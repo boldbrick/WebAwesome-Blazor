@@ -1,0 +1,123 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using WebAwesome.Blazor.Base;
+
+namespace WebAwesome.Blazor.Components;
+
+/// <summary>
+/// A popover component that displays interactive content when their anchor element is clicked.
+/// Corresponds to the wa-popover Web Awesome component.
+/// </summary>
+public class WaPopover : ComponentBase
+{
+    #region ------ Public Properties ------
+
+    /// <summary>
+    /// The associated <see cref="ElementReference"/>.
+    /// <para>
+    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// </para>
+    /// </summary>
+    [DisallowNull] public ElementReference? Element { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    // Common styling parameters
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+
+    // Popover properties
+    [Parameter] public string? For { get; set; }
+    [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public int Distance { get; set; } = 8;
+    [Parameter] public bool WithoutArrow { get; set; }
+
+    #endregion
+
+    #region ------ Content ------
+
+    /// <summary>
+    /// The popover content
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    #endregion
+
+    #region ------ Events ------
+
+    [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+    [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
+
+    #endregion
+
+    #region ------ Overrides ------
+
+    /// <inheritdoc />
+    protected override void BuildRenderTree(RenderTreeBuilder builder)
+    {
+        builder.OpenElement(0, "wa-popover");
+
+        // Add common attributes
+        builder.AddMultipleAttributes(1, AdditionalAttributes);
+        builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
+        builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
+
+        // Add popover-specific attributes
+        builder.AddAttributeIfNotNullOrEmpty(10, "for", For);
+        if (Placement != WaPlacement.Top)
+            builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
+        builder.AddAttribute(12, "open", Open);
+        if (Distance != 8)
+            builder.AddAttribute(13, "distance", Distance);
+        builder.AddAttribute(14, "without-arrow", WithoutArrow);
+
+        // Add event handlers
+        if (OnShow.HasDelegate)
+            builder.AddAttribute(20, "wa-show", OnShow);
+
+        if (OnHide.HasDelegate)
+            builder.AddAttribute(21, "wa-hide", OnHide);
+
+        // Add element reference capture
+        builder.AddElementReferenceCapture(22, __popoverReference => Element = __popoverReference);
+
+        // Add content
+        if (ChildContent is not null)
+        {
+            builder.AddContent(30, ChildContent);
+        }
+
+        builder.CloseElement();
+    }
+
+    #endregion
+
+    #region ------ Private Methods ------
+
+    /// <summary>
+    /// Gets the CSS class string combining user classes
+    /// </summary>
+    private string GetCombinedCssClass()
+    {
+        var classes = new List<string>();
+
+        if (!string.IsNullOrEmpty(Class))
+            classes.Add(Class);
+
+        return string.Join(' ', classes);
+    }
+
+    #endregion
+}
+
+// TODO: Popover positioning and interaction
+// Popovers require JavaScript for proper positioning, outside-click detection, and focus management.
+// Currently provides basic binding support. Advanced features like collision detection,
+// dynamic positioning, keyboard navigation, and dismissal behavior require JS interop implementation.
