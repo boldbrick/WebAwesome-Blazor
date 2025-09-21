@@ -41,6 +41,9 @@
     <!-- EF Core output directory -->
     <EFOutputDir>$(IntermediateOutputPath)</EFOutputDir>
 
+    <!-- NuSpec output directory -->
+    <NuspecOutputPath>$(IntermediateOutputPath)</NuspecOutputPath>
+
     <!-- used primarily by the packaging system -->
     <MSBuildProjectExtensionsPath>$(IntermediateOutputPath)</MSBuildProjectExtensionsPath>
 
@@ -90,4 +93,14 @@
     <GenerateAssemblyProductAttribute>true</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCopyrightAttribute>true</GenerateAssemblyCopyrightAttribute>
   </PropertyGroup>
+
+  <!-- Package license configuration -->
+  <PropertyGroup>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+
+  <!-- Include license file in packages -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(SolutionDir)..\LICENSE.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 </Project>
