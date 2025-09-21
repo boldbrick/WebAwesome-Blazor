@@ -52,8 +52,12 @@ jobs:
       #      dotnet pack WebAwesome.slnx --no-build /p:Configuration=Release /p:ContinuousIntegrationBuild=true
       #    }
 
+      # Note a step that "uses" ignores the default working directory
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
           name: nupkg
-          path: output/packages/Release/*.nupkg
+          path: src/output/packages/Release/*.nupkg
+          if-no-files-found: error
+          overwrite: true
+
