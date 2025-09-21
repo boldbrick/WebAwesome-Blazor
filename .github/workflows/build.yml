@@ -1,0 +1,59 @@
+name: build-and-pack
+
+on:
+  push:
+    branches: [ "main", "release-**" ]
+    tags: [ "wa-blazor-*" ]
+  pull_request:
+    branches: [ "main", "release-**" ]
+
+defaults:
+  run:
+    working-directory: src
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+
+      - name: Restore
+        run: dotnet restore WebAwesome.slnxx
+
+      - name: Build
+        run: dotnet build WebAwesome.slnx -c Release --no-restore
+
+      # Determine version:
+      # - If this is a tag 'wa-blazor-*', use the tag value after the slash
+      # - Otherwise, let csproj/Directory.Build.props decide (or generate a CI suffix)
+      - name: Compute version (if tagged)
+        id: meta
+        shell: pwsh
+        run: |
+          $ref = "${{ github.ref }}"
+          if ($ref -like "refs/tags/wa-blazor-*") {
+            $ver = $ref.Substring("refs/tags/wa-blazor-".Length)
+            echo "version=$ver" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Pack
+        run: |
+          if ("${{ steps.meta.outputs.version }}" -ne "") {
+            dotnet pack WebAwesome.slnx -c Release /p:ContinuousIntegrationBuild=true /p:Version=${{ steps.meta.outputs.version }}
+          } else {
+            dotnet pack WebAwesome.slnx -c Release /p:ContinuousIntegrationBuild=true
+          }
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: output/packages/Release/*.nupkg

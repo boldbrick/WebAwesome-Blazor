@@ -1,0 +1,36 @@
+# Visual Studio files
+*.suo
+*.user
+.vs/
+
+# Build outputs
+bin/
+obj/
+pkg/
+pkgobj/
+output/
+
+# Debug files
+*.pdb
+
+# Backup and temporary files
+*.bak
+*.log
+*.tmp
+temp/
+
+# Test results
+TestResults/
+
+# Satellite assemblies
+.SatelliteAssemblies/
+
+# NuGet packages
+packages/
+*.nupkg
+
+# JetBrains IDEs
+.idea/
+
+# Claude settings
+.claude/settings.local.json
