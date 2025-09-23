@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using System;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -64,6 +65,31 @@ public class WaRatingHoverEventArgs
     /// The potential rating value during hover
     /// </summary>
     public decimal Value { get; set; }
+}
+
+#endregion
+
+#region ------ Details Events ------
+
+/// <summary>
+/// Event arguments for details toggle events
+/// </summary>
+public class WaDetailsToggleEventArgs : EventArgs
+{
+    public bool IsOpen { get; set; }
+}
+
+#endregion
+
+#region ------ Split Panel Events ------
+
+/// <summary>
+/// Event arguments for split panel reposition events
+/// </summary>
+public class WaSplitPanelRepositionEventArgs : EventArgs
+{
+    public decimal Position { get; set; }
+    public int PositionInPixels { get; set; }
 }
 
 #endregion

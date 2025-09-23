@@ -15,6 +15,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaCopyButton : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -145,16 +151,14 @@ public class WaCopyButton : ComponentBase
     /// <summary>
     /// Programmatically trigger the copy operation.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-copy-button's copy() method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task CopyAsync()
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task CopyAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.copy() method on the underlying wa-copy-button element
-        throw new NotImplementedException("CopyAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-copy-button element's copy() method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot copy: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "copy");
     }
 
     #endregion

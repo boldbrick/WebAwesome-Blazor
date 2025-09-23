@@ -14,6 +14,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaDetails : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -92,11 +98,10 @@ public class WaDetails : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(9, "name", Name);
 
         // Add event handlers
-        // TODO: This event needs to be mapped to the Web Awesome component events
         if (OnToggle.HasDelegate)
-        {
-            // Custom event handler will need JavaScript interop
-        }
+            builder.AddAttribute(20, "wa-show", EventCallback.Factory.Create(this, () => HandleToggleEvent(true)));
+        if (OnToggle.HasDelegate)
+            builder.AddAttribute(21, "wa-hide", EventCallback.Factory.Create(this, () => HandleToggleEvent(false)));
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __detailsReference => Element = __detailsReference);
@@ -144,31 +149,27 @@ public class WaDetails : ComponentBase
     /// <summary>
     /// Programmatically shows the details content.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-details's show method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task ShowAsync()
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task ShowAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.show() method on the underlying wa-details element
-        throw new NotImplementedException("ShowAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-details element's show method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show details: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "show");
     }
 
     /// <summary>
     /// Programmatically hides the details content.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-details's hide method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task HideAsync()
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task HideAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.hide() method on the underlying wa-details element
-        throw new NotImplementedException("HideAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-details element's hide method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot hide details: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
     }
 
     #endregion
@@ -188,13 +189,14 @@ public class WaDetails : ComponentBase
         return string.Join(' ', classes);
     }
 
-    #endregion
-}
+    /// <summary>
+    /// Handles toggle events from the Web Awesome component
+    /// </summary>
+    private async Task HandleToggleEvent(bool isOpen)
+    {
+        var args = new WaDetailsToggleEventArgs { IsOpen = isOpen };
+        await OnToggle.InvokeAsync(args);
+    }
 
-/// <summary>
-/// Event arguments for details toggle events
-/// </summary>
-public class WaDetailsToggleEventArgs : EventArgs
-{
-    public bool IsOpen { get; set; }
+    #endregion
 }
