@@ -13,28 +13,11 @@ export function setCustomValidity(element, message) {
         throw new Error('Element reference is null or undefined');
     }
 
-    // Verify this is a Web Awesome component that supports setCustomValidity
-    const tagName = element.tagName?.toLowerCase();
-    const supportedComponents = [
-        'wa-button',
-        'wa-checkbox',
-        'wa-color-picker',
-        'wa-input',
-        'wa-radio',
-        'wa-radio-group',
-        'wa-select',
-        'wa-slider',
-        'wa-switch',
-        'wa-textarea'
-    ];
+    const tagName = element.tagName?.toLowerCase() || 'unknown';
 
-    if (!supportedComponents.includes(tagName)) {
-        throw new Error(`setCustomValidity is not supported on ${tagName || 'unknown'} elements`);
-    }
-
-    // Check if the element has the setCustomValidity method
+    // Check if element implements WebAwesomeFormControl interface by testing for setCustomValidity method
     if (typeof element.setCustomValidity !== 'function') {
-        throw new Error(`Element ${tagName} does not support setCustomValidity method. Ensure Web Awesome library is properly loaded.`);
+        throw new Error(`Element ${tagName} does not implement WebAwesomeFormControl interface. Ensure Web Awesome library is properly loaded.`);
     }
 
     try {

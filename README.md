@@ -98,7 +98,9 @@ All form controls support custom validation via the `SetCustomValidityAsync` met
 ```
 
 Supported components:
-- `WaButton`, `WaCheckbox`, `WaColorPicker`, `WaInput`, `WaRadio`, `WaRadioGroup`, `WaSelect`, `WaSlider`, `WaSwitch`, `WaTextarea`
+- All Web Awesome form controls that implement the `WebAwesomeFormControl` interface
+- Currently includes: `WaButton`, `WaCheckbox`, `WaColorPicker`, `WaInput`, `WaRadio`, `WaRadioGroup`, `WaSelect`, `WaSlider`, `WaSwitch`, `WaTextarea`
+- Future form controls will be automatically supported without requiring updates to this library
 
 ## Version alignment
 We align binding versions to WA versions. Use the **same** semantic version when possible; for prereleases we follow WA suffixes.
