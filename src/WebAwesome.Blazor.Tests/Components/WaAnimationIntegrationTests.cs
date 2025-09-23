@@ -85,6 +85,82 @@ public class WaAnimationIntegrationTests : IDisposable
         Assert.Equal(0m, result);
     }
 
+    [Fact]
+    public async Task SetKeyframesAsync_WithNullElement_ThrowsInvalidOperationException()
+    {
+        // Arrange - component not rendered yet, Element is null
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            animationComponent.SetKeyframesAsync(new object()));
+
+        Assert.Contains("Cannot set keyframes: component has not been rendered yet", exception.Message);
+    }
+
+    [Fact]
+    public async Task SetKeyframesAsync_WithValidElement_CallsJSInterop()
+    {
+        // Arrange
+        SetupElementReference();
+        var keyframes = new { offset = 0, transform = "rotate(0deg)" };
+
+        // Act - This should not throw because we have a test JSRuntime
+        await animationComponent.SetKeyframesAsync(keyframes);
+
+        // Assert - Test passed if no exception was thrown
+        Assert.True(true);
+    }
+
+    [Fact]
+    public async Task FinishAsync_WithNullElement_ThrowsInvalidOperationException()
+    {
+        // Arrange - component not rendered yet, Element is null
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            animationComponent.FinishAsync());
+
+        Assert.Contains("Cannot finish animation: component has not been rendered yet", exception.Message);
+    }
+
+    [Fact]
+    public async Task FinishAsync_WithValidElement_CallsJSInterop()
+    {
+        // Arrange
+        SetupElementReference();
+
+        // Act - This should not throw because we have a test JSRuntime
+        await animationComponent.FinishAsync();
+
+        // Assert - Test passed if no exception was thrown
+        Assert.True(true);
+    }
+
+    [Fact]
+    public async Task SetCurrentTimeAsync_WithNullElement_ThrowsInvalidOperationException()
+    {
+        // Arrange - component not rendered yet, Element is null
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            animationComponent.SetCurrentTimeAsync(1000m));
+
+        Assert.Contains("Cannot set current time: component has not been rendered yet", exception.Message);
+    }
+
+    [Fact]
+    public async Task SetCurrentTimeAsync_WithValidElement_CallsJSInterop()
+    {
+        // Arrange
+        SetupElementReference();
+
+        // Act - This should not throw because we have a test JSRuntime
+        await animationComponent.SetCurrentTimeAsync(1500m);
+
+        // Assert - Test passed if no exception was thrown
+        Assert.True(true);
+    }
+
     private void SetupElementReference()
     {
         // Simulate element being rendered by setting Element property

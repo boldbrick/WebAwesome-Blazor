@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +15,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaAnimatedImage : ComponentBase
 {
+    #region ------ Injected Services ------
+
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -86,12 +93,12 @@ public class WaAnimatedImage : ComponentBase
     /// TODO: This method requires JavaScript interop to call the underlying wa-animated-image's play method.
     /// Implementation depends on the Web Awesome library being properly loaded in the page.
     /// </remarks>
-    public Task PlayAsync()
+    public async Task PlayAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.play() method on the underlying wa-animated-image element
-        throw new NotImplementedException("PlayAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-animated-image element's play method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot play animation: component has not been rendered yet.");
+
+        await JSInterop.SetPropertyAsync(Element.Value, "play", true);
     }
 
     /// <summary>
@@ -101,12 +108,12 @@ public class WaAnimatedImage : ComponentBase
     /// TODO: This method requires JavaScript interop to call the underlying wa-animated-image's pause method.
     /// Implementation depends on the Web Awesome library being properly loaded in the page.
     /// </remarks>
-    public Task PauseAsync()
+    public async Task PauseAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.pause() method on the underlying wa-animated-image element
-        throw new NotImplementedException("PauseAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-animated-image element's pause method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot pause animation: component has not been rendered yet.");
+
+        await JSInterop.SetPropertyAsync(Element.Value, "play", false);
     }
 
     #endregion
