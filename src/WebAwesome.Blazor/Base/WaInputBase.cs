@@ -20,7 +20,7 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
 {
     #region ------ Dependency Injection ------
 
-    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
 

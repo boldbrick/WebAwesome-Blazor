@@ -47,3 +47,23 @@ public class WaTabCloseEventArgs
 }
 
 #endregion
+
+#region ------ Rating Events ------
+
+/// <summary>
+/// Event arguments for rating hover events
+/// </summary>
+public class WaRatingHoverEventArgs
+{
+    /// <summary>
+    /// Hover phase: 'start', 'move', or 'end'
+    /// </summary>
+    public string Phase { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The potential rating value during hover
+    /// </summary>
+    public decimal Value { get; set; }
+}
+
+#endregion

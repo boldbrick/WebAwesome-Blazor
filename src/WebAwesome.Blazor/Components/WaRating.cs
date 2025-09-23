@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -48,10 +49,7 @@ public class WaRating : WaInputBase<decimal>
 
         // Add rating-specific event handlers
         if (OnHover.HasDelegate)
-        {
-            // TODO: This requires custom event handling for wa-hover events
-            // builder.AddAttribute(40, "wa-hover", OnHover);
-        }
+            builder.AddAttribute(40, "wa-hover", OnHover);
 
         // Add common event handlers
         AddCommonEventHandlers(builder, 50);
@@ -86,27 +84,21 @@ public class WaRating : WaInputBase<decimal>
     /// <summary>
     /// Sets a custom symbol function for rendering icons.
     /// </summary>
-    /// <param name="jsFunction">JavaScript function that returns HTML for the symbol</param>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-rating's getSymbol property.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public void SetSymbolFunction(string jsFunction)
+    /// <param name="jsFunction">JavaScript function string that returns HTML for the symbol</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
+    public async Task SetSymbolFunctionAsync(string jsFunction)
     {
-        // TODO: Implement JavaScript interop call
-        // Should set Element.getSymbol = jsFunction on the underlying wa-rating element
-        throw new NotImplementedException("SetSymbolFunction requires JavaScript interop implementation. " +
-            "This should set the underlying wa-rating element's getSymbol property.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set symbol function: component has not been rendered yet.");
+
+        if (string.IsNullOrEmpty(jsFunction))
+            throw new ArgumentNullException(nameof(jsFunction));
+
+        await JSInterop.SetPropertyAsync(Element.Value, "getSymbol", jsFunction);
     }
 
     #endregion
 }
 
-/// <summary>
-/// Event arguments for rating hover events
-/// </summary>
-public class WaRatingHoverEventArgs : EventArgs
-{
-    public string Phase { get; set; } = string.Empty;
-    public decimal Value { get; set; }
-}

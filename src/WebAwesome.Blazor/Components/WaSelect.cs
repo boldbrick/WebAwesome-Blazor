@@ -200,16 +200,19 @@ public class WaSelect : WaInputBase<string?>
     /// <summary>
     /// Sets the custom tag generation function for multiple selection mode.
     /// </summary>
-    /// <param name="getTagFunction">Function that generates custom HTML for each selected option</param>
-    /// <remarks>
-    /// This method requires JavaScript interop to set the getTag property on the underlying web component.
-    /// </remarks>
-    public Task SetGetTagFunctionAsync(Func<WaOption, int, string> getTagFunction)
+    /// <param name="jsFunction">JavaScript function string that generates custom HTML for each selected option</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
+    public async Task SetGetTagFunctionAsync(string jsFunction)
     {
-        GetTag = getTagFunction;
-        // Note: This would require JavaScript interop to set the getTag property
-        throw new NotImplementedException("SetGetTagFunctionAsync requires JavaScript interop implementation. " +
-            "This should set the getTag property on the underlying wa-select element.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set get tag function: component has not been rendered yet.");
+
+        if (string.IsNullOrEmpty(jsFunction))
+            throw new ArgumentNullException(nameof(jsFunction));
+
+        await JSInterop.SetPropertyAsync(Element.Value, "getTag", jsFunction);
     }
 
     #endregion
