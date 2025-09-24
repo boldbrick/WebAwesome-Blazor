@@ -93,3 +93,29 @@ public class WaSplitPanelRepositionEventArgs : EventArgs
 }
 
 #endregion
+
+#region ------ Observer Events ------
+
+/// <summary>
+/// Event arguments for mutation events
+/// </summary>
+public class MutationEventArgs : EventArgs
+{
+    /// <summary>
+    /// Array of MutationRecord objects describing the mutations
+    /// </summary>
+    public object[]? MutationRecords { get; set; }
+}
+
+/// <summary>
+/// Event arguments for resize events
+/// </summary>
+public class ResizeEventArgs : EventArgs
+{
+    /// <summary>
+    /// Array of ResizeObserverEntry objects describing the size changes
+    /// </summary>
+    public object[]? ResizeObserverEntries { get; set; }
+}
+
+#endregion

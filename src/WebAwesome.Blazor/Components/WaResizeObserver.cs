@@ -18,6 +18,12 @@ namespace WebAwesome.Blazor.Components;
 /// </remarks>
 public class WaResizeObserver : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -131,27 +137,27 @@ public class WaResizeObserver : ComponentBase
     /// <summary>
     /// Disconnects the resize observer
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Stop observing resize changes
-    /// </remarks>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task DisconnectAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.resizeObserver.disconnect", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot disconnect observer: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "disconnect");
     }
 
     /// <summary>
     /// Reconnects the resize observer
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Resume observing resize changes
-    /// </remarks>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task ReconnectAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.resizeObserver.reconnect", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot reconnect observer: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "reconnect");
     }
 
     #endregion
@@ -172,15 +178,4 @@ public class WaResizeObserver : ComponentBase
     }
 
     #endregion
-}
-
-/// <summary>
-/// Event args for resize events
-/// </summary>
-public class ResizeEventArgs : EventArgs
-{
-    /// <summary>
-    /// Array of ResizeObserverEntry objects describing the size changes
-    /// </summary>
-    public object[]? ResizeObserverEntries { get; set; }
 }
