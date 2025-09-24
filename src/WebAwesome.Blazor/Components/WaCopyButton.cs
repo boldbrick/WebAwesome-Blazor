@@ -102,8 +102,6 @@ public class WaCopyButton : ComponentBase
         builder.AddAttribute(10, "feedback-duration", FeedbackDuration);
 
         // Add event handlers
-        // Note: Copy events are handled through standard Blazor EventCallback pattern
-        // wa-copy, wa-success, wa-error events are properly bound
         if (OnCopy.HasDelegate)
             builder.AddAttribute(20, "wa-copy", OnCopy);
 

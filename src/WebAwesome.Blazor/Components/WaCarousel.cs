@@ -90,11 +90,8 @@ public class WaCarousel : ComponentBase
         builder.AddAttribute(12, "slides-per-move", SlidesPerMove);
 
         // Add event handlers
-        // TODO: This event needs to be mapped to the Web Awesome component events
         if (OnSlideChange.HasDelegate)
-        {
-            // Custom event handler will need JavaScript interop
-        }
+            builder.AddAttribute(15, "wa-slide-change", OnSlideChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __carouselReference => Element = __carouselReference);
@@ -116,10 +113,7 @@ public class WaCarousel : ComponentBase
     /// Programmatically navigates to the specified slide.
     /// </summary>
     /// <param name="index">The zero-based index of the slide to show</param>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-carousel's goToSlide method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task GoToSlideAsync(int index)
     {
         if (Element == null)
@@ -131,10 +125,7 @@ public class WaCarousel : ComponentBase
     /// <summary>
     /// Programmatically navigates to the previous slide.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-carousel's previous method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task PreviousAsync()
     {
         if (Element == null)
@@ -146,10 +137,7 @@ public class WaCarousel : ComponentBase
     /// <summary>
     /// Programmatically navigates to the next slide.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-carousel's next method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task NextAsync()
     {
         if (Element == null)

@@ -84,17 +84,11 @@ public class WaTabGroup : ComponentBase
         builder.AddAttribute(6, "activation", Activation.ToHtmlValue());
 
         // Add event handlers
-        // TODO: These events need to be mapped to the Web Awesome component events
-        // wa-tab-change, wa-tab-close
         if (OnTabChange.HasDelegate)
-        {
-            // Custom event handler will need JavaScript interop
-        }
+            builder.AddAttribute(7, "wa-tab-change", OnTabChange);
 
         if (OnTabClose.HasDelegate)
-        {
-            // Custom event handler will need JavaScript interop
-        }
+            builder.AddAttribute(8, "wa-tab-close", OnTabClose);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __tabGroupReference => Element = __tabGroupReference);
@@ -125,10 +119,7 @@ public class WaTabGroup : ComponentBase
     /// Programmatically shows the specified tab panel.
     /// </summary>
     /// <param name="panelName">The name of the tab panel to show</param>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-tab-group's show method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task ShowTabAsync(string panelName)
     {
         if (Element == null)
