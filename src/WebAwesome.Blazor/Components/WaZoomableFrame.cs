@@ -18,6 +18,12 @@ namespace WebAwesome.Blazor.Components;
 /// </remarks>
 public class WaZoomableFrame : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -119,21 +125,7 @@ public class WaZoomableFrame : ComponentBase
     {
         if (firstRender)
         {
-            // TODO: JS Interop needed
-            // Initialize zoom and pan controls for the iframe
-            // Call: await JSRuntime.InvokeVoidAsync("webAwesome.zoomableFrame.initialize", Element);
-
-            // The JavaScript should:
-            // 1. Create iframe element with proper src/srcdoc
-            // 2. Implement zoom controls (zoom in, zoom out, reset, specific levels)
-            // 3. Handle pan/drag functionality within the zoomed frame
-            // 4. Parse zoom-levels attribute for custom zoom increments
-            // 5. Apply CSS transforms for zoom and pan effects
-            // 6. Handle mouse/touch events for user interaction
-            // 7. Emit zoom-change events with current zoom level
-            // 8. Respect without-controls and without-interaction flags
-            // 9. Handle iframe load/error events
-            // 10. Maintain accessibility for keyboard navigation
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -147,54 +139,50 @@ public class WaZoomableFrame : ComponentBase
     /// Sets the zoom level programmatically
     /// </summary>
     /// <param name="zoomLevel">The zoom level (1.0 = 100%)</param>
-    /// <remarks>
-    /// TODO: JS Interop needed - Apply zoom level and update controls
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task SetZoomAsync(double zoomLevel)
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.zoomableFrame.setZoom", Element, zoomLevel);
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set zoom: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "setZoom", zoomLevel);
         Zoom = zoomLevel;
-        await Task.CompletedTask;
     }
 
     /// <summary>
     /// Resets zoom to 100% and centers the content
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Reset zoom and pan to defaults
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task ResetAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.zoomableFrame.reset", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot reset zoom: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "reset");
     }
 
     /// <summary>
     /// Zooms in by one level
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Zoom in based on zoom-levels or default increment
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task ZoomInAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.zoomableFrame.zoomIn", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot zoom in: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "zoomIn");
     }
 
     /// <summary>
     /// Zooms out by one level
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Zoom out based on zoom-levels or default increment
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task ZoomOutAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.zoomableFrame.zoomOut", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot zoom out: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "zoomOut");
     }
 
     #endregion
@@ -215,20 +203,4 @@ public class WaZoomableFrame : ComponentBase
     }
 
     #endregion
-}
-
-/// <summary>
-/// Event args for zoom change events
-/// </summary>
-public class ZoomChangeEventArgs : EventArgs
-{
-    /// <summary>
-    /// The new zoom level (1.0 = 100%)
-    /// </summary>
-    public double ZoomLevel { get; set; }
-
-    /// <summary>
-    /// The previous zoom level
-    /// </summary>
-    public double PreviousZoomLevel { get; set; }
 }
