@@ -13,6 +13,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaPopover : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -115,9 +121,54 @@ public class WaPopover : ComponentBase
     }
 
     #endregion
-}
 
-// TODO: Popover positioning and interaction
-// Popovers require JavaScript for proper positioning, outside-click detection, and focus management.
-// Currently provides basic binding support. Advanced features like collision detection,
-// dynamic positioning, keyboard navigation, and dismissal behavior require JS interop implementation.
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Shows the popover with dynamic positioning
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task ShowAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show popover: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+    }
+
+    /// <summary>
+    /// Hides the popover
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task HideAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot hide popover: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+    }
+
+    /// <summary>
+    /// Recalculates and updates the popover position
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task RepositionAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot reposition popover: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
+    }
+
+    #endregion
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

@@ -13,6 +13,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaDropdown : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -132,15 +138,54 @@ public class WaDropdown : ComponentBase
     }
 
     #endregion
-}
 
-// TODO: Dropdown positioning and interaction management
-// Dropdowns require JavaScript for:
-// - Popup positioning using Floating UI or similar
-// - Outside-click detection for dismissal
-// - Keyboard navigation (arrow keys, enter, escape)
-// - Focus management and restoration
-// - Submenu opening/closing on hover/click
-// - wa-select event with proper detail data
-// - Integration with data-dropdown declarative API
-// Currently provides basic binding support. Advanced dropdown behaviors require JS interop.
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Shows the dropdown with dynamic positioning
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task ShowAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show dropdown: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+    }
+
+    /// <summary>
+    /// Hides the dropdown with focus restoration
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task HideAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot hide dropdown: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+    }
+
+    /// <summary>
+    /// Recalculates and updates the dropdown position
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task RepositionAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot reposition dropdown: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
+    }
+
+    #endregion
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

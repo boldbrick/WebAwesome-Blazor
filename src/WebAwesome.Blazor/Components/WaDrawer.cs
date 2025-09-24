@@ -13,6 +13,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaDrawer : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -146,15 +152,54 @@ public class WaDrawer : ComponentBase
     }
 
     #endregion
-}
 
-// TODO: Drawer slide-in behavior and focus management
-// Drawers require JavaScript for:
-// - Slide-in/out animations from different sides
-// - Modal overlay behavior
-// - Focus trapping and management
-// - ESC key handling
-// - Initial focus setting
-// - Preventing closure (wa-hide event cancellation)
-// - Responsive size handling
-// Currently provides basic binding support. Advanced slide behaviors require JS interop.
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Shows the drawer with focus management and slide-in animation
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task ShowAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show drawer: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+    }
+
+    /// <summary>
+    /// Hides the drawer with focus restoration and slide-out animation
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task HideAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot hide drawer: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+    }
+
+    /// <summary>
+    /// Focuses the drawer or first focusable element within it
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus drawer: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
+
+    #endregion
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
