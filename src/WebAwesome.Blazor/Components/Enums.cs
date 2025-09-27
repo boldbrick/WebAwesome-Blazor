@@ -482,9 +482,9 @@ public enum WaTabPlacement
 }
 
 /// <summary>
-/// Icon position for details component
+/// Icon placement for details component
 /// </summary>
-public enum WaIconPosition
+public enum WaIconPlacement
 {
     Start,
     End
@@ -912,15 +912,15 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaIconPosition to HTML attribute value
+    /// Converts WaIconPlacement to HTML attribute value
     /// </summary>
-    public static string ToHtmlValue(this WaIconPosition position)
+    public static string ToHtmlValue(this WaIconPlacement placement)
     {
-        return position switch
+        return placement switch
         {
-            WaIconPosition.Start => "start",
-            WaIconPosition.End => "end",
-            _ => throw new ArgumentOutOfRangeException(nameof(position), position, null)
+            WaIconPlacement.Start => "start",
+            WaIconPlacement.End => "end",
+            _ => throw new ArgumentOutOfRangeException(nameof(placement), placement, null)
         };
     }
 
