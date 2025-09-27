@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -13,6 +14,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaTooltip : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -115,9 +122,54 @@ public class WaTooltip : ComponentBase
     }
 
     #endregion
-}
 
-// TODO: Tooltip positioning and interaction
-// Tooltips require JavaScript for proper positioning using libraries like Floating UI.
-// Currently provides basic binding support. Advanced features like collision detection,
-// dynamic positioning, and proper focus management require JS interop implementation.
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Shows the tooltip with dynamic positioning
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task ShowAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show tooltip: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+    }
+
+    /// <summary>
+    /// Hides the tooltip
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task HideAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot hide tooltip: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+    }
+
+    /// <summary>
+    /// Recalculates and updates the tooltip position
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task RepositionAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot reposition tooltip: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
+    }
+
+    #endregion
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

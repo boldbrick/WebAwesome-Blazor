@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using WebAwesome.Blazor.Components;
 
@@ -15,8 +16,14 @@ namespace WebAwesome.Blazor.Base;
 /// for labels, hints, validation, and styling
 /// </summary>
 /// <typeparam name="TValue">The type of value bound to the input</typeparam>
-public abstract class WaInputBase<TValue> : InputBase<TValue>
+public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -161,6 +168,19 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>
         }
 
         return currentSequence;
+    }
+
+    #endregion
+
+    #region ------ Implementation of IFormValidation ------
+
+    /// <inheritdoc />
+    public virtual async Task SetCustomValidityAsync(string message)
+    {
+        if (Element is null)
+            throw new InvalidOperationException("Cannot set custom validity before the component is rendered. Element reference is null.");
+
+        await JSInterop.SetCustomValidityAsync(Element.Value, message);
     }
 
     #endregion

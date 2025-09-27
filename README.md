@@ -25,6 +25,31 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
  dotnet add package WebAwesome.Blazor
 ```
 
+## Setup
+
+### 1. Register Services
+Add Web Awesome services to your dependency injection container in `Program.cs`:
+
+```csharp
+using WebAwesome.Blazor.Extensions;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add Web Awesome services
+builder.Services.AddWebAwesome();
+
+// ... other services
+
+var app = builder.Build();
+```
+
+### 2. Include Web Awesome Assets
+Ensure the Web Awesome JavaScript library is loaded in your application (e.g., in `_Host.cshtml` or `wwwroot/index.html`):
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/web-awesome@3.0.0-beta.4/dist/web-awesome.js"></script>
+```
+
 ## Quick start (wrapper usage)
 ```razor
 @page "/demo"
@@ -42,6 +67,40 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 
 ### Using native elements directly (advanced)
 If you prefer working with native web components, you can still render `<wa-button>` etc. The wrappers primarily exist to make event binding, parameter casing, and lifecycle interop seamless in Blazor.
+
+## Features
+
+### Custom Validation
+All form controls support custom validation via the `SetCustomValidityAsync` method:
+
+```csharp
+@inject IFormValidation formValidation
+
+<WaInput @ref="nameInput" Label="Name" required />
+<WaButton OnClick="ValidateName">Check Name</WaButton>
+
+@code {
+    private WaInput nameInput = default!;
+
+    private async Task ValidateName()
+    {
+        var value = nameInput.Value;
+        if (value == "admin")
+        {
+            await nameInput.SetCustomValidityAsync("Admin is not allowed as a name");
+        }
+        else
+        {
+            await nameInput.SetCustomValidityAsync(""); // Clear validation error
+        }
+    }
+}
+```
+
+Supported components:
+- All Web Awesome form controls that implement the `WebAwesomeFormControl` interface
+- Currently includes: `WaButton`, `WaCheckbox`, `WaColorPicker`, `WaInput`, `WaRadio`, `WaRadioGroup`, `WaSelect`, `WaSlider`, `WaSwitch`, `WaTextarea`
+- Future form controls will be automatically supported without requiring updates to this library
 
 ## Version alignment
 We align binding versions to WA versions. Use the **same** semantic version when possible; for prereleases we follow WA suffixes.

@@ -84,26 +84,4 @@ public class WaCheckbox : WaInputBase<bool>
 
     #endregion
 
-    #region ------ Public Methods ------
-
-    /// <summary>
-    /// Sets a custom validation message. This will prevent the form from submitting
-    /// and make the browser display the error message you provide.
-    /// To clear the error, call this function with an empty string.
-    /// </summary>
-    /// <param name="message">The validation message to display, or empty string to clear</param>
-    /// <remarks>
-    /// This method requires JavaScript interop to call the underlying web component's
-    /// setCustomValidity method. Implementation depends on the Web Awesome library
-    /// being properly loaded in the page.
-    /// </remarks>
-    public Task SetCustomValidityAsync(string message)
-    {
-        // Note: This would require JavaScript interop to call element.setCustomValidity(message)
-        // For now, we document that this functionality needs JS interop implementation
-        throw new NotImplementedException("SetCustomValidityAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-checkbox element's setCustomValidity method.");
-    }
-
-    #endregion
 }

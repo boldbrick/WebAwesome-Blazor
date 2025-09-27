@@ -196,38 +196,23 @@ public class WaSelect : WaInputBase<string?>
 
     #region ------ Public Methods ------
 
-    /// <summary>
-    /// Sets a custom validation message. This will prevent the form from submitting
-    /// and make the browser display the error message you provide.
-    /// To clear the error, call this function with an empty string.
-    /// </summary>
-    /// <param name="message">The validation message to display, or empty string to clear</param>
-    /// <remarks>
-    /// This method requires JavaScript interop to call the underlying web component's
-    /// setCustomValidity method. Implementation depends on the Web Awesome library
-    /// being properly loaded in the page.
-    /// </remarks>
-    public Task SetCustomValidityAsync(string message)
-    {
-        // Note: This would require JavaScript interop to call element.setCustomValidity(message)
-        // For now, we document that this functionality needs JS interop implementation
-        throw new NotImplementedException("SetCustomValidityAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-select element's setCustomValidity method.");
-    }
 
     /// <summary>
     /// Sets the custom tag generation function for multiple selection mode.
     /// </summary>
-    /// <param name="getTagFunction">Function that generates custom HTML for each selected option</param>
-    /// <remarks>
-    /// This method requires JavaScript interop to set the getTag property on the underlying web component.
-    /// </remarks>
-    public Task SetGetTagFunctionAsync(Func<WaOption, int, string> getTagFunction)
+    /// <param name="jsFunction">JavaScript function string that generates custom HTML for each selected option</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
+    public async Task SetGetTagFunctionAsync(string jsFunction)
     {
-        GetTag = getTagFunction;
-        // Note: This would require JavaScript interop to set the getTag property
-        throw new NotImplementedException("SetGetTagFunctionAsync requires JavaScript interop implementation. " +
-            "This should set the getTag property on the underlying wa-select element.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set get tag function: component has not been rendered yet.");
+
+        if (string.IsNullOrEmpty(jsFunction))
+            throw new ArgumentNullException(nameof(jsFunction));
+
+        await JSInterop.SetPropertyAsync(Element.Value, "getTag", jsFunction);
     }
 
     #endregion

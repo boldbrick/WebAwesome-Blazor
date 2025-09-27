@@ -211,16 +211,19 @@ public class WaSlider : WaInputBase<decimal?>
     /// <summary>
     /// Sets the custom value formatting function for tooltips and screen readers.
     /// </summary>
-    /// <param name="formatter">Function that formats slider values for display</param>
-    /// <remarks>
-    /// This method requires JavaScript interop to set the valueFormatter property on the underlying web component.
-    /// </remarks>
-    public Task SetValueFormatterAsync(Func<decimal, string> formatter)
+    /// <param name="jsFunction">JavaScript function string that formats slider values for display</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
+    public async Task SetValueFormatterAsync(string jsFunction)
     {
-        ValueFormatter = formatter;
-        // Note: This would require JavaScript interop to set the valueFormatter property
-        throw new NotImplementedException("SetValueFormatterAsync requires JavaScript interop implementation. " +
-            "This should set the valueFormatter property on the underlying wa-slider element.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set value formatter: component has not been rendered yet.");
+
+        if (string.IsNullOrEmpty(jsFunction))
+            throw new ArgumentNullException(nameof(jsFunction));
+
+        await JSInterop.SetPropertyAsync(Element.Value, "valueFormatter", jsFunction);
     }
 
     #endregion

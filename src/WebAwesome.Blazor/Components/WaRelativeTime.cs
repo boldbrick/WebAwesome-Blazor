@@ -18,6 +18,12 @@ namespace WebAwesome.Blazor.Components;
 /// </remarks>
 public class WaRelativeTime : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -89,18 +95,7 @@ public class WaRelativeTime : ComponentBase
     {
         if (firstRender)
         {
-            // TODO: JS Interop needed
-            // Initialize Intl.RelativeTimeFormat and timer management
-            // Call: await JSRuntime.InvokeVoidAsync("webAwesome.relativeTime.initialize", Element);
-
-            // The JavaScript should:
-            // 1. Parse the date attribute using Date.parse() or new Date()
-            // 2. Calculate time difference from current time
-            // 3. Use Intl.RelativeTimeFormat with appropriate locale and format options
-            // 4. Update display text with formatted relative time
-            // 5. If sync=true, set up timer to periodically update the display
-            // 6. Handle different format styles (auto, relative, numeric)
-            // 7. Support custom lang attribute for localization
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -108,9 +103,10 @@ public class WaRelativeTime : ComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        // TODO: JS Interop needed
-        // Update the component when parameters change
-        // Call: await JSRuntime.InvokeVoidAsync("webAwesome.relativeTime.update", Element, GetDateString());
+        if (Element != null)
+        {
+            await JSInterop.InvokeMethodAsync(Element.Value, "update");
+        }
 
         await base.OnParametersSetAsync();
     }
@@ -122,14 +118,13 @@ public class WaRelativeTime : ComponentBase
     /// <summary>
     /// Forces an update of the relative time display
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Force recalculation and display update
-    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task UpdateAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.relativeTime.forceUpdate", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot update relative time: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "update");
     }
 
     #endregion

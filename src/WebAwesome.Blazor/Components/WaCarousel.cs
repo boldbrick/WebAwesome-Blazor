@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +15,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaCarousel : ComponentBase
 {
+    #region ------ Injected Services ------
+
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -83,11 +90,8 @@ public class WaCarousel : ComponentBase
         builder.AddAttribute(12, "slides-per-move", SlidesPerMove);
 
         // Add event handlers
-        // TODO: This event needs to be mapped to the Web Awesome component events
         if (OnSlideChange.HasDelegate)
-        {
-            // Custom event handler will need JavaScript interop
-        }
+            builder.AddAttribute(15, "wa-slide-change", OnSlideChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __carouselReference => Element = __carouselReference);
@@ -109,46 +113,37 @@ public class WaCarousel : ComponentBase
     /// Programmatically navigates to the specified slide.
     /// </summary>
     /// <param name="index">The zero-based index of the slide to show</param>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-carousel's goToSlide method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task GoToSlideAsync(int index)
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task GoToSlideAsync(int index)
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.goToSlide(index) method on the underlying wa-carousel element
-        throw new NotImplementedException("GoToSlideAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-carousel element's goToSlide method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot navigate to slide: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "goToSlide", index);
     }
 
     /// <summary>
     /// Programmatically navigates to the previous slide.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-carousel's previous method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task PreviousAsync()
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task PreviousAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.previous() method on the underlying wa-carousel element
-        throw new NotImplementedException("PreviousAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-carousel element's previous method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot navigate to previous slide: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "previous");
     }
 
     /// <summary>
     /// Programmatically navigates to the next slide.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-carousel's next method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task NextAsync()
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task NextAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.next() method on the underlying wa-carousel element
-        throw new NotImplementedException("NextAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-carousel element's next method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot navigate to next slide: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "next");
     }
 
     #endregion
@@ -171,10 +166,3 @@ public class WaCarousel : ComponentBase
     #endregion
 }
 
-/// <summary>
-/// Event arguments for carousel slide change events
-/// </summary>
-public class WaSlideChangeEventArgs : EventArgs
-{
-    public int Index { get; set; }
-}

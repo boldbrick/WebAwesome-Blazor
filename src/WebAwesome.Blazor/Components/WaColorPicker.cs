@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -71,33 +72,32 @@ public class WaColorPicker : WaInputBase<string>
     /// Sets the color picker's swatches programmatically.
     /// </summary>
     /// <param name="colors">Array of color values</param>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to set the underlying wa-color-picker's swatches property.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public void SetSwatches(string[] colors)
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    /// <exception cref="ArgumentNullException">Thrown when colors is null</exception>
+    public async Task SetSwatchesAsync(string[] colors)
     {
-        // TODO: Implement JavaScript interop call
-        // Should set Element.swatches = colors on the underlying wa-color-picker element
-        throw new NotImplementedException("SetSwatches requires JavaScript interop implementation. " +
-            "This should set the underlying wa-color-picker element's swatches property.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set swatches: component has not been rendered yet.");
+
+        if (colors == null)
+            throw new ArgumentNullException(nameof(colors));
+
+        await JSInterop.SetPropertyAsync(Element.Value, "swatches", colors);
     }
 
     /// <summary>
     /// Gets the current color value in the specified format.
     /// </summary>
     /// <param name="format">The desired color format</param>
-    /// <returns>The color value in the specified format</returns>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-color-picker's getFormattedValue method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public string GetFormattedValue(WaColorFormat format)
+    /// <returns>A task that represents the asynchronous operation. The task result contains the color value in the specified format</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    public async Task<string> GetFormattedValueAsync(WaColorFormat format)
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.getFormattedValue(format) on the underlying wa-color-picker element
-        throw new NotImplementedException("GetFormattedValue requires JavaScript interop implementation. " +
-            "This should call the underlying wa-color-picker element's getFormattedValue method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot get formatted value: component has not been rendered yet.");
+
+        return await JSInterop.InvokeMethodAsync<string>(Element.Value, "getFormattedValue", format.ToHtmlValue());
     }
 
     #endregion

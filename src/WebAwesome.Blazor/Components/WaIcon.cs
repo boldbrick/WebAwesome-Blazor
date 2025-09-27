@@ -12,6 +12,12 @@ namespace WebAwesome.Blazor.Components;
 /// An icon component that displays symbols from icon libraries or custom SVG sources.
 /// Corresponds to the wa-icon Web Awesome component.
 /// </summary>
+/// <remarks>
+/// Icon library registration is handled through the WaIconLibraryService.
+/// The default library is Font Awesome Free. Custom libraries can be registered
+/// using the WaIconLibraryService which provides methods for Font Awesome Pro,
+/// Heroicons, Lucide, and custom icon libraries. See WaIconLibraryService documentation.
+/// </remarks>
 public class WaIcon : ComponentBase
 {
     #region ------ Public Properties ------
@@ -104,8 +110,3 @@ public class WaIcon : ComponentBase
 
     #endregion
 }
-
-// TODO: Icon library registration
-// Icons depend on JavaScript icon libraries being registered via registerIconLibrary().
-// The default library is Font Awesome Free. Custom libraries can be registered for
-// additional icon sets. This should be documented for users to set up properly.

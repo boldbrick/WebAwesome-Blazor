@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -133,16 +134,19 @@ public class WaRange : WaInputBase<decimal>
     /// <summary>
     /// Sets a custom value formatter function for tooltips and screen readers.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-slider's valueFormatter property.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public void SetValueFormatter(string jsFunction)
+    /// <param name="jsFunction">JavaScript function string that formats values for display</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
+    public async Task SetValueFormatterAsync(string jsFunction)
     {
-        // TODO: Implement JavaScript interop call
-        // Should set Element.valueFormatter = jsFunction on the underlying wa-slider element
-        throw new NotImplementedException("SetValueFormatter requires JavaScript interop implementation. " +
-            "This should set the underlying wa-slider element's valueFormatter property.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set value formatter: component has not been rendered yet.");
+
+        if (string.IsNullOrEmpty(jsFunction))
+            throw new ArgumentNullException(nameof(jsFunction));
+
+        await JSInterop.SetPropertyAsync(Element.Value, "valueFormatter", jsFunction);
     }
 
     #endregion

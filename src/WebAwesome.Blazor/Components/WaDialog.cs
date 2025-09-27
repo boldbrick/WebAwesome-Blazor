@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -13,6 +14,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaDialog : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -143,14 +150,54 @@ public class WaDialog : ComponentBase
     }
 
     #endregion
-}
 
-// TODO: Dialog modal behavior and focus management
-// Dialogs require JavaScript for:
-// - Modal behavior (backdrop, disable background interaction)
-// - Focus trapping and management
-// - ESC key handling
-// - Initial focus setting
-// - Preventing closure (wa-hide event cancellation)
-// - Body scroll locking
-// Currently provides basic binding support. Advanced modal behaviors require JS interop.
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Shows the dialog with focus management and modal behavior
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task ShowAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show dialog: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+    }
+
+    /// <summary>
+    /// Hides the dialog with focus restoration
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task HideAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot hide dialog: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+    }
+
+    /// <summary>
+    /// Focuses the dialog or first focusable element within it
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus dialog: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
+
+    #endregion
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -12,8 +13,14 @@ namespace WebAwesome.Blazor.Components;
 /// A button component that represents actions available to the user.
 /// Corresponds to the wa-button Web Awesome component.
 /// </summary>
-public class WaButton : ComponentBase
+public class WaButton : ComponentBase, IFormValidation
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -159,6 +166,19 @@ public class WaButton : ComponentBase
             classes.Add(Class);
 
         return string.Join(' ', classes);
+    }
+
+    #endregion
+
+    #region ------ Implementation of IFormValidation ------
+
+    /// <inheritdoc />
+    public async Task SetCustomValidityAsync(string message)
+    {
+        if (Element is null)
+            throw new InvalidOperationException("Cannot set custom validity before the component is rendered. Element reference is null.");
+
+        await JSInterop.SetCustomValidityAsync(Element.Value, message);
     }
 
     #endregion

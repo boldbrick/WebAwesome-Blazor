@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -13,6 +15,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaTabGroup : ComponentBase
 {
+    #region ------ Injected Services ------
+
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -76,17 +84,11 @@ public class WaTabGroup : ComponentBase
         builder.AddAttribute(6, "activation", Activation.ToHtmlValue());
 
         // Add event handlers
-        // TODO: These events need to be mapped to the Web Awesome component events
-        // wa-tab-change, wa-tab-close
         if (OnTabChange.HasDelegate)
-        {
-            // Custom event handler will need JavaScript interop
-        }
+            builder.AddAttribute(7, "wa-tab-change", OnTabChange);
 
         if (OnTabClose.HasDelegate)
-        {
-            // Custom event handler will need JavaScript interop
-        }
+            builder.AddAttribute(8, "wa-tab-close", OnTabClose);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __tabGroupReference => Element = __tabGroupReference);
@@ -117,16 +119,16 @@ public class WaTabGroup : ComponentBase
     /// Programmatically shows the specified tab panel.
     /// </summary>
     /// <param name="panelName">The name of the tab panel to show</param>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-tab-group's show method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public void ShowTab(string panelName)
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task ShowTabAsync(string panelName)
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.show(panelName) method on the underlying wa-tab-group element
-        throw new NotImplementedException("ShowTab requires JavaScript interop implementation. " +
-            "This should call the underlying wa-tab-group element's show method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show tab: component has not been rendered yet.");
+
+        if (string.IsNullOrEmpty(panelName))
+            throw new ArgumentNullException(nameof(panelName));
+
+        await JSInterop.SetPropertyAsync(Element.Value, "active", panelName);
     }
 
     #endregion
@@ -149,18 +151,3 @@ public class WaTabGroup : ComponentBase
     #endregion
 }
 
-/// <summary>
-/// Event arguments for tab change events
-/// </summary>
-public class WaTabChangeEventArgs : EventArgs
-{
-    public string Name { get; set; } = string.Empty;
-}
-
-/// <summary>
-/// Event arguments for tab close events
-/// </summary>
-public class WaTabCloseEventArgs : EventArgs
-{
-    public string Name { get; set; } = string.Empty;
-}

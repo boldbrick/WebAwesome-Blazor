@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +15,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaAnimation : ComponentBase
 {
+    #region ------ Injected Services ------
+
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -114,78 +121,64 @@ public class WaAnimation : ComponentBase
     /// Sets custom keyframes for the animation.
     /// </summary>
     /// <param name="keyframes">JavaScript keyframes array object</param>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to set the underlying wa-animation's keyframes property.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task SetKeyframesAsync(object keyframes)
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task SetKeyframesAsync(object keyframes)
     {
-        // TODO: Implement JavaScript interop call
-        // Should set Element.keyframes = keyframes on the underlying wa-animation element
-        throw new NotImplementedException("SetKeyframesAsync requires JavaScript interop implementation. " +
-            "This should set the underlying wa-animation element's keyframes property.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set keyframes: component has not been rendered yet.");
+
+        await JSInterop.SetPropertyAsync(Element.Value, "keyframes", keyframes);
     }
 
     /// <summary>
     /// Cancels the current animation.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-animation's cancel method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task CancelAsync()
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the method call fails</exception>
+    public async Task CancelAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.cancel() method on the underlying wa-animation element
-        throw new NotImplementedException("CancelAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-animation element's cancel method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot cancel animation: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "cancel");
     }
 
     /// <summary>
     /// Finishes the current animation immediately.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-animation's finish method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task FinishAsync()
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task FinishAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.finish() method on the underlying wa-animation element
-        throw new NotImplementedException("FinishAsync requires JavaScript interop implementation. " +
-            "This should call the underlying wa-animation element's finish method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot finish animation: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "finish");
     }
 
     /// <summary>
     /// Gets the current time of the animation.
     /// </summary>
     /// <returns>The current time in milliseconds</returns>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to get the underlying wa-animation's currentTime property.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task<decimal> GetCurrentTimeAsync()
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the property access fails</exception>
+    public async Task<decimal> GetCurrentTimeAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should return Element.currentTime property on the underlying wa-animation element
-        throw new NotImplementedException("GetCurrentTimeAsync requires JavaScript interop implementation. " +
-            "This should get the underlying wa-animation element's currentTime property.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot get current time: component has not been rendered yet.");
+
+        return await JSInterop.GetPropertyAsync<decimal>(Element.Value, "currentTime");
     }
 
     /// <summary>
     /// Sets the current time of the animation.
     /// </summary>
     /// <param name="time">The time in milliseconds</param>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to set the underlying wa-animation's currentTime property.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task SetCurrentTimeAsync(decimal time)
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task SetCurrentTimeAsync(decimal time)
     {
-        // TODO: Implement JavaScript interop call
-        // Should set Element.currentTime = time on the underlying wa-animation element
-        throw new NotImplementedException("SetCurrentTimeAsync requires JavaScript interop implementation. " +
-            "This should set the underlying wa-animation element's currentTime property.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set current time: component has not been rendered yet.");
+
+        await JSInterop.SetPropertyAsync(Element.Value, "currentTime", time);
     }
 
     #endregion

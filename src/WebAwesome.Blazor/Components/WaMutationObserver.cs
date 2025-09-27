@@ -18,6 +18,12 @@ namespace WebAwesome.Blazor.Components;
 /// </remarks>
 public class WaMutationObserver : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -107,24 +113,7 @@ public class WaMutationObserver : ComponentBase
     {
         if (firstRender)
         {
-            // TODO: JS Interop needed
-            // Initialize MutationObserver with specified options
-            // Call: await JSRuntime.InvokeVoidAsync("webAwesome.mutationObserver.initialize", Element);
-
-            // The JavaScript should:
-            // 1. Create new MutationObserver instance
-            // 2. Parse component attributes to build MutationObserverInit options:
-            //    - attributes: attr attribute value
-            //    - childList: child-list attribute value
-            //    - characterData: char-data attribute value
-            //    - subtree: subtree attribute value
-            //    - attributeOldValue: attribute-old-value attribute value
-            //    - characterDataOldValue: character-data-old-value attribute value
-            //    - attributeFilter: parse attribute-filter as array of strings
-            // 3. Observe the component's child content with these options
-            // 4. When mutations occur, emit wa-mutation event with MutationRecord array
-            // 5. Validate that at least one of attr, child-list, or char-data is true
-            // 6. Handle disconnection/reconnection on component updates
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -137,40 +126,40 @@ public class WaMutationObserver : ComponentBase
     /// <summary>
     /// Disconnects the mutation observer
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Stop observing mutations
-    /// </remarks>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task DisconnectAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.mutationObserver.disconnect", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot disconnect observer: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "disconnect");
     }
 
     /// <summary>
     /// Reconnects the mutation observer with current settings
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Resume observing mutations
-    /// </remarks>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task ReconnectAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.mutationObserver.reconnect", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot reconnect observer: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "reconnect");
     }
 
     /// <summary>
     /// Gets pending mutation records without waiting for callback
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Return current mutation records
-    /// </remarks>
+    /// <returns>A task that represents the asynchronous operation. The task result contains an array of mutation records</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task<object[]> TakeRecordsAsync()
     {
-        // TODO: JS Interop needed
-        // return await JSRuntime.InvokeAsync<object[]>("webAwesome.mutationObserver.takeRecords", Element);
-        return await Task.FromResult(Array.Empty<object>());
+        if (Element == null)
+            throw new InvalidOperationException("Cannot take records: component has not been rendered yet.");
+
+        return await JSInterop.InvokeMethodAsync<object[]>(Element.Value, "takeRecords");
     }
 
     #endregion
@@ -191,15 +180,4 @@ public class WaMutationObserver : ComponentBase
     }
 
     #endregion
-}
-
-/// <summary>
-/// Event args for mutation events
-/// </summary>
-public class MutationEventArgs : EventArgs
-{
-    /// <summary>
-    /// Array of MutationRecord objects describing the mutations
-    /// </summary>
-    public object[]? MutationRecords { get; set; }
 }

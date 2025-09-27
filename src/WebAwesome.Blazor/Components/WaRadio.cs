@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using WebAwesome.Blazor.Base;
 
@@ -13,8 +14,14 @@ namespace WebAwesome.Blazor.Components;
 /// Must be used as a child of WaRadioGroup.
 /// Corresponds to the wa-radio Web Awesome component.
 /// </summary>
-public class WaRadio : ComponentBase
+public class WaRadio : ComponentBase, IFormValidation
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -114,6 +121,19 @@ public class WaRadio : ComponentBase
             classes.Add(Class);
 
         return string.Join(' ', classes);
+    }
+
+    #endregion
+
+    #region ------ Implementation of IFormValidation ------
+
+    /// <inheritdoc />
+    public async Task SetCustomValidityAsync(string message)
+    {
+        if (Element is null)
+            throw new InvalidOperationException("Cannot set custom validity before the component is rendered. Element reference is null.");
+
+        await JSInterop.SetCustomValidityAsync(Element.Value, message);
     }
 
     #endregion

@@ -12,5 +12,11 @@
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="9.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.8" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit" Version="2.9.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Testing" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.JSInterop" Version="9.0.8" />
   </ItemGroup>
 </Project>

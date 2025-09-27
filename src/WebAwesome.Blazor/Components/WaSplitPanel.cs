@@ -14,6 +14,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaSplitPanel : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -89,11 +95,8 @@ public class WaSplitPanel : ComponentBase
         builder.AddAttribute(10, "snap-threshold", SnapThreshold);
 
         // Add event handlers
-        // TODO: This event needs to be mapped to the Web Awesome component events
         if (OnReposition.HasDelegate)
-        {
-            // Custom event handler will need JavaScript interop
-        }
+            builder.AddAttribute(20, "wa-reposition", EventCallback.Factory.Create<ChangeEventArgs>(this, HandleRepositionEvent));
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __splitPanelReference => Element = __splitPanelReference);
@@ -135,33 +138,27 @@ public class WaSplitPanel : ComponentBase
     /// <summary>
     /// Gets the current position of the divider as a percentage.
     /// </summary>
-    /// <returns>The current position as a percentage</returns>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to get the underlying wa-split-panel's position property.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task<decimal> GetPositionAsync()
+    /// <returns>A task that represents the asynchronous operation. The task result contains the current position as a percentage</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task<decimal> GetPositionAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should return Element.position property on the underlying wa-split-panel element
-        throw new NotImplementedException("GetPositionAsync requires JavaScript interop implementation. " +
-            "This should get the underlying wa-split-panel element's position property.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot get position: component has not been rendered yet.");
+
+        return await JSInterop.GetPropertyAsync<decimal>(Element.Value, "position");
     }
 
     /// <summary>
     /// Gets the current position of the divider in pixels.
     /// </summary>
-    /// <returns>The current position in pixels</returns>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to get the underlying wa-split-panel's positionInPixels property.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public Task<int> GetPositionInPixelsAsync()
+    /// <returns>A task that represents the asynchronous operation. The task result contains the current position in pixels</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task<int> GetPositionInPixelsAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should return Element.positionInPixels property on the underlying wa-split-panel element
-        throw new NotImplementedException("GetPositionInPixelsAsync requires JavaScript interop implementation. " +
-            "This should get the underlying wa-split-panel element's positionInPixels property.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot get position in pixels: component has not been rendered yet.");
+
+        return await JSInterop.GetPropertyAsync<int>(Element.Value, "positionInPixels");
     }
 
     #endregion
@@ -181,14 +178,24 @@ public class WaSplitPanel : ComponentBase
         return string.Join(' ', classes);
     }
 
-    #endregion
-}
+    /// <summary>
+    /// Handles reposition events from the Web Awesome component
+    /// </summary>
+    private async Task HandleRepositionEvent(ChangeEventArgs args)
+    {
+        // The wa-reposition event typically provides position information
+        // We'll get the current position values from the component
+        var position = await GetPositionAsync();
+        var positionInPixels = await GetPositionInPixelsAsync();
 
-/// <summary>
-/// Event arguments for split panel reposition events
-/// </summary>
-public class WaSplitPanelRepositionEventArgs : EventArgs
-{
-    public decimal Position { get; set; }
-    public int PositionInPixels { get; set; }
+        var eventArgs = new WaSplitPanelRepositionEventArgs
+        {
+            Position = position,
+            PositionInPixels = positionInPixels
+        };
+
+        await OnReposition.InvokeAsync(eventArgs);
+    }
+
+    #endregion
 }

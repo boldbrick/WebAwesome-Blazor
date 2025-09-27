@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -14,6 +16,12 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaTab : ComponentBase
 {
+    #region ------ Injected Services ------
+
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -103,31 +111,25 @@ public class WaTab : ComponentBase
     /// <summary>
     /// Programmatically focuses the tab.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-tab's focus method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public void Focus()
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task FocusAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.focus() method on the underlying wa-tab element
-        throw new NotImplementedException("Focus requires JavaScript interop implementation. " +
-            "This should call the underlying wa-tab element's focus method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus tab: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
     }
 
     /// <summary>
     /// Programmatically removes focus from the tab.
     /// </summary>
-    /// <remarks>
-    /// TODO: This method requires JavaScript interop to call the underlying wa-tab's blur method.
-    /// Implementation depends on the Web Awesome library being properly loaded in the page.
-    /// </remarks>
-    public void Blur()
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task BlurAsync()
     {
-        // TODO: Implement JavaScript interop call
-        // Should call Element.blur() method on the underlying wa-tab element
-        throw new NotImplementedException("Blur requires JavaScript interop implementation. " +
-            "This should call the underlying wa-tab element's blur method.");
+        if (Element == null)
+            throw new InvalidOperationException("Cannot blur tab: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
     }
 
     #endregion

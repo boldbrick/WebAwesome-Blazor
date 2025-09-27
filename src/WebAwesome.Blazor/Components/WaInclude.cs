@@ -18,6 +18,12 @@ namespace WebAwesome.Blazor.Components;
 /// </remarks>
 public class WaInclude : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -90,16 +96,7 @@ public class WaInclude : ComponentBase
     {
         if (firstRender)
         {
-            // TODO: JS Interop needed
-            // Initialize fetch mechanism for loading external content
-            // Call: await JSRuntime.InvokeVoidAsync("webAwesome.include.initialize", Element);
-
-            // The JavaScript should:
-            // 1. Set up fetch() calls with proper CORS mode
-            // 2. Cache requests to avoid duplicate loads
-            // 3. Insert loaded HTML into the component's slot
-            // 4. Emit wa-load and wa-error events with proper event details
-            // 5. Handle different modes (cors, no-cors, same-origin)
+            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -112,14 +109,14 @@ public class WaInclude : ComponentBase
     /// <summary>
     /// Reloads the included content
     /// </summary>
-    /// <remarks>
-    /// TODO: JS Interop needed - Force reload the content, bypassing cache
-    /// </remarks>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task ReloadAsync()
     {
-        // TODO: JS Interop needed
-        // await JSRuntime.InvokeVoidAsync("webAwesome.include.reload", Element);
-        await Task.CompletedTask;
+        if (Element == null)
+            throw new InvalidOperationException("Cannot reload content: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "reload");
     }
 
     #endregion
@@ -140,20 +137,4 @@ public class WaInclude : ComponentBase
     }
 
     #endregion
-}
-
-/// <summary>
-/// Event args for include error events
-/// </summary>
-public class IncludeErrorEventArgs : EventArgs
-{
-    /// <summary>
-    /// HTTP status code of the failed request (e.g., 404)
-    /// </summary>
-    public int Status { get; set; }
-
-    /// <summary>
-    /// Error message describing the failure
-    /// </summary>
-    public string? Message { get; set; }
 }

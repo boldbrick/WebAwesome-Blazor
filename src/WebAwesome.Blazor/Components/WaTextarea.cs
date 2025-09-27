@@ -14,8 +14,14 @@ namespace WebAwesome.Blazor.Components;
 /// <summary>
 /// A multiline input component for editing <see cref="string"/> values.
 /// </summary>
-public class WaTextArea : InputBase<string?>
+public class WaTextArea : InputBase<string?>, IFormValidation
 {
+    #region ------ Dependency Injection ------
+
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
@@ -103,4 +109,17 @@ public class WaTextArea : InputBase<string?>
         validationErrorMessage = null;
         return true;
     }
+
+    #region ------ Implementation of IFormValidation ------
+
+    /// <inheritdoc />
+    public async Task SetCustomValidityAsync(string message)
+    {
+        if (Element is null)
+            throw new InvalidOperationException("Cannot set custom validity before the component is rendered. Element reference is null.");
+
+        await JSInterop.SetCustomValidityAsync(Element.Value, message);
+    }
+
+    #endregion
 }
