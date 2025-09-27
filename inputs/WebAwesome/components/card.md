@@ -17,10 +17,8 @@ category: Organization
   This kitten is as cute as he is playful. Bring him home today!<br />
   <small class="wa-caption-m">6 weeks old</small>
 
-  <div slot="footer" class="wa-split">
-    <wa-button variant="brand" pill>More Info</wa-button>
-    <wa-rating label="Rating"></wa-rating>
-  </div>
+  <wa-button slot="footer" variant="brand" pill>More Info</wa-button>
+  <wa-rating slot="footer-actions" label="Rating"></wa-rating>
 </wa-card>
 
 <style>
@@ -55,14 +53,11 @@ If using SSR, you need to also use the `with-header` attribute to add a header t
 
 ```html {.example}
 <wa-card class="card-header">
-  <div slot="header" class="wa-split">
-    Header Title
-    <wa-button appearance="plain">
-      <wa-icon name="gear" variant="solid" label="Settings"></wa-icon>
-    </wa-button>
-  </div>
-
+  <h3 slot="header">Header Title</h3>
   This card has a header. You can put all sorts of things in it!
+  <wa-button appearance="plain" slot="header-actions">
+    <wa-icon name="gear" variant="solid" label="Settings"></wa-icon>
+  </wa-button>
 </wa-card>
 
 <style>
@@ -85,10 +80,9 @@ If using SSR, you need to also use the `with-footer` attribute to add a footer t
 <wa-card class="card-footer">
   This card has a footer. You can put all sorts of things in it!
 
-  <div slot="footer" class="wa-split">
-    <wa-rating></wa-rating>
-    <wa-button variant="brand">Preview</wa-button>
-  </div>
+  <wa-rating slot="footer"></wa-rating>
+
+  <wa-button slot="footer-actions" variant="brand">Preview</wa-button>
 </wa-card>
 
 <style>
@@ -154,4 +148,36 @@ Use the `appearance` attribute to change the card's visual appearance.
   </wa-card>
   {%- endfor %}
 </div>
+```
+
+### Orientation
+
+Set the `orientation` attribute to `horizontal` to create a card with a horizontal, side-by-side layout. Make sure to set a width or maximum width for the media slot. Horizontal cards do not currently contain the header and footer slots.
+<wa-callout>
+<wa-icon slot="icon" name="circle-info" variant="regular"></wa-icon>
+The `actions` slot is only available for the horizontal orientation
+</wa-callout>
+
+```html {.example}
+<div class="wa-grid">
+  <wa-card orientation="horizontal" class="horizontal-card">
+    <img
+      slot="media"
+      src="https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
+      alt="A kitten sits patiently between a terracotta pot and decorative grasses."
+    />
+    This is a kitten, but not just any kitten. This kitten likes walking along pallets.
+    <wa-button slot="actions" variant="neutral" appearance="plain"
+      ><wa-icon name="ellipsis" label="actions"></wa-icon
+    ></wa-button>
+  </wa-card>
+</div>
+
+<style>
+  .horizontal-card {
+    img[slot='media'] {
+      max-width: 300px;
+    }
+  }
+</style>
 ```
