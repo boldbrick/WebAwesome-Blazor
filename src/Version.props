@@ -53,7 +53,7 @@
     <Copyright>Copyright © 2025–$([System.DateTime]::Today.Year) $(Company) and contributors</Copyright>
 
     <!-- version numbers - these flow SDK-style projects -->
-    <Version>3.0.0-beta.4</Version>
+    <Version>3.0.0-beta.6</Version>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
     <InformationalVersion>3.0.0</InformationalVersion>
