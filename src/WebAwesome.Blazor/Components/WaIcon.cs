@@ -17,6 +17,9 @@ namespace WebAwesome.Blazor.Components;
 /// The default library is Font Awesome Free. Custom libraries can be registered
 /// using the WaIconLibraryService which provides methods for Font Awesome Pro,
 /// Heroicons, Lucide, and custom icon libraries. See WaIconLibraryService documentation.
+///
+/// With Font Awesome 7, icons have fixed width by default. Use AutoWidth to allow variable width.
+/// SwapOpacity is available for duotone icons to swap the opacity of the primary and secondary layers.
 /// </remarks>
 public class WaIcon : ComponentBase
 {
@@ -46,7 +49,8 @@ public class WaIcon : ComponentBase
     [Parameter] public string? Variant { get; set; }
     [Parameter] public string? Src { get; set; }
     [Parameter] public string? Label { get; set; }
-    [Parameter] public bool FixedWidth { get; set; }
+    [Parameter] public bool AutoWidth { get; set; }
+    [Parameter] public bool SwapOpacity { get; set; }
 
     #endregion
 
@@ -76,7 +80,8 @@ public class WaIcon : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(13, "variant", Variant);
         builder.AddAttributeIfNotNullOrEmpty(14, "src", Src);
         builder.AddAttributeIfNotNullOrEmpty(15, "label", Label);
-        builder.AddAttribute(16, "fixed-width", FixedWidth);
+        builder.AddAttribute(16, "auto-width", AutoWidth);
+        builder.AddAttribute(17, "swap-opacity", SwapOpacity);
 
         // Add event handlers
         if (OnLoad.HasDelegate)

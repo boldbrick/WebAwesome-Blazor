@@ -44,7 +44,7 @@ public class WaDetails : ComponentBase
     [Parameter] public bool Open { get; set; }
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public WaAppearance? Appearance { get; set; }
-    [Parameter] public WaIconPosition IconPosition { get; set; } = WaIconPosition.End;
+    [Parameter] public WaIconPlacement IconPlacement { get; set; } = WaIconPlacement.End;
     [Parameter] public string? Name { get; set; }
 
     #endregion
@@ -94,7 +94,7 @@ public class WaDetails : ComponentBase
         builder.AddAttribute(5, "open", Open);
         builder.AddAttribute(6, "disabled", Disabled);
         builder.AddAttributeIfNotNull(7, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttribute(8, "icon-position", IconPosition.ToHtmlValue());
+        builder.AddAttribute(8, "icon-placement", IconPlacement.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(9, "name", Name);
 
         // Add event handlers

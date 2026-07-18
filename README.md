@@ -4,7 +4,7 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 
 > **Status**
 > - Active train: **WA 3.0**
-> - Current alignment: **WA 3.0.0-beta.4** (tagged releases use `wa-blazor-<version>`)
+> - Current alignment: **WA 3.0.0-beta.6** (tagged releases use `wa-blazor-<version>`)
 
 ## Why this library
 - Use WA components with **strongly-typed** Blazor parameters and events.
@@ -44,10 +44,11 @@ var app = builder.Build();
 ```
 
 ### 2. Include Web Awesome Assets
-Ensure the Web Awesome JavaScript library is loaded in your application (e.g., in `_Host.cshtml` or `wwwroot/index.html`):
+Ensure the Web Awesome JavaScript library is loaded in your application (e.g., in `App.razor`):
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/web-awesome@3.0.0-beta.4/dist/web-awesome.js"></script>
+<link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.5/dist/styles/themes/default.css" />
+<script type="module" src="https://early.webawesome.com/webawesome@3.0.0-beta.6/dist/webawesome.loader.js"></script>
 ```
 
 ## Quick start (wrapper usage)
@@ -107,13 +108,13 @@ We align binding versions to WA versions. Use the **same** semantic version when
 
 | Web Awesome | Bindings Tag                          | Branch (GitHub)       |
 |-------------|----------------------------------------|-----------------------|
-| 3.0.0-beta.4| `wa-blazor-3.0.0-beta.4`     | `main` (promoted)     |
+| 3.0.0-beta.6| `wa-blazor-3.0.0-beta.6`     | `main` (promoted)     |
 | 3.0 train   | rolling prereleases → tags as above    | `main/wa-3.0`         |
 | 3.0 stable  | `v3.0.x` maintained on release branch  | `release-3.0` (later) |
 
 **Promotion model**
 - Active development stays in a **subtrunk**: `main/wa-<ver>` (e.g., `main/wa-3.0`).
-- When ready, we *promote* the subtrunk to `main` and **tag** (e.g., `wa-blazor-3.0.0-beta.4`).
+- When ready, we *promote* the subtrunk to `main` and **tag** (e.g., `wa-blazor-3.0.0-beta.6`).
 - After WA 3.0 stabilizes, we create `release-3.0` for maintenance; `main` moves on to `main/wa-3.1` or `main/wa-4.0`.
 
 **Monotonic merge rule**

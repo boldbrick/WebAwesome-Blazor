@@ -22,43 +22,7 @@ Through the magic of a mutation observer, changing the `lang` attribute will aut
 
 ## Available Translations
 
-Web Awesome ships with a number of translations. The default is English (US), which also serves as the fallback locale. As such, you do not need to import the English translation.
-
-Available translations include:
-
-<div style="columns: 3; gap: 1rem; margin-block-end: 1.5rem;">
-
-- ar
-- cs
-- da
-- de-ch
-- de
-- en-gb
-- en
-- es
-- fa
-- fi
-- fr
-- he
-- hr
-- hu
-- id
-- it
-- ja
-- nb
-- nl
-- nn
-- pl
-- pt
-- ru
-- sl
-- sv
-- tr
-- uk
-- zh-cn
-- zh-tw
-
-</div>
+Web Awesome ships with [a number of translations](https://github.com/shoelace-style/webawesome/tree/next/packages/webawesome/src/translations). The default is English (US), which also serves as the fallback locale. As such, you do not need to import the English translation.
 
 You can import translations using the following syntax, where `<code>` is replaced with any language code shown above.
 
@@ -92,7 +56,7 @@ To contribute new translations or improvements to existing translations, please 
 
 Regional translations are welcome! For example, if a German translation (`de`) exists it's perfectly acceptable to submit a German (Switzerland) (`de-CH`) translation.
 
-If you have any questions, please start a [discussion](https://github.com/shoelace-style/shoelace/discussions) or ask in the [community chat](https://discord.gg/mg8f26C).
+If you have any questions, please start a [discussion](https://github.com/shoelace-style/webawesome/discussions) or ask in the [community chat](https://discord.gg/mg8f26C).
 
 :::info
 Web Awesome provides a localization mechanism for component internals. This is not designed to be used as localization tool for your entire application. You should use a more appropriate tool such as [i18next](https://www.i18next.com/) if you need to localize content in your app.
