@@ -37,19 +37,44 @@ public class WaTabGroup : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Tab group properties
+    /// <summary>
+    /// The name of the panel belonging to the currently active tab.
+    /// </summary>
     [Parameter] public string? Active { get; set; }
+
+    /// <summary>
+    /// The placement of the tabs.
+    /// </summary>
     [Parameter] public WaTabPlacement Placement { get; set; } = WaTabPlacement.Top;
+
+    /// <summary>
+    /// When <see cref="WaActivation.Auto"/>, navigating tabs with the arrow keys instantly shows the corresponding panel. When <see cref="WaActivation.Manual"/>, the tab receives focus but is not shown until the user presses spacebar or enter.
+    /// </summary>
     [Parameter] public WaActivation Activation { get; set; } = WaActivation.Auto;
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the active tab changes.
+    /// </summary>
     [Parameter] public EventCallback<WaTabChangeEventArgs> OnTabChange { get; set; }
+
+    /// <summary>
+    /// Invoked when a closable tab's close button is activated.
+    /// </summary>
     [Parameter] public EventCallback<WaTabCloseEventArgs> OnTabClose { get; set; }
 
     #endregion

@@ -21,8 +21,6 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!-- CS1591 suppressed until the XML documentation sweep (WP-G) completes; WP-G removes this and elevates CS1591 to error -->
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <!-- deterministic, SourceLink-enabled builds on CI only (local builds run from a PlasticSCM workspace without git metadata) -->

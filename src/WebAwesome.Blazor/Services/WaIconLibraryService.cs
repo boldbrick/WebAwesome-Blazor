@@ -12,6 +12,11 @@ public class WaIconLibraryService
 {
     private readonly WebAwesomeJSInterop jsInterop;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WaIconLibraryService"/>.
+    /// </summary>
+    /// <param name="jsInterop">JavaScript interop service used to register and manage icon libraries</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="jsInterop"/> is null</exception>
     public WaIconLibraryService(WebAwesomeJSInterop jsInterop)
     {
         this.jsInterop = jsInterop ?? throw new ArgumentNullException(nameof(jsInterop));

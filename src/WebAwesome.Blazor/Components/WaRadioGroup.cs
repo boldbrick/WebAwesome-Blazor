@@ -15,13 +15,23 @@ public class WaRadioGroup : WaInputBase<string?>
 {
     #region ------ Visual & Behavior Properties ------
 
+    /// <summary>
+    /// The name of the radio group, submitted as a name/value pair with form data.
+    /// </summary>
     [Parameter] public string? Name { get; set; }
+
+    /// <summary>
+    /// The orientation in which to show radio items.
+    /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the radio group's selected value changes.
+    /// </summary>
     [Parameter] public EventCallback<string?> OnValueChange { get; set; }
 
     #endregion

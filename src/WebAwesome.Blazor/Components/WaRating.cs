@@ -16,13 +16,23 @@ public class WaRating : WaInputBase<decimal>
 {
     #region ------ Rating Properties ------
 
+    /// <summary>
+    /// The highest rating to show.
+    /// </summary>
     [Parameter] public int Max { get; set; } = 5;
+
+    /// <summary>
+    /// The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this to 0.5.
+    /// </summary>
     [Parameter] public decimal Precision { get; set; } = 1;
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the user hovers over a value. The event args indicate the hover phase and the value that would be committed if the user were to select it.
+    /// </summary>
     [Parameter] public EventCallback<WaRatingHoverEventArgs> OnHover { get; set; }
 
     #endregion

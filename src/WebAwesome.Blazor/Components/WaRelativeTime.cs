@@ -20,6 +20,9 @@ public class WaRelativeTime : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to call methods on the underlying Web Awesome element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -40,17 +43,46 @@ public class WaRelativeTime : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Relative time properties
+    /// <summary>
+    /// The date from which to calculate elapsed time. Takes precedence over <see cref="DateString"/> when set.
+    /// </summary>
     [Parameter] public DateTime? Date { get; set; }
+
+    /// <summary>
+    /// The date from which to calculate elapsed time, as an ISO 8601 string. Used only when <see cref="Date"/> is not set.
+    /// </summary>
     [Parameter] public string? DateString { get; set; }
+
+    /// <summary>
+    /// Keeps the displayed value up to date as time passes.
+    /// </summary>
     [Parameter] public bool Sync { get; set; }
+
+    /// <summary>
+    /// The formatting style to use.
+    /// </summary>
     [Parameter] public WaFormat Format { get; set; } = WaFormat.Auto;
+
+    /// <summary>
+    /// The locale used to format the relative time phrase, e.g. "en-US".
+    /// </summary>
     [Parameter] public string? Lang { get; set; }
 
     // Numeric style for format
+    /// <summary>
+    /// When <see langword="true"/>, values such as "yesterday" and "tomorrow" are shown when possible; when <see langword="false"/>, values such as "1 day ago" are always used.
+    /// </summary>
     [Parameter] public bool Numeric { get; set; } = true;
 
     #endregion
@@ -91,6 +123,7 @@ public class WaRelativeTime : ComponentBase
         builder.CloseElement();
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -101,6 +134,7 @@ public class WaRelativeTime : ComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (Element != null)

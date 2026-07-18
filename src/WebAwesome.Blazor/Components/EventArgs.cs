@@ -76,6 +76,9 @@ public class WaRatingHoverEventArgs
 /// </summary>
 public class WaDetailsToggleEventArgs : EventArgs
 {
+    /// <summary>
+    /// Whether the details element is open after the toggle.
+    /// </summary>
     public bool IsOpen { get; set; }
 }
 
@@ -88,7 +91,14 @@ public class WaDetailsToggleEventArgs : EventArgs
 /// </summary>
 public class WaSplitPanelRepositionEventArgs : EventArgs
 {
+    /// <summary>
+    /// The new position of the divider from the primary panel's edge, as a percentage between 0 and 100.
+    /// </summary>
     public decimal Position { get; set; }
+
+    /// <summary>
+    /// The new position of the divider from the primary panel's edge, in pixels.
+    /// </summary>
     public int PositionInPixels { get; set; }
 }
 

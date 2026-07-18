@@ -28,25 +28,82 @@ public class WaFormatNumber : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Number formatting properties
+    /// <summary>
+    /// The number to format.
+    /// </summary>
     [Parameter] public decimal Value { get; set; }
+
+    /// <summary>
+    /// The formatting style to use.
+    /// </summary>
     [Parameter] public WaFormatNumberType Type { get; set; } = WaFormatNumberType.Decimal;
+
+    /// <summary>
+    /// The locale (BCP 47 language tag) to use when formatting the number. When unset, the browser's default locale is used.
+    /// </summary>
     [Parameter] public string? Lang { get; set; }
+
+    /// <summary>
+    /// The <see href="https://en.wikipedia.org/wiki/ISO_4217">ISO 4217</see> currency code to use when formatting.
+    /// </summary>
     [Parameter] public string? Currency { get; set; }
+
+    /// <summary>
+    /// How to display the currency.
+    /// </summary>
     [Parameter] public WaCurrencyDisplay? CurrencyDisplay { get; set; }
 
     // Intl.NumberFormat options
+    /// <summary>
+    /// The minimum number of integer digits to use. Possible values are 1-21.
+    /// </summary>
     [Parameter] public int? MinimumIntegerDigits { get; set; }
+
+    /// <summary>
+    /// The minimum number of fraction digits to use. Possible values are 0-100.
+    /// </summary>
     [Parameter] public int? MinimumFractionDigits { get; set; }
+
+    /// <summary>
+    /// The maximum number of fraction digits to use. Possible values are 0-100.
+    /// </summary>
     [Parameter] public int? MaximumFractionDigits { get; set; }
+
+    /// <summary>
+    /// The minimum number of significant digits to use. Possible values are 1-21.
+    /// </summary>
     [Parameter] public int? MinimumSignificantDigits { get; set; }
+
+    /// <summary>
+    /// The maximum number of significant digits to use. Possible values are 1-21.
+    /// </summary>
     [Parameter] public int? MaximumSignificantDigits { get; set; }
+
+    /// <summary>
+    /// The formatting notation to use, such as scientific, engineering, or compact notation.
+    /// </summary>
     [Parameter] public WaNotation? Notation { get; set; }
+
+    /// <summary>
+    /// The display style to use for compact notation when <see cref="Notation"/> is compact.
+    /// </summary>
     [Parameter] public WaCompactDisplay? CompactDisplay { get; set; }
+
+    /// <summary>
+    /// Whether to use grouping separators, such as thousands separators.
+    /// </summary>
     [Parameter] public bool? UseGrouping { get; set; }
 
     #endregion

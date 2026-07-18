@@ -14,6 +14,11 @@ public class WebAwesomeJSInterop
     private readonly IJSRuntime jsRuntime;
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WebAwesomeJSInterop"/> service.
+    /// </summary>
+    /// <param name="jsRuntime">JavaScript runtime used to load and invoke the Web Awesome interop module</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="jsRuntime"/> is null</exception>
     public WebAwesomeJSInterop(IJSRuntime jsRuntime)
     {
         this.jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));

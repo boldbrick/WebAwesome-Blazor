@@ -16,6 +16,9 @@ public class WaSplitPanel : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to call methods on the underlying Web Awesome element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -36,22 +39,59 @@ public class WaSplitPanel : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Split panel properties
+    /// <summary>
+    /// Sets the split panel's orientation.
+    /// </summary>
     [Parameter] public WaOrientation Orientation { get; set; } = WaOrientation.Horizontal;
+
+    /// <summary>
+    /// The current position of the divider from the primary panel's edge as a percentage between 0 and 100. Defaults to 50% of the container's initial size.
+    /// </summary>
     [Parameter] public decimal? Position { get; set; }
+
+    /// <summary>
+    /// The current position of the divider from the primary panel's edge, in pixels.
+    /// </summary>
     [Parameter] public int? PositionInPixels { get; set; }
+
+    /// <summary>
+    /// Designates which panel maintains its size while the other grows or shrinks when the host element is resized. When unset, both panels resize proportionally.
+    /// </summary>
     [Parameter] public WaPrimary? Primary { get; set; }
+
+    /// <summary>
+    /// Disables resizing. The position may still change as a result of resizing the host element.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// One or more space-separated values at which the divider should snap. Values can be in pixels or percentages, e.g. "100px 50%".
+    /// </summary>
     [Parameter] public string? Snap { get; set; }
+
+    /// <summary>
+    /// How close the divider must be to a snap point, in pixels, before snapping occurs.
+    /// </summary>
     [Parameter] public int SnapThreshold { get; set; } = 12;
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the divider's position changes.
+    /// </summary>
     [Parameter] public EventCallback<WaSplitPanelRepositionEventArgs> OnReposition { get; set; }
 
     #endregion

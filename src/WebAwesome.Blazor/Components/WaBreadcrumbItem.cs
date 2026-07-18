@@ -29,11 +29,21 @@ public class WaBreadcrumbItem : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Breadcrumb item properties
+    /// <summary>
+    /// Optional URL to navigate to when the breadcrumb item is activated. When set, a link is rendered internally;
+    /// when unset, a button is rendered instead.
+    /// </summary>
     [Parameter] public string? Href { get; set; }
 
     #endregion
@@ -69,6 +79,9 @@ public class WaBreadcrumbItem : ComponentBase
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the breadcrumb item is clicked.
+    /// </summary>
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     #endregion

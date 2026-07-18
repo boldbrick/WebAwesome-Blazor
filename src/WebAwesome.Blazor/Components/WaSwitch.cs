@@ -29,6 +29,9 @@ public class WaSwitch : WaInputBase<bool>
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the switch's checked state changes.
+    /// </summary>
     [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
 
     #endregion

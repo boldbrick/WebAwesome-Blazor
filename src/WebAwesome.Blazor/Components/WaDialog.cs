@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,9 @@ public class WaDialog : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -35,14 +38,36 @@ public class WaDialog : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Dialog properties
+    /// <summary>
+    /// The dialog's label as displayed in the header. A relevant label is required for proper accessibility. If you
+    /// need to display HTML, use <see cref="HeaderActionsContent"/> or a custom header instead.
+    /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// Indicates whether or not the dialog is open. Toggle this to show and hide the dialog.
+    /// </summary>
     [Parameter] public bool Open { get; set; }
+
+    /// <summary>
+    /// Disables the header. This also removes the default close button.
+    /// </summary>
     [Parameter] public bool WithoutHeader { get; set; }
+
+    /// <summary>
+    /// When enabled, the dialog is closed when the user clicks outside of it.
+    /// </summary>
     [Parameter] public bool LightDismiss { get; set; }
 
     #endregion
@@ -68,8 +93,20 @@ public class WaDialog : ComponentBase
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the dialog opens.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+
+    /// <summary>
+    /// Invoked when the dialog is requested to close. Avoid relying on this to prevent closing unless it would
+    /// result in destructive behavior such as data loss.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
+
+    /// <summary>
+    /// Invoked when the dialog sets initial focus after opening.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnInitialFocus { get; set; }
 
     #endregion
@@ -191,6 +228,7 @@ public class WaDialog : ComponentBase
 
     #endregion
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

@@ -28,13 +28,30 @@ public class WaCallout : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Callout properties
+    /// <summary>
+    /// The callout's theme variant. Defaults to <c>brand</c> if not within another element with a variant.
+    /// </summary>
     [Parameter] public WaVariant Variant { get; set; } = WaVariant.Neutral;
+
+    /// <summary>
+    /// The callout's visual appearance.
+    /// </summary>
     [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.OutlinedFilled;
+
+    /// <summary>
+    /// The callout's size.
+    /// </summary>
     [Parameter] public WaSize Size { get; set; } = WaSize.Medium;
 
     #endregion

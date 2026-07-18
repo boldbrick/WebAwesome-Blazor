@@ -16,9 +16,27 @@ public class WaColorPicker : WaInputBase<string>
 {
     #region ------ Color Picker Properties ------
 
+    /// <summary>
+    /// Shows the opacity slider. Enabling this causes the formatted value to be HEXA, RGBA, or HSLA.
+    /// </summary>
     [Parameter] public bool Opacity { get; set; }
+
+    /// <summary>
+    /// The color format to use. If <see cref="Opacity"/> is enabled, formats translate to their alpha-channel
+    /// equivalent (HEXA, RGBA, HSLA, or HSVA). The color picker accepts user input in any format, including CSS
+    /// color names, and converts it to the desired format.
+    /// </summary>
     [Parameter] public WaColorFormat Format { get; set; } = WaColorFormat.Hex;
+
+    /// <summary>
+    /// Removes the button that lets users toggle between formats.
+    /// </summary>
     [Parameter] public bool WithoutFormatToggle { get; set; }
+
+    /// <summary>
+    /// One or more predefined color swatches to display as presets, separated by a semicolon (<c>;</c>). Can include
+    /// any format the color picker can parse, such as HEX(A), RGB(A), HSL(A), HSV(A), or CSS color names.
+    /// </summary>
     [Parameter] public string? Swatches { get; set; }
 
     #endregion

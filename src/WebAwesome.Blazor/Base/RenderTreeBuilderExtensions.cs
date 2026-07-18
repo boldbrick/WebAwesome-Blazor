@@ -3,8 +3,19 @@ using Microsoft.AspNetCore.Components.Rendering;
 
 namespace WebAwesome.Blazor.Base;
 
+/// <summary>
+/// Helper extensions for <see cref="RenderTreeBuilder"/> that conditionally emit attributes,
+/// reducing repetitive null/empty checks in generated component render trees.
+/// </summary>
 internal static class RenderTreeBuilderExtensions
 {
+    /// <summary>
+    /// Adds a string attribute to the render tree only when the value is not null or empty.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null or empty</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void AddAttributeIfNotNullOrEmpty(this RenderTreeBuilder builder, int sequence, string name, string? value)
     {
@@ -14,6 +25,14 @@ internal static class RenderTreeBuilderExtensions
         }
     }
 
+    /// <summary>
+    /// Adds an attribute to the render tree, converted via <see cref="object.ToString"/>, only when the value is not null.
+    /// </summary>
+    /// <typeparam name="T">Type of the value to convert and emit</typeparam>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void AddAttributeIfNotNull<T>(this RenderTreeBuilder builder, int sequence, string name, T? value)
     {

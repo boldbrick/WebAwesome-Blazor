@@ -28,14 +28,35 @@ public class WaBadge : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Visual properties
+    /// <summary>
+    /// The badge's theme variant. Defaults to <c>brand</c> if not within another element with a variant.
+    /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
+
+    /// <summary>
+    /// The badge's visual appearance.
+    /// </summary>
     [Parameter] public WaAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// Draws a pill-style badge with rounded edges.
+    /// </summary>
     [Parameter] public bool Pill { get; set; }
+
+    /// <summary>
+    /// Adds an animation to draw attention to the badge.
+    /// </summary>
     [Parameter] public WaAttention? Attention { get; set; }
 
     #endregion

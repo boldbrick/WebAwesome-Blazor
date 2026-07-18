@@ -29,10 +29,20 @@ public class WaVisuallyHidden : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names appended to the wa-visually-hidden utility class on the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Visually hidden properties
+    /// <summary>
+    /// Uses the wa-visually-hidden-force variant, which hides content even when a screen reader is forcing visibility.
+    /// </summary>
     [Parameter] public bool Force { get; set; }
 
     #endregion

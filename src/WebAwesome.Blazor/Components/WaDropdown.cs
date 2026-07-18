@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -16,6 +16,9 @@ public class WaDropdown : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -35,14 +38,37 @@ public class WaDropdown : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Dropdown properties
+    /// <summary>
+    /// Opens or closes the dropdown.
+    /// </summary>
     [Parameter] public bool Open { get; set; }
+
+    /// <summary>
+    /// The placement of the dropdown menu in reference to the trigger. The menu will shift to a more optimal
+    /// location if the preferred placement doesn't have enough room.
+    /// </summary>
     [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.BottomStart;
+
+    /// <summary>
+    /// The distance of the dropdown menu from its trigger.
+    /// </summary>
     [Parameter] public int Distance { get; set; } = 8;
+
+    /// <summary>
+    /// The offset of the dropdown menu along its trigger.
+    /// </summary>
     [Parameter] public int Skidding { get; set; } = 0;
 
     #endregion
@@ -63,8 +89,19 @@ public class WaDropdown : ComponentBase
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the dropdown is about to show.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+
+    /// <summary>
+    /// Invoked when the dropdown is about to hide.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
+
+    /// <summary>
+    /// Invoked when an item in the dropdown is selected.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnSelect { get; set; }
 
     #endregion
@@ -180,6 +217,7 @@ public class WaDropdown : ComponentBase
 
     #endregion
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

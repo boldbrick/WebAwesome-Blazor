@@ -37,23 +37,61 @@ public class WaRadio : ComponentBase, IFormValidation
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Radio properties
+    /// <summary>
+    /// The radio's value. When selected, the radio group receives this value.
+    /// </summary>
     [Parameter] public string? Value { get; set; }
+
+    /// <summary>
+    /// Checks the radio.
+    /// </summary>
     [Parameter] public bool Checked { get; set; }
+
+    /// <summary>
+    /// Disables the radio.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// The radio's size. When used inside a radio group, the size is determined by the radio group's size,
+    /// so this attribute can typically be omitted.
+    /// </summary>
     [Parameter] public WaSize? Size { get; set; }
+
+    /// <summary>
+    /// The radio's visual appearance.
+    /// </summary>
     [Parameter] public WaRadioAppearance? Appearance { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the checked state changes.
+    /// </summary>
     [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
+
+    /// <summary>
+    /// Invoked when the control gains focus.
+    /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
+
+    /// <summary>
+    /// Invoked when the control loses focus.
+    /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
     #endregion

@@ -29,14 +29,40 @@ public class WaTag : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Tag properties
+    /// <summary>
+    /// The tag's theme variant.
+    /// </summary>
     [Parameter] public WaVariant Variant { get; set; } = WaVariant.Neutral;
+
+    /// <summary>
+    /// The tag's visual appearance.
+    /// </summary>
     [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.OutlinedFilled;
+
+    /// <summary>
+    /// The tag's size.
+    /// </summary>
     [Parameter] public WaSize Size { get; set; } = WaSize.Medium;
+
+    /// <summary>
+    /// Draws a pill-style tag with rounded edges.
+    /// </summary>
     [Parameter] public bool Pill { get; set; }
+
+    /// <summary>
+    /// Makes the tag removable and shows a remove button.
+    /// </summary>
     [Parameter] public bool WithRemove { get; set; }
 
     #endregion
@@ -52,6 +78,9 @@ public class WaTag : ComponentBase
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the remove button is activated.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnRemove { get; set; }
 
     #endregion
