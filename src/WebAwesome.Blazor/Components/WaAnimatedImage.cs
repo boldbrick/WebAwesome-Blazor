@@ -47,6 +47,20 @@ public class WaAnimatedImage : ComponentBase
 
     #endregion
 
+    #region ------ Content ------
+
+    /// <summary>
+    /// Icon rendered into the play-icon slot, replacing the default play icon.
+    /// </summary>
+    [Parameter] public string? PlayIconName { get; set; }
+
+    /// <summary>
+    /// Icon rendered into the pause-icon slot, replacing the default pause icon.
+    /// </summary>
+    [Parameter] public string? PauseIconName { get; set; }
+
+    #endregion
+
     #region ------ Events ------
 
     [Parameter] public EventCallback OnLoad { get; set; }
@@ -78,6 +92,10 @@ public class WaAnimatedImage : ComponentBase
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __animatedImageReference => Element = __animatedImageReference);
+
+        // Add play/pause icon slots
+        builder.AddIconSlot(30, "play-icon", PlayIconName);
+        builder.AddIconSlot(35, "pause-icon", PauseIconName);
 
         builder.CloseElement();
     }

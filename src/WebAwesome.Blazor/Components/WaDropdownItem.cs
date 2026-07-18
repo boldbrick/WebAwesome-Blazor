@@ -54,6 +54,11 @@ public class WaDropdownItem : ComponentBase
     [Parameter] public RenderFragment? IconContent { get; set; }
 
     /// <summary>
+    /// Convenience alternative to <see cref="IconContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? IconName { get; set; }
+
+    /// <summary>
     /// Details content to display at the end of the item (e.g., keyboard shortcuts)
     /// </summary>
     [Parameter] public RenderFragment? DetailsContent { get; set; }
@@ -95,6 +100,10 @@ public class WaDropdownItem : ComponentBase
             builder.AddAttribute(21, "slot", "icon");
             builder.AddContent(22, IconContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(25, "icon", IconName);
         }
 
         // Add main content (label)

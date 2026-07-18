@@ -83,6 +83,16 @@ public class WaButton : ComponentBase, IFormValidation
     /// </summary>
     [Parameter] public RenderFragment? EndContent { get; set; }
 
+    /// <summary>
+    /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? StartIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="EndContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? EndIconName { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -132,6 +142,10 @@ public class WaButton : ComponentBase, IFormValidation
             builder.AddContent(32, StartContent);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(35, "start", StartIconName);
+        }
 
         // Add main content (label)
         if (ChildContent is not null)
@@ -146,6 +160,10 @@ public class WaButton : ComponentBase, IFormValidation
             builder.AddAttribute(51, "slot", "end");
             builder.AddContent(52, EndContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(55, "end", EndIconName);
         }
 
         builder.CloseElement();

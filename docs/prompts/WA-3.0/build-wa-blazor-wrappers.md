@@ -49,3 +49,13 @@ Work in phases:
 3. Learn from feedback. Work on another group and wait for feedback. Take maximu 10 components per group.
 
 Now start with Phase 1.
+
+# Icon convenience parameters
+
+Components that expose an icon-shaped slot — a `start`/`end` slot documented as accepting "an element such as `wa-icon`", or a dedicated `*-icon` slot (e.g. `expand-icon`, `copy-icon`) — also get a matching `<Slot>IconName` string parameter (e.g. `StartIconName`, `ExpandIconName`) in addition to the existing `RenderFragment` for that slot.
+
+- Rendering goes through the shared helper `RenderTreeBuilderExtensions.AddIconSlot(builder, sequence, slotName, iconName)`, which renders a `wa-icon` element with a `name` attribute (and a `slot` attribute when the slot is not the default) when `iconName` is non-empty.
+- **Fragment wins**: when the slot already has a `RenderFragment` (e.g. `StartContent`), the icon parameter is only rendered when that fragment is `null`. Document this on the parameter: "Convenience alternative to `<FragmentName>`; ignored when the fragment is set."
+- When a slot has no corresponding `RenderFragment`, render the icon whenever the name is set (no fragment to defer to).
+- Use constant sequence numbers for the `AddIconSlot` call, spaced from other sequences used in the file (never `sequence++`).
+- Pane-like `start`/`end` slots that hold arbitrary panel content rather than an icon (e.g. `wa-split-panel`'s `start`/`end` panes) are excluded from this convention.

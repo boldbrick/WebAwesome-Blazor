@@ -57,6 +57,20 @@ public class WaZoomableFrame : ComponentBase
 
     #endregion
 
+    #region ------ Content ------
+
+    /// <summary>
+    /// Icon rendered into the zoom-in-icon slot, replacing the default zoom-in control icon.
+    /// </summary>
+    [Parameter] public string? ZoomInIconName { get; set; }
+
+    /// <summary>
+    /// Icon rendered into the zoom-out-icon slot, replacing the default zoom-out control icon.
+    /// </summary>
+    [Parameter] public string? ZoomOutIconName { get; set; }
+
+    #endregion
+
     #region ------ Events ------
 
     /// <summary>
@@ -117,6 +131,10 @@ public class WaZoomableFrame : ComponentBase
 
         // Add element reference capture
         builder.AddElementReferenceCapture(50, __frameReference => Element = __frameReference);
+
+        // Add zoom control icon slots
+        builder.AddIconSlot(60, "zoom-in-icon", ZoomInIconName);
+        builder.AddIconSlot(65, "zoom-out-icon", ZoomOutIconName);
 
         builder.CloseElement();
     }
