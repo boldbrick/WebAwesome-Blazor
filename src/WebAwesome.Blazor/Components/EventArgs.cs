@@ -155,3 +155,28 @@ public class ZoomChangeEventArgs : EventArgs
 }
 
 #endregion
+
+#region ------ Intersection Observer Events ------
+
+/// <summary>
+/// Event arguments for intersection observer events
+/// </summary>
+public class WaIntersectionEventArgs
+{
+    /// <summary>
+    /// Whether the target element is intersecting with the root
+    /// </summary>
+    public bool IsIntersecting { get; set; }
+
+    /// <summary>
+    /// The ratio of intersection between 0.0 and 1.0
+    /// </summary>
+    public double IntersectionRatio { get; set; }
+
+    /// <summary>
+    /// Reference to the target element being observed
+    /// </summary>
+    public ElementReference Target { get; set; }
+}
+
+#endregion

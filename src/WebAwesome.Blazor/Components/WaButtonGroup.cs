@@ -11,6 +11,10 @@ namespace WebAwesome.Blazor.Components;
 /// A button group component that visually groups related buttons together.
 /// Corresponds to the wa-button-group Web Awesome component.
 /// </summary>
+/// <remarks>
+/// To set button sizes, apply the size property to individual WaButton components
+/// within the group rather than using a group-level size property.
+/// </remarks>
 public class WaButtonGroup : ComponentBase
 {
     #region ------ Public Properties ------
@@ -34,7 +38,6 @@ public class WaButtonGroup : ComponentBase
 
     // Button group properties
     [Parameter] public string? Label { get; set; }
-    [Parameter] public WaSize? Size { get; set; }
     [Parameter] public WaOrientation? Orientation { get; set; }
     [Parameter] public WaVariant? Variant { get; set; }
 
@@ -61,9 +64,8 @@ public class WaButtonGroup : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
         builder.AddAttributeIfNotNullOrEmpty(4, "label", Label);
-        builder.AddAttributeIfNotNull(5, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(6, "orientation", Orientation?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(7, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(5, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(6, "variant", Variant?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __buttonGroupReference => Element = __buttonGroupReference);

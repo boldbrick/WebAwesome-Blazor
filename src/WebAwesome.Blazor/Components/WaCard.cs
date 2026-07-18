@@ -34,6 +34,7 @@ public class WaCard : ComponentBase
 
     // Card properties
     [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.Outlined;
+    [Parameter] public WaOrientation? Orientation { get; set; }
     [Parameter] public bool WithHeader { get; set; }
     [Parameter] public bool WithFooter { get; set; }
     [Parameter] public bool WithMedia { get; set; }
@@ -53,9 +54,19 @@ public class WaCard : ComponentBase
     [Parameter] public RenderFragment? HeaderContent { get; set; }
 
     /// <summary>
+    /// Content for the card header actions
+    /// </summary>
+    [Parameter] public RenderFragment? HeaderActionsContent { get; set; }
+
+    /// <summary>
     /// Content for the card footer
     /// </summary>
     [Parameter] public RenderFragment? FooterContent { get; set; }
+
+    /// <summary>
+    /// Content for the card footer actions
+    /// </summary>
+    [Parameter] public RenderFragment? FooterActionsContent { get; set; }
 
     /// <summary>
     /// Media content for the card (images, videos, etc.)
@@ -79,12 +90,13 @@ public class WaCard : ComponentBase
         // Add card-specific attributes
         if (Appearance != WaAppearance.Outlined)
             builder.AddAttribute(10, "appearance", Appearance.ToHtmlValue());
-        builder.AddAttribute(11, "with-header", WithHeader || HeaderContent is not null);
-        builder.AddAttribute(12, "with-footer", WithFooter || FooterContent is not null);
-        builder.AddAttribute(13, "with-media", WithMedia || MediaContent is not null);
+        builder.AddAttributeIfNotNull(11, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttribute(12, "with-header", WithHeader || HeaderContent is not null || HeaderActionsContent is not null);
+        builder.AddAttribute(13, "with-footer", WithFooter || FooterContent is not null || FooterActionsContent is not null);
+        builder.AddAttribute(14, "with-media", WithMedia || MediaContent is not null);
 
         // Add element reference capture
-        builder.AddElementReferenceCapture(14, __cardReference => Element = __cardReference);
+        builder.AddElementReferenceCapture(15, __cardReference => Element = __cardReference);
 
         // Add media slot content
         if (MediaContent is not null)
@@ -104,6 +116,15 @@ public class WaCard : ComponentBase
             builder.CloseElement();
         }
 
+        // Add header actions slot content
+        if (HeaderActionsContent is not null)
+        {
+            builder.OpenElement(35, "div");
+            builder.AddAttribute(36, "slot", "header-actions");
+            builder.AddContent(37, HeaderActionsContent);
+            builder.CloseElement();
+        }
+
         // Add main content
         if (ChildContent is not null)
         {
@@ -116,6 +137,15 @@ public class WaCard : ComponentBase
             builder.OpenElement(50, "div");
             builder.AddAttribute(51, "slot", "footer");
             builder.AddContent(52, FooterContent);
+            builder.CloseElement();
+        }
+
+        // Add footer actions slot content
+        if (FooterActionsContent is not null)
+        {
+            builder.OpenElement(55, "div");
+            builder.AddAttribute(56, "slot", "footer-actions");
+            builder.AddContent(57, FooterActionsContent);
             builder.CloseElement();
         }
 
