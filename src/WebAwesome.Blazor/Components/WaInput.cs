@@ -50,6 +50,16 @@ public class WaInput : WaInputBase<string?>
     /// </summary>
     [Parameter] public RenderFragment? EndContent { get; set; }
 
+    /// <summary>
+    /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? StartIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="EndContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? EndIconName { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -104,6 +114,10 @@ public class WaInput : WaInputBase<string?>
             builder.AddContent(62, StartContent);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(100, "start", StartIconName);
+        }
 
         // Add end slot content
         if (EndContent is not null)
@@ -112,6 +126,10 @@ public class WaInput : WaInputBase<string?>
             builder.AddAttribute(66, "slot", "end");
             builder.AddContent(67, EndContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(105, "end", EndIconName);
         }
 
         // Add label and hint slots

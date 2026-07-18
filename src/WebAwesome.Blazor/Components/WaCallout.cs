@@ -51,6 +51,11 @@ public class WaCallout : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? IconContent { get; set; }
 
+    /// <summary>
+    /// Convenience alternative to <see cref="IconContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? IconName { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -83,6 +88,10 @@ public class WaCallout : ComponentBase
             builder.AddAttribute(21, "slot", "icon");
             builder.AddContent(22, IconContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(25, "icon", IconName);
         }
 
         // Add main content (message)

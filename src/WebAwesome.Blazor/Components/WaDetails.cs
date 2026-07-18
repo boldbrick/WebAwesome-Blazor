@@ -77,6 +77,16 @@ public class WaDetails : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? CollapseIcon { get; set; }
 
+    /// <summary>
+    /// Convenience alternative to <see cref="ExpandIcon"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? ExpandIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="CollapseIcon"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? CollapseIconName { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -123,6 +133,10 @@ public class WaDetails : ComponentBase
             builder.AddContent(32, ExpandIcon);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(60, "expand-icon", ExpandIconName);
+        }
 
         // Add collapse icon slot content
         if (CollapseIcon is not null)
@@ -131,6 +145,10 @@ public class WaDetails : ComponentBase
             builder.AddAttribute(41, "slot", "collapse-icon");
             builder.AddContent(42, CollapseIcon);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(65, "collapse-icon", CollapseIconName);
         }
 
         // Add child content (main details content)

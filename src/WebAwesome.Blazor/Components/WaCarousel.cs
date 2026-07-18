@@ -66,6 +66,16 @@ public class WaCarousel : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// Icon rendered into the next-icon slot, replacing the default next navigation icon.
+    /// </summary>
+    [Parameter] public string? NextIconName { get; set; }
+
+    /// <summary>
+    /// Icon rendered into the previous-icon slot, replacing the default previous navigation icon.
+    /// </summary>
+    [Parameter] public string? PreviousIconName { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -101,6 +111,10 @@ public class WaCarousel : ComponentBase
         {
             builder.AddContent(30, ChildContent);
         }
+
+        // Add navigation icon slots
+        builder.AddIconSlot(40, "next-icon", NextIconName);
+        builder.AddIconSlot(45, "previous-icon", PreviousIconName);
 
         builder.CloseElement();
     }

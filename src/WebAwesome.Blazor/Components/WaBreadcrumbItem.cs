@@ -55,6 +55,16 @@ public class WaBreadcrumbItem : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? EndContent { get; set; }
 
+    /// <summary>
+    /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? StartIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="EndContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? EndIconName { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -93,6 +103,10 @@ public class WaBreadcrumbItem : ComponentBase
             builder.AddContent(32, StartContent);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(60, "start", StartIconName);
+        }
 
         // Add main content (label)
         if (ChildContent is not null)
@@ -107,6 +121,10 @@ public class WaBreadcrumbItem : ComponentBase
             builder.AddAttribute(51, "slot", "end");
             builder.AddContent(52, EndContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(70, "end", EndIconName);
         }
 
         builder.CloseElement();

@@ -80,6 +80,21 @@ public class WaCopyButton : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? ErrorIcon { get; set; }
 
+    /// <summary>
+    /// Convenience alternative to <see cref="CopyIcon"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? CopyIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="SuccessIcon"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? SuccessIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="ErrorIcon"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? ErrorIconName { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -122,6 +137,10 @@ public class WaCopyButton : ComponentBase
             builder.AddContent(32, CopyIcon);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(60, "copy-icon", CopyIconName);
+        }
 
         if (SuccessIcon is not null)
         {
@@ -130,6 +149,10 @@ public class WaCopyButton : ComponentBase
             builder.AddContent(42, SuccessIcon);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(65, "success-icon", SuccessIconName);
+        }
 
         if (ErrorIcon is not null)
         {
@@ -137,6 +160,10 @@ public class WaCopyButton : ComponentBase
             builder.AddAttribute(51, "slot", "error-icon");
             builder.AddContent(52, ErrorIcon);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(70, "error-icon", ErrorIconName);
         }
 
         builder.CloseElement();
