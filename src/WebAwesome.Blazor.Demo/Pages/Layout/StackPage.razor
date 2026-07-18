@@ -23,14 +23,18 @@
 
 <ExampleSection Title="A Simple Form" Code="@FormExample">
     <WaStack>
-        <WaInput Label="Email" />
-        <WaInput Label="Password" Type="WaInputType.Password" />
-        <WaCheckbox>Remember me on this device</WaCheckbox>
+        <WaInput Label="Email" @bind-Value="email" />
+        <WaInput Label="Password" Type="WaInputType.Password" @bind-Value="password" />
+        <WaCheckbox @bind-Value="remember">Remember me on this device</WaCheckbox>
         <WaButton>Log In</WaButton>
     </WaStack>
 </ExampleSection>
 
 @code {
+    private string? email;
+    private string? password;
+    private bool remember;
+
     private const string DefaultExample = """
         <WaStack>
             <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
@@ -49,9 +53,9 @@
 
     private const string FormExample = """
         <WaStack>
-            <WaInput Label="Email" />
-            <WaInput Label="Password" Type="WaInputType.Password" />
-            <WaCheckbox>Remember me on this device</WaCheckbox>
+            <WaInput Label="Email" @bind-Value="email" />
+            <WaInput Label="Password" Type="WaInputType.Password" @bind-Value="password" />
+            <WaCheckbox @bind-Value="remember">Remember me on this device</WaCheckbox>
             <WaButton>Log In</WaButton>
         </WaStack>
         """;

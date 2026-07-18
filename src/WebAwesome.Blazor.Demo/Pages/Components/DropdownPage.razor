@@ -6,7 +6,16 @@
 <p><code>&lt;wa-dropdown&gt;</code> wrapped by <code>WaDropdown</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaDropdown />
+    <WaDropdown>
+        <TriggerContent>
+            <WaButton WithCaret="true">Dropdown</WaButton>
+        </TriggerContent>
+        <ChildContent>
+            <WaDropdownItem>Option 1</WaDropdownItem>
+            <WaDropdownItem>Option 2</WaDropdownItem>
+            <WaDropdownItem>Option 3</WaDropdownItem>
+        </ChildContent>
+    </WaDropdown>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\dropdown.md) *@
@@ -14,5 +23,16 @@
 <ApiTable Tag="wa-dropdown" />
 
 @code {
-    private const string DefaultExample = "<WaDropdown />";
+    private const string DefaultExample = """
+        <WaDropdown>
+            <TriggerContent>
+                <WaButton WithCaret="true">Dropdown</WaButton>
+            </TriggerContent>
+            <ChildContent>
+                <WaDropdownItem>Option 1</WaDropdownItem>
+                <WaDropdownItem>Option 2</WaDropdownItem>
+                <WaDropdownItem>Option 3</WaDropdownItem>
+            </ChildContent>
+        </WaDropdown>
+        """;
 }

@@ -6,7 +6,11 @@
 <p><code>&lt;wa-breadcrumb&gt;</code> wrapped by <code>WaBreadcrumb</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaBreadcrumb />
+    <WaBreadcrumb>
+        <WaBreadcrumbItem Href="/">Home</WaBreadcrumbItem>
+        <WaBreadcrumbItem Href="/components">Components</WaBreadcrumbItem>
+        <WaBreadcrumbItem>Breadcrumb</WaBreadcrumbItem>
+    </WaBreadcrumb>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\breadcrumb.md) *@
@@ -14,5 +18,11 @@
 <ApiTable Tag="wa-breadcrumb" />
 
 @code {
-    private const string DefaultExample = "<WaBreadcrumb />";
+    private const string DefaultExample = """
+        <WaBreadcrumb>
+            <WaBreadcrumbItem Href="/">Home</WaBreadcrumbItem>
+            <WaBreadcrumbItem Href="/components">Components</WaBreadcrumbItem>
+            <WaBreadcrumbItem>Breadcrumb</WaBreadcrumbItem>
+        </WaBreadcrumb>
+        """;
 }

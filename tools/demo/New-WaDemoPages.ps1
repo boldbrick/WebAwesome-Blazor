@@ -70,9 +70,41 @@ foreach ($tag in $surface.components.PSObject.Properties.Name) {
     $className = "Wa$pascal"
 
     # components without a wrapper yet get a native-element example so the page still compiles
-    $wrapperExists = Test-Path (Join-Path $RepoRoot "src\WebAwesome.Blazor\Components\$className.cs")
+    $wrapperPath = Join-Path $RepoRoot "src\WebAwesome.Blazor\Components\$className.cs"
+    $wrapperExists = Test-Path $wrapperPath
+
+    # detect whether the wrapper derives from WaInputBase<T>/InputBase<T>, which requires @bind-Value
+    # (a bare Value= attribute or no binding at all throws at runtime because ValueExpression is unset)
+    $isInputBase = $false
+    $valueType = $null
     if ($wrapperExists) {
-        $example = "<$className />"
+        $wrapperSource = Get-Content $wrapperPath -Raw
+        if ($wrapperSource -match ':\s*(?:WaInputBase|InputBase)<([^>]+)>') {
+            $isInputBase = $true
+            $valueType = $matches[1].Trim()
+        }
+    }
+
+    # detect whether the component exposes a default (unnamed) content slot
+    $hasDefaultSlot = $false
+    if ($component.slots) {
+        $hasDefaultSlot = [bool]($component.slots.PSObject.Properties.Name -contains '(default)')
+    }
+
+    $codeField = $null
+    if ($wrapperExists) {
+        if ($isInputBase) {
+            # bound example: give the control a @bind-Value and a matching backing field
+            $example = "<$className @bind-Value=`"value`">$human</$className>"
+            $codeField = "private $valueType value;"
+        }
+        elseif ($hasDefaultSlot) {
+            # text child content instead of a self-closing tag, since the component renders a default slot
+            $example = "<$className>$className example</$className>"
+        }
+        else {
+            $example = "<$className />"
+        }
         $subtitle = "<p><code>&lt;$tag&gt;</code> wrapped by <code>$className</code>.</p>"
         $todo = "@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\$route.md) *@"
     }
@@ -80,6 +112,14 @@ foreach ($tag in $surface.components.PSObject.Properties.Name) {
         $example = "<$tag></$tag>"
         $subtitle = "<p><code>&lt;$tag&gt;</code> - <strong>wrapper not yet implemented</strong>; the example below uses the native element.</p>"
         $todo = "@* TODO: implement the $className wrapper, then replace the native element example *@"
+    }
+
+    $defaultExampleLine = "private const string DefaultExample = `"$($example -replace '"', '\"')`";"
+    if ($codeField) {
+        $codeBody = "    $codeField`r`n`r`n    $defaultExampleLine"
+    }
+    else {
+        $codeBody = "    $defaultExampleLine"
     }
 
     $content = @"
@@ -99,7 +139,7 @@ $todo
 <ApiTable Tag="$tag" />
 
 @code {
-    private const string DefaultExample = "$($example -replace '"', '\"')";
+$codeBody
 }
 "@
 

@@ -6,7 +6,7 @@
 <p>Radio groups are used to group multiple radios so they function as a single form control. <code>&lt;wa-radio-group&gt;</code> wrapped by <code>WaRadioGroup</code>, with <code>&lt;wa-radio&gt;</code> wrapped by <code>WaRadio</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaRadioGroup Label="Select an option" Name="a" Value="1">
+    <WaRadioGroup Label="Select an option" Name="a" @bind-Value="defaultValue">
         <WaRadio Value="1">Option 1</WaRadio>
         <WaRadio Value="2">Option 2</WaRadio>
         <WaRadio Value="3">Option 3</WaRadio>
@@ -14,7 +14,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Hint &amp; Orientation" Code="@HintExample">
-    <WaRadioGroup Label="Select an option" Hint="Choose the most appropriate option." Orientation="WaOrientation.Horizontal" Name="a" Value="1">
+    <WaRadioGroup Label="Select an option" Hint="Choose the most appropriate option." Orientation="WaOrientation.Horizontal" Name="a" @bind-Value="hintValue">
         <WaRadio Value="1">Option 1</WaRadio>
         <WaRadio Value="2">Option 2</WaRadio>
         <WaRadio Value="3">Option 3</WaRadio>
@@ -22,7 +22,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Radio Buttons" Code="@ButtonExample">
-    <WaRadioGroup Label="Horizontal options" Orientation="WaOrientation.Horizontal" Name="a" Value="1">
+    <WaRadioGroup Label="Horizontal options" Orientation="WaOrientation.Horizontal" Name="a" @bind-Value="buttonValue">
         <WaRadio Appearance="WaRadioAppearance.Button" Value="1">Option 1</WaRadio>
         <WaRadio Appearance="WaRadioAppearance.Button" Value="2">Option 2</WaRadio>
         <WaRadio Appearance="WaRadioAppearance.Button" Value="3">Option 3</WaRadio>
@@ -30,7 +30,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Disabling" Code="@DisabledExample">
-    <WaRadioGroup Label="Select an option">
+    <WaRadioGroup Label="Select an option" @bind-Value="disabledExampleValue">
         <WaRadio Value="1">Option 1</WaRadio>
         <WaRadio Value="2" Disabled="true">Option 2</WaRadio>
         <WaRadio Value="3">Option 3</WaRadio>
@@ -50,37 +50,57 @@
 
 @code {
     private string? selected = "1";
+    private string? defaultValue = "1";
+    private string? hintValue = "1";
+    private string? buttonValue = "1";
+    private string? disabledExampleValue = "1";
 
     private const string DefaultExample = """
-        <WaRadioGroup Label="Select an option" Name="a" Value="1">
+        <WaRadioGroup Label="Select an option" Name="a" @bind-Value="defaultValue">
             <WaRadio Value="1">Option 1</WaRadio>
             <WaRadio Value="2">Option 2</WaRadio>
             <WaRadio Value="3">Option 3</WaRadio>
         </WaRadioGroup>
+
+        @code {
+            private string? defaultValue = "1";
+        }
         """;
 
     private const string HintExample = """
-        <WaRadioGroup Label="Select an option" Hint="Choose the most appropriate option." Orientation="WaOrientation.Horizontal" Name="a" Value="1">
+        <WaRadioGroup Label="Select an option" Hint="Choose the most appropriate option." Orientation="WaOrientation.Horizontal" Name="a" @bind-Value="hintValue">
             <WaRadio Value="1">Option 1</WaRadio>
             <WaRadio Value="2">Option 2</WaRadio>
             <WaRadio Value="3">Option 3</WaRadio>
         </WaRadioGroup>
+
+        @code {
+            private string? hintValue = "1";
+        }
         """;
 
     private const string ButtonExample = """
-        <WaRadioGroup Label="Horizontal options" Orientation="WaOrientation.Horizontal" Name="a" Value="1">
+        <WaRadioGroup Label="Horizontal options" Orientation="WaOrientation.Horizontal" Name="a" @bind-Value="buttonValue">
             <WaRadio Appearance="WaRadioAppearance.Button" Value="1">Option 1</WaRadio>
             <WaRadio Appearance="WaRadioAppearance.Button" Value="2">Option 2</WaRadio>
             <WaRadio Appearance="WaRadioAppearance.Button" Value="3">Option 3</WaRadio>
         </WaRadioGroup>
+
+        @code {
+            private string? buttonValue = "1";
+        }
         """;
 
     private const string DisabledExample = """
-        <WaRadioGroup Label="Select an option">
+        <WaRadioGroup Label="Select an option" @bind-Value="disabledExampleValue">
             <WaRadio Value="1">Option 1</WaRadio>
             <WaRadio Value="2" Disabled="true">Option 2</WaRadio>
             <WaRadio Value="3">Option 3</WaRadio>
         </WaRadioGroup>
+
+        @code {
+            private string? disabledExampleValue = "1";
+        }
         """;
 
     private const string BindingExample = """

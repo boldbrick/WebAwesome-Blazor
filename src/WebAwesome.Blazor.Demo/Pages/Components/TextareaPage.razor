@@ -6,7 +6,7 @@
 <p><code>&lt;wa-textarea&gt;</code> wrapped by <code>WaTextarea</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaTextArea />
+    <WaTextArea @bind-Value="value" />
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\textarea.md) *@
@@ -14,5 +14,13 @@
 <ApiTable Tag="wa-textarea" />
 
 @code {
-    private const string DefaultExample = "<WaTextArea />";
+    private string? value;
+
+    private const string DefaultExample = """
+        <WaTextArea @bind-Value="value" />
+
+        @code {
+            private string? value;
+        }
+        """;
 }

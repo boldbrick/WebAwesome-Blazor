@@ -6,7 +6,17 @@
 <p><code>&lt;wa-carousel-item&gt;</code> wrapped by <code>WaCarouselItem</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaCarouselItem />
+    <WaCarousel Pagination="true" Navigation="true">
+        <WaCarouselItem>
+            <div style="background: var(--wa-color-red-fill-loud); height: 200px;"></div>
+        </WaCarouselItem>
+        <WaCarouselItem>
+            <div style="background: var(--wa-color-green-fill-loud); height: 200px;"></div>
+        </WaCarouselItem>
+        <WaCarouselItem>
+            <div style="background: var(--wa-color-blue-fill-loud); height: 200px;"></div>
+        </WaCarouselItem>
+    </WaCarousel>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\carousel-item.md) *@
@@ -14,5 +24,17 @@
 <ApiTable Tag="wa-carousel-item" />
 
 @code {
-    private const string DefaultExample = "<WaCarouselItem />";
+    private const string DefaultExample = """
+        <WaCarousel Pagination="true" Navigation="true">
+            <WaCarouselItem>
+                <div style="background: var(--wa-color-red-fill-loud); height: 200px;"></div>
+            </WaCarouselItem>
+            <WaCarouselItem>
+                <div style="background: var(--wa-color-green-fill-loud); height: 200px;"></div>
+            </WaCarouselItem>
+            <WaCarouselItem>
+                <div style="background: var(--wa-color-blue-fill-loud); height: 200px;"></div>
+            </WaCarouselItem>
+        </WaCarousel>
+        """;
 }

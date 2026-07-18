@@ -17,8 +17,8 @@
 <ExampleSection Title="Content Conveyed by Context" Code="@ContextExample">
     <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">
         <WaVisuallyHidden>Personal Info</WaVisuallyHidden>
-        <WaInput Label="Name" Style="margin-bottom: .5rem;" />
-        <WaInput Label="Email" Type="WaInputType.Email" />
+        <WaInput Label="Name" Style="margin-bottom: .5rem;" @bind-Value="name" />
+        <WaInput Label="Email" Type="WaInputType.Email" @bind-Value="email" />
     </div>
 </ExampleSection>
 
@@ -30,6 +30,9 @@
 </ExampleSection>
 
 @code {
+    private string? name;
+    private string? email;
+
     private const string DefaultExample = """
         <div style="min-height: 1.875rem;">
             <a href="#main">
@@ -41,8 +44,8 @@
     private const string ContextExample = """
         <div>
             <WaVisuallyHidden>Personal Info</WaVisuallyHidden>
-            <WaInput Label="Name" Style="margin-bottom: .5rem;" />
-            <WaInput Label="Email" Type="WaInputType.Email" />
+            <WaInput Label="Name" Style="margin-bottom: .5rem;" @bind-Value="name" />
+            <WaInput Label="Email" Type="WaInputType.Email" @bind-Value="email" />
         </div>
         """;
 

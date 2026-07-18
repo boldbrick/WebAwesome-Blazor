@@ -1,9 +1,20 @@
 @inherits LayoutComponentBase
 @inject ApiSurfaceService SurfaceService
+@inject IJSRuntime JS
+@inject WebAwesome.Blazor.Models.WebAwesomeOptions WaOptions
 
 <div class="demo-shell">
     <aside class="demo-sidebar">
         <a class="demo-logo" href="">Web Awesome <strong>Blazor</strong></a>
+
+        <div class="demo-controls">
+            <WaSelect Label="Theme" @bind-Value="theme" @bind-Value:after="ApplyThemeAsync">
+                <WaOption Value="default">Default</WaOption>
+                <WaOption Value="awesome">Awesome</WaOption>
+                <WaOption Value="shoelace">Shoelace</WaOption>
+            </WaSelect>
+            <WaSwitch @bind-Value="dark" @bind-Value:after="ApplyDarkAsync">Dark mode</WaSwitch>
+        </div>
 
         <nav>
             <h4>Getting Started</h4>
@@ -36,6 +47,22 @@
 
 @code {
     private IReadOnlyList<(string Tag, string Name)> componentLinks = [];
+    private string? theme = "default";
+    private bool dark;
+
+    private async Task ApplyThemeAsync()
+    {
+        // theme stylesheets live next to the main stylesheet; "default" is built into webawesome.css
+        var themeHref = theme is null or "default"
+            ? null
+            : WaOptions.ResolveStylesheetUrl().Replace("/webawesome.css", $"/themes/{theme}.css");
+        await JS.InvokeVoidAsync("demoTheme.setTheme", themeHref);
+    }
+
+    private async Task ApplyDarkAsync()
+    {
+        await JS.InvokeVoidAsync("demoTheme.setDark", dark);
+    }
 
     private static readonly (string Route, string Name)[] LayoutLinks =
     [

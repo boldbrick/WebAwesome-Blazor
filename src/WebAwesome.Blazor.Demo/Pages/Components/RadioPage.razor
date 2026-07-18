@@ -6,7 +6,11 @@
 <p><code>&lt;wa-radio&gt;</code> wrapped by <code>WaRadio</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaRadio />
+    <WaRadioGroup Label="Select an option" @bind-Value="value">
+        <WaRadio Value="1">Option 1</WaRadio>
+        <WaRadio Value="2">Option 2</WaRadio>
+        <WaRadio Value="3">Option 3</WaRadio>
+    </WaRadioGroup>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\radio.md) *@
@@ -14,5 +18,17 @@
 <ApiTable Tag="wa-radio" />
 
 @code {
-    private const string DefaultExample = "<WaRadio />";
+    private string? value = "1";
+
+    private const string DefaultExample = """
+        <WaRadioGroup Label="Select an option" @bind-Value="value">
+            <WaRadio Value="1">Option 1</WaRadio>
+            <WaRadio Value="2">Option 2</WaRadio>
+            <WaRadio Value="3">Option 3</WaRadio>
+        </WaRadioGroup>
+
+        @code {
+            private string? value = "1";
+        }
+        """;
 }

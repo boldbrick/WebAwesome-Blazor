@@ -6,7 +6,7 @@
 <p><code>&lt;wa-color-picker&gt;</code> wrapped by <code>WaColorPicker</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaColorPicker />
+    <WaColorPicker @bind-Value="value" />
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\color-picker.md) *@
@@ -14,5 +14,13 @@
 <ApiTable Tag="wa-color-picker" />
 
 @code {
-    private const string DefaultExample = "<WaColorPicker />";
+    private string value = "#4a90d9";
+
+    private const string DefaultExample = """
+        <WaColorPicker @bind-Value="value" />
+
+        @code {
+            private string value = "#4a90d9";
+        }
+        """;
 }

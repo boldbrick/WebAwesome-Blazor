@@ -28,6 +28,30 @@ html, body {
     margin-bottom: 1rem;
 }
 
+.demo-controls {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--wa-color-surface-border, #e2e5e9);
+}
+
+.api-note {
+    font-size: 0.8rem;
+    color: var(--wa-color-text-quiet, #6a7381);
+}
+
+.api-native {
+    font-size: 0.8rem;
+    color: var(--wa-color-text-quiet, #6a7381);
+}
+
+/* dark scheme fallbacks for demo chrome */
+.wa-dark body {
+    background: var(--wa-color-surface-default, #14171c);
+    color: var(--wa-color-text-normal, #e6e9ee);
+}
+
 .demo-sidebar nav h4 {
     margin: 1rem 0 0.25rem;
     text-transform: uppercase;

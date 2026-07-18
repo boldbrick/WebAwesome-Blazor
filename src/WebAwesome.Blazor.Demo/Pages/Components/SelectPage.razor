@@ -6,7 +6,7 @@
 <p>Selects allow you to choose items from a menu of predefined options. <code>&lt;wa-select&gt;</code> wrapped by <code>WaSelect</code>, with <code>&lt;wa-option&gt;</code> wrapped by <code>WaOption</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaSelect Label="Select one" Placeholder="Select one">
+    <WaSelect Label="Select one" Placeholder="Select one" @bind-Value="defaultValue">
         <WaOption Value="option-1">Option 1</WaOption>
         <WaOption Value="option-2">Option 2</WaOption>
         <WaOption Value="option-3">Option 3</WaOption>
@@ -14,38 +14,38 @@
 </ExampleSection>
 
 <ExampleSection Title="Hint, Clearable &amp; Disabled" Code="@HintExample">
-    <WaSelect Label="Experience" Hint="Please tell us your skill level." WithClear="true">
+    <WaSelect Label="Experience" Hint="Please tell us your skill level." WithClear="true" @bind-Value="experienceValue">
         <WaOption Value="1">Novice</WaOption>
         <WaOption Value="2">Intermediate</WaOption>
         <WaOption Value="3">Advanced</WaOption>
     </WaSelect>
-    <WaSelect Placeholder="Disabled" Disabled="true">
+    <WaSelect Placeholder="Disabled" Disabled="true" @bind-Value="disabledValue">
         <WaOption Value="option-1">Option 1</WaOption>
         <WaOption Value="option-2">Option 2</WaOption>
     </WaSelect>
 </ExampleSection>
 
 <ExampleSection Title="Appearance &amp; Pill" Code="@AppearanceExample">
-    <WaSelect Appearance="WaInputAppearance.Filled">
+    <WaSelect Appearance="WaInputAppearance.Filled" @bind-Value="filledValue">
         <WaOption Value="option-1">Option 1</WaOption>
         <WaOption Value="option-2">Option 2</WaOption>
     </WaSelect>
-    <WaSelect Pill="true">
+    <WaSelect Pill="true" @bind-Value="pillValue">
         <WaOption Value="option-1">Option 1</WaOption>
         <WaOption Value="option-2">Option 2</WaOption>
     </WaSelect>
 </ExampleSection>
 
 <ExampleSection Title="Sizes" Code="@SizesExample">
-    <WaSelect Placeholder="Small" Size="WaSize.Small">
+    <WaSelect Placeholder="Small" Size="WaSize.Small" @bind-Value="smallValue">
         <WaOption Value="option-1">Option 1</WaOption>
         <WaOption Value="option-2">Option 2</WaOption>
     </WaSelect>
-    <WaSelect Placeholder="Medium" Size="WaSize.Medium">
+    <WaSelect Placeholder="Medium" Size="WaSize.Medium" @bind-Value="mediumValue">
         <WaOption Value="option-1">Option 1</WaOption>
         <WaOption Value="option-2">Option 2</WaOption>
     </WaSelect>
-    <WaSelect Placeholder="Large" Size="WaSize.Large">
+    <WaSelect Placeholder="Large" Size="WaSize.Large" @bind-Value="largeValue">
         <WaOption Value="option-1">Option 1</WaOption>
         <WaOption Value="option-2">Option 2</WaOption>
     </WaSelect>
@@ -61,7 +61,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Start &amp; End Decorations" Code="@DecorationsExample">
-    <WaSelect Placeholder="Destination" StartIconName="house" EndIconName="flag-checkered">
+    <WaSelect Placeholder="Destination" StartIconName="house" EndIconName="flag-checkered" @bind-Value="destinationValue">
         <WaOption Value="option-1">Option 1</WaOption>
         <WaOption Value="option-2">Option 2</WaOption>
     </WaSelect>
@@ -71,51 +71,80 @@
 
 @code {
     private string[]? selectedValues = ["option-1", "option-2"];
+    private string? defaultValue = "option-1";
+    private string? experienceValue = "1";
+    private string? disabledValue;
+    private string? filledValue = "option-1";
+    private string? pillValue = "option-1";
+    private string? smallValue = "option-1";
+    private string? mediumValue = "option-1";
+    private string? largeValue = "option-1";
+    private string? destinationValue;
 
     private const string DefaultExample = """
-        <WaSelect Label="Select one" Placeholder="Select one">
+        <WaSelect Label="Select one" Placeholder="Select one" @bind-Value="defaultValue">
             <WaOption Value="option-1">Option 1</WaOption>
             <WaOption Value="option-2">Option 2</WaOption>
             <WaOption Value="option-3">Option 3</WaOption>
         </WaSelect>
+
+        @code {
+            private string? defaultValue = "option-1";
+        }
         """;
 
     private const string HintExample = """
-        <WaSelect Label="Experience" Hint="Please tell us your skill level." WithClear="true">
+        <WaSelect Label="Experience" Hint="Please tell us your skill level." WithClear="true" @bind-Value="experienceValue">
             <WaOption Value="1">Novice</WaOption>
             <WaOption Value="2">Intermediate</WaOption>
             <WaOption Value="3">Advanced</WaOption>
         </WaSelect>
-        <WaSelect Placeholder="Disabled" Disabled="true">
+        <WaSelect Placeholder="Disabled" Disabled="true" @bind-Value="disabledValue">
             <WaOption Value="option-1">Option 1</WaOption>
             <WaOption Value="option-2">Option 2</WaOption>
         </WaSelect>
+
+        @code {
+            private string? experienceValue = "1";
+            private string? disabledValue;
+        }
         """;
 
     private const string AppearanceExample = """
-        <WaSelect Appearance="WaInputAppearance.Filled">
+        <WaSelect Appearance="WaInputAppearance.Filled" @bind-Value="filledValue">
             <WaOption Value="option-1">Option 1</WaOption>
             <WaOption Value="option-2">Option 2</WaOption>
         </WaSelect>
-        <WaSelect Pill="true">
+        <WaSelect Pill="true" @bind-Value="pillValue">
             <WaOption Value="option-1">Option 1</WaOption>
             <WaOption Value="option-2">Option 2</WaOption>
         </WaSelect>
+
+        @code {
+            private string? filledValue = "option-1";
+            private string? pillValue = "option-1";
+        }
         """;
 
     private const string SizesExample = """
-        <WaSelect Placeholder="Small" Size="WaSize.Small">
+        <WaSelect Placeholder="Small" Size="WaSize.Small" @bind-Value="smallValue">
             <WaOption Value="option-1">Option 1</WaOption>
             <WaOption Value="option-2">Option 2</WaOption>
         </WaSelect>
-        <WaSelect Placeholder="Medium" Size="WaSize.Medium">
+        <WaSelect Placeholder="Medium" Size="WaSize.Medium" @bind-Value="mediumValue">
             <WaOption Value="option-1">Option 1</WaOption>
             <WaOption Value="option-2">Option 2</WaOption>
         </WaSelect>
-        <WaSelect Placeholder="Large" Size="WaSize.Large">
+        <WaSelect Placeholder="Large" Size="WaSize.Large" @bind-Value="largeValue">
             <WaOption Value="option-1">Option 1</WaOption>
             <WaOption Value="option-2">Option 2</WaOption>
         </WaSelect>
+
+        @code {
+            private string? smallValue = "option-1";
+            private string? mediumValue = "option-1";
+            private string? largeValue = "option-1";
+        }
         """;
 
     private const string MultipleExample = """
@@ -133,9 +162,13 @@
         """;
 
     private const string DecorationsExample = """
-        <WaSelect Placeholder="Destination" StartIconName="house" EndIconName="flag-checkered">
+        <WaSelect Placeholder="Destination" StartIconName="house" EndIconName="flag-checkered" @bind-Value="destinationValue">
             <WaOption Value="option-1">Option 1</WaOption>
             <WaOption Value="option-2">Option 2</WaOption>
         </WaSelect>
+
+        @code {
+            private string? destinationValue;
+        }
         """;
 }
