@@ -22,13 +22,16 @@
                 <li><NavLink href="" Match="NavLinkMatch.All">Introduction</NavLink></li>
             </ul>
 
-            <h4>Components</h4>
-            <ul>
-                @foreach (var (tag, component) in componentLinks)
-                {
-                    <li><NavLink href="@($"components/{tag["wa-".Length..]}")">@component</NavLink></li>
-                }
-            </ul>
+            @foreach (var group in componentGroups)
+            {
+                <h4>@group.Category</h4>
+                <ul>
+                    @foreach (var (tag, component) in group.Components)
+                    {
+                        <li><NavLink href="@($"components/{tag["wa-".Length..]}")">@component</NavLink></li>
+                    }
+                </ul>
+            }
 
             <h4>Layout</h4>
             <ul>
@@ -46,7 +49,7 @@
 </div>
 
 @code {
-    private IReadOnlyList<(string Tag, string Name)> componentLinks = [];
+    private IReadOnlyList<(string Category, IReadOnlyList<(string Tag, string Name)> Components)> componentGroups = [];
     private string? theme = "default";
     private bool dark;
 
@@ -81,11 +84,17 @@
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        // the sidebar is driven by the API surface document, so it always matches the bound WA version
+        // the sidebar is driven by the API surface document, so it always matches the bound WA version;
+        // components are grouped into the same categories Web Awesome uses in its own docs navigation
         var surface = await SurfaceService.GetSurfaceAsync();
-        componentLinks = surface.Components
-            .Select(c => (c.Key, Humanize(c.Key)))
-            .OrderBy(c => c.Item2)
+        componentGroups = surface.Components.Keys
+            .Select(tag => (Tag: tag, Name: Humanize(tag), Category: ComponentCategoryMap.GetCategory(tag)))
+            .GroupBy(c => c.Category)
+            .OrderBy(g => Array.IndexOf(ComponentCategoryMap.CategoryOrder, g.Key) is var index && index >= 0 ? index : int.MaxValue)
+            .Select(g => (Category: g.Key, Components: (IReadOnlyList<(string Tag, string Name)>)g
+                .Select(c => (c.Tag, c.Name))
+                .OrderBy(c => c.Name)
+                .ToList()))
             .ToList();
     }
 

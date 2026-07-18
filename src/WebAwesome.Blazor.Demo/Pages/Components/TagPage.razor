@@ -6,7 +6,7 @@
 <p><code>&lt;wa-tag&gt;</code> wrapped by <code>WaTag</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaTag />
+    <WaTag Variant="WaVariant.Brand">Tag</WaTag>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tag.md) *@
@@ -14,5 +14,7 @@
 <ApiTable Tag="wa-tag" />
 
 @code {
-    private const string DefaultExample = "<WaTag />";
+    private const string DefaultExample = """
+        <WaTag Variant="WaVariant.Brand">Tag</WaTag>
+        """;
 }
