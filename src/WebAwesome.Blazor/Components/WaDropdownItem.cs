@@ -28,15 +28,42 @@ public class WaDropdownItem : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Dropdown item properties
+    /// <summary>
+    /// An optional value for the menu item. This is useful for determining which item was selected when
+    /// listening to the dropdown's select event.
+    /// </summary>
     [Parameter] public string? Value { get; set; }
+
+    /// <summary>
+    /// Set to <see cref="WaDropdownItemType.Checkbox"/> to make the item a checkbox.
+    /// </summary>
     [Parameter] public WaDropdownItemType Type { get; set; } = WaDropdownItemType.Normal;
+
+    /// <summary>
+    /// Checks the dropdown item. Only valid when <see cref="Type"/> is <see cref="WaDropdownItemType.Checkbox"/>.
+    /// </summary>
     [Parameter] public bool Checked { get; set; }
+
+    /// <summary>
+    /// Disables the dropdown item.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// The type of menu item to render.
+    /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
 
     #endregion

@@ -36,13 +36,30 @@ public class WaAnimatedImage : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Image properties
+    /// <summary>
+    /// The path to the image to load.
+    /// </summary>
     [Parameter] public string? Src { get; set; }
+
+    /// <summary>
+    /// A description of the image used by assistive devices.
+    /// </summary>
     [Parameter] public string? Alt { get; set; }
+
+    /// <summary>
+    /// Plays the animation. When set to <see langword="false"/>, the animation will pause.
+    /// </summary>
     [Parameter] public bool Play { get; set; } = true;
 
     #endregion
@@ -63,7 +80,14 @@ public class WaAnimatedImage : ComponentBase
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the image loads successfully.
+    /// </summary>
     [Parameter] public EventCallback OnLoad { get; set; }
+
+    /// <summary>
+    /// Invoked when the image fails to load.
+    /// </summary>
     [Parameter] public EventCallback OnError { get; set; }
 
     #endregion

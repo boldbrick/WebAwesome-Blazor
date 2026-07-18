@@ -74,6 +74,11 @@
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
+  <!-- production libraries must be fully XML-documented; missing docs fail the build -->
+  <PropertyGroup Condition="'$(BbComponentGroup)'=='Libs'">
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
+  </PropertyGroup>
+
   <!-- Release build setttings -->
   <PropertyGroup Condition="'$(Configuration)'=='Release' AND $(BbForProductionUse)">
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract> <!-- Optional: extracts native libraries at runtime -->

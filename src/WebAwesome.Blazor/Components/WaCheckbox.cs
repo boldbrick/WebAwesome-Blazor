@@ -15,12 +15,19 @@ public class WaCheckbox : WaInputBase<bool>
 {
     #region ------ Visual & Behavior Properties ------
 
+    /// <summary>
+    /// Draws the checkbox in an indeterminate state. This is usually applied to checkboxes that represent a
+    /// "select all/none" behavior when associated checkboxes have a mix of checked and unchecked states.
+    /// </summary>
     [Parameter] public bool Indeterminate { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the checked state changes.
+    /// </summary>
     [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
 
     #endregion

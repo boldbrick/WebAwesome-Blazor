@@ -34,6 +34,6 @@ Key rules distilled (the files above win on conflict):
 
 ## Verification and result
 
-Build after implementing (from the repository root): `dotnet build src\WebAwesome.slnx -p:Configuration=Debug`. Fix all errors and any new warnings you introduced. Code must compile for **all** frameworks in `TargetFrameworks` (currently net9.0 and net10.0); `#if` conditional compilation is allowed only with a documented reason (see `docs\prompts\WA-3.0\net10-blazor-evaluation.md` — the standing verdict is a single shared code path).
+Build after implementing (from the repository root): `dotnet build src\WebAwesome.slnx -p:Configuration=Debug`. Fix all errors and any new warnings you introduced. Missing XML documentation on non-private members fails the build (CS1591 is an error for library projects) — fully documented code is the acceptance criterion, not an afterthought. Code must compile for **all** frameworks in `TargetFrameworks` (currently net9.0 and net10.0); `#if` conditional compilation is allowed only with a documented reason (see `docs\prompts\WA-3.0\net10-blazor-evaluation.md` — the standing verdict is a single shared code path).
 
 Return a structured summary: files created/changed, enums added/extended, event args added, intentional deviations from the CEM surface (with rationale) for the caller to record in `parity-config.json`, and any semantics you were unsure about.

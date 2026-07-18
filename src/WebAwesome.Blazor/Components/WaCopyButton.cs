@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -17,6 +17,9 @@ public class WaCopyButton : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -36,29 +39,75 @@ public class WaCopyButton : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Copy functionality
+    /// <summary>
+    /// The text value to copy.
+    /// </summary>
     [Parameter] public string? Value { get; set; }
+
+    /// <summary>
+    /// An id referencing an element in the same document from which data is copied. If both this and
+    /// <see cref="Value"/> are set, this value takes precedence. By default, the target element's
+    /// <c>textContent</c> is copied. To copy an attribute, append the attribute name wrapped in square brackets,
+    /// e.g. <c>from="el[value]"</c>. To copy a property, append a dot and the property name, e.g.
+    /// <c>from="el.value"</c>.
+    /// </summary>
     [Parameter] public string? From { get; set; }
+
+    /// <summary>
+    /// Disables the copy button.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
     // Labels for different states
+    /// <summary>
+    /// A custom label to show in the tooltip.
+    /// </summary>
     [Parameter] public string? CopyLabel { get; set; } = "Copy to clipboard";
+
+    /// <summary>
+    /// A custom label to show in the tooltip after copying.
+    /// </summary>
     [Parameter] public string? SuccessLabel { get; set; } = "Copied!";
+
+    /// <summary>
+    /// A custom label to show in the tooltip when a copy error occurs.
+    /// </summary>
     [Parameter] public string? ErrorLabel { get; set; } = "Copy failed";
 
     // Feedback duration in milliseconds
+    /// <summary>
+    /// The length of time, in milliseconds, to show feedback before restoring the default trigger.
+    /// </summary>
     [Parameter] public int FeedbackDuration { get; set; } = 1000;
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the data has been copied.
+    /// </summary>
     [Parameter] public EventCallback OnCopy { get; set; }
+
+    /// <summary>
+    /// Invoked when the success feedback state is shown.
+    /// </summary>
     [Parameter] public EventCallback OnSuccess { get; set; }
+
+    /// <summary>
+    /// Invoked when the data could not be copied.
+    /// </summary>
     [Parameter] public EventCallback OnError { get; set; }
 
     #endregion

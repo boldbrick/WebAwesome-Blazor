@@ -28,15 +28,43 @@ public class WaCard : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Card properties
+    /// <summary>
+    /// The card's visual appearance.
+    /// </summary>
     [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.Outlined;
+
+    /// <summary>
+    /// The card's orientation.
+    /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
+
+    /// <summary>
+    /// Renders the card with a header. This is set automatically when <see cref="HeaderContent"/> or
+    /// <see cref="HeaderActionsContent"/> is provided.
+    /// </summary>
     [Parameter] public bool WithHeader { get; set; }
+
+    /// <summary>
+    /// Renders the card with a footer. This is set automatically when <see cref="FooterContent"/> or
+    /// <see cref="FooterActionsContent"/> is provided.
+    /// </summary>
     [Parameter] public bool WithFooter { get; set; }
+
+    /// <summary>
+    /// Renders the card with a media section. This is set automatically when <see cref="MediaContent"/> is
+    /// provided.
+    /// </summary>
     [Parameter] public bool WithMedia { get; set; }
 
     #endregion

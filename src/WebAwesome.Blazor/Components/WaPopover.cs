@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -16,6 +16,9 @@ public class WaPopover : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -35,15 +38,42 @@ public class WaPopover : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Popover properties
+    /// <summary>
+    /// The ID of the popover's anchor element. This must be an interactive/focusable element such as a button.
+    /// </summary>
     [Parameter] public string? For { get; set; }
+
+    /// <summary>
+    /// The preferred placement of the popover. Note that the actual placement may vary as needed to keep the
+    /// popover inside of the viewport.
+    /// </summary>
     [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
+
+    /// <summary>
+    /// Shows or hides the popover.
+    /// </summary>
     [Parameter] public bool Open { get; set; }
+
+    /// <summary>
+    /// The distance in pixels from which to offset the popover away from its target.
+    /// </summary>
     [Parameter] public int Distance { get; set; } = 8;
+
+    /// <summary>
+    /// Removes the arrow from the popover.
+    /// </summary>
     [Parameter] public bool WithoutArrow { get; set; }
 
     #endregion
@@ -59,7 +89,14 @@ public class WaPopover : ComponentBase
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the popover begins to show.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+
+    /// <summary>
+    /// Invoked when the popover begins to hide.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
 
     #endregion
@@ -163,6 +200,7 @@ public class WaPopover : ComponentBase
 
     #endregion
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

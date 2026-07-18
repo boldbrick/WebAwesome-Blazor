@@ -14,26 +14,80 @@ public class WaInput : WaInputBase<string?>
 {
     #region ------ Visual & Behavior Properties ------
 
+    /// <summary>
+    /// Placeholder text to show as a hint when the input is empty.
+    /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// The type of input. Works the same as a native <c>&lt;input&gt;</c> element, but only a subset of types
+    /// are supported.
+    /// </summary>
     [Parameter] public WaInputType Type { get; set; } = WaInputType.Text;
+
+    /// <summary>
+    /// The input's visual appearance.
+    /// </summary>
     [Parameter] public WaInputAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// Draws a pill-style input with rounded edges.
+    /// </summary>
     [Parameter] public bool Pill { get; set; }
+
+    /// <summary>
+    /// Adds a clear button when the input is not empty.
+    /// </summary>
     [Parameter] public bool WithClear { get; set; }
+
+    /// <summary>
+    /// Adds a button to toggle the password's visibility. Only applies to password types.
+    /// </summary>
     [Parameter] public bool PasswordToggle { get; set; }
+
+    /// <summary>
+    /// Enables spell checking on the input.
+    /// </summary>
     [Parameter] public bool? Spellcheck { get; set; }
 
     // Input-specific validation
+    /// <summary>
+    /// A regular expression pattern to validate input against.
+    /// </summary>
     [Parameter] public string? Pattern { get; set; }
+
+    /// <summary>
+    /// The input's minimum value. Only applies to date and number input types.
+    /// </summary>
     [Parameter] public decimal? Min { get; set; }
+
+    /// <summary>
+    /// The input's maximum value. Only applies to date and number input types.
+    /// </summary>
     [Parameter] public decimal? Max { get; set; }
+
+    /// <summary>
+    /// Specifies the granularity that the value must adhere to. Only applies to date and number input types.
+    /// </summary>
     [Parameter] public decimal? Step { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the clear button is activated.
+    /// </summary>
     [Parameter] public EventCallback OnClear { get; set; }
+
+    /// <summary>
+    /// Invoked when the password visibility toggle button is activated.
+    /// </summary>
     [Parameter] public EventCallback OnPasswordToggle { get; set; }
+
+    /// <summary>
+    /// Invoked when the password's visibility changes.
+    /// </summary>
     [Parameter] public EventCallback<bool> OnPasswordVisibilityChange { get; set; }
 
     #endregion

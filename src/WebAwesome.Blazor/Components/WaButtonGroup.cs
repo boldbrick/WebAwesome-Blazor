@@ -32,13 +32,31 @@ public class WaButtonGroup : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Button group properties
+    /// <summary>
+    /// A label for the button group. This is not displayed on the screen, but it is announced by assistive devices
+    /// when interacting with the control and is strongly recommended.
+    /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// The button group's orientation.
+    /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
+
+    /// <summary>
+    /// The button group's theme variant. Defaults to <c>neutral</c> if not within another element with a variant.
+    /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
 
     #endregion

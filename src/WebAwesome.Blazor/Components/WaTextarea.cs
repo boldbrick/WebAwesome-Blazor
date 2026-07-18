@@ -31,32 +31,98 @@ public class WaTextArea : InputBase<string?>, IFormValidation
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     // ----- Common parameters -----
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // --- Visual & behavior props ---
+    /// <summary>
+    /// Placeholder text to show as a hint when the input is empty.
+    /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// The number of rows to display by default.
+    /// </summary>
     [Parameter] public int Rows { get; set; }
+
+    /// <summary>
+    /// The textarea's size.
+    /// </summary>
     [Parameter] public WaSize? Size { get; set; }
+
+    /// <summary>
+    /// The textarea's visual appearance.
+    /// </summary>
     [Parameter] public WaInputAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// Controls how the textarea can be resized.
+    /// </summary>
     [Parameter] public WaResize? Resize { get; set; }
 
+    /// <summary>
+    /// Disables the textarea.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Makes the textarea readonly.
+    /// </summary>
     [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Makes the textarea a required field.
+    /// </summary>
     [Parameter] public bool Required { get; set; }
 
     // Validation
+    /// <summary>
+    /// The minimum length of input that will be considered valid.
+    /// </summary>
     [Parameter] public int? MinLength { get; set; }
+
+    /// <summary>
+    /// The maximum length of input that will be considered valid.
+    /// </summary>
     [Parameter] public int? MaxLength { get; set; }
 
     // Browser behavior
+    /// <summary>
+    /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
+    /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>
+    /// Enables spell checking on the textarea.
+    /// </summary>
     [Parameter] public bool? Spellcheck { get; set; }
 
     // Labels & hint (string or RenderFragment via MarkupX)
+    /// <summary>
+    /// Plain-text label rendered via the element's "label" attribute.
+    /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// Rich markup label rendered into the "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// </summary>
     [Parameter] public RenderFragment? MarkupLabel { get; set; }
+
+    /// <summary>
+    /// Plain-text hint rendered via the element's "hint" attribute.
+    /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// Rich markup hint rendered into the "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// </summary>
     [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     /// <inheritdoc />

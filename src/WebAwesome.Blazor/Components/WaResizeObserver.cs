@@ -20,6 +20,9 @@ public class WaResizeObserver : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to call methods on the underlying Web Awesome element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -40,10 +43,20 @@ public class WaResizeObserver : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // ResizeObserver options
+    /// <summary>
+    /// Disables the observer.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
     #endregion
@@ -97,6 +110,7 @@ public class WaResizeObserver : ComponentBase
         builder.CloseElement();
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -107,6 +121,7 @@ public class WaResizeObserver : ComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (Element != null)

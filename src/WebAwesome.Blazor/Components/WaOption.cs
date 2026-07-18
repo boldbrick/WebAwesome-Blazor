@@ -28,19 +28,42 @@ public class WaOption : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Option properties
+    /// <summary>
+    /// The option's value. When selected, the containing form control receives this value. The value must be
+    /// unique from other options in the same group and must not contain spaces, as spaces are used as
+    /// delimiters when listing multiple values.
+    /// </summary>
     [Parameter] public string? Value { get; set; }
+
+    /// <summary>
+    /// Selects an option initially.
+    /// </summary>
     [Parameter] public bool Selected { get; set; }
+
+    /// <summary>
+    /// Draws the option in a disabled state, preventing selection.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the selected state changes.
+    /// </summary>
     [Parameter] public EventCallback<bool> OnSelectedChange { get; set; }
 
     #endregion

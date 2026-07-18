@@ -38,21 +38,54 @@ public class WaTab : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Tab properties
+    /// <summary>
+    /// The name of the tab panel this tab is associated with. The panel must be located in the same tab group.
+    /// </summary>
     [Parameter] public string? Panel { get; set; }
+
+    /// <summary>
+    /// Whether this tab is the currently active tab within its tab group.
+    /// </summary>
     [Parameter] public bool Active { get; set; }
+
+    /// <summary>
+    /// Disables the tab and prevents selection.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Shows a close button on the tab, allowing the user to remove it.
+    /// </summary>
     [Parameter] public bool Closable { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the tab is clicked.
+    /// </summary>
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    /// <summary>
+    /// Invoked when the tab gains focus.
+    /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
+
+    /// <summary>
+    /// Invoked when the tab loses focus.
+    /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
     #endregion

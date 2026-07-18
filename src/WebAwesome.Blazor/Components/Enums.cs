@@ -9,10 +9,15 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public enum WaVariant
 {
+    /// <summary>Neutral, unemphasized variant.</summary>
     Neutral,
+    /// <summary>Brand-colored variant.</summary>
     Brand,
+    /// <summary>Success (positive) variant.</summary>
     Success,
+    /// <summary>Warning (cautionary) variant.</summary>
     Warning,
+    /// <summary>Danger (destructive/error) variant.</summary>
     Danger
 }
 
@@ -21,14 +26,22 @@ public enum WaVariant
 /// </summary>
 public enum WaSize
 {
+    /// <summary>Small size.</summary>
     Small,
+    /// <summary>Medium size.</summary>
     Medium,
+    /// <summary>Large size.</summary>
     Large
 }
 
+/// <summary>
+/// Visual appearance for form input components.
+/// </summary>
 public enum WaInputAppearance
 {
+    /// <summary>Draws the input with an outline and no fill.</summary>
     Outlined,
+    /// <summary>Draws the input with a filled background.</summary>
     Filled,
 }
 /// <summary>
@@ -36,16 +49,30 @@ public enum WaInputAppearance
 /// </summary>
 public enum WaAppearance
 {
+    /// <summary>Draws the component with a filled background.</summary>
     Filled,
+    /// <summary>Draws the component with an outline and no fill.</summary>
     Outlined,
+    /// <summary>Draws the component with both an outline and a filled background.</summary>
     OutlinedFilled,
+    /// <summary>Draws the component as plain text with no border or fill.</summary>
     Text,
+    /// <summary>Draws the component with minimal, unstyled chrome.</summary>
     Plain,
+    /// <summary>Draws the component using the accent theme styling.</summary>
     Accent
 }
 
+/// <summary>
+/// Extension methods for converting <see cref="WaAppearance"/> to its raw string representation.
+/// </summary>
 public static class WaAppearanceExt
 {
+    /// <summary>
+    /// Converts the value to the string used by the underlying HTML/CSS appearance token.
+    /// </summary>
+    /// <param name="appearance">The appearance value to convert</param>
+    /// <returns>The lowercase string representation, with <see cref="WaAppearance.OutlinedFilled"/> rendered as "outlined filled"</returns>
     public static string ToStringForHtml(this WaAppearance appearance)
         => appearance == WaAppearance.OutlinedFilled ? "outlined filled" : appearance.ToString().ToLowerInvariant();
 }
@@ -55,7 +82,9 @@ public static class WaAppearanceExt
 /// </summary>
 public enum WaAttention
 {
+    /// <summary>Pulses to draw attention.</summary>
     Pulse,
+    /// <summary>Bounces to draw attention.</summary>
     Bounce,
 }
 
@@ -64,7 +93,9 @@ public enum WaAttention
 /// </summary>
 public enum WaOrientation
 {
+    /// <summary>Lays out the component horizontally.</summary>
     Horizontal,
+    /// <summary>Lays out the component vertically.</summary>
     Vertical
 }
 
@@ -77,19 +108,33 @@ public enum WaOrientation
 /// </summary>
 public enum WaPlacement
 {
+    /// <summary>Places the element above its anchor.</summary>
     Top,
+    /// <summary>Places the element below its anchor.</summary>
     Bottom,
+    /// <summary>Places the element to the left of its anchor.</summary>
     Left,
+    /// <summary>Places the element to the right of its anchor.</summary>
     Right,
+    /// <summary>Places the element at the logical start of its anchor.</summary>
     Start,
+    /// <summary>Places the element at the logical end of its anchor.</summary>
     End,
+    /// <summary>Places the element above and aligned to the start of its anchor.</summary>
     TopStart,
+    /// <summary>Places the element above and aligned to the end of its anchor.</summary>
     TopEnd,
+    /// <summary>Places the element below and aligned to the start of its anchor.</summary>
     BottomStart,
+    /// <summary>Places the element below and aligned to the end of its anchor.</summary>
     BottomEnd,
+    /// <summary>Places the element to the left and aligned to the start of its anchor.</summary>
     LeftStart,
+    /// <summary>Places the element to the left and aligned to the end of its anchor.</summary>
     LeftEnd,
+    /// <summary>Places the element to the right and aligned to the start of its anchor.</summary>
     RightStart,
+    /// <summary>Places the element to the right and aligned to the end of its anchor.</summary>
     RightEnd
 }
 
@@ -98,9 +143,13 @@ public enum WaPlacement
 /// </summary>
 public enum WaArrowPlacement
 {
+    /// <summary>Positions the arrow relative to the anchor element.</summary>
     Anchor,
+    /// <summary>Positions the arrow at the start of the popup.</summary>
     Start,
+    /// <summary>Positions the arrow at the end of the popup.</summary>
     End,
+    /// <summary>Centers the arrow on the popup.</summary>
     Center
 }
 
@@ -113,8 +162,11 @@ public enum WaArrowPlacement
 /// </summary>
 public enum WaButtonType
 {
+    /// <summary>A plain, non-submitting button.</summary>
     Button,
+    /// <summary>Submits the associated form.</summary>
     Submit,
+    /// <summary>Resets the associated form.</summary>
     Reset
 }
 
@@ -123,13 +175,21 @@ public enum WaButtonType
 /// </summary>
 public enum WaInputType
 {
+    /// <summary>Plain text input.</summary>
     Text,
+    /// <summary>Email address input.</summary>
     Email,
+    /// <summary>Numeric input.</summary>
     Number,
+    /// <summary>Password input with obscured characters.</summary>
     Password,
+    /// <summary>Search input.</summary>
     Search,
+    /// <summary>Telephone number input.</summary>
     Tel,
+    /// <summary>URL input.</summary>
     Url,
+    /// <summary>Date input.</summary>
     Date
 }
 
@@ -142,9 +202,13 @@ public enum WaInputType
 /// </summary>
 public enum WaAnimationDirection
 {
+    /// <summary>Plays the animation forward.</summary>
     Normal,
+    /// <summary>Plays the animation backward.</summary>
     Reverse,
+    /// <summary>Alternates between forward and backward on each iteration.</summary>
     Alternate,
+    /// <summary>Alternates between backward and forward on each iteration.</summary>
     AlternateReverse
 }
 
@@ -153,10 +217,15 @@ public enum WaAnimationDirection
 /// </summary>
 public enum WaAnimationEasing
 {
+    /// <summary>Constant speed throughout the animation.</summary>
     Linear,
+    /// <summary>Starts slow, speeds up, then slows down.</summary>
     Ease,
+    /// <summary>Starts slow and accelerates.</summary>
     EaseIn,
+    /// <summary>Starts fast and decelerates.</summary>
     EaseOut,
+    /// <summary>Starts slow, speeds up in the middle, and slows down again.</summary>
     EaseInOut
 }
 
@@ -165,9 +234,13 @@ public enum WaAnimationEasing
 /// </summary>
 public enum WaAnimationFill
 {
+    /// <summary>No styles are applied before or after the animation runs.</summary>
     None,
+    /// <summary>Retains the styles from the last keyframe after the animation ends.</summary>
     Forwards,
+    /// <summary>Applies the styles from the first keyframe before the animation starts.</summary>
     Backwards,
+    /// <summary>Combines the effects of <see cref="Forwards"/> and <see cref="Backwards"/>.</summary>
     Both
 }
 
@@ -180,8 +253,11 @@ public enum WaAnimationFill
 /// </summary>
 public enum WaAvatarShape
 {
+    /// <summary>Circular shape.</summary>
     Circle,
+    /// <summary>Square shape with sharp corners.</summary>
     Square,
+    /// <summary>Square shape with rounded corners.</summary>
     Rounded
 }
 
@@ -191,11 +267,17 @@ public enum WaAvatarShape
 [Flags]
 public enum WaDropdownTrigger
 {
+    /// <summary>No trigger is active.</summary>
     None = 0,
+    /// <summary>Opens the dropdown on click.</summary>
     Click = 1,
+    /// <summary>Opens the dropdown on hover.</summary>
     Hover = 2,
+    /// <summary>Opens the dropdown on focus.</summary>
     Focus = 4,
+    /// <summary>The dropdown is opened and closed only via the API.</summary>
     Manual = 8,
+    /// <summary>Opens the dropdown on both hover and focus.</summary>
     HoverFocus = Hover | Focus
 }
 
@@ -204,8 +286,11 @@ public enum WaDropdownTrigger
 /// </summary>
 public enum WaFormatNumberType
 {
+    /// <summary>Formats the number as a plain decimal.</summary>
     Decimal,
+    /// <summary>Formats the number as a currency value.</summary>
     Currency,
+    /// <summary>Formats the number as a percentage.</summary>
     Percent
 }
 
@@ -214,8 +299,11 @@ public enum WaFormatNumberType
 /// </summary>
 public enum WaCurrencyDisplay
 {
+    /// <summary>Displays the currency symbol, e.g. "$".</summary>
     Symbol,
+    /// <summary>Displays the currency code, e.g. "USD".</summary>
     Code,
+    /// <summary>Displays the localized currency name, e.g. "dollar".</summary>
     Name
 }
 
@@ -224,9 +312,13 @@ public enum WaCurrencyDisplay
 /// </summary>
 public enum WaNotation
 {
+    /// <summary>Plain number formatting.</summary>
     Standard,
+    /// <summary>Scientific notation, e.g. "1.2E3".</summary>
     Scientific,
+    /// <summary>Engineering notation, exponents are multiples of three.</summary>
     Engineering,
+    /// <summary>Compact notation using unit prefixes, e.g. "1.2K".</summary>
     Compact
 }
 
@@ -235,7 +327,9 @@ public enum WaNotation
 /// </summary>
 public enum WaCompactDisplay
 {
+    /// <summary>Uses short compact suffixes, e.g. "1.2K".</summary>
     Short,
+    /// <summary>Uses long compact suffixes, e.g. "1.2 thousand".</summary>
     Long
 }
 
@@ -245,9 +339,13 @@ public enum WaCompactDisplay
 [Flags]
 public enum WaAutoSize
 {
+    /// <summary>No auto-sizing is applied.</summary>
     None = 0,
+    /// <summary>Automatically resizes the width to fit available space.</summary>
     Width = 1,
+    /// <summary>Automatically resizes the height to fit available space.</summary>
     Height = 2,
+    /// <summary>Automatically resizes both width and height to fit available space.</summary>
     Both = Width | Height
 }
 
@@ -257,9 +355,13 @@ public enum WaAutoSize
 [Flags]
 public enum WaSync
 {
+    /// <summary>No dimension is synced.</summary>
     None = 0,
+    /// <summary>Syncs the width to match the anchor element.</summary>
     Width = 1,
+    /// <summary>Syncs the height to match the anchor element.</summary>
     Height = 2,
+    /// <summary>Syncs both width and height to match the anchor element.</summary>
     Both = Width | Height
 }
 
@@ -268,9 +370,13 @@ public enum WaSync
 /// </summary>
 public enum WaErrorCorrection
 {
+    /// <summary>Low error correction (~7% of codewords can be restored).</summary>
     L,
+    /// <summary>Medium error correction (~15% of codewords can be restored).</summary>
     M,
+    /// <summary>Quartile error correction (~25% of codewords can be restored).</summary>
     Q,
+    /// <summary>High error correction (~30% of codewords can be restored).</summary>
     H
 }
 
@@ -279,8 +385,11 @@ public enum WaErrorCorrection
 /// </summary>
 public enum WaEffect
 {
+    /// <summary>Animates a sheen sweeping across the skeleton.</summary>
     Sheen,
+    /// <summary>Animates the skeleton with a pulsing opacity.</summary>
     Pulse,
+    /// <summary>No animation effect is applied.</summary>
     None
 }
 
@@ -289,10 +398,15 @@ public enum WaEffect
 /// </summary>
 public enum WaResize
 {
+    /// <summary>The textarea cannot be resized.</summary>
     None,
+    /// <summary>The textarea can only be resized vertically.</summary>
     Vertical,
+    /// <summary>The textarea can only be resized horizontally.</summary>
     Horizontal,
+    /// <summary>The textarea can be resized both vertically and horizontally.</summary>
     Both,
+    /// <summary>The textarea automatically resizes to fit its content.</summary>
     Auto,
 }
 
@@ -301,7 +415,9 @@ public enum WaResize
 /// </summary>
 public enum WaActivation
 {
+    /// <summary>Navigating tabs with the keyboard immediately activates the corresponding panel.</summary>
     Auto,
+    /// <summary>Navigating tabs with the keyboard only moves focus; activation requires an explicit action.</summary>
     Manual
 }
 
@@ -310,10 +426,15 @@ public enum WaActivation
 /// </summary>
 public enum WaFit
 {
+    /// <summary>Stretches the image to fill the container, ignoring aspect ratio.</summary>
     Fill,
+    /// <summary>Scales the image to fit within the container while preserving aspect ratio.</summary>
     Contain,
+    /// <summary>Scales the image to cover the container while preserving aspect ratio, cropping as needed.</summary>
     Cover,
+    /// <summary>Scales the image down to fit the container if it is larger, without scaling up.</summary>
     ScaleDown,
+    /// <summary>Renders the image at its natural size, ignoring the container.</summary>
     None
 }
 
@@ -322,7 +443,9 @@ public enum WaFit
 /// </summary>
 public enum WaLoading
 {
+    /// <summary>Loads the image immediately, regardless of its position on the page.</summary>
     Eager,
+    /// <summary>Defers loading the image until it is near the viewport.</summary>
     Lazy
 }
 
@@ -331,8 +454,11 @@ public enum WaLoading
 /// </summary>
 public enum WaFormat
 {
+    /// <summary>Uses friendly terms such as "yesterday" or "tomorrow" when possible.</summary>
     Auto,
+    /// <summary>Always uses relative phrasing, e.g. "1 day ago".</summary>
     Relative,
+    /// <summary>Always uses numeric phrasing, e.g. "in 1 day".</summary>
     Numeric
 }
 
@@ -341,7 +467,9 @@ public enum WaFormat
 /// </summary>
 public enum WaDisplay
 {
+    /// <summary>Uses short unit abbreviations, e.g. "KB".</summary>
     Short,
+    /// <summary>Uses long unit names, e.g. "kilobytes".</summary>
     Long
 }
 
@@ -350,8 +478,11 @@ public enum WaDisplay
 /// </summary>
 public enum WaMode
 {
+    /// <summary>Allows cross-origin requests using CORS.</summary>
     Cors,
+    /// <summary>Restricts the request to same-origin behavior without CORS headers.</summary>
     NoCors,
+    /// <summary>Restricts the request to the same origin only.</summary>
     SameOrigin
 }
 
@@ -360,7 +491,9 @@ public enum WaMode
 /// </summary>
 public enum WaPrimary
 {
+    /// <summary>The start panel is designated as primary.</summary>
     Start,
+    /// <summary>The end panel is designated as primary.</summary>
     End
 }
 
@@ -370,10 +503,15 @@ public enum WaPrimary
 [Flags]
 public enum WaTriggerType
 {
+    /// <summary>No trigger is active.</summary>
     None = 0,
+    /// <summary>Activates on hover.</summary>
     Hover = 1,
+    /// <summary>Activates on focus.</summary>
     Focus = 2,
+    /// <summary>Activated and deactivated only via the API.</summary>
     Manual = 4,
+    /// <summary>Activates on both hover and focus.</summary>
     HoverFocus = Hover | Focus
 }
 
@@ -382,8 +520,11 @@ public enum WaTriggerType
 /// </summary>
 public enum WaMenuItemType
 {
+    /// <summary>A regular, non-selectable menu item.</summary>
     Normal,
+    /// <summary>A menu item that can be independently toggled on or off.</summary>
     Checkbox,
+    /// <summary>A menu item that is mutually exclusive within its group.</summary>
     Radio
 }
 
@@ -392,8 +533,11 @@ public enum WaMenuItemType
 /// </summary>
 public enum WaDropdownItemType
 {
+    /// <summary>A regular, non-selectable dropdown item.</summary>
     Normal,
+    /// <summary>A dropdown item that can be independently toggled on or off.</summary>
     Checkbox,
+    /// <summary>A dropdown item that is mutually exclusive within its group.</summary>
     Radio
 }
 
@@ -413,8 +557,11 @@ public enum WaRadioAppearance
 /// </summary>
 public enum WaTrigger
 {
+    /// <summary>Opens on hover.</summary>
     Hover,
+    /// <summary>Opens on click.</summary>
     Click,
+    /// <summary>Opened and closed only via the API.</summary>
     Manual
 }
 
@@ -423,9 +570,13 @@ public enum WaTrigger
 /// </summary>
 public enum WaDrawerPlacement
 {
+    /// <summary>Slides in from the logical start edge.</summary>
     Start,
+    /// <summary>Slides in from the logical end edge.</summary>
     End,
+    /// <summary>Slides in from the top edge.</summary>
     Top,
+    /// <summary>Slides in from the bottom edge.</summary>
     Bottom
 }
 
@@ -434,7 +585,9 @@ public enum WaDrawerPlacement
 /// </summary>
 public enum WaByteUnit
 {
+    /// <summary>Formats using byte-based units (e.g. KB, MB).</summary>
     Byte,
+    /// <summary>Formats using bit-based units (e.g. kb, Mb).</summary>
     Bit
 }
 
@@ -443,10 +596,15 @@ public enum WaByteUnit
 /// </summary>
 public enum WaDateTimeStyle
 {
+    /// <summary>Long form, e.g. "January".</summary>
     Long,
+    /// <summary>Short form, e.g. "Jan".</summary>
     Short,
+    /// <summary>Narrow form, e.g. "J".</summary>
     Narrow,
+    /// <summary>Numeric form, e.g. "1".</summary>
     Numeric,
+    /// <summary>Two-digit numeric form, e.g. "01".</summary>
     TwoDigit
 }
 
@@ -455,7 +613,9 @@ public enum WaDateTimeStyle
 /// </summary>
 public enum WaHourFormat
 {
+    /// <summary>Uses a 12-hour clock.</summary>
     Twelve,
+    /// <summary>Uses a 24-hour clock.</summary>
     TwentyFour
 }
 
@@ -464,9 +624,13 @@ public enum WaHourFormat
 /// </summary>
 public enum WaColorFormat
 {
+    /// <summary>Hexadecimal color format, e.g. "#ff0000".</summary>
     Hex,
+    /// <summary>RGB color format, e.g. "rgb(255, 0, 0)".</summary>
     Rgb,
+    /// <summary>HSL color format, e.g. "hsl(0, 100%, 50%)".</summary>
     Hsl,
+    /// <summary>HSV color format, e.g. "hsv(0, 100%, 100%)".</summary>
     Hsv
 }
 
@@ -475,9 +639,13 @@ public enum WaColorFormat
 /// </summary>
 public enum WaTabPlacement
 {
+    /// <summary>Places the tabs above the panels.</summary>
     Top,
+    /// <summary>Places the tabs below the panels.</summary>
     Bottom,
+    /// <summary>Places the tabs at the logical start, beside the panels.</summary>
     Start,
+    /// <summary>Places the tabs at the logical end, beside the panels.</summary>
     End
 }
 
@@ -486,7 +654,9 @@ public enum WaTabPlacement
 /// </summary>
 public enum WaIconPlacement
 {
+    /// <summary>Places the icon at the start.</summary>
     Start,
+    /// <summary>Places the icon at the end.</summary>
     End
 }
 
@@ -500,8 +670,11 @@ public enum WaIconPlacement
 public static class WaEnumExtensions
 {
     /// <summary>
-    /// Converts WaSize to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="size">The size value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "small"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="size"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaSize size)
     {
         return size switch
@@ -514,8 +687,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaVariant to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="variant">The variant value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "neutral"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="variant"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaVariant variant)
     {
         return variant switch
@@ -530,8 +706,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaAppearance to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="appearance">The appearance value to convert</param>
+    /// <returns>The attribute string, e.g. "filled" or "outlined filled"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="appearance"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaAppearance appearance)
     {
         return appearance switch
@@ -547,8 +726,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaInputAppearance to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="appearance">The appearance value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "outlined"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="appearance"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaInputAppearance appearance)
     {
         return appearance switch
@@ -560,8 +742,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaInputType to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="type">The input type value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "text"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaInputType type)
     {
         return type switch
@@ -579,8 +764,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaButtonType to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="type">The button type value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "button"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaButtonType type)
     {
         return type switch
@@ -593,8 +781,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaResize to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="resize">The resize value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "none"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="resize"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaResize resize)
     {
         return resize switch
@@ -609,8 +800,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaPlacement to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="placement">The placement value to convert</param>
+    /// <returns>The kebab-case attribute string, e.g. "top-start"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="placement"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaPlacement placement)
     {
         return placement switch
@@ -634,8 +828,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaAttention to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="attention">The attention value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "pulse"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="attention"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaAttention attention)
     {
         return attention switch
@@ -647,8 +844,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaOrientation to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="orientation">The orientation value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "horizontal"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="orientation"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaOrientation orientation)
     {
         return orientation switch
@@ -660,8 +860,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaRadioAppearance to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="appearance">The radio appearance value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "normal"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="appearance"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaRadioAppearance appearance)
     {
         return appearance switch
@@ -673,8 +876,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaAvatarShape to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="shape">The avatar shape value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "circle"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="shape"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaAvatarShape shape)
     {
         return shape switch
@@ -687,8 +893,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaEffect to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="effect">The effect value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "sheen"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="effect"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaEffect effect)
     {
         return effect switch
@@ -701,8 +910,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaLoading to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="loading">The loading value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "eager"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="loading"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaLoading loading)
     {
         return loading switch
@@ -714,8 +926,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaTrigger to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="trigger">The trigger value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "hover"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="trigger"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaTrigger trigger)
     {
         return trigger switch
@@ -728,8 +943,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaDrawerPlacement to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="placement">The drawer placement value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "start"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="placement"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaDrawerPlacement placement)
     {
         return placement switch
@@ -743,8 +961,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaDropdownItemType to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="type">The dropdown item type value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "normal"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaDropdownItemType type)
     {
         return type switch
@@ -757,8 +978,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaByteUnit to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="unit">The byte unit value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "byte"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="unit"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaByteUnit unit)
     {
         return unit switch
@@ -770,8 +994,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaDateTimeStyle to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="style">The date/time style value to convert</param>
+    /// <returns>The attribute string, e.g. "long" or "2-digit"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="style"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaDateTimeStyle style)
     {
         return style switch
@@ -786,8 +1013,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaHourFormat to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="format">The hour format value to convert</param>
+    /// <returns>The attribute string, "12" or "24"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="format"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaHourFormat format)
     {
         return format switch
@@ -799,8 +1029,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaFormatNumberType to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="type">The format number type value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "decimal"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaFormatNumberType type)
     {
         return type switch
@@ -813,8 +1046,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaCurrencyDisplay to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="display">The currency display value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "symbol"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="display"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaCurrencyDisplay display)
     {
         return display switch
@@ -827,8 +1063,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaNotation to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="notation">The notation value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "standard"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="notation"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaNotation notation)
     {
         return notation switch
@@ -842,8 +1081,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaCompactDisplay to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="display">The compact display value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "short"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="display"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaCompactDisplay display)
     {
         return display switch
@@ -855,8 +1097,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaColorFormat to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="format">The color format value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "hex"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="format"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaColorFormat format)
     {
         return format switch
@@ -870,8 +1115,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaTabPlacement to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="placement">The tab placement value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "top"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="placement"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaTabPlacement placement)
     {
         return placement switch
@@ -885,8 +1133,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaActivation to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="activation">The activation value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "auto"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="activation"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaActivation activation)
     {
         return activation switch
@@ -898,8 +1149,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaMenuItemType to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="type">The menu item type value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "normal"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaMenuItemType type)
     {
         return type switch
@@ -912,8 +1166,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaIconPlacement to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="placement">The icon placement value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "start"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="placement"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaIconPlacement placement)
     {
         return placement switch
@@ -925,8 +1182,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaPrimary to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="primary">The primary panel value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "start"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="primary"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaPrimary primary)
     {
         return primary switch
@@ -938,8 +1198,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaAnimationDirection to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="direction">The animation direction value to convert</param>
+    /// <returns>The kebab-case attribute string, e.g. "alternate-reverse"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="direction"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaAnimationDirection direction)
     {
         return direction switch
@@ -953,8 +1216,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaAnimationEasing to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="easing">The animation easing value to convert</param>
+    /// <returns>The kebab-case attribute string, e.g. "ease-in-out"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="easing"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaAnimationEasing easing)
     {
         return easing switch
@@ -969,8 +1235,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaAnimationFill to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="fill">The animation fill mode value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "forwards"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="fill"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaAnimationFill fill)
     {
         return fill switch
@@ -984,8 +1253,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaErrorCorrection to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="errorCorrection">The error correction level to convert</param>
+    /// <returns>The single-letter attribute string, e.g. "L"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="errorCorrection"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaErrorCorrection errorCorrection)
     {
         return errorCorrection switch
@@ -999,8 +1271,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaArrowPlacement to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="placement">The arrow placement value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "anchor"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="placement"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaArrowPlacement placement)
     {
         return placement switch
@@ -1014,8 +1289,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaAutoSize to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="autoSize">The auto-size flags to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "width", or an empty string for <see cref="WaAutoSize.None"/></returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="autoSize"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaAutoSize autoSize)
     {
         return autoSize switch
@@ -1029,8 +1307,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaSync to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="sync">The sync flags to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "width", or an empty string for <see cref="WaSync.None"/></returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="sync"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaSync sync)
     {
         return sync switch
@@ -1044,8 +1325,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaMode to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="mode">The request mode value to convert</param>
+    /// <returns>The kebab-case attribute string, e.g. "no-cors"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="mode"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaMode mode)
     {
         return mode switch
@@ -1058,8 +1342,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaFormat to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="format">The relative time format value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "auto"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="format"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaFormat format)
     {
         return format switch
@@ -1072,8 +1359,11 @@ public static class WaEnumExtensions
     }
 
     /// <summary>
-    /// Converts WaDisplay to HTML attribute value
+    /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="display">The byte display mode value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "short"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="display"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaDisplay display)
     {
         return display switch

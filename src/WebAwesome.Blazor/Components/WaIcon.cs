@@ -38,25 +38,76 @@ public class WaIcon : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Icon properties
+    /// <summary>
+    /// The name of the icon to draw. Available names depend on the icon library being used.
+    /// </summary>
     [Parameter] public string? Name { get; set; }
+
+    /// <summary>
+    /// The name of a registered custom icon library.
+    /// </summary>
     [Parameter] public string? Library { get; set; }
+
+    /// <summary>
+    /// The family of icons to choose from. For Font Awesome Free, valid options include <c>classic</c> and
+    /// <c>brands</c>. For Font Awesome Pro subscribers, valid options also include <c>sharp</c>, <c>duotone</c>,
+    /// and <c>sharp-duotone</c>.
+    /// </summary>
     [Parameter] public string? Family { get; set; }
+
+    /// <summary>
+    /// The name of the icon's variant. For Font Awesome, valid options include <c>thin</c>, <c>light</c>,
+    /// <c>regular</c>, and <c>solid</c> for the <c>classic</c> and <c>sharp</c> families. Custom icon libraries
+    /// may or may not use this property.
+    /// </summary>
     [Parameter] public string? Variant { get; set; }
+
+    /// <summary>
+    /// An external URL of an SVG file. Be sure you trust the content you are including, as it will be executed
+    /// as code and can result in XSS attacks.
+    /// </summary>
     [Parameter] public string? Src { get; set; }
+
+    /// <summary>
+    /// An alternate description to use for assistive devices. If omitted, the icon is considered presentational
+    /// and ignored by assistive devices.
+    /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// Sets the width of the icon to match the cropped SVG viewBox, similar to the Font Awesome <c>fa-width-auto</c> class.
+    /// </summary>
     [Parameter] public bool AutoWidth { get; set; }
+
+    /// <summary>
+    /// Swaps the opacity of duotone icons.
+    /// </summary>
     [Parameter] public bool SwapOpacity { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the icon has loaded.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnLoad { get; set; }
+
+    /// <summary>
+    /// Invoked when the icon fails to load due to an error.
+    /// </summary>
     [Parameter] public EventCallback<ErrorEventArgs> OnError { get; set; }
 
     #endregion

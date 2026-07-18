@@ -28,13 +28,31 @@ public class WaFormatBytes : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Format properties
+    /// <summary>
+    /// The number to format in bytes.
+    /// </summary>
     [Parameter] public long Value { get; set; }
+
+    /// <summary>
+    /// The type of unit to display.
+    /// </summary>
     [Parameter] public WaByteUnit Unit { get; set; } = WaByteUnit.Byte;
+
+    /// <summary>
+    /// The locale (BCP 47 language tag) to use when formatting the value. When unset, the browser's default locale is used.
+    /// </summary>
     [Parameter] public string? Lang { get; set; }
 
     #endregion

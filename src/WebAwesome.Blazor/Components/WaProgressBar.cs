@@ -28,13 +28,32 @@ public class WaProgressBar : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Progress bar properties
+    /// <summary>
+    /// The current progress as a percentage, 0 to 100.
+    /// </summary>
     [Parameter] public int Value { get; set; } = 0;
+
+    /// <summary>
+    /// A custom label for assistive devices.
+    /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// When true, <see cref="Value"/> is ignored, the label is hidden, and the progress bar is drawn in an
+    /// indeterminate state.
+    /// </summary>
     [Parameter] public bool Indeterminate { get; set; }
 
     #endregion

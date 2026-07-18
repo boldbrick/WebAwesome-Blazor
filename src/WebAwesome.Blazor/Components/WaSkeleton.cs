@@ -29,10 +29,20 @@ public class WaSkeleton : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Skeleton properties
+    /// <summary>
+    /// Determines which effect the skeleton will use.
+    /// </summary>
     [Parameter] public WaEffect Effect { get; set; } = WaEffect.None;
 
     #endregion
