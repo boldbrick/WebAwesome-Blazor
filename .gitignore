@@ -34,3 +34,8 @@ packages/
 
 # Claude settings
 .claude/settings.local.json
+
+# Node / Playwright (tools\e2e)
+node_modules/
+playwright-report/
+test-results/

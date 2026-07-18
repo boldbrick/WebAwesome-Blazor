@@ -6,7 +6,7 @@
 <p><code>&lt;wa-progress-bar&gt;</code> wrapped by <code>WaProgressBar</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaProgressBar />
+    <WaProgressBar Value="50" Label="Uploading..." />
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\progress-bar.md) *@
@@ -14,5 +14,7 @@
 <ApiTable Tag="wa-progress-bar" />
 
 @code {
-    private const string DefaultExample = "<WaProgressBar />";
+    private const string DefaultExample = """
+        <WaProgressBar Value="50" Label="Uploading..." />
+        """;
 }

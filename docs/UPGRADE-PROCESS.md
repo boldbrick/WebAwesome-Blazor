@@ -75,6 +75,14 @@ No Web Awesome Pro source code is ever committed. Release zips and everything ex
 - **Ticketing**: WAB project, Tasks named `WA bindings for <version>` under the train epic, `Source tag:` GitHub link in the description; states In Progress → In Review → Done.
 - **Code style**: `CLAUDE.md` (regions, explicit usings, central package management, constant render-tree sequence numbers per `docs\prompts\WA-3.0\fix-render-tree-numbering.md`).
 
+## Pending workarounds to re-verify every upgrade
+
+Some fixes in this codebase work around upstream Web Awesome/Blazor-runtime behavior rather than a wrapper defect, and were discovered by manually driving the demo app in a real browser (bUnit and the parity tests cannot catch them — they're runtime/DOM-semantics issues, not API-surface mismatches). They are logged under `## [Unreleased]` → `### Fixed` in `docs\CHANGELOG.md` as they're found, each with a "Next-release check" note. **Phase 2 (Ingest and analyze) must read that section and carry forward or close each item**:
+
+- If the target release's source confirms the underlying JS method/behavior a workaround exists for is now correct upstream (e.g. `initialize()` genuinely exists on an element now, or `disconnect`/`reconnect` are real method names), remove the workaround and note the closure when drafting the CHANGELOG entry for the target version (Phase 5).
+- If still broken upstream, carry the item forward unchanged into the new `[Unreleased]` section (or the target version's entry if the workaround needed a code change for this release).
+- Run the demo app's Playwright suite (`tools\e2e\`) against the upgraded build before assuming any of these areas still work — the sweep test (`tools\e2e\sweep.spec.ts`) exercises every demo page for unhandled console/page errors, and the targeted tests cover the checkbox/switch binding and theme switching specifically.
+
 ## Troubleshooting
 
 - **Parity test fails after regenerating the surface** — expected: that failure list *is* the worklist. Only edit `parity-config.json` for deviations that are deliberate.

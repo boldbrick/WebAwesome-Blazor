@@ -660,6 +660,19 @@ public enum WaIconPlacement
     End
 }
 
+/// <summary>
+/// Selection behavior for the tree component
+/// </summary>
+public enum WaTreeSelection
+{
+    /// <summary>Only one node can be selected at a time.</summary>
+    Single,
+    /// <summary>Displays checkboxes and allows more than one node to be selected.</summary>
+    Multiple,
+    /// <summary>Only leaf nodes can be selected.</summary>
+    Leaf
+}
+
 #endregion
 
 #region ------ Extension Methods ------
@@ -1371,6 +1384,23 @@ public static class WaEnumExtensions
             WaDisplay.Short => "short",
             WaDisplay.Long => "long",
             _ => throw new ArgumentOutOfRangeException(nameof(display), display, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="selection">The tree selection mode value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "multiple"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="selection"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaTreeSelection selection)
+    {
+        return selection switch
+        {
+            WaTreeSelection.Single => "single",
+            WaTreeSelection.Multiple => "multiple",
+            WaTreeSelection.Leaf => "leaf",
+            _ => throw new ArgumentOutOfRangeException(nameof(selection), selection, null)
         };
     }
 }

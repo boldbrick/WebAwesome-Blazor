@@ -6,7 +6,14 @@
 <p><code>&lt;wa-split-panel&gt;</code> wrapped by <code>WaSplitPanel</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaSplitPanel />
+    <WaSplitPanel Style="height: 200px;">
+        <StartContent>
+            <div style="background: var(--wa-color-brand-fill-quiet); height: 100%; display: flex; align-items: center; justify-content: center;">Start</div>
+        </StartContent>
+        <EndContent>
+            <div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; display: flex; align-items: center; justify-content: center;">End</div>
+        </EndContent>
+    </WaSplitPanel>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\split-panel.md) *@
@@ -14,5 +21,14 @@
 <ApiTable Tag="wa-split-panel" />
 
 @code {
-    private const string DefaultExample = "<WaSplitPanel />";
+    private const string DefaultExample = """
+        <WaSplitPanel Style="height: 200px;">
+            <StartContent>
+                <div style="background: var(--wa-color-brand-fill-quiet); height: 100%; display: flex; align-items: center; justify-content: center;">Start</div>
+            </StartContent>
+            <EndContent>
+                <div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; display: flex; align-items: center; justify-content: center;">End</div>
+            </EndContent>
+        </WaSplitPanel>
+        """;
 }

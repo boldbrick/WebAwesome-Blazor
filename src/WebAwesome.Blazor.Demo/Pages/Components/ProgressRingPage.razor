@@ -6,7 +6,7 @@
 <p><code>&lt;wa-progress-ring&gt;</code> wrapped by <code>WaProgressRing</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaProgressRing />
+    <WaProgressRing Value="75">75%</WaProgressRing>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\progress-ring.md) *@
@@ -14,5 +14,7 @@
 <ApiTable Tag="wa-progress-ring" />
 
 @code {
-    private const string DefaultExample = "<WaProgressRing />";
+    private const string DefaultExample = """
+        <WaProgressRing Value="75">75%</WaProgressRing>
+        """;
 }
