@@ -111,17 +111,6 @@ public class WaResizeObserver : ComponentBase
     }
 
     /// <inheritdoc />
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (Element != null)
@@ -146,7 +135,8 @@ public class WaResizeObserver : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot disconnect observer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "disconnect");
+        // the underlying wa-resize-observer element exposes stopObserver()/startObserver(), not disconnect()/reconnect()
+        await JSInterop.InvokeMethodAsync(Element.Value, "stopObserver");
     }
 
     /// <summary>
@@ -159,7 +149,7 @@ public class WaResizeObserver : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot reconnect observer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "reconnect");
+        await JSInterop.InvokeMethodAsync(Element.Value, "startObserver");
     }
 
     #endregion

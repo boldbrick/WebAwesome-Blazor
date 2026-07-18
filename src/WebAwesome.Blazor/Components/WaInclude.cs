@@ -110,17 +110,6 @@ public class WaInclude : ComponentBase
         builder.CloseElement();
     }
 
-    /// <inheritdoc />
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
     #endregion
 
     #region ------ Public Methods ------

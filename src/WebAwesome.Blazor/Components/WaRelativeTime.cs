@@ -124,17 +124,6 @@ public class WaRelativeTime : ComponentBase
     }
 
     /// <inheritdoc />
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (Element != null)

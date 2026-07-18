@@ -147,17 +147,6 @@ public class WaMutationObserver : ComponentBase
         builder.CloseElement();
     }
 
-    /// <inheritdoc />
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
     #endregion
 
     #region ------ Public Methods ------
@@ -172,7 +161,8 @@ public class WaMutationObserver : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot disconnect observer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "disconnect");
+        // the underlying wa-mutation-observer element exposes stopObserver()/startObserver(), not disconnect()/reconnect()
+        await JSInterop.InvokeMethodAsync(Element.Value, "stopObserver");
     }
 
     /// <summary>
@@ -185,7 +175,7 @@ public class WaMutationObserver : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot reconnect observer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "reconnect");
+        await JSInterop.InvokeMethodAsync(Element.Value, "startObserver");
     }
 
     /// <summary>
