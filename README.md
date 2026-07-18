@@ -18,7 +18,7 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 - NuGet: `WebAwesome.Blazor` *(published from release tags)*
 
 ## Requirements
-- .NET 9 (or latest LTS supported by the repo)
+- .NET 10 (LTS, primary target) or .NET 9 (compatibility; out of Microsoft support since May 2026)
 - WA 3.x assets available to your app (via your chosen delivery method)
 
 ## Install
