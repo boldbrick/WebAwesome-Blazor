@@ -6,7 +6,12 @@
 <p><code>&lt;wa-intersection-observer&gt;</code> wrapped by <code>WaIntersectionObserver</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaIntersectionObserver />
+    <WaIntersectionObserver Threshold="1" OnIntersect="HandleIntersect">
+        <div style="border: solid 2px var(--wa-color-surface-border); padding: 4rem 2rem; text-align: center;">
+            Scroll and watch the message below.
+        </div>
+    </WaIntersectionObserver>
+    <p>@intersectMessage</p>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\intersection-observer.md) *@
@@ -14,5 +19,28 @@
 <ApiTable Tag="wa-intersection-observer" />
 
 @code {
-    private const string DefaultExample = "<WaIntersectionObserver />";
+    private string intersectMessage = "Scroll the box above into and out of view to see events fire.";
+
+    private void HandleIntersect(WaIntersectionEventArgs args)
+    {
+        intersectMessage = $"Intersecting: {args.IsIntersecting}";
+    }
+
+    private const string DefaultExample = """
+        <WaIntersectionObserver Threshold="1" OnIntersect="HandleIntersect">
+            <div style="border: solid 2px var(--wa-color-surface-border); padding: 4rem 2rem; text-align: center;">
+                Scroll and watch the message below.
+            </div>
+        </WaIntersectionObserver>
+        <p>@intersectMessage</p>
+
+        @code {
+            private string intersectMessage = "Scroll the box above into and out of view to see events fire.";
+
+            private void HandleIntersect(WaIntersectionEventArgs args)
+            {
+                intersectMessage = $"Intersecting: {args.IsIntersecting}";
+            }
+        }
+        """;
 }
