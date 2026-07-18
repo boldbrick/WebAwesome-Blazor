@@ -21,6 +21,13 @@
         <BbForProductionUse>False</BbForProductionUse>
       </PropertyGroup>
     </When>
+    <!-- demo and sample applications - not packable, but publishable -->
+    <When Condition="$(MSBuildProjectName.Contains('Demo'))">
+      <PropertyGroup>
+        <BbComponentGroup>Apps</BbComponentGroup>
+        <BbForProductionUse>False</BbForProductionUse>
+      </PropertyGroup>
+    </When>
     <!-- everything else is considered a library -->
     <Otherwise>
       <PropertyGroup>
@@ -30,11 +37,15 @@
     </Otherwise>
   </Choose>
 
-  <!-- Framework targeting: net10.0 (LTS) is the primary target, net9.0 kept for compatibility -->
-  <PropertyGroup>
+  <!-- Framework targeting: net10.0 (LTS) is the primary target, net9.0 kept for compatibility;
+       applications target net10.0 only -->
+  <PropertyGroup Condition="'$(BbComponentGroup)' != 'Apps'">
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net9.0'">9.0.8</RuntimeFrameworkVersion>
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net10.0'">10.0.10</RuntimeFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BbComponentGroup)' == 'Apps'">
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <!-- Common compilation settings -->

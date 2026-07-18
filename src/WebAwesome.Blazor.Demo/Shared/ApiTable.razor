@@ -1,0 +1,94 @@
+@inject ApiSurfaceService SurfaceService
+
+@if (component != null)
+{
+    <section class="api-reference">
+        <h2>API Reference</h2>
+
+        @if (component.Attributes is { Count: > 0 })
+        {
+            <h3>Attributes</h3>
+            <table>
+                <thead><tr><th>Attribute</th><th>Description</th><th>Type</th><th>Default</th></tr></thead>
+                <tbody>
+                    @foreach (var attributeEntry in component.Attributes)
+                    {
+                        <tr>
+                            <td><code>@attributeEntry.Key</code></td>
+                            <td>@attributeEntry.Value.Description</td>
+                            <td><code>@attributeEntry.Value.Type</code></td>
+                            <td><code>@attributeEntry.Value.Default</code></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (component.Events is { Count: > 0 })
+        {
+            <h3>Events</h3>
+            <table>
+                <thead><tr><th>Event</th><th>Description</th></tr></thead>
+                <tbody>
+                    @foreach (var evt in component.Events)
+                    {
+                        <tr>
+                            <td><code>@evt.Key</code></td>
+                            <td>@evt.Value.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (component.Slots is { Count: > 0 })
+        {
+            <h3>Slots</h3>
+            <table>
+                <thead><tr><th>Slot</th><th>Description</th></tr></thead>
+                <tbody>
+                    @foreach (var slot in component.Slots)
+                    {
+                        <tr>
+                            <td><code>@slot.Key</code></td>
+                            <td>@slot.Value</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (component.Methods is { Count: > 0 })
+        {
+            <h3>Methods</h3>
+            <table>
+                <thead><tr><th>Method</th><th>Description</th></tr></thead>
+                <tbody>
+                    @foreach (var method in component.Methods)
+                    {
+                        <tr>
+                            <td><code>@method.Value.Signature</code></td>
+                            <td>@method.Value.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    /// <summary>
+    /// Custom element tag whose API reference is rendered, e.g. "wa-button".
+    /// </summary>
+    [Parameter, EditorRequired] public string Tag { get; set; } = string.Empty;
+
+    private ComponentSurface? component;
+
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
+    {
+        var surface = await SurfaceService.GetSurfaceAsync();
+        surface.Components.TryGetValue(Tag, out component);
+    }
+}

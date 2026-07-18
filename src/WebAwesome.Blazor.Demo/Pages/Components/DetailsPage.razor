@@ -1,0 +1,126 @@
+﻿@page "/components/details"
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+<p>Details show a brief summary and expand to show additional content.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaDetails Summary="Toggle Me">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+        consequat.
+    </WaDetails>
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaDetails Summary="Disabled" Disabled="true">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+        consequat.
+    </WaDetails>
+</ExampleSection>
+
+<ExampleSection Title="Customizing the Summary Icon" Code="@CustomIconsExample">
+    <WaDetails Summary="Toggle Me" ExpandIconName="square-plus" CollapseIconName="square-minus">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+        consequat.
+    </WaDetails>
+</ExampleSection>
+
+<ExampleSection Title="Icon Position" Code="@IconPositionExample">
+    <div class="wa-stack">
+        <WaDetails Summary="Start" IconPlacement="WaIconPlacement.Start">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat.
+        </WaDetails>
+        <WaDetails Summary="End" IconPlacement="WaIconPlacement.End">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat.
+        </WaDetails>
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Grouping Details" Code="@GroupingExample">
+    <div class="wa-stack">
+        <WaDetails Name="group-1" Summary="Section 1" Open="true">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat.
+        </WaDetails>
+        <WaDetails Name="group-1" Summary="Section 2">
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam
+            rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt
+            explicabo.
+        </WaDetails>
+        <WaDetails Name="group-1" Summary="Section 3">
+            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti
+            atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+        </WaDetails>
+    </div>
+</ExampleSection>
+
+<ApiTable Tag="wa-details" />
+
+@code {
+    private const string DefaultExample = """
+        <WaDetails Summary="Toggle Me">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat.
+        </WaDetails>
+        """;
+
+    private const string DisabledExample = """
+        <WaDetails Summary="Disabled" Disabled="true">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat.
+        </WaDetails>
+        """;
+
+    private const string CustomIconsExample = """
+        <WaDetails Summary="Toggle Me" ExpandIconName="square-plus" CollapseIconName="square-minus">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat.
+        </WaDetails>
+        """;
+
+    private const string IconPositionExample = """
+        <div class="wa-stack">
+            <WaDetails Summary="Start" IconPlacement="WaIconPlacement.Start">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                ea commodo consequat.
+            </WaDetails>
+            <WaDetails Summary="End" IconPlacement="WaIconPlacement.End">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                ea commodo consequat.
+            </WaDetails>
+        </div>
+        """;
+
+    private const string GroupingExample = """
+        <div class="wa-stack">
+            <WaDetails Name="group-1" Summary="Section 1" Open="true">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                ea commodo consequat.
+            </WaDetails>
+            <WaDetails Name="group-1" Summary="Section 2">
+                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam
+                rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt
+                explicabo.
+            </WaDetails>
+            <WaDetails Name="group-1" Summary="Section 3">
+                At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti
+                atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+            </WaDetails>
+        </div>
+        """;
+}

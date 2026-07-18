@@ -1,0 +1,64 @@
+@page "/components/checkbox"
+
+<PageTitle>Checkbox</PageTitle>
+
+<h1>Checkbox</h1>
+<p>Checkboxes allow the user to toggle an option on or off. <code>&lt;wa-checkbox&gt;</code> wrapped by <code>WaCheckbox</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaCheckbox>Checkbox</WaCheckbox>
+</ExampleSection>
+
+<ExampleSection Title="Checked &amp; Indeterminate" Code="@CheckedExample">
+    <WaCheckbox Value="true">Checked</WaCheckbox>
+    <WaCheckbox Indeterminate="true">Indeterminate</WaCheckbox>
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaCheckbox Disabled="true">Disabled</WaCheckbox>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaCheckbox Size="WaSize.Small">Small</WaCheckbox>
+    <WaCheckbox Size="WaSize.Medium">Medium</WaCheckbox>
+    <WaCheckbox Size="WaSize.Large">Large</WaCheckbox>
+</ExampleSection>
+
+<ExampleSection Title="Hint &amp; Two-way Binding" Code="@HintExample">
+    <WaCheckbox Hint="What should the user know about the checkbox?" @bind-Value="agreed">Accept terms</WaCheckbox>
+    <p>Agreed: <strong>@agreed</strong></p>
+</ExampleSection>
+
+<ApiTable Tag="wa-checkbox" />
+
+@code {
+    private bool agreed;
+
+    private const string DefaultExample = """
+        <WaCheckbox>Checkbox</WaCheckbox>
+        """;
+
+    private const string CheckedExample = """
+        <WaCheckbox Value="true">Checked</WaCheckbox>
+        <WaCheckbox Indeterminate="true">Indeterminate</WaCheckbox>
+        """;
+
+    private const string DisabledExample = """
+        <WaCheckbox Disabled="true">Disabled</WaCheckbox>
+        """;
+
+    private const string SizesExample = """
+        <WaCheckbox Size="WaSize.Small">Small</WaCheckbox>
+        <WaCheckbox Size="WaSize.Medium">Medium</WaCheckbox>
+        <WaCheckbox Size="WaSize.Large">Large</WaCheckbox>
+        """;
+
+    private const string HintExample = """
+        <WaCheckbox Hint="What should the user know about the checkbox?" @bind-Value="agreed">Accept terms</WaCheckbox>
+        <p>Agreed: @agreed</p>
+
+        @code {
+            private bool agreed;
+        }
+        """;
+}

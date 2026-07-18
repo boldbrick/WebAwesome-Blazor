@@ -1,0 +1,68 @@
+@inherits LayoutComponentBase
+@inject ApiSurfaceService SurfaceService
+
+<div class="demo-shell">
+    <aside class="demo-sidebar">
+        <a class="demo-logo" href="">Web Awesome <strong>Blazor</strong></a>
+
+        <nav>
+            <h4>Getting Started</h4>
+            <ul>
+                <li><NavLink href="" Match="NavLinkMatch.All">Introduction</NavLink></li>
+            </ul>
+
+            <h4>Components</h4>
+            <ul>
+                @foreach (var (tag, component) in componentLinks)
+                {
+                    <li><NavLink href="@($"components/{tag["wa-".Length..]}")">@component</NavLink></li>
+                }
+            </ul>
+
+            <h4>Layout</h4>
+            <ul>
+                @foreach (var (route, name) in LayoutLinks)
+                {
+                    <li><NavLink href="@($"layout/{route}")">@name</NavLink></li>
+                }
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="demo-content">
+        @Body
+    </main>
+</div>
+
+@code {
+    private IReadOnlyList<(string Tag, string Name)> componentLinks = [];
+
+    private static readonly (string Route, string Name)[] LayoutLinks =
+    [
+        ("cluster", "Cluster"),
+        ("flank", "Flank"),
+        ("frame", "Frame"),
+        ("grid", "Grid"),
+        ("split", "Split"),
+        ("stack", "Stack"),
+        ("text", "Text"),
+        ("visually-hidden", "Visually Hidden")
+    ];
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        // the sidebar is driven by the API surface document, so it always matches the bound WA version
+        var surface = await SurfaceService.GetSurfaceAsync();
+        componentLinks = surface.Components
+            .Select(c => (c.Key, Humanize(c.Key)))
+            .OrderBy(c => c.Item2)
+            .ToList();
+    }
+
+    private static string Humanize(string tag)
+    {
+        var name = tag.StartsWith("wa-") ? tag["wa-".Length..] : tag;
+        return string.Join(' ', name.Split('-').Select(part => char.ToUpperInvariant(part[0]) + part[1..]));
+    }
+}

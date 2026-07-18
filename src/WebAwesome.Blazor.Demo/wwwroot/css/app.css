@@ -1,0 +1,117 @@
+/* demo shell layout */
+html, body {
+    margin: 0;
+    font-family: var(--wa-font-family-body, system-ui, sans-serif);
+    color: var(--wa-color-text-normal, #1b1f24);
+}
+
+.demo-shell {
+    display: grid;
+    grid-template-columns: 16rem 1fr;
+    min-height: 100vh;
+}
+
+.demo-sidebar {
+    border-right: 1px solid var(--wa-color-surface-border, #e2e5e9);
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.demo-logo {
+    display: block;
+    font-size: 1.1rem;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 1rem;
+}
+
+.demo-sidebar nav h4 {
+    margin: 1rem 0 0.25rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--wa-color-text-quiet, #6a7381);
+}
+
+.demo-sidebar nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.demo-sidebar nav a {
+    display: block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.35rem;
+    text-decoration: none;
+    color: inherit;
+    font-size: 0.9rem;
+}
+
+.demo-sidebar nav a:hover { background: var(--wa-color-surface-lowered, #f2f4f6); }
+.demo-sidebar nav a.active { background: var(--wa-color-brand-fill-quiet, #e7f0fe); }
+
+.demo-content {
+    padding: 2rem 3rem;
+    max-width: 60rem;
+}
+
+/* examples */
+.example-section { margin: 2rem 0; }
+
+.example-live {
+    border: 1px solid var(--wa-color-surface-border, #e2e5e9);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+}
+
+.example-code pre {
+    background: var(--wa-color-surface-lowered, #f6f8fa);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+/* API reference tables */
+.api-reference table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.api-reference th, .api-reference td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--wa-color-surface-border, #e2e5e9);
+    vertical-align: top;
+}
+
+.demo-loading {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    color: #6a7381;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

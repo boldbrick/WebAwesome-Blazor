@@ -1,0 +1,50 @@
+@page "/layout/flank"
+
+<PageTitle>Flank</PageTitle>
+
+<h1>Flank</h1>
+<p>The Flank layout positions two items side-by-side, with one item flanking content that stretches to fill the available space. It works well for asides, inputs with adjacent buttons, and rich description lists. <code>WaFlank</code> renders a <code>div</code> with the <code>wa-flank</code> utility class.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaFlank>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Flank</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Main content that stretches to fill the remaining space</div>
+    </WaFlank>
+</ExampleSection>
+
+<ExampleSection Title="Position" Code="@PositionExample">
+    <WaFlank Position="FlankPosition.End">
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Main content stretches first</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Flank</div>
+    </WaFlank>
+</ExampleSection>
+
+<ExampleSection Title="Sizing" Code="@SizingExample">
+    <WaFlank FlankSize="6rem">
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Fixed 6rem</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Main content</div>
+    </WaFlank>
+</ExampleSection>
+
+@code {
+    private const string DefaultExample = """
+        <WaFlank>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Flank</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Main content that stretches to fill the remaining space</div>
+        </WaFlank>
+        """;
+
+    private const string PositionExample = """
+        <WaFlank Position="FlankPosition.End">
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Main content stretches first</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Flank</div>
+        </WaFlank>
+        """;
+
+    private const string SizingExample = """
+        <WaFlank FlankSize="6rem">
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Fixed 6rem</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Main content</div>
+        </WaFlank>
+        """;
+}

@@ -1,0 +1,200 @@
+@page "/components/callout"
+
+<PageTitle>Callout</PageTitle>
+
+<h1>Callout</h1>
+<p><code>&lt;wa-callout&gt;</code> wrapped by <code>WaCallout</code>. Callouts are used to display important messages inline.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaCallout IconName="circle-info">
+        This is a standard callout. You can customize its content and even the icon.
+    </WaCallout>
+</ExampleSection>
+
+<ExampleSection Title="Variants" Code="@VariantsExample">
+    <WaCallout Variant="WaVariant.Brand" IconName="circle-info">
+        <strong>This is super informative</strong><br />
+        You can tell by how pretty the callout is.
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Variant="WaVariant.Success" IconName="circle-check">
+        <strong>Your changes have been saved</strong><br />
+        You can safely exit the app now.
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Variant="WaVariant.Neutral" IconName="gear">
+        <strong>Your settings have been updated</strong><br />
+        Settings will take effect on next login.
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Variant="WaVariant.Warning" IconName="triangle-exclamation">
+        <strong>Your session has ended</strong><br />
+        Please login again to continue.
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Variant="WaVariant.Danger" IconName="circle-exclamation">
+        <strong>Your account has been deleted</strong><br />
+        We're very sorry to see you go!
+    </WaCallout>
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Accent" IconName="square-check">
+        This <strong>accent</strong> callout draws attention
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.OutlinedFilled" IconName="fill-drip">
+        This callout is both <strong>filled</strong> and <strong>outlined</strong>
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Filled" IconName="fill">
+        This callout is only <strong>filled</strong>
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Outlined" IconName="lines-leaning">
+        Here's an <strong>outlined</strong> callout
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Plain" IconName="font">
+        No bells and whistles on this <strong>plain</strong> callout
+    </WaCallout>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaCallout Size="WaSize.Large" IconName="circle-info">
+        This is meant to be very emphasized.
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Size="WaSize.Medium" IconName="circle-info">
+        Normal-sized callout.
+    </WaCallout>
+
+    <br />
+
+    <WaCallout Size="WaSize.Small" IconName="circle-info">
+        Just a small tip!
+    </WaCallout>
+</ExampleSection>
+
+<ExampleSection Title="Without Icons" Code="@WithoutIconsExample">
+    <WaCallout Variant="WaVariant.Brand">
+        Nothing fancy here, just a simple callout.
+    </WaCallout>
+</ExampleSection>
+
+<ApiTable Tag="wa-callout" />
+
+@code {
+    private const string DefaultExample = """
+        <WaCallout IconName="circle-info">
+            This is a standard callout. You can customize its content and even the icon.
+        </WaCallout>
+        """;
+
+    private const string VariantsExample = """
+        <WaCallout Variant="WaVariant.Brand" IconName="circle-info">
+            <strong>This is super informative</strong><br />
+            You can tell by how pretty the callout is.
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Variant="WaVariant.Success" IconName="circle-check">
+            <strong>Your changes have been saved</strong><br />
+            You can safely exit the app now.
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Variant="WaVariant.Neutral" IconName="gear">
+            <strong>Your settings have been updated</strong><br />
+            Settings will take effect on next login.
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Variant="WaVariant.Warning" IconName="triangle-exclamation">
+            <strong>Your session has ended</strong><br />
+            Please login again to continue.
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Variant="WaVariant.Danger" IconName="circle-exclamation">
+            <strong>Your account has been deleted</strong><br />
+            We're very sorry to see you go!
+        </WaCallout>
+        """;
+
+    private const string AppearanceExample = """
+        <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Accent" IconName="square-check">
+            This <strong>accent</strong> callout draws attention
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.OutlinedFilled" IconName="fill-drip">
+            This callout is both <strong>filled</strong> and <strong>outlined</strong>
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Filled" IconName="fill">
+            This callout is only <strong>filled</strong>
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Outlined" IconName="lines-leaning">
+            Here's an <strong>outlined</strong> callout
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Plain" IconName="font">
+            No bells and whistles on this <strong>plain</strong> callout
+        </WaCallout>
+        """;
+
+    private const string SizesExample = """
+        <WaCallout Size="WaSize.Large" IconName="circle-info">
+            This is meant to be very emphasized.
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Size="WaSize.Medium" IconName="circle-info">
+            Normal-sized callout.
+        </WaCallout>
+
+        <br />
+
+        <WaCallout Size="WaSize.Small" IconName="circle-info">
+            Just a small tip!
+        </WaCallout>
+        """;
+
+    private const string WithoutIconsExample = """
+        <WaCallout Variant="WaVariant.Brand">
+            Nothing fancy here, just a simple callout.
+        </WaCallout>
+        """;
+}

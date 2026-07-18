@@ -74,6 +74,11 @@
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
+  <!-- applications are publishable (e.g. the demo site), but never packable -->
+  <PropertyGroup Condition="'$(BbComponentGroup)'=='Apps'">
+    <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+
   <!-- production libraries must be fully XML-documented; missing docs fail the build -->
   <PropertyGroup Condition="'$(BbComponentGroup)'=='Libs'">
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>

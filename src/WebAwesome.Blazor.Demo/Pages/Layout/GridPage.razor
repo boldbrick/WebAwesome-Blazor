@@ -1,0 +1,62 @@
+@page "/layout/grid"
+
+<PageTitle>Grid</PageTitle>
+
+<h1>Grid</h1>
+<p>The Grid layout arranges elements into rows and columns that automatically adapt to the available space, and works especially well for card lists and content designed for browsing. <code>WaGrid</code> renders a <code>div</code> with the <code>wa-grid</code> utility class.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaGrid>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 2</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 3</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 4</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 5</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 6</div>
+    </WaGrid>
+</ExampleSection>
+
+<ExampleSection Title="Minimum Column Size" Code="@MinColumnExample">
+    <WaGrid MinColumnSize="12rem">
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 2</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 3</div>
+    </WaGrid>
+</ExampleSection>
+
+<ExampleSection Title="Gap" Code="@GapExample">
+    <WaGrid Gap="GapSize.Gap_2XL">
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 2</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 3</div>
+    </WaGrid>
+</ExampleSection>
+
+@code {
+    private const string DefaultExample = """
+        <WaGrid>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 2</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 3</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 4</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 5</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 6</div>
+        </WaGrid>
+        """;
+
+    private const string MinColumnExample = """
+        <WaGrid MinColumnSize="12rem">
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 2</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 3</div>
+        </WaGrid>
+        """;
+
+    private const string GapExample = """
+        <WaGrid Gap="GapSize.Gap_2XL">
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 2</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 3</div>
+        </WaGrid>
+        """;
+}
