@@ -52,11 +52,13 @@
 
     private async Task ApplyThemeAsync()
     {
-        // theme stylesheets live next to the main stylesheet; "default" is built into webawesome.css
+        // theme stylesheets live next to the main stylesheet; "default" is built into webawesome.css.
+        // the stylesheet alone isn't enough: Web Awesome theme rules are scoped under a "wa-theme-{name}"
+        // class (e.g. ".wa-theme-awesome"), so the class has to be applied to <html> as well
         var themeHref = theme is null or "default"
             ? null
             : WaOptions.ResolveStylesheetUrl().Replace("/webawesome.css", $"/themes/{theme}.css");
-        await JS.InvokeVoidAsync("demoTheme.setTheme", themeHref);
+        await JS.InvokeVoidAsync("demoTheme.setTheme", theme, themeHref);
     }
 
     private async Task ApplyDarkAsync()

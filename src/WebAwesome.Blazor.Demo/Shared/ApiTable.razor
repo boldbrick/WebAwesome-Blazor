@@ -1,3 +1,5 @@
+@using System.Linq
+@using System.Reflection
 @inject ApiSurfaceService SurfaceService
 
 @if (component != null)
@@ -17,7 +19,17 @@
                             <td><code>@ToPascalCase(attributeEntry.Key)</code></td>
                             <td><code>@attributeEntry.Key</code></td>
                             <td>@attributeEntry.Value.Description</td>
-                            <td><code>@attributeEntry.Value.Type</code></td>
+                            <td>
+                                <code>@attributeEntry.Value.Type</code>
+                                @{
+                                    var enumValues = GetEnumValues(attributeEntry.Key, attributeEntry.Value.Type);
+                                }
+                                @if (enumValues is not null)
+                                {
+                                    <br />
+                                    <code class="api-enum-values">@enumValues</code>
+                                }
+                            </td>
                             <td><code>@attributeEntry.Value.Default</code></td>
                         </tr>
                     }
@@ -101,4 +113,59 @@
 
     private static string ToEventCallbackName(string eventName)
         => "On" + ToPascalCase(eventName.StartsWith("wa-", StringComparison.Ordinal) ? eventName["wa-".Length..] : eventName);
+
+    /// <summary>
+    /// Resolves the comma-separated list of allowed values for an enum-typed attribute, formatted using the
+    /// wrapper's own <c>ToHtmlValue</c> conversion where available so values match the actual attribute strings.
+    /// </summary>
+    /// <param name="attributeKey">Kebab-case attribute name, e.g. "direction"</param>
+    /// <param name="rawType">The raw type string from the API surface document, e.g. "PlaybackDirection"</param>
+    /// <returns>A comma-separated list of allowed values, or <see langword="null"/> when the type isn't a resolvable enum</returns>
+    private string? GetEnumValues(string attributeKey, string? rawType)
+    {
+        // primitive types and already-expanded TS unions (e.g. "'small' | 'medium'") need no further expansion
+        if (string.IsNullOrEmpty(rawType)) return null;
+        if (rawType is "string" or "number" or "boolean") return null;
+        if (rawType.Contains('|') || rawType.StartsWith('\'')) return null;
+
+        var enumType = ResolveEnumType(component?.ClassName, attributeKey);
+        if (enumType is null) return null;
+
+        var converter = FindToHtmlValueMethod(enumType);
+        var values = Enum.GetValues(enumType).Cast<object>()
+            .Select(value => converter is not null ? (string)converter.Invoke(null, [value])! : value.ToString()!.ToLowerInvariant());
+        return string.Join(", ", values);
+    }
+
+    /// <summary>
+    /// Finds the CLR enum type backing an attribute by reflecting over the wrapper component's public properties.
+    /// </summary>
+    /// <param name="className">The wrapper's class name, e.g. "WaAnimation"</param>
+    /// <param name="attributeKey">Kebab-case attribute name</param>
+    /// <returns>The enum type, or <see langword="null"/> when the wrapper or a matching enum property can't be found</returns>
+    private static Type? ResolveEnumType(string? className, string attributeKey)
+    {
+        if (string.IsNullOrEmpty(className)) return null;
+
+        var wrapperType = typeof(WaButton).Assembly.GetType($"WebAwesome.Blazor.Components.{className}");
+        var property = wrapperType?.GetProperty(ToPascalCase(attributeKey), BindingFlags.Public | BindingFlags.Instance);
+        var propertyType = property?.PropertyType;
+        if (propertyType is null) return null;
+
+        var underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+        return underlyingType.IsEnum ? underlyingType : null;
+    }
+
+    /// <summary>
+    /// Finds the static <c>ToHtmlValue</c> extension method for the given enum type, if one exists.
+    /// </summary>
+    /// <param name="enumType">The enum type to find a converter for</param>
+    /// <returns>The matching method, or <see langword="null"/> when no dedicated converter exists</returns>
+    private static MethodInfo? FindToHtmlValueMethod(Type enumType)
+        => enumType.Assembly.GetTypes()
+            .Where(type => type.IsAbstract && type.IsSealed)
+            .SelectMany(type => type.GetMethods(BindingFlags.Public | BindingFlags.Static))
+            .FirstOrDefault(method => method.Name == "ToHtmlValue"
+                && method.GetParameters() is [{ } parameter]
+                && parameter.ParameterType == enumType);
 }
