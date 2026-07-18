@@ -90,7 +90,8 @@ Follow the plan document, in this order, checking in per phase (check-in rules a
 
 1. Delegate to the **wa-test-engineer** agent (`.claude\agents\wa-test-engineer.md`): integration tests for each new component (pattern: existing `Wa*IntegrationTests.cs`), breaking-change validation tests for this version, updates to affected existing tests.
 2. If there are breaking changes, write `docs\MIGRATION-<target-version>.md` following `docs\MIGRATION-3.0.0-beta.6.md` (breaking changes, new features, checklist, find/replace patterns).
-3. Full suite green: `dotnet build` Debug **and** Release, `dotnet test`.
+3. Draft the `docs\CHANGELOG.md` entry for `<target>` from the change report (`temp\wa-api\changes_*.json`/`.md`): a `## [<target>] — <date>` section with `### Breaking changes` (verbatim from `breakingChanges`), `### New components`, `### Changed`, `### Library` subsections per the existing entries' style, plus a link to the migration doc when one exists. Fold any accumulated `## [Unreleased]` items into the new section.
+4. Full suite green: `dotnet build` Debug **and** Release, `dotnet test`.
 
 ## Phase 6 — Check in and deliver
 
