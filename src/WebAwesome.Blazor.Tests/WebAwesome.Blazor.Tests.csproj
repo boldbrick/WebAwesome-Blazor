@@ -18,4 +18,9 @@
     <ProjectReference Include="..\WebAwesome.Blazor\WebAwesome.Blazor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="ApiParity\expected-api-surface.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="ApiParity\parity-config.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

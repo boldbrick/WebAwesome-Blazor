@@ -1,0 +1,27 @@
+﻿{
+  "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons').",
+  "enabled": false,
+  "targetWaVersion": "3.0.0",
+  "globalIgnoredAttributes": [
+    "title"
+  ],
+  "ignoredComponents": [],
+  "componentClassOverrides": {},
+  "components": {
+    "wa-details": {
+      "eventOverrides": {
+        "wa-show": "OnToggle",
+        "wa-hide": "OnToggle",
+        "wa-after-show": "OnAfterShow",
+        "wa-after-hide": "OnAfterHide"
+      }
+    }
+  },
+  "ignoreReasons": {
+    "title": "native HTML attribute, passed through via AdditionalAttributes"
+  }
+}
+
+
+
+
