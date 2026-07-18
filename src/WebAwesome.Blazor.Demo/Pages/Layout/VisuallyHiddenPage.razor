@@ -1,0 +1,55 @@
+@page "/layout/visually-hidden"
+
+<PageTitle>Visually Hidden</PageTitle>
+
+<h1>Visually Hidden</h1>
+<p>The Visually Hidden utility makes content accessible to assistive devices without displaying it on screen. Since visually hidden content can receive focus when tabbing, it becomes visible when something inside receives focus (unless forced). <code>WaVisuallyHidden</code> renders a <code>span</code> with the <code>wa-visually-hidden</code> (or <code>wa-visually-hidden-force</code>) utility class.</p>
+
+<ExampleSection Title="Skip Link" Code="@DefaultExample">
+    <div style="min-height: 1.875rem;">
+        <a href="#main">
+            <WaVisuallyHidden>Skip to main content</WaVisuallyHidden>
+        </a>
+    </div>
+    <p>Tab into this example to see the visually hidden link become visible.</p>
+</ExampleSection>
+
+<ExampleSection Title="Content Conveyed by Context" Code="@ContextExample">
+    <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">
+        <WaVisuallyHidden>Personal Info</WaVisuallyHidden>
+        <WaInput Label="Name" Style="margin-bottom: .5rem;" />
+        <WaInput Label="Email" Type="WaInputType.Email" />
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Force Visually Hidden" Code="@ForceExample">
+    <label>
+        <WaVisuallyHidden Force="true">Checkbox not visually rendered, but still in the accessibility tree</WaVisuallyHidden>
+        <span>I have read the terms and conditions</span>
+    </label>
+</ExampleSection>
+
+@code {
+    private const string DefaultExample = """
+        <div style="min-height: 1.875rem;">
+            <a href="#main">
+                <WaVisuallyHidden>Skip to main content</WaVisuallyHidden>
+            </a>
+        </div>
+        """;
+
+    private const string ContextExample = """
+        <div>
+            <WaVisuallyHidden>Personal Info</WaVisuallyHidden>
+            <WaInput Label="Name" Style="margin-bottom: .5rem;" />
+            <WaInput Label="Email" Type="WaInputType.Email" />
+        </div>
+        """;
+
+    private const string ForceExample = """
+        <label>
+            <WaVisuallyHidden Force="true">Checkbox not visually rendered, but still in the accessibility tree</WaVisuallyHidden>
+            <span>I have read the terms and conditions</span>
+        </label>
+        """;
+}

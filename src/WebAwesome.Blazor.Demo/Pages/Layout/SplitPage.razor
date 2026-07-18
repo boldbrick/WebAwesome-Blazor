@@ -1,0 +1,50 @@
+@page "/layout/split"
+
+<PageTitle>Split</PageTitle>
+
+<h1>Split</h1>
+<p>The Split layout distributes two or more items evenly across available space, either in a row or a column, and is especially helpful for navigation, header, and footer layouts. <code>WaSplit</code> renders a <code>div</code> with the <code>wa-split</code> utility class.</p>
+
+<ExampleSection Title="Default (Row)" Code="@DefaultExample">
+    <WaSplit>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Left</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Right</div>
+    </WaSplit>
+</ExampleSection>
+
+<ExampleSection Title="Column Direction" Code="@ColumnExample">
+    <WaSplit Direction="SplitDirection.Column" Style="height: 8rem;">
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Top</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Bottom</div>
+    </WaSplit>
+</ExampleSection>
+
+<ExampleSection Title="Align Items" Code="@AlignExample">
+    <WaSplit AlignItems="AlignItems.Start" Style="height: 6rem;">
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Top-aligned</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Top-aligned</div>
+    </WaSplit>
+</ExampleSection>
+
+@code {
+    private const string DefaultExample = """
+        <WaSplit>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Left</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Right</div>
+        </WaSplit>
+        """;
+
+    private const string ColumnExample = """
+        <WaSplit Direction="SplitDirection.Column" Style="height: 8rem;">
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Top</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Bottom</div>
+        </WaSplit>
+        """;
+
+    private const string AlignExample = """
+        <WaSplit AlignItems="AlignItems.Start" Style="height: 6rem;">
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Top-aligned</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Top-aligned</div>
+        </WaSplit>
+        """;
+}

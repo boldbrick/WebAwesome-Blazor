@@ -1,0 +1,139 @@
+@page "/components/tab-group"
+
+<PageTitle>Tab Group</PageTitle>
+
+<h1>Tab Group</h1>
+<p>
+    Tab groups organize content into a container that shows one section at a time. <code>&lt;wa-tab-group&gt;</code>
+    wrapped by <code>WaTabGroup</code>, with <code>&lt;wa-tab&gt;</code>/<code>&lt;wa-tab-panel&gt;</code> wrapped by
+    <code>WaTab</code>/<code>WaTabPanel</code>. Each <code>WaTab</code>'s <code>Panel</code> must match a
+    <code>WaTabPanel</code>'s <code>Name</code>.
+</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaTabGroup>
+        <WaTab Panel="general">General</WaTab>
+        <WaTab Panel="custom">Custom</WaTab>
+        <WaTab Panel="advanced">Advanced</WaTab>
+        <WaTab Panel="disabled" Disabled="true">Disabled</WaTab>
+
+        <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+        <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+        <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+        <WaTabPanel Name="disabled">This is a disabled tab panel.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+<ExampleSection Title="Setting the Active Tab" Code="@ActiveExample">
+    <WaTabGroup Active="advanced">
+        <WaTab Panel="general">General</WaTab>
+        <WaTab Panel="custom">Custom</WaTab>
+        <WaTab Panel="advanced">Advanced</WaTab>
+
+        <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+        <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+        <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+<ExampleSection Title="Tab Placement" Code="@PlacementExample">
+    <WaTabGroup Placement="WaTabPlacement.Bottom">
+        <WaTab Panel="general">General</WaTab>
+        <WaTab Panel="custom">Custom</WaTab>
+
+        <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+        <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+<ExampleSection Title="Manual Activation" Code="@ManualExample">
+    <WaTabGroup Activation="WaActivation.Manual">
+        <WaTab Panel="general">General</WaTab>
+        <WaTab Panel="custom">Custom</WaTab>
+        <WaTab Panel="advanced">Advanced</WaTab>
+
+        <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+        <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+        <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+<ExampleSection Title="Reacting to Tab Changes" Code="@ChangeExample">
+    <WaTabGroup OnTabChange="@(e => lastActivePanel = e.Name)">
+        <WaTab Panel="general">General</WaTab>
+        <WaTab Panel="custom">Custom</WaTab>
+
+        <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+        <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+    </WaTabGroup>
+    <p>Last active panel: <strong>@lastActivePanel</strong></p>
+</ExampleSection>
+
+<ApiTable Tag="wa-tab-group" />
+
+@code {
+    private string? lastActivePanel;
+
+    private const string DefaultExample = """
+        <WaTabGroup>
+            <WaTab Panel="general">General</WaTab>
+            <WaTab Panel="custom">Custom</WaTab>
+            <WaTab Panel="advanced">Advanced</WaTab>
+            <WaTab Panel="disabled" Disabled="true">Disabled</WaTab>
+
+            <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+            <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+            <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+            <WaTabPanel Name="disabled">This is a disabled tab panel.</WaTabPanel>
+        </WaTabGroup>
+        """;
+
+    private const string ActiveExample = """
+        <WaTabGroup Active="advanced">
+            <WaTab Panel="general">General</WaTab>
+            <WaTab Panel="custom">Custom</WaTab>
+            <WaTab Panel="advanced">Advanced</WaTab>
+
+            <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+            <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+            <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+        </WaTabGroup>
+        """;
+
+    private const string PlacementExample = """
+        <WaTabGroup Placement="WaTabPlacement.Bottom">
+            <WaTab Panel="general">General</WaTab>
+            <WaTab Panel="custom">Custom</WaTab>
+
+            <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+            <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+        </WaTabGroup>
+        """;
+
+    private const string ManualExample = """
+        <WaTabGroup Activation="WaActivation.Manual">
+            <WaTab Panel="general">General</WaTab>
+            <WaTab Panel="custom">Custom</WaTab>
+            <WaTab Panel="advanced">Advanced</WaTab>
+
+            <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+            <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+            <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+        </WaTabGroup>
+        """;
+
+    private const string ChangeExample = """
+        <WaTabGroup OnTabChange="@(e => lastActivePanel = e.Name)">
+            <WaTab Panel="general">General</WaTab>
+            <WaTab Panel="custom">Custom</WaTab>
+
+            <WaTabPanel Name="general">This is the general tab panel.</WaTabPanel>
+            <WaTabPanel Name="custom">This is the custom tab panel.</WaTabPanel>
+        </WaTabGroup>
+        <p>Last active panel: @lastActivePanel</p>
+
+        @code {
+            private string? lastActivePanel;
+        }
+        """;
+}

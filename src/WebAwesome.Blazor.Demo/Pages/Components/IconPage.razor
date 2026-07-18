@@ -1,0 +1,134 @@
+@page "/components/icon"
+
+<PageTitle>Icon</PageTitle>
+
+<h1>Icon</h1>
+<p><code>&lt;wa-icon&gt;</code> wrapped by <code>WaIcon</code>. Web Awesome comes bundled with over 2,000 free icons courtesy of Font Awesome, available in the <code>default</code> icon library.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaIcon Name="face-awesome" Variant="light" Label="Awesome" Style="font-size: 2em;" />
+</ExampleSection>
+
+<ExampleSection Title="Families &amp; Variants" Code="@FamiliesAndVariantsExample">
+    <div class="wa-cluster" style="font-size: 1.5em;">
+        <WaIcon Name="eyedropper" />
+        <WaIcon Variant="regular" Name="grip-vertical" />
+        <WaIcon Variant="light" Name="play" />
+        <WaIcon Variant="thin" Name="star" />
+    </div>
+    <div class="wa-cluster" style="font-size: 1.5em;">
+        <WaIcon Family="duotone" Name="eyedropper" />
+        <WaIcon Family="duotone" Variant="regular" Name="grip-vertical" />
+        <WaIcon Family="duotone" Variant="light" Name="play" />
+        <WaIcon Family="duotone" Variant="thin" Name="star" />
+    </div>
+    <div class="wa-cluster" style="font-size: 1.5em;">
+        <WaIcon Family="brands" Name="font-awesome" />
+        <WaIcon Family="brands" Name="web-awesome" />
+        <WaIcon Family="brands" Name="github" />
+        <WaIcon Family="brands" Name="discord" />
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Labels" Code="@LabelsExample">
+    <WaIcon Name="star" Label="Favorite" Style="font-size: 1.5em;" />
+</ExampleSection>
+
+<ExampleSection Title="Sizing &amp; Color" Code="@SizingAndColorExample">
+    <div class="wa-cluster" style="font-size: 1.5em;">
+        <WaIcon Name="strawberry" Style="color: salmon;" />
+        <WaIcon Name="crab" Style="color: coral;" />
+        <WaIcon Name="sun" Style="color: gold;" />
+        <WaIcon Name="leaf" Style="color: mediumseagreen;" />
+        <WaIcon Name="cloud-showers-heavy" Style="color: steelblue;" />
+        <WaIcon Name="cat-space" Style="color: mediumpurple;" />
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Auto Width &amp; Duotone Opacity" Code="@AutoWidthAndOpacityExample">
+    <p>Without <code>AutoWidth</code>:</p>
+    <div style="font-size: 1.5em; color: #193154;">
+        <WaIcon Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+        <WaIcon Family="solid" Name="circle-check" Style="background: lightsalmon;" />
+        <WaIcon Family="solid" Name="ruler-vertical" Style="background: lightsalmon;" />
+    </div>
+    <p>With <code>AutoWidth</code>:</p>
+    <div style="font-size: 1.5em; color: #193154;">
+        <WaIcon AutoWidth="true" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+        <WaIcon AutoWidth="true" Family="solid" Name="circle-check" Style="background: lightsalmon;" />
+        <WaIcon AutoWidth="true" Family="solid" Name="ruler-vertical" Style="background: lightsalmon;" />
+    </div>
+    <p>Duotone with <code>SwapOpacity</code>:</p>
+    <div class="wa-cluster" style="font-size: 1.5em;">
+        <WaIcon Family="duotone" Name="home" />
+        <WaIcon Family="duotone" Name="home" SwapOpacity="true" />
+        <WaIcon Family="duotone" Name="envelope" />
+        <WaIcon Family="duotone" Name="envelope" SwapOpacity="true" />
+    </div>
+</ExampleSection>
+
+<ApiTable Tag="wa-icon" />
+
+@code {
+    private const string DefaultExample = """
+        <WaIcon Name="face-awesome" Variant="light" Label="Awesome" Style="font-size: 2em;" />
+        """;
+
+    private const string FamiliesAndVariantsExample = """
+        <div class="wa-cluster" style="font-size: 1.5em;">
+            <WaIcon Name="eyedropper" />
+            <WaIcon Variant="regular" Name="grip-vertical" />
+            <WaIcon Variant="light" Name="play" />
+            <WaIcon Variant="thin" Name="star" />
+        </div>
+        <div class="wa-cluster" style="font-size: 1.5em;">
+            <WaIcon Family="duotone" Name="eyedropper" />
+            <WaIcon Family="duotone" Variant="regular" Name="grip-vertical" />
+            <WaIcon Family="duotone" Variant="light" Name="play" />
+            <WaIcon Family="duotone" Variant="thin" Name="star" />
+        </div>
+        <div class="wa-cluster" style="font-size: 1.5em;">
+            <WaIcon Family="brands" Name="font-awesome" />
+            <WaIcon Family="brands" Name="web-awesome" />
+            <WaIcon Family="brands" Name="github" />
+            <WaIcon Family="brands" Name="discord" />
+        </div>
+        """;
+
+    private const string LabelsExample = """
+        <WaIcon Name="star" Label="Favorite" Style="font-size: 1.5em;" />
+        """;
+
+    private const string SizingAndColorExample = """
+        <div class="wa-cluster" style="font-size: 1.5em;">
+            <WaIcon Name="strawberry" Style="color: salmon;" />
+            <WaIcon Name="crab" Style="color: coral;" />
+            <WaIcon Name="sun" Style="color: gold;" />
+            <WaIcon Name="leaf" Style="color: mediumseagreen;" />
+            <WaIcon Name="cloud-showers-heavy" Style="color: steelblue;" />
+            <WaIcon Name="cat-space" Style="color: mediumpurple;" />
+        </div>
+        """;
+
+    private const string AutoWidthAndOpacityExample = """
+        <p>Without <code>AutoWidth</code>:</p>
+        <div style="font-size: 1.5em; color: #193154;">
+            <WaIcon Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+            <WaIcon Family="solid" Name="circle-check" Style="background: lightsalmon;" />
+            <WaIcon Family="solid" Name="ruler-vertical" Style="background: lightsalmon;" />
+        </div>
+        <p>With <code>AutoWidth</code>:</p>
+        <div style="font-size: 1.5em; color: #193154;">
+            <WaIcon AutoWidth="true" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+            <WaIcon AutoWidth="true" Family="solid" Name="circle-check" Style="background: lightsalmon;" />
+            <WaIcon AutoWidth="true" Family="solid" Name="ruler-vertical" Style="background: lightsalmon;" />
+        </div>
+        <p>Duotone with <code>SwapOpacity</code>:</p>
+        <div class="wa-cluster" style="font-size: 1.5em;">
+            <WaIcon Family="duotone" Name="home" />
+            <WaIcon Family="duotone" Name="home" SwapOpacity="true" />
+            <WaIcon Family="duotone" Name="envelope" />
+            <WaIcon Family="duotone" Name="envelope" SwapOpacity="true" />
+        </div>
+        """;
+}

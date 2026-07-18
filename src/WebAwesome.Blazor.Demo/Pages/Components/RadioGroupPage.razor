@@ -1,0 +1,98 @@
+@page "/components/radio-group"
+
+<PageTitle>Radio Group</PageTitle>
+
+<h1>Radio Group</h1>
+<p>Radio groups are used to group multiple radios so they function as a single form control. <code>&lt;wa-radio-group&gt;</code> wrapped by <code>WaRadioGroup</code>, with <code>&lt;wa-radio&gt;</code> wrapped by <code>WaRadio</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaRadioGroup Label="Select an option" Name="a" Value="1">
+        <WaRadio Value="1">Option 1</WaRadio>
+        <WaRadio Value="2">Option 2</WaRadio>
+        <WaRadio Value="3">Option 3</WaRadio>
+    </WaRadioGroup>
+</ExampleSection>
+
+<ExampleSection Title="Hint &amp; Orientation" Code="@HintExample">
+    <WaRadioGroup Label="Select an option" Hint="Choose the most appropriate option." Orientation="WaOrientation.Horizontal" Name="a" Value="1">
+        <WaRadio Value="1">Option 1</WaRadio>
+        <WaRadio Value="2">Option 2</WaRadio>
+        <WaRadio Value="3">Option 3</WaRadio>
+    </WaRadioGroup>
+</ExampleSection>
+
+<ExampleSection Title="Radio Buttons" Code="@ButtonExample">
+    <WaRadioGroup Label="Horizontal options" Orientation="WaOrientation.Horizontal" Name="a" Value="1">
+        <WaRadio Appearance="WaRadioAppearance.Button" Value="1">Option 1</WaRadio>
+        <WaRadio Appearance="WaRadioAppearance.Button" Value="2">Option 2</WaRadio>
+        <WaRadio Appearance="WaRadioAppearance.Button" Value="3">Option 3</WaRadio>
+    </WaRadioGroup>
+</ExampleSection>
+
+<ExampleSection Title="Disabling" Code="@DisabledExample">
+    <WaRadioGroup Label="Select an option">
+        <WaRadio Value="1">Option 1</WaRadio>
+        <WaRadio Value="2" Disabled="true">Option 2</WaRadio>
+        <WaRadio Value="3">Option 3</WaRadio>
+    </WaRadioGroup>
+</ExampleSection>
+
+<ExampleSection Title="Two-way Binding" Code="@BindingExample">
+    <WaRadioGroup Label="Select an option" @bind-Value="selected">
+        <WaRadio Value="1">Option 1</WaRadio>
+        <WaRadio Value="2">Option 2</WaRadio>
+        <WaRadio Value="3">Option 3</WaRadio>
+    </WaRadioGroup>
+    <p>Selected: <strong>@selected</strong></p>
+</ExampleSection>
+
+<ApiTable Tag="wa-radio-group" />
+
+@code {
+    private string? selected = "1";
+
+    private const string DefaultExample = """
+        <WaRadioGroup Label="Select an option" Name="a" Value="1">
+            <WaRadio Value="1">Option 1</WaRadio>
+            <WaRadio Value="2">Option 2</WaRadio>
+            <WaRadio Value="3">Option 3</WaRadio>
+        </WaRadioGroup>
+        """;
+
+    private const string HintExample = """
+        <WaRadioGroup Label="Select an option" Hint="Choose the most appropriate option." Orientation="WaOrientation.Horizontal" Name="a" Value="1">
+            <WaRadio Value="1">Option 1</WaRadio>
+            <WaRadio Value="2">Option 2</WaRadio>
+            <WaRadio Value="3">Option 3</WaRadio>
+        </WaRadioGroup>
+        """;
+
+    private const string ButtonExample = """
+        <WaRadioGroup Label="Horizontal options" Orientation="WaOrientation.Horizontal" Name="a" Value="1">
+            <WaRadio Appearance="WaRadioAppearance.Button" Value="1">Option 1</WaRadio>
+            <WaRadio Appearance="WaRadioAppearance.Button" Value="2">Option 2</WaRadio>
+            <WaRadio Appearance="WaRadioAppearance.Button" Value="3">Option 3</WaRadio>
+        </WaRadioGroup>
+        """;
+
+    private const string DisabledExample = """
+        <WaRadioGroup Label="Select an option">
+            <WaRadio Value="1">Option 1</WaRadio>
+            <WaRadio Value="2" Disabled="true">Option 2</WaRadio>
+            <WaRadio Value="3">Option 3</WaRadio>
+        </WaRadioGroup>
+        """;
+
+    private const string BindingExample = """
+        <WaRadioGroup Label="Select an option" @bind-Value="selected">
+            <WaRadio Value="1">Option 1</WaRadio>
+            <WaRadio Value="2">Option 2</WaRadio>
+            <WaRadio Value="3">Option 3</WaRadio>
+        </WaRadioGroup>
+        <p>Selected: @selected</p>
+
+        @code {
+            private string? selected = "1";
+        }
+        """;
+}

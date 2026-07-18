@@ -1,0 +1,58 @@
+@page "/layout/cluster"
+
+<PageTitle>Cluster</PageTitle>
+
+<h1>Cluster</h1>
+<p>The Cluster layout arranges elements inline with even spacing, allowing items to wrap when space is limited. It is ideal for inline lists and aligning items of varying sizes. <code>WaCluster</code> renders a <code>div</code> with the <code>wa-cluster</code> utility class.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaCluster>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 2</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 3</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 4</div>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Gap" Code="@GapExample">
+    <WaCluster Gap="GapSize.Gap_2XS">
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">A</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">B</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">C</div>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Align Items" Code="@AlignExample">
+    <WaCluster AlignItems="AlignItems.Start" Style="min-height: 6rem;">
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Short</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 2.5rem;">Tall</div>
+        <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Short</div>
+    </WaCluster>
+</ExampleSection>
+
+@code {
+    private const string DefaultExample = """
+        <WaCluster>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 1</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 2</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 3</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Box 4</div>
+        </WaCluster>
+        """;
+
+    private const string GapExample = """
+        <WaCluster Gap="GapSize.Gap_2XS">
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">A</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">B</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">C</div>
+        </WaCluster>
+        """;
+
+    private const string AlignExample = """
+        <WaCluster AlignItems="AlignItems.Start" Style="min-height: 6rem;">
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Short</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 2.5rem;">Tall</div>
+            <div style="background: var(--wa-color-surface-lowered, #eee); padding: 1rem;">Short</div>
+        </WaCluster>
+        """;
+}

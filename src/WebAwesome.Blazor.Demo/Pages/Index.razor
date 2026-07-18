@@ -1,0 +1,46 @@
+@page "/"
+
+<PageTitle>Web Awesome Blazor Bindings</PageTitle>
+
+<h1>Web Awesome Blazor Bindings</h1>
+
+<p>
+    Strongly-typed Blazor wrappers for the <a href="https://webawesome.com">Web Awesome</a> web components —
+    idiomatic C# parameters and enums, EditForm and validation integration, named slots as render fragments,
+    and a minimal JS interop surface. MIT-licensed; versions follow Web Awesome releases one-to-one.
+</p>
+
+<ExampleSection Title="Hello Web Awesome" Code="@HelloExample">
+    <WaButton Variant="WaVariant.Brand" OnClick="() => count++">Click me</WaButton>
+    <p>Clicked @count times</p>
+</ExampleSection>
+
+<h2>Getting started</h2>
+
+<h3>1. Install</h3>
+<pre><code>dotnet add package WebAwesome.Blazor</code></pre>
+
+<h3>2. Register services</h3>
+<pre><code>using WebAwesome.Blazor.Extensions;
+
+builder.Services.AddWebAwesome(builder.Configuration);</code></pre>
+
+<h3>3. Include assets</h3>
+<p>Place the <code>WebAwesomeAssets</code> component in your head content (e.g. in <code>App.razor</code>):</p>
+<pre><code>&lt;WebAwesomeAssets /&gt;</code></pre>
+<p>
+    In standalone WebAssembly apps (like this demo), add the equivalent static tags to <code>index.html</code> instead.
+    See the <a href="https://github.com/boldbrick/WebAwesome-Blazor">repository README</a> for details.
+</p>
+
+<h3>4. Use components</h3>
+<p>Pick any component from the sidebar to see live examples and its API reference.</p>
+
+@code {
+    private int count;
+
+    private const string HelloExample = """
+        <WaButton Variant="WaVariant.Brand" OnClick="() => count++">Click me</WaButton>
+        <p>Clicked @count times</p>
+        """;
+}

@@ -24,6 +24,8 @@ The pipeline is orchestrated by the **`/wa-upgrade` skill** (`.claude\skills\wa-
 | `Compare-WaApiSurface.ps1` | `tools\upgrade\` | Diffs two surfaces → JSON change report + Markdown summary, breaking changes flagged |
 | `ApiSurfaceParityTests` | `src\WebAwesome.Blazor.Tests\ApiParity\` | Reflection tests: every CEM attribute/event/method has a wrapper counterpart |
 | `wa-wrapper-engineer` agent | `.claude\agents\` | Implements wrappers from change-report excerpts, per the authoring contract |
+| `New-WaDemoPages.ps1` | `tools\demo\` | Generates skeleton demo pages per component from a surface JSON (idempotent) |
+| `WebAwesome.Blazor.Demo` | `src\` | WA-docs-shaped demo site (WASM, GitHub Pages via `demo.yml`); nav + API tables driven by the surface JSON |
 | `wa-test-engineer` agent | `.claude\agents\` | Integration + breaking-change tests, suite to green |
 | `infra-ops:jira-ops` / `infra-ops:plastic-ops` | plugins | Ticketing (WAB project) and VCS (Plastic branches, check-ins, merges) |
 
@@ -47,9 +49,9 @@ Phase numbers match the skill (0–6). `<major.minor>` is always taken from the 
 0. **Preflight** — clean Plastic workspace, on the subtrunk (`/main/WA-<major.minor>`) or this upgrade's own task branch (resume), baseline build + tests green, target version validated against the gradual-upgrade rule.
 1. **Ticket & branch** (idempotent — reruns reuse existing) — JIRA Task `WA bindings for <version>` under the train's epic (e.g. WAB-1) with a `Source tag:` link, moved to In Progress; Plastic task branch `/main/WA-<major.minor>/WAB-<n>` created and switched to.
 2. **Ingest & analyze** — surfaces exported for current and target versions, change report generated, plan document written to `docs\prompts\WA-<major.minor>\upgrade-v<from>-to-v<to>-plan.md`. `inputs\WebAwesome` is refreshed to the target version's documentation: from the public GitHub tag (`packages/webawesome/docs/docs`) for free components, and from `webawesome.com/docs/components/<name>` for Pro components absent there (as of 3.1.0: `combobox`, `page`); the refresh is checked in as its own changeset. `--dry-run` stops here, with the plan document checked in and the ticket/branch left ready for the real run.
-3. **Arm parity & bump** — target surface copied to `ApiParity\expected-api-surface.json`, `parity-config.json` enabled and retargeted, `src\Version.props` + `README.md` bumped. Failing parity tests now enumerate the exact remaining work.
+3. **Arm parity & bump** — target surface copied to `ApiParity\expected-api-surface.json`, `parity-config.json` enabled and retargeted, `src\Version.props` + `README.md` bumped, demo app synced (CDN version in `index.html`, surface copy to `wwwroot\data\api-surface.json`). Failing parity tests now enumerate the exact remaining work.
 4. **Implement** — breaking changes first (including deleting wrappers of removed components), then new components, then additive modifications; wrapper work fanned out to `wa-wrapper-engineer` agents in groups of ≤10 components.
-5. **Test & docs** — `wa-test-engineer` adds integration and version-scoped breaking-change tests; `docs\MIGRATION-<version>.md` written when there are breaking changes; the `docs\CHANGELOG.md` entry for the version is drafted from the change report; Debug + Release builds and full suite green.
+5. **Test & docs** — `wa-test-engineer` adds integration and version-scoped breaking-change tests; `docs\MIGRATION-<version>.md` written when there are breaking changes; the `docs\CHANGELOG.md` entry for the version is drafted from the change report; demo page skeletons generated for new components (`tools\demo\New-WaDemoPages.ps1 -PruneRemoved`); Debug + Release builds and full suite green.
 6. **Deliver** — phased check-ins on the task branch (established comment style), JIRA comment + transition to In Review; with `--publish`, merge to the subtrunk (never forced on conflict) and transition to Done.
 
 Releasing to NuGet stays a deliberate manual act: promote the subtrunk to `/main` and tag `wa-blazor-<version>` — the GitHub mirror's CI (`.github\workflows\build.yml`) packs on that tag.

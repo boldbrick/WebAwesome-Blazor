@@ -1,0 +1,176 @@
+@page "/components/dialog"
+
+<PageTitle>Dialog</PageTitle>
+
+<h1>Dialog</h1>
+<p>Dialogs, sometimes called "modals", appear above the page and require the user's immediate attention. <code>&lt;wa-dialog&gt;</code> wrapped by <code>WaDialog</code>.</p>
+
+<ExampleSection Title="Basic Dialog" Code="@DefaultExample">
+    <WaButton OnClick="@(() => dialog1Open = true)">Open Dialog</WaButton>
+    <WaDialog Label="Dialog" Open="@dialog1Open" OnHide="@(() => dialog1Open = false)">
+        <ChildContent>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog1Open = false)">Close</WaButton>
+        </FooterContent>
+    </WaDialog>
+</ExampleSection>
+
+<ExampleSection Title="Dialog without Header" Code="@WithoutHeaderExample">
+    <WaButton OnClick="@(() => dialog2Open = true)">Open Dialog</WaButton>
+    <WaDialog Label="Dialog" WithoutHeader="true" Open="@dialog2Open" OnHide="@(() => dialog2Open = false)">
+        <ChildContent>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog2Open = false)">Close</WaButton>
+        </FooterContent>
+    </WaDialog>
+</ExampleSection>
+
+<ExampleSection Title="Header Actions" Code="@HeaderActionsExample">
+    <WaButton OnClick="@(() => dialog3Open = true)">Open Dialog</WaButton>
+    <WaDialog Label="Dialog" Open="@dialog3Open" OnHide="@(() => dialog3Open = false)">
+        <HeaderActionsContent>
+            <WaButton Appearance="WaAppearance.Plain" OnClick="@OpenInNewWindow">
+                <WaIcon Name="arrow-up-right-from-square" Variant="solid" Label="Open in new window" />
+            </WaButton>
+        </HeaderActionsContent>
+        <ChildContent>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog3Open = false)">Close</WaButton>
+        </FooterContent>
+    </WaDialog>
+</ExampleSection>
+
+<ExampleSection Title="Custom Width" Code="@CustomWidthExample">
+    <WaButton OnClick="@(() => dialog4Open = true)">Open Dialog</WaButton>
+    <WaDialog Label="Dialog" Style="--width: 50vw;" Open="@dialog4Open" OnHide="@(() => dialog4Open = false)">
+        <ChildContent>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog4Open = false)">Close</WaButton>
+        </FooterContent>
+    </WaDialog>
+</ExampleSection>
+
+<ExampleSection Title="Light Dismissal" Code="@LightDismissExample">
+    <WaButton OnClick="@(() => dialog5Open = true)">Open Dialog</WaButton>
+    <WaDialog Label="Dialog" LightDismiss="true" Open="@dialog5Open" OnHide="@(() => dialog5Open = false)">
+        <ChildContent>
+            This dialog will close when you click on the overlay.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog5Open = false)">Close</WaButton>
+        </FooterContent>
+    </WaDialog>
+</ExampleSection>
+
+<ApiTable Tag="wa-dialog" />
+
+@code {
+    private bool dialog1Open;
+    private bool dialog2Open;
+    private bool dialog3Open;
+    private bool dialog4Open;
+    private bool dialog5Open;
+
+    private void OpenInNewWindow()
+    {
+        // no-op placeholder; in a real app this would navigate via NavigationManager
+    }
+
+    private const string DefaultExample = """
+        <WaButton OnClick="@(() => dialog1Open = true)">Open Dialog</WaButton>
+        <WaDialog Label="Dialog" Open="@dialog1Open" OnHide="@(() => dialog1Open = false)">
+            <ChildContent>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog1Open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDialog>
+
+        @code {
+            private bool dialog1Open;
+        }
+        """;
+
+    private const string WithoutHeaderExample = """
+        <WaButton OnClick="@(() => dialog2Open = true)">Open Dialog</WaButton>
+        <WaDialog Label="Dialog" WithoutHeader="true" Open="@dialog2Open" OnHide="@(() => dialog2Open = false)">
+            <ChildContent>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog2Open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDialog>
+
+        @code {
+            private bool dialog2Open;
+        }
+        """;
+
+    private const string HeaderActionsExample = """
+        <WaButton OnClick="@(() => dialog3Open = true)">Open Dialog</WaButton>
+        <WaDialog Label="Dialog" Open="@dialog3Open" OnHide="@(() => dialog3Open = false)">
+            <HeaderActionsContent>
+                <WaButton Appearance="WaAppearance.Plain" OnClick="@OpenInNewWindow">
+                    <WaIcon Name="arrow-up-right-from-square" Variant="solid" Label="Open in new window" />
+                </WaButton>
+            </HeaderActionsContent>
+            <ChildContent>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog3Open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDialog>
+
+        @code {
+            private bool dialog3Open;
+
+            private void OpenInNewWindow()
+            {
+                // e.g. NavigationManager.NavigateTo(url, forceLoad: true)
+            }
+        }
+        """;
+
+    private const string CustomWidthExample = """
+        <WaButton OnClick="@(() => dialog4Open = true)">Open Dialog</WaButton>
+        <WaDialog Label="Dialog" Style="--width: 50vw;" Open="@dialog4Open" OnHide="@(() => dialog4Open = false)">
+            <ChildContent>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog4Open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDialog>
+
+        @code {
+            private bool dialog4Open;
+        }
+        """;
+
+    private const string LightDismissExample = """
+        <WaButton OnClick="@(() => dialog5Open = true)">Open Dialog</WaButton>
+        <WaDialog Label="Dialog" LightDismiss="true" Open="@dialog5Open" OnHide="@(() => dialog5Open = false)">
+            <ChildContent>
+                This dialog will close when you click on the overlay.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => dialog5Open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDialog>
+
+        @code {
+            private bool dialog5Open;
+        }
+        """;
+}

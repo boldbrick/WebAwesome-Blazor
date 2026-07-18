@@ -1,0 +1,62 @@
+name: deploy-demo
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+            10.0.x
+
+      - name: Publish demo
+        working-directory: src
+        run: dotnet publish WebAwesome.Blazor.Demo/WebAwesome.Blazor.Demo.csproj /p:Configuration=Release
+
+      - name: Prepare static site
+        shell: pwsh
+        run: |
+          $site = "src/output/publish/Apps/wwwroot"
+          # GitHub Pages serves under /<repo>/ - rewrite the base href
+          $index = Join-Path $site "index.html"
+          (Get-Content $index -Raw) -replace '<base href="/" />', '<base href="/WebAwesome-Blazor/" />' | Set-Content $index -Encoding utf8
+          # SPA fallback and Jekyll bypass
+          Copy-Item $index (Join-Path $site "404.html")
+          New-Item -ItemType File -Path (Join-Path $site ".nojekyll") -Force | Out-Null
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: src/output/publish/Apps/wwwroot
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,82 @@
+@page "/components/input"
+
+<PageTitle>Input</PageTitle>
+
+<h1>Input</h1>
+<p>Inputs collect single-line text data from the user. <code>&lt;wa-input&gt;</code> wrapped by <code>WaInput</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaInput />
+</ExampleSection>
+
+<ExampleSection Title="Label &amp; Hint" Code="@LabelHintExample">
+    <WaInput Label="Nickname" Hint="What would you like people to call you?" />
+</ExampleSection>
+
+<ExampleSection Title="Placeholder, Clearable &amp; Password Toggle" Code="@PlaceholderExample">
+    <WaInput Placeholder="Clearable" WithClear="true" />
+    <WaInput Type="WaInputType.Password" Placeholder="Password Toggle" PasswordToggle="true" />
+</ExampleSection>
+
+<ExampleSection Title="Appearance, Pill &amp; Disabled" Code="@AppearanceExample">
+    <WaInput Placeholder="Filled" Appearance="WaInputAppearance.Filled" />
+    <WaInput Placeholder="Pill" Pill="true" />
+    <WaInput Placeholder="Disabled" Disabled="true" />
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaInput Placeholder="Small" Size="WaSize.Small" />
+    <WaInput Placeholder="Medium" Size="WaSize.Medium" />
+    <WaInput Placeholder="Large" Size="WaSize.Large" />
+</ExampleSection>
+
+<ExampleSection Title="Start &amp; End Decorations" Code="@DecorationsExample">
+    <WaInput Placeholder="Search" StartIconName="magnifying-glass" EndIconName="circle-xmark" />
+</ExampleSection>
+
+<ExampleSection Title="Two-way Binding" Code="@BindingExample">
+    <WaInput Label="Type something" @bind-Value="name" />
+    <p>You typed: <strong>@name</strong></p>
+</ExampleSection>
+
+<ApiTable Tag="wa-input" />
+
+@code {
+    private string? name;
+
+    private const string DefaultExample = "<WaInput />";
+
+    private const string LabelHintExample = """
+        <WaInput Label="Nickname" Hint="What would you like people to call you?" />
+        """;
+
+    private const string PlaceholderExample = """
+        <WaInput Placeholder="Clearable" WithClear="true" />
+        <WaInput Type="WaInputType.Password" Placeholder="Password Toggle" PasswordToggle="true" />
+        """;
+
+    private const string AppearanceExample = """
+        <WaInput Placeholder="Filled" Appearance="WaInputAppearance.Filled" />
+        <WaInput Placeholder="Pill" Pill="true" />
+        <WaInput Placeholder="Disabled" Disabled="true" />
+        """;
+
+    private const string SizesExample = """
+        <WaInput Placeholder="Small" Size="WaSize.Small" />
+        <WaInput Placeholder="Medium" Size="WaSize.Medium" />
+        <WaInput Placeholder="Large" Size="WaSize.Large" />
+        """;
+
+    private const string DecorationsExample = """
+        <WaInput Placeholder="Search" StartIconName="magnifying-glass" EndIconName="circle-xmark" />
+        """;
+
+    private const string BindingExample = """
+        <WaInput Label="Type something" @bind-Value="name" />
+        <p>You typed: @name</p>
+
+        @code {
+            private string? name;
+        }
+        """;
+}
