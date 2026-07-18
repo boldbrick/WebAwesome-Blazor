@@ -1,5 +1,5 @@
 ﻿{
-    "version":  "3.0.0",
+    "version":  "3.0.0-beta.6",
     "generated":  "Export-WaApiSurface.ps1",
     "components":  {
                        "wa-animated-image":  {
@@ -197,7 +197,7 @@
                                         "status":  "stable",
                                         "attributes":  {
                                                            "appearance":  {
-                                                                              "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
+                                                                              "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027",
                                                                               "default":  "\u0027accent\u0027",
                                                                               "description":  "The badge\u0027s visual appearance."
                                                                           },
@@ -301,7 +301,7 @@
                                          "status":  "stable",
                                          "attributes":  {
                                                             "appearance":  {
-                                                                               "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027 | \u0027plain\u0027",
+                                                                               "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027plain\u0027",
                                                                                "default":  "\u0027accent\u0027",
                                                                                "description":  "The button\u0027s visual appearance."
                                                                            },
@@ -487,12 +487,12 @@
                                            },
                        "wa-callout":  {
                                           "className":  "WaCallout",
-                                          "since":  "3.0",
+                                          "since":  "2.0",
                                           "status":  "stable",
                                           "attributes":  {
                                                              "appearance":  {
-                                                                                "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027plain\u0027 | \u0027filled-outlined\u0027",
-                                                                                "default":  null,
+                                                                                "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027plain\u0027 | \u0027outlined filled\u0027",
+                                                                                "default":  "\u0027outlined filled\u0027",
                                                                                 "description":  "The callout\u0027s visual appearance."
                                                                             },
                                                              "size":  {
@@ -1006,7 +1006,7 @@
                                           "status":  "stable",
                                           "attributes":  {
                                                              "appearance":  {
-                                                                                "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027 | \u0027plain\u0027",
+                                                                                "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027plain\u0027",
                                                                                 "default":  "\u0027outlined\u0027",
                                                                                 "description":  "The element\u0027s visual appearance."
                                                                             },
@@ -1143,7 +1143,6 @@
                                                           "body",
                                                           "close-button",
                                                           "close-button__base",
-                                                          "dialog",
                                                           "footer",
                                                           "header",
                                                           "header-actions",
@@ -1240,7 +1239,6 @@
                                                           "body",
                                                           "close-button",
                                                           "close-button__base",
-                                                          "dialog",
                                                           "footer",
                                                           "header",
                                                           "header-actions",
@@ -1688,8 +1686,8 @@
                                        "status":  "stable",
                                        "attributes":  {
                                                           "auto-width":  {
-                                                                             "type":  "boolean",
-                                                                             "default":  "false",
+                                                                             "type":  "false",
+                                                                             "default":  null,
                                                                              "description":  "Sets the width of the icon to match the cropped SVG viewBox. This operates like the Font `fa-width-auto` class."
                                                                          },
                                                           "family":  {
@@ -1773,11 +1771,11 @@
                                                                      }
                                                          },
                                           "events":  {
-                                                         "wa-include-error":  {
-                                                                                  "type":  "{ status: number }",
-                                                                                  "eventName":  "WaIncludeErrorEvent",
-                                                                                  "description":  "Emitted when the included file fails to load due to an error."
-                                                                              },
+                                                         "wa-error":  {
+                                                                          "type":  "{ status: number }",
+                                                                          "eventName":  "WaErrorEvent",
+                                                                          "description":  "Emitted when the included file fails to load due to an error."
+                                                                      },
                                                          "wa-load":  {
                                                                          "type":  null,
                                                                          "eventName":  "WaLoadEvent",
@@ -1800,7 +1798,7 @@
                                         "status":  "stable",
                                         "attributes":  {
                                                            "appearance":  {
-                                                                              "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
+                                                                              "type":  "\u0027filled\u0027 | \u0027outlined\u0027",
                                                                               "default":  "\u0027outlined\u0027",
                                                                               "description":  "The input\u0027s visual appearance."
                                                                           },
@@ -2160,7 +2158,7 @@
                                                             "label":  {
                                                                           "type":  "string",
                                                                           "default":  null,
-                                                                          "description":  "The option’s plain text label.\nUsually automatically generated, but can be useful to provide manually for cases involving complex content."
+                                                                          "description":  "The optionâ€™s plain text label.\nUsually automatically generated, but can be useful to provide manually for cases involving complex content."
                                                                       },
                                                             "selected":  {
                                                                              "type":  "boolean",
@@ -2191,93 +2189,6 @@
                                                           "start"
                                                       ]
                                      },
-                       "wa-page":  {
-                                       "className":  "WaPage",
-                                       "since":  "3.0",
-                                       "status":  "stable",
-                                       "attributes":  {
-                                                          "disable-navigation-toggle":  {
-                                                                                            "type":  "boolean",
-                                                                                            "default":  "false",
-                                                                                            "description":  "Determines whether or not to hide the default hamburger button.\nThis will automatically flip to \"true\" if you add an element with `data-toggle-nav` anywhere in the element light DOM.\nGenerally this will be set for you and you don\u0027t need to do anything, unless you\u0027re using SSR, in which case you should set this manually for initial page loads."
-                                                                                        },
-                                                          "mobile-breakpoint":  {
-                                                                                    "type":  "string",
-                                                                                    "default":  "\u0027768px\u0027",
-                                                                                    "description":  "At what page width to hide the \"navigation\" slot and collapse into a hamburger button.\nAccepts both numbers (interpreted as px) and CSS lengths (e.g. `50em`), which are resolved based on the root element."
-                                                                                },
-                                                          "navigation-placement":  {
-                                                                                       "type":  "\u0027start\u0027 | \u0027end\u0027",
-                                                                                       "default":  "\u0027start\u0027",
-                                                                                       "description":  "Where to place the navigation when in the mobile viewport."
-                                                                                   },
-                                                          "nav-open":  {
-                                                                           "type":  "boolean",
-                                                                           "default":  "false",
-                                                                           "description":  "Whether or not the navigation drawer is open. Note, the navigation drawer is only \"open\" on mobile views."
-                                                                       },
-                                                          "view":  {
-                                                                       "type":  "\u0027mobile\u0027 | \u0027desktop\u0027",
-                                                                       "default":  "\u0027desktop\u0027",
-                                                                       "description":  "The view is a reflection of the \"mobileBreakpoint\", when the page is larger than the `mobile-breakpoint` (768px by\ndefault), it is considered to be a \"desktop\" view. The view is merely a way to distinguish when to show/hide the\nnavigation. You can use additional media queries to make other adjustments to content as necessary.\nThe default is \"desktop\" because the \"mobile navigation drawer\" isn\u0027t accessible via SSR due to drawer requiring JS."
-                                                                   }
-                                                      },
-                                       "events":  {
-
-                                                  },
-                                       "slots":  {
-                                                     "(default)":  "The page\u0027s main content.",
-                                                     "aside":  "Content to be shown on the right side of the page. Typically contains a table of contents, ads, etc. This section \"sticks\" to the top as the page scrolls.",
-                                                     "banner":  "The banner that gets display above the header. The banner will not be shown if no content is provided.",
-                                                     "footer":  "The content to display in the footer. This is always displayed underneath the viewport so will always make the page \"scrollable\".",
-                                                     "header":  "The header to display at the top of the page. If a banner is present, the header will appear below the banner. The header will not be shown if there is no content.",
-                                                     "main-footer":  "Footer to display inline below the main content.",
-                                                     "main-header":  "Header to display inline above the main content.",
-                                                     "menu":  "The left side of the page. If you slot an element in here, you will override the default `navigation` slot and will be handling navigation on your own. This also will not disable the fallback behavior of the navigation button. This section \"sticks\" to the top as the page scrolls.",
-                                                     "navigation":  "The main content to display in the navigation area. This is displayed on the left side of the page, if `menu` is not used. This section \"sticks\" to the top as the page scrolls.",
-                                                     "navigation-footer":  "The footer for a navigation area. On mobile this will be the footer for `\u003cwa-drawer\u003e`.",
-                                                     "navigation-header":  "The header for a navigation area. On mobile this will be the header for `\u003cwa-drawer\u003e`.",
-                                                     "navigation-toggle":  "Use this slot to slot in your own button + icon for toggling the navigation drawer. By default it is a `\u003cwa-button\u003e` + a 3 bars `\u003cwa-icon\u003e`",
-                                                     "navigation-toggle-icon":  "Use this to slot in your own icon for toggling the navigation drawer. By default it is 3 bars `\u003cwa-icon\u003e`.",
-                                                     "skip-to-content":  "The \"skip to content\" slot. You can override this If you would like to override the `Skip to content` button and add additional \"Skip to X\", they can be inserted here.",
-                                                     "subheader":  "A subheader to display below the `header`. This is a good place to put things like breadcrumbs."
-                                                 },
-                                       "methods":  {
-                                                       "hideNavigation":  {
-                                                                              "signature":  "hideNavigation() =\u003e void",
-                                                                              "description":  "Hides the mobile navigation drawer"
-                                                                          },
-                                                       "showNavigation":  {
-                                                                              "signature":  "showNavigation() =\u003e void",
-                                                                              "description":  "Shows the mobile navigation drawer"
-                                                                          },
-                                                       "toggleNavigation":  {
-                                                                                "signature":  "toggleNavigation() =\u003e void",
-                                                                                "description":  "Toggles the mobile navigation drawer"
-                                                                            }
-                                                   },
-                                       "cssParts":  [
-                                                        "aside",
-                                                        "banner",
-                                                        "base",
-                                                        "body",
-                                                        "dialog-wrapper",
-                                                        "footer",
-                                                        "header",
-                                                        "main-content",
-                                                        "main-footer",
-                                                        "main-header",
-                                                        "menu",
-                                                        "navigation",
-                                                        "navigation-footer",
-                                                        "navigation-header",
-                                                        "navigation-toggle",
-                                                        "navigation-toggle-icon",
-                                                        "skip-link",
-                                                        "skip-links",
-                                                        "subheader"
-                                                    ]
-                                   },
                        "wa-popover":  {
                                           "className":  "WaPopover",
                                           "since":  "3.0",
@@ -2624,7 +2535,7 @@
                                                            "appearance":  {
                                                                               "type":  "\u0027default\u0027 | \u0027button\u0027",
                                                                               "default":  "\u0027default\u0027",
-                                                                              "description":  "The radio\u0027s visual appearance."
+                                                                              "description":  "The radio\u0027s value. When selected, the radio group will receive this value."
                                                                           },
                                                            "disabled":  {
                                                                             "type":  "boolean",
@@ -2945,7 +2856,7 @@
                                          "status":  "stable",
                                          "attributes":  {
                                                             "appearance":  {
-                                                                               "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
+                                                                               "type":  "\u0027filled\u0027 | \u0027outlined\u0027",
                                                                                "default":  "\u0027outlined\u0027",
                                                                                "description":  "The select\u0027s visual appearance."
                                                                            },
@@ -3653,8 +3564,8 @@
                                       "status":  "stable",
                                       "attributes":  {
                                                          "appearance":  {
-                                                                            "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
-                                                                            "default":  "\u0027filled-outlined\u0027",
+                                                                            "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027outlined filled\u0027",
+                                                                            "default":  "\u0027outlined filled\u0027",
                                                                             "description":  "The tag\u0027s visual appearance."
                                                                         },
                                                          "pill":  {
@@ -3704,7 +3615,7 @@
                                            "status":  "stable",
                                            "attributes":  {
                                                               "appearance":  {
-                                                                                 "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
+                                                                                 "type":  "\u0027filled\u0027 | \u0027outlined\u0027",
                                                                                  "default":  "\u0027outlined\u0027",
                                                                                  "description":  "The textarea\u0027s visual appearance."
                                                                              },

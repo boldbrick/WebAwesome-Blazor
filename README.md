@@ -12,6 +12,7 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 - CSS-only layouts are covered as components, too (e.g. a `div class="wa-flank"` is implemented as a `WaFlank` class).
 - Minimal JS interop surface; wrappers mirror WA names while following Blazor conventions.
 - Versioned to follow WA releases (beta/rc/stable) with clear mapping.
+- **MIT-licensed** — free for commercial use.
 
 ## Package
 - NuGet: `WebAwesome.Blazor` *(published from release tags)*
@@ -47,8 +48,8 @@ var app = builder.Build();
 Ensure the Web Awesome JavaScript library is loaded in your application (e.g., in `App.razor`):
 
 ```html
-<link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.5/dist/styles/themes/default.css" />
-<script type="module" src="https://early.webawesome.com/webawesome@3.0.0-beta.6/dist/webawesome.loader.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/styles/webawesome.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/webawesome.loader.js"></script>
 ```
 
 ## Quick start (wrapper usage)
@@ -132,7 +133,7 @@ We align binding versions to WA versions. Use the **same** semantic version when
  dotnet pack -c Release
 ```
 
-The repo use a single-output-directory build system and produces nugets into `src/output/package/<Configuration>`.
+The repo uses a single-output-directory build system and produces nugets into `src/output/packages/<Configuration>`.
 
 > CI packs on tags named `wa-blazor-*` and attaches the `.nupkg` to the GitHub Release.
 
@@ -147,7 +148,7 @@ The repo use a single-output-directory build system and produces nugets into `sr
 - Unit test coverage
 
 ## License
-MIT — see `LICENSE`.
+MIT — see `LICENSE.md`.
 
 ## Trademarks
 Web Awesome, Font Awesome, and any related marks are property of their respective owners. This project is an independent community binding and not affiliated with or endorsed by the Web Awesome authors.

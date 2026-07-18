@@ -69,7 +69,7 @@ No Web Awesome Pro source code is ever committed. Release zips and everything ex
 
 ## Conventions honored
 
-- **Branching** (`CONTRIBUING.md`): work on `/main/WA-<train>/WAB-<n>`; monotonic promotion of subtrunks into `main`; release tags `wa-blazor-<version>`.
+- **Branching** (`CONTRIBUTING.md`): work on `/main/WA-<train>/WAB-<n>`; monotonic promotion of subtrunks into `main`; release tags `wa-blazor-<version>`.
 - **Ticketing**: WAB project, Tasks named `WA bindings for <version>` under the train epic, `Source tag:` GitHub link in the description; states In Progress → In Review → Done.
 - **Code style**: `CLAUDE.md` (regions, explicit usings, central package management, constant render-tree sequence numbers per `docs\prompts\WA-3.0\fix-render-tree-numbering.md`).
 
