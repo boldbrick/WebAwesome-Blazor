@@ -14,10 +14,11 @@ temp\download\webawesome_<ver>.zip
                        └── expected-api-surface.json → parity tests (red/green driver)
 ```
 
-The pipeline is orchestrated by the **`/wa-upgrade` skill** (`.claude\skills\wa-upgrade\SKILL.md`), which delegates to:
+The pipeline is orchestrated by the **`/wa-upgrade` skill** (`.claude\skills\wa-upgrade\SKILL.md`). The skill runs forked (`context: fork`) under the dedicated **`wa-orchestrator`** agent with the **Opus model pinned**, so the whole upgrade executes in an isolated context regardless of the invoking session's model, and delegates to:
 
 | Piece | Location | Role |
 |---|---|---|
+| `wa-orchestrator` agent | `.claude\agents\` | Executes the forked skill (Opus); phases, delegation, verification, delivery |
 | `Expand-WaRelease.ps1` | `tools\upgrade\` | Extracts a release zip to `temp\wa-src\<ver>` |
 | `Export-WaApiSurface.ps1` | `tools\upgrade\` | CEM → deterministic per-component API surface JSON |
 | `Compare-WaApiSurface.ps1` | `tools\upgrade\` | Diffs two surfaces → JSON change report + Markdown summary, breaking changes flagged |
@@ -41,13 +42,15 @@ To walk the whole train (e.g. 3.0.0 → 3.10.0), run `/wa-upgrade next --publish
 
 ## Pipeline phases
 
-1. **Preflight** — clean Plastic workspace, on the subtrunk (`/main/WA-<major.minor>`), baseline build + tests green, target version validated against the gradual-upgrade rule.
-2. **Ticket & branch** — JIRA Task `WA bindings for <version>` under the train's epic (e.g. WAB-1) with a `Source tag:` link, moved to In Progress; Plastic task branch `/main/WA-<major.minor>/WAB-<n>` created and switched to.
-3. **Ingest & analyze** — surfaces exported for current and target versions, change report generated, plan document written to `docs\prompts\WA-<major.minor>\upgrade-v<from>-to-v<to>-plan.md`.
-4. **Arm parity & bump** — target surface copied to `ApiParity\expected-api-surface.json`, `parity-config.json` enabled and retargeted, `src\Version.props` + `README.md` bumped. Failing parity tests now enumerate the exact remaining work.
-5. **Implement** — breaking changes first, then new components, then additive modifications; wrapper work fanned out to `wa-wrapper-engineer` agents in groups of ≤10 components.
-6. **Test & docs** — `wa-test-engineer` adds integration and version-scoped breaking-change tests; `docs\MIGRATION-<version>.md` written when there are breaking changes; Debug + Release builds and full suite green.
-7. **Deliver** — phased check-ins on the task branch (established comment style), JIRA comment + transition to In Review; with `--publish`, merge to the subtrunk and transition to Done.
+Phase numbers match the skill (0–6). `<major.minor>` is always taken from the **target** version; when a new train starts, the subtrunk, WAB epic, and `docs\prompts\WA-<major.minor>\` folder are created as part of preflight/ticketing. Versions are compared by SemVer precedence (`3.0.0-beta.6 < 3.0.0`, `3.2.0 < 3.10.0`).
+
+0. **Preflight** — clean Plastic workspace, on the subtrunk (`/main/WA-<major.minor>`) or this upgrade's own task branch (resume), baseline build + tests green, target version validated against the gradual-upgrade rule.
+1. **Ticket & branch** (idempotent — reruns reuse existing) — JIRA Task `WA bindings for <version>` under the train's epic (e.g. WAB-1) with a `Source tag:` link, moved to In Progress; Plastic task branch `/main/WA-<major.minor>/WAB-<n>` created and switched to.
+2. **Ingest & analyze** — surfaces exported for current and target versions, change report generated, plan document written to `docs\prompts\WA-<major.minor>\upgrade-v<from>-to-v<to>-plan.md`. `inputs\WebAwesome` is refreshed to the target version's documentation: from the public GitHub tag (`packages/webawesome/docs/docs`) for free components, and from `webawesome.com/docs/components/<name>` for Pro components absent there (as of 3.1.0: `combobox`, `page`); the refresh is checked in as its own changeset. `--dry-run` stops here, with the plan document checked in and the ticket/branch left ready for the real run.
+3. **Arm parity & bump** — target surface copied to `ApiParity\expected-api-surface.json`, `parity-config.json` enabled and retargeted, `src\Version.props` + `README.md` bumped. Failing parity tests now enumerate the exact remaining work.
+4. **Implement** — breaking changes first (including deleting wrappers of removed components), then new components, then additive modifications; wrapper work fanned out to `wa-wrapper-engineer` agents in groups of ≤10 components.
+5. **Test & docs** — `wa-test-engineer` adds integration and version-scoped breaking-change tests; `docs\MIGRATION-<version>.md` written when there are breaking changes; Debug + Release builds and full suite green.
+6. **Deliver** — phased check-ins on the task branch (established comment style), JIRA comment + transition to In Review; with `--publish`, merge to the subtrunk (never forced on conflict) and transition to Done.
 
 Releasing to NuGet stays a deliberate manual act: promote the subtrunk to `/main` and tag `wa-blazor-<version>` — the GitHub mirror's CI (`.github\workflows\build.yml`) packs on that tag.
 
@@ -59,6 +62,10 @@ A wrapper is "functionally equal" to the original component when it renders the 
 2. **Integration tests** (`Wa*IntegrationTests.cs`): defaults, parameter behavior, enum `ToHtmlValue()` mappings, event wiring.
 3. **Breaking-change validation tests** (per version, pattern of `WaBreakingChangesValidationTests`): assert the post-upgrade API shape and defaults.
 4. **Render-output tests (future):** bUnit-based golden rendering of each wrapper against expected markup would close the remaining gap (attribute *values*, sequence-number regressions). Not implemented yet; the parity layer covers names and presence.
+
+## Pro-source containment
+
+No Web Awesome Pro source code is ever committed. Release zips and everything extracted from them live exclusively under `temp\` (`temp\download`, `temp\wa-src`, `temp\wa-api`), which is ignored by both Plastic (`ignore.conf`) and git (`.gitignore`). The only CEM-derived artifact checked into the repo is `ApiParity\expected-api-surface.json` — pure API metadata (tag/attribute/event/slot/method names, types, defaults, and doc-string descriptions), no implementation code; the same information is publicly documented at webawesome.com/docs. Plan documents and migration guides describe API changes but must never embed upstream JS/TS/CSS source.
 
 ## Conventions honored
 
