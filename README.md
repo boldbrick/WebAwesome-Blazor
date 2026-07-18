@@ -41,16 +41,39 @@ using WebAwesome.Blazor.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Web Awesome services
-builder.Services.AddWebAwesome();
+// Add Web Awesome services (binds the optional "WebAwesome" configuration section)
+builder.Services.AddWebAwesome(builder.Configuration);
 
 // ... other services
 
 var app = builder.Build();
 ```
 
+Overloads: `AddWebAwesome()` for pure defaults, or `AddWebAwesome(options => ...)` for programmatic configuration.
+
 ### 2. Include Web Awesome Assets
-Ensure the Web Awesome JavaScript library is loaded in your application (e.g., in `App.razor`):
+Place the `WebAwesomeAssets` component in your application's head content (e.g. in `App.razor`):
+
+```razor
+<head>
+    ...
+    <WebAwesomeAssets />
+</head>
+```
+
+By default it loads the matching Web Awesome version from the official CDN. Everything is configurable via the `WebAwesome` configuration section or the options delegate — asset source (CDN vs. self-hosted), version, explicit URLs, and a Font Awesome kit code for premium icon packs:
+
+```jsonc
+// appsettings.json — all values optional
+{
+  "WebAwesome": {
+    "FontAwesomeKitCode": "your_kit_code_here" // configure via user secrets, never commit real codes
+  }
+}
+```
+
+#### Advanced: static asset tags
+In standalone WebAssembly apps `index.html` is static, so add the equivalent tags directly (adjust the version to the release you use — it always matches this package's version):
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/styles/webawesome.css" />
