@@ -30,10 +30,11 @@
     </Otherwise>
   </Choose>
 
-  <!-- Framework targeting -->
+  <!-- Framework targeting: net10.0 (LTS) is the primary target, net9.0 kept for compatibility -->
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <RuntimeFrameworkVersion>9.0.8</RuntimeFrameworkVersion>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net9.0'">9.0.8</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net10.0'">10.0.10</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <!-- Common compilation settings -->

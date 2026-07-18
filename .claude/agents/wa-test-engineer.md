@@ -18,6 +18,6 @@ You are a test engineer for the WebAwesome.Blazor wrapper library in the current
 
 ## Verification and result
 
-Run `dotnet test src\WebAwesome.slnx -p:Configuration=Debug` (from the repository root) and iterate until green.
+Run `dotnet test src\WebAwesome.slnx -p:Configuration=Debug` (from the repository root) and iterate until green — the suite runs once per target framework (net9.0 and net10.0); both must pass. Tests must compile for all TFMs; no `#if` divergence without a documented reason.
 
 Return a structured summary: test files added/changed, total pass/fail counts before and after, parity gaps you believe are intentional deviations (with rationale), and any wrapper bugs you found (report — do not fix wrapper code yourself unless the fix is a one-line correction matching the CEM surface).
