@@ -6,22 +6,22 @@
 <p>Checkboxes allow the user to toggle an option on or off. <code>&lt;wa-checkbox&gt;</code> wrapped by <code>WaCheckbox</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaCheckbox>Checkbox</WaCheckbox>
+    <WaCheckbox @bind-Value="defaultChecked">Checkbox</WaCheckbox>
 </ExampleSection>
 
 <ExampleSection Title="Checked &amp; Indeterminate" Code="@CheckedExample">
-    <WaCheckbox Value="true">Checked</WaCheckbox>
-    <WaCheckbox Indeterminate="true">Indeterminate</WaCheckbox>
+    <WaCheckbox @bind-Value="checkedValue">Checked</WaCheckbox>
+    <WaCheckbox Indeterminate="true" @bind-Value="indeterminateValue">Indeterminate</WaCheckbox>
 </ExampleSection>
 
 <ExampleSection Title="Disabled" Code="@DisabledExample">
-    <WaCheckbox Disabled="true">Disabled</WaCheckbox>
+    <WaCheckbox Disabled="true" @bind-Value="disabledValue">Disabled</WaCheckbox>
 </ExampleSection>
 
 <ExampleSection Title="Sizes" Code="@SizesExample">
-    <WaCheckbox Size="WaSize.Small">Small</WaCheckbox>
-    <WaCheckbox Size="WaSize.Medium">Medium</WaCheckbox>
-    <WaCheckbox Size="WaSize.Large">Large</WaCheckbox>
+    <WaCheckbox Size="WaSize.Small" @bind-Value="smallValue">Small</WaCheckbox>
+    <WaCheckbox Size="WaSize.Medium" @bind-Value="mediumValue">Medium</WaCheckbox>
+    <WaCheckbox Size="WaSize.Large" @bind-Value="largeValue">Large</WaCheckbox>
 </ExampleSection>
 
 <ExampleSection Title="Hint &amp; Two-way Binding" Code="@HintExample">
@@ -33,24 +33,50 @@
 
 @code {
     private bool agreed;
+    private bool defaultChecked;
+    private bool checkedValue = true;
+    private bool indeterminateValue;
+    private bool disabledValue;
+    private bool smallValue;
+    private bool mediumValue;
+    private bool largeValue;
 
     private const string DefaultExample = """
-        <WaCheckbox>Checkbox</WaCheckbox>
+        <WaCheckbox @bind-Value="defaultChecked">Checkbox</WaCheckbox>
+
+        @code {
+            private bool defaultChecked;
+        }
         """;
 
     private const string CheckedExample = """
-        <WaCheckbox Value="true">Checked</WaCheckbox>
-        <WaCheckbox Indeterminate="true">Indeterminate</WaCheckbox>
+        <WaCheckbox @bind-Value="checkedValue">Checked</WaCheckbox>
+        <WaCheckbox Indeterminate="true" @bind-Value="indeterminateValue">Indeterminate</WaCheckbox>
+
+        @code {
+            private bool checkedValue = true;
+            private bool indeterminateValue;
+        }
         """;
 
     private const string DisabledExample = """
-        <WaCheckbox Disabled="true">Disabled</WaCheckbox>
+        <WaCheckbox Disabled="true" @bind-Value="disabledValue">Disabled</WaCheckbox>
+
+        @code {
+            private bool disabledValue;
+        }
         """;
 
     private const string SizesExample = """
-        <WaCheckbox Size="WaSize.Small">Small</WaCheckbox>
-        <WaCheckbox Size="WaSize.Medium">Medium</WaCheckbox>
-        <WaCheckbox Size="WaSize.Large">Large</WaCheckbox>
+        <WaCheckbox Size="WaSize.Small" @bind-Value="smallValue">Small</WaCheckbox>
+        <WaCheckbox Size="WaSize.Medium" @bind-Value="mediumValue">Medium</WaCheckbox>
+        <WaCheckbox Size="WaSize.Large" @bind-Value="largeValue">Large</WaCheckbox>
+
+        @code {
+            private bool smallValue;
+            private bool mediumValue;
+            private bool largeValue;
+        }
         """;
 
     private const string HintExample = """

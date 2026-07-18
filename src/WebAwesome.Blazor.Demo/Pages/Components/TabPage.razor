@@ -6,7 +6,12 @@
 <p><code>&lt;wa-tab&gt;</code> wrapped by <code>WaTab</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaTab />
+    <WaTabGroup>
+        <WaTab Panel="general" Active="true">General</WaTab>
+        <WaTab Panel="advanced">Advanced</WaTab>
+        <WaTabPanel Name="general" Active="true">This is the general tab panel.</WaTabPanel>
+        <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+    </WaTabGroup>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tab.md) *@
@@ -14,5 +19,12 @@
 <ApiTable Tag="wa-tab" />
 
 @code {
-    private const string DefaultExample = "<WaTab />";
+    private const string DefaultExample = """
+        <WaTabGroup>
+            <WaTab Panel="general" Active="true">General</WaTab>
+            <WaTab Panel="advanced">Advanced</WaTab>
+            <WaTabPanel Name="general" Active="true">This is the general tab panel.</WaTabPanel>
+            <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+        </WaTabGroup>
+        """;
 }

@@ -6,7 +6,10 @@
 <p><code>&lt;wa-popover&gt;</code> wrapped by <code>WaPopover</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaPopover />
+    <WaButton id="popover-anchor">Click me</WaButton>
+    <WaPopover For="popover-anchor" Open="true">
+        Popover content
+    </WaPopover>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\popover.md) *@
@@ -14,5 +17,10 @@
 <ApiTable Tag="wa-popover" />
 
 @code {
-    private const string DefaultExample = "<WaPopover />";
+    private const string DefaultExample = """
+        <WaButton id="popover-anchor">Click me</WaButton>
+        <WaPopover For="popover-anchor" Open="true">
+            Popover content
+        </WaPopover>
+        """;
 }

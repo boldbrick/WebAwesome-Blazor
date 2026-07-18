@@ -7,13 +7,14 @@
 
         @if (component.Attributes is { Count: > 0 })
         {
-            <h3>Attributes</h3>
+            <h3>Parameters</h3>
             <table>
-                <thead><tr><th>Attribute</th><th>Description</th><th>Type</th><th>Default</th></tr></thead>
+                <thead><tr><th>Parameter</th><th>Attribute</th><th>Description</th><th>Type</th><th>Default</th></tr></thead>
                 <tbody>
                     @foreach (var attributeEntry in component.Attributes)
                     {
                         <tr>
+                            <td><code>@ToPascalCase(attributeEntry.Key)</code></td>
                             <td><code>@attributeEntry.Key</code></td>
                             <td>@attributeEntry.Value.Description</td>
                             <td><code>@attributeEntry.Value.Type</code></td>
@@ -22,17 +23,19 @@
                     }
                 </tbody>
             </table>
+            <p class="api-note">Parameter names follow the Blazor convention (PascalCase of the attribute); a few wrappers deviate deliberately — see the wrapper's IntelliSense for the authoritative API.</p>
         }
 
         @if (component.Events is { Count: > 0 })
         {
             <h3>Events</h3>
             <table>
-                <thead><tr><th>Event</th><th>Description</th></tr></thead>
+                <thead><tr><th>Callback</th><th>Event</th><th>Description</th></tr></thead>
                 <tbody>
                     @foreach (var evt in component.Events)
                     {
                         <tr>
+                            <td><code>@ToEventCallbackName(evt.Key)</code></td>
                             <td><code>@evt.Key</code></td>
                             <td>@evt.Value.Description</td>
                         </tr>
@@ -67,7 +70,7 @@
                     @foreach (var method in component.Methods)
                     {
                         <tr>
-                            <td><code>@method.Value.Signature</code></td>
+                            <td><code>@(ToPascalCase(method.Key))Async()</code> <span class="api-native">(<code>@method.Value.Signature</code>)</span></td>
                             <td>@method.Value.Description</td>
                         </tr>
                     }
@@ -91,4 +94,11 @@
         var surface = await SurfaceService.GetSurfaceAsync();
         surface.Components.TryGetValue(Tag, out component);
     }
+
+    private static string ToPascalCase(string kebabName)
+        => string.Concat(kebabName.Split('-', StringSplitOptions.RemoveEmptyEntries)
+            .Select(part => char.ToUpperInvariant(part[0]) + part[1..]));
+
+    private static string ToEventCallbackName(string eventName)
+        => "On" + ToPascalCase(eventName.StartsWith("wa-", StringComparison.Ordinal) ? eventName["wa-".Length..] : eventName);
 }

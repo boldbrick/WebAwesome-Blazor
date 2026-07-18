@@ -6,7 +6,7 @@
 <p><code>&lt;wa-switch&gt;</code> wrapped by <code>WaSwitch</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaSwitch />
+    <WaSwitch @bind-Value="value">Switch</WaSwitch>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\switch.md) *@
@@ -14,5 +14,13 @@
 <ApiTable Tag="wa-switch" />
 
 @code {
-    private const string DefaultExample = "<WaSwitch />";
+    private bool value;
+
+    private const string DefaultExample = """
+        <WaSwitch @bind-Value="value">Switch</WaSwitch>
+
+        @code {
+            private bool value;
+        }
+        """;
 }

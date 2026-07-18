@@ -6,7 +6,16 @@
 <p><code>&lt;wa-popup&gt;</code> wrapped by <code>WaPopup</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaPopup />
+    <WaPopup Active="true" Placement="WaPlacement.Top">
+        <AnchorContent>
+            <WaButton>Anchor</WaButton>
+        </AnchorContent>
+        <ChildContent>
+            <div style="background: var(--wa-color-neutral-fill-loud); color: var(--wa-color-neutral-on-loud); padding: var(--wa-space-s); border-radius: var(--wa-border-radius-m);">
+                Popup content
+            </div>
+        </ChildContent>
+    </WaPopup>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\popup.md) *@
@@ -14,5 +23,16 @@
 <ApiTable Tag="wa-popup" />
 
 @code {
-    private const string DefaultExample = "<WaPopup />";
+    private const string DefaultExample = """
+        <WaPopup Active="true" Placement="WaPlacement.Top">
+            <AnchorContent>
+                <WaButton>Anchor</WaButton>
+            </AnchorContent>
+            <ChildContent>
+                <div style="background: var(--wa-color-neutral-fill-loud); color: var(--wa-color-neutral-on-loud); padding: var(--wa-space-s); border-radius: var(--wa-border-radius-m);">
+                    Popup content
+                </div>
+            </ChildContent>
+        </WaPopup>
+        """;
 }

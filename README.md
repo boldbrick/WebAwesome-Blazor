@@ -95,6 +95,8 @@ In standalone WebAssembly apps `index.html` is static, so add the equivalent tag
 
 > The Blazor wrappers are named `WaXxx` (e.g., `WaButton`, `WaTabs`). They internally render the corresponding `wa-xxx` web component and wire up events/attributes so you can use standard Blazor patterns.
 
+> **Form controls need a binding.** Wrappers deriving from `InputBase<T>` (`WaInput`, `WaCheckbox`, `WaSwitch`, `WaSelect`, `WaRadioGroup`, `WaSlider`, `WaRange`, `WaColorPicker`, `WaRating`, `WaTextArea`) follow the standard Blazor input model: use them with `@bind-Value` (or inside an `EditForm`); bare usage throws at runtime, as with Blazor's built-in inputs.
+
 ### Using native elements directly (advanced)
 If you prefer working with native web components, you can still render `<wa-button>` etc. The wrappers primarily exist to make event binding, parameter casing, and lifecycle interop seamless in Blazor.
 

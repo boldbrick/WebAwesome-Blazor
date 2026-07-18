@@ -37,7 +37,7 @@
             This card has a footer. You can put all sorts of things in it!
         </ChildContent>
         <FooterContent>
-            <WaRating Label="Rating" />
+            <WaRating Label="Rating" @bind-Value="footerRating" />
         </FooterContent>
         <FooterActionsContent>
             <WaButton Variant="WaVariant.Brand">Preview</WaButton>
@@ -69,6 +69,8 @@
 <ApiTable Tag="wa-card" />
 
 @code {
+    private decimal footerRating = 3;
+
     private const string DefaultExample = "<WaCard />";
 
     private const string BasicExample = """
@@ -99,12 +101,16 @@
                 This card has a footer. You can put all sorts of things in it!
             </ChildContent>
             <FooterContent>
-                <WaRating Label="Rating" />
+                <WaRating Label="Rating" @bind-Value="footerRating" />
             </FooterContent>
             <FooterActionsContent>
                 <WaButton Variant="WaVariant.Brand">Preview</WaButton>
             </FooterActionsContent>
         </WaCard>
+
+        @code {
+            private decimal footerRating = 3;
+        }
         """;
 
     private const string MediaExample = """

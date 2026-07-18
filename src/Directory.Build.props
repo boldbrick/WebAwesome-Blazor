@@ -17,6 +17,10 @@
 
   <!-- common output directory configuration -->
   <PropertyGroup>
+    <!-- this file is evaluated before MSBuild's own Configuration default applies; without this,
+         plain `dotnet run`/`dotnet build` (no -c) would compute output paths with an empty Configuration -->
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+
     <!-- root solution directory initialization in case running from project folder -->
     <SolutionDir Condition="$(SolutionDir) == ''">$([MSBuild]::EnsureTrailingSlash($([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)', '$(BbMainSolution)'))))</SolutionDir>
 

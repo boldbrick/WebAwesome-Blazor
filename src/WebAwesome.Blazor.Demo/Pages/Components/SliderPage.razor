@@ -6,7 +6,7 @@
 <p><code>&lt;wa-slider&gt;</code> wrapped by <code>WaSlider</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaSlider />
+    <WaSlider @bind-Value="value" />
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\slider.md) *@
@@ -14,5 +14,13 @@
 <ApiTable Tag="wa-slider" />
 
 @code {
-    private const string DefaultExample = "<WaSlider />";
+    private decimal? value = 50;
+
+    private const string DefaultExample = """
+        <WaSlider @bind-Value="value" />
+
+        @code {
+            private decimal? value = 50;
+        }
+        """;
 }
