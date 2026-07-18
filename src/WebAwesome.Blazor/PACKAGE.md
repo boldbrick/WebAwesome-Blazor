@@ -15,15 +15,16 @@ Register the services in `Program.cs`:
 ```csharp
 using WebAwesome.Blazor.Extensions;
 
-builder.Services.AddWebAwesome();
+builder.Services.AddWebAwesome(builder.Configuration);
 ```
 
-Include the Web Awesome assets (e.g. in `App.razor`):
+Include the Web Awesome assets in your head content (e.g. in `App.razor`):
 
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/styles/webawesome.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/webawesome.loader.js"></script>
+```razor
+<WebAwesomeAssets />
 ```
+
+The component loads the matching Web Awesome version from the official CDN by default; asset source, version, URLs, and a Font Awesome kit code are configurable via the `WebAwesome` configuration section.
 
 ## Use
 
