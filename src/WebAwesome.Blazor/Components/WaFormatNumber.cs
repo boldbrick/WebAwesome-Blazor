@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,13 @@ public class WaFormatNumber : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -106,6 +106,11 @@ public class WaFormatNumber : ComponentBase
     /// </summary>
     [Parameter] public bool? UseGrouping { get; set; }
 
+    /// <summary>
+    /// Turns off grouping separators, such as thousands separators, regardless of locale.
+    /// </summary>
+    [Parameter] public bool WithoutGrouping { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -134,6 +139,8 @@ public class WaFormatNumber : ComponentBase
         builder.AddAttributeIfNotNull(15, "notation", Notation?.ToHtmlValue());
         builder.AddAttributeIfNotNull(16, "compact-display", CompactDisplay?.ToHtmlValue());
         builder.AddAttributeIfNotNull(17, "use-grouping", UseGrouping);
+        if (WithoutGrouping)
+            builder.AddAttribute(18, "without-grouping", WithoutGrouping);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __formatNumberReference => Element = __formatNumberReference);

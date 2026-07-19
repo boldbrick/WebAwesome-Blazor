@@ -28,13 +28,13 @@ public class WaDialog : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -109,6 +109,16 @@ public class WaDialog : ComponentBase
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnInitialFocus { get; set; }
 
+    /// <summary>
+    /// Invoked after the dialog opens and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+
+    /// <summary>
+    /// Invoked after the dialog closes and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -130,14 +140,15 @@ public class WaDialog : ComponentBase
         builder.AddAttribute(13, "light-dismiss", LightDismiss);
 
         // Add event handlers
-        if (OnShow.HasDelegate)
-            builder.AddAttribute(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "wa-show", OnShow);
 
-        if (OnHide.HasDelegate)
-            builder.AddAttribute(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "wa-hide", OnHide);
 
-        if (OnInitialFocus.HasDelegate)
-            builder.AddAttribute(22, "wa-initial-focus", OnInitialFocus);
+        builder.AddAttributeIfHasDelegate(22, "wa-initial-focus", OnInitialFocus);
+
+        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
+
+        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __dialogReference => Element = __dialogReference);

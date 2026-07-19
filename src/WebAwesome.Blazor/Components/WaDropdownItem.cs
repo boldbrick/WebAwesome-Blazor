@@ -1,8 +1,10 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -13,18 +15,27 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaDropdownItem : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -65,6 +76,20 @@ public class WaDropdownItem : ComponentBase
     /// The type of menu item to render.
     /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
+
+    #endregion
+
+    #region ------ Events ------
+
+    /// <summary>
+    /// Emitted when the dropdown item loses focus.
+    /// </summary>
+    [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
+
+    /// <summary>
+    /// Emitted when the dropdown item gains focus.
+    /// </summary>
+    [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     #endregion
 
@@ -117,6 +142,10 @@ public class WaDropdownItem : ComponentBase
         builder.AddAttribute(13, "disabled", Disabled);
         builder.AddAttributeIfNotNull(14, "variant", Variant?.ToHtmlValue());
 
+        // Add event handlers
+        builder.AddAttributeIfHasDelegate(16, "blur", OnBlur);
+        builder.AddAttributeIfHasDelegate(17, "focus", OnFocus);
+
         // Add element reference capture
         builder.AddElementReferenceCapture(15, __dropdownItemReference => Element = __dropdownItemReference);
 
@@ -158,6 +187,34 @@ public class WaDropdownItem : ComponentBase
         }
 
         builder.CloseElement();
+    }
+
+    #endregion
+
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Opens the submenu, if this item has one.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task OpenSubmenuAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot open submenu: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "openSubmenu");
+    }
+
+    /// <summary>
+    /// Closes the submenu, if this item has one.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task CloseSubmenuAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot close submenu: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "closeSubmenu");
     }
 
     #endregion

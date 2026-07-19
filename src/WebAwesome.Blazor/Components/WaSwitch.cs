@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -16,7 +16,7 @@ public class WaSwitch : WaInputBase<bool>
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
-    /// Gets or sets whether the switch is checked (mirrors CurrentValue for convenience)
+    /// Whether the switch is checked (mirrors CurrentValue for convenience)
     /// </summary>
     [Parameter]
     public bool Checked
@@ -24,6 +24,11 @@ public class WaSwitch : WaInputBase<bool>
         get => CurrentValue;
         set => CurrentValue = value;
     }
+
+    /// <summary>
+    /// Reserves space for the hint even when it is not populated.
+    /// </summary>
+    [Parameter] public bool WithHint { get; set; }
 
     #endregion
 
@@ -33,6 +38,11 @@ public class WaSwitch : WaInputBase<bool>
     /// Invoked when the switch's checked state changes.
     /// </summary>
     [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
+
+    /// <summary>
+    /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
     #endregion
 
@@ -61,6 +71,7 @@ public class WaSwitch : WaInputBase<bool>
         // Include the "value" attribute so that when this is posted by a form, "true"
         // is included in the form fields. That's how <input type="checkbox"> works normally.
         builder.AddAttribute(21, "value", bool.TrueString);
+        builder.AddAttribute(23, "with-hint", WithHint);
 
         // <wa-switch> is a custom element, not a native <input>, so Blazor's built-in change-event
         // value extraction (which only reads .checked when tagName === "INPUT") can't see its real
@@ -72,11 +83,11 @@ public class WaSwitch : WaInputBase<bool>
         AddCommonEventHandlers(builder, 30);
 
         // Add switch-specific event handlers
-        if (OnCheckedChange.HasDelegate)
-            builder.AddAttribute(40, "wa-change", OnCheckedChange);
+        builder.AddAttributeIfHasDelegate(40, "wa-change", OnCheckedChange);
+        builder.AddAttributeIfHasDelegate(42, "wa-invalid", OnInvalid);
 
         // Add element reference capture
-        builder.AddElementReferenceCapture(41, __switchReference => Element = __switchReference);
+        builder.AddElementReferenceCapture(43, __switchReference => Element = __switchReference);
 
         // Add child content (label)
         if (ChildContent is not null)
@@ -93,6 +104,49 @@ public class WaSwitch : WaInputBase<bool>
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out bool result, [NotNullWhen(false)] out string? validationErrorMessage)
         => throw new NotSupportedException($"This component does not parse string inputs. Bind to the '{nameof(CurrentValue)}' property, not '{nameof(CurrentValueAsString)}'.");
+
+    #endregion
+
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Removes focus from the switch.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task BlurAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot blur: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
+    }
+
+    /// <summary>
+    /// Simulates a click on the switch.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task ClickAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot click: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "click");
+    }
+
+    /// <summary>
+    /// Sets focus on the switch.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
 
     #endregion
 

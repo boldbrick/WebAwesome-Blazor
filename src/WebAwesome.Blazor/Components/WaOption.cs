@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,13 @@ public class WaOption : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -56,6 +56,13 @@ public class WaOption : ComponentBase
     /// Draws the option in a disabled state, preventing selection.
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// A label for the option that will be used as its text content when the option is displayed in the
+    /// form control's combobox-like display, particularly useful when the option's default slot content
+    /// is more complex than plain text.
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
 
     #endregion
 
@@ -111,10 +118,10 @@ public class WaOption : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
         builder.AddAttribute(5, "selected", Selected);
         builder.AddAttribute(6, "disabled", Disabled);
+        builder.AddAttributeIfNotNullOrEmpty(7, "label", Label);
 
         // Add event handlers
-        if (OnSelectedChange.HasDelegate)
-            builder.AddAttribute(10, "wa-change", OnSelectedChange);
+        builder.AddAttributeIfHasDelegate(10, "wa-change", OnSelectedChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __optionReference => Element = __optionReference);

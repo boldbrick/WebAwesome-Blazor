@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -26,13 +26,13 @@ public class WaButton : ComponentBase, IFormValidation
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -110,6 +110,51 @@ public class WaButton : ComponentBase, IFormValidation
     /// </summary>
     [Parameter] public string? Rel { get; set; }
 
+    // Form-submission properties
+    /// <summary>
+    /// The "form owner" to associate the button with. If omitted, the closest containing form will be used
+    /// instead. The value of this attribute must be an id of a form in the same document or shadow root as the
+    /// button.
+    /// </summary>
+    [Parameter] public string? Form { get; set; }
+
+    /// <summary>
+    /// Used to override the form owner's <c>action</c> attribute.
+    /// </summary>
+    [Parameter] public string? FormAction { get; set; }
+
+    /// <summary>
+    /// Used to override the form owner's <c>enctype</c> attribute.
+    /// </summary>
+    [Parameter] public string? FormEncType { get; set; }
+
+    /// <summary>
+    /// Used to override the form owner's <c>method</c> attribute.
+    /// </summary>
+    [Parameter] public string? FormMethod { get; set; }
+
+    /// <summary>
+    /// Used to override the form owner's <c>novalidate</c> attribute.
+    /// </summary>
+    [Parameter] public bool? FormNoValidate { get; set; }
+
+    /// <summary>
+    /// Used to override the form owner's <c>target</c> attribute.
+    /// </summary>
+    [Parameter] public string? FormTarget { get; set; }
+
+    /// <summary>
+    /// The name of the button, submitted as a name/value pair with form data, but only when this button is the
+    /// submitter. This attribute is ignored when <see cref="Href"/> is present.
+    /// </summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>
+    /// The value of the button, submitted as a pair with the button's name as part of the form data, but only
+    /// when this button is the submitter. This attribute is ignored when <see cref="Href"/> is present.
+    /// </summary>
+    [Parameter] public string? Value { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -128,6 +173,11 @@ public class WaButton : ComponentBase, IFormValidation
     /// Invoked when the button loses focus.
     /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
+
+    /// <summary>
+    /// Invoked when the form control has been checked for validity and its constraints aren't satisfied.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
     #endregion
 
@@ -186,15 +236,24 @@ public class WaButton : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(14, "download", Download);
         builder.AddAttributeIfNotNullOrEmpty(15, "rel", Rel);
 
+        // Form-submission attributes
+        builder.AddAttributeIfNotNullOrEmpty(16, "form", Form);
+        builder.AddAttributeIfNotNullOrEmpty(17, "formaction", FormAction);
+        builder.AddAttributeIfNotNullOrEmpty(18, "formenctype", FormEncType);
+        builder.AddAttributeIfNotNullOrEmpty(19, "formmethod", FormMethod);
+        builder.AddAttributeIfNotNull(60, "formnovalidate", FormNoValidate);
+        builder.AddAttributeIfNotNullOrEmpty(61, "formtarget", FormTarget);
+        builder.AddAttributeIfNotNullOrEmpty(62, "name", Name);
+        builder.AddAttributeIfNotNullOrEmpty(63, "value", Value);
+
         // Add event handlers
-        if (OnClick.HasDelegate)
-            builder.AddAttribute(20, "onclick", OnClick);
+        builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);
 
-        if (OnFocus.HasDelegate)
-            builder.AddAttribute(21, "onfocus", OnFocus);
+        builder.AddAttributeIfHasDelegate(21, "onfocus", OnFocus);
 
-        if (OnBlur.HasDelegate)
-            builder.AddAttribute(22, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(22, "onblur", OnBlur);
+
+        builder.AddAttributeIfHasDelegate(24, "wa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __buttonReference => Element = __buttonReference);
@@ -249,6 +308,49 @@ public class WaButton : ComponentBase, IFormValidation
             classes.Add(Class);
 
         return string.Join(' ', classes);
+    }
+
+    #endregion
+
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Sets focus on the button.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus the button before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
+
+    /// <summary>
+    /// Removes focus from the button.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task BlurAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot blur the button before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
+    }
+
+    /// <summary>
+    /// Simulates a click on the button.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task ClickAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot click the button before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "click");
     }
 
     #endregion

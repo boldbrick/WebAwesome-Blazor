@@ -32,13 +32,13 @@ public class WaIntersectionObserver : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -79,6 +79,11 @@ public class WaIntersectionObserver : ComponentBase
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
+    /// <summary>
+    /// Whether to disconnect the observer after the first time the wrapped elements intersect.
+    /// </summary>
+    [Parameter] public bool Once { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -117,6 +122,7 @@ public class WaIntersectionObserver : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(12, "root-margin", RootMargin);
         builder.AddAttributeIfNotNullOrEmpty(13, "intersect-class", IntersectClass);
         builder.AddAttribute(14, "disabled", Disabled);
+        builder.AddAttribute(15, "once", Once);
 
         // Add event handlers
         if (OnIntersect.HasDelegate)

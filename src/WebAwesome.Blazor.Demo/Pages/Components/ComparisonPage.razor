@@ -1,18 +1,54 @@
-﻿@page "/components/comparison"
+@page "/components/comparison"
 
 <PageTitle>Comparison</PageTitle>
 
 <h1>Comparison</h1>
-<p><code>&lt;wa-comparison&gt;</code> - <strong>wrapper not yet implemented</strong>; the example below uses the native element.</p>
+<p><code>&lt;wa-comparison&gt;</code> wrapped by <code>WaComparison</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <wa-comparison></wa-comparison>
+    <WaComparison>
+        <BeforeContent>
+            <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: var(--wa-color-neutral-fill-normal);">Before</div>
+        </BeforeContent>
+        <AfterContent>
+            <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: var(--wa-color-brand-fill-loud); color: var(--wa-color-brand-on-loud);">After</div>
+        </AfterContent>
+    </WaComparison>
 </ExampleSection>
 
-@* TODO: implement the WaComparison wrapper, then replace the native element example *@
+<ExampleSection Title="Initial position" Code="@PositionExample">
+    <WaComparison Position="25">
+        <BeforeContent>
+            <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: var(--wa-color-neutral-fill-normal);">Before</div>
+        </BeforeContent>
+        <AfterContent>
+            <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: var(--wa-color-brand-fill-loud); color: var(--wa-color-brand-on-loud);">After</div>
+        </AfterContent>
+    </WaComparison>
+</ExampleSection>
 
 <ApiTable Tag="wa-comparison" />
 
 @code {
-    private const string DefaultExample = "<wa-comparison></wa-comparison>";
+    private const string DefaultExample = """
+        <WaComparison>
+            <BeforeContent>
+                <div>Before</div>
+            </BeforeContent>
+            <AfterContent>
+                <div>After</div>
+            </AfterContent>
+        </WaComparison>
+        """;
+
+    private const string PositionExample = """
+        <WaComparison Position="25">
+            <BeforeContent>
+                <div>Before</div>
+            </BeforeContent>
+            <AfterContent>
+                <div>After</div>
+            </AfterContent>
+        </WaComparison>
+        """;
 }

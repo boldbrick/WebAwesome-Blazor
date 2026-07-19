@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
 namespace WebAwesome.Blazor.Base;
@@ -39,6 +40,39 @@ internal static class RenderTreeBuilderExtensions
         if (value != null)
         {
             builder.AddAttribute(sequence, name, value.ToString());
+        }
+    }
+
+    /// <summary>
+    /// Adds an event handler attribute to the render tree only when the callback has a delegate attached.
+    /// </summary>
+    /// <typeparam name="T">Type of the event arguments</typeparam>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Event attribute name</param>
+    /// <param name="callback">Event callback; nothing is emitted when no delegate is attached</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddAttributeIfHasDelegate<T>(this RenderTreeBuilder builder, int sequence, string name, EventCallback<T> callback)
+    {
+        if (callback.HasDelegate)
+        {
+            builder.AddAttribute(sequence, name, callback);
+        }
+    }
+
+    /// <summary>
+    /// Adds an event handler attribute to the render tree only when the callback has a delegate attached.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Event attribute name</param>
+    /// <param name="callback">Event callback; nothing is emitted when no delegate is attached</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddAttributeIfHasDelegate(this RenderTreeBuilder builder, int sequence, string name, EventCallback callback)
+    {
+        if (callback.HasDelegate)
+        {
+            builder.AddAttribute(sequence, name, callback);
         }
     }
 

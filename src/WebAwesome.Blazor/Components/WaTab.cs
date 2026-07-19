@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,13 +27,13 @@ public class WaTab : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -116,14 +116,11 @@ public class WaTab : ComponentBase
         builder.AddAttribute(7, "closable", Closable);
 
         // Add event handlers
-        if (OnClick.HasDelegate)
-            builder.AddAttribute(10, "onclick", OnClick);
+        builder.AddAttributeIfHasDelegate(10, "onclick", OnClick);
 
-        if (OnFocus.HasDelegate)
-            builder.AddAttribute(11, "onfocus", OnFocus);
+        builder.AddAttributeIfHasDelegate(11, "onfocus", OnFocus);
 
-        if (OnBlur.HasDelegate)
-            builder.AddAttribute(12, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(12, "onblur", OnBlur);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(13, __tabReference => Element = __tabReference);

@@ -28,13 +28,13 @@ public class WaPopover : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -72,6 +72,11 @@ public class WaPopover : ComponentBase
     [Parameter] public int Distance { get; set; } = 8;
 
     /// <summary>
+    /// The distance in pixels from which to offset the popover along its target.
+    /// </summary>
+    [Parameter] public int? Skidding { get; set; }
+
+    /// <summary>
     /// Removes the arrow from the popover.
     /// </summary>
     [Parameter] public bool WithoutArrow { get; set; }
@@ -99,6 +104,16 @@ public class WaPopover : ComponentBase
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
 
+    /// <summary>
+    /// Invoked after the popover shows and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+
+    /// <summary>
+    /// Invoked after the popover hides and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -121,13 +136,16 @@ public class WaPopover : ComponentBase
         if (Distance != 8)
             builder.AddAttribute(13, "distance", Distance);
         builder.AddAttribute(14, "without-arrow", WithoutArrow);
+        builder.AddAttributeIfNotNull(15, "skidding", Skidding);
 
         // Add event handlers
-        if (OnShow.HasDelegate)
-            builder.AddAttribute(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "wa-show", OnShow);
 
-        if (OnHide.HasDelegate)
-            builder.AddAttribute(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "wa-hide", OnHide);
+
+        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
+
+        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(22, __popoverReference => Element = __popoverReference);
