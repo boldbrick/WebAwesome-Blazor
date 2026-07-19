@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ public class WaTag : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -108,8 +108,7 @@ public class WaTag : ComponentBase
         builder.AddAttribute(14, "with-remove", WithRemove);
 
         // Add event handlers
-        if (OnRemove.HasDelegate)
-            builder.AddAttribute(20, "wa-remove", OnRemove);
+        builder.AddAttributeIfHasDelegate(20, "wa-remove", OnRemove);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(21, __tagReference => Element = __tagReference);

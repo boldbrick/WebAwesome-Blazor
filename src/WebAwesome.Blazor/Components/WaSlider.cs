@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -88,6 +88,16 @@ public class WaSlider : WaInputBase<decimal?>
     /// </summary>
     [Parameter] public WaPlacement? TooltipPlacement { get; set; }
 
+    /// <summary>
+    /// The distance in pixels from which to offset the tooltip from the slider's thumb.
+    /// </summary>
+    [Parameter] public int? TooltipDistance { get; set; }
+
+    /// <summary>
+    /// Automatically focuses the slider when the page loads.
+    /// </summary>
+    [Parameter] public bool AutoFocus { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -96,6 +106,11 @@ public class WaSlider : WaInputBase<decimal?>
     /// Invoked when the slider's value changes.
     /// </summary>
     [Parameter] public EventCallback<decimal?> OnValueChange { get; set; }
+
+    /// <summary>
+    /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
     #endregion
 
@@ -142,6 +157,8 @@ public class WaSlider : WaInputBase<decimal?>
         builder.AddAttribute(26, "with-tooltip", WithTooltip);
         builder.AddAttribute(27, "with-markers", WithMarkers);
         builder.AddAttributeIfNotNull(28, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(29, "tooltip-distance", TooltipDistance);
+        builder.AddAttribute(33, "autofocus", AutoFocus);
 
         // Add value binding - handle both single and range mode
         if (Range)
@@ -164,11 +181,11 @@ public class WaSlider : WaInputBase<decimal?>
         AddCommonEventHandlers(builder, 40);
 
         // Add slider-specific event handlers
-        if (OnValueChange.HasDelegate)
-            builder.AddAttribute(50, "wa-change", OnValueChange);
+        builder.AddAttributeIfHasDelegate(50, "wa-change", OnValueChange);
+        builder.AddAttributeIfHasDelegate(52, "wa-invalid", OnInvalid);
 
         // Add element reference capture
-        builder.AddElementReferenceCapture(51, __sliderReference => Element = __sliderReference);
+        builder.AddElementReferenceCapture(53, __sliderReference => Element = __sliderReference);
 
         // Add child content (reference labels)
         if (ChildContent is not null)
@@ -257,6 +274,58 @@ public class WaSlider : WaInputBase<decimal?>
             throw new ArgumentNullException(nameof(jsFunction));
 
         await JSInterop.SetPropertyAsync(Element.Value, "valueFormatter", jsFunction);
+    }
+
+    /// <summary>
+    /// Removes focus from the slider.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task BlurAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot blur: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
+    }
+
+    /// <summary>
+    /// Sets focus on the slider.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
+
+    /// <summary>
+    /// Decrements the slider's value by <see cref="Step"/>.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task StepDownAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot step down: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "stepDown");
+    }
+
+    /// <summary>
+    /// Increments the slider's value by <see cref="Step"/>.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task StepUpAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot step up: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "stepUp");
     }
 
     #endregion

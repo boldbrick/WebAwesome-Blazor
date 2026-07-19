@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -26,7 +26,7 @@ public class WaAnimatedImage : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -58,7 +58,7 @@ public class WaAnimatedImage : ComponentBase
     [Parameter] public string? Alt { get; set; }
 
     /// <summary>
-    /// Plays the animation. When set to <see langword="false"/>, the animation will pause.
+    /// Plays the animation. When set to false, the animation will pause.
     /// </summary>
     [Parameter] public bool Play { get; set; } = true;
 
@@ -108,11 +108,9 @@ public class WaAnimatedImage : ComponentBase
         builder.AddAttribute(6, "play", Play);
 
         // Add event handlers
-        if (OnLoad.HasDelegate)
-            builder.AddAttribute(10, "load", OnLoad);
+        builder.AddAttributeIfHasDelegate(10, "load", OnLoad);
 
-        if (OnError.HasDelegate)
-            builder.AddAttribute(11, "error", OnError);
+        builder.AddAttributeIfHasDelegate(11, "error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __animatedImageReference => Element = __animatedImageReference);

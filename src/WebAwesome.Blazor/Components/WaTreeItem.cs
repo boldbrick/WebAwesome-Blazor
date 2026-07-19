@@ -1,7 +1,10 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -10,21 +13,23 @@ namespace WebAwesome.Blazor.Components;
 /// A single node within a <see cref="WaTree"/>, optionally containing nested <see cref="WaTreeItem"/> children.
 /// Corresponds to the wa-tree-item Web Awesome component.
 /// </summary>
-/// <remarks>
-/// The CEM-documented <c>getChildrenItems()</c> method (returning the nested <c>WaTreeItem</c> elements) is not
-/// exposed here: there is no supported way to marshal an arbitrary array of DOM elements returned from a JS
-/// method call into live <see cref="ElementReference"/>s or wrapper instances (those only exist for elements
-/// Blazor itself captured via element reference capture). Track nested items declaratively through
-/// <see cref="ChildContent"/> instead.
-/// </remarks>
 public class WaTreeItem : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -141,23 +146,17 @@ public class WaTreeItem : ComponentBase
         builder.AddAttribute(7, "selected", Selected);
 
         // Add event handlers
-        if (OnAfterCollapse.HasDelegate)
-            builder.AddAttribute(10, "wa-after-collapse", OnAfterCollapse);
+        builder.AddAttributeIfHasDelegate(10, "wa-after-collapse", OnAfterCollapse);
 
-        if (OnAfterExpand.HasDelegate)
-            builder.AddAttribute(11, "wa-after-expand", OnAfterExpand);
+        builder.AddAttributeIfHasDelegate(11, "wa-after-expand", OnAfterExpand);
 
-        if (OnCollapse.HasDelegate)
-            builder.AddAttribute(12, "wa-collapse", OnCollapse);
+        builder.AddAttributeIfHasDelegate(12, "wa-collapse", OnCollapse);
 
-        if (OnExpand.HasDelegate)
-            builder.AddAttribute(13, "wa-expand", OnExpand);
+        builder.AddAttributeIfHasDelegate(13, "wa-expand", OnExpand);
 
-        if (OnLazyChange.HasDelegate)
-            builder.AddAttribute(14, "wa-lazy-change", OnLazyChange);
+        builder.AddAttributeIfHasDelegate(14, "wa-lazy-change", OnLazyChange);
 
-        if (OnLazyLoad.HasDelegate)
-            builder.AddAttribute(15, "wa-lazy-load", OnLazyLoad);
+        builder.AddAttributeIfHasDelegate(15, "wa-lazy-load", OnLazyLoad);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(16, __treeItemReference => Element = __treeItemReference);
@@ -187,6 +186,28 @@ public class WaTreeItem : ComponentBase
         }
 
         builder.CloseElement();
+    }
+
+    #endregion
+
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Gets the tree item's nested child tree items.
+    /// </summary>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a raw
+    /// <see cref="JsonElement"/> representing the array of child <c>wa-tree-item</c> elements, since arbitrary
+    /// DOM element arrays returned from JavaScript cannot be marshaled into live <see cref="ElementReference"/>s
+    /// or wrapper instances.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task<JsonElement> GetChildrenItemsAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot get children items: component has not been rendered yet.");
+
+        return await JSInterop.InvokeMethodAsync<JsonElement>(Element.Value, "getChildrenItems");
     }
 
     #endregion

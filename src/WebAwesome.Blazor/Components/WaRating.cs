@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -58,8 +58,7 @@ public class WaRating : WaInputBase<decimal>
         builder.SetUpdatesAttributeName("value");
 
         // Add rating-specific event handlers
-        if (OnHover.HasDelegate)
-            builder.AddAttribute(40, "wa-hover", OnHover);
+        builder.AddAttributeIfHasDelegate(40, "wa-hover", OnHover);
 
         // Add common event handlers
         AddCommonEventHandlers(builder, 50);
@@ -90,6 +89,32 @@ public class WaRating : WaInputBase<decimal>
     #endregion
 
     #region ------ Public Methods ------
+
+    /// <summary>
+    /// Removes focus from the rating.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task BlurAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot blur: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
+    }
+
+    /// <summary>
+    /// Sets focus on the rating.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
 
     /// <summary>
     /// Sets a custom symbol function for rendering icons.

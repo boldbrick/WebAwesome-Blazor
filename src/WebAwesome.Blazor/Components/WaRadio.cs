@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ public class WaRadio : ComponentBase, IFormValidation
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -123,14 +123,11 @@ public class WaRadio : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNull(8, "appearance", Appearance?.ToHtmlValue());
 
         // Add event handlers
-        if (OnCheckedChange.HasDelegate)
-            builder.AddAttribute(10, "wa-change", OnCheckedChange);
+        builder.AddAttributeIfHasDelegate(10, "wa-change", OnCheckedChange);
 
-        if (OnFocus.HasDelegate)
-            builder.AddAttribute(11, "onfocus", OnFocus);
+        builder.AddAttributeIfHasDelegate(11, "onfocus", OnFocus);
 
-        if (OnBlur.HasDelegate)
-            builder.AddAttribute(12, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(12, "onblur", OnBlur);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(13, __radioReference => Element = __radioReference);

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -19,7 +19,7 @@ public class WaBreadcrumbItem : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -45,6 +45,16 @@ public class WaBreadcrumbItem : ComponentBase
     /// when unset, a button is rendered instead.
     /// </summary>
     [Parameter] public string? Href { get; set; }
+
+    /// <summary>
+    /// The <c>rel</c> attribute to use when <see cref="Href"/> is set.
+    /// </summary>
+    [Parameter] public string? Rel { get; set; }
+
+    /// <summary>
+    /// Tells the browser where to open the link when <see cref="Href"/> is set.
+    /// </summary>
+    [Parameter] public string? Target { get; set; }
 
     #endregion
 
@@ -100,10 +110,11 @@ public class WaBreadcrumbItem : ComponentBase
 
         // Add breadcrumb item-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "href", Href);
+        builder.AddAttributeIfNotNullOrEmpty(11, "rel", Rel);
+        builder.AddAttributeIfNotNullOrEmpty(12, "target", Target);
 
         // Add event handlers
-        if (OnClick.HasDelegate)
-            builder.AddAttribute(20, "onclick", OnClick);
+        builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(21, __breadcrumbItemReference => Element = __breadcrumbItemReference);

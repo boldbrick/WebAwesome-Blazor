@@ -147,6 +147,7 @@ public class ComponentManager : IComponentManager
 - **Required** for all non-private members
 - Include parameter descriptions and important exceptions
 - Avoid redundant phrases like "Gets or sets..."
+- **Never use `<see langword="..."/>`** — write keywords like `true`, `false`, `null` as plain text
 ```csharp
 /// <summary>
 /// Creates a new UI component with the specified configuration.

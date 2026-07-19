@@ -9,7 +9,7 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 
 > **Status**
 > - Active train: **WA 3.0**
-> - Current alignment: **WA 3.0.0-beta.6** (tagged releases use `wa-blazor-<version>`)
+> - Current alignment: **WA 3.0.0** (tagged releases use `wa-blazor-<version>`)
 
 ## Why this library
 - Use WA components with **strongly-typed** Blazor parameters and events.
@@ -76,8 +76,8 @@ By default it loads the matching Web Awesome version from the official CDN. Ever
 In standalone WebAssembly apps `index.html` is static, so add the equivalent tags directly (adjust the version to the release you use — it always matches this package's version):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/styles/webawesome.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/webawesome.loader.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0/dist-cdn/styles/webawesome.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0/dist-cdn/webawesome.loader.js"></script>
 ```
 
 ## Quick start (wrapper usage)
@@ -139,6 +139,7 @@ We align binding versions to WA versions. Use the **same** semantic version when
 
 | Web Awesome | Bindings Tag                          | Branch (GitHub)       |
 |-------------|----------------------------------------|-----------------------|
+| 3.0.0       | `wa-blazor-3.0.0`           | `main` (promoted)     |
 | 3.0.0-beta.6| `wa-blazor-3.0.0-beta.6`     | `main` (promoted)     |
 | 3.0 train   | rolling prereleases → tags as above    | `main/wa-3.0`         |
 | 3.0 stable  | `v3.0.x` maintained on release branch  | `release-3.0` (later) |

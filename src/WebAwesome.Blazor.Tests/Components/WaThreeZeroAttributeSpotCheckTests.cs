@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using System;
 using WebAwesome.Blazor.Components;
 using Xunit;
@@ -94,12 +94,12 @@ public class WaThreeZeroAttributeSpotCheckTests
         var component = new WaSlider();
 
         // Act
-        component.Autofocus = true;
-        component.TooltipDistance = 12.5;
+        component.AutoFocus = true;
+        component.TooltipDistance = 12;
 
         // Assert
-        Assert.True(component.Autofocus);
-        Assert.Equal(12.5, component.TooltipDistance);
+        Assert.True(component.AutoFocus);
+        Assert.Equal(12, component.TooltipDistance);
     }
 
     #endregion
@@ -148,22 +148,22 @@ public class WaThreeZeroAttributeSpotCheckTests
         var component = new WaInput();
 
         // Act
-        component.Autocapitalize = "words";
-        component.Autocorrect = "off";
-        component.Autofocus = true;
-        component.Enterkeyhint = "go";
-        component.Inputmode = "numeric";
+        component.AutoCapitalize = "words";
+        component.AutoCorrect = "off";
+        component.AutoFocus = true;
+        component.EnterKeyHint = "go";
+        component.InputMode = "numeric";
         component.PasswordVisible = true;
         component.WithHint = true;
         component.WithLabel = true;
         component.WithoutSpinButtons = true;
 
         // Assert
-        Assert.Equal("words", component.Autocapitalize);
-        Assert.Equal("off", component.Autocorrect);
-        Assert.True(component.Autofocus);
-        Assert.Equal("go", component.Enterkeyhint);
-        Assert.Equal("numeric", component.Inputmode);
+        Assert.Equal("words", component.AutoCapitalize);
+        Assert.Equal("off", component.AutoCorrect);
+        Assert.True(component.AutoFocus);
+        Assert.Equal("go", component.EnterKeyHint);
+        Assert.Equal("numeric", component.InputMode);
         Assert.True(component.PasswordVisible);
         Assert.True(component.WithHint);
         Assert.True(component.WithLabel);
@@ -196,21 +196,21 @@ public class WaThreeZeroAttributeSpotCheckTests
 
         // Act
         component.Form = "my-form";
-        component.Formaction = "/submit";
-        component.Formenctype = "multipart/form-data";
-        component.Formmethod = "post";
-        component.Formnovalidate = true;
-        component.Formtarget = "_blank";
+        component.FormAction = "/submit";
+        component.FormEncType = "multipart/form-data";
+        component.FormMethod = "post";
+        component.FormNoValidate = true;
+        component.FormTarget = "_blank";
         component.Name = "action";
         component.Value = "save";
 
         // Assert
         Assert.Equal("my-form", component.Form);
-        Assert.Equal("/submit", component.Formaction);
-        Assert.Equal("multipart/form-data", component.Formenctype);
-        Assert.Equal("post", component.Formmethod);
-        Assert.True(component.Formnovalidate);
-        Assert.Equal("_blank", component.Formtarget);
+        Assert.Equal("/submit", component.FormAction);
+        Assert.Equal("multipart/form-data", component.FormEncType);
+        Assert.Equal("post", component.FormMethod);
+        Assert.True(component.FormNoValidate);
+        Assert.Equal("_blank", component.FormTarget);
         Assert.Equal("action", component.Name);
         Assert.Equal("save", component.Value);
     }
@@ -524,17 +524,17 @@ public class WaThreeZeroAttributeSpotCheckTests
     }
 
     [Fact]
-    public void WaZoomableFrame_Srcdoc_ReplacesRenamedSrcDocProperty()
+    public void WaZoomableFrame_SrcDoc_UsesIdiomaticCasing()
     {
         // Arrange
         var component = new WaZoomableFrame();
 
         // Act
-        component.Srcdoc = "<p>content</p>";
+        component.SrcDoc = "<p>content</p>";
 
-        // Assert - renamed from "SrcDoc" to "Srcdoc" per the 3.0.0 CEM
-        Assert.Equal("<p>content</p>", component.Srcdoc);
-        Assert.Null(component.GetType().GetProperty("SrcDoc"));
+        // Assert - the srcdoc attribute maps to SrcDoc (idiomatic .NET casing, see parity-config attributeOverrides)
+        Assert.Equal("<p>content</p>", component.SrcDoc);
+        Assert.Null(component.GetType().GetProperty("Srcdoc"));
     }
 
     [Fact]
@@ -544,15 +544,15 @@ public class WaThreeZeroAttributeSpotCheckTests
         var component = new WaZoomableFrame();
 
         // Act
-        component.Allowfullscreen = true;
+        component.AllowFullScreen = true;
         component.Loading = WaLoading.Lazy;
-        component.Referrerpolicy = "no-referrer";
+        component.ReferrerPolicy = "no-referrer";
         component.Sandbox = "allow-scripts allow-same-origin";
 
         // Assert
-        Assert.True(component.Allowfullscreen);
+        Assert.True(component.AllowFullScreen);
         Assert.Equal(WaLoading.Lazy, component.Loading);
-        Assert.Equal("no-referrer", component.Referrerpolicy);
+        Assert.Equal("no-referrer", component.ReferrerPolicy);
         Assert.Equal("allow-scripts allow-same-origin", component.Sandbox);
     }
 

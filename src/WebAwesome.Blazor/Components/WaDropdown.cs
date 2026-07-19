@@ -28,7 +28,7 @@ public class WaDropdown : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -71,6 +71,11 @@ public class WaDropdown : ComponentBase
     /// </summary>
     [Parameter] public int Skidding { get; set; } = 0;
 
+    /// <summary>
+    /// The size of dropdown items slotted into the default slot (i.e. <c>wa-dropdown-item</c>).
+    /// </summary>
+    [Parameter] public WaSize? Size { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -104,6 +109,16 @@ public class WaDropdown : ComponentBase
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnSelect { get; set; }
 
+    /// <summary>
+    /// Invoked after the dropdown opens and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+
+    /// <summary>
+    /// Invoked after the dropdown closes and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -126,16 +141,18 @@ public class WaDropdown : ComponentBase
             builder.AddAttribute(12, "distance", Distance);
         if (Skidding != 0)
             builder.AddAttribute(13, "skidding", Skidding);
+        builder.AddAttributeIfNotNull(14, "size", Size?.ToHtmlValue());
 
         // Add event handlers
-        if (OnShow.HasDelegate)
-            builder.AddAttribute(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "wa-show", OnShow);
 
-        if (OnHide.HasDelegate)
-            builder.AddAttribute(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "wa-hide", OnHide);
 
-        if (OnSelect.HasDelegate)
-            builder.AddAttribute(22, "wa-select", OnSelect);
+        builder.AddAttributeIfHasDelegate(22, "wa-select", OnSelect);
+
+        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
+
+        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __dropdownReference => Element = __dropdownReference);

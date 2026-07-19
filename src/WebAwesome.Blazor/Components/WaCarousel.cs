@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -26,7 +26,7 @@ public class WaCarousel : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -145,8 +145,7 @@ public class WaCarousel : ComponentBase
         builder.AddAttribute(12, "slides-per-move", SlidesPerMove);
 
         // Add event handlers
-        if (OnSlideChange.HasDelegate)
-            builder.AddAttribute(15, "wa-slide-change", OnSlideChange);
+        builder.AddAttributeIfHasDelegate(15, "wa-slide-change", OnSlideChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __carouselReference => Element = __carouselReference);

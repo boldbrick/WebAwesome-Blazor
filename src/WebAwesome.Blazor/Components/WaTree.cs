@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -18,7 +18,7 @@ public class WaTree : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -92,8 +92,7 @@ public class WaTree : ComponentBase
         builder.AddAttribute(4, "selection", Selection.ToHtmlValue());
 
         // Add event handlers
-        if (OnSelectionChange.HasDelegate)
-            builder.AddAttribute(10, "wa-selection-change", OnSelectionChange);
+        builder.AddAttributeIfHasDelegate(10, "wa-selection-change", OnSelectionChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(15, __treeReference => Element = __treeReference);

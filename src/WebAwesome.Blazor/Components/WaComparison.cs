@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ public class WaComparison : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -95,8 +95,7 @@ public class WaComparison : ComponentBase
         builder.AddAttributeIfNotNull(10, "position", Position);
 
         // Add event handlers
-        if (OnChange.HasDelegate)
-            builder.AddAttribute(20, "change", OnChange);
+        builder.AddAttributeIfHasDelegate(20, "change", OnChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __comparisonReference => Element = __comparisonReference);

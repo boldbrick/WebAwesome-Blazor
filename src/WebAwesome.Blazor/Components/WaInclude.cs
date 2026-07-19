@@ -32,7 +32,7 @@ public class WaInclude : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -65,6 +65,12 @@ public class WaInclude : ComponentBase
     /// </summary>
     [Parameter] public WaMode Mode { get; set; } = WaMode.Cors;
 
+    /// <summary>
+    /// Allows scripts included as part of the requested file to be executed. Be extra careful to use this feature
+    /// only with trusted content, as it can result in XSS attacks.
+    /// </summary>
+    [Parameter] public bool AllowScripts { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -75,9 +81,9 @@ public class WaInclude : ComponentBase
     [Parameter] public EventCallback<EventArgs> OnLoad { get; set; }
 
     /// <summary>
-    /// Emitted when the content fails to load
+    /// Emitted when the included file fails to load due to an error.
     /// </summary>
-    [Parameter] public EventCallback<IncludeErrorEventArgs> OnError { get; set; }
+    [Parameter] public EventCallback<IncludeErrorEventArgs> OnIncludeError { get; set; }
 
     #endregion
 
@@ -97,12 +103,12 @@ public class WaInclude : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(10, "src", Src);
         if (Mode != WaMode.Cors)
             builder.AddAttribute(11, "mode", Mode.ToHtmlValue());
+        if (AllowScripts)
+            builder.AddAttribute(12, "allow-scripts", AllowScripts);
 
         // Add event handlers
-        if (OnLoad.HasDelegate)
-            builder.AddAttribute(20, "wa-load", OnLoad);
-        if (OnError.HasDelegate)
-            builder.AddAttribute(21, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(20, "wa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(21, "wa-include-error", OnIncludeError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __includeReference => Element = __includeReference);

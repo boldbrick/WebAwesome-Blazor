@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ public class WaPage : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -54,7 +54,7 @@ public class WaPage : ComponentBase
     // Page properties
     /// <summary>
     /// Determines whether or not to hide the default hamburger button. This will automatically flip to
-    /// <see langword="true"/> if you add an element with <c>data-toggle-nav</c> anywhere in the element light DOM.
+    /// true if you add an element with <c>data-toggle-nav</c> anywhere in the element light DOM.
     /// Generally this will be set for you and you don't need to do anything, unless you're using SSR, in which case
     /// you should set this manually for initial page loads.
     /// </summary>

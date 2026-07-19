@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ public class WaZoomableFrame : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -85,6 +85,26 @@ public class WaZoomableFrame : ComponentBase
     /// Disables interaction with the frame content.
     /// </summary>
     [Parameter] public bool WithoutInteraction { get; set; }
+
+    /// <summary>
+    /// Whether the iframe is allowed to be displayed in fullscreen mode.
+    /// </summary>
+    [Parameter] public bool AllowFullScreen { get; set; }
+
+    /// <summary>
+    /// Indicates when the browser should load the iframe.
+    /// </summary>
+    [Parameter] public WaLoading? Loading { get; set; }
+
+    /// <summary>
+    /// Indicates which referrer to send when fetching the frame's content.
+    /// </summary>
+    [Parameter] public string? ReferrerPolicy { get; set; }
+
+    /// <summary>
+    /// Applies extra restrictions to the content in the frame, e.g. <c>allow-scripts allow-same-origin</c>.
+    /// </summary>
+    [Parameter] public string? Sandbox { get; set; }
 
     #endregion
 
@@ -152,13 +172,16 @@ public class WaZoomableFrame : ComponentBase
         builder.AddAttribute(30, "without-controls", WithoutControls);
         builder.AddAttribute(31, "without-interaction", WithoutInteraction);
 
+        // Add remaining iframe passthrough attributes
+        builder.AddAttribute(32, "allowfullscreen", AllowFullScreen);
+        builder.AddAttributeIfNotNull(33, "loading", Loading?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(34, "referrerpolicy", ReferrerPolicy);
+        builder.AddAttributeIfNotNullOrEmpty(35, "sandbox", Sandbox);
+
         // Add event handlers
-        if (OnZoomChange.HasDelegate)
-            builder.AddAttribute(40, "wa-zoom-change", OnZoomChange);
-        if (OnLoad.HasDelegate)
-            builder.AddAttribute(41, "wa-load", OnLoad);
-        if (OnError.HasDelegate)
-            builder.AddAttribute(42, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(40, "wa-zoom-change", OnZoomChange);
+        builder.AddAttributeIfHasDelegate(41, "wa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(42, "wa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(50, __frameReference => Element = __frameReference);

@@ -29,7 +29,7 @@ public class WaCopyButton : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -90,6 +90,11 @@ public class WaCopyButton : ComponentBase
     /// The length of time, in milliseconds, to show feedback before restoring the default trigger.
     /// </summary>
     [Parameter] public int FeedbackDuration { get; set; } = 1000;
+
+    /// <summary>
+    /// The placement of the tooltip shown for the copy, success, and error labels.
+    /// </summary>
+    [Parameter] public WaPlacement? TooltipPlacement { get; set; }
 
     #endregion
 
@@ -164,16 +169,14 @@ public class WaCopyButton : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(8, "success-label", SuccessLabel);
         builder.AddAttributeIfNotNullOrEmpty(9, "error-label", ErrorLabel);
         builder.AddAttribute(10, "feedback-duration", FeedbackDuration);
+        builder.AddAttributeIfNotNull(11, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
 
         // Add event handlers
-        if (OnCopy.HasDelegate)
-            builder.AddAttribute(20, "wa-copy", OnCopy);
+        builder.AddAttributeIfHasDelegate(20, "wa-copy", OnCopy);
 
-        if (OnSuccess.HasDelegate)
-            builder.AddAttribute(21, "wa-success", OnSuccess);
+        builder.AddAttributeIfHasDelegate(21, "wa-success", OnSuccess);
 
-        if (OnError.HasDelegate)
-            builder.AddAttribute(22, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(22, "wa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __copyButtonReference => Element = __copyButtonReference);

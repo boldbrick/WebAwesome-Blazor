@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -26,7 +26,7 @@ public class WaAnimation : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -53,7 +53,7 @@ public class WaAnimation : ComponentBase
     [Parameter] public string? Name { get; set; }
 
     /// <summary>
-    /// Plays the animation. When set to <see langword="false"/>, the animation will be paused.
+    /// Plays the animation. When set to false, the animation will be paused.
     /// </summary>
     [Parameter] public bool Play { get; set; }
 
@@ -93,6 +93,16 @@ public class WaAnimation : ComponentBase
     /// reverses the animation.
     /// </summary>
     [Parameter] public decimal PlaybackRate { get; set; } = 1;
+
+    /// <summary>
+    /// The number of milliseconds to delay after the end of the animation.
+    /// </summary>
+    [Parameter] public int? EndDelay { get; set; }
+
+    /// <summary>
+    /// The offset at which to start the animation, usually between 0 (start) and 1 (end).
+    /// </summary>
+    [Parameter] public double? IterationStart { get; set; }
 
     #endregion
 
@@ -144,16 +154,15 @@ public class WaAnimation : ComponentBase
         builder.AddAttribute(10, "iterations", Iterations == decimal.MaxValue ? "Infinity" : Iterations.ToString());
         builder.AddAttribute(11, "fill", Fill.ToHtmlValue());
         builder.AddAttribute(12, "playback-rate", PlaybackRate);
+        builder.AddAttributeIfNotNull(13, "end-delay", EndDelay);
+        builder.AddAttributeIfNotNull(14, "iteration-start", IterationStart);
 
         // Add event handlers
-        if (OnCancel.HasDelegate)
-            builder.AddAttribute(20, "wa-cancel", OnCancel);
+        builder.AddAttributeIfHasDelegate(20, "wa-cancel", OnCancel);
 
-        if (OnFinish.HasDelegate)
-            builder.AddAttribute(21, "wa-finish", OnFinish);
+        builder.AddAttributeIfHasDelegate(21, "wa-finish", OnFinish);
 
-        if (OnStart.HasDelegate)
-            builder.AddAttribute(22, "wa-start", OnStart);
+        builder.AddAttributeIfHasDelegate(22, "wa-start", OnStart);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __animationReference => Element = __animationReference);

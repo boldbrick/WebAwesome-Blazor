@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ public class WaBreadcrumb : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -37,6 +37,11 @@ public class WaBreadcrumb : ComponentBase
     /// Additional inline styles to apply to the component.
     /// </summary>
     [Parameter] public string? Style { get; set; }
+
+    /// <summary>
+    /// A label to use for the breadcrumb's <c>aria-label</c> attribute for proper accessibility.
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
 
     #endregion
 
@@ -65,6 +70,7 @@ public class WaBreadcrumb : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
+        builder.AddAttributeIfNotNullOrEmpty(4, "label", Label);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __breadcrumbReference => Element = __breadcrumbReference);

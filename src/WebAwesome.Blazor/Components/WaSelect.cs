@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -43,7 +43,7 @@ public class WaSelect : WaInputBase<string?>
     [Parameter] public bool Multiple { get; set; }
 
     /// <summary>
-    /// The maximum number of selected options to show when <see cref="Multiple"/> is <see langword="true"/>. Beyond this count, a "+n" indicator is shown. Set to 0 to remove the limit.
+    /// The maximum number of selected options to show when <see cref="Multiple"/> is true. Beyond this count, a "+n" indicator is shown. Set to 0 to remove the limit.
     /// </summary>
     [Parameter] public int? MaxOptionsVisible { get; set; }
 
@@ -51,6 +51,21 @@ public class WaSelect : WaInputBase<string?>
     /// The preferred placement of the select's menu. The actual placement may vary as needed to keep the listbox inside the viewport.
     /// </summary>
     [Parameter] public WaPlacement? Placement { get; set; }
+
+    /// <summary>
+    /// Indicates whether the select's dropdown is open.
+    /// </summary>
+    [Parameter] public bool Open { get; set; }
+
+    /// <summary>
+    /// Reserves space for the hint even when it is not populated.
+    /// </summary>
+    [Parameter] public bool WithHint { get; set; }
+
+    /// <summary>
+    /// Reserves space for the label even when it is not populated.
+    /// </summary>
+    [Parameter] public bool WithLabel { get; set; }
 
     #endregion
 
@@ -74,6 +89,31 @@ public class WaSelect : WaInputBase<string?>
     /// Invoked when the control's value is cleared.
     /// </summary>
     [Parameter] public EventCallback OnClear { get; set; }
+
+    /// <summary>
+    /// Invoked when the select's dropdown opens.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+
+    /// <summary>
+    /// Invoked when the select's dropdown closes.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
+
+    /// <summary>
+    /// Invoked after the select's dropdown opens and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+
+    /// <summary>
+    /// Invoked after the select's dropdown closes and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
+
+    /// <summary>
+    /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
     #endregion
 
@@ -138,6 +178,9 @@ public class WaSelect : WaInputBase<string?>
         builder.AddAttribute(24, "multiple", Multiple);
         builder.AddAttributeIfNotNull(25, "max-options-visible", MaxOptionsVisible);
         builder.AddAttributeIfNotNull(26, "placement", Placement?.ToHtmlValue());
+        builder.AddAttribute(27, "open", Open);
+        builder.AddAttribute(28, "with-hint", WithHint);
+        builder.AddAttribute(29, "with-label", WithLabel);
 
         // Add value binding - handle both single and multiple selection
         if (Multiple)
@@ -160,11 +203,15 @@ public class WaSelect : WaInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add select-specific event handlers
-        if (OnClear.HasDelegate)
-            builder.AddAttribute(50, "wa-clear", OnClear);
+        builder.AddAttributeIfHasDelegate(50, "wa-clear", OnClear);
+        builder.AddAttributeIfHasDelegate(52, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(53, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(54, "wa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(55, "wa-after-hide", OnAfterHide);
+        builder.AddAttributeIfHasDelegate(56, "wa-invalid", OnInvalid);
 
         // Add element reference capture
-        builder.AddElementReferenceCapture(51, __selectReference => Element = __selectReference);
+        builder.AddElementReferenceCapture(57, __selectReference => Element = __selectReference);
 
         // Add start slot content
         if (StartContent is not null)
@@ -261,6 +308,58 @@ public class WaSelect : WaInputBase<string?>
             throw new ArgumentNullException(nameof(jsFunction));
 
         await JSInterop.SetPropertyAsync(Element.Value, "getTag", jsFunction);
+    }
+
+    /// <summary>
+    /// Removes focus from the select.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task BlurAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot blur: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
+    }
+
+    /// <summary>
+    /// Sets focus on the select.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
+
+    /// <summary>
+    /// Hides the select's dropdown.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task HideAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot hide: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+    }
+
+    /// <summary>
+    /// Shows the select's dropdown.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task ShowAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "show");
     }
 
     #endregion

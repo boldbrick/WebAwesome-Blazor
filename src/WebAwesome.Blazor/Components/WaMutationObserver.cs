@@ -32,7 +32,7 @@ public class WaMutationObserver : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
@@ -90,6 +90,21 @@ public class WaMutationObserver : ComponentBase
     /// </summary>
     [Parameter] public string? AttributeFilter { get; set; }
 
+    /// <summary>
+    /// Indicates whether the attribute's previous value should be recorded when monitoring changes.
+    /// </summary>
+    [Parameter] public bool AttrOldValue { get; set; }
+
+    /// <summary>
+    /// Disables the mutation observer.
+    /// </summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Indicates whether the previous value of the node's character data should be recorded.
+    /// </summary>
+    [Parameter] public bool CharDataOldValue { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -130,10 +145,12 @@ public class WaMutationObserver : ComponentBase
         builder.AddAttribute(14, "attribute-old-value", AttributeOldValue);
         builder.AddAttribute(15, "character-data-old-value", CharacterDataOldValue);
         builder.AddAttributeIfNotNullOrEmpty(16, "attribute-filter", AttributeFilter);
+        builder.AddAttribute(17, "attr-old-value", AttrOldValue);
+        builder.AddAttribute(18, "disabled", Disabled);
+        builder.AddAttribute(19, "char-data-old-value", CharDataOldValue);
 
         // Add event handlers
-        if (OnMutation.HasDelegate)
-            builder.AddAttribute(20, "wa-mutation", OnMutation);
+        builder.AddAttributeIfHasDelegate(20, "wa-mutation", OnMutation);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __observerReference => Element = __observerReference);
