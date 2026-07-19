@@ -1,0 +1,94 @@
+@page "/components/tooltip"
+
+<PageTitle>Tooltip</PageTitle>
+
+<h1>Tooltip</h1>
+<p>Tooltips display additional information based on a specific action. <code>&lt;wa-tooltip&gt;</code> wrapped by <code>WaTooltip</code>. A tooltip's target is based on the <code>For</code> parameter, which points to an element id.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaTooltip For="my-button">This is a tooltip</WaTooltip>
+    <WaButton id="my-button">Hover Me</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Placement" Code="@PlacementExample">
+    <WaTooltip For="tooltip-top" Placement="WaPlacement.Top">top</WaTooltip>
+    <WaTooltip For="tooltip-right" Placement="WaPlacement.Right">right</WaTooltip>
+    <WaTooltip For="tooltip-bottom" Placement="WaPlacement.Bottom">bottom</WaTooltip>
+    <WaTooltip For="tooltip-left" Placement="WaPlacement.Left">left</WaTooltip>
+
+    <div style="display:flex; gap:0.5rem;">
+        <WaButton id="tooltip-top">Top</WaButton>
+        <WaButton id="tooltip-right">Right</WaButton>
+        <WaButton id="tooltip-bottom">Bottom</WaButton>
+        <WaButton id="tooltip-left">Left</WaButton>
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Click Trigger" Code="@ClickTriggerExample">
+    <WaButton id="toggle-button">Click to Toggle</WaButton>
+    <WaTooltip For="toggle-button" Trigger="WaTrigger.Click">Click again to dismiss</WaTooltip>
+</ExampleSection>
+
+<ExampleSection Title="Manual Trigger" Code="@ManualTriggerExample">
+    <WaButton id="manual-trigger-button" @onclick="ToggleManualTooltip">Toggle Manually</WaButton>
+    <WaTooltip For="manual-trigger-button" Trigger="WaTrigger.Manual" Open="isManualTooltipOpen">This is a tooltip!</WaTooltip>
+</ExampleSection>
+
+<ExampleSection Title="Removing Arrows" Code="@RemovingArrowsExample">
+    <WaButton id="no-arrow">No Arrow</WaButton>
+    <WaTooltip For="no-arrow" WithoutArrow="true">This is a tooltip with no arrow</WaTooltip>
+</ExampleSection>
+
+<ApiTable Tag="wa-tooltip" />
+
+@code {
+    private bool isManualTooltipOpen;
+
+    private void ToggleManualTooltip()
+    {
+        isManualTooltipOpen = !isManualTooltipOpen;
+    }
+
+    private const string DefaultExample = """
+        <WaTooltip For="my-button">This is a tooltip</WaTooltip>
+        <WaButton id="my-button">Hover Me</WaButton>
+        """;
+
+    private const string PlacementExample = """
+        <WaTooltip For="tooltip-top" Placement="WaPlacement.Top">top</WaTooltip>
+        <WaTooltip For="tooltip-right" Placement="WaPlacement.Right">right</WaTooltip>
+        <WaTooltip For="tooltip-bottom" Placement="WaPlacement.Bottom">bottom</WaTooltip>
+        <WaTooltip For="tooltip-left" Placement="WaPlacement.Left">left</WaTooltip>
+
+        <div style="display:flex; gap:0.5rem;">
+            <WaButton id="tooltip-top">Top</WaButton>
+            <WaButton id="tooltip-right">Right</WaButton>
+            <WaButton id="tooltip-bottom">Bottom</WaButton>
+            <WaButton id="tooltip-left">Left</WaButton>
+        </div>
+        """;
+
+    private const string ClickTriggerExample = """
+        <WaButton id="toggle-button">Click to Toggle</WaButton>
+        <WaTooltip For="toggle-button" Trigger="WaTrigger.Click">Click again to dismiss</WaTooltip>
+        """;
+
+    private const string ManualTriggerExample = """
+        <WaButton id="manual-trigger-button" @onclick="ToggleManualTooltip">Toggle Manually</WaButton>
+        <WaTooltip For="manual-trigger-button" Trigger="WaTrigger.Manual" Open="isManualTooltipOpen">This is a tooltip!</WaTooltip>
+
+        @code {
+            private bool isManualTooltipOpen;
+
+            private void ToggleManualTooltip()
+            {
+                isManualTooltipOpen = !isManualTooltipOpen;
+            }
+        }
+        """;
+
+    private const string RemovingArrowsExample = """
+        <WaButton id="no-arrow">No Arrow</WaButton>
+        <WaTooltip For="no-arrow" WithoutArrow="true">This is a tooltip with no arrow</WaTooltip>
+        """;
+}

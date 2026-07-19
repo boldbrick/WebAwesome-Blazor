@@ -16,25 +16,74 @@ public class WaRange : WaInputBase<decimal>
 {
     #region ------ Range Properties ------
 
+    /// <summary>
+    /// The minimum value allowed.
+    /// </summary>
     [Parameter] public decimal Min { get; set; } = 0;
+
+    /// <summary>
+    /// The maximum value allowed.
+    /// </summary>
     [Parameter] public decimal Max { get; set; } = 100;
+
+    /// <summary>
+    /// The granularity the value must adhere to when incrementing and decrementing.
+    /// </summary>
     [Parameter] public decimal Step { get; set; } = 1;
+
+    /// <summary>
+    /// The orientation of the slider.
+    /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
+
+    /// <summary>
+    /// Draws a tooltip above the thumb when the control has focus or is dragged.
+    /// </summary>
     [Parameter] public bool WithTooltip { get; set; }
+
+    /// <summary>
+    /// Draws markers at each step along the slider.
+    /// </summary>
     [Parameter] public bool WithMarkers { get; set; }
+
+    /// <summary>
+    /// The placement of the tooltip in reference to the slider's thumb.
+    /// </summary>
     [Parameter] public string? TooltipPlacement { get; set; }
+
+    /// <summary>
+    /// The starting value from which to draw the slider's fill, which is based on its current value.
+    /// </summary>
     [Parameter] public decimal? IndicatorOffset { get; set; }
 
     // Range selection (dual thumb)
+    /// <summary>
+    /// Converts the slider to a range slider with two thumbs.
+    /// </summary>
     [Parameter] public bool Range { get; set; }
+
+    /// <summary>
+    /// The minimum value of a range selection. Used only when <see cref="Range"/> is set.
+    /// </summary>
     [Parameter] public decimal? MinValue { get; set; }
+
+    /// <summary>
+    /// The maximum value of a range selection. Used only when <see cref="Range"/> is set.
+    /// </summary>
     [Parameter] public decimal? MaxValue { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when <see cref="MinValue"/> changes in range selection mode.
+    /// </summary>
     [Parameter] public EventCallback<decimal> OnMinValueChange { get; set; }
+
+    /// <summary>
+    /// Invoked when <see cref="MaxValue"/> changes in range selection mode.
+    /// </summary>
     [Parameter] public EventCallback<decimal> OnMaxValueChange { get; set; }
 
     #endregion

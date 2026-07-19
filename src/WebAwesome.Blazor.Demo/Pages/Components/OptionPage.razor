@@ -1,0 +1,34 @@
+﻿@page "/components/option"
+
+<PageTitle>Option</PageTitle>
+
+<h1>Option</h1>
+<p><code>&lt;wa-option&gt;</code> wrapped by <code>WaOption</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaSelect Label="Select one" @bind-Value="value">
+        <WaOption Value="option-1">Option 1</WaOption>
+        <WaOption Value="option-2">Option 2</WaOption>
+        <WaOption Value="option-3">Option 3</WaOption>
+    </WaSelect>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\option.md) *@
+
+<ApiTable Tag="wa-option" />
+
+@code {
+    private string? value = "option-1";
+
+    private const string DefaultExample = """
+        <WaSelect Label="Select one" @bind-Value="value">
+            <WaOption Value="option-1">Option 1</WaOption>
+            <WaOption Value="option-2">Option 2</WaOption>
+            <WaOption Value="option-3">Option 3</WaOption>
+        </WaSelect>
+
+        @code {
+            private string? value = "option-1";
+        }
+        """;
+}

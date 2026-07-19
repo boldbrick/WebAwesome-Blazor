@@ -76,6 +76,9 @@ public class WaRatingHoverEventArgs
 /// </summary>
 public class WaDetailsToggleEventArgs : EventArgs
 {
+    /// <summary>
+    /// Whether the details element is open after the toggle.
+    /// </summary>
     public bool IsOpen { get; set; }
 }
 
@@ -88,7 +91,14 @@ public class WaDetailsToggleEventArgs : EventArgs
 /// </summary>
 public class WaSplitPanelRepositionEventArgs : EventArgs
 {
+    /// <summary>
+    /// The new position of the divider from the primary panel's edge, as a percentage between 0 and 100.
+    /// </summary>
     public decimal Position { get; set; }
+
+    /// <summary>
+    /// The new position of the divider from the primary panel's edge, in pixels.
+    /// </summary>
     public int PositionInPixels { get; set; }
 }
 
@@ -152,6 +162,29 @@ public class ZoomChangeEventArgs : EventArgs
     /// The previous zoom level
     /// </summary>
     public double PreviousZoomLevel { get; set; }
+}
+
+#endregion
+
+#region ------ Tree Events ------
+
+/// <summary>
+/// Event arguments for tree selection change events
+/// </summary>
+/// <remarks>
+/// <see cref="Selection"/> is left as raw deserialized objects (one per selected <c>&lt;wa-tree-item&gt;</c>),
+/// mirroring <see cref="MutationEventArgs.MutationRecords"/> and <see cref="ResizeEventArgs.ResizeObserverEntries"/>:
+/// there is no supported way to marshal arbitrary DOM elements from a custom event's <c>detail</c> payload into
+/// live <see cref="ElementReference"/>s (those are only produced by Blazor itself, via <c>@ref</c>/element
+/// reference capture). Consumers needing to act on specific items should track selection via each
+/// <c>WaTreeItem</c>'s own <c>Selected</c> parameter/<c>OnSelectedChange</c>-style wiring instead.
+/// </remarks>
+public class WaTreeSelectionChangeEventArgs : EventArgs
+{
+    /// <summary>
+    /// Raw selection data as reported by the wa-selection-change event's detail, one entry per selected tree item.
+    /// </summary>
+    public object[]? Selection { get; set; }
 }
 
 #endregion

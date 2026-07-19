@@ -15,12 +15,19 @@ public class WaCheckbox : WaInputBase<bool>
 {
     #region ------ Visual & Behavior Properties ------
 
+    /// <summary>
+    /// Draws the checkbox in an indeterminate state. This is usually applied to checkboxes that represent a
+    /// "select all/none" behavior when associated checkboxes have a mix of checked and unchecked states.
+    /// </summary>
     [Parameter] public bool Indeterminate { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the checked state changes.
+    /// </summary>
     [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
 
     #endregion
@@ -52,9 +59,11 @@ public class WaCheckbox : WaInputBase<bool>
         // is included in the form fields. That's how <input type="checkbox"> works normally.
         builder.AddAttribute(22, "value", bool.TrueString);
 
-        // Add value binding
-        builder.AddAttribute(23, "onchange", EventCallback.Factory.CreateBinder<bool>(this, __value => CurrentValue = __value, CurrentValue));
-        builder.SetUpdatesAttributeName("checked");
+        // <wa-checkbox> is a custom element, not a native <input>, so Blazor's built-in change-event
+        // value extraction (which only reads .checked when tagName === "INPUT") can't see its real
+        // checked state and would always read the static "value" attribute above instead. Read the
+        // real state back explicitly via JS interop rather than relying on CreateBinder<bool>.
+        builder.AddAttribute(23, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, HandleCheckedChangedAsync));
 
         // Add common event handlers
         AddCommonEventHandlers(builder, 30);
@@ -81,6 +90,19 @@ public class WaCheckbox : WaInputBase<bool>
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out bool result, [NotNullWhen(false)] out string? validationErrorMessage)
         => throw new NotSupportedException($"This component does not parse string inputs. Bind to the '{nameof(CurrentValue)}' property, not '{nameof(CurrentValueAsString)}'.");
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // reads the checkbox's real checked state via JS interop, since the "change" event's own value
+    // (Blazor reads .value for non-<input> elements) is a static placeholder, not the actual state
+    private async Task HandleCheckedChangedAsync(ChangeEventArgs args)
+    {
+        if (Element is null) return;
+
+        CurrentValue = await JSInterop.GetPropertyAsync<bool>(Element.Value, "checked");
+    }
 
     #endregion
 

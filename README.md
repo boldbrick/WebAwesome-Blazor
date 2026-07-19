@@ -1,5 +1,10 @@
 # Web Awesome Blazor Bindings
 
+[![build-and-pack](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/build.yml/badge.svg)](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/build.yml)
+<!-- NuGet badge — activate at publication go-live (WP-I):
+[![NuGet](https://img.shields.io/nuget/v/WebAwesome.Blazor.svg)](https://www.nuget.org/packages/WebAwesome.Blazor)
+-->
+
 Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. No additional application logic and no additional / extension components.
 
 > **Status**
@@ -12,12 +17,13 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 - CSS-only layouts are covered as components, too (e.g. a `div class="wa-flank"` is implemented as a `WaFlank` class).
 - Minimal JS interop surface; wrappers mirror WA names while following Blazor conventions.
 - Versioned to follow WA releases (beta/rc/stable) with clear mapping.
+- **MIT-licensed** — free for commercial use.
 
 ## Package
 - NuGet: `WebAwesome.Blazor` *(published from release tags)*
 
 ## Requirements
-- .NET 9 (or latest LTS supported by the repo)
+- .NET 10 (LTS, primary target) or .NET 9 (compatibility; out of Microsoft support since May 2026)
 - WA 3.x assets available to your app (via your chosen delivery method)
 
 ## Install
@@ -35,20 +41,43 @@ using WebAwesome.Blazor.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Web Awesome services
-builder.Services.AddWebAwesome();
+// Add Web Awesome services (binds the optional "WebAwesome" configuration section)
+builder.Services.AddWebAwesome(builder.Configuration);
 
 // ... other services
 
 var app = builder.Build();
 ```
 
+Overloads: `AddWebAwesome()` for pure defaults, or `AddWebAwesome(options => ...)` for programmatic configuration.
+
 ### 2. Include Web Awesome Assets
-Ensure the Web Awesome JavaScript library is loaded in your application (e.g., in `App.razor`):
+Place the `WebAwesomeAssets` component in your application's head content (e.g. in `App.razor`):
+
+```razor
+<head>
+    ...
+    <WebAwesomeAssets />
+</head>
+```
+
+By default it loads the matching Web Awesome version from the official CDN. Everything is configurable via the `WebAwesome` configuration section or the options delegate — asset source (CDN vs. self-hosted), version, explicit URLs, and a Font Awesome kit code for premium icon packs:
+
+```jsonc
+// appsettings.json — all values optional
+{
+  "WebAwesome": {
+    "FontAwesomeKitCode": "your_kit_code_here" // configure via user secrets, never commit real codes
+  }
+}
+```
+
+#### Advanced: static asset tags
+In standalone WebAssembly apps `index.html` is static, so add the equivalent tags directly (adjust the version to the release you use — it always matches this package's version):
 
 ```html
-<link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.5/dist/styles/themes/default.css" />
-<script type="module" src="https://early.webawesome.com/webawesome@3.0.0-beta.6/dist/webawesome.loader.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/styles/webawesome.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.6/dist-cdn/webawesome.loader.js"></script>
 ```
 
 ## Quick start (wrapper usage)
@@ -65,6 +94,8 @@ Ensure the Web Awesome JavaScript library is loaded in your application (e.g., i
 ```
 
 > The Blazor wrappers are named `WaXxx` (e.g., `WaButton`, `WaTabs`). They internally render the corresponding `wa-xxx` web component and wire up events/attributes so you can use standard Blazor patterns.
+
+> **Form controls need a binding.** Wrappers deriving from `InputBase<T>` (`WaInput`, `WaCheckbox`, `WaSwitch`, `WaSelect`, `WaRadioGroup`, `WaSlider`, `WaRange`, `WaColorPicker`, `WaRating`, `WaTextArea`) follow the standard Blazor input model: use them with `@bind-Value` (or inside an `EditForm`); bare usage throws at runtime, as with Blazor's built-in inputs.
 
 ### Using native elements directly (advanced)
 If you prefer working with native web components, you can still render `<wa-button>` etc. The wrappers primarily exist to make event binding, parameter casing, and lifecycle interop seamless in Blazor.
@@ -132,7 +163,7 @@ We align binding versions to WA versions. Use the **same** semantic version when
  dotnet pack -c Release
 ```
 
-The repo use a single-output-directory build system and produces nugets into `src/output/package/<Configuration>`.
+The repo uses a single-output-directory build system and produces nugets into `src/output/packages/<Configuration>`.
 
 > CI packs on tags named `wa-blazor-*` and attaches the `.nupkg` to the GitHub Release.
 
@@ -147,7 +178,7 @@ The repo use a single-output-directory build system and produces nugets into `sr
 - Unit test coverage
 
 ## License
-MIT — see `LICENSE`.
+MIT — see `LICENSE.md`.
 
 ## Trademarks
 Web Awesome, Font Awesome, and any related marks are property of their respective owners. This project is an independent community binding and not affiliated with or endorsed by the Web Awesome authors.

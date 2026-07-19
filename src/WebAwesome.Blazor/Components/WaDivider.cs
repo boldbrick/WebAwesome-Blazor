@@ -28,11 +28,19 @@ public class WaDivider : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes applied to the created element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline styles applied to the created element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
-    // Divider properties
+    /// <summary>
+    /// The divider's orientation.
+    /// </summary>
     [Parameter] public WaOrientation Orientation { get; set; } = WaOrientation.Horizontal;
 
     #endregion

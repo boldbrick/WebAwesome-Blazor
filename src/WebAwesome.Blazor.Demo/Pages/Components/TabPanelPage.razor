@@ -1,0 +1,30 @@
+﻿@page "/components/tab-panel"
+
+<PageTitle>Tab Panel</PageTitle>
+
+<h1>Tab Panel</h1>
+<p><code>&lt;wa-tab-panel&gt;</code> wrapped by <code>WaTabPanel</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaTabGroup>
+        <WaTab Panel="general" Active="true">General</WaTab>
+        <WaTab Panel="advanced">Advanced</WaTab>
+        <WaTabPanel Name="general" Active="true">This is the general tab panel.</WaTabPanel>
+        <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tab-panel.md) *@
+
+<ApiTable Tag="wa-tab-panel" />
+
+@code {
+    private const string DefaultExample = """
+        <WaTabGroup>
+            <WaTab Panel="general" Active="true">General</WaTab>
+            <WaTab Panel="advanced">Advanced</WaTab>
+            <WaTabPanel Name="general" Active="true">This is the general tab panel.</WaTabPanel>
+            <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
+        </WaTabGroup>
+        """;
+}

@@ -36,32 +36,97 @@ public class WaButton : ComponentBase, IFormValidation
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Visual & behavior properties
+    /// <summary>
+    /// The button's theme variant. Defaults to <c>neutral</c> if not within another element with a variant.
+    /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
+
+    /// <summary>
+    /// The button's visual appearance.
+    /// </summary>
     [Parameter] public WaAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The button's size.
+    /// </summary>
     [Parameter] public WaSize? Size { get; set; }
+
+    /// <summary>
+    /// Draws a pill-style button with rounded edges.
+    /// </summary>
     [Parameter] public bool Pill { get; set; }
+
+    /// <summary>
+    /// Draws the button with a caret, indicating that it triggers a dropdown menu or similar behavior.
+    /// </summary>
     [Parameter] public bool WithCaret { get; set; }
+
+    /// <summary>
+    /// Draws the button in a loading state.
+    /// </summary>
     [Parameter] public bool Loading { get; set; }
+
+    /// <summary>
+    /// Disables the button. Does not apply to link buttons.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// The type of button. The default is <see cref="WaButtonType.Button"/> rather than <c>submit</c>, which is the
+    /// opposite of how native <c>&lt;button&gt;</c> elements behave.
+    /// </summary>
     [Parameter] public WaButtonType? Type { get; set; }
 
     // Link behavior (when href is provided, renders as <a>)
+    /// <summary>
+    /// When set, the button is rendered as an <c>&lt;a&gt;</c> with this <c>href</c> instead of a
+    /// <c>&lt;button&gt;</c>.
+    /// </summary>
     [Parameter] public string? Href { get; set; }
+
+    /// <summary>
+    /// Tells the browser where to open the link. Only used when <see cref="Href"/> is present.
+    /// </summary>
     [Parameter] public string? Target { get; set; }
+
+    /// <summary>
+    /// Tells the browser to download the linked file as this filename. Only used when <see cref="Href"/> is present.
+    /// </summary>
     [Parameter] public string? Download { get; set; }
+
+    /// <summary>
+    /// When using <see cref="Href"/>, this maps to the underlying link's <c>rel</c> attribute.
+    /// </summary>
     [Parameter] public string? Rel { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the button is clicked.
+    /// </summary>
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    /// <summary>
+    /// Invoked when the button gains focus.
+    /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
+
+    /// <summary>
+    /// Invoked when the button loses focus.
+    /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
     #endregion
@@ -82,6 +147,16 @@ public class WaButton : ComponentBase, IFormValidation
     /// Content to display at the end of the button (typically icons)
     /// </summary>
     [Parameter] public RenderFragment? EndContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? StartIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="EndContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? EndIconName { get; set; }
 
     #endregion
 
@@ -132,6 +207,10 @@ public class WaButton : ComponentBase, IFormValidation
             builder.AddContent(32, StartContent);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(35, "start", StartIconName);
+        }
 
         // Add main content (label)
         if (ChildContent is not null)
@@ -146,6 +225,10 @@ public class WaButton : ComponentBase, IFormValidation
             builder.AddAttribute(51, "slot", "end");
             builder.AddContent(52, EndContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(55, "end", EndIconName);
         }
 
         builder.CloseElement();

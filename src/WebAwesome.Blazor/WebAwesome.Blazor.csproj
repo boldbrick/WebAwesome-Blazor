@@ -5,12 +5,47 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <!-- NuGet package metadata -->
+  <PropertyGroup>
+    <PackageId>WebAwesome.Blazor</PackageId>
+    <Title>Web Awesome Blazor Bindings</Title>
+    <Description>Strongly-typed Blazor wrappers for the Web Awesome web components: idiomatic C# parameters and enums, EditForm and validation integration, named slots as render fragments, and a minimal JS interop surface. MIT-licensed; versions follow Web Awesome releases one-to-one.</Description>
+    <Authors>BoldBrick</Authors>
+    <PackageTags>blazor;webawesome;web-awesome;shoelace;web-components;components;ui;razor</PackageTags>
+    <PackageProjectUrl>https://github.com/boldbrick/WebAwesome-Blazor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/boldbrick/WebAwesome-Blazor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
+    <PackageReleaseNotes>See https://github.com/boldbrick/WebAwesome-Blazor/blob/main/docs/CHANGELOG.md</PackageReleaseNotes>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- deterministic, SourceLink-enabled builds on CI only (local builds run from a PlasticSCM workspace without git metadata) -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" />
+    <None Include="PACKAGE.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
   </ItemGroup>
 
 </Project>

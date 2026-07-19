@@ -29,12 +29,30 @@ public class WaText : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names appended to the wa-body/wa-heading/wa-caption utility class on the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Text styling properties
+    /// <summary>
+    /// Typography role (body, heading, or caption) that selects the wa-* utility class family and default semantic element.
+    /// </summary>
     [Parameter] public TextVariant Variant { get; set; } = TextVariant.Body;
+
+    /// <summary>
+    /// Text size token that selects the wa-*-* utility class suffix and, for headings, the heading level.
+    /// </summary>
     [Parameter] public TextSize Size { get; set; } = TextSize.M;
+
+    /// <summary>
+    /// Overrides the rendered HTML element name instead of the variant/size-based default.
+    /// </summary>
     [Parameter] public string? Element { get; set; }
 
     #endregion

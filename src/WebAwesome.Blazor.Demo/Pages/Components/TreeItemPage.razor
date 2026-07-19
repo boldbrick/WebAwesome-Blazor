@@ -1,0 +1,34 @@
+﻿@page "/components/tree-item"
+
+<PageTitle>Tree Item</PageTitle>
+
+<h1>Tree Item</h1>
+<p><code>&lt;wa-tree-item&gt;</code> wrapped by <code>WaTreeItem</code>. Must be used as a child of <code>WaTree</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaTree>
+        <WaTreeItem Expanded="true">
+            Documents
+            <WaTreeItem>Invoices</WaTreeItem>
+            <WaTreeItem Selected="true">Receipts</WaTreeItem>
+        </WaTreeItem>
+        <WaTreeItem Disabled="true">Archived (disabled)</WaTreeItem>
+    </WaTree>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tree-item.md) *@
+
+<ApiTable Tag="wa-tree-item" />
+
+@code {
+    private const string DefaultExample = """
+        <WaTree>
+            <WaTreeItem Expanded="true">
+                Documents
+                <WaTreeItem>Invoices</WaTreeItem>
+                <WaTreeItem Selected="true">Receipts</WaTreeItem>
+            </WaTreeItem>
+            <WaTreeItem Disabled="true">Archived (disabled)</WaTreeItem>
+        </WaTree>
+        """;
+}

@@ -1,0 +1,163 @@
+@page "/components/drawer"
+
+<PageTitle>Drawer</PageTitle>
+
+<h1>Drawer</h1>
+<p>Drawers slide in from a container to expose additional options and information. <code>&lt;wa-drawer&gt;</code> wrapped by <code>WaDrawer</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaButton OnClick="@(() => defaultOpen = true)">Open Drawer</WaButton>
+    <WaDrawer Label="Drawer" Open="defaultOpen" OnHide="@(() => defaultOpen = false)">
+        <ChildContent>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => defaultOpen = false)">Close</WaButton>
+        </FooterContent>
+    </WaDrawer>
+</ExampleSection>
+
+<ExampleSection Title="Without Header" Code="@WithoutHeaderExample">
+    <WaButton OnClick="@(() => noHeaderOpen = true)">Open Drawer</WaButton>
+    <WaDrawer Label="Drawer" WithoutHeader="true" Open="noHeaderOpen" OnHide="@(() => noHeaderOpen = false)">
+        <ChildContent>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => noHeaderOpen = false)">Close</WaButton>
+        </FooterContent>
+    </WaDrawer>
+</ExampleSection>
+
+<ExampleSection Title="Slide-in Placement" Code="@PlacementExample">
+    <WaButton OnClick="@(() => startOpen = true)">Open From Start</WaButton>
+    <WaButton OnClick="@(() => topOpen = true)">Open From Top</WaButton>
+
+    <WaDrawer Label="Drawer" Placement="WaDrawerPlacement.Start" Open="startOpen" OnHide="@(() => startOpen = false)">
+        <ChildContent>
+            This drawer slides in from the start.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => startOpen = false)">Close</WaButton>
+        </FooterContent>
+    </WaDrawer>
+
+    <WaDrawer Label="Drawer" Placement="WaDrawerPlacement.Top" Open="topOpen" OnHide="@(() => topOpen = false)">
+        <ChildContent>
+            This drawer slides in from the top.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => topOpen = false)">Close</WaButton>
+        </FooterContent>
+    </WaDrawer>
+</ExampleSection>
+
+<ExampleSection Title="Header Actions" Code="@HeaderActionsExample">
+    <WaButton OnClick="@(() => actionsOpen = true)">Open Drawer</WaButton>
+    <WaDrawer Label="Drawer" Open="actionsOpen" OnHide="@(() => actionsOpen = false)">
+        <HeaderActionsContent>
+            <WaButton Appearance="WaAppearance.Plain" StartIconName="arrow-up-right-from-square" />
+        </HeaderActionsContent>
+        <ChildContent>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => actionsOpen = false)">Close</WaButton>
+        </FooterContent>
+    </WaDrawer>
+</ExampleSection>
+
+<ExampleSection Title="Light Dismissal" Code="@LightDismissExample">
+    <WaButton OnClick="@(() => dismissOpen = true)">Open Drawer</WaButton>
+    <WaDrawer Label="Drawer" LightDismiss="true" Open="dismissOpen" OnHide="@(() => dismissOpen = false)">
+        <ChildContent>
+            This drawer will close when you click on the overlay.
+        </ChildContent>
+        <FooterContent>
+            <WaButton Variant="WaVariant.Brand" OnClick="@(() => dismissOpen = false)">Close</WaButton>
+        </FooterContent>
+    </WaDrawer>
+</ExampleSection>
+
+<ApiTable Tag="wa-drawer" />
+
+@code {
+    private bool defaultOpen;
+    private bool noHeaderOpen;
+    private bool startOpen;
+    private bool topOpen;
+    private bool actionsOpen;
+    private bool dismissOpen;
+
+    private const string DefaultExample = """
+        <WaButton OnClick="@(() => open = true)">Open Drawer</WaButton>
+        <WaDrawer Label="Drawer" Open="open" OnHide="@(() => open = false)">
+            <ChildContent>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDrawer>
+
+        @code {
+            private bool open;
+        }
+        """;
+
+    private const string WithoutHeaderExample = """
+        <WaDrawer Label="Drawer" WithoutHeader="true" Open="open" OnHide="@(() => open = false)">
+            <ChildContent>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDrawer>
+        """;
+
+    private const string PlacementExample = """
+        <WaDrawer Label="Drawer" Placement="WaDrawerPlacement.Start" Open="open" OnHide="@(() => open = false)">
+            <ChildContent>
+                This drawer slides in from the start.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDrawer>
+
+        <WaDrawer Label="Drawer" Placement="WaDrawerPlacement.Top" Open="open" OnHide="@(() => open = false)">
+            <ChildContent>
+                This drawer slides in from the top.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDrawer>
+        """;
+
+    private const string HeaderActionsExample = """
+        <WaDrawer Label="Drawer" Open="open" OnHide="@(() => open = false)">
+            <HeaderActionsContent>
+                <WaButton Appearance="WaAppearance.Plain" StartIconName="arrow-up-right-from-square" />
+            </HeaderActionsContent>
+            <ChildContent>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDrawer>
+        """;
+
+    private const string LightDismissExample = """
+        <WaDrawer Label="Drawer" LightDismiss="true" Open="open" OnHide="@(() => open = false)">
+            <ChildContent>
+                This drawer will close when you click on the overlay.
+            </ChildContent>
+            <FooterContent>
+                <WaButton Variant="WaVariant.Brand" OnClick="@(() => open = false)">Close</WaButton>
+            </FooterContent>
+        </WaDrawer>
+        """;
+}

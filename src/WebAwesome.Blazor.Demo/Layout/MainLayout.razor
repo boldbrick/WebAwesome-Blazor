@@ -1,0 +1,106 @@
+@inherits LayoutComponentBase
+@inject ApiSurfaceService SurfaceService
+@inject IJSRuntime JS
+@inject WebAwesome.Blazor.Models.WebAwesomeOptions WaOptions
+
+<div class="demo-shell">
+    <aside class="demo-sidebar">
+        <a class="demo-logo" href="">Web Awesome <strong>Blazor</strong></a>
+
+        <div class="demo-controls">
+            <WaSelect Label="Theme" @bind-Value="theme" @bind-Value:after="ApplyThemeAsync">
+                <WaOption Value="default">Default</WaOption>
+                <WaOption Value="awesome">Awesome</WaOption>
+                <WaOption Value="shoelace">Shoelace</WaOption>
+            </WaSelect>
+            <WaSwitch @bind-Value="dark" @bind-Value:after="ApplyDarkAsync">Dark mode</WaSwitch>
+        </div>
+
+        <nav>
+            <h4>Getting Started</h4>
+            <ul>
+                <li><NavLink href="" Match="NavLinkMatch.All">Introduction</NavLink></li>
+            </ul>
+
+            @foreach (var group in componentGroups)
+            {
+                <h4>@group.Category</h4>
+                <ul>
+                    @foreach (var (tag, component) in group.Components)
+                    {
+                        <li><NavLink href="@($"components/{tag["wa-".Length..]}")">@component</NavLink></li>
+                    }
+                </ul>
+            }
+
+            <h4>Layout</h4>
+            <ul>
+                @foreach (var (route, name) in LayoutLinks)
+                {
+                    <li><NavLink href="@($"layout/{route}")">@name</NavLink></li>
+                }
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="demo-content">
+        @Body
+    </main>
+</div>
+
+@code {
+    private IReadOnlyList<(string Category, IReadOnlyList<(string Tag, string Name)> Components)> componentGroups = [];
+    private string? theme = "default";
+    private bool dark;
+
+    private async Task ApplyThemeAsync()
+    {
+        // theme stylesheets live next to the main stylesheet; "default" is built into webawesome.css.
+        // the stylesheet alone isn't enough: Web Awesome theme rules are scoped under a "wa-theme-{name}"
+        // class (e.g. ".wa-theme-awesome"), so the class has to be applied to <html> as well
+        var themeHref = theme is null or "default"
+            ? null
+            : WaOptions.ResolveStylesheetUrl().Replace("/webawesome.css", $"/themes/{theme}.css");
+        await JS.InvokeVoidAsync("demoTheme.setTheme", theme, themeHref);
+    }
+
+    private async Task ApplyDarkAsync()
+    {
+        await JS.InvokeVoidAsync("demoTheme.setDark", dark);
+    }
+
+    private static readonly (string Route, string Name)[] LayoutLinks =
+    [
+        ("cluster", "Cluster"),
+        ("flank", "Flank"),
+        ("frame", "Frame"),
+        ("grid", "Grid"),
+        ("split", "Split"),
+        ("stack", "Stack"),
+        ("text", "Text"),
+        ("visually-hidden", "Visually Hidden")
+    ];
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        // the sidebar is driven by the API surface document, so it always matches the bound WA version;
+        // components are grouped into the same categories Web Awesome uses in its own docs navigation
+        var surface = await SurfaceService.GetSurfaceAsync();
+        componentGroups = surface.Components.Keys
+            .Select(tag => (Tag: tag, Name: Humanize(tag), Category: ComponentCategoryMap.GetCategory(tag)))
+            .GroupBy(c => c.Category)
+            .OrderBy(g => Array.IndexOf(ComponentCategoryMap.CategoryOrder, g.Key) is var index && index >= 0 ? index : int.MaxValue)
+            .Select(g => (Category: g.Key, Components: (IReadOnlyList<(string Tag, string Name)>)g
+                .Select(c => (c.Tag, c.Name))
+                .OrderBy(c => c.Name)
+                .ToList()))
+            .ToList();
+    }
+
+    private static string Humanize(string tag)
+    {
+        var name = tag.StartsWith("wa-") ? tag["wa-".Length..] : tag;
+        return string.Join(' ', name.Split('-').Select(part => char.ToUpperInvariant(part[0]) + part[1..]));
+    }
+}

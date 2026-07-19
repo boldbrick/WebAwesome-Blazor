@@ -29,11 +29,21 @@ public class WaBreadcrumbItem : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Breadcrumb item properties
+    /// <summary>
+    /// Optional URL to navigate to when the breadcrumb item is activated. When set, a link is rendered internally;
+    /// when unset, a button is rendered instead.
+    /// </summary>
     [Parameter] public string? Href { get; set; }
 
     #endregion
@@ -55,10 +65,23 @@ public class WaBreadcrumbItem : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? EndContent { get; set; }
 
+    /// <summary>
+    /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? StartIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="EndContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? EndIconName { get; set; }
+
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the breadcrumb item is clicked.
+    /// </summary>
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     #endregion
@@ -93,6 +116,10 @@ public class WaBreadcrumbItem : ComponentBase
             builder.AddContent(32, StartContent);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(60, "start", StartIconName);
+        }
 
         // Add main content (label)
         if (ChildContent is not null)
@@ -107,6 +134,10 @@ public class WaBreadcrumbItem : ComponentBase
             builder.AddAttribute(51, "slot", "end");
             builder.AddContent(52, EndContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(70, "end", EndIconName);
         }
 
         builder.CloseElement();

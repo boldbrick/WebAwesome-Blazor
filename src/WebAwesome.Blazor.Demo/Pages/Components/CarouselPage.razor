@@ -1,0 +1,40 @@
+﻿@page "/components/carousel"
+
+<PageTitle>Carousel</PageTitle>
+
+<h1>Carousel</h1>
+<p><code>&lt;wa-carousel&gt;</code> wrapped by <code>WaCarousel</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaCarousel Pagination="true" Navigation="true">
+        <WaCarouselItem>
+            <div style="background: var(--wa-color-brand-fill-loud); height: 200px;"></div>
+        </WaCarouselItem>
+        <WaCarouselItem>
+            <div style="background: var(--wa-color-success-fill-loud); height: 200px;"></div>
+        </WaCarouselItem>
+        <WaCarouselItem>
+            <div style="background: var(--wa-color-warning-fill-loud); height: 200px;"></div>
+        </WaCarouselItem>
+    </WaCarousel>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\carousel.md) *@
+
+<ApiTable Tag="wa-carousel" />
+
+@code {
+    private const string DefaultExample = """
+        <WaCarousel Pagination="true" Navigation="true">
+            <WaCarouselItem>
+                <div style="background: var(--wa-color-brand-fill-loud); height: 200px;"></div>
+            </WaCarouselItem>
+            <WaCarouselItem>
+                <div style="background: var(--wa-color-success-fill-loud); height: 200px;"></div>
+            </WaCarouselItem>
+            <WaCarouselItem>
+                <div style="background: var(--wa-color-warning-fill-loud); height: 200px;"></div>
+            </WaCarouselItem>
+        </WaCarousel>
+        """;
+}

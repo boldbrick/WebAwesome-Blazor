@@ -28,15 +28,42 @@ public class WaDropdownItem : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Dropdown item properties
+    /// <summary>
+    /// An optional value for the menu item. This is useful for determining which item was selected when
+    /// listening to the dropdown's select event.
+    /// </summary>
     [Parameter] public string? Value { get; set; }
+
+    /// <summary>
+    /// Set to <see cref="WaDropdownItemType.Checkbox"/> to make the item a checkbox.
+    /// </summary>
     [Parameter] public WaDropdownItemType Type { get; set; } = WaDropdownItemType.Normal;
+
+    /// <summary>
+    /// Checks the dropdown item. Only valid when <see cref="Type"/> is <see cref="WaDropdownItemType.Checkbox"/>.
+    /// </summary>
     [Parameter] public bool Checked { get; set; }
+
+    /// <summary>
+    /// Disables the dropdown item.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// The type of menu item to render.
+    /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
 
     #endregion
@@ -52,6 +79,11 @@ public class WaDropdownItem : ComponentBase
     /// Icon content to display at the start of the item
     /// </summary>
     [Parameter] public RenderFragment? IconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="IconContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? IconName { get; set; }
 
     /// <summary>
     /// Details content to display at the end of the item (e.g., keyboard shortcuts)
@@ -95,6 +127,10 @@ public class WaDropdownItem : ComponentBase
             builder.AddAttribute(21, "slot", "icon");
             builder.AddContent(22, IconContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(25, "icon", IconName);
         }
 
         // Add main content (label)

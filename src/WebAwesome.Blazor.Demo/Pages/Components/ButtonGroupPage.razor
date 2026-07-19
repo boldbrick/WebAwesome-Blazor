@@ -1,0 +1,28 @@
+﻿@page "/components/button-group"
+
+<PageTitle>Button Group</PageTitle>
+
+<h1>Button Group</h1>
+<p><code>&lt;wa-button-group&gt;</code> wrapped by <code>WaButtonGroup</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaButtonGroup Label="Alignment">
+        <WaButton>Left</WaButton>
+        <WaButton>Center</WaButton>
+        <WaButton>Right</WaButton>
+    </WaButtonGroup>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\button-group.md) *@
+
+<ApiTable Tag="wa-button-group" />
+
+@code {
+    private const string DefaultExample = """
+        <WaButtonGroup Label="Alignment">
+            <WaButton>Left</WaButton>
+            <WaButton>Center</WaButton>
+            <WaButton>Right</WaButton>
+        </WaButtonGroup>
+        """;
+}

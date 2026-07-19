@@ -1,0 +1,90 @@
+@page "/components/button"
+
+<PageTitle>Button</PageTitle>
+
+<h1>Button</h1>
+<p>Buttons represent actions that are available to the user. <code>&lt;wa-button&gt;</code> wrapped by <code>WaButton</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaButton />
+</ExampleSection>
+
+<ExampleSection Title="Variants" Code="@VariantsExample">
+    <WaButton Variant="WaVariant.Neutral">Neutral</WaButton>
+    <WaButton Variant="WaVariant.Brand">Brand</WaButton>
+    <WaButton Variant="WaVariant.Success">Success</WaButton>
+    <WaButton Variant="WaVariant.Warning">Warning</WaButton>
+    <WaButton Variant="WaVariant.Danger">Danger</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaButton Appearance="WaAppearance.Accent" Variant="WaVariant.Brand">Accent</WaButton>
+    <WaButton Appearance="WaAppearance.Filled" Variant="WaVariant.Brand">Filled</WaButton>
+    <WaButton Appearance="WaAppearance.Outlined" Variant="WaVariant.Brand">Outlined</WaButton>
+    <WaButton Appearance="WaAppearance.Plain" Variant="WaVariant.Brand">Plain</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaButton Size="WaSize.Small">Small</WaButton>
+    <WaButton Size="WaSize.Medium">Medium</WaButton>
+    <WaButton Size="WaSize.Large">Large</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Pill Buttons" Code="@PillExample">
+    <WaButton Size="WaSize.Small" Pill="true">Small</WaButton>
+    <WaButton Size="WaSize.Medium" Pill="true">Medium</WaButton>
+    <WaButton Size="WaSize.Large" Pill="true">Large</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Start &amp; End Decorations" Code="@DecorationsExample">
+    <WaButton Size="WaSize.Small" StartIconName="gear">Settings</WaButton>
+    <WaButton Size="WaSize.Small" EndIconName="undo">Refresh</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Loading &amp; Disabled" Code="@LoadingDisabledExample">
+    <WaButton Variant="WaVariant.Brand" Loading="true">Brand</WaButton>
+    <WaButton Variant="WaVariant.Success" Disabled="true">Success</WaButton>
+</ExampleSection>
+
+<ApiTable Tag="wa-button" />
+
+@code {
+    private const string DefaultExample = "<WaButton />";
+
+    private const string VariantsExample = """
+        <WaButton Variant="WaVariant.Neutral">Neutral</WaButton>
+        <WaButton Variant="WaVariant.Brand">Brand</WaButton>
+        <WaButton Variant="WaVariant.Success">Success</WaButton>
+        <WaButton Variant="WaVariant.Warning">Warning</WaButton>
+        <WaButton Variant="WaVariant.Danger">Danger</WaButton>
+        """;
+
+    private const string AppearanceExample = """
+        <WaButton Appearance="WaAppearance.Accent" Variant="WaVariant.Brand">Accent</WaButton>
+        <WaButton Appearance="WaAppearance.Filled" Variant="WaVariant.Brand">Filled</WaButton>
+        <WaButton Appearance="WaAppearance.Outlined" Variant="WaVariant.Brand">Outlined</WaButton>
+        <WaButton Appearance="WaAppearance.Plain" Variant="WaVariant.Brand">Plain</WaButton>
+        """;
+
+    private const string SizesExample = """
+        <WaButton Size="WaSize.Small">Small</WaButton>
+        <WaButton Size="WaSize.Medium">Medium</WaButton>
+        <WaButton Size="WaSize.Large">Large</WaButton>
+        """;
+
+    private const string PillExample = """
+        <WaButton Size="WaSize.Small" Pill="true">Small</WaButton>
+        <WaButton Size="WaSize.Medium" Pill="true">Medium</WaButton>
+        <WaButton Size="WaSize.Large" Pill="true">Large</WaButton>
+        """;
+
+    private const string DecorationsExample = """
+        <WaButton Size="WaSize.Small" StartIconName="gear">Settings</WaButton>
+        <WaButton Size="WaSize.Small" EndIconName="undo">Refresh</WaButton>
+        """;
+
+    private const string LoadingDisabledExample = """
+        <WaButton Variant="WaVariant.Brand" Loading="true">Brand</WaButton>
+        <WaButton Variant="WaVariant.Success" Disabled="true">Success</WaButton>
+        """;
+}

@@ -28,13 +28,30 @@ public class WaCallout : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Callout properties
+    /// <summary>
+    /// The callout's theme variant. Defaults to <c>brand</c> if not within another element with a variant.
+    /// </summary>
     [Parameter] public WaVariant Variant { get; set; } = WaVariant.Neutral;
+
+    /// <summary>
+    /// The callout's visual appearance.
+    /// </summary>
     [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.OutlinedFilled;
+
+    /// <summary>
+    /// The callout's size.
+    /// </summary>
     [Parameter] public WaSize Size { get; set; } = WaSize.Medium;
 
     #endregion
@@ -50,6 +67,11 @@ public class WaCallout : ComponentBase
     /// Icon content to display at the start of the callout
     /// </summary>
     [Parameter] public RenderFragment? IconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="IconContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? IconName { get; set; }
 
     #endregion
 
@@ -83,6 +105,10 @@ public class WaCallout : ComponentBase
             builder.AddAttribute(21, "slot", "icon");
             builder.AddContent(22, IconContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(25, "icon", IconName);
         }
 
         // Add main content (message)

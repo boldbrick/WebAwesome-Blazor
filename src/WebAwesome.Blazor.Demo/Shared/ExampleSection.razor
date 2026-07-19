@@ -1,0 +1,30 @@
+<section class="example-section">
+    <h3>@Title</h3>
+    <div class="example-live">
+        @ChildContent
+    </div>
+    @if (!string.IsNullOrEmpty(Code))
+    {
+        <details class="example-code">
+            <summary>Source</summary>
+            <pre><code>@Code</code></pre>
+        </details>
+    }
+</section>
+
+@code {
+    /// <summary>
+    /// Heading of the example.
+    /// </summary>
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The live example content.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Razor source of the example, shown beneath the live rendering.
+    /// </summary>
+    [Parameter] public string? Code { get; set; }
+}

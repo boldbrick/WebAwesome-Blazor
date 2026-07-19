@@ -28,15 +28,40 @@ public class WaAvatar : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Avatar properties
+    /// <summary>
+    /// The image source to use for the avatar.
+    /// </summary>
     [Parameter] public string? Image { get; set; }
+
+    /// <summary>
+    /// Initials to use as a fallback when no image is available (1-2 characters max recommended).
+    /// </summary>
     [Parameter] public string? Initials { get; set; }
+
+    /// <summary>
+    /// Indicates how the browser should load the image.
+    /// </summary>
     [Parameter] public WaLoading Loading { get; set; } = WaLoading.Eager;
+
+    /// <summary>
+    /// A label to use to describe the avatar to assistive devices.
+    /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// The shape of the avatar.
+    /// </summary>
     [Parameter] public WaAvatarShape Shape { get; set; } = WaAvatarShape.Circle;
 
     #endregion
@@ -47,6 +72,11 @@ public class WaAvatar : ComponentBase
     /// Custom icon content to display when no image or initials are provided
     /// </summary>
     [Parameter] public RenderFragment? IconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="IconContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? IconName { get; set; }
 
     #endregion
 
@@ -81,6 +111,10 @@ public class WaAvatar : ComponentBase
             builder.AddAttribute(21, "slot", "icon");
             builder.AddContent(22, IconContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(30, "icon", IconName);
         }
 
         builder.CloseElement();

@@ -1,0 +1,42 @@
+@page "/layout/frame"
+
+<PageTitle>Frame</PageTitle>
+
+<h1>Frame</h1>
+<p>The Frame layout creates a responsive container with consistent proportions to enclose content, and is well-suited for images and image placeholders. <code>WaFrame</code> renders a <code>div</code> with the <code>wa-frame</code> utility class.</p>
+
+<ExampleSection Title="Default (Square)" Code="@DefaultExample">
+    <WaFrame Style="max-inline-size: 12rem;">
+        <div style="background: var(--wa-color-surface-lowered, #eee); width: 100%; height: 100%;"></div>
+    </WaFrame>
+</ExampleSection>
+
+<ExampleSection Title="Aspect Ratio" Code="@AspectExample">
+    <WaGrid>
+        <WaFrame AspectRatio="FrameAspectRatio.Landscape">
+            <div style="background: var(--wa-color-surface-lowered, #eee); width: 100%; height: 100%;"></div>
+        </WaFrame>
+        <WaFrame AspectRatio="FrameAspectRatio.Portrait">
+            <div style="background: var(--wa-color-surface-lowered, #eee); width: 100%; height: 100%;"></div>
+        </WaFrame>
+    </WaGrid>
+</ExampleSection>
+
+@code {
+    private const string DefaultExample = """
+        <WaFrame Style="max-inline-size: 12rem;">
+            <div style="background: var(--wa-color-surface-lowered, #eee); width: 100%; height: 100%;"></div>
+        </WaFrame>
+        """;
+
+    private const string AspectExample = """
+        <WaGrid>
+            <WaFrame AspectRatio="FrameAspectRatio.Landscape">
+                <div style="background: var(--wa-color-surface-lowered, #eee); width: 100%; height: 100%;"></div>
+            </WaFrame>
+            <WaFrame AspectRatio="FrameAspectRatio.Portrait">
+                <div style="background: var(--wa-color-surface-lowered, #eee); width: 100%; height: 100%;"></div>
+            </WaFrame>
+        </WaGrid>
+        """;
+}

@@ -28,24 +28,78 @@ public class WaFormatDate : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Date/time properties
+    /// <summary>
+    /// The date/time to format. If not set, the current date and time is used. When passing a string, it's
+    /// strongly recommended to use the ISO 8601 format to ensure time zones are handled correctly.
+    /// </summary>
     [Parameter] public string? Date { get; set; }
+
+    /// <summary>
+    /// The locale (BCP 47 language tag) to use when formatting the date. When unset, the browser's default locale is used.
+    /// </summary>
     [Parameter] public string? Lang { get; set; }
+
+    /// <summary>
+    /// Whether to use 12-hour or 24-hour time when displaying the hour.
+    /// </summary>
     [Parameter] public WaHourFormat? HourFormat { get; set; }
 
     // Intl.DateTimeFormat options
+    /// <summary>
+    /// The format for displaying the weekday.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? Weekday { get; set; }
+
+    /// <summary>
+    /// The format for displaying the era.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? Era { get; set; }
+
+    /// <summary>
+    /// The format for displaying the year.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? Year { get; set; }
+
+    /// <summary>
+    /// The format for displaying the month.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? Month { get; set; }
+
+    /// <summary>
+    /// The format for displaying the day.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? Day { get; set; }
+
+    /// <summary>
+    /// The format for displaying the hour.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? Hour { get; set; }
+
+    /// <summary>
+    /// The format for displaying the minute.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? Minute { get; set; }
+
+    /// <summary>
+    /// The format for displaying the second.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? Second { get; set; }
+
+    /// <summary>
+    /// The format for displaying the time zone name.
+    /// </summary>
     [Parameter] public WaDateTimeStyle? TimeZoneName { get; set; }
 
     #endregion

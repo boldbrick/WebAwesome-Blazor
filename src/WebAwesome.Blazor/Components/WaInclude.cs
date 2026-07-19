@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -20,6 +20,9 @@ public class WaInclude : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -39,12 +42,27 @@ public class WaInclude : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Include-specific properties
+    /// <summary>
+    /// The location of the HTML file to include. Be sure you trust the content you are including, as it will
+    /// be executed as code and can result in XSS attacks.
+    /// </summary>
     [Parameter] public string? Src { get; set; }
+
+    /// <summary>
+    /// The fetch mode to use when requesting the included content.
+    /// </summary>
     [Parameter] public WaMode Mode { get; set; } = WaMode.Cors;
 
     #endregion
@@ -90,16 +108,6 @@ public class WaInclude : ComponentBase
         builder.AddElementReferenceCapture(30, __includeReference => Element = __includeReference);
 
         builder.CloseElement();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
     }
 
     #endregion

@@ -1,0 +1,42 @@
+@page "/layout/text"
+
+<PageTitle>Text</PageTitle>
+
+<h1>Text</h1>
+<p>The Text utility combines custom properties from the Web Awesome theme to conveniently style body text, headings, and captions. <code>WaText</code> renders a semantic element (<code>p</code>, <code>h1</code>-<code>h6</code>, or <code>small</code>) with the corresponding <code>wa-body-*</code>, <code>wa-heading-*</code>, or <code>wa-caption-*</code> utility class.</p>
+
+<ExampleSection Title="Body Sizes" Code="@BodyExample">
+    <WaText Variant="TextVariant.Body" Size="TextSize.S">Sphinx of black quartz, judge my vow.</WaText>
+    <WaText Variant="TextVariant.Body" Size="TextSize.M">Sphinx of black quartz, judge my vow.</WaText>
+    <WaText Variant="TextVariant.Body" Size="TextSize.L">Sphinx of black quartz, judge my vow.</WaText>
+</ExampleSection>
+
+<ExampleSection Title="Headings" Code="@HeadingExample">
+    <WaText Variant="TextVariant.Heading" Size="TextSize.L">Five Boxing Wizards</WaText>
+    <WaText Variant="TextVariant.Heading" Size="TextSize.XL">Five Boxing Wizards</WaText>
+    <WaText Variant="TextVariant.Heading" Size="TextSize.XL2">Five Boxing Wizards</WaText>
+</ExampleSection>
+
+<ExampleSection Title="Captions" Code="@CaptionExample">
+    <WaText Variant="TextVariant.Caption" Size="TextSize.S">The quick brown fox jumps over the lazy dog.</WaText>
+    <WaText Variant="TextVariant.Caption" Size="TextSize.M">The quick brown fox jumps over the lazy dog.</WaText>
+</ExampleSection>
+
+@code {
+    private const string BodyExample = """
+        <WaText Variant="TextVariant.Body" Size="TextSize.S">Sphinx of black quartz, judge my vow.</WaText>
+        <WaText Variant="TextVariant.Body" Size="TextSize.M">Sphinx of black quartz, judge my vow.</WaText>
+        <WaText Variant="TextVariant.Body" Size="TextSize.L">Sphinx of black quartz, judge my vow.</WaText>
+        """;
+
+    private const string HeadingExample = """
+        <WaText Variant="TextVariant.Heading" Size="TextSize.L">Five Boxing Wizards</WaText>
+        <WaText Variant="TextVariant.Heading" Size="TextSize.XL">Five Boxing Wizards</WaText>
+        <WaText Variant="TextVariant.Heading" Size="TextSize.XL2">Five Boxing Wizards</WaText>
+        """;
+
+    private const string CaptionExample = """
+        <WaText Variant="TextVariant.Caption" Size="TextSize.S">The quick brown fox jumps over the lazy dog.</WaText>
+        <WaText Variant="TextVariant.Caption" Size="TextSize.M">The quick brown fox jumps over the lazy dog.</WaText>
+        """;
+}

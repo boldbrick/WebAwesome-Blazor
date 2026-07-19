@@ -20,6 +20,9 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used by derived input components to call methods on the underlying Web Awesome element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -35,34 +38,104 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element alongside validation state classes.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Visual & behavior properties
+    /// <summary>
+    /// Size variant of the input, mapped to the underlying Web Awesome element's "size" attribute.
+    /// </summary>
     [Parameter] public WaSize? Size { get; set; }
+
+    /// <summary>
+    /// Disables the input, preventing user interaction and value submission.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Makes the input read-only, allowing its value to be seen but not edited.
+    /// </summary>
     [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
     [Parameter] public bool Required { get; set; }
 
     // Labels & hints (string or RenderFragment)
+    /// <summary>
+    /// Plain-text label rendered via the element's "label" attribute.
+    /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// Rich markup label rendered into the "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// </summary>
     [Parameter] public RenderFragment? MarkupLabel { get; set; }
+
+    /// <summary>
+    /// Plain-text hint rendered via the element's "hint" attribute.
+    /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// Rich markup hint rendered into the "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// </summary>
     [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     // Validation
+    /// <summary>
+    /// Minimum number of characters required for a valid value.
+    /// </summary>
     [Parameter] public int? MinLength { get; set; }
+
+    /// <summary>
+    /// Maximum number of characters allowed for the value.
+    /// </summary>
     [Parameter] public int? MaxLength { get; set; }
 
     // Browser behavior
+    /// <summary>
+    /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
+    /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
 
     // Common events
+    /// <summary>
+    /// Invoked when the input gains keyboard or pointer focus.
+    /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
+
+    /// <summary>
+    /// Invoked when the input loses focus.
+    /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
+
+    /// <summary>
+    /// Invoked when a key is pressed down while the input is focused.
+    /// </summary>
     [Parameter] public EventCallback<KeyboardEventArgs> OnKeyDown { get; set; }
+
+    /// <summary>
+    /// Invoked when a key is released while the input is focused.
+    /// </summary>
     [Parameter] public EventCallback<KeyboardEventArgs> OnKeyUp { get; set; }
+
+    /// <summary>
+    /// Invoked when a character-producing key is pressed while the input is focused.
+    /// </summary>
     [Parameter] public EventCallback<KeyboardEventArgs> OnKeyPress { get; set; }
+
+    /// <summary>
+    /// Invoked when the input's value changes as the user types.
+    /// </summary>
     [Parameter] public EventCallback<ChangeEventArgs> OnInput { get; set; }
 
     #endregion

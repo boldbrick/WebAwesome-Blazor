@@ -29,10 +29,20 @@ public class WaFrame : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names appended to the wa-frame utility class on the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Frame properties
+    /// <summary>
+    /// Aspect ratio applied as a wa-frame:* modifier class; defaults to a square frame.
+    /// </summary>
     [Parameter] public FrameAspectRatio AspectRatio { get; set; } = FrameAspectRatio.Square;
 
     #endregion

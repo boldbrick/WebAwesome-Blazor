@@ -17,6 +17,10 @@
 
   <!-- common output directory configuration -->
   <PropertyGroup>
+    <!-- this file is evaluated before MSBuild's own Configuration default applies; without this,
+         plain `dotnet run`/`dotnet build` (no -c) would compute output paths with an empty Configuration -->
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+
     <!-- root solution directory initialization in case running from project folder -->
     <SolutionDir Condition="$(SolutionDir) == ''">$([MSBuild]::EnsureTrailingSlash($([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)', '$(BbMainSolution)'))))</SolutionDir>
 
@@ -27,10 +31,11 @@
     <BaseIntermediateOutputPath>$(ArtifactsDir)obj\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(MSBuildProjectName)\</IntermediateOutputPath>
 
-    <!-- output\bin\<configuration>\[<component>\] -->
+    <!-- output\bin\<configuration>\[<component>\] (multi-targeted projects get a framework subdirectory appended by the SDK) -->
     <BaseOutputPath>$(ArtifactsDir)bin\$(Configuration)\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)$(BbComponentGroup)\</OutputPath>
-    <OutDir>$(OutputPath)</OutDir>
+    <!-- pin OutDir only for single-TFM projects; for multi-TFM the SDK derives it from OutputPath after appending the framework -->
+    <OutDir Condition="'$(TargetFrameworks)' == ''">$(OutputPath)</OutDir>
 
     <!-- output\packages\ -->
     <PackageOutputPath>$(ArtifactsDir)packages\$(Configuration)\</PackageOutputPath>
@@ -54,8 +59,10 @@
     <ProjectAssetsFile>$(MSBuildProjectExtensionsPath)project.assets.json</ProjectAssetsFile>
     <ProjectAssetsCacheFile>$(MSBuildProjectExtensionsPath)$(TargetFramework)\$(MSBuildProjectName).assets.cache</ProjectAssetsCacheFile>
 
-    <!-- prevent the framework-version subdirectory -->
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- single-TFM projects build flat; multi-targeted projects need the framework subdirectory
+         to keep per-TFM outputs apart (P2P references would otherwise pick up the wrong TFM's assembly) -->
+    <AppendTargetFrameworkToOutputPath Condition="'$(TargetFrameworks)' == ''">false</AppendTargetFrameworkToOutputPath>
+    <AppendTargetFrameworkToOutputPath Condition="'$(TargetFrameworks)' != ''">true</AppendTargetFrameworkToOutputPath>
 
     <!-- well-know folders with build dependencies -->
     <BbToolsDir>$(SolutionDir)\..\tools\</BbToolsDir>
@@ -69,6 +76,16 @@
   <PropertyGroup Condition="!$(BbForProductionUse)">
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+
+  <!-- applications are publishable (e.g. the demo site), but never packable -->
+  <PropertyGroup Condition="'$(BbComponentGroup)'=='Apps'">
+    <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+
+  <!-- production libraries must be fully XML-documented; missing docs fail the build -->
+  <PropertyGroup Condition="'$(BbComponentGroup)'=='Libs'">
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
   </PropertyGroup>
 
   <!-- Release build setttings -->

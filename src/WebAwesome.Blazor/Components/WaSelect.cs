@@ -17,12 +17,39 @@ public class WaSelect : WaInputBase<string?>
 {
     #region ------ Visual & Behavior Properties ------
 
+    /// <summary>
+    /// Placeholder text to show as a hint when the select is empty.
+    /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// The select's visual appearance.
+    /// </summary>
     [Parameter] public WaInputAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// Draws a pill-style select with rounded edges.
+    /// </summary>
     [Parameter] public bool Pill { get; set; }
+
+    /// <summary>
+    /// Adds a clear button when the select is not empty.
+    /// </summary>
     [Parameter] public bool WithClear { get; set; }
+
+    /// <summary>
+    /// Allows more than one option to be selected.
+    /// </summary>
     [Parameter] public bool Multiple { get; set; }
+
+    /// <summary>
+    /// The maximum number of selected options to show when <see cref="Multiple"/> is <see langword="true"/>. Beyond this count, a "+n" indicator is shown. Set to 0 to remove the limit.
+    /// </summary>
     [Parameter] public int? MaxOptionsVisible { get; set; }
+
+    /// <summary>
+    /// The preferred placement of the select's menu. The actual placement may vary as needed to keep the listbox inside the viewport.
+    /// </summary>
     [Parameter] public WaPlacement? Placement { get; set; }
 
     #endregion
@@ -43,6 +70,9 @@ public class WaSelect : WaInputBase<string?>
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the control's value is cleared.
+    /// </summary>
     [Parameter] public EventCallback OnClear { get; set; }
 
     #endregion
@@ -63,6 +93,16 @@ public class WaSelect : WaInputBase<string?>
     /// The options to display in the select
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? StartIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="EndContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? EndIconName { get; set; }
 
     #endregion
 
@@ -134,6 +174,10 @@ public class WaSelect : WaInputBase<string?>
             builder.AddContent(62, StartContent);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(100, "start", StartIconName);
+        }
 
         // Add end slot content
         if (EndContent is not null)
@@ -142,6 +186,10 @@ public class WaSelect : WaInputBase<string?>
             builder.AddAttribute(66, "slot", "end");
             builder.AddContent(67, EndContent);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(105, "end", EndIconName);
         }
 
         // Add child content (options)

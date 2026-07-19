@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -20,6 +20,9 @@ public class WaIntersectionObserver : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -39,8 +42,15 @@ public class WaIntersectionObserver : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // IntersectionObserver options

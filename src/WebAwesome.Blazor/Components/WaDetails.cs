@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,9 @@ public class WaDetails : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to invoke methods on the underlying element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -35,22 +38,55 @@ public class WaDetails : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Details properties
+    /// <summary>
+    /// The summary to show in the header. If you need to display HTML, use <see cref="SummaryContent"/> instead.
+    /// </summary>
     [Parameter] public string? Summary { get; set; }
+
+    /// <summary>
+    /// Indicates whether or not the details is open. Toggle this to show and hide the content, or use
+    /// <see cref="ShowAsync"/> and <see cref="HideAsync"/> and this will reflect the details' open state.
+    /// </summary>
     [Parameter] public bool Open { get; set; }
+
+    /// <summary>
+    /// Disables the details so it can't be toggled.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// The element's visual appearance.
+    /// </summary>
     [Parameter] public WaAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The location of the expand/collapse icon.
+    /// </summary>
     [Parameter] public WaIconPlacement IconPlacement { get; set; } = WaIconPlacement.End;
+
+    /// <summary>
+    /// Groups related details elements. When one opens, others with the same name will close.
+    /// </summary>
     [Parameter] public string? Name { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the details is toggled open or closed.
+    /// </summary>
     [Parameter] public EventCallback<WaDetailsToggleEventArgs> OnToggle { get; set; }
 
     #endregion
@@ -76,6 +112,16 @@ public class WaDetails : ComponentBase
     /// Custom collapse icon
     /// </summary>
     [Parameter] public RenderFragment? CollapseIcon { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="ExpandIcon"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? ExpandIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="CollapseIcon"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? CollapseIconName { get; set; }
 
     #endregion
 
@@ -123,6 +169,10 @@ public class WaDetails : ComponentBase
             builder.AddContent(32, ExpandIcon);
             builder.CloseElement();
         }
+        else
+        {
+            builder.AddIconSlot(60, "expand-icon", ExpandIconName);
+        }
 
         // Add collapse icon slot content
         if (CollapseIcon is not null)
@@ -131,6 +181,10 @@ public class WaDetails : ComponentBase
             builder.AddAttribute(41, "slot", "collapse-icon");
             builder.AddContent(42, CollapseIcon);
             builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(65, "collapse-icon", CollapseIconName);
         }
 
         // Add child content (main details content)

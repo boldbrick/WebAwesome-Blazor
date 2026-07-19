@@ -36,25 +36,70 @@ public class WaCarousel : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Carousel properties
+    /// <summary>
+    /// The orientation in which the carousel lays out its slides.
+    /// </summary>
     [Parameter] public WaOrientation Orientation { get; set; } = WaOrientation.Horizontal;
+
+    /// <summary>
+    /// Shows the carousel's pagination indicators.
+    /// </summary>
     [Parameter] public bool Pagination { get; set; }
+
+    /// <summary>
+    /// Shows the carousel's navigation.
+    /// </summary>
     [Parameter] public bool Navigation { get; set; }
+
+    /// <summary>
+    /// Allows the slides to be scrolled through by dragging them with the mouse.
+    /// </summary>
     [Parameter] public bool MouseDragging { get; set; }
+
+    /// <summary>
+    /// Allows the user to navigate the carousel in the same direction indefinitely.
+    /// </summary>
     [Parameter] public bool Loop { get; set; }
+
+    /// <summary>
+    /// When set, the slides scroll automatically when the user is not interacting with them.
+    /// </summary>
     [Parameter] public bool Autoplay { get; set; }
+
+    /// <summary>
+    /// The amount of time, in milliseconds, between each automatic scroll.
+    /// </summary>
     [Parameter] public int AutoplayInterval { get; set; } = 3000;
+
+    /// <summary>
+    /// How many slides are shown at a given time.
+    /// </summary>
     [Parameter] public int SlidesPerPage { get; set; } = 1;
+
+    /// <summary>
+    /// The number of slides the carousel advances when scrolling. Useful when <see cref="SlidesPerPage"/> is greater
+    /// than one. It cannot be higher than <see cref="SlidesPerPage"/>.
+    /// </summary>
     [Parameter] public int SlidesPerMove { get; set; } = 1;
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the active slide changes.
+    /// </summary>
     [Parameter] public EventCallback<WaSlideChangeEventArgs> OnSlideChange { get; set; }
 
     #endregion
@@ -65,6 +110,16 @@ public class WaCarousel : ComponentBase
     /// The carousel's content (WaCarouselItem components)
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Icon rendered into the next-icon slot, replacing the default next navigation icon.
+    /// </summary>
+    [Parameter] public string? NextIconName { get; set; }
+
+    /// <summary>
+    /// Icon rendered into the previous-icon slot, replacing the default previous navigation icon.
+    /// </summary>
+    [Parameter] public string? PreviousIconName { get; set; }
 
     #endregion
 
@@ -101,6 +156,10 @@ public class WaCarousel : ComponentBase
         {
             builder.AddContent(30, ChildContent);
         }
+
+        // Add navigation icon slots
+        builder.AddIconSlot(40, "next-icon", NextIconName);
+        builder.AddIconSlot(45, "previous-icon", PreviousIconName);
 
         builder.CloseElement();
     }

@@ -16,6 +16,9 @@ public class WaTooltip : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to call methods on the underlying Web Awesome element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -36,14 +39,40 @@ public class WaTooltip : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Tooltip properties
+    /// <summary>
+    /// The id of the element the tooltip is anchored to.
+    /// </summary>
     [Parameter] public string? For { get; set; }
+
+    /// <summary>
+    /// The preferred placement of the tooltip. The actual placement may vary as needed to keep the tooltip inside the viewport.
+    /// </summary>
     [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
+
+    /// <summary>
+    /// Controls how the tooltip is activated.
+    /// </summary>
     [Parameter] public WaTrigger Trigger { get; set; } = WaTrigger.Hover;
+
+    /// <summary>
+    /// Indicates whether the tooltip is open. Can be used in lieu of <see cref="ShowAsync"/>/<see cref="HideAsync"/>.
+    /// </summary>
     [Parameter] public bool Open { get; set; }
+
+    /// <summary>
+    /// Removes the arrow from the tooltip.
+    /// </summary>
     [Parameter] public bool WithoutArrow { get; set; }
 
     #endregion
@@ -59,7 +88,14 @@ public class WaTooltip : ComponentBase
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the tooltip begins to show.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+
+    /// <summary>
+    /// Invoked when the tooltip begins to hide.
+    /// </summary>
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
 
     #endregion
@@ -162,14 +198,4 @@ public class WaTooltip : ComponentBase
     }
 
     #endregion
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
 }

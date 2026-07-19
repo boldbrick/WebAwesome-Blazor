@@ -30,11 +30,25 @@ public abstract class WaLayoutBase : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names appended to the layout utility class on the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Layout properties
+    /// <summary>
+    /// Spacing token applied as a wa-gap-* modifier class between child elements.
+    /// </summary>
     [Parameter] public GapSize? Gap { get; set; }
+
+    /// <summary>
+    /// Cross-axis alignment token applied as a wa-align-items-* modifier class.
+    /// </summary>
     [Parameter] public AlignItems? AlignItems { get; set; }
 
     #endregion

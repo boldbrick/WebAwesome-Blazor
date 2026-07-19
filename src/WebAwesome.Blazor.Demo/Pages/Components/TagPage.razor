@@ -1,0 +1,20 @@
+﻿@page "/components/tag"
+
+<PageTitle>Tag</PageTitle>
+
+<h1>Tag</h1>
+<p><code>&lt;wa-tag&gt;</code> wrapped by <code>WaTag</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaTag Variant="WaVariant.Brand">Tag</WaTag>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tag.md) *@
+
+<ApiTable Tag="wa-tag" />
+
+@code {
+    private const string DefaultExample = """
+        <WaTag Variant="WaVariant.Brand">Tag</WaTag>
+        """;
+}

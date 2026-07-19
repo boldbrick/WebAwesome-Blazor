@@ -1,0 +1,24 @@
+﻿@page "/components/animation"
+
+<PageTitle>Animation</PageTitle>
+
+<h1>Animation</h1>
+<p><code>&lt;wa-animation&gt;</code> wrapped by <code>WaAnimation</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaAnimation Name="bounce" Play="true" Iterations="1">
+        <div style="background: var(--wa-color-brand-fill-loud); width: 100px; height: 100px;"></div>
+    </WaAnimation>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\animation.md) *@
+
+<ApiTable Tag="wa-animation" />
+
+@code {
+    private const string DefaultExample = """
+        <WaAnimation Name="bounce" Play="true" Iterations="1">
+            <div style="background: var(--wa-color-brand-fill-loud); width: 100px; height: 100px;"></div>
+        </WaAnimation>
+        """;
+}

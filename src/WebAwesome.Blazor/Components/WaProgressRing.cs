@@ -28,11 +28,21 @@ public class WaProgressRing : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Progress properties
+    /// <summary>
+    /// The current progress as a percentage, 0 to 100.
+    /// </summary>
     [Parameter] public int Value { get; set; }
 
     #endregion

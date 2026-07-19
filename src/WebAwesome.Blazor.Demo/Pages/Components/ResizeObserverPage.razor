@@ -1,0 +1,46 @@
+﻿@page "/components/resize-observer"
+
+<PageTitle>Resize Observer</PageTitle>
+
+<h1>Resize Observer</h1>
+<p><code>&lt;wa-resize-observer&gt;</code> wrapped by <code>WaResizeObserver</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaResizeObserver OnResize="HandleResize">
+        <div style="border: solid 2px var(--wa-color-surface-border); padding: 4rem 2rem; text-align: center;">
+            Resize this box and watch the message below.
+        </div>
+    </WaResizeObserver>
+    <p>@resizeMessage</p>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\resize-observer.md) *@
+
+<ApiTable Tag="wa-resize-observer" />
+
+@code {
+    private string resizeMessage = "Resize the box above to see events fire.";
+
+    private void HandleResize(ResizeEventArgs args)
+    {
+        resizeMessage = $"Resized at {DateTime.Now:T}";
+    }
+
+    private const string DefaultExample = """
+        <WaResizeObserver OnResize="HandleResize">
+            <div style="border: solid 2px var(--wa-color-surface-border); padding: 4rem 2rem; text-align: center;">
+                Resize this box and watch the message below.
+            </div>
+        </WaResizeObserver>
+        <p>@resizeMessage</p>
+
+        @code {
+            private string resizeMessage = "Resize the box above to see events fire.";
+
+            private void HandleResize(ResizeEventArgs args)
+            {
+                resizeMessage = $"Resized at {DateTime.Now:T}";
+            }
+        }
+        """;
+}

@@ -40,46 +40,148 @@ public class WaPopup : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Additional CSS class names to apply to the rendered element.
+    /// </summary>
     // Common styling parameters
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline CSS styles to apply to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Popup positioning properties
+    /// <summary>
+    /// The preferred placement of the popup. Note that the actual placement will vary as configured to keep
+    /// the panel inside of the viewport.
+    /// </summary>
     [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
+
+    /// <summary>
+    /// Activates the positioning logic and shows the popup. When deactivated, the positioning logic is torn
+    /// down and the popup is hidden.
+    /// </summary>
     [Parameter] public bool Active { get; set; }
+
+    /// <summary>
+    /// The ID of the element the popup will be anchored to. The anchor must live outside of the popup; to
+    /// anchor to an element inside the popup, use the anchor slot instead.
+    /// </summary>
     [Parameter] public string? Anchor { get; set; }
+
+    /// <summary>
+    /// The distance in pixels from which to offset the panel away from its anchor.
+    /// </summary>
     [Parameter] public double Distance { get; set; } = 0;
+
+    /// <summary>
+    /// The distance in pixels from which to offset the panel along its anchor.
+    /// </summary>
     [Parameter] public double Skidding { get; set; } = 0;
 
     // Arrow properties
+    /// <summary>
+    /// Attaches an arrow to the popup. The arrow's size and color can be customized using the
+    /// <c>--arrow-size</c> and <c>--arrow-color</c> custom properties.
+    /// </summary>
     [Parameter] public bool Arrow { get; set; }
+
+    /// <summary>
+    /// The placement of the arrow. The default, <see cref="WaArrowPlacement.Anchor"/>, aligns the arrow as
+    /// close to the center of the anchor as possible, considering available space and <see cref="ArrowPadding"/>.
+    /// </summary>
     [Parameter] public WaArrowPlacement ArrowPlacement { get; set; } = WaArrowPlacement.Anchor;
+
+    /// <summary>
+    /// The amount of padding, in pixels, between the arrow and the edges of the popup. If the popup has a
+    /// border-radius, this prevents the arrow from overflowing the corners.
+    /// </summary>
     [Parameter] public double ArrowPadding { get; set; } = 10;
 
     // Flip behavior
+    /// <summary>
+    /// When set, the popup's placement flips to the opposite side to keep it in view. Use
+    /// <see cref="FlipFallbackPlacements"/> to further configure how the fallback placement is determined.
+    /// </summary>
     [Parameter] public bool Flip { get; set; }
+
+    /// <summary>
+    /// If the preferred placement doesn't fit, the popup is tested in these fallback placements until one
+    /// fits. Must be a string of any number of placements separated by a space, e.g. <c>top bottom left</c>.
+    /// </summary>
     [Parameter] public string? FlipFallbackPlacements { get; set; }
+
+    /// <summary>
+    /// When neither the preferred placement nor the fallback placements fit, this value determines whether
+    /// the popup is positioned using the best available fit based on available space or as it was initially
+    /// preferred.
+    /// </summary>
     [Parameter] public string? FlipFallbackStrategy { get; set; } = "initial";
+
+    /// <summary>
+    /// The clipping element(s) that overflow is checked relative to when flipping. By default, the boundary
+    /// includes overflow ancestors that will cause the element to be clipped.
+    /// </summary>
     [Parameter] public string? FlipBoundary { get; set; }
+
+    /// <summary>
+    /// The amount of padding, in pixels, to exceed before the flip behavior occurs.
+    /// </summary>
     [Parameter] public double FlipPadding { get; set; } = 0;
 
     // Shift behavior
+    /// <summary>
+    /// Moves the popup along the axis to keep it in view when clipped.
+    /// </summary>
     [Parameter] public bool Shift { get; set; }
+
+    /// <summary>
+    /// The clipping element(s) that overflow is checked relative to when shifting. By default, the boundary
+    /// includes overflow ancestors that will cause the element to be clipped.
+    /// </summary>
     [Parameter] public string? ShiftBoundary { get; set; }
+
+    /// <summary>
+    /// The amount of padding, in pixels, to exceed before the shift behavior occurs.
+    /// </summary>
     [Parameter] public double ShiftPadding { get; set; } = 0;
 
     // Auto-size behavior
+    /// <summary>
+    /// When set, causes the popup to automatically resize itself to prevent it from overflowing.
+    /// </summary>
     [Parameter] public WaAutoSize AutoSize { get; set; } = WaAutoSize.None;
+
+    /// <summary>
+    /// The clipping element(s) that overflow is checked relative to when auto-sizing. By default, the
+    /// boundary includes overflow ancestors that will cause the element to be clipped.
+    /// </summary>
     [Parameter] public string? AutoSizeBoundary { get; set; }
+
+    /// <summary>
+    /// The amount of padding, in pixels, to exceed before the auto-size behavior occurs.
+    /// </summary>
     [Parameter] public double AutoSizePadding { get; set; } = 0;
 
     // Sync behavior
+    /// <summary>
+    /// Syncs the popup's width or height to that of the anchor element.
+    /// </summary>
     [Parameter] public WaSync Sync { get; set; } = WaSync.None;
 
     // Hover bridge
+    /// <summary>
+    /// When a gap exists between the anchor and the popup element, adds a "hover bridge" that fills the gap
+    /// using an invisible element, so hover-based events such as <c>mouseenter</c>/<c>mouseleave</c> don't
+    /// fire prematurely. The hover bridge is only drawn while the popup is active.
+    /// </summary>
     [Parameter] public bool HoverBridge { get; set; }
 
     // Boundary
+    /// <summary>
+    /// The bounding box to use for flipping, shifting, and auto-sizing.
+    /// </summary>
     [Parameter] public string? Boundary { get; set; }
 
     #endregion

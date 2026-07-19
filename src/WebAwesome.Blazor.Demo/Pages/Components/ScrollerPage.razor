@@ -1,0 +1,32 @@
+﻿@page "/components/scroller"
+
+<PageTitle>Scroller</PageTitle>
+
+<h1>Scroller</h1>
+<p><code>&lt;wa-scroller&gt;</code> wrapped by <code>WaScroller</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaScroller Style="max-width: 500px;">
+        <div style="display: flex; gap: 1rem; padding: 1rem;">
+            @for (var i = 1; i <= 8; i++)
+            {
+                <div style="flex: 0 0 auto; width: 120px; height: 80px; background: var(--wa-color-neutral-fill-normal); border-radius: var(--wa-border-radius-m); display: flex; align-items: center; justify-content: center;">Item @i</div>
+            }
+        </div>
+    </WaScroller>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\scroller.md) *@
+
+<ApiTable Tag="wa-scroller" />
+
+@code {
+    private const string DefaultExample = """
+        <WaScroller Style="max-width: 500px;">
+            <div style="display: flex; gap: 1rem; padding: 1rem;">
+                <div style="flex: 0 0 auto; width: 120px; height: 80px; background: var(--wa-color-neutral-fill-normal); border-radius: var(--wa-border-radius-m);">Item 1</div>
+                <!-- ...more items... -->
+            </div>
+        </WaScroller>
+        """;
+}

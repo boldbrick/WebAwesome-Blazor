@@ -20,6 +20,9 @@ public class WaZoomableFrame : ComponentBase
 {
     #region ------ Dependency Injection ------
 
+    /// <summary>
+    /// JavaScript interop service used to call methods on the underlying Web Awesome element.
+    /// </summary>
     [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
@@ -40,20 +43,62 @@ public class WaZoomableFrame : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Common styling parameters
+    /// <summary>
+    /// Additional CSS class names applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline CSS style applied to the rendered element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Frame content properties
+    /// <summary>
+    /// The URL of the content to display. Ignored when <see cref="SrcDoc"/> is set.
+    /// </summary>
     [Parameter] public string? Src { get; set; }
+
+    /// <summary>
+    /// Inline HTML to display. Takes precedence over <see cref="Src"/> when set.
+    /// </summary>
     [Parameter] public string? SrcDoc { get; set; }
 
     // Zoom properties
+    /// <summary>
+    /// The current zoom of the frame, e.g. 0 = 0% and 1 = 100%.
+    /// </summary>
     [Parameter] public double Zoom { get; set; } = 1.0;
+
+    /// <summary>
+    /// The zoom levels to step through when using the zoom controls. Does not restrict programmatic changes to the zoom.
+    /// </summary>
     [Parameter] public string? ZoomLevels { get; set; }
 
     // Control properties
+    /// <summary>
+    /// Removes the zoom controls.
+    /// </summary>
     [Parameter] public bool WithoutControls { get; set; }
+
+    /// <summary>
+    /// Disables interaction with the frame content.
+    /// </summary>
     [Parameter] public bool WithoutInteraction { get; set; }
+
+    #endregion
+
+    #region ------ Content ------
+
+    /// <summary>
+    /// Icon rendered into the zoom-in-icon slot, replacing the default zoom-in control icon.
+    /// </summary>
+    [Parameter] public string? ZoomInIconName { get; set; }
+
+    /// <summary>
+    /// Icon rendered into the zoom-out-icon slot, replacing the default zoom-out control icon.
+    /// </summary>
+    [Parameter] public string? ZoomOutIconName { get; set; }
 
     #endregion
 
@@ -118,17 +163,11 @@ public class WaZoomableFrame : ComponentBase
         // Add element reference capture
         builder.AddElementReferenceCapture(50, __frameReference => Element = __frameReference);
 
+        // Add zoom control icon slots
+        builder.AddIconSlot(60, "zoom-in-icon", ZoomInIconName);
+        builder.AddIconSlot(65, "zoom-out-icon", ZoomOutIconName);
+
         builder.CloseElement();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSInterop.InvokeMethodAsync(Element.Value, "initialize");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
     }
 
     #endregion

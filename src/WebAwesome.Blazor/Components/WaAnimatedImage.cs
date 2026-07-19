@@ -36,20 +36,58 @@ public class WaAnimatedImage : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Image properties
+    /// <summary>
+    /// The path to the image to load.
+    /// </summary>
     [Parameter] public string? Src { get; set; }
+
+    /// <summary>
+    /// A description of the image used by assistive devices.
+    /// </summary>
     [Parameter] public string? Alt { get; set; }
+
+    /// <summary>
+    /// Plays the animation. When set to <see langword="false"/>, the animation will pause.
+    /// </summary>
     [Parameter] public bool Play { get; set; } = true;
+
+    #endregion
+
+    #region ------ Content ------
+
+    /// <summary>
+    /// Icon rendered into the play-icon slot, replacing the default play icon.
+    /// </summary>
+    [Parameter] public string? PlayIconName { get; set; }
+
+    /// <summary>
+    /// Icon rendered into the pause-icon slot, replacing the default pause icon.
+    /// </summary>
+    [Parameter] public string? PauseIconName { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the image loads successfully.
+    /// </summary>
     [Parameter] public EventCallback OnLoad { get; set; }
+
+    /// <summary>
+    /// Invoked when the image fails to load.
+    /// </summary>
     [Parameter] public EventCallback OnError { get; set; }
 
     #endregion
@@ -78,6 +116,10 @@ public class WaAnimatedImage : ComponentBase
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __animatedImageReference => Element = __animatedImageReference);
+
+        // Add play/pause icon slots
+        builder.AddIconSlot(30, "play-icon", PlayIconName);
+        builder.AddIconSlot(35, "pause-icon", PauseIconName);
 
         builder.CloseElement();
     }

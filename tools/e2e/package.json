@@ -1,0 +1,14 @@
+{
+  "name": "webawesome-blazor-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright end-to-end tests for the WebAwesome.Blazor.Demo app. Drives the real running demo against a real browser to catch runtime issues bUnit/build cannot see (JS interop failures, DOM event semantics, actual computed styles).",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "install-browsers": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}

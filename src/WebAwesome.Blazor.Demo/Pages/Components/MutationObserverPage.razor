@@ -1,0 +1,60 @@
+﻿@page "/components/mutation-observer"
+
+<PageTitle>Mutation Observer</PageTitle>
+
+<h1>Mutation Observer</h1>
+<p><code>&lt;wa-mutation-observer&gt;</code> wrapped by <code>WaMutationObserver</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaMutationObserver Attr="true" OnMutation="HandleMutation">
+        <WaButton Variant="mutationVariant" OnClick="ChangeVariant">Click to mutate</WaButton>
+    </WaMutationObserver>
+    <p>@mutationMessage</p>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\mutation-observer.md) *@
+
+<ApiTable Tag="wa-mutation-observer" />
+
+@code {
+    private static readonly WaVariant[] variants = [WaVariant.Brand, WaVariant.Success, WaVariant.Neutral, WaVariant.Warning, WaVariant.Danger];
+    private int clicks;
+    private WaVariant mutationVariant = WaVariant.Brand;
+    private string mutationMessage = "Click the button to mutate its variant and see events fire.";
+
+    private void ChangeVariant()
+    {
+        clicks++;
+        mutationVariant = variants[clicks % variants.Length];
+    }
+
+    private void HandleMutation(MutationEventArgs args)
+    {
+        mutationMessage = $"Mutation observed at {DateTime.Now:T}";
+    }
+
+    private const string DefaultExample = """
+        <WaMutationObserver Attr="true" OnMutation="HandleMutation">
+            <WaButton Variant="mutationVariant" OnClick="ChangeVariant">Click to mutate</WaButton>
+        </WaMutationObserver>
+        <p>@mutationMessage</p>
+
+        @code {
+            private static readonly WaVariant[] variants = [WaVariant.Brand, WaVariant.Success, WaVariant.Neutral, WaVariant.Warning, WaVariant.Danger];
+            private int clicks;
+            private WaVariant mutationVariant = WaVariant.Brand;
+            private string mutationMessage = "Click the button to mutate its variant and see events fire.";
+
+            private void ChangeVariant()
+            {
+                clicks++;
+                mutationVariant = variants[clicks % variants.Length];
+            }
+
+            private void HandleMutation(MutationEventArgs args)
+            {
+                mutationMessage = $"Mutation observed at {DateTime.Now:T}";
+            }
+        }
+        """;
+}

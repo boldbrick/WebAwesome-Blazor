@@ -1,0 +1,31 @@
+﻿@page "/components/zoomable-frame"
+
+<PageTitle>Zoomable Frame</PageTitle>
+
+<h1>Zoomable Frame</h1>
+<p><code>&lt;wa-zoomable-frame&gt;</code> wrapped by <code>WaZoomableFrame</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 300px;" />
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\zoomable-frame.md) *@
+
+<ApiTable Tag="wa-zoomable-frame" />
+
+@code {
+    private const string FrameContent = """
+        <body style="margin:0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#f2f4f6;">
+            <h1>Zoom me!</h1>
+        </body>
+        """;
+
+    private const string DefaultExample = """
+        <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 300px;" />
+
+        @code {
+            // FrameContent: inline HTML document rendered inside the frame
+            private const string FrameContent = "...";
+        }
+        """;
+}

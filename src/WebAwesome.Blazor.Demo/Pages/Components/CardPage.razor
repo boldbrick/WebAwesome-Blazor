@@ -1,0 +1,136 @@
+@page "/components/card"
+
+<PageTitle>Card</PageTitle>
+
+<h1>Card</h1>
+<p><code>&lt;wa-card&gt;</code> wrapped by <code>WaCard</code>. Cards can be used to group related subjects in a container.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaCard />
+</ExampleSection>
+
+<ExampleSection Title="Basic Card" Code="@BasicExample">
+    <WaCard Style="max-width: 300px;">
+        This is just a basic card. No media, no header, and no footer. Just your content.
+    </WaCard>
+</ExampleSection>
+
+<ExampleSection Title="Card with Header" Code="@HeaderExample">
+    <WaCard Style="max-width: 300px;">
+        <HeaderContent>
+            <h3 style="margin: 0;">Header Title</h3>
+        </HeaderContent>
+        <HeaderActionsContent>
+            <WaButton Appearance="WaAppearance.Plain">
+                <WaIcon Name="gear" Variant="solid" Label="Settings" />
+            </WaButton>
+        </HeaderActionsContent>
+        <ChildContent>
+            This card has a header. You can put all sorts of things in it!
+        </ChildContent>
+    </WaCard>
+</ExampleSection>
+
+<ExampleSection Title="Card with Footer" Code="@FooterExample">
+    <WaCard Style="max-width: 300px;">
+        <ChildContent>
+            This card has a footer. You can put all sorts of things in it!
+        </ChildContent>
+        <FooterContent>
+            <WaRating Label="Rating" @bind-Value="footerRating" />
+        </FooterContent>
+        <FooterActionsContent>
+            <WaButton Variant="WaVariant.Brand">Preview</WaButton>
+        </FooterActionsContent>
+    </WaCard>
+</ExampleSection>
+
+<ExampleSection Title="Media" Code="@MediaExample">
+    <WaCard Style="max-width: 300px;">
+        <MediaContent>
+            <img src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=80"
+                 alt="A kitten walks towards camera on top of pallet." />
+        </MediaContent>
+        <ChildContent>
+            This is a kitten, but not just any kitten. This kitten likes walking along pallets.
+        </ChildContent>
+    </WaCard>
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <WaCard Appearance="WaAppearance.Outlined" Style="max-width: 200px;">Outlined (default)</WaCard>
+        <WaCard Appearance="WaAppearance.Plain" Style="max-width: 200px;">Plain</WaCard>
+        <WaCard Appearance="WaAppearance.Filled" Style="max-width: 200px;">Filled</WaCard>
+        <WaCard Appearance="WaAppearance.Accent" Style="max-width: 200px;">Accent</WaCard>
+    </div>
+</ExampleSection>
+
+<ApiTable Tag="wa-card" />
+
+@code {
+    private decimal footerRating = 3;
+
+    private const string DefaultExample = "<WaCard />";
+
+    private const string BasicExample = """
+        <WaCard Style="max-width: 300px;">
+            This is just a basic card. No media, no header, and no footer. Just your content.
+        </WaCard>
+        """;
+
+    private const string HeaderExample = """
+        <WaCard Style="max-width: 300px;">
+            <HeaderContent>
+                <h3 style="margin: 0;">Header Title</h3>
+            </HeaderContent>
+            <HeaderActionsContent>
+                <WaButton Appearance="WaAppearance.Plain">
+                    <WaIcon Name="gear" Variant="solid" Label="Settings" />
+                </WaButton>
+            </HeaderActionsContent>
+            <ChildContent>
+                This card has a header. You can put all sorts of things in it!
+            </ChildContent>
+        </WaCard>
+        """;
+
+    private const string FooterExample = """
+        <WaCard Style="max-width: 300px;">
+            <ChildContent>
+                This card has a footer. You can put all sorts of things in it!
+            </ChildContent>
+            <FooterContent>
+                <WaRating Label="Rating" @bind-Value="footerRating" />
+            </FooterContent>
+            <FooterActionsContent>
+                <WaButton Variant="WaVariant.Brand">Preview</WaButton>
+            </FooterActionsContent>
+        </WaCard>
+
+        @code {
+            private decimal footerRating = 3;
+        }
+        """;
+
+    private const string MediaExample = """
+        <WaCard Style="max-width: 300px;">
+            <MediaContent>
+                <img src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=80"
+                     alt="A kitten walks towards camera on top of pallet." />
+            </MediaContent>
+            <ChildContent>
+                This is a kitten, but not just any kitten. This kitten likes walking along pallets.
+            </ChildContent>
+        </WaCard>
+        """;
+
+    private const string AppearanceExample = """
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <WaCard Appearance="WaAppearance.Outlined" Style="max-width: 200px;">Outlined (default)</WaCard>
+            <WaCard Appearance="WaAppearance.Plain" Style="max-width: 200px;">Plain</WaCard>
+            <WaCard Appearance="WaAppearance.Filled" Style="max-width: 200px;">Filled</WaCard>
+            <WaCard Appearance="WaAppearance.Accent" Style="max-width: 200px;">Accent</WaCard>
+        </div>
+        """;
+}

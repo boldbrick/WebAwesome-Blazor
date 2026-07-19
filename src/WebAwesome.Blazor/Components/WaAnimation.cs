@@ -36,27 +36,81 @@ public class WaAnimation : ComponentBase
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Common styling parameters
+    /// <summary>
+    /// Additional CSS classes to apply to the component.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the component.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
 
     // Animation properties
+    /// <summary>
+    /// The name of the built-in animation to use. For custom animations, use <see cref="SetKeyframesAsync"/>.
+    /// </summary>
     [Parameter] public string? Name { get; set; }
+
+    /// <summary>
+    /// Plays the animation. When set to <see langword="false"/>, the animation will be paused.
+    /// </summary>
     [Parameter] public bool Play { get; set; }
+
+    /// <summary>
+    /// The number of milliseconds each iteration of the animation takes to complete.
+    /// </summary>
     [Parameter] public int Duration { get; set; } = 1000;
+
+    /// <summary>
+    /// The number of milliseconds to delay the start of the animation.
+    /// </summary>
     [Parameter] public int Delay { get; set; } = 0;
+
+    /// <summary>
+    /// Determines the direction of playback as well as the behavior when reaching the end of an iteration.
+    /// </summary>
     [Parameter] public WaAnimationDirection Direction { get; set; } = WaAnimationDirection.Normal;
+
+    /// <summary>
+    /// The easing function to use for the animation.
+    /// </summary>
     [Parameter] public WaAnimationEasing Easing { get; set; } = WaAnimationEasing.Linear;
+
+    /// <summary>
+    /// The number of iterations to run before the animation completes. Use <see cref="decimal.MaxValue"/> for an
+    /// infinite, looping animation.
+    /// </summary>
     [Parameter] public decimal Iterations { get; set; } = 1;
+
+    /// <summary>
+    /// Sets how the animation applies styles to its target before and after its execution.
+    /// </summary>
     [Parameter] public WaAnimationFill Fill { get; set; } = WaAnimationFill.None;
+
+    /// <summary>
+    /// The animation's playback rate. A value of <c>1</c> plays the animation at normal speed; a negative value
+    /// reverses the animation.
+    /// </summary>
     [Parameter] public decimal PlaybackRate { get; set; } = 1;
 
     #endregion
 
     #region ------ Events ------
 
+    /// <summary>
+    /// Invoked when the animation is canceled.
+    /// </summary>
     [Parameter] public EventCallback OnCancel { get; set; }
+
+    /// <summary>
+    /// Invoked when the animation finishes.
+    /// </summary>
     [Parameter] public EventCallback OnFinish { get; set; }
+
+    /// <summary>
+    /// Invoked when the animation starts or restarts.
+    /// </summary>
     [Parameter] public EventCallback OnStart { get; set; }
 
     #endregion
