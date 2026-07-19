@@ -1,0 +1,2743 @@
+namespace WebAwesome.Blazor.Base
+{
+    public static class Constants { }
+    public interface IFormValidation
+    {
+        System.Threading.Tasks.Task SetCustomValidityAsync(string message);
+    }
+    public abstract class WaInputBase<TValue> : Microsoft.AspNetCore.Components.Forms.InputBase<TValue>, WebAwesome.Blazor.Base.IFormValidation
+    {
+        protected WaInputBase() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxLength { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinLength { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs> OnInput { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.KeyboardEventArgs> OnKeyDown { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.KeyboardEventArgs> OnKeyPress { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.KeyboardEventArgs> OnKeyUp { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected int AddCommonAttributes(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence) { }
+        protected int AddCommonEventHandlers(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence) { }
+        protected int AddLabelAndHintSlots(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence) { }
+        protected string GetCombinedCssClass() { }
+        public virtual System.Threading.Tasks.Task SetCustomValidityAsync(string message) { }
+    }
+    public abstract class WaLayoutBase : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        protected WaLayoutBase() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Layout.AlignItems? AlignItems { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Layout.GapSize? Gap { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected int AddCommonLayoutAttributes(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string elementName, string baseLayoutClass) { }
+        protected string GetCombinedCssClass(string baseLayoutClass) { }
+    }
+    public class WebAwesomeJSInterop
+    {
+        public WebAwesomeJSInterop(Microsoft.JSInterop.IJSRuntime jsRuntime) { }
+        public System.Threading.Tasks.ValueTask DisposeAsync() { }
+        public virtual System.Threading.Tasks.Task<string> GetDefaultIconFamilyAsync() { }
+        public System.Threading.Tasks.Task<T> GetPropertyAsync<T>(Microsoft.AspNetCore.Components.ElementReference elementReference, string propertyName) { }
+        public System.Threading.Tasks.Task InvokeMethodAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string methodName, params object[] args) { }
+        public System.Threading.Tasks.Task<T> InvokeMethodAsync<T>(Microsoft.AspNetCore.Components.ElementReference elementReference, string methodName, params object[] args) { }
+        public virtual System.Threading.Tasks.Task RegisterIconLibraryAsync(string name, WebAwesome.Blazor.Models.IconLibraryOptions options) { }
+        public System.Threading.Tasks.Task SetCustomValidityAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string message) { }
+        public virtual System.Threading.Tasks.Task SetDefaultIconFamilyAsync(string family) { }
+        public System.Threading.Tasks.Task SetPropertyAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string propertyName, object value) { }
+        public virtual System.Threading.Tasks.Task UnregisterIconLibraryAsync(string name) { }
+    }
+}
+namespace WebAwesome.Blazor.Components
+{
+    public class IncludeErrorEventArgs : System.EventArgs
+    {
+        public IncludeErrorEventArgs() { }
+        public string? Message { get; set; }
+        public int Status { get; set; }
+    }
+    public class MutationEventArgs : System.EventArgs
+    {
+        public MutationEventArgs() { }
+        public object[]? MutationRecords { get; set; }
+    }
+    public class ResizeEventArgs : System.EventArgs
+    {
+        public ResizeEventArgs() { }
+        public object[]? ResizeObserverEntries { get; set; }
+    }
+    public enum WaActivation
+    {
+        Auto = 0,
+        Manual = 1,
+    }
+    public class WaAnimatedImage : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaAnimatedImage() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Alt { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnError { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnLoad { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? PauseIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Play { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? PlayIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Src { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task PauseAsync() { }
+        public System.Threading.Tasks.Task PlayAsync() { }
+    }
+    public class WaAnimation : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaAnimation() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Delay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAnimationDirection Direction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Duration { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAnimationEasing Easing { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? EndDelay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAnimationFill Fill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double? IterationStart { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Iterations { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Name { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnCancel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnFinish { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnStart { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Play { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal PlaybackRate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task CancelAsync() { }
+        public System.Threading.Tasks.Task FinishAsync() { }
+        public System.Threading.Tasks.Task<decimal> GetCurrentTimeAsync() { }
+        public System.Threading.Tasks.Task SetCurrentTimeAsync(decimal time) { }
+        public System.Threading.Tasks.Task SetKeyframesAsync(object keyframes) { }
+    }
+    public enum WaAnimationDirection
+    {
+        Normal = 0,
+        Reverse = 1,
+        Alternate = 2,
+        AlternateReverse = 3,
+    }
+    public enum WaAnimationEasing
+    {
+        Linear = 0,
+        Ease = 1,
+        EaseIn = 2,
+        EaseOut = 3,
+        EaseInOut = 4,
+    }
+    public enum WaAnimationFill
+    {
+        None = 0,
+        Forwards = 1,
+        Backwards = 2,
+        Both = 3,
+    }
+    public enum WaAppearance
+    {
+        Filled = 0,
+        Outlined = 1,
+        OutlinedFilled = 2,
+        Text = 3,
+        Plain = 4,
+        Accent = 5,
+    }
+    public static class WaAppearanceExt
+    {
+        public static string ToStringForHtml(this WebAwesome.Blazor.Components.WaAppearance appearance) { }
+    }
+    public enum WaArrowPlacement
+    {
+        Anchor = 0,
+        Start = 1,
+        End = 2,
+        Center = 3,
+    }
+    public enum WaAttention
+    {
+        Pulse = 0,
+        Bounce = 1,
+    }
+    [System.Flags]
+    public enum WaAutoSize
+    {
+        None = 0,
+        Width = 1,
+        Height = 2,
+        Both = 3,
+    }
+    public class WaAvatar : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaAvatar() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? IconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? IconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Image { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Initials { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaLoading Loading { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnError { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAvatarShape Shape { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public enum WaAvatarShape
+    {
+        Circle = 0,
+        Square = 1,
+        Rounded = 2,
+    }
+    public class WaBadge : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaBadge() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAttention? Attention { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVariant? Variant { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaBreadcrumb : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaBreadcrumb() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? SeparatorContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaBreadcrumbItem : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaBreadcrumbItem() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EndIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Href { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.MouseEventArgs> OnClick { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Rel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? StartIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Target { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaButton : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IFormValidation
+    {
+        public WaButton() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Download { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EndIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Form { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FormAction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FormEncType { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FormMethod { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool? FormNoValidate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FormTarget { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Href { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Loading { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Name { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.MouseEventArgs> OnClick { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Rel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? StartIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Target { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaButtonType? Type { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Value { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVariant? Variant { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithCaret { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ClickAsync() { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task SetCustomValidityAsync(string message) { }
+    }
+    public class WaButtonGroup : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaButtonGroup() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVariant? Variant { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public enum WaButtonType
+    {
+        Button = 0,
+        Submit = 1,
+        Reset = 2,
+    }
+    public enum WaByteUnit
+    {
+        Byte = 0,
+        Bit = 1,
+    }
+    public class WaCallout : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaCallout() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAppearance Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? IconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? IconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVariant Variant { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaCard : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaCard() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAppearance Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? FooterActionsContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? HeaderActionsContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? HeaderContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MediaContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithFooter { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHeader { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithMedia { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaCarousel : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaCarousel() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Autoplay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int AutoplayInterval { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Loop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool MouseDragging { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Navigation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? NextIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaSlideChangeEventArgs> OnSlideChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pagination { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? PreviousIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int SlidesPerMove { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int SlidesPerPage { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task GoToSlideAsync(int index) { }
+        public System.Threading.Tasks.Task NextAsync() { }
+        public System.Threading.Tasks.Task PreviousAsync() { }
+    }
+    public class WaCarouselItem : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaCarouselItem() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaCheckbox : WebAwesome.Blazor.Base.WaInputBase<bool>
+    {
+        public WaCheckbox() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Indeterminate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<bool> OnCheckedChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ClickAsync() { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        protected override bool TryParseValueFromString(string? value, out bool result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public enum WaColorFormat
+    {
+        Hex = 0,
+        Rgb = 1,
+        Hsl = 2,
+        Hsv = 3,
+    }
+    public class WaColorPicker : WebAwesome.Blazor.Base.WaInputBase<string>
+    {
+        public WaColorPicker() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaColorFormat Format { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Opacity { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Swatches { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Uppercase { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithLabel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutFormatToggle { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task<string> GetFormattedValueAsync(WebAwesome.Blazor.Components.WaColorFormat format) { }
+        public System.Threading.Tasks.Task<string> GetHexStringAsync() { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task<bool> ReportValidityAsync() { }
+        public System.Threading.Tasks.Task SetSwatchesAsync(string[] colors) { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+        protected override bool TryParseValueFromString(string? value, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out string result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public enum WaCompactDisplay
+    {
+        Short = 0,
+        Long = 1,
+    }
+    public class WaComparison : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaComparison() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? AfterContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? BeforeContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? HandleContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? Position { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaCopyButton : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaCopyButton() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? CopyIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? CopyIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? CopyLabel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ErrorIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ErrorIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ErrorLabel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int FeedbackDuration { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? From { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnCopy { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnError { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnSuccess { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? SuccessIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? SuccessIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? SuccessLabel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPlacement? TooltipPlacement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Value { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task CopyAsync() { }
+    }
+    public enum WaCurrencyDisplay
+    {
+        Symbol = 0,
+        Code = 1,
+        Name = 2,
+    }
+    public enum WaDateTimeStyle
+    {
+        Long = 0,
+        Short = 1,
+        Narrow = 2,
+        Numeric = 3,
+        TwoDigit = 4,
+    }
+    public class WaDetails : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaDetails() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? CollapseIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? CollapseIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ExpandIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ExpandIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaIconPlacement IconPlacement { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Name { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDetailsToggleEventArgs> OnToggle { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Summary { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? SummaryContent { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+    }
+    public class WaDetailsToggleEventArgs : System.EventArgs
+    {
+        public WaDetailsToggleEventArgs() { }
+        public bool IsOpen { get; set; }
+    }
+    public class WaDialog : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaDialog() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? HeaderActionsContent { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool LightDismiss { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInitialFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutHeader { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+    }
+    public enum WaDisplay
+    {
+        Short = 0,
+        Long = 1,
+    }
+    public class WaDivider : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaDivider() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaDrawer : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaDrawer() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? HeaderActionsContent { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool LightDismiss { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInitialFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDrawerPlacement Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutHeader { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+    }
+    public enum WaDrawerPlacement
+    {
+        Start = 0,
+        End = 1,
+        Top = 2,
+        Bottom = 3,
+    }
+    public class WaDropdown : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaDropdown() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Distance { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnSelect { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPlacement Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Skidding { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? TriggerContent { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task RepositionAsync() { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+    }
+    public class WaDropdownItem : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaDropdownItem() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Checked { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? DetailsContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? IconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? IconName { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? SubmenuContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDropdownItemType Type { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Value { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVariant? Variant { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task CloseSubmenuAsync() { }
+        public System.Threading.Tasks.Task OpenSubmenuAsync() { }
+    }
+    public enum WaDropdownItemType
+    {
+        Normal = 0,
+        Checkbox = 1,
+        Radio = 2,
+    }
+    [System.Flags]
+    public enum WaDropdownTrigger
+    {
+        None = 0,
+        Click = 1,
+        Hover = 2,
+        Focus = 4,
+        Manual = 8,
+        HoverFocus = 6,
+    }
+    public enum WaEffect
+    {
+        Sheen = 0,
+        Pulse = 1,
+        None = 2,
+    }
+    public static class WaEnumExtensions
+    {
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaActivation activation) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaAnimationDirection direction) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaAnimationEasing easing) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaAnimationFill fill) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaAppearance appearance) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaArrowPlacement placement) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaAttention attention) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaAutoSize autoSize) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaAvatarShape shape) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaButtonType type) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaByteUnit unit) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaColorFormat format) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaCompactDisplay display) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaCurrencyDisplay display) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDateTimeStyle style) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDisplay display) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDrawerPlacement placement) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDropdownItemType type) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaEffect effect) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaErrorCorrection errorCorrection) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaFormat format) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaFormatNumberType type) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaHourFormat format) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaIconPlacement placement) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaInputAppearance appearance) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaInputType type) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaLoading loading) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaMenuItemType type) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaMode mode) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaNotation notation) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaOrientation orientation) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPageNavigationPlacement placement) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPageView view) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPlacement placement) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPrimary primary) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaRadioAppearance appearance) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaResize resize) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaSize size) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaSync sync) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaTabPlacement placement) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaTreeSelection selection) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaTrigger trigger) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaVariant variant) { }
+    }
+    public enum WaErrorCorrection
+    {
+        L = 0,
+        M = 1,
+        Q = 2,
+        H = 3,
+    }
+    public enum WaFit
+    {
+        Fill = 0,
+        Contain = 1,
+        Cover = 2,
+        ScaleDown = 3,
+        None = 4,
+    }
+    public enum WaFormat
+    {
+        Auto = 0,
+        Relative = 1,
+        Numeric = 2,
+    }
+    public class WaFormatBytes : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaFormatBytes() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDisplay? Display { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Lang { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaByteUnit Unit { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public long Value { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaFormatDate : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaFormatDate() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Date { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? Day { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? Era { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? Hour { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaHourFormat? HourFormat { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Lang { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? Minute { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? Month { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? Second { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? TimeZone { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? TimeZoneName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? Weekday { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDateTimeStyle? Year { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaFormatNumber : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaFormatNumber() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaCompactDisplay? CompactDisplay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Currency { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaCurrencyDisplay? CurrencyDisplay { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Lang { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaximumFractionDigits { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaximumSignificantDigits { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinimumFractionDigits { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinimumIntegerDigits { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinimumSignificantDigits { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaNotation? Notation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaFormatNumberType Type { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool? UseGrouping { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Value { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutGrouping { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public enum WaFormatNumberType
+    {
+        Decimal = 0,
+        Currency = 1,
+        Percent = 2,
+    }
+    public enum WaHourFormat
+    {
+        Twelve = 0,
+        TwentyFour = 1,
+    }
+    public class WaIcon : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaIcon() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoWidth { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Family { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Library { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Name { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.ErrorEventArgs> OnError { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnLoad { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Src { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool SwapOpacity { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Variant { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public enum WaIconPlacement
+    {
+        Start = 0,
+        End = 1,
+    }
+    public class WaInclude : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaInclude() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AllowScripts { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaMode Mode { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.IncludeErrorEventArgs> OnIncludeError { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnLoad { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Src { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ReloadAsync() { }
+    }
+    public class WaInput : WebAwesome.Blazor.Base.WaInputBase<string?>
+    {
+        public WaInput() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? AutoCapitalize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? AutoCorrect { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EndIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EnterKeyHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? InputMode { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? Max { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnPasswordToggle { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<bool> OnPasswordVisibilityChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool PasswordToggle { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool PasswordVisible { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Pattern { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Placeholder { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool? Spellcheck { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? StartIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? Step { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaInputType Type { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithLabel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutSpinButtons { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task SelectAsync() { }
+        public System.Threading.Tasks.Task SetRangeTextAsync(string replacement, int? start = default, int? end = default, string selectMode = "preserve") { }
+        public System.Threading.Tasks.Task SetSelectionRangeAsync(int selectionStart, int selectionEnd, string selectionDirection = "none") { }
+        public System.Threading.Tasks.Task ShowPickerAsync() { }
+        public System.Threading.Tasks.Task StepDownAsync() { }
+        public System.Threading.Tasks.Task StepUpAsync() { }
+        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public enum WaInputAppearance
+    {
+        Outlined = 0,
+        Filled = 1,
+        FilledOutlined = 2,
+    }
+    public enum WaInputType
+    {
+        Text = 0,
+        Email = 1,
+        Number = 2,
+        Password = 3,
+        Search = 4,
+        Tel = 5,
+        Url = 6,
+        Date = 7,
+    }
+    public class WaIntersectionEventArgs : System.EventArgs
+    {
+        public WaIntersectionEventArgs() { }
+        public double IntersectionRatio { get; set; }
+        public bool IsIntersecting { get; set; }
+    }
+    public class WaIntersectionObserver : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaIntersectionObserver() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? IntersectClass { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaIntersectionEventArgs> OnIntersect { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Once { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Root { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? RootMargin { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Threshold { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public enum WaLoading
+    {
+        Eager = 0,
+        Lazy = 1,
+    }
+    public enum WaMenuItemType
+    {
+        Normal = 0,
+        Checkbox = 1,
+        Radio = 2,
+    }
+    public enum WaMode
+    {
+        Cors = 0,
+        NoCors = 1,
+        SameOrigin = 2,
+    }
+    public class WaMutationObserver : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaMutationObserver() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Attr { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AttrOldValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? AttributeFilter { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AttributeOldValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool CharData { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool CharDataOldValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool CharacterDataOldValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool ChildList { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.MutationEventArgs> OnMutation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Subtree { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task DisconnectAsync() { }
+        public System.Threading.Tasks.Task ReconnectAsync() { }
+        public System.Threading.Tasks.Task<object[]> TakeRecordsAsync() { }
+    }
+    public enum WaNotation
+    {
+        Standard = 0,
+        Scientific = 1,
+        Engineering = 2,
+        Compact = 3,
+    }
+    public class WaOption : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaOption() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EndIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<bool> OnSelectedChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Selected { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? StartIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Value { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public enum WaOrientation
+    {
+        Horizontal = 0,
+        Vertical = 1,
+    }
+    public class WaPage : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaPage() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? Aside { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? Banner { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool DisableNavigationToggle { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? Footer { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? Header { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MainFooter { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MainHeader { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? Menu { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? MobileBreakpoint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool NavOpen { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? Navigation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NavigationFooter { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NavigationHeader { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPageNavigationPlacement? NavigationPlacement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NavigationToggle { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NavigationToggleIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? SkipToContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? Subheader { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPageView? View { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task HideNavigationAsync() { }
+        public System.Threading.Tasks.Task ShowNavigationAsync() { }
+        public System.Threading.Tasks.Task ToggleNavigationAsync() { }
+    }
+    public enum WaPageNavigationPlacement
+    {
+        Start = 0,
+        End = 1,
+    }
+    public enum WaPageView
+    {
+        Mobile = 0,
+        Desktop = 1,
+    }
+    public enum WaPlacement
+    {
+        Top = 0,
+        Bottom = 1,
+        Left = 2,
+        Right = 3,
+        Start = 4,
+        End = 5,
+        TopStart = 6,
+        TopEnd = 7,
+        BottomStart = 8,
+        BottomEnd = 9,
+        LeftStart = 10,
+        LeftEnd = 11,
+        RightStart = 12,
+        RightEnd = 13,
+    }
+    public class WaPopover : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaPopover() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Distance { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? For { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPlacement Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Skidding { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutArrow { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task RepositionAsync() { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+    }
+    public class WaPopup : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaPopup() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Active { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Anchor { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? AnchorContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Arrow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double ArrowPadding { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaArrowPlacement ArrowPlacement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAutoSize AutoSize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? AutoSizeBoundary { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double AutoSizePadding { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Boundary { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double Distance { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Flip { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FlipBoundary { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FlipFallbackPlacements { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FlipFallbackStrategy { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double FlipPadding { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool HoverBridge { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnReposition { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPlacement Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Shift { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShiftBoundary { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double ShiftPadding { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double Skidding { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSync Sync { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task RepositionAsync() { }
+    }
+    public enum WaPrimary
+    {
+        Start = 0,
+        End = 1,
+    }
+    public class WaProgressBar : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaProgressBar() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Indeterminate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Value { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaProgressRing : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaProgressRing() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Value { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaQrCode : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaQrCode() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string Background { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaErrorCorrection ErrorCorrection { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string Fill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Radius { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Value { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaRadio : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IFormValidation
+    {
+        public WaRadio() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaRadioAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Checked { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<bool> OnCheckedChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Value { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task SetCustomValidityAsync(string message) { }
+    }
+    public enum WaRadioAppearance
+    {
+        Normal = 0,
+        Button = 1,
+    }
+    public class WaRadioGroup : WebAwesome.Blazor.Base.WaInputBase<string?>
+    {
+        public WaRadioGroup() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Name { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<string?> OnValueChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithLabel { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public class WaRange : WebAwesome.Blazor.Base.WaInputBase<decimal>
+    {
+        public WaRange() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? IndicatorOffset { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Max { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? MaxValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? MinValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<decimal> OnMaxValueChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<decimal> OnMinValueChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Range { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ReferenceContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Step { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? TooltipPlacement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithMarkers { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithTooltip { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
+        protected override bool TryParseValueFromString(string? value, out decimal result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public class WaRating : WebAwesome.Blazor.Base.WaInputBase<decimal>
+    {
+        public WaRating() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Max { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaRatingHoverEventArgs> OnHover { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Precision { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task SetSymbolFunctionAsync(string jsFunction) { }
+        protected override bool TryParseValueFromString(string? value, out decimal result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public class WaRatingHoverEventArgs : System.EventArgs
+    {
+        public WaRatingHoverEventArgs() { }
+        public string Phase { get; set; }
+        public decimal Value { get; set; }
+    }
+    public class WaRelativeTime : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaRelativeTime() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.DateTime? Date { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? DateString { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaFormat Format { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Lang { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Numeric { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Sync { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        protected override System.Threading.Tasks.Task OnParametersSetAsync() { }
+        public System.Threading.Tasks.Task UpdateAsync() { }
+    }
+    public enum WaResize
+    {
+        None = 0,
+        Vertical = 1,
+        Horizontal = 2,
+        Both = 3,
+        Auto = 4,
+    }
+    public class WaResizeObserver : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaResizeObserver() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.ResizeEventArgs> OnResize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task DisconnectAsync() { }
+        protected override System.Threading.Tasks.Task OnParametersSetAsync() { }
+        public System.Threading.Tasks.Task ReconnectAsync() { }
+    }
+    public class WaScroller : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaScroller() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutScrollbar { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutShadow { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaSelect : WebAwesome.Blazor.Base.WaInputBase<string?>
+    {
+        public WaSelect() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EndIconName { get; set; }
+        public System.Func<WebAwesome.Blazor.Components.WaOption, int, string>? GetTag { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxOptionsVisible { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Multiple { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Placeholder { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPlacement? Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string[]? SelectedValues { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<string[]?> SelectedValuesChanged { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? StartIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithLabel { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task SetGetTagFunctionAsync(string jsFunction) { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public enum WaSize
+    {
+        Small = 0,
+        Medium = 1,
+        Large = 2,
+    }
+    public class WaSkeleton : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaSkeleton() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaEffect Effect { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaSlideChangeEventArgs : System.EventArgs
+    {
+        public WaSlideChangeEventArgs() { }
+        public int Index { get; set; }
+    }
+    public class WaSlider : WebAwesome.Blazor.Base.WaInputBase<decimal?>
+    {
+        public WaSlider() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? IndicatorOffset { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Max { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? MaxValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<decimal?> MaxValueChanged { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? MinValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<decimal?> MinValueChanged { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<decimal?> OnValueChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Range { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Step { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? TooltipDistance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPlacement? TooltipPlacement { get; set; }
+        public System.Func<decimal, string>? ValueFormatter { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithMarkers { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithTooltip { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
+        public System.Threading.Tasks.Task StepDownAsync() { }
+        public System.Threading.Tasks.Task StepUpAsync() { }
+        protected override bool TryParseValueFromString(string? value, out decimal? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public class WaSpinner : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaSpinner() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaSplitPanel : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaSplitPanel() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? DividerContent { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaSplitPanelRepositionEventArgs> OnReposition { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? Position { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? PositionInPixels { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPrimary? Primary { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Snap { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int SnapThreshold { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task<decimal> GetPositionAsync() { }
+        public System.Threading.Tasks.Task<int> GetPositionInPixelsAsync() { }
+    }
+    public class WaSplitPanelRepositionEventArgs : System.EventArgs
+    {
+        public WaSplitPanelRepositionEventArgs() { }
+        public decimal Position { get; set; }
+        public int PositionInPixels { get; set; }
+    }
+    public class WaSwitch : WebAwesome.Blazor.Base.WaInputBase<bool>
+    {
+        public WaSwitch() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Checked { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<bool> OnCheckedChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ClickAsync() { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        protected override bool TryParseValueFromString(string? value, out bool result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    [System.Flags]
+    public enum WaSync
+    {
+        None = 0,
+        Width = 1,
+        Height = 2,
+        Both = 3,
+    }
+    public class WaTab : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaTab() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Active { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Closable { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.MouseEventArgs> OnClick { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Panel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+    }
+    public class WaTabChangeEventArgs : System.EventArgs
+    {
+        public WaTabChangeEventArgs() { }
+        public string Name { get; set; }
+    }
+    public class WaTabGroup : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaTabGroup() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaActivation Activation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Active { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NavContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaTabChangeEventArgs> OnTabChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaTabChangeEventArgs> OnTabHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaTabChangeEventArgs> OnTabShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaTabPlacement Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutScrollControls { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ShowTabAsync(string panelName) { }
+    }
+    public class WaTabPanel : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaTabPanel() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Active { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Name { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public enum WaTabPlacement
+    {
+        Top = 0,
+        Bottom = 1,
+        Start = 2,
+        End = 3,
+    }
+    public class WaTag : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaTag() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAppearance Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnRemove { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVariant Variant { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithRemove { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaTextArea : Microsoft.AspNetCore.Components.Forms.InputBase<string?>, WebAwesome.Blazor.Base.IFormValidation
+    {
+        public WaTextArea() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? AutoCapitalize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? AutoCorrect { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EnterKeyHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? InputMode { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxLength { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinLength { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs> OnInput { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Placeholder { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaResize? Resize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Rows { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool? Spellcheck { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithLabel { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task<WebAwesome.Blazor.Components.WaTextAreaScrollPosition?> ScrollPositionAsync(double? top = default, double? left = default) { }
+        public System.Threading.Tasks.Task SelectAsync() { }
+        public System.Threading.Tasks.Task SetCustomValidityAsync(string message) { }
+        public System.Threading.Tasks.Task SetRangeTextAsync(string replacement, int? start = default, int? end = default, WebAwesome.Blazor.Components.WaTextAreaSelectMode selectMode = 3) { }
+        public System.Threading.Tasks.Task SetSelectionRangeAsync(int selectionStart, int selectionEnd, WebAwesome.Blazor.Components.WaTextAreaSelectionDirection selectionDirection = 0) { }
+        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public static class WaTextAreaEnumExtensions
+    {
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaTextAreaSelectMode selectMode) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaTextAreaSelectionDirection selectionDirection) { }
+    }
+    public class WaTextAreaScrollPosition : System.IEquatable<WebAwesome.Blazor.Components.WaTextAreaScrollPosition>
+    {
+        public WaTextAreaScrollPosition(double Top, double Left) { }
+        public double Left { get; init; }
+        public double Top { get; init; }
+    }
+    public enum WaTextAreaSelectMode
+    {
+        Select = 0,
+        Start = 1,
+        End = 2,
+        Preserve = 3,
+    }
+    public enum WaTextAreaSelectionDirection
+    {
+        None = 0,
+        Forward = 1,
+        Backward = 2,
+    }
+    public class WaTooltip : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaTooltip() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Distance { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? For { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? HideDelay { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPlacement Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? ShowDelay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Skidding { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaTrigger Trigger { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutArrow { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task RepositionAsync() { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+    }
+    public class WaTree : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaTree() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? CollapseIconName { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ExpandIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaTreeSelectionChangeEventArgs> OnSelectionChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaTreeSelection Selection { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaTreeItem : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaTreeItem() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? CollapseIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Expanded { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Lazy { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnAfterCollapse { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnAfterExpand { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnCollapse { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnExpand { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnLazyChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnLazyLoad { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Selected { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task<System.Text.Json.JsonElement> GetChildrenItemsAsync() { }
+    }
+    public enum WaTreeSelection
+    {
+        Single = 0,
+        Multiple = 1,
+        Leaf = 2,
+    }
+    public class WaTreeSelectionChangeEventArgs : System.EventArgs
+    {
+        public WaTreeSelectionChangeEventArgs() { }
+        public object[]? Selection { get; set; }
+    }
+    public enum WaTrigger
+    {
+        Hover = 0,
+        Click = 1,
+        Manual = 2,
+    }
+    [System.Flags]
+    public enum WaTriggerType
+    {
+        None = 0,
+        Hover = 1,
+        Focus = 2,
+        Manual = 4,
+        HoverFocus = 3,
+    }
+    public enum WaVariant
+    {
+        Neutral = 0,
+        Brand = 1,
+        Success = 2,
+        Warning = 3,
+        Danger = 4,
+    }
+    public class WaZoomableFrame : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaZoomableFrame() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AllowFullScreen { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaLoading? Loading { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnError { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnLoad { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.ZoomChangeEventArgs> OnZoomChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ReferrerPolicy { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Sandbox { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Src { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? SrcDoc { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutControls { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutInteraction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double Zoom { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ZoomInIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ZoomLevels { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ZoomOutIconName { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ResetAsync() { }
+        public System.Threading.Tasks.Task SetZoomAsync(double zoomLevel) { }
+        public System.Threading.Tasks.Task ZoomInAsync() { }
+        public System.Threading.Tasks.Task ZoomOutAsync() { }
+    }
+    public class WebAwesomeAssets : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WebAwesomeAssets() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WebAwesomeOptions? Options { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class ZoomChangeEventArgs : System.EventArgs
+    {
+        public ZoomChangeEventArgs() { }
+        public double PreviousZoomLevel { get; set; }
+        public double ZoomLevel { get; set; }
+    }
+}
+namespace WebAwesome.Blazor.Extensions
+{
+    public static class ServiceCollectionExtensions
+    {
+        public const string ConfigurationSection = "WebAwesome";
+        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddWebAwesome(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) { }
+        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddWebAwesome(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration) { }
+        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddWebAwesome(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<WebAwesome.Blazor.Models.WebAwesomeOptions> configure) { }
+    }
+}
+namespace WebAwesome.Blazor.Layout
+{
+    public enum AlignItems
+    {
+        Start = 0,
+        End = 1,
+        Center = 2,
+        Stretch = 3,
+        Baseline = 4,
+    }
+    public enum FlankPosition
+    {
+        Start = 0,
+        End = 1,
+    }
+    public enum FrameAspectRatio
+    {
+        Square = 0,
+        Landscape = 1,
+        Portrait = 2,
+    }
+    public enum GapSize
+    {
+        Gap_0 = 0,
+        Gap_3XS = 1,
+        Gap_2XS = 2,
+        Gap_XS = 3,
+        Gap_S = 4,
+        Gap_M = 5,
+        Gap_L = 6,
+        Gap_XL = 7,
+        Gap_2XL = 8,
+        Gap_3XL = 9,
+    }
+    public enum SplitDirection
+    {
+        Row = 0,
+        Column = 1,
+    }
+    public enum TextSize
+    {
+        XS = 0,
+        S = 1,
+        M = 2,
+        L = 3,
+        XL = 4,
+        XL2 = 5,
+        XL3 = 6,
+    }
+    public enum TextVariant
+    {
+        Body = 0,
+        Heading = 1,
+        Caption = 2,
+    }
+    public class WaCluster : WebAwesome.Blazor.Base.WaLayoutBase
+    {
+        public WaCluster() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaFlank : WebAwesome.Blazor.Base.WaLayoutBase
+    {
+        public WaFlank() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ContentPercentage { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FlankSize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Layout.FlankPosition Position { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaFrame : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaFrame() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Layout.FrameAspectRatio AspectRatio { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaGrid : WebAwesome.Blazor.Base.WaLayoutBase
+    {
+        public WaGrid() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? MinColumnSize { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public static class WaLayoutEnumExtensions
+    {
+        public static string ToHtmlValue(this WebAwesome.Blazor.Layout.AlignItems align) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Layout.FlankPosition position) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Layout.FrameAspectRatio ratio) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Layout.GapSize gap) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Layout.SplitDirection direction) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Layout.TextSize size) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Layout.TextVariant variant) { }
+    }
+    public class WaSplit : WebAwesome.Blazor.Base.WaLayoutBase
+    {
+        public WaSplit() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Layout.SplitDirection Direction { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaStack : WebAwesome.Blazor.Base.WaLayoutBase
+    {
+        public WaStack() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaText : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaText() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? ElementRef { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Layout.TextSize Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Layout.TextVariant Variant { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public class WaVisuallyHidden : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaVisuallyHidden() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Force { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+}
+namespace WebAwesome.Blazor.Models
+{
+    public class IconLibraryOptions
+    {
+        public IconLibraryOptions() { }
+        public string? Mutator { get; set; }
+        public string? Resolver { get; set; }
+        public bool SpriteSheet { get; set; }
+    }
+    public enum WaAssetSource
+    {
+        Cdn = 0,
+        SelfHosted = 1,
+    }
+    public class WebAwesomeOptions
+    {
+        public WebAwesomeOptions() { }
+        public WebAwesome.Blazor.Models.WaAssetSource AssetSource { get; set; }
+        public string? BasePath { get; set; }
+        public string CdnBaseUrl { get; set; }
+        public string? FontAwesomeKitCode { get; set; }
+        public string? LoaderUrl { get; set; }
+        public string? StylesheetUrl { get; set; }
+        public string? Version { get; set; }
+        public string ResolveLoaderUrl() { }
+        public string ResolveStylesheetUrl() { }
+        public string ResolveVersion() { }
+    }
+}
+namespace WebAwesome.Blazor.Services
+{
+    public class WaIconLibraryService
+    {
+        public WaIconLibraryService(WebAwesome.Blazor.Base.WebAwesomeJSInterop jsInterop) { }
+        public System.Threading.Tasks.Task<string> GetDefaultIconFamilyAsync() { }
+        public System.Threading.Tasks.Task RegisterFontAwesomeProAsync(string kitCode) { }
+        public System.Threading.Tasks.Task RegisterHeroiconsAsync(string version = "2.0.18") { }
+        public System.Threading.Tasks.Task RegisterIconLibraryAsync(string name, WebAwesome.Blazor.Models.IconLibraryOptions options) { }
+        public System.Threading.Tasks.Task RegisterLucideAsync(string version = "latest") { }
+        public System.Threading.Tasks.Task SetDefaultIconFamilyAsync(string family) { }
+        public System.Threading.Tasks.Task UnregisterIconLibraryAsync(string name) { }
+    }
+}
+namespace WebAwesome.Blazor
+{
+    public class _Imports
+    {
+        public _Imports() { }
+        protected void Execute() { }
+    }
+}

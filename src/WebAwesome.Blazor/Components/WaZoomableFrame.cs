@@ -179,9 +179,9 @@ public class WaZoomableFrame : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(35, "sandbox", Sandbox);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(40, "wa-zoom-change", OnZoomChange);
-        builder.AddAttributeIfHasDelegate(41, "wa-load", OnLoad);
-        builder.AddAttributeIfHasDelegate(42, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(40, "onwa-zoom-change", OnZoomChange);
+        builder.AddAttributeIfHasDelegate(41, "onwa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(42, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(50, __frameReference => Element = __frameReference);

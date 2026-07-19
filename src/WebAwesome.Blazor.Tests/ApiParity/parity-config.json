@@ -1,5 +1,5 @@
 {
-  "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons').",
+  "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, ElementMethodInvocationTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
   "enabled": true,
   "targetWaVersion": "3.0.0",
   "globalIgnoredAttributes": [
@@ -9,6 +9,7 @@
   "componentClassOverrides": {
     "wa-textarea": "WaTextArea"
   },
+  "nativeElementMethods": [ "focus", "blur", "click" ],
   "components": {
     "wa-details": {
       "eventOverrides": {
@@ -53,7 +54,8 @@
         "srcdoc": "SrcDoc",
         "allowfullscreen": "AllowFullScreen",
         "referrerpolicy": "ReferrerPolicy"
-      }
+      },
+      "extraElementMethods": [ "setZoom", "reset" ]
     },
     "wa-select": {
       "ignoredAttributes": [ "name", "form" ],
@@ -98,6 +100,36 @@
     },
     "wa-dropdown-item": {
       "ignoredAttributes": [ "submenuOpen" ]
+    },
+    "wa-dialog": {
+      "extraElementMethods": [ "show", "hide" ]
+    },
+    "wa-drawer": {
+      "extraElementMethods": [ "show", "hide" ]
+    },
+    "wa-dropdown": {
+      "extraElementMethods": [ "show", "hide", "reposition" ]
+    },
+    "wa-copy-button": {
+      "extraElementMethods": [ "copy" ]
+    },
+    "wa-include": {
+      "extraElementMethods": [ "reload" ]
+    },
+    "wa-mutation-observer": {
+      "extraElementMethods": [ "stopObserver", "startObserver", "takeRecords" ]
+    },
+    "wa-resize-observer": {
+      "extraElementMethods": [ "stopObserver", "startObserver" ]
+    },
+    "wa-popover": {
+      "extraElementMethods": [ "reposition" ]
+    },
+    "wa-relative-time": {
+      "extraElementMethods": [ "update" ]
+    },
+    "wa-tooltip": {
+      "extraElementMethods": [ "reposition" ]
     }
   },
   "ignoreReasons": {
@@ -111,6 +143,13 @@
     "getSymbol": "function-valued property (custom symbol renderer callback), not an authorable HTML attribute",
     "currentSlide": "read-only JS state property of wa-carousel, not an authorable HTML attribute",
     "slides": "read-only JS collection property of wa-carousel, not an authorable HTML attribute",
-    "submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute"
+    "submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute",
+    "extraElementMethods:show/hide": "dialog/drawer/dropdown/select-like open-close methods exist on the elements (verified against the WA 3.0.0 source) but are not CEM-documented for these components",
+    "extraElementMethods:reposition": "popup repositioning method present on wa-dropdown/wa-popover/wa-tooltip source, not CEM-documented",
+    "extraElementMethods:copy": "wa-copy-button trigger method present in source, not CEM-documented",
+    "extraElementMethods:reload": "wa-include refetch method present in source, not CEM-documented",
+    "extraElementMethods:stopObserver/startObserver/takeRecords": "observer control methods confirmed from the WA 3.0.0 source after the disconnect/reconnect rename incident; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:update": "wa-relative-time refresh method present in source, not CEM-documented",
+    "extraElementMethods:setZoom/reset": "wa-zoomable-frame zoom control methods present in source, not CEM-documented"
   }
 }

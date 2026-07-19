@@ -146,17 +146,17 @@ public class WaTreeItem : ComponentBase
         builder.AddAttribute(7, "selected", Selected);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(10, "wa-after-collapse", OnAfterCollapse);
+        builder.AddAttributeIfHasDelegate(10, "onwa-after-collapse", OnAfterCollapse);
 
-        builder.AddAttributeIfHasDelegate(11, "wa-after-expand", OnAfterExpand);
+        builder.AddAttributeIfHasDelegate(11, "onwa-after-expand", OnAfterExpand);
 
-        builder.AddAttributeIfHasDelegate(12, "wa-collapse", OnCollapse);
+        builder.AddAttributeIfHasDelegate(12, "onwa-collapse", OnCollapse);
 
-        builder.AddAttributeIfHasDelegate(13, "wa-expand", OnExpand);
+        builder.AddAttributeIfHasDelegate(13, "onwa-expand", OnExpand);
 
-        builder.AddAttributeIfHasDelegate(14, "wa-lazy-change", OnLazyChange);
+        builder.AddAttributeIfHasDelegate(14, "onwa-lazy-change", OnLazyChange);
 
-        builder.AddAttributeIfHasDelegate(15, "wa-lazy-load", OnLazyLoad);
+        builder.AddAttributeIfHasDelegate(15, "onwa-lazy-load", OnLazyLoad);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(16, __treeItemReference => Element = __treeItemReference);

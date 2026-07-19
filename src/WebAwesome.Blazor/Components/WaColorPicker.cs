@@ -119,11 +119,11 @@ public class WaColorPicker : WaInputBase<string>
         AddCommonEventHandlers(builder, 50);
 
         // Add color picker-specific event handlers
-        builder.AddAttributeIfHasDelegate(56, "wa-show", OnShow);
-        builder.AddAttributeIfHasDelegate(57, "wa-hide", OnHide);
-        builder.AddAttributeIfHasDelegate(58, "wa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(59, "wa-after-hide", OnAfterHide);
-        builder.AddAttributeIfHasDelegate(60, "wa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(56, "onwa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(57, "onwa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(58, "onwa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(59, "onwa-after-hide", OnAfterHide);
+        builder.AddAttributeIfHasDelegate(60, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(65, __colorPickerReference => Element = __colorPickerReference);

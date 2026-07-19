@@ -203,12 +203,12 @@ public class WaSelect : WaInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add select-specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "wa-clear", OnClear);
-        builder.AddAttributeIfHasDelegate(52, "wa-show", OnShow);
-        builder.AddAttributeIfHasDelegate(53, "wa-hide", OnHide);
-        builder.AddAttributeIfHasDelegate(54, "wa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(55, "wa-after-hide", OnAfterHide);
-        builder.AddAttributeIfHasDelegate(56, "wa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
+        builder.AddAttributeIfHasDelegate(52, "onwa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(53, "onwa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(54, "onwa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(55, "onwa-after-hide", OnAfterHide);
+        builder.AddAttributeIfHasDelegate(56, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(57, __selectReference => Element = __selectReference);

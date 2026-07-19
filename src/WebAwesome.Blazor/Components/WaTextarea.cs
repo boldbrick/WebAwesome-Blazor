@@ -227,7 +227,7 @@ public class WaTextArea : InputBase<string?>, IFormValidation
         builder.AddAttributeIfHasDelegate(40, "onblur", OnBlur);
         builder.AddAttributeIfHasDelegate(41, "onfocus", OnFocus);
         builder.AddAttributeIfHasDelegate(42, "oninput", OnInput);
-        builder.AddAttributeIfHasDelegate(43, "wa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(43, "onwa-invalid", OnInvalid);
 
         builder.AddElementReferenceCapture(50, __inputReference => Element = __inputReference);
         if (MarkupLabel is not null)

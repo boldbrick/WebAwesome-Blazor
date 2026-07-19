@@ -74,9 +74,9 @@ public class WaCheckbox : WaInputBase<bool>
         AddCommonEventHandlers(builder, 30);
 
         // Add checkbox-specific event handlers
-        builder.AddAttributeIfHasDelegate(40, "wa-change", OnCheckedChange);
+        builder.AddAttributeIfHasDelegate(40, "onwa-change", OnCheckedChange);
 
-        builder.AddAttributeIfHasDelegate(42, "wa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(42, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(41, __checkboxReference => Element = __checkboxReference);

@@ -78,11 +78,6 @@ public class WaTabGroup : ComponentBase
     [Parameter] public EventCallback<WaTabChangeEventArgs> OnTabChange { get; set; }
 
     /// <summary>
-    /// Invoked when a closable tab's close button is activated.
-    /// </summary>
-    [Parameter] public EventCallback<WaTabCloseEventArgs> OnTabClose { get; set; }
-
-    /// <summary>
     /// Invoked when a tab panel is shown.
     /// </summary>
     [Parameter] public EventCallback<WaTabChangeEventArgs> OnTabShow { get; set; }
@@ -124,14 +119,13 @@ public class WaTabGroup : ComponentBase
         builder.AddAttribute(6, "activation", Activation.ToHtmlValue());
         builder.AddAttribute(9, "without-scroll-controls", WithoutScrollControls);
 
-        // Add event handlers
-        builder.AddAttributeIfHasDelegate(7, "wa-tab-change", OnTabChange);
+        // Add event handlers; the element emits wa-tab-show/wa-tab-hide only (there is no
+        // wa-tab-change or wa-tab-close event in Web Awesome 3.0), so OnTabChange is served
+        // by the same browser event as OnTabShow
+        if (OnTabShow.HasDelegate || OnTabChange.HasDelegate)
+            builder.AddAttribute(11, "onwa-tab-show", EventCallback.Factory.Create<WaTabChangeEventArgs>(this, HandleTabShownAsync));
 
-        builder.AddAttributeIfHasDelegate(8, "wa-tab-close", OnTabClose);
-
-        builder.AddAttributeIfHasDelegate(11, "wa-tab-show", OnTabShow);
-
-        builder.AddAttributeIfHasDelegate(12, "wa-tab-hide", OnTabHide);
+        builder.AddAttributeIfHasDelegate(12, "onwa-tab-hide", OnTabHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __tabGroupReference => Element = __tabGroupReference);
@@ -189,6 +183,13 @@ public class WaTabGroup : ComponentBase
             classes.Add(Class);
 
         return string.Join(' ', classes);
+    }
+
+    // one wa-tab-show browser event serves both callbacks
+    private async Task HandleTabShownAsync(WaTabChangeEventArgs args)
+    {
+        await OnTabShow.InvokeAsync(args);
+        await OnTabChange.InvokeAsync(args);
     }
 
     #endregion

@@ -150,7 +150,7 @@ public class WaMutationObserver : ComponentBase
         builder.AddAttribute(19, "char-data-old-value", CharDataOldValue);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-mutation", OnMutation);
+        builder.AddAttributeIfHasDelegate(20, "onwa-mutation", OnMutation);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __observerReference => Element = __observerReference);

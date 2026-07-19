@@ -144,15 +144,15 @@ public class WaDropdown : ComponentBase
         builder.AddAttributeIfNotNull(14, "size", Size?.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
 
-        builder.AddAttributeIfHasDelegate(22, "wa-select", OnSelect);
+        builder.AddAttributeIfHasDelegate(22, "onwa-select", OnSelect);
 
-        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 
-        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
+        builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __dropdownReference => Element = __dropdownReference);

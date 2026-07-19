@@ -107,8 +107,8 @@ public class WaInclude : ComponentBase
             builder.AddAttribute(12, "allow-scripts", AllowScripts);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-load", OnLoad);
-        builder.AddAttributeIfHasDelegate(21, "wa-include-error", OnIncludeError);
+        builder.AddAttributeIfHasDelegate(20, "onwa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(21, "onwa-include-error", OnIncludeError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __includeReference => Element = __includeReference);

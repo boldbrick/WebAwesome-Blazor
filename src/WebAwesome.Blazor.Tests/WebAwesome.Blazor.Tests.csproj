@@ -10,6 +10,8 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="PublicApiGenerator" />
+    <PackageReference Include="bunit" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.JSInterop" />
@@ -22,6 +24,7 @@
   <ItemGroup>
     <None Include="ApiParity\expected-api-surface.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="ApiParity\parity-config.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="PublicApi\approved-public-api.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

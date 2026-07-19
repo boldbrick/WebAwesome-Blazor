@@ -145,7 +145,7 @@ public class WaCarousel : ComponentBase
         builder.AddAttribute(12, "slides-per-move", SlidesPerMove);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(15, "wa-slide-change", OnSlideChange);
+        builder.AddAttributeIfHasDelegate(15, "onwa-slide-change", OnSlideChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __carouselReference => Element = __carouselReference);

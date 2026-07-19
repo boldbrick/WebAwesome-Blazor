@@ -92,7 +92,7 @@ public class WaTree : ComponentBase
         builder.AddAttribute(4, "selection", Selection.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(10, "wa-selection-change", OnSelectionChange);
+        builder.AddAttributeIfHasDelegate(10, "onwa-selection-change", OnSelectionChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(15, __treeReference => Element = __treeReference);

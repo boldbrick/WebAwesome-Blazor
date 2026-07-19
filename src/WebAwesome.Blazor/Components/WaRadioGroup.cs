@@ -85,8 +85,8 @@ public class WaRadioGroup : WaInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add radio group specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "wa-change", OnValueChange);
-        builder.AddAttributeIfHasDelegate(52, "wa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(50, "onwa-change", OnValueChange);
+        builder.AddAttributeIfHasDelegate(52, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(53, __radioGroupReference => Element = __radioGroupReference);

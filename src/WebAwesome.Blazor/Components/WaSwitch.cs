@@ -83,8 +83,8 @@ public class WaSwitch : WaInputBase<bool>
         AddCommonEventHandlers(builder, 30);
 
         // Add switch-specific event handlers
-        builder.AddAttributeIfHasDelegate(40, "wa-change", OnCheckedChange);
-        builder.AddAttributeIfHasDelegate(42, "wa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(40, "onwa-change", OnCheckedChange);
+        builder.AddAttributeIfHasDelegate(42, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(43, __switchReference => Element = __switchReference);

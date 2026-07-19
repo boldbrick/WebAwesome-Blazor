@@ -172,11 +172,11 @@ public class WaCopyButton : ComponentBase
         builder.AddAttributeIfNotNull(11, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-copy", OnCopy);
+        builder.AddAttributeIfHasDelegate(20, "onwa-copy", OnCopy);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-success", OnSuccess);
+        builder.AddAttributeIfHasDelegate(21, "onwa-success", OnSuccess);
 
-        builder.AddAttributeIfHasDelegate(22, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(22, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __copyButtonReference => Element = __copyButtonReference);
