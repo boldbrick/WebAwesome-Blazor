@@ -1,0 +1,53 @@
+@page "/components/page"
+
+<PageTitle>Page</PageTitle>
+
+<h1>Page</h1>
+<p><code>&lt;wa-page&gt;</code> wrapped by <code>WaPage</code>.</p>
+<p>
+    <code>WaPage</code> is designed to be the root layout of an application, offering slots for a banner, header,
+    navigation, main content, and footer. The example below shows a scaled-down page embedded in a fixed-height
+    container; in a real application the component would wrap the entire page content.
+</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <div style="height: 320px; border: 1px solid var(--wa-color-surface-border); overflow: auto;">
+        <WaPage MobileBreakpoint="0">
+            <Header>
+                <div style="padding: var(--wa-space-s); background: var(--wa-color-neutral-fill-quiet);">Header</div>
+            </Header>
+            <Navigation>
+                <div style="padding: var(--wa-space-s);">Navigation</div>
+            </Navigation>
+            <ChildContent>
+                <div style="padding: var(--wa-space-s);">Main content</div>
+            </ChildContent>
+            <Footer>
+                <div style="padding: var(--wa-space-s); background: var(--wa-color-neutral-fill-quiet);">Footer</div>
+            </Footer>
+        </WaPage>
+    </div>
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\page.md) *@
+
+<ApiTable Tag="wa-page" />
+
+@code {
+    private const string DefaultExample = """
+        <WaPage MobileBreakpoint="0">
+            <Header>
+                <div>Header</div>
+            </Header>
+            <Navigation>
+                <div>Navigation</div>
+            </Navigation>
+            <ChildContent>
+                <div>Main content</div>
+            </ChildContent>
+            <Footer>
+                <div>Footer</div>
+            </Footer>
+        </WaPage>
+        """;
+}
