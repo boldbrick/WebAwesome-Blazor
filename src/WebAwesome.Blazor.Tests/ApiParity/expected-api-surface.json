@@ -3871,7 +3871,7 @@
                                                                      },
                                                            "scrollPosition":  {
                                                                                   "signature":  "scrollPosition(position?: { top?: number; left?: number }) =\u003e { top: number; left: number } | undefined",
-                                                                                  "description":  "Gets or sets the textarea\u0027s scroll position."
+                                                                                  "description":  "The textarea\u0027s scroll position."
                                                                               },
                                                            "select":  {
                                                                           "signature":  "select() =\u003e void",

@@ -16,7 +16,7 @@ public class WaSwitch : WaInputBase<bool>
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
-    /// Gets or sets whether the switch is checked (mirrors CurrentValue for convenience)
+    /// Whether the switch is checked (mirrors CurrentValue for convenience)
     /// </summary>
     [Parameter]
     public bool Checked

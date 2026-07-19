@@ -307,7 +307,7 @@ public class WaTextArea : InputBase<string?>, IFormValidation
     }
 
     /// <summary>
-    /// Gets or sets the textarea's scroll position. Pass null for <paramref name="top"/> and
+    /// The textarea's scroll position. Pass null for <paramref name="top"/> and
     /// <paramref name="left"/> to get the current scroll position without changing it.
     /// </summary>
     /// <param name="top">The vertical scroll position to set, in pixels</param>
