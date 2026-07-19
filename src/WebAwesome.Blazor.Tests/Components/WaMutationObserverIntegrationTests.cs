@@ -35,17 +35,4 @@ public class WaMutationObserverIntegrationTests
 
         Assert.Contains("Cannot reconnect observer: component has not been rendered yet", exception.Message);
     }
-
-    [Fact]
-    public async Task TakeRecordsAsync_WithNullElement_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        var component = new WaMutationObserver();
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            component.TakeRecordsAsync());
-
-        Assert.Contains("Cannot take records: component has not been rendered yet", exception.Message);
-    }
 }

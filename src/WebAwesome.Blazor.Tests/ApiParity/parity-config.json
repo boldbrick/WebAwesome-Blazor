@@ -54,8 +54,7 @@
         "srcdoc": "SrcDoc",
         "allowfullscreen": "AllowFullScreen",
         "referrerpolicy": "ReferrerPolicy"
-      },
-      "extraElementMethods": [ "setZoom", "reset" ]
+      }
     },
     "wa-select": {
       "ignoredAttributes": [ "name", "form" ],
@@ -101,35 +100,14 @@
     "wa-dropdown-item": {
       "ignoredAttributes": [ "submenuOpen" ]
     },
-    "wa-dialog": {
-      "extraElementMethods": [ "show", "hide" ]
-    },
-    "wa-drawer": {
-      "extraElementMethods": [ "show", "hide" ]
-    },
-    "wa-dropdown": {
-      "extraElementMethods": [ "show", "hide", "reposition" ]
-    },
-    "wa-copy-button": {
-      "extraElementMethods": [ "copy" ]
-    },
-    "wa-include": {
-      "extraElementMethods": [ "reload" ]
-    },
     "wa-mutation-observer": {
-      "extraElementMethods": [ "stopObserver", "startObserver", "takeRecords" ]
+      "extraElementMethods": [ "stopObserver", "startObserver" ]
     },
     "wa-resize-observer": {
       "extraElementMethods": [ "stopObserver", "startObserver" ]
     },
-    "wa-popover": {
-      "extraElementMethods": [ "reposition" ]
-    },
     "wa-relative-time": {
       "extraElementMethods": [ "update" ]
-    },
-    "wa-tooltip": {
-      "extraElementMethods": [ "reposition" ]
     }
   },
   "ignoreReasons": {
@@ -144,12 +122,7 @@
     "currentSlide": "read-only JS state property of wa-carousel, not an authorable HTML attribute",
     "slides": "read-only JS collection property of wa-carousel, not an authorable HTML attribute",
     "submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute",
-    "extraElementMethods:show/hide": "dialog/drawer/dropdown/select-like open-close methods exist on the elements (verified against the WA 3.0.0 source) but are not CEM-documented for these components",
-    "extraElementMethods:reposition": "popup repositioning method present on wa-dropdown/wa-popover/wa-tooltip source, not CEM-documented",
-    "extraElementMethods:copy": "wa-copy-button trigger method present in source, not CEM-documented",
-    "extraElementMethods:reload": "wa-include refetch method present in source, not CEM-documented",
-    "extraElementMethods:stopObserver/startObserver/takeRecords": "observer control methods confirmed from the WA 3.0.0 source after the disconnect/reconnect rename incident; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
-    "extraElementMethods:update": "wa-relative-time refresh method present in source, not CEM-documented",
-    "extraElementMethods:setZoom/reset": "wa-zoomable-frame zoom control methods present in source, not CEM-documented"
+    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19), not CEM-documented"
   }
 }

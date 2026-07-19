@@ -235,7 +235,9 @@ public class WaCopyButton : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot copy: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "copy");
+        // wa-copy-button exposes no copy() method in WA 3.0; clicking the element triggers
+        // the copy operation exactly like a user interaction
+        await JSInterop.InvokeMethodAsync(Element.Value, "click");
     }
 
     #endregion

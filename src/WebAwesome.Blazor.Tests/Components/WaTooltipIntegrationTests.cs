@@ -35,17 +35,4 @@ public class WaTooltipIntegrationTests
 
         Assert.Contains("Cannot hide tooltip: component has not been rendered yet", exception.Message);
     }
-
-    [Fact]
-    public async Task RepositionAsync_WithNullElement_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        var component = new WaTooltip();
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            component.RepositionAsync());
-
-        Assert.Contains("Cannot reposition tooltip: component has not been rendered yet", exception.Message);
-    }
 }

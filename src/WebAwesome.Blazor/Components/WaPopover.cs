@@ -204,17 +204,8 @@ public class WaPopover : ComponentBase
         await JSInterop.InvokeMethodAsync(Element.Value, "hide");
     }
 
-    /// <summary>
-    /// Recalculates and updates the popover position
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task RepositionAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot reposition popover: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
-    }
+    // note: no RepositionAsync - wa-popover exposes no reposition() method in WA 3.0
+    // (repositioning is handled internally by its anchored wa-popup)
 
     #endregion
 }

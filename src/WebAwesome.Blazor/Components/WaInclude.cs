@@ -120,18 +120,9 @@ public class WaInclude : ComponentBase
 
     #region ------ Public Methods ------
 
-    /// <summary>
-    /// Reloads the included content
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ReloadAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot reload content: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "reload");
-    }
+    // note: no ReloadAsync - wa-include exposes no reload() method in WA 3.0 and Lit's
+    // reactive src property ignores same-value re-assignment; re-fetching requires changing
+    // the Src parameter (e.g. via a cache-busting query string)
 
     #endregion
 

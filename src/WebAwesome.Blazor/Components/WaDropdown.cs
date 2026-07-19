@@ -205,7 +205,9 @@ public class WaDropdown : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot show dropdown: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+        // wa-dropdown exposes no show()/hide() methods in WA 3.0 - open/close is driven by
+        // the "open" property
+        await JSInterop.SetPropertyAsync(Element.Value, "open", true);
     }
 
     /// <summary>
@@ -217,19 +219,7 @@ public class WaDropdown : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot hide dropdown: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
-    }
-
-    /// <summary>
-    /// Recalculates and updates the dropdown position
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task RepositionAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot reposition dropdown: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
+        await JSInterop.SetPropertyAsync(Element.Value, "open", false);
     }
 
     #endregion

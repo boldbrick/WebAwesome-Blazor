@@ -11,15 +11,11 @@ namespace WebAwesome.Blazor.Tests.Components;
 public class WaIncludeIntegrationTests
 {
     [Fact]
-    public async Task ReloadAsync_WithNullElement_ThrowsInvalidOperationException()
+    public void Include_RendersSrcAttribute()
     {
-        // Arrange
-        var component = new WaInclude();
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            component.ReloadAsync());
-
-        Assert.Contains("Cannot reload content: component has not been rendered yet", exception.Message);
+        // wa-include exposes no reload() method in WA 3.0, so there is no imperative API to
+        // cover here; assert the basic parameter surface instead
+        var component = new WaInclude { Src = "fragments/example.html" };
+        Assert.Equal("fragments/example.html", component.Src);
     }
 }

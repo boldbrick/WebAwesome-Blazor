@@ -919,7 +919,6 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? TriggerContent { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task HideAsync() { }
-        public System.Threading.Tasks.Task RepositionAsync() { }
         public System.Threading.Tasks.Task ShowAsync() { }
     }
     public class WaDropdownItem : Microsoft.AspNetCore.Components.ComponentBase
@@ -1220,7 +1219,6 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
-        public System.Threading.Tasks.Task ReloadAsync() { }
     }
     public class WaInput : WebAwesome.Blazor.Base.WaInputBase<string?>
     {
@@ -1401,7 +1399,6 @@ namespace WebAwesome.Blazor.Components
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task DisconnectAsync() { }
         public System.Threading.Tasks.Task ReconnectAsync() { }
-        public System.Threading.Tasks.Task<object[]> TakeRecordsAsync() { }
     }
     public enum WaNotation
     {
@@ -1567,7 +1564,6 @@ namespace WebAwesome.Blazor.Components
         public bool WithoutArrow { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task HideAsync() { }
-        public System.Threading.Tasks.Task RepositionAsync() { }
         public System.Threading.Tasks.Task ShowAsync() { }
     }
     public class WaPopup : Microsoft.AspNetCore.Components.ComponentBase
@@ -2365,7 +2361,6 @@ namespace WebAwesome.Blazor.Components
         public bool WithoutArrow { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task HideAsync() { }
-        public System.Threading.Tasks.Task RepositionAsync() { }
         public System.Threading.Tasks.Task ShowAsync() { }
     }
     public class WaTree : Microsoft.AspNetCore.Components.ComponentBase

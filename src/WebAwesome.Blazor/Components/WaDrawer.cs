@@ -217,7 +217,9 @@ public class WaDrawer : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot show drawer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+        // wa-drawer exposes no hide() method in WA 3.0 - open/close is driven by the "open"
+        // property; use it for both directions for symmetry
+        await JSInterop.SetPropertyAsync(Element.Value, "open", true);
     }
 
     /// <summary>
@@ -229,7 +231,7 @@ public class WaDrawer : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot hide drawer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+        await JSInterop.SetPropertyAsync(Element.Value, "open", false);
     }
 
     /// <summary>
