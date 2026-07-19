@@ -1,0 +1,169 @@
+@page "/showcases/dashboard"
+
+<PageTitle>Showcase: Dashboard</PageTitle>
+
+<WaSplit Direction="SplitDirection.Row" AlignItems="AlignItems.Center">
+    <div>
+        <h1>Nova Studio — Release Dashboard</h1>
+        <p>
+            Sprint 42 status for the Nova Studio 3.2 release, showing cards, badges, progress indicators,
+            formatted values, avatars, tags and skeleton placeholders on a responsive grid.
+        </p>
+    </div>
+    <WaButton Variant="WaVariant.Brand" StartIconName="rotate" OnClick="RefreshAsync" Loading="refreshing">Refresh</WaButton>
+</WaSplit>
+
+<WaGrid MinColumnSize="16rem" Gap="GapSize.Gap_L" Style="margin-block: var(--wa-space-l);">
+    <WaCard>
+        <WaText Variant="TextVariant.Caption">Monthly recurring revenue</WaText>
+        <WaText Variant="TextVariant.Heading" Size="TextSize.XL2" Element="div">
+            <WaFormatNumber Value="128450" Type="WaFormatNumberType.Currency" Currency="EUR" MaximumFractionDigits="0" />
+        </WaText>
+        <WaBadge Variant="WaVariant.Success" Appearance="WaAppearance.OutlinedFilled">+8.2% vs. last month</WaBadge>
+    </WaCard>
+
+    <WaCard>
+        <WaText Variant="TextVariant.Caption">Release completion</WaText>
+        <div id="release-completion" style="margin-block: var(--wa-space-xs);">
+            <WaProgressBar Value="72" Label="Release completion">72%</WaProgressBar>
+        </div>
+        <WaTooltip For="release-completion">54 of 75 planned issues resolved</WaTooltip>
+        <WaText Variant="TextVariant.Caption">Feature freeze <WaRelativeTime Date="featureFreeze" /></WaText>
+    </WaCard>
+
+    <WaCard>
+        <WaText Variant="TextVariant.Caption">Test coverage</WaText>
+        <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+            <WaProgressRing Value="86" Label="Test coverage" Style="--size: 4.5rem;">86%</WaProgressRing>
+            <div>
+                <WaText Element="div"><WaFormatNumber Value="0.86m" Type="WaFormatNumberType.Percent" /> lines covered</WaText>
+                <WaText Variant="TextVariant.Caption" Element="div">1,204 tests passing</WaText>
+            </div>
+        </WaCluster>
+    </WaCard>
+
+    <WaCard>
+        <WaText Variant="TextVariant.Caption">Asset bundle size</WaText>
+        <WaText Variant="TextVariant.Heading" Size="TextSize.XL2" Element="div">
+            <WaFormatBytes Value="18734080" />
+        </WaText>
+        <WaBadge Variant="WaVariant.Warning" Attention="WaAttention.Pulse">approaching 20 MB budget</WaBadge>
+    </WaCard>
+</WaGrid>
+
+<WaGrid MinColumnSize="22rem" Gap="GapSize.Gap_L">
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Workstreams</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <WaStack Gap="GapSize.Gap_M">
+                @foreach (var stream in workstreams)
+                {
+                    <div>
+                        <WaSplit Direction="SplitDirection.Row" AlignItems="AlignItems.Center">
+                            <WaCluster Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center">
+                                <WaAvatar Initials="@stream.OwnerInitials" Label="@stream.Owner" Shape="WaAvatarShape.Rounded"
+                                          Style="--size: 2rem;" />
+                                <strong>@stream.Name</strong>
+                                <WaTag Size="WaSize.Small" Variant="@stream.TagVariant">@stream.Status</WaTag>
+                            </WaCluster>
+                            <WaText Variant="TextVariant.Caption">@stream.Done / @stream.Total issues</WaText>
+                        </WaSplit>
+                        <WaProgressBar Value="@(stream.Done * 100 / stream.Total)" Label="@($"{stream.Name} progress")" />
+                    </div>
+                    <WaDivider />
+                }
+                <WaText Variant="TextVariant.Caption">
+                    Customer satisfaction this sprint:
+                    <WaRating Label="Customer satisfaction" @bind-Value="satisfaction" Precision="0.5m" Readonly="true" Size="WaSize.Small" />
+                </WaText>
+            </WaStack>
+        </ChildContent>
+    </WaCard>
+
+    <WaStack Gap="GapSize.Gap_L">
+        <WaCard WithHeader="true">
+            <HeaderContent>
+                <WaText Variant="TextVariant.Heading" Element="h2">Next milestone</WaText>
+            </HeaderContent>
+            <ChildContent>
+                <WaStack Gap="GapSize.Gap_XS">
+                    <WaText Element="div"><strong>Nova Studio 3.2 — release candidate</strong></WaText>
+                    <WaText Element="div">
+                        <WaIcon Name="calendar" Style="margin-inline-end: var(--wa-space-2xs);" />
+                        <WaFormatDate Date="@rcDate.ToString("o")" Year="WaDateTimeStyle.Numeric" Month="WaDateTimeStyle.Long" Day="WaDateTimeStyle.Numeric" />
+                    </WaText>
+                    <WaCluster Gap="GapSize.Gap_2XS">
+                        <WaTag Size="WaSize.Small" Pill="true">editor</WaTag>
+                        <WaTag Size="WaSize.Small" Pill="true">collaboration</WaTag>
+                        <WaTag Size="WaSize.Small" Pill="true">export-pipeline</WaTag>
+                        <WaTag Size="WaSize.Small" Pill="true">a11y</WaTag>
+                    </WaCluster>
+                </WaStack>
+            </ChildContent>
+        </WaCard>
+
+        <WaCard WithHeader="true">
+            <HeaderContent>
+                <WaCluster Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center">
+                    <WaText Variant="TextVariant.Heading" Element="h2">Live deployment feed</WaText>
+                    @if (refreshing)
+                    {
+                        <WaSpinner Style="font-size: 1.25rem;" />
+                    }
+                </WaCluster>
+            </HeaderContent>
+            <ChildContent>
+                @if (refreshing)
+                {
+                    @* skeleton placeholders shown while the feed reloads *@
+                    <WaStack Gap="GapSize.Gap_S">
+                        <WaSkeleton Effect="WaEffect.Sheen" Style="width: 85%; height: 1rem;" />
+                        <WaSkeleton Effect="WaEffect.Sheen" Style="width: 70%; height: 1rem;" />
+                        <WaSkeleton Effect="WaEffect.Sheen" Style="width: 78%; height: 1rem;" />
+                    </WaStack>
+                }
+                else
+                {
+                    <WaStack Gap="GapSize.Gap_S">
+                        <WaText Element="div">
+                            <WaBadge Variant="WaVariant.Success">deployed</WaBadge>
+                            build 3.2.0-rc.1 to staging — <WaRelativeTime Date="deployedAt" Sync="true" />
+                        </WaText>
+                        <WaText Element="div">
+                            <WaBadge Variant="WaVariant.Neutral">queued</WaBadge>
+                            nightly localization sync
+                        </WaText>
+                    </WaStack>
+                }
+            </ChildContent>
+        </WaCard>
+    </WaStack>
+</WaGrid>
+
+@code {
+    private bool refreshing;
+    private decimal satisfaction = 4.5m;
+    private readonly DateTime featureFreeze = DateTime.Now.AddDays(9);
+    private readonly DateTime rcDate = DateTime.Now.AddDays(23);
+    private readonly DateTime deployedAt = DateTime.Now.AddMinutes(-42);
+
+    private sealed record Workstream(string Name, string Status, WaVariant TagVariant, string Owner, string OwnerInitials, int Done, int Total);
+
+    private readonly Workstream[] workstreams =
+    [
+        new("Realtime editor", "on track", WaVariant.Success, "Mara Lindqvist", "ML", 18, 22),
+        new("Export pipeline", "at risk", WaVariant.Warning, "Jonas Petrov", "JP", 9, 17),
+        new("Accessibility pass", "on track", WaVariant.Success, "Priya Anand", "PA", 14, 16),
+        new("Billing integration", "blocked", WaVariant.Danger, "Tomás Ruiz", "TR", 5, 12)
+    ];
+
+    private async Task RefreshAsync()
+    {
+        // simulate a short reload so the spinner and skeleton placeholders are visible
+        refreshing = true;
+        await Task.Delay(1200);
+        refreshing = false;
+    }
+}

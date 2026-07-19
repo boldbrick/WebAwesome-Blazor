@@ -1,0 +1,151 @@
+@page "/showcases/overlays"
+
+<PageTitle>Showcase: Overlays</PageTitle>
+
+<h1>Nova Studio — Overlays &amp; Menus</h1>
+<p>
+    Everything in Nova Studio that floats above the page: a modal dialog with a small form, a drawer,
+    a popover, an anchored popup, tooltips and a dropdown menu — each opened from a real trigger.
+</p>
+
+@if (feedback is not null)
+{
+    <WaCallout Variant="WaVariant.Success" IconName="circle-check" Style="margin-block-end: var(--wa-space-m);">
+        @feedback
+    </WaCallout>
+}
+
+<WaGrid MinColumnSize="20rem" Gap="GapSize.Gap_L">
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Dialog</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <p>Invite a teammate to the workspace. The dialog hosts a small form and returns feedback on completion.</p>
+            <WaButton Variant="WaVariant.Brand" StartIconName="user-plus" OnClick="@(() => inviteDialogOpen = true)">
+                Invite teammate
+            </WaButton>
+        </ChildContent>
+    </WaCard>
+
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Drawer</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <p>Recent workspace activity slides in from the end of the viewport without leaving the page.</p>
+            <WaButton Appearance="WaAppearance.Outlined" StartIconName="clock-rotate-left" OnClick="@(() => activityDrawerOpen = true)">
+                Show activity
+            </WaButton>
+        </ChildContent>
+    </WaCard>
+
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Popover &amp; tooltip</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <p>The popover explains the deploy status in place; the tooltip gives the abbreviation its full name.</p>
+            <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+                <WaButton id="deploy-status-trigger" Appearance="WaAppearance.Outlined" StartIconName="circle-info">
+                    Deploy status
+                </WaButton>
+                <WaPopover For="deploy-status-trigger" Placement="WaPlacement.Bottom">
+                    <strong>Staging is healthy.</strong><br />
+                    Build 3.2.0-rc.1 has been live for 42 minutes with no new errors reported.
+                </WaPopover>
+                <span id="rc-abbreviation" style="text-decoration: underline dotted;">RC</span>
+                <WaTooltip For="rc-abbreviation">Release candidate — the last build before general availability</WaTooltip>
+            </WaCluster>
+        </ChildContent>
+    </WaCard>
+
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Popup</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <p>A low-level anchored popup — here used as a manually toggled hint bubble.</p>
+            <WaButton id="popup-anchor" Appearance="WaAppearance.Outlined" OnClick="@(() => popupActive = !popupActive)">
+                @(popupActive ? "Hide" : "Show") keyboard hint
+            </WaButton>
+            <WaPopup Anchor="popup-anchor" Active="popupActive" Placement="WaPlacement.Top" Distance="8" Arrow="true">
+                <div style="background: var(--wa-color-neutral-fill-loud); color: var(--wa-color-neutral-on-loud); padding: var(--wa-space-xs) var(--wa-space-s); border-radius: var(--wa-border-radius-s);">
+                    Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open the command palette
+                </div>
+            </WaPopup>
+        </ChildContent>
+    </WaCard>
+
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Dropdown menu</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <p>Document actions collected behind a single caret button.</p>
+            <WaDropdown>
+                <TriggerContent>
+                    <WaButton WithCaret="true" StartIconName="file-lines">Document actions</WaButton>
+                </TriggerContent>
+                <ChildContent>
+                    <WaDropdownItem IconName="pen" @onclick="@(() => feedback = "Renamed document to 'Q2 launch plan'.")">Rename</WaDropdownItem>
+                    <WaDropdownItem IconName="copy" @onclick="@(() => feedback = "Duplicated document.")">Duplicate</WaDropdownItem>
+                    <WaDropdownItem IconName="share-nodes" @onclick="@(() => feedback = "Share link copied to clipboard.")">Share…</WaDropdownItem>
+                    <WaDivider />
+                    <WaDropdownItem IconName="trash" Variant="WaVariant.Danger" @onclick="@(() => feedback = "Document moved to trash.")">Delete</WaDropdownItem>
+                </ChildContent>
+            </WaDropdown>
+        </ChildContent>
+    </WaCard>
+</WaGrid>
+
+<WaDialog Label="Invite a teammate" Open="@inviteDialogOpen" OnHide="@(() => inviteDialogOpen = false)">
+    <ChildContent>
+        <WaStack Gap="GapSize.Gap_M">
+            <WaInput Label="E-mail address" Type="WaInputType.Email" StartIconName="envelope"
+                     Placeholder="teammate@meridianlabs.example" @bind-Value="inviteEmail" />
+            <WaSelect Label="Role" Hint="Editors can change documents; viewers can only read" @bind-Value="inviteRole">
+                <WaOption Value="editor">Editor</WaOption>
+                <WaOption Value="viewer">Viewer</WaOption>
+                <WaOption Value="admin">Workspace admin</WaOption>
+            </WaSelect>
+        </WaStack>
+    </ChildContent>
+    <FooterContent>
+        <WaButton Appearance="WaAppearance.Plain" OnClick="@(() => inviteDialogOpen = false)">Cancel</WaButton>
+        <WaButton Variant="WaVariant.Brand" OnClick="SendInvite">Send invitation</WaButton>
+    </FooterContent>
+</WaDialog>
+
+<WaDrawer Label="Recent activity" Placement="WaDrawerPlacement.End" Open="@activityDrawerOpen" OnHide="@(() => activityDrawerOpen = false)">
+    <ChildContent>
+        <WaStack Gap="GapSize.Gap_M">
+            <WaText Element="div"><strong>Mara Lindqvist</strong> merged <em>editor-undo-history</em> into main</WaText>
+            <WaDivider />
+            <WaText Element="div"><strong>Jonas Petrov</strong> commented on the export pipeline design doc</WaText>
+            <WaDivider />
+            <WaText Element="div"><strong>Priya Anand</strong> closed 4 accessibility issues</WaText>
+        </WaStack>
+    </ChildContent>
+    <FooterContent>
+        <WaButton Variant="WaVariant.Brand" OnClick="@(() => activityDrawerOpen = false)">Close</WaButton>
+    </FooterContent>
+</WaDrawer>
+
+@code {
+    private bool inviteDialogOpen;
+    private bool activityDrawerOpen;
+    private bool popupActive;
+    private string? feedback;
+    private string? inviteEmail;
+    private string? inviteRole = "editor";
+
+    private void SendInvite()
+    {
+        inviteDialogOpen = false;
+        feedback = string.IsNullOrWhiteSpace(inviteEmail)
+            ? "Invitation drafted — add an e-mail address to send it."
+            : $"Invitation sent to {inviteEmail} as {inviteRole}.";
+        inviteEmail = null;
+    }
+}
