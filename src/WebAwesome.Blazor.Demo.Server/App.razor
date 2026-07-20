@@ -1,0 +1,41 @@
+@using Microsoft.AspNetCore.Components.Web
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Awesome Blazor Bindings</title>
+    <base href="/" />
+
+    <!-- Web Awesome assets; the version always matches the library version (kept in sync by the upgrade pipeline) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@awesome.me/webawesome@3.0.0/dist-cdn/styles/webawesome.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@@awesome.me/webawesome@3.0.0/dist-cdn/webawesome.loader.js"></script>
+
+    <link rel="stylesheet" href="css/app.css" />
+
+    <!-- demo-local theming helper shared with the WebAssembly host (served from WebAwesome.Blazor.Demo static assets) -->
+    <script src="js/demo-theme.js"></script>
+
+    <HeadOutlet @rendermode="RenderMode" />
+</head>
+
+<body>
+    <WebAwesome.Blazor.Demo.App @rendermode="RenderMode" />
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+    <script src="_framework/blazor.web.js"></script>
+</body>
+
+</html>
+
+@code {
+    // prerendering is disabled so the server host behaves like the standalone WebAssembly demo:
+    // components initialize exactly once, in the interactive circuit
+    private static IComponentRenderMode RenderMode { get; } = new InteractiveServerRenderMode(prerender: false);
+}

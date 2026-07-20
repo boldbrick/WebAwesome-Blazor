@@ -42,6 +42,15 @@ npm test
 
 Set `DEMO_BASE_URL` if the demo is running on a different port than `http://localhost:5000`.
 
+The same suite also runs against the server-hosted demo variant (interactive server render
+mode over a SignalR circuit) — both hosting models should stay green:
+
+```powershell
+dotnet run --project src\WebAwesome.Blazor.Demo.Server --no-build --launch-profile http
+cd tools\e2e
+$env:DEMO_BASE_URL = 'http://localhost:5100'; npm test
+```
+
 ## Adding tests
 
 - New component demo pages are picked up automatically by `sweep.spec.js` (it reads routes
