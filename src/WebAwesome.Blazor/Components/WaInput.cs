@@ -209,13 +209,13 @@ public class WaInput : WaInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add input-specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "wa-clear", OnClear);
+        builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
 
-        builder.AddAttributeIfHasDelegate(51, "wa-password-toggle", OnPasswordToggle);
+        builder.AddAttributeIfHasDelegate(51, "onwa-password-toggle", OnPasswordToggle);
 
-        builder.AddAttributeIfHasDelegate(52, "wa-password-visibility-change", OnPasswordVisibilityChange);
+        builder.AddAttributeIfHasDelegate(52, "onwa-password-visibility-change", OnPasswordVisibilityChange);
 
-        builder.AddAttributeIfHasDelegate(49, "wa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(49, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(53, __inputReference => Element = __inputReference);

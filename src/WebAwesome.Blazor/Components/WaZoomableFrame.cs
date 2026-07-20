@@ -179,9 +179,9 @@ public class WaZoomableFrame : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(35, "sandbox", Sandbox);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(40, "wa-zoom-change", OnZoomChange);
-        builder.AddAttributeIfHasDelegate(41, "wa-load", OnLoad);
-        builder.AddAttributeIfHasDelegate(42, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(40, "onwa-zoom-change", OnZoomChange);
+        builder.AddAttributeIfHasDelegate(41, "onwa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(42, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(50, __frameReference => Element = __frameReference);
@@ -207,12 +207,15 @@ public class WaZoomableFrame : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot set zoom: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "setZoom", zoomLevel);
+        // wa-zoomable-frame exposes no setZoom() method in WA 3.0 - zoom is a reactive
+        // property; only zoomIn()/zoomOut() exist as methods
+        await JSInterop.SetPropertyAsync(Element.Value, "zoom", zoomLevel);
         Zoom = zoomLevel;
     }
 
     /// <summary>
-    /// Resets zoom to 100% and centers the content
+    /// Resets zoom to 100% (wa-zoomable-frame exposes no reset() method in WA 3.0; this sets
+    /// the zoom property back to 1.0).
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task ResetAsync()
@@ -220,7 +223,8 @@ public class WaZoomableFrame : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot reset zoom: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "reset");
+        await JSInterop.SetPropertyAsync(Element.Value, "zoom", 1.0);
+        Zoom = 1.0;
     }
 
     /// <summary>

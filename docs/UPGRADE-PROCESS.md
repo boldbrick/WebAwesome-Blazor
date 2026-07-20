@@ -63,7 +63,11 @@ A wrapper is "functionally equal" to the original component when it renders the 
 1. **API surface parity (automated side-by-side, primary):** `ApiSurfaceParityTests` compare, per component, the CEM-declared surface of the *exact bound WA version* against the wrapper's reflected API — attributes ↔ `[Parameter]` properties (kebab→Pascal), events ↔ `EventCallback` parameters (`wa-x` → `OnX`), documented methods ↔ `XxxAsync` wrappers. Intentional deviations must be recorded in `parity-config.json` with a reason (`ignoreReasons`); nothing is silenced implicitly. The tests are inert (`"enabled": false`) between upgrades so a stale surface never blocks unrelated work, and `ParityDataFiles_AreWellFormed` still guards the data files.
 2. **Integration tests** (`Wa*IntegrationTests.cs`): defaults, parameter behavior, enum `ToHtmlValue()` mappings, event wiring.
 3. **Breaking-change validation tests** (per version, pattern of `WaBreakingChangesValidationTests`): assert the post-upgrade API shape and defaults.
-4. **Render-output tests (future):** bUnit-based golden rendering of each wrapper against expected markup would close the remaining gap (attribute *values*, sequence-number regressions). Not implemented yet; the parity layer covers names and presence.
+4. **EditForm integration tests** (bUnit, `src\WebAwesome.Blazor.Tests\Base\`): every `WaInputBase<T>`/`InputBase<T>`-derived form control is exercised inside a real EditForm — binding, change propagation, DataAnnotations validation lifecycle, validation CSS classes, custom validity interop. New form controls added by an upgrade must join this suite (Phase 5).
+5. **Event delivery guards** (`EventBindingRegistrationTests`): source scan proving every bound `wa-*` event uses the `onwa-` attribute prefix and is registered with `Blazor.registerCustomEventType` in `wwwroot\WebAwesome.Blazor.lib.module.js` — both omissions are silent at build time and at runtime (no event ever fires), which is how the 3.0.0 event-delivery bug shipped.
+6. **Element-method invocation audit** (`ElementMethodInvocationTests`): every JS element method a wrapper invokes must be CEM-documented, a native DOM method, or allowlisted in `parity-config.json` (`extraElementMethods`) with a reason. Allowlisted methods are exactly the ones the CEM diff cannot track — re-verify each against the target source every upgrade.
+7. **Public API snapshot** (`PublicApiSnapshotTests` + `approved-public-api.txt`): parity verifies us against upstream; the snapshot verifies our own consumers against us. Intentional changes are diffed, promoted into the baseline, and surfaced in the CHANGELOG (Phase 5).
+8. **Browser end-to-end** (`tools\e2e\`, Playwright): the sweep visits every demo page asserting no unhandled errors; targeted specs cover checkbox/switch binding, theme switching, and custom-event payload delivery. Run against the upgraded build before delivery (Phase 5).
 
 ## Pro-source containment
 
@@ -74,6 +78,20 @@ No Web Awesome Pro source code is ever committed. Release zips and everything ex
 - **Branching** (`CONTRIBUTING.md`): work on `/main/WA-<train>/WAB-<n>`; monotonic promotion of subtrunks into `main`; release tags `wa-blazor-<version>`.
 - **Ticketing**: WAB project, Tasks named `WA bindings for <version>` under the train epic, `Source tag:` GitHub link in the description; states In Progress → In Review → Done.
 - **Code style**: `CLAUDE.md` (regions, explicit usings, central package management, constant render-tree sequence numbers per `docs\prompts\WA-3.0\fix-render-tree-numbering.md`).
+
+## Coverage gates for newly added components and features
+
+Every upgrade that adds components or major features must leave the following covered — the first three are enforced mechanically by tests, the rest are explicit Phase 5 steps in the skill:
+
+| Addition | Required coverage | Enforced by |
+|---|---|---|
+| New component | Wrapper + integration tests + skeleton demo page | `ApiSurfaceParityTests` (wrapper), Phase 5 (tests, `New-WaDemoPages.ps1`) |
+| New bound `wa-*` event | `onwa-` binding + JS initializer registration (+ payload mapping if detail carries data) | `EventBindingRegistrationTests` |
+| New element method wrapper | CEM-documented or allowlisted with reason | `ElementMethodInvocationTests` |
+| New form control (`WaInputBase<T>`) | bUnit EditForm integration coverage | Phase 5 coverage rule (skill) |
+| Any public API change | Snapshot baseline promotion + CHANGELOG mention | `PublicApiSnapshotTests` |
+| New/removed components vs. curated showcases | Removed components pruned from `Pages\Showcases\`; new ones queued as curation follow-up (new form controls added to the form showcase immediately) | Phase 5 (skill) + demo build |
+| Runtime behavior | Playwright sweep + targeted e2e specs green against the upgraded build | Phase 5 (skill) |
 
 ## Pending workarounds to re-verify every upgrade
 

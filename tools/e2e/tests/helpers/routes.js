@@ -18,6 +18,16 @@ const LAYOUT_ROUTES = [
   '/layout/visually-hidden',
 ];
 
+// Hand-designed showcase pages; kept in sync manually with MainLayout.razor's ShowcaseLinks array.
+const SHOWCASE_ROUTES = [
+  '/showcases/registration-form',
+  '/showcases/dashboard',
+  '/showcases/settings',
+  '/showcases/overlays',
+  '/showcases/media-gallery',
+  '/showcases/content',
+];
+
 function getComponentRoutes() {
   const surfacePath = path.resolve(
     __dirname,
@@ -30,7 +40,7 @@ function getComponentRoutes() {
 }
 
 function getAllRoutes() {
-  return ['/', ...getComponentRoutes(), ...LAYOUT_ROUTES];
+  return ['/', ...getComponentRoutes(), ...LAYOUT_ROUTES, ...SHOWCASE_ROUTES];
 }
 
-module.exports = { getComponentRoutes, getAllRoutes, LAYOUT_ROUTES };
+module.exports = { getComponentRoutes, getAllRoutes, LAYOUT_ROUTES, SHOWCASE_ROUTES };

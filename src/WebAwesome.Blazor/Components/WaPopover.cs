@@ -139,13 +139,13 @@ public class WaPopover : ComponentBase
         builder.AddAttributeIfNotNull(15, "skidding", Skidding);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
 
-        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 
-        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
+        builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(22, __popoverReference => Element = __popoverReference);
@@ -204,17 +204,8 @@ public class WaPopover : ComponentBase
         await JSInterop.InvokeMethodAsync(Element.Value, "hide");
     }
 
-    /// <summary>
-    /// Recalculates and updates the popover position
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task RepositionAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot reposition popover: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
-    }
+    // note: no RepositionAsync - wa-popover exposes no reposition() method in WA 3.0
+    // (repositioning is handled internally by its anchored wa-popup)
 
     #endregion
 }

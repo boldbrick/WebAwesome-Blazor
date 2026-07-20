@@ -253,7 +253,7 @@ public class WaButton : ComponentBase, IFormValidation
 
         builder.AddAttributeIfHasDelegate(22, "onblur", OnBlur);
 
-        builder.AddAttributeIfHasDelegate(24, "wa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(24, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __buttonReference => Element = __buttonReference);

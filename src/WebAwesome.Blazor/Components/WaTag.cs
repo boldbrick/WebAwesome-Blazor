@@ -108,7 +108,7 @@ public class WaTag : ComponentBase
         builder.AddAttribute(14, "with-remove", WithRemove);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-remove", OnRemove);
+        builder.AddAttributeIfHasDelegate(20, "onwa-remove", OnRemove);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(21, __tagReference => Element = __tagReference);

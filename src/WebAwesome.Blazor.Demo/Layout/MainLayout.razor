@@ -22,6 +22,14 @@
                 <li><NavLink href="" Match="NavLinkMatch.All">Introduction</NavLink></li>
             </ul>
 
+            <h4>Showcases</h4>
+            <ul>
+                @foreach (var (route, name) in ShowcaseLinks)
+                {
+                    <li><NavLink href="@($"showcases/{route}")">@name</NavLink></li>
+                }
+            </ul>
+
             @foreach (var group in componentGroups)
             {
                 <h4>@group.Category</h4>
@@ -68,6 +76,16 @@
     {
         await JS.InvokeVoidAsync("demoTheme.setDark", dark);
     }
+
+    private static readonly (string Route, string Name)[] ShowcaseLinks =
+    [
+        ("registration-form", "Registration Form"),
+        ("dashboard", "Dashboard"),
+        ("settings", "Settings"),
+        ("overlays", "Overlays"),
+        ("media-gallery", "Media Gallery"),
+        ("content", "Content & Observers")
+    ];
 
     private static readonly (string Route, string Name)[] LayoutLinks =
     [

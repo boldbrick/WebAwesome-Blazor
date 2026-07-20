@@ -172,11 +172,11 @@ public class WaCopyButton : ComponentBase
         builder.AddAttributeIfNotNull(11, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-copy", OnCopy);
+        builder.AddAttributeIfHasDelegate(20, "onwa-copy", OnCopy);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-success", OnSuccess);
+        builder.AddAttributeIfHasDelegate(21, "onwa-success", OnSuccess);
 
-        builder.AddAttributeIfHasDelegate(22, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(22, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __copyButtonReference => Element = __copyButtonReference);
@@ -235,7 +235,9 @@ public class WaCopyButton : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot copy: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "copy");
+        // wa-copy-button exposes no copy() method in WA 3.0; clicking the element triggers
+        // the copy operation exactly like a user interaction
+        await JSInterop.InvokeMethodAsync(Element.Value, "click");
     }
 
     #endregion

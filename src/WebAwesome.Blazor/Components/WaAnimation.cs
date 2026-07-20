@@ -158,11 +158,11 @@ public class WaAnimation : ComponentBase
         builder.AddAttributeIfNotNull(14, "iteration-start", IterationStart);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-cancel", OnCancel);
+        builder.AddAttributeIfHasDelegate(20, "onwa-cancel", OnCancel);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-finish", OnFinish);
+        builder.AddAttributeIfHasDelegate(21, "onwa-finish", OnFinish);
 
-        builder.AddAttributeIfHasDelegate(22, "wa-start", OnStart);
+        builder.AddAttributeIfHasDelegate(22, "onwa-start", OnStart);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __animationReference => Element = __animationReference);

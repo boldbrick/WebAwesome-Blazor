@@ -95,7 +95,7 @@ public class WaResizeObserver : ComponentBase
         builder.AddAttribute(10, "disabled", Disabled);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-resize", OnResize);
+        builder.AddAttributeIfHasDelegate(20, "onwa-resize", OnResize);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __observerReference => Element = __observerReference);

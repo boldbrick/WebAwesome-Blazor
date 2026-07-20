@@ -135,9 +135,9 @@ public class WaIcon : ComponentBase
         builder.AddAttribute(17, "swap-opacity", SwapOpacity);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(20, "onwa-load", OnLoad);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(21, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(22, __iconReference => Element = __iconReference);

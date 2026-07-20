@@ -134,9 +134,9 @@ public class WaSplitPanel : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(9, "snap", Snap);
         builder.AddAttribute(10, "snap-threshold", SnapThreshold);
 
-        // Add event handlers
-        if (OnReposition.HasDelegate)
-            builder.AddAttribute(20, "wa-reposition", EventCallback.Factory.Create<ChangeEventArgs>(this, HandleRepositionEvent));
+        // Add event handlers; the interop module's createEventArgs reads position and
+        // position-in-pixels from the element, as the wa-reposition event carries no detail
+        builder.AddAttributeIfHasDelegate(21, "onwa-reposition", OnReposition);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __splitPanelReference => Element = __splitPanelReference);
@@ -221,21 +221,6 @@ public class WaSplitPanel : ComponentBase
     /// <summary>
     /// Handles reposition events from the Web Awesome component
     /// </summary>
-    private async Task HandleRepositionEvent(ChangeEventArgs args)
-    {
-        // The wa-reposition event typically provides position information
-        // We'll get the current position values from the component
-        var position = await GetPositionAsync();
-        var positionInPixels = await GetPositionInPixelsAsync();
-
-        var eventArgs = new WaSplitPanelRepositionEventArgs
-        {
-            Position = position,
-            PositionInPixels = positionInPixels
-        };
-
-        await OnReposition.InvokeAsync(eventArgs);
-    }
 
     #endregion
 }

@@ -111,7 +111,7 @@ public class WaAvatar : ComponentBase
             builder.AddAttribute(14, "shape", Shape.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(16, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(16, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(15, __avatarReference => Element = __avatarReference);

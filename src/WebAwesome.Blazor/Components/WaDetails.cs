@@ -153,13 +153,12 @@ public class WaDetails : ComponentBase
         builder.AddAttribute(8, "icon-placement", IconPlacement.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(9, "name", Name);
 
-        // Add event handlers
-        if (OnToggle.HasDelegate)
-            builder.AddAttribute(20, "wa-show", EventCallback.Factory.Create(this, () => HandleToggleEvent(true)));
-        if (OnToggle.HasDelegate)
-            builder.AddAttribute(21, "wa-hide", EventCallback.Factory.Create(this, () => HandleToggleEvent(false)));
-        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
+        // Add event handlers; the interop module's createEventArgs derives IsOpen from the
+        // event type (wa-show -> true, wa-hide -> false), so both events share OnToggle
+        builder.AddAttributeIfHasDelegate(52, "onwa-show", OnToggle);
+        builder.AddAttributeIfHasDelegate(53, "onwa-hide", OnToggle);
+        builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __detailsReference => Element = __detailsReference);
@@ -258,11 +257,5 @@ public class WaDetails : ComponentBase
     /// <summary>
     /// Handles toggle events from the Web Awesome component
     /// </summary>
-    private async Task HandleToggleEvent(bool isOpen)
-    {
-        var args = new WaDetailsToggleEventArgs { IsOpen = isOpen };
-        await OnToggle.InvokeAsync(args);
-    }
-
     #endregion
 }

@@ -147,15 +147,15 @@ public class WaDrawer : ComponentBase
         builder.AddAttribute(14, "light-dismiss", LightDismiss);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
 
-        builder.AddAttributeIfHasDelegate(22, "wa-initial-focus", OnInitialFocus);
+        builder.AddAttributeIfHasDelegate(22, "onwa-initial-focus", OnInitialFocus);
 
-        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 
-        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
+        builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __drawerReference => Element = __drawerReference);
@@ -217,7 +217,9 @@ public class WaDrawer : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot show drawer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+        // wa-drawer exposes no hide() method in WA 3.0 - open/close is driven by the "open"
+        // property; use it for both directions for symmetry
+        await JSInterop.SetPropertyAsync(Element.Value, "open", true);
     }
 
     /// <summary>
@@ -229,7 +231,7 @@ public class WaDrawer : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot hide drawer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+        await JSInterop.SetPropertyAsync(Element.Value, "open", false);
     }
 
     /// <summary>

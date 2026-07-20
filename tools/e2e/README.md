@@ -14,6 +14,10 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   on first render" class of bug (e.g. the `wa-resize-observer` "initialize" crash).
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
+- `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug
+  (no `wa-*` EventCallback ever fired: bindings lacked the `on` attribute prefix and no event
+  type was registered with `Blazor.registerCustomEventType`); asserts a real tab click delivers
+  the typed `e.Name` payload into the Blazor handler.
 - `tests\theme-and-dark-mode.spec.js` — regression test for the dark-mode switch and theme
   selector doing nothing visible.
 

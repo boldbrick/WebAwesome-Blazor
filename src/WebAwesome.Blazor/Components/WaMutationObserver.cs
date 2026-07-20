@@ -150,7 +150,7 @@ public class WaMutationObserver : ComponentBase
         builder.AddAttribute(19, "char-data-old-value", CharDataOldValue);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-mutation", OnMutation);
+        builder.AddAttributeIfHasDelegate(20, "onwa-mutation", OnMutation);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __observerReference => Element = __observerReference);
@@ -195,18 +195,8 @@ public class WaMutationObserver : ComponentBase
         await JSInterop.InvokeMethodAsync(Element.Value, "startObserver");
     }
 
-    /// <summary>
-    /// Gets pending mutation records without waiting for callback
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation. The task result contains an array of mutation records</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task<object[]> TakeRecordsAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot take records: component has not been rendered yet.");
-
-        return await JSInterop.InvokeMethodAsync<object[]>(Element.Value, "takeRecords");
-    }
+    // note: no TakeRecordsAsync - wa-mutation-observer exposes no takeRecords() method in
+    // WA 3.0 (the underlying MutationObserver instance is private to the element)
 
     #endregion
 

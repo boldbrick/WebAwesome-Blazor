@@ -283,7 +283,7 @@ public class WaPopup : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(80, "boundary", Boundary);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(85, "wa-reposition", OnReposition);
+        builder.AddAttributeIfHasDelegate(85, "onwa-reposition", OnReposition);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(90, __popupReference => Element = __popupReference);

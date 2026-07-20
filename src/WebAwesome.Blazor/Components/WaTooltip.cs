@@ -162,13 +162,13 @@ public class WaTooltip : ComponentBase
         builder.AddAttributeIfNotNull(19, "skidding", Skidding);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
 
-        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 
-        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
+        builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(22, __tooltipReference => Element = __tooltipReference);
@@ -227,17 +227,8 @@ public class WaTooltip : ComponentBase
         await JSInterop.InvokeMethodAsync(Element.Value, "hide");
     }
 
-    /// <summary>
-    /// Recalculates and updates the tooltip position
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task RepositionAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot reposition tooltip: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
-    }
+    // note: no RepositionAsync - wa-tooltip exposes no reposition() method in WA 3.0
+    // (repositioning is handled internally by its anchored wa-popup)
 
     #endregion
 }

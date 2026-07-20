@@ -144,15 +144,15 @@ public class WaDropdown : ComponentBase
         builder.AddAttributeIfNotNull(14, "size", Size?.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);
 
-        builder.AddAttributeIfHasDelegate(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
 
-        builder.AddAttributeIfHasDelegate(22, "wa-select", OnSelect);
+        builder.AddAttributeIfHasDelegate(22, "onwa-select", OnSelect);
 
-        builder.AddAttributeIfHasDelegate(50, "wa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 
-        builder.AddAttributeIfHasDelegate(51, "wa-after-hide", OnAfterHide);
+        builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __dropdownReference => Element = __dropdownReference);
@@ -205,7 +205,9 @@ public class WaDropdown : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot show dropdown: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+        // wa-dropdown exposes no show()/hide() methods in WA 3.0 - open/close is driven by
+        // the "open" property
+        await JSInterop.SetPropertyAsync(Element.Value, "open", true);
     }
 
     /// <summary>
@@ -217,19 +219,7 @@ public class WaDropdown : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot hide dropdown: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
-    }
-
-    /// <summary>
-    /// Recalculates and updates the dropdown position
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task RepositionAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot reposition dropdown: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
+        await JSInterop.SetPropertyAsync(Element.Value, "open", false);
     }
 
     #endregion

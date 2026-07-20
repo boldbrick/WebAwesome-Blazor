@@ -121,7 +121,7 @@ public class WaOption : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(7, "label", Label);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(10, "wa-change", OnSelectedChange);
+        builder.AddAttributeIfHasDelegate(10, "onwa-change", OnSelectedChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __optionReference => Element = __optionReference);

@@ -1,0 +1,141 @@
+@page "/showcases/settings"
+
+<PageTitle>Showcase: Settings</PageTitle>
+
+<h1>Nova Studio — Workspace Settings</h1>
+<p>
+    A settings screen for the fictional Nova Studio workspace: an embedded <code>WaPage</code> shell,
+    tabbed sections, switches, selects, an exclusive accordion of <code>WaDetails</code>, tooltips
+    on labels and a copyable API key.
+</p>
+
+<div style="height: 560px; border: 1px solid var(--wa-color-surface-border); border-radius: var(--wa-border-radius-m); overflow: auto;">
+    <WaPage MobileBreakpoint="0">
+        <Header>
+            <WaSplit Direction="SplitDirection.Row" AlignItems="AlignItems.Center"
+                     Style="padding: var(--wa-space-s) var(--wa-space-m); background: var(--wa-color-neutral-fill-quiet); width: 100%;">
+                <WaCluster Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center">
+                    <WaIcon Name="gear" Variant="solid" />
+                    <strong>Meridian Labs / Nova Studio</strong>
+                </WaCluster>
+                <WaAvatar Initials="FP" Label="Filip Prochaska" Style="--size: 2rem;" />
+            </WaSplit>
+        </Header>
+        <ChildContent>
+            <div style="padding: var(--wa-space-m);">
+                <WaTabGroup OnTabChange="@(e => activeSection = e.Name)">
+                    <WaTab Panel="general">General</WaTab>
+                    <WaTab Panel="notifications">Notifications</WaTab>
+                    <WaTab Panel="api">API access</WaTab>
+
+                    <WaTabPanel Name="general">
+                        <WaStack Gap="GapSize.Gap_M">
+                            <WaInput Label="Workspace name" Hint="Shown in the browser tab and invitations"
+                                     @bind-Value="workspaceName" />
+
+                            <WaSelect Label="Default language" StartIconName="language" @bind-Value="language">
+                                <WaOption Value="en">English</WaOption>
+                                <WaOption Value="cs">Čeština</WaOption>
+                                <WaOption Value="de">Deutsch</WaOption>
+                            </WaSelect>
+
+                            <WaSelect Label="First day of the week" @bind-Value="weekStart">
+                                <WaOption Value="monday">Monday</WaOption>
+                                <WaOption Value="sunday">Sunday</WaOption>
+                            </WaSelect>
+
+                            <WaDivider />
+
+                            <div>
+                                <span id="density-label">Interface density</span>
+                                <WaTooltip For="density-label">Compact density fits more content on screen; comfortable adds breathing room</WaTooltip>
+                                <WaButtonGroup Label="Interface density" Style="display: block; margin-top: var(--wa-space-2xs);">
+                                    <WaButton Appearance="@(density == "compact" ? WaAppearance.OutlinedFilled : WaAppearance.Outlined)"
+                                              OnClick="@(() => density = "compact")">Compact</WaButton>
+                                    <WaButton Appearance="@(density == "comfortable" ? WaAppearance.OutlinedFilled : WaAppearance.Outlined)"
+                                              OnClick="@(() => density = "comfortable")">Comfortable</WaButton>
+                                    <WaButton Appearance="@(density == "spacious" ? WaAppearance.OutlinedFilled : WaAppearance.Outlined)"
+                                              OnClick="@(() => density = "spacious")">Spacious</WaButton>
+                                </WaButtonGroup>
+                            </div>
+
+                            <WaSwitch Hint="Applies immediately to all open editor tabs" @bind-Value="autoSave">
+                                Save documents automatically
+                            </WaSwitch>
+                        </WaStack>
+                    </WaTabPanel>
+
+                    <WaTabPanel Name="notifications">
+                        <WaStack Gap="GapSize.Gap_M">
+                            <WaSwitch @bind-Value="notifyMentions" Hint="Someone mentions you in a comment">Mentions</WaSwitch>
+                            <WaSwitch @bind-Value="notifyReviews" Hint="A review you requested is completed">Review results</WaSwitch>
+                            <WaSwitch @bind-Value="notifyDigest" Hint="A summary of workspace activity, sent Monday morning">Weekly digest</WaSwitch>
+
+                            <WaDivider />
+
+                            @* exclusive accordion: all three share the same name, so only one stays open *@
+                            <WaDetails Summary="Quiet hours" Name="notification-details" ExpandIconName="moon">
+                                Notifications are muted between 18:00 and 08:00 local time. Urgent build failures
+                                still come through.
+                            </WaDetails>
+                            <WaDetails Summary="Delivery channels" Name="notification-details">
+                                E-mail and in-app notifications are enabled. Connect Slack in the integrations
+                                section to receive messages there as well.
+                            </WaDetails>
+                            <WaDetails Summary="Per-project overrides" Name="notification-details">
+                                Three projects override these defaults: Atlas, Borealis and the internal
+                                design-system playground.
+                            </WaDetails>
+                        </WaStack>
+                    </WaTabPanel>
+
+                    <WaTabPanel Name="api">
+                        <WaStack Gap="GapSize.Gap_M">
+                            <WaCallout Variant="WaVariant.Warning" IconName="triangle-exclamation">
+                                Treat API keys like passwords. This example key is a placeholder — real keys belong
+                                in configuration, never in source code.
+                            </WaCallout>
+
+                            <WaFlank Position="FlankPosition.End">
+                                <WaInput Label="Workspace API key" Readonly="true" @bind-Value="apiKey" />
+                                <WaCopyButton Value="@apiKey" CopyLabel="Copy API key" Style="align-self: end;" />
+                            </WaFlank>
+
+                            <WaSelect Label="Key expiration" Hint="Expired keys are rejected with HTTP 401" @bind-Value="keyExpiration">
+                                <WaOption Value="30">30 days</WaOption>
+                                <WaOption Value="90">90 days</WaOption>
+                                <WaOption Value="365">1 year</WaOption>
+                            </WaSelect>
+
+                            <WaSwitch @bind-Value="restrictIps" Hint="Only requests from the office ranges are accepted">
+                                Restrict key to allowed IP ranges
+                            </WaSwitch>
+                        </WaStack>
+                    </WaTabPanel>
+                </WaTabGroup>
+            </div>
+        </ChildContent>
+        <Footer>
+            <div style="padding: var(--wa-space-s) var(--wa-space-m); background: var(--wa-color-neutral-fill-quiet);">
+                <WaText Variant="TextVariant.Caption">
+                    Editing section: <strong>@(activeSection ?? "general")</strong> — changes are saved automatically
+                </WaText>
+            </div>
+        </Footer>
+    </WaPage>
+</div>
+
+@code {
+    private string? activeSection;
+    private string? workspaceName = "Nova Studio";
+    private string? language = "en";
+    private string? weekStart = "monday";
+    private string density = "comfortable";
+    private bool autoSave = true;
+    private bool notifyMentions = true;
+    private bool notifyReviews = true;
+    private bool notifyDigest;
+    private string? apiKey = "nova_live_your_api_key_here"; // placeholder only, never a real credential
+    private string? keyExpiration = "90";
+    private bool restrictIps;
+}

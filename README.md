@@ -10,17 +10,33 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 > **Status**
 > - Active train: **WA 3.0**
 > - Current alignment: **WA 3.0.0** (tagged releases use `wa-blazor-<version>`)
+> - **[Live demo](https://boldbrick.github.io/WebAwesome-Blazor/)** — every component, rendered from this library
 
 ## Why this library
-- Use WA components with **strongly-typed** Blazor parameters and events.
-- String attributes with specified sets of values are declared as `enum`.
-- CSS-only layouts are covered as components, too (e.g. a `div class="wa-flank"` is implemented as a `WaFlank` class).
-- Minimal JS interop surface; wrappers mirror WA names while following Blazor conventions.
-- Versioned to follow WA releases (beta/rc/stable) with clear mapping.
-- **MIT-licensed** — free for commercial use.
+
+⚖️ **MIT-licensed, commercial-friendly.** Free for closed-source and commercial applications, no copyleft obligations. Backed by [BoldBrick](https://www.boldbrick.com).
+
+🧩 **Blazor-native architecture — no JavaScript layer to fight.** Wrappers are pure C# render trees; Web Awesome's `wa-*` custom events bind directly to `EventCallback<T>` handlers with typed event args. There are no per-component JS modules, no `document.getElementById` lookups, no library-generated element ids. The entire JS interop surface is a single ~100-line module driven by `ElementReference` — collision-proof, prerender-safe, and trivially auditable.
+
+📝 **Real form integration, not string soup.** Form controls derive from Blazor's `InputBase<TValue>`: typed values (`bool`, `decimal`, not just strings), `@bind-Value`, full `EditForm`/`EditContext` participation, DataAnnotations validation, validation CSS classes, and `SetCustomValidityAsync` for constraint validation — the same programming model as Blazor's built-in inputs.
+
+🔒 **Strongly typed all the way down.** String attributes with fixed value sets are nullable C# enums; an unset parameter omits the attribute entirely so Web Awesome's own defaults apply. Enum-to-attribute mapping lives in one place, not scattered per component.
+
+✅ **Machine-verified completeness.** A reflection-based API parity suite checks every wrapper against Web Awesome's published custom-elements manifest — attributes, slots, events. "Did we miss a parameter?" is a red/green test signal, not a code-review hope. 229 automated tests plus a Playwright-based end-to-end sweep of the demo app back every release.
+
+🚄 **Built to track Web Awesome releases fast.** A CEM-driven upgrade pipeline diffs upstream API surfaces, generates change reports, and drives wrapper updates and tests (see [docs/UPGRADE-PROCESS.md](docs/UPGRADE-PROCESS.md)). Package versions are **identical** to the Web Awesome version they bind — no parallel version scheme to decode.
+
+📐 **Covers what others skip.** Web Awesome's CSS-only layout system ships as components too (`WaStack`, `WaCluster`, `WaFlank`, `WaGrid`, …), alongside utility elements like `WaFormatDate`, `WaFormatNumber`, and the observer components.
+
+✨ **Ergonomic where it counts.** Common slot usage is one attribute (`StartIconName="gear"`), with `RenderFragment` slots (`StartContent`, `EndContent`, …) always available as the general mechanism.
+
+📦 **Clean packaging.** Multi-targeted `net9.0`/`net10.0`, XML IntelliSense docs on every public member (missing docs fail the build), symbol packages (snupkg) with SourceLink, deterministic CI builds.
+
+🎯 **Pure bindings, no lock-in.** By deliberate architectural decision, the package contains no application logic, no extension components, and redistributes no Web Awesome Pro source — you bring WA assets via CDN or self-hosting, exactly as upstream documents.
 
 ## Package
 - NuGet: `WebAwesome.Blazor` *(published from release tags)*
+- [Changelog](docs/CHANGELOG.md) — keyed to Web Awesome versions, breaking changes called out per release
 
 ## Requirements
 - .NET 10 (LTS, primary target) or .NET 9 (compatibility; out of Microsoft support since May 2026)
@@ -168,15 +184,20 @@ The repo uses a single-output-directory build system and produces nugets into `s
 
 > CI packs on tags named `wa-blazor-*` and attaches the `.nupkg` to the GitHub Release.
 
+## Demo
+A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every component with source-visible examples, grouped into the same categories Web Awesome's own documentation uses. It is deployed to GitHub Pages on every merge to `main`: **<https://boldbrick.github.io/WebAwesome-Blazor/>**. It doubles as a manual regression harness for upgrades and is swept by automated Playwright tests (`tools/e2e`).
+
 ## Component coverage
-- We aim for one Blazor wrapper per WA component, following WA naming where sensible.
-- _Pro_ components not yet covered.
-- Missing component? File an issue or PR against the active subtrunk.
+- **59 component wrappers** — one Blazor wrapper per WA 3.0.0 component, following WA naming (`WaButton` ↔ `wa-button`). Every public member carries XML documentation that ships in the package, so the full API reference is available as IntelliSense; for component behavior, use the [official Web Awesome docs](https://webawesome.com/docs) together with the [live demo](https://boldbrick.github.io/WebAwesome-Blazor/) for the Blazor-specific syntax.
+- **8 CSS layout components** covering Web Awesome's CSS-only layout system (`WaStack`, `WaCluster`, `WaFlank`, `WaFrame`, `WaGrid`, `WaSplit`, `WaText`, `WaVisuallyHidden`).
+- Coverage is enforced by the API parity test suite against Web Awesome's custom-elements manifest.
+- Components introduced after WA 3.0.0 (combobox, date/time pickers, file input, charts, toast, …) arrive with the corresponding version upgrades on the release train.
+- Missing something? File an issue or PR against the active subtrunk.
 
 ## Roadmap (contributions welcome!)
-- Complete WA 3.0 coverage
-- Docs site with interactive samples built as a Blazor project
-- Unit test coverage
+- Ride the release train to current Web Awesome (3.1 → 3.10.x) via the automated upgrade pipeline
+
+> **Non-goal:** app-level convenience components (toast dispatch services, confirm dialogs, dark-mode toggles). It is an architectural decision that this library ships pure bindings only — no extensions will be bundled.
 
 ## License
 MIT — see `LICENSE.md`.

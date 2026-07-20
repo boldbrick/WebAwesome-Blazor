@@ -58,7 +58,7 @@ public class WaRating : WaInputBase<decimal>
         builder.SetUpdatesAttributeName("value");
 
         // Add rating-specific event handlers
-        builder.AddAttributeIfHasDelegate(40, "wa-hover", OnHover);
+        builder.AddAttributeIfHasDelegate(40, "onwa-hover", OnHover);
 
         // Add common event handlers
         AddCommonEventHandlers(builder, 50);

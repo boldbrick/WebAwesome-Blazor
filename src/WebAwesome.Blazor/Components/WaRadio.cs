@@ -123,7 +123,7 @@ public class WaRadio : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNull(8, "appearance", Appearance?.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(10, "wa-change", OnCheckedChange);
+        builder.AddAttributeIfHasDelegate(10, "onwa-change", OnCheckedChange);
 
         builder.AddAttributeIfHasDelegate(11, "onfocus", OnFocus);
 

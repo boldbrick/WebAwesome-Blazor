@@ -8,17 +8,17 @@ namespace WebAwesome.Blazor.Components;
 /// <summary>
 /// Event arguments for carousel slide change events
 /// </summary>
-public class WaSlideChangeEventArgs
+public class WaSlideChangeEventArgs : EventArgs
 {
     /// <summary>
     /// Zero-based index of the active slide
     /// </summary>
+    /// <remarks>
+    /// The wa-slide-change event's detail also carries the slide element itself; DOM elements
+    /// cannot be marshaled into Blazor <see cref="ElementReference"/>s from event payloads,
+    /// so only the index is exposed.
+    /// </remarks>
     public int Index { get; set; }
-
-    /// <summary>
-    /// Reference to the active slide element
-    /// </summary>
-    public ElementReference Slide { get; set; }
 }
 
 #endregion
@@ -28,21 +28,10 @@ public class WaSlideChangeEventArgs
 /// <summary>
 /// Event arguments for tab change events
 /// </summary>
-public class WaTabChangeEventArgs
+public class WaTabChangeEventArgs : EventArgs
 {
     /// <summary>
     /// Name of the tab panel that was shown or hidden
-    /// </summary>
-    public string Name { get; set; } = string.Empty;
-}
-
-/// <summary>
-/// Event arguments for tab close events
-/// </summary>
-public class WaTabCloseEventArgs
-{
-    /// <summary>
-    /// Name of the tab panel that was closed
     /// </summary>
     public string Name { get; set; } = string.Empty;
 }
@@ -54,7 +43,7 @@ public class WaTabCloseEventArgs
 /// <summary>
 /// Event arguments for rating hover events
 /// </summary>
-public class WaRatingHoverEventArgs
+public class WaRatingHoverEventArgs : EventArgs
 {
     /// <summary>
     /// Hover phase: 'start', 'move', or 'end'
@@ -182,7 +171,8 @@ public class ZoomChangeEventArgs : EventArgs
 public class WaTreeSelectionChangeEventArgs : EventArgs
 {
     /// <summary>
-    /// Raw selection data as reported by the wa-selection-change event's detail, one entry per selected tree item.
+    /// Selection data projected from the wa-selection-change event's detail, one entry per
+    /// selected tree item; each entry carries the item's id and trimmed text content.
     /// </summary>
     public object[]? Selection { get; set; }
 }
@@ -194,7 +184,7 @@ public class WaTreeSelectionChangeEventArgs : EventArgs
 /// <summary>
 /// Event arguments for intersection observer events
 /// </summary>
-public class WaIntersectionEventArgs
+public class WaIntersectionEventArgs : EventArgs
 {
     /// <summary>
     /// Whether the target element is intersecting with the root
@@ -204,12 +194,12 @@ public class WaIntersectionEventArgs
     /// <summary>
     /// The ratio of intersection between 0.0 and 1.0
     /// </summary>
+    /// <remarks>
+    /// The wa-intersect event's detail carries the full IntersectionObserverEntry, whose
+    /// target is a DOM element; DOM elements cannot be marshaled into Blazor
+    /// <see cref="ElementReference"/>s from event payloads, so only the scalar fields are exposed.
+    /// </remarks>
     public double IntersectionRatio { get; set; }
-
-    /// <summary>
-    /// Reference to the target element being observed
-    /// </summary>
-    public ElementReference Target { get; set; }
 }
 
 #endregion
