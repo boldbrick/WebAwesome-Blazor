@@ -49,10 +49,14 @@ $env:WA_PRO_DIST = 'D:\wa-pro\dist'; .\Set-WaProAssets.ps1
 param(
     [switch]$Clear,
 
-    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+    [string]$RepoRoot
 )
 
 $ErrorActionPreference = 'Stop'
+
+# resolved in the body: $PSScriptRoot is not reliably available while parameter defaults are
+# evaluated under Windows PowerShell 5.1
+if (-not $RepoRoot) { $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path }
 
 $wwwroot = Join-Path $RepoRoot 'src\WebAwesome.Blazor.Demo\wwwroot'
 $distTarget = Join-Path $wwwroot 'webawesome'
