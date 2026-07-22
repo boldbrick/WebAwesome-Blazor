@@ -1,0 +1,7 @@
+{
+  "comment": "Web Awesome Pro components by tag. Pro-ness is NOT recorded in the CEM (upstream keeps the flag in their closed docs site), so this list is curated per upgrade during the docs-refresh phase: a component present in the (Pro) release CEM but absent from the public @awesome.me/webawesome npm package is Pro. Export-WaApiSurface.ps1 stamps 'pro': true into the surface JSON from this list; the demo renders the Pro badge from it.",
+  "proComponents": [
+    "wa-combobox",
+    "wa-page"
+  ]
+}

@@ -1,0 +1,44 @@
+@inject ApiSurfaceService SurfaceService
+
+@* status markers mirroring the official Web Awesome docs: an orange "Pro" pill for Pro-only
+   components and a flask icon for components upstream marks experimental; both are driven by
+   the API surface document, so they track the bound WA version automatically *@
+@if (pro || experimental)
+{
+    <span class="component-badges">
+        @if (pro)
+        {
+            <WaBadge Variant="WaVariant.Danger" Appearance="WaAppearance.Accent" Pill="true" Class="pro-badge" title="Pro component — requires a Web Awesome Pro license">Pro</WaBadge>
+        }
+        @if (experimental)
+        {
+            <WaIcon Name="flask" Class="experimental-flask" Label="Experimental" title="Experimental — the upstream API may still change" />
+        }
+    </span>
+}
+
+@code {
+    /// <summary>
+    /// Tag name of the Web Awesome component (e.g. "wa-combobox").
+    /// </summary>
+    [Parameter, EditorRequired] public string Tag { get; set; } = "";
+
+    private bool pro;
+    private bool experimental;
+
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
+    {
+        var surface = await SurfaceService.GetSurfaceAsync();
+        if (surface.Components is not null && surface.Components.TryGetValue(Tag, out var component))
+        {
+            pro = component.Pro;
+            experimental = component.Status == "experimental";
+        }
+        else
+        {
+            pro = false;
+            experimental = false;
+        }
+    }
+}

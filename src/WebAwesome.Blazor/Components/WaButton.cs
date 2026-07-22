@@ -112,9 +112,11 @@ public class WaButton : ComponentBase, IFormValidation
 
     // Form-submission properties
     /// <summary>
-    /// The "form owner" to associate the button with. If omitted, the closest containing form will be used
-    /// instead. The value of this attribute must be an id of a form in the same document or shadow root as the
-    /// button.
+    /// The "form owner" to associate the button with, by the id of a form in the same document.
+    /// If omitted, the closest containing form is used. Since Web Awesome 3.1.0 the attribute is
+    /// handled by native platform form association (ElementInternals) and no longer appears in the
+    /// CEM; it remains fully functional and composes with Blazor's EditForm (an external submit
+    /// button triggers the form's submit event, which EditForm intercepts as usual).
     /// </summary>
     [Parameter] public string? Form { get; set; }
 

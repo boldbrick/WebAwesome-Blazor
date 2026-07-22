@@ -36,7 +36,7 @@
                 <ul>
                     @foreach (var (tag, component) in group.Components)
                     {
-                        <li><NavLink href="@($"components/{tag["wa-".Length..]}")">@component</NavLink></li>
+                        <li><NavLink href="@($"components/{tag["wa-".Length..]}")">@component</NavLink><ComponentBadges Tag="@tag" /></li>
                     }
                 </ul>
             }

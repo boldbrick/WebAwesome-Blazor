@@ -436,8 +436,6 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaVariant? Variant { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
     public enum WaButtonType
@@ -627,6 +625,68 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task SetSwatchesAsync(string[] colors) { }
         public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out string result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public class WaCombobox : WebAwesome.Blazor.Base.WaInputBase<string?>
+    {
+        public WaCombobox() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AllowCustomValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EndIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxOptionsVisible { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Multiple { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Placeholder { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPlacement? Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string[]? SelectedValues { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<string[]?> SelectedValuesChanged { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? StartIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithLabel { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task ShowAsync() { }
+        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public enum WaCompactDisplay
     {

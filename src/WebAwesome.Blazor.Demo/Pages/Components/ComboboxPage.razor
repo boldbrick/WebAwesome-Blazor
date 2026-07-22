@@ -1,0 +1,162 @@
+@page "/components/combobox"
+
+<PageTitle>Combobox</PageTitle>
+
+<h1>Combobox <ComponentBadges Tag="wa-combobox" /></h1>
+<p>Comboboxes combine a text input with a filterable list of predefined options. <code>&lt;wa-combobox&gt;</code> wrapped by <code>WaCombobox</code>, with <code>&lt;wa-option&gt;</code> wrapped by <code>WaOption</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaCombobox Label="Choose a fruit" Placeholder="Type to filter" @bind-Value="defaultValue">
+        <WaOption Value="apple">Apple</WaOption>
+        <WaOption Value="banana">Banana</WaOption>
+        <WaOption Value="cherry">Cherry</WaOption>
+        <WaOption Value="grape">Grape</WaOption>
+        <WaOption Value="orange">Orange</WaOption>
+    </WaCombobox>
+</ExampleSection>
+
+<ExampleSection Title="Hint, Clearable &amp; Disabled" Code="@HintExample">
+    <WaCombobox Label="Experience" Hint="Please tell us your skill level." WithClear="true" @bind-Value="experienceValue">
+        <WaOption Value="1">Novice</WaOption>
+        <WaOption Value="2">Intermediate</WaOption>
+        <WaOption Value="3">Advanced</WaOption>
+    </WaCombobox>
+    <WaCombobox Placeholder="Disabled" Disabled="true" @bind-Value="disabledValue">
+        <WaOption Value="option-1">Option 1</WaOption>
+        <WaOption Value="option-2">Option 2</WaOption>
+    </WaCombobox>
+</ExampleSection>
+
+<ExampleSection Title="Custom Values" Code="@CustomValueExample">
+    <WaCombobox Label="Tag" Hint="Pick a suggestion or type your own." AllowCustomValue="true" @bind-Value="customValue">
+        <WaOption Value="bug">bug</WaOption>
+        <WaOption Value="enhancement">enhancement</WaOption>
+        <WaOption Value="documentation">documentation</WaOption>
+    </WaCombobox>
+</ExampleSection>
+
+<ExampleSection Title="Multiple Selection" Code="@MultipleExample">
+    <WaCombobox Label="Select a few" Multiple="true" WithClear="true" MaxOptionsVisible="2" @bind-Value="multipleValue" SelectedValues="@selectedValues" SelectedValuesChanged="@(v => selectedValues = v)">
+        <WaOption Value="option-1">Option 1</WaOption>
+        <WaOption Value="option-2">Option 2</WaOption>
+        <WaOption Value="option-3">Option 3</WaOption>
+        <WaOption Value="option-4">Option 4</WaOption>
+    </WaCombobox>
+</ExampleSection>
+
+<ExampleSection Title="Appearance &amp; Pill" Code="@AppearanceExample">
+    <WaCombobox Appearance="WaInputAppearance.Filled" Placeholder="Filled" @bind-Value="filledValue">
+        <WaOption Value="option-1">Option 1</WaOption>
+        <WaOption Value="option-2">Option 2</WaOption>
+    </WaCombobox>
+    <WaCombobox Pill="true" Placeholder="Pill" @bind-Value="pillValue">
+        <WaOption Value="option-1">Option 1</WaOption>
+        <WaOption Value="option-2">Option 2</WaOption>
+    </WaCombobox>
+</ExampleSection>
+
+<ExampleSection Title="Start &amp; End Decorations" Code="@DecorationsExample">
+    <WaCombobox Placeholder="Destination" StartIconName="house" EndIconName="flag-checkered" @bind-Value="destinationValue">
+        <WaOption Value="option-1">Option 1</WaOption>
+        <WaOption Value="option-2">Option 2</WaOption>
+    </WaCombobox>
+</ExampleSection>
+
+<ApiTable Tag="wa-combobox" />
+
+@code {
+    private string? defaultValue;
+    private string? experienceValue = "1";
+    private string? disabledValue;
+    private string? customValue;
+    private string? multipleValue;
+    private string[]? selectedValues = ["option-1", "option-2"];
+    private string? filledValue = "option-1";
+    private string? pillValue = "option-1";
+    private string? destinationValue;
+
+    private const string DefaultExample = """
+        <WaCombobox Label="Choose a fruit" Placeholder="Type to filter" @bind-Value="defaultValue">
+            <WaOption Value="apple">Apple</WaOption>
+            <WaOption Value="banana">Banana</WaOption>
+            <WaOption Value="cherry">Cherry</WaOption>
+            <WaOption Value="grape">Grape</WaOption>
+            <WaOption Value="orange">Orange</WaOption>
+        </WaCombobox>
+
+        @code {
+            private string? defaultValue;
+        }
+        """;
+
+    private const string HintExample = """
+        <WaCombobox Label="Experience" Hint="Please tell us your skill level." WithClear="true" @bind-Value="experienceValue">
+            <WaOption Value="1">Novice</WaOption>
+            <WaOption Value="2">Intermediate</WaOption>
+            <WaOption Value="3">Advanced</WaOption>
+        </WaCombobox>
+        <WaCombobox Placeholder="Disabled" Disabled="true" @bind-Value="disabledValue">
+            <WaOption Value="option-1">Option 1</WaOption>
+            <WaOption Value="option-2">Option 2</WaOption>
+        </WaCombobox>
+
+        @code {
+            private string? experienceValue = "1";
+            private string? disabledValue;
+        }
+        """;
+
+    private const string CustomValueExample = """
+        <WaCombobox Label="Tag" Hint="Pick a suggestion or type your own." AllowCustomValue="true" @bind-Value="customValue">
+            <WaOption Value="bug">bug</WaOption>
+            <WaOption Value="enhancement">enhancement</WaOption>
+            <WaOption Value="documentation">documentation</WaOption>
+        </WaCombobox>
+
+        @code {
+            private string? customValue;
+        }
+        """;
+
+    private const string MultipleExample = """
+        <WaCombobox Label="Select a few" Multiple="true" WithClear="true" MaxOptionsVisible="2" @bind-Value="multipleValue"
+                    SelectedValues="@selectedValues" SelectedValuesChanged="@(v => selectedValues = v)">
+            <WaOption Value="option-1">Option 1</WaOption>
+            <WaOption Value="option-2">Option 2</WaOption>
+            <WaOption Value="option-3">Option 3</WaOption>
+            <WaOption Value="option-4">Option 4</WaOption>
+        </WaCombobox>
+
+        @code {
+            private string? multipleValue;
+            private string[]? selectedValues = ["option-1", "option-2"];
+        }
+        """;
+
+    private const string AppearanceExample = """
+        <WaCombobox Appearance="WaInputAppearance.Filled" Placeholder="Filled" @bind-Value="filledValue">
+            <WaOption Value="option-1">Option 1</WaOption>
+            <WaOption Value="option-2">Option 2</WaOption>
+        </WaCombobox>
+        <WaCombobox Pill="true" Placeholder="Pill" @bind-Value="pillValue">
+            <WaOption Value="option-1">Option 1</WaOption>
+            <WaOption Value="option-2">Option 2</WaOption>
+        </WaCombobox>
+
+        @code {
+            private string? filledValue = "option-1";
+            private string? pillValue = "option-1";
+        }
+        """;
+
+    private const string DecorationsExample = """
+        <WaCombobox Placeholder="Destination" StartIconName="house" EndIconName="flag-checkered" @bind-Value="destinationValue">
+            <WaOption Value="option-1">Option 1</WaOption>
+            <WaOption Value="option-2">Option 2</WaOption>
+        </WaCombobox>
+
+        @code {
+            private string? destinationValue;
+        }
+        """;
+}
