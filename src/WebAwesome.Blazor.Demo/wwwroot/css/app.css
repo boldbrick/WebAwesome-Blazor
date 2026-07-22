@@ -78,6 +78,35 @@ html, body {
 .demo-sidebar nav a:hover { background: var(--wa-color-surface-lowered, #f2f4f6); }
 .demo-sidebar nav a.active { background: var(--wa-color-brand-fill-quiet, #e7f0fe); }
 
+/* keep nav link and its status badges on one line */
+.demo-sidebar nav li {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Pro / experimental markers (see Shared\ComponentBadges.razor) */
+.component-badges {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    vertical-align: middle;
+}
+
+.component-badges .pro-badge {
+    font-size: 0.65rem;
+}
+
+.component-badges .experimental-flask {
+    font-size: 0.8rem;
+    color: var(--wa-color-text-quiet, #6a7381);
+}
+
+h1 .component-badges {
+    margin-inline-start: 0.5rem;
+    font-size: 1rem;
+}
+
 .demo-content {
     padding: 2rem 3rem;
     max-width: 60rem;

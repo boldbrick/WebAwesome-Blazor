@@ -22,6 +22,8 @@ public class WebAwesomeAssets : ComponentBase
 
     [Inject] private WebAwesomeOptions RegisteredOptions { get; set; } = default!;
 
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
     #endregion
 
     #region ------ Overrides ------
@@ -30,11 +32,12 @@ public class WebAwesomeAssets : ComponentBase
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
         var options = Options ?? RegisteredOptions;
-        var loaderUrl = options.ResolveLoaderUrl();
+        var stylesheetUrl = Absolutize(options.ResolveStylesheetUrl());
+        var loaderUrl = Absolutize(options.ResolveLoaderUrl());
 
         builder.OpenElement(0, "link");
         builder.AddAttribute(1, "rel", "stylesheet");
-        builder.AddAttribute(2, "href", options.ResolveStylesheetUrl());
+        builder.AddAttribute(2, "href", stylesheetUrl);
         builder.CloseElement();
 
         builder.OpenElement(10, "script");
@@ -55,6 +58,21 @@ public class WebAwesomeAssets : ComponentBase
     #endregion
 
     #region ------ Internals ------
+
+    /// <summary>
+    /// Resolves an app-base-relative asset URL to an absolute one. Web Awesome's autoloader derives
+    /// its component base path from the loader script's raw src attribute; a relative value would
+    /// yield a bare dynamic-import specifier (components silently never upgrade) and would also
+    /// resolve against the current route instead of the app base. Absolute and root-relative URLs
+    /// pass through unchanged.
+    /// </summary>
+    private string Absolutize(string url)
+    {
+        if (url.StartsWith('/') || Uri.TryCreate(url, UriKind.Absolute, out _)) return url;
+
+        // NavigationManager.BaseUri always ends with a slash
+        return Navigation.BaseUri + url;
+    }
 
     private static string BuildKitCodeModule(string loaderUrl, string kitCode)
     {

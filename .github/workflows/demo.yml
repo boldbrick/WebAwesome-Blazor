@@ -30,6 +30,19 @@ jobs:
             9.0.x
             10.0.x
 
+      # Web Awesome Pro assets for the published demo: set the WA_PRO_STYLESHEET_URL and
+      # WA_PRO_LOADER_URL repository VARIABLES to your Pro kit URLs. Deliberately variables,
+      # not secrets - the URLs end up verbatim in the published page anyway, and Web Awesome
+      # kits are domain-locked. When unset, the demo uses the free CDN and Pro components
+      # render inert (their pages explain this via the Pro badge).
+      - name: Configure Pro assets (optional)
+        if: vars.WA_PRO_STYLESHEET_URL != '' && vars.WA_PRO_LOADER_URL != ''
+        shell: pwsh
+        env:
+          WA_PRO_STYLESHEET_URL: ${{ vars.WA_PRO_STYLESHEET_URL }}
+          WA_PRO_LOADER_URL: ${{ vars.WA_PRO_LOADER_URL }}
+        run: ./tools/demo/Set-WaProAssets.ps1
+
       - name: Publish demo
         working-directory: src
         run: dotnet publish WebAwesome.Blazor.Demo/WebAwesome.Blazor.Demo.csproj /p:Configuration=Release

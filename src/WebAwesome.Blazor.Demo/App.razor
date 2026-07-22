@@ -1,3 +1,10 @@
+@* Web Awesome asset tags are emitted from configuration (WebAwesomeOptions) so a Pro CDN/kit URL
+   or self-hosted dist can be supplied via appsettings.Local.json without touching committed files;
+   with no configuration the library defaults apply (free CDN, version = library version) *@
+<HeadContent>
+    <WebAwesomeAssets />
+</HeadContent>
+
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />

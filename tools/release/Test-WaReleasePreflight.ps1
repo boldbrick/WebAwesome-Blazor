@@ -67,8 +67,26 @@ Add-Gate 'surface-version' ($surfaceVersion -eq $version) ("expected-api-surface
 $readme = Get-Content README.md -Raw
 Add-Gate 'readme-cdn-version' ($readme.Contains("webawesome@$version")) ("README CDN snippet references webawesome@{0}" -f $version)
 
+# demo asset tags are emitted by WebAwesomeAssets from configuration and default to the library
+# version, so demo/version alignment is structural; the gate instead verifies nothing reintroduced
+# a hard-coded Web Awesome CDN pin into either demo host
 $demoIndex = Get-Content src\WebAwesome.Blazor.Demo\wwwroot\index.html -Raw
-Add-Gate 'demo-cdn-version' ($demoIndex.Contains("webawesome@$version")) ("demo index.html references webawesome@{0}" -f $version)
+$serverApp = Get-Content src\WebAwesome.Blazor.Demo.Server\App.razor -Raw
+$noPins = (-not ($demoIndex -match 'webawesome@\d')) -and (-not ($serverApp -match 'webawesome@\d'))
+Add-Gate 'demo-no-hardcoded-cdn' $noPins 'demo hosts must not hard-code Web Awesome CDN URLs (WebAwesomeAssets emits them from configuration)'
+
+# --- gate: no Pro asset leakage ----------------------------------------------
+# Pro kit URLs / dist overrides are supplied via env vars and the generated (ignored)
+# appsettings.Local.json only - fail if the override artifacts are versioned or a kit-like
+# URL sneaked into sources/workflows (inputs\ docs legitimately mention the public ka-f host)
+$localSettingsLeak = (cm ls 'src\WebAwesome.Blazor.Demo\wwwroot' --format='{name}' 2>$null) -match 'appsettings\.Local\.json|^webawesome$'
+$kitLeak = Get-ChildItem src, .github -Recurse -File -Include *.cs, *.razor, *.html, *.json, *.yml, *.props |
+    Where-Object { (Get-Content $_.FullName -Raw) -match 'ka-f\.webawesome\.com/[A-Za-z0-9]{8,}|_authToken' }
+$ignoreConf = Get-Content ignore.conf -Raw
+$gitIgnore = Get-Content .gitignore -Raw
+$ignoresPresent = $ignoreConf.Contains('appsettings.Local.json') -and $gitIgnore.Contains('appsettings.Local.json')
+Add-Gate 'pro-asset-leak' ((-not $localSettingsLeak) -and (@($kitLeak).Count -eq 0) -and $ignoresPresent) `
+    ('leak check: versioned override={0}, kit-like URLs in sources={1}, ignore rules present={2}' -f [bool]$localSettingsLeak, @($kitLeak).Count, $ignoresPresent)
 
 # --- gate: changelog and migration doc ---------------------------------------
 $changelog = Get-Content docs\CHANGELOG.md -Raw

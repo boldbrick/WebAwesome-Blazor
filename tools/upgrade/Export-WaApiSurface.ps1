@@ -74,6 +74,15 @@ else {
 
 $cem = $cemJson | ConvertFrom-Json
 
+# ------ Pro component list ------
+# the CEM carries no Pro marker; tools\upgrade\pro-components.json is the curated source of truth
+# (maintained per upgrade - see the comment inside that file)
+$proTags = @()
+$proListPath = Join-Path $PSScriptRoot 'pro-components.json'
+if (Test-Path $proListPath) {
+    $proTags = @((Get-Content $proListPath -Raw | ConvertFrom-Json).proComponents)
+}
+
 # ------ helpers ------
 
 function Get-TypeText($typeObj) {
@@ -137,6 +146,7 @@ foreach ($module in $cem.modules) {
             className  = $decl.name
             since      = $decl.since
             status     = $decl.status
+            pro        = ($proTags -contains $decl.tagName)
             attributes = $attributes
             events     = $events
             slots      = $slots
