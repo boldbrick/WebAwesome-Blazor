@@ -26,7 +26,13 @@ Invocation arguments: `$ARGUMENTS`
 **Train rule:** `<major.minor>` in branch, epic, and folder names is taken from the **target** version, matching the existing casing convention (`/main/WA-3.0`). If the subtrunk `/main/WA-<major.minor>` does not exist yet:
 
 1. **Release gate (hard):** a new train may only start once the previous train has been **released** — the head of the previous train's subtrunk merged (promoted) into `/main`, so that the version in `src\Version.props` at the head of `/main` equals the previous train's released version. Verify this via `infra-ops:plastic-ops`. If the previous subtrunk carries unreleased, unmerged version work, **refuse to create the new train** and report what is pending — promotion of a subtrunk to `/main` is a deliberate owner release step, never done by this pipeline. Sole exception: pending **patch** work (`x.y.z`, `z > 0`, on top of a version already released to `/main`) on the previous subtrunk does not block a new train; note it in the report.
-2. Create the new subtrunk **off `/main`** — never off the previous train's subtrunk — then create the matching WAB epic (`Web Awesome <major.minor>`) and `tasks\WA-<major.minor>\`.
+2. Set up the train in this exact order, so every changeset lands on the branch it belongs to:
+   1. Create the new subtrunk **off `/main`** — never off the previous train's subtrunk — and switch to it.
+   2. Create `tasks\WA-<major.minor>\` and check it in **on the subtrunk** as its first changeset (Plastic versions directories as first-class items, so the empty epic folder commits fine).
+   3. Only then create the task branch (Phase 1) — it inherits the epic folder from the subtrunk.
+   4. The task folder `tasks\WA-<major.minor>\WAB-<n>\` and the plan document are checked in **on the task branch** (Phase 2).
+
+   Also create the matching WAB epic (`Web Awesome <major.minor>`).
 
 **Patch release rule:** a patch release is developed on its train's existing subtrunk (e.g. `3.0.1` on `/main/WA-3.0`) and released by labeling `wa-blazor-<x.y.z>` **on that subtrunk** — `/main` is not involved and receives only `<major.minor>.0` promotions. A fix that matters to newer trains is merged from the older subtrunk **directly into** the newer one (e.g. `/main/WA-3.0` → `/main/WA-3.1`), skipping `/main`.
 
@@ -43,7 +49,7 @@ This phase is **idempotent** — a restarted or post-dry-run pipeline reuses wha
 1. Via the `infra-ops:jira-ops` skill (jira-operator agent):
    - Find the epic for the target WA train in project **WAB** (e.g. WAB-1 "Web Awesome 3.0" for the 3.0 train); create one per the train rule if missing.
    - Search WAB for an existing non-Done Task with summary `WA bindings for <target-version>`; if found, **reuse it** (ensure it is In Progress). Otherwise create a Task under the epic: summary `WA bindings for <target-version>`, description containing a `Source tag:` line linking `https://github.com/shoelace-style/webawesome/tree/v<target-version>` and a short scope note. Transition it to **In Progress**.
-2. Via `infra-ops:plastic-ops`: if the task branch `/main/WA-<major.minor>/WAB-<n>` (n = the JIRA issue number from step 1) already exists, switch to it; otherwise create it off the subtrunk and switch to it.
+2. Via `infra-ops:plastic-ops`: if the task branch `/main/WA-<major.minor>/WAB-<n>` (n = the JIRA issue number from step 1) already exists, switch to it; otherwise create it off the subtrunk and switch to it. For a brand-new train, the subtrunk must already carry the `tasks\WA-<major.minor>\` changeset (train rule step 2) **before** the task branch is created — never branch off an empty, just-created subtrunk head.
 
 ## Phase 2 — Ingest and analyze
 
@@ -70,7 +76,7 @@ Notes:
 
 **Pro-source rule (hard):** everything extracted from the Pro release zips stays under `temp\` (ignored by Plastic and git). The only CEM-derived artifact ever checked in is the API surface JSON (names, types, defaults, doc descriptions — no implementation code); plan documents and migration guides may describe APIs but must never embed upstream JS/TS/CSS source.
 
-Produce the plan document `tasks\WA-<major.minor>\WAB-<n>\upgrade-v<current>-to-v<target>-plan.md` (n = this upgrade's JIRA task from Phase 1; create the task folder if missing) following the structure of `tasks\WA-3.0\WAB-4\upgrade-v3-beta-4-to-beta-6-plan.md`: phased change list (breaking → new components → enhancements), per-file actions, validation checklist, risks.
+Produce the plan document `tasks\WA-<major.minor>\WAB-<n>\upgrade-v<current>-to-v<target>-plan.md` (n = this upgrade's JIRA task from Phase 1; create the task folder if missing) and check it in on the task branch together with its folder, following the structure of `tasks\WA-3.0\WAB-4\upgrade-v3-beta-4-to-beta-6-plan.md`: phased change list (breaking → new components → enhancements), per-file actions, validation checklist, risks.
 
 If `--dry-run`, stop here — but leave a clean, resumable state: check in the plan document on the task branch (comment: `Upgrade plan for Web Awesome <target>`), add a JIRA comment linking the plan, leave the task In Progress, and report that ticket `WAB-<n>` and branch `/main/WA-<major.minor>/WAB-<n>` were created and will be reused by the real run.
 
@@ -106,13 +112,21 @@ Follow the plan document, in this order, checking in per phase (check-in rules a
 
 ## Phase 6 — Check in and deliver
 
-1. Via `infra-ops:plastic-ops`, check in on the task branch. Use one check-in per completed phase where practical, comments in the established style, e.g.:
-   - `Version bumped to <target>`
-   - `Upgrade to Web Awesome <target> Phase 1 - Breaking changes (<short list>)`
-   - `Upgrade to Web Awesome <target> Phase 2 - New features (<short list>)`
-   - `Additional tests and migration guide`
+1. Via `infra-ops:plastic-ops`, check in on the task branch. Use one check-in per completed phase where practical.
 
-   (the phase numbers in check-in comments refer to the plan document's phases, not this pipeline's)
+   **Check-in comment convention (applies to every check-in this pipeline makes):**
+   - Never start with ticket keys (`WAB-<n> ...`) — the branch name already carries the ticket; the key is superfluous in the comment.
+   - Format: 1–2 sentences summarizing what and why, followed by bullet-pointed details where the change has more than one facet. Example:
+
+     ```
+     Upgrade to Web Awesome <target>: new WaCombobox wrapper and the two upstream attribute removals.
+     - WaCombobox (Pro, modeled on WaSelect) with integration + EditForm tests and demo page
+     - BREAKING: WaButton.Form and WaButtonGroup.Variant removed per upstream
+     - parity deviations recorded; public API baseline promoted
+     - 312 tests green on net9.0+net10.0
+     ```
+
+   - Single-facet changesets keep a short one-liner (`Version bumped to <target>`).
 2. Via `infra-ops:jira-ops`: add a comment to the WAB task summarizing changes (counts from the change report, notable deviations, test totals) and transition it to **In Review**.
 3. Only with `--publish`: via `infra-ops:plastic-ops`, merge the task branch to the subtrunk `/main/WA-<major.minor>`, then transition the JIRA task to **Done**. If the merge conflicts, do not force it: leave the task branch checked in and In Review, comment the conflict on the JIRA task, and report. (Promotion of the subtrunk to `/main` and tagging `wa-blazor-<version>` for the GitHub release pipeline remains a separate, deliberate release step — do not do it here.)
 
