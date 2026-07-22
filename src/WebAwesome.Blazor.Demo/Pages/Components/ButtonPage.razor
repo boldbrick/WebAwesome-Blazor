@@ -1,4 +1,5 @@
 @page "/components/button"
+@using Microsoft.AspNetCore.Components.Forms
 
 <PageTitle>Button</PageTitle>
 
@@ -46,10 +47,76 @@
     <WaButton Variant="WaVariant.Success" Disabled="true">Success</WaButton>
 </ExampleSection>
 
+<ExampleSection Title="External Submit via Form Association" Code="@ExternalSubmitExample">
+    <p>
+        A submit button placed <em>outside</em> a form can drive it through the native <code>form="id"</code>
+        association — Web Awesome form controls and buttons are form-associated custom elements. This composes
+        with Blazor's <code>EditForm</code>: the external button triggers the form's submit event, which
+        <code>EditForm</code> intercepts as usual.
+    </p>
+    <EditForm id="external-submit-form" EditContext="externalFormContext" OnSubmit="OnExternalSubmit">
+        <WaInput Label="Display name" Placeholder="Type anything" @bind-Value="externalFormModel.DisplayName" />
+    </EditForm>
+    <div style="margin-top: var(--wa-space-m);">
+        <WaButton Variant="WaVariant.Brand" Type="WaButtonType.Submit" Form="external-submit-form" data-testid="external-submit">
+            Submit from outside the form
+        </WaButton>
+    </div>
+    @if (externalSubmitCount > 0)
+    {
+        <WaCallout Variant="WaVariant.Success" data-testid="external-submit-result" Style="margin-top: var(--wa-space-m);">
+            Submitted @externalSubmitCount time(s) — last value: @(string.IsNullOrEmpty(lastSubmittedName) ? "(empty)" : lastSubmittedName)
+        </WaCallout>
+    }
+</ExampleSection>
+
 <ApiTable Tag="wa-button" />
 
 @code {
+    private ExternalFormModel externalFormModel = new();
+    private EditContext externalFormContext = null!;
+    private int externalSubmitCount;
+    private string? lastSubmittedName;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        externalFormContext = new EditContext(externalFormModel);
+    }
+
+    private void OnExternalSubmit()
+    {
+        externalSubmitCount++;
+        lastSubmittedName = externalFormModel.DisplayName;
+    }
+
+    private class ExternalFormModel
+    {
+        public string? DisplayName { get; set; }
+    }
+
     private const string DefaultExample = "<WaButton />";
+
+    private const string ExternalSubmitExample = """
+        <EditForm id="external-submit-form" EditContext="externalFormContext" OnSubmit="OnExternalSubmit">
+            <WaInput Label="Display name" @bind-Value="externalFormModel.DisplayName" />
+        </EditForm>
+        <WaButton Type="WaButtonType.Submit" Form="external-submit-form">
+            Submit from outside the form
+        </WaButton>
+
+        @code {
+            private ExternalFormModel externalFormModel = new();
+            private EditContext externalFormContext = null!;
+
+            protected override void OnInitialized()
+            {
+                externalFormContext = new EditContext(externalFormModel);
+            }
+
+            private void OnExternalSubmit() { /* runs on external-button submit */ }
+        }
+        """;
 
     private const string VariantsExample = """
         <WaButton Variant="WaVariant.Neutral">Neutral</WaButton>

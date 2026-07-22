@@ -195,6 +195,7 @@ public class WaThreeZeroAttributeSpotCheckTests
         var component = new WaButton();
 
         // Act
+        component.Form = "external-form";
         component.FormAction = "/submit";
         component.FormEncType = "multipart/form-data";
         component.FormMethod = "post";
@@ -204,6 +205,7 @@ public class WaThreeZeroAttributeSpotCheckTests
         component.Value = "save";
 
         // Assert
+        Assert.Equal("external-form", component.Form);
         Assert.Equal("/submit", component.FormAction);
         Assert.Equal("multipart/form-data", component.FormEncType);
         Assert.Equal("post", component.FormMethod);

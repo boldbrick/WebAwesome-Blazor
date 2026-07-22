@@ -367,6 +367,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EndIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Form { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? FormAction { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? FormEncType { get; set; }

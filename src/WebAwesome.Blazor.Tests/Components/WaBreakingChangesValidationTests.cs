@@ -157,15 +157,15 @@ public class WaBreakingChangesValidationTests
     }
 
     [Fact]
-    public void WaButton_DoesNotHaveFormProperty()
+    public void WaButton_KeepsFormProperty()
     {
         // Arrange & Act
         var component = new WaButton();
-        var type = component.GetType();
 
-        // Assert - Form property was removed in Web Awesome 3.1.0
-        var formProperty = type.GetProperty("Form");
-        Assert.Null(formProperty);
+        // Assert - the form attribute left the 3.1.0 CEM (moved to native ElementInternals form
+        // association) but remains functional, so the wrapper deliberately keeps the parameter
+        component.Form = "external-form";
+        Assert.Equal("external-form", component.Form);
     }
 
     #endregion
