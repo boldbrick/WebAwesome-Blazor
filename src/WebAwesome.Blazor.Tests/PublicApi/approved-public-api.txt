@@ -14,7 +14,7 @@ namespace WebAwesome.Blazor.Base
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Hint { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
@@ -66,7 +66,7 @@ namespace WebAwesome.Blazor.Base
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Layout.GapSize? Gap { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -121,7 +121,7 @@ namespace WebAwesome.Blazor.Components
         public string? Alt { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnError { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -157,7 +157,7 @@ namespace WebAwesome.Blazor.Components
         public int Duration { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaAnimationEasing Easing { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? EndDelay { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -249,7 +249,7 @@ namespace WebAwesome.Blazor.Components
         public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? IconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -289,7 +289,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Pill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -307,7 +307,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -325,7 +325,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -361,7 +361,7 @@ namespace WebAwesome.Blazor.Components
         public bool Disabled { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Download { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -429,7 +429,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -462,7 +462,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? IconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -486,7 +486,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterActionsContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -522,7 +522,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Loop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -559,7 +559,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
@@ -646,7 +646,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? HandleContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -672,7 +672,7 @@ namespace WebAwesome.Blazor.Components
         public string? CopyLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ErrorIcon { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -737,7 +737,7 @@ namespace WebAwesome.Blazor.Components
         public string? CollapseIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIcon { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -780,7 +780,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -824,7 +824,7 @@ namespace WebAwesome.Blazor.Components
         public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaOrientation Orientation { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -840,7 +840,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -892,7 +892,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int Distance { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -936,7 +936,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? DetailsContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? IconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1059,7 +1059,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDisplay? Display { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Lang { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1081,7 +1081,7 @@ namespace WebAwesome.Blazor.Components
         public string? Date { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDateTimeStyle? Day { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDateTimeStyle? Era { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1121,7 +1121,7 @@ namespace WebAwesome.Blazor.Components
         public string? Currency { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaCurrencyDisplay? CurrencyDisplay { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Lang { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1168,7 +1168,7 @@ namespace WebAwesome.Blazor.Components
         public bool AutoWidth { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Family { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1205,7 +1205,7 @@ namespace WebAwesome.Blazor.Components
         public bool AllowScripts { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1324,7 +1324,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? IntersectClass { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
@@ -1387,7 +1387,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1418,7 +1418,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1459,7 +1459,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool DisableNavigationToggle { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? Footer { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1539,7 +1539,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int Distance { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? For { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
@@ -1597,7 +1597,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public double Distance { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Flip { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1643,7 +1643,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Indeterminate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1663,7 +1663,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1681,7 +1681,7 @@ namespace WebAwesome.Blazor.Components
         public string Background { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaErrorCorrection ErrorCorrection { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1713,7 +1713,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1822,7 +1822,7 @@ namespace WebAwesome.Blazor.Components
         public System.DateTime? Date { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? DateString { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaFormat Format { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
@@ -1858,7 +1858,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1879,7 +1879,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaOrientation Orientation { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1963,7 +1963,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaEffect Effect { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
@@ -2028,7 +2028,7 @@ namespace WebAwesome.Blazor.Components
         public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
@@ -2044,7 +2044,7 @@ namespace WebAwesome.Blazor.Components
         public bool Disabled { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? DividerContent { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
@@ -2119,7 +2119,7 @@ namespace WebAwesome.Blazor.Components
         public bool Closable { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2152,7 +2152,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? NavContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2181,7 +2181,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Name { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2206,7 +2206,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnRemove { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2238,7 +2238,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EnterKeyHint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2330,7 +2330,7 @@ namespace WebAwesome.Blazor.Components
         public bool Disabled { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? Distance { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? For { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2374,7 +2374,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? CollapseIconName { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? ExpandIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2398,7 +2398,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? CollapseIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2469,7 +2469,7 @@ namespace WebAwesome.Blazor.Components
         public bool AllowFullScreen { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2614,7 +2614,7 @@ namespace WebAwesome.Blazor.Layout
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
@@ -2659,7 +2659,7 @@ namespace WebAwesome.Blazor.Layout
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Element { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? ElementRef { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? ElementRef { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Layout.TextSize Size { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2677,7 +2677,7 @@ namespace WebAwesome.Blazor.Layout
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Force { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]

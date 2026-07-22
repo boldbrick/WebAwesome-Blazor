@@ -92,7 +92,7 @@ public class WaSliderEditFormTests : FormControlTestBase
     {
         // bare usage outside @bind-Value must fail exactly like Blazor's built-in inputs, for the
         // nullable decimal-valued control family (WaSlider)
-        var exception = Assert.ThrowsAny<Exception>(() => RenderComponent<WaSlider>());
+        var exception = Assert.ThrowsAny<Exception>(() => Render<WaSlider>());
         Assert.Contains("ValueExpression", exception.Message);
     }
 

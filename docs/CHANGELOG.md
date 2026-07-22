@@ -2,7 +2,21 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [3.0.0] — 2026-07-22
+
+Alignment with the Web Awesome 3.0.0 stable release, plus the browser-verified correctness sweep that made every `wa-*` event and imperative method actually work. See [MIGRATION-3.0.0.md](MIGRATION-3.0.0.md) for the migration guide.
+
+### Breaking changes
+- `appearance` combined token renamed by WA 3.0.0: `WaAppearance.OutlinedFilled` now emits `filled-outlined` (was `outlined filled`) across `WaBadge`, `WaButton`, `WaCallout`, `WaDetails`, `WaTag`; `WaInputAppearance` gains the new `FilledOutlined` value for `WaInput`, `WaSelect`, `WaTextArea`. No C# signature change — only the emitted attribute token.
+- `WaInclude`: `OnError` renamed to `OnIncludeError`, bound to the renamed upstream event `wa-include-error` (was `wa-error`).
+- Removed `WaTabGroup.OnTabClose` and `WaTabCloseEventArgs` — `wa-tab-close` does not exist in Web Awesome 3.0 (and no event ever fired before this release, see Fixed below).
+- Removed `WaSlideChangeEventArgs.Slide` and `WaIntersectionEventArgs.Target` — `ElementReference` properties that can never be populated from an event payload.
+- Removed never-functional imperative methods (their JS counterparts do not exist on the elements): `WaDropdown.RepositionAsync`, `WaPopover.RepositionAsync`, `WaTooltip.RepositionAsync`, `WaInclude.ReloadAsync`, `WaMutationObserver.TakeRecordsAsync`.
+
+### New components
+- `WaPage` (Pro, new in WA 3.0.0): full slot surface (15 slots), navigation state parameters, `ShowNavigationAsync`/`HideNavigationAsync`/`ToggleNavigationAsync`.
+- `WaComparison`: pre-existing WA component whose wrapper was missing — gap surfaced by the armed parity suite and closed.
+- `WaScroller`, `WaTree`, `WaTreeItem`: implemented against the bound API surface (`wa-tree`/`wa-tree-item` since WA 2.0, `wa-scroller` since 3.0). `WaTree.Selection` uses the new `WaTreeSelection` enum (Single/Multiple/Leaf). `WaTreeItem.getChildrenItems()` and the full item list of `wa-selection-change` are intentionally not exposed as typed element references — arbitrary DOM elements returned from JS cannot become live Blazor `ElementReference`s; `WaTreeSelectionChangeEventArgs.Selection` stays `object[]`, consistent with `MutationEventArgs`/`ResizeEventArgs`.
 
 ### Fixed
 - `WaCheckbox`/`WaSwitch`: two-way `@bind-Value` silently never updated on user interaction. Root cause: Blazor's built-in change-event value extraction only reads the DOM `.checked` property when the target's `tagName === "INPUT"`; for the custom elements `<wa-checkbox>`/`<wa-switch>` it falls back to reading `.value`, which the wrapper hard-codes to the constant string `"True"` for form-submission purposes (mirroring native checkbox `value` semantics) — so the bound value never reflected the real checked state. **Workaround applied:** replaced the `EventCallback.Factory.CreateBinder<bool>` `onchange` wiring with a manual handler that reads the true state via `WebAwesomeJSInterop.GetPropertyAsync<bool>(Element, "checked")`. **Next-release check:** verify whether the upstream Blazor runtime (or a future WA release exposing these as form-associated custom elements recognized by `ElementInternals`) changes this; if Blazor ever special-cases arbitrary form-associated custom elements for `.checked` extraction, this workaround can likely be removed.
@@ -26,8 +40,7 @@ The previously flagged "suspected gap" around custom event binding was live-brow
 
 **Behavioral/API changes in the same area (justified as the events never fired before, so nothing could have depended on them):**
 - `WaTabGroup.OnTabChange` is now raised by the real `wa-tab-show` browser event (Web Awesome 3.0 has no `wa-tab-change` event); `OnTabShow` and `OnTabChange` share one browser event.
-- Removed `WaTabGroup.OnTabClose` and `WaTabCloseEventArgs` — `wa-tab-close` does not exist in Web Awesome 3.0.
-- Removed `WaSlideChangeEventArgs.Slide` and `WaIntersectionEventArgs.Target` (`ElementReference` properties that can never be populated from an event payload — DOM elements cannot be marshaled into element references).
+- The `OnTabClose`/event-args and `ElementReference`-property removals are listed under Breaking changes above.
 
 **Guardrails added:** `EventBindingRegistrationTests` source-scans the wrappers and fails if any event is bound without the `on` prefix or bound without a matching registration in the JS initializer's event list — both failure modes are silent at build time and runtime, which is how this shipped in the first place.
 
@@ -36,13 +49,12 @@ Every `extraElementMethods` allowlist entry was verified against the live WA 3.0
 - `wa-dialog`/`wa-drawer` have `show()` but **no** `hide()`; `wa-dropdown` has neither. `ShowAsync`/`HideAsync` on `WaDialog`, `WaDrawer`, and `WaDropdown` now drive the element's `open` property (symmetric, documented, attribute-backed).
 - `wa-copy-button` has no `copy()` — `CopyAsync` now clicks the element, which triggers the copy exactly like a user interaction.
 - `wa-zoomable-frame` has no `setZoom()`/`reset()` (only `zoomIn()`/`zoomOut()`) — `SetZoomAsync` now sets the `zoom` property; `ResetAsync` sets it to 1.0.
-- Removed methods with no working equivalent (never functional, so nothing could depend on them): `WaDropdown.RepositionAsync`, `WaPopover.RepositionAsync`, `WaTooltip.RepositionAsync` (no `reposition()` on those elements — only `wa-popup` has one, and `WaPopup.RepositionAsync` stays), `WaInclude.ReloadAsync` (no `reload()`; Lit ignores same-value `src` re-assignment), `WaMutationObserver.TakeRecordsAsync` (no `takeRecords()`; the element's observer is private).
+- Methods with no working JS equivalent were removed (never functional, so nothing could depend on them) — listed under Breaking changes above; only `wa-popup` has a real `reposition()`, so `WaPopup.RepositionAsync` stays.
 - `parity-config.json` `extraElementMethods` now contains only browser-verified entries (observer `stopObserver`/`startObserver`, `wa-relative-time.update`), each dated; the `ElementMethodInvocationTests` audit enforces the list.
 
 ### Added
 - Server-hosted demo variant (`src\WebAwesome.Blazor.Demo.Server`, Blazor Web App with interactive server render mode, prerendering off): reuses the entire demo UI from `WebAwesome.Blazor.Demo` via `AddAdditionalAssemblies`, so every page runs under both Blazor hosting models. Static assets (CSS, theme helper, `data/api-surface.json`) flow through as static web assets from the referenced demo project; the theming helper moved from inline `index.html` script to `wwwroot\js\demo-theme.js` so both hosts share one copy. Runs on `http://localhost:5100`; the Playwright suite runs against it via `DEMO_BASE_URL=http://localhost:5100` (verified: all 82 tests pass on both hosts, including the custom-event payload regression over the SignalR circuit).
 - Curated showcase pages (`src\WebAwesome.Blazor.Demo\Pages\Showcases\`, nav section "Showcases", covered by the e2e sweep): registration form (all 10 form controls in one validated EditForm), dashboard, settings, overlays, media gallery, and content/observers — together they exercise all 59 wrappers and all 8 CSS layout components with realistic content, including live typed event payloads (tab change, tree selection, resize/mutation/intersection observers).
-- New wrapper components: `WaScroller`, `WaTree`, `WaTreeItem` — confirmed present with full attributes/slots/events in the exact bound 3.0.0-beta.6 API surface (`wa-tree`/`wa-tree-item` since WA 2.0, `wa-scroller` since 3.0), so this was a real gap, not a not-yet-released feature. `WaTree.Selection` uses the new `WaTreeSelection` enum (Single/Multiple/Leaf). `WaTreeItem.getChildrenItems()` (CEM method) and `WaTree`'s `wa-selection-change` full item list are intentionally not exposed as strongly-typed `WaTreeItem[]`/`ElementReference[]` — there's no supported way to turn arbitrary DOM elements returned from JS into live Blazor `ElementReference`s outside of Blazor's own element-reference capture; `WaTreeSelectionChangeEventArgs.Selection` is left as raw `object[]`, consistent with the existing `MutationEventArgs`/`ResizeEventArgs` convention for the same limitation.
 - Persistent browser-based test automation (Playwright) verifying the demo app end-to-end — see `tools\e2e\README.md`. Grew out of manually diagnosing the bugs above; ad hoc Playwright scripts caught issues neither the build nor bUnit tests could (real DOM event semantics, JS interop failures, actual rendered CSS).
 - Demo nav now groups components into the same documentation categories Web Awesome uses in its own docs (Actions, Feedback & Status, Form Controls, Imagery, Navigation, Organization, Utilities), via `WebAwesome.Blazor.Demo\Services\ComponentCategoryMap.cs`.
 
@@ -56,6 +68,10 @@ Every `extraElementMethods` allowlist entry was verified against the live WA 3.0
 - NuGet packaging: full package metadata, icon, package readme, symbol packages (snupkg), per-framework XML documentation for IntelliSense.
 - Automated upgrade pipeline: CEM-driven API diff tooling (`tools\upgrade\`), API-surface parity tests, and the `/wa-upgrade` orchestration skill (see `docs\UPGRADE-PROCESS.md`).
 - Repository hygiene: corrected README setup snippet (official `@awesome.me/webawesome` CDN), verified 3.0.0-beta.6 documentation inputs, corrected API parity baseline.
+- Test stack migrated to the current generations: xunit → `xunit.v3` 3.2.2, bUnit 1.40.0 → 2.7.2 (official .NET 10 support); transitive AngleSharp lifted to 1.5.2 (mXSS advisory CVE-2026-54570).
+- NuGet dependency policy (see `docs\technical.md`): the package's framework dependencies are floored at the base target majors (`9.0.0`/`10.0.0`) instead of pinning latest patches — consumers are no longer forced onto specific patch levels; test/tooling dependencies track latest stable.
+- Release engineering: CI split into branch verification (`build.yml`) and a tag-triggered release workflow (`release.yml`, `wa-blazor-*` tags) that rebuilds from the tag and publishes to nuget.org via Trusted Publishing behind a go-live gate; release/branching model codified (patch releases tagged on train subtrunks, new trains branch from the main line behind a release gate) — see `README.md` and `CONTRIBUTING.md`.
+- Repository restructuring: task-scoped working documents moved from `docs\prompts\` to `tasks\<epic>\<task>\`; durable wrapper technical standards extracted into `docs\technical.md`.
 
 ## [3.0.0-beta.6] — 2026-07-18
 

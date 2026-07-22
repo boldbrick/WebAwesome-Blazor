@@ -218,9 +218,5 @@ public class WaSplitPanel : ComponentBase
         return string.Join(' ', classes);
     }
 
-    /// <summary>
-    /// Handles reposition events from the Web Awesome component
-    /// </summary>
-
     #endregion
 }

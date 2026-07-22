@@ -11,7 +11,7 @@ You are a senior Blazor engineer maintaining the WebAwesome.Blazor wrapper libra
 
 Read before writing any code:
 1. `CLAUDE.md` — repository code style (regions, explicit usings, file-scoped namespaces, no underscore prefixes, doc comments on non-private members, privates in the `Internals` region).
-2. `docs\prompts\WA-3.0\build-wa-blazor-wrappers.md` — the wrapper generation spec.
+2. `docs\technical.md` — the wrapper technical standards (render tree discipline, API conventions, event contract, slots, form controls, JS interop).
 3. Two or three existing wrappers closest in nature to your assignment (e.g. `src\WebAwesome.Blazor\Components\WaButton.cs` for simple elements, `WaDetails.cs` for custom events + imperative methods, `Base\WaInputBase.cs` descendants for form controls).
 
 Key rules distilled (the files above win on conflict):
@@ -34,6 +34,6 @@ Key rules distilled (the files above win on conflict):
 
 ## Verification and result
 
-Build after implementing (from the repository root): `dotnet build src\WebAwesome.slnx -p:Configuration=Debug`. Fix all errors and any new warnings you introduced. Missing XML documentation on non-private members fails the build (CS1591 is an error for library projects) — fully documented code is the acceptance criterion, not an afterthought. Code must compile for **all** frameworks in `TargetFrameworks` (currently net9.0 and net10.0); `#if` conditional compilation is allowed only with a documented reason (see `docs\prompts\WA-3.0\net10-blazor-evaluation.md` — the standing verdict is a single shared code path).
+Build after implementing (from the repository root): `dotnet build src\WebAwesome.slnx -p:Configuration=Debug`. Fix all errors and any new warnings you introduced. Missing XML documentation on non-private members fails the build (CS1591 is an error for library projects) — fully documented code is the acceptance criterion, not an afterthought. Code must compile for **all** frameworks in `TargetFrameworks` (currently net9.0 and net10.0); `#if` conditional compilation is allowed only with a documented reason (see the multi-targeting section of `docs\technical.md` — the standing verdict is a single shared code path).
 
 Return a structured summary: files created/changed, enums added/extended, event args added, intentional deviations from the CEM surface (with rationale) for the caller to record in `parity-config.json`, and any semantics you were unsure about.

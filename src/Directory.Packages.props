@@ -9,30 +9,35 @@
   </PropertyGroup>
   <!-- packages used globally, TFM-neutral -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="xunit" Version="2.9.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="Moq" Version="4.20.72" />
-    <PackageVersion Include="PublicApiGenerator" Version="11.1.0" />
-    <PackageVersion Include="bunit" Version="1.40.0" />
+    <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
+    <PackageVersion Include="bunit" Version="2.7.2" />
+    <!-- transitive via bunit (brings 1.4.0); referenced directly to lift it past the mXSS advisory CVE-2026-54570 (NU1902, fixed in 1.5.0) -->
+    <PackageVersion Include="AngleSharp" Version="1.5.2" />
   </ItemGroup>
-  <!-- framework-aligned packages per target framework -->
+  <!-- framework-aligned packages per target framework.
+       The two packages the LIBRARY ships as nupkg dependencies (Components.Web, Configuration.Abstractions)
+       are floored at x.0.0 - NuGet versions are minimums, and a higher floor would force consumers to
+       upgrade their framework packages for no reason. Test-/demo-only packages track the latest patch. -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.JSInterop" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.18" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.18" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.18" />
+    <PackageVersion Include="Microsoft.JSInterop" Version="9.0.18" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.10" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.10" />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="10.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
     <PackageVersion Include="Microsoft.JSInterop" Version="10.0.10" />
   </ItemGroup>
