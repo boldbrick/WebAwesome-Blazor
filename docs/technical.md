@@ -63,6 +63,13 @@ Rules:
 - Method wrappers guard a null `Element` (component not yet rendered).
 - New .NET JS-interop APIs replace the module only if they can address a DOM element directly; `ElementReference` is not an `IJSObjectReference`, so the module stays (standing verdict: `tasks\WA-3.0\WAB-7\net10-blazor-evaluation.md`).
 
+## Dependencies
+
+All versions live in `src\Directory.Packages.props` (Central Package Management — see `CLAUDE.md`), with two opposing policies:
+
+- **The library ships minimal floors.** NuGet dependency versions are minimums, so every package the library carries into the nupkg (currently `Microsoft.AspNetCore.Components.Web`, `Microsoft.Extensions.Configuration.Abstractions`) stays at the **base release of the target major** (`9.0.0`, `10.0.0`) — a higher floor would force consumers to upgrade their framework packages for no reason. Raise a floor only when the library genuinely needs a later API or fix, and document why at the version entry. A side effect worth keeping: the test suite then validates against the minimum versions consumers can actually resolve.
+- **The test harness and tooling track latest stable.** Test-only and build-only packages (test SDK/framework, bUnit, mocking, analyzers, SourceLink, and framework packages referenced only by tests or the demo apps) are kept current — there is no consumer impact, and staying recent picks up runner fixes and security patches. Known-vulnerability warnings (NU1902) are fixed by lifting the affected package, never by suppressing the warning.
+
 ## Multi-targeting
 
 The library targets `net9.0;net10.0` with **a single shared code path — no `#if` divergence in library code**. Multi-targeting exists for dependency hygiene (framework package references conditioned per TFM via Central Package Management), not API divergence; net10.0 (LTS) is the primary, fully tested target. `#if` conditional compilation requires a documented reason; the standing evaluation of why none is warranted is archived at `tasks\WA-3.0\WAB-7\net10-blazor-evaluation.md` and is re-evaluated per .NET release (async validation in .NET 11 is the known future interaction point).
