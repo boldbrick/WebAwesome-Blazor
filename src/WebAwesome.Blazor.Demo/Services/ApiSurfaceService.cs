@@ -29,6 +29,12 @@ public class ComponentSurface
     [JsonPropertyName("className")]
     public string ClassName { get; set; }
 
+    [JsonPropertyName("status")]
+    public string Status { get; set; }
+
+    [JsonPropertyName("pro")]
+    public bool Pro { get; set; }
+
     [JsonPropertyName("attributes")]
     public Dictionary<string, MemberDetail> Attributes { get; set; }
 

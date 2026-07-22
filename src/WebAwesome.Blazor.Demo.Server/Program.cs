@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebAwesome.Blazor.Extensions;
 using WebAwesome.Blazor.Demo.Services;
@@ -22,6 +23,10 @@ public static class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // optional, never-committed local override for Web Awesome assets (Pro CDN/kit URL or
+        // self-hosted dist); environment variables (WebAwesome__...) override it as usual
+        builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true);
 
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();

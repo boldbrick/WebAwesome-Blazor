@@ -1,7 +1,7 @@
 {
   "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, ElementMethodInvocationTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
   "enabled": true,
-  "targetWaVersion": "3.0.0",
+  "targetWaVersion": "3.1.0",
   "globalIgnoredAttributes": [
     "title"
   ],
@@ -20,11 +20,11 @@
       }
     },
     "wa-checkbox": {
-      "ignoredAttributes": [ "name", "form", "checked" ],
+      "ignoredAttributes": [ "name", "checked" ],
       "ignoredEvents": [ "change" ]
     },
     "wa-color-picker": {
-      "ignoredAttributes": [ "name", "form" ],
+      "ignoredAttributes": [ "name" ],
       "ignoredEvents": [ "change" ]
     },
     "wa-input": {
@@ -37,7 +37,6 @@
         "enterkeyhint": "EnterKeyHint",
         "inputmode": "InputMode"
       },
-      "ignoredAttributes": [ "form" ],
       "ignoredEvents": [ "change" ]
     },
     "wa-button": {
@@ -57,22 +56,19 @@
       }
     },
     "wa-select": {
-      "ignoredAttributes": [ "name", "form" ],
+      "ignoredAttributes": [ "name" ],
       "ignoredEvents": [ "change" ]
     },
     "wa-slider": {
       "attributeOverrides": {
         "autofocus": "AutoFocus"
       },
-      "ignoredAttributes": [ "name", "form" ],
+      "ignoredAttributes": [ "name" ],
       "ignoredEvents": [ "change" ]
     },
     "wa-switch": {
-      "ignoredAttributes": [ "name", "form" ],
+      "ignoredAttributes": [ "name" ],
       "ignoredEvents": [ "change" ]
-    },
-    "wa-radio": {
-      "ignoredAttributes": [ "form" ]
     },
     "wa-radio-group": {
       "ignoredEvents": [ "change" ]
@@ -87,7 +83,7 @@
         "enterkeyhint": "EnterKeyHint",
         "inputmode": "InputMode"
       },
-      "ignoredAttributes": [ "name", "form" ],
+      "ignoredAttributes": [ "name" ],
       "ignoredEvents": [ "change" ]
     },
     "wa-rating": {
@@ -108,21 +104,28 @@
     },
     "wa-relative-time": {
       "extraElementMethods": [ "update" ]
+    },
+    "wa-combobox": {
+      "ignoredAttributes": [ "name" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-page": {
+      "ignoredMethods": [ "visiblePixelsInViewport" ]
     }
   },
   "ignoreReasons": {
     "title": "native HTML attribute, passed through via AdditionalAttributes",
     "change": "native change event folded into Blazor two-way binding (ValueChanged / @bind-Value)",
     "name": "form-control name is handled by Blazor InputBase form integration (NameAttributeValue / EditContext), not a discrete parameter",
-    "form": "form association is handled by Blazor EditForm / EditContext, not a discrete attribute parameter",
     "checked": "checkbox checked state is the two-way-bound Value on WaInputBase<bool>",
+    "visiblePixelsInViewport": "wa-page internal scroll-gap layout helper (takes a live HTMLElement arg; its own doc comment cites a StackOverflow scroll-fill fix) - not a consumer-facing API and not marshalable from Blazor",
     "maxlength": "exposed as MaxLength on WaInputBase (idiomatic .NET casing); mapped via attributeOverrides",
     "minlength": "exposed as MinLength on WaInputBase (idiomatic .NET casing); mapped via attributeOverrides",
     "getSymbol": "function-valued property (custom symbol renderer callback), not an authorable HTML attribute",
     "currentSlide": "read-only JS state property of wa-carousel, not an authorable HTML attribute",
     "slides": "read-only JS collection property of wa-carousel, not an authorable HTML attribute",
     "submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute",
-    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
-    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19), not CEM-documented"
+    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22, still present as private methods in mutation-observer.d.ts/resize-observer.d.ts); the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19) and source-re-verified against WA 3.1.0 (2026-07-22, the Lit ReactiveElement lifecycle update() inherited via WebAwesomeElement, hence absent from the component .d.ts), not CEM-documented"
   }
 }

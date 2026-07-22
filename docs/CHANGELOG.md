@@ -2,6 +2,33 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.1.0] — 2026-07-22
+
+Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](MIGRATION-3.1.0.md) for the migration guide.
+
+### Breaking changes
+- Removed `WaButtonGroup.Variant` — the `variant` attribute left the `wa-button-group` CEM in WA 3.1.0. Verified upstream (issue #1677, maintainer response): the group-level variant functionality had already been dropped earlier and the property lingered by mistake; the supported way is setting the variant on each button, which also allows mixing variants within a group.
+
+### New components
+- `WaCombobox` (Pro, experimental upstream, new in WA 3.1.0): filterable single/multi-select form control modeled on `WaSelect` — `WaInputBase<string?>` with `WaOption` children, `Multiple` + `SelectedValues`/`SelectedValuesChanged`, `AllowCustomValue`, `MaxOptionsVisible`, `WithClear`, `Pill`, `Appearance`, `Placement`, `Open`, start/end/clear-icon/expand-icon slots, `OnClear`/`OnShow`/`OnHide`/`OnAfterShow`/`OnAfterHide`/`OnInvalid`, and `ShowAsync`/`HideAsync`/`FocusAsync`/`BlurAsync`. All six `wa-*` events were already registered in the JS initializer; no interop changes were needed.
+
+### Changed
+- `WaButton.Form` is **kept** although the `form` attribute left the 3.1.0 CEM: upstream PR #1815 moved form association to the native platform mechanism (`ElementInternals`; `el.form` now returns the real `HTMLFormElement`), so the `form="id"` content attribute remains fully functional — it just stopped being a declared Lit property. The wrapper parameter renders the attribute as before and composes with `EditForm`: an external submit button triggers the form's `submit` event, which `EditForm` intercepts as usual. The other form controls still intentionally expose no `Form` parameter (their form story goes through `InputBase`/`EditContext`). **Next-release check:** the attribute is now CEM-invisible, so the parity suite cannot flag upstream changes to it — re-verify `WebAwesomeFormAssociatedElement` still supports `form="id"` on each upgrade; also re-assess against WA's evolving SSR support (beta/experimental in newer versions), where Blazor static-SSR form handling differs from the interactive `onsubmit` interception path.
+- `WaCard.Appearance` now accepts `WaAppearance.OutlinedFilled` upstream — WA 3.1.0 added `filled-outlined` to the card appearance union; the enum already emitted the token, so this is upstream catching up, not a wrapper change.
+- `wa-page`'s new `visiblePixelsInViewport(element)` method is intentionally not wrapped — it is an internal scroll-gap layout helper taking a live DOM element, not marshalable from Blazor (recorded as a parity deviation).
+
+### Fixed
+- `WebAwesomeAssets` now absolutizes app-base-relative asset URLs against the application base URI. Web Awesome's autoloader derives its component base path from the loader script's raw `src` attribute; a relative value (typical for self-hosted setups, e.g. `BasePath: "webawesome"`) produced a bare dynamic-import specifier that fails silently — styles loaded, but **no component ever upgraded**. Found live while verifying the Pro self-hosted asset path; guarded by the e2e spec `tools\e2e\tests\pro-assets.spec.js`. Note the self-hosted folder must be the `dist-cdn` build — the npm-style `dist` build's loader only re-exports and never starts the autoloader.
+
+### Library extended
+- Demo: Pro and experimental components are marked like in the official docs — an orange `Pro` pill and a flask icon, in the navigation and on page headers. Data-driven: `tools\upgrade\pro-components.json` (curated per upgrade; the CEM carries no Pro marker) is stamped into the API surface by `Export-WaApiSurface.ps1` as `"pro": true`, and the upstream `status` field drives the flask.
+- Demo: Web Awesome asset tags are no longer hard-coded in the hosts — `WebAwesomeAssets` emits them from configuration in both the WebAssembly and server host (this also removed a stale 3.0.0 CDN pin the version-sync had missed in `Demo.Server\App.razor`; the version now defaults to the library version structurally). A Web Awesome **Pro** license can be exercised locally or in CI without committing anything: `tools\demo\Set-WaProAssets.ps1` generates an ignored `appsettings.Local.json` from `WA_PRO_DIST` (self-hosted `dist-cdn`, offline), `WA_PRO_CDN_BASE` (kit base URL with a `{version}` placeholder — the library substitutes its bound WA version, so the value is version-independent), or explicit `WA_PRO_STYLESHEET_URL`/`WA_PRO_LOADER_URL`; `demo.yml` injects `WA_PRO_CDN_BASE` from the repository variable of the same name for the published Pages demo. The release preflight gained a leak gate (override artifacts must not be versioned, no kit-like URLs in sources, ignore rules present in both `ignore.conf` and `.gitignore`).
+
+### Next-release check outcomes (carried from 3.0.0)
+- `WaCheckbox`/`WaSwitch` `.checked` two-way-binding workaround: carried forward unchanged — Blazor-runtime behavior, unaffected by WA 3.1.0.
+- Removed `initialize()` calls: still correct — no WA 3.1.0 element reintroduces an explicit init step.
+- Observer `stopObserver()`/`startObserver()` method names and `wa-relative-time` `update()`: re-verified against the 3.1.0 sources — still present; the allowlist stands.
+
 ## [3.0.0] — 2026-07-22
 
 Alignment with the Web Awesome 3.0.0 stable release, plus the browser-verified correctness sweep that made every `wa-*` event and imperative method actually work. See [MIGRATION-3.0.0.md](MIGRATION-3.0.0.md) for the migration guide.

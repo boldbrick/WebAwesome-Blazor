@@ -9,9 +9,9 @@
     <title>Web Awesome Blazor Bindings</title>
     <base href="/" />
 
-    <!-- Web Awesome assets; the version always matches the library version (kept in sync by the upgrade pipeline) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@awesome.me/webawesome@3.0.0/dist-cdn/styles/webawesome.css" />
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@@awesome.me/webawesome@3.0.0/dist-cdn/webawesome.loader.js"></script>
+    <!-- Web Awesome asset tags emitted from configuration (WebAwesomeOptions); statically rendered
+         into the initial document, version defaults to the library version -->
+    <WebAwesome.Blazor.Components.WebAwesomeAssets />
 
     <link rel="stylesheet" href="css/app.css" />
 

@@ -54,11 +54,6 @@ public class WaButtonGroup : ComponentBase
     /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
 
-    /// <summary>
-    /// The button group's theme variant. Defaults to <c>neutral</c> if not within another element with a variant.
-    /// </summary>
-    [Parameter] public WaVariant? Variant { get; set; }
-
     #endregion
 
     #region ------ Content ------
@@ -83,7 +78,6 @@ public class WaButtonGroup : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
         builder.AddAttributeIfNotNullOrEmpty(4, "label", Label);
         builder.AddAttributeIfNotNull(5, "orientation", Orientation?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(6, "variant", Variant?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __buttonGroupReference => Element = __buttonGroupReference);

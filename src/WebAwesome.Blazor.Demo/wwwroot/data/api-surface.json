@@ -1,11 +1,12 @@
 ﻿{
-    "version":  "3.0.0",
+    "version":  "3.1.0",
     "generated":  "Export-WaApiSurface.ps1",
     "components":  {
                        "wa-animated-image":  {
                                                  "className":  "WaAnimatedImage",
                                                  "since":  "2.0",
                                                  "status":  "stable",
+                                                 "pro":  false,
                                                  "attributes":  {
                                                                     "alt":  {
                                                                                 "type":  "string",
@@ -50,6 +51,7 @@
                                             "className":  "WaAnimation",
                                             "since":  "2.0",
                                             "status":  "stable",
+                                            "pro":  false,
                                             "attributes":  {
                                                                "delay":  {
                                                                              "type":  "number",
@@ -145,6 +147,7 @@
                                          "className":  "WaAvatar",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "image":  {
                                                                           "type":  "string",
@@ -195,6 +198,7 @@
                                         "className":  "WaBadge",
                                         "since":  "2.0",
                                         "status":  "stable",
+                                        "pro":  false,
                                         "attributes":  {
                                                            "appearance":  {
                                                                               "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
@@ -234,6 +238,7 @@
                                              "className":  "WaBreadcrumb",
                                              "since":  "2.0",
                                              "status":  "stable",
+                                             "pro":  false,
                                              "attributes":  {
                                                                 "label":  {
                                                                               "type":  "string",
@@ -259,6 +264,7 @@
                                                   "className":  "WaBreadcrumbItem",
                                                   "since":  "2.0",
                                                   "status":  "stable",
+                                                  "pro":  false,
                                                   "attributes":  {
                                                                      "href":  {
                                                                                   "type":  "string | undefined",
@@ -299,6 +305,7 @@
                                          "className":  "WaButton",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "appearance":  {
                                                                                "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027 | \u0027plain\u0027",
@@ -315,11 +322,6 @@
                                                                              "default":  null,
                                                                              "description":  "Tells the browser to download the linked file as this filename. Only used when `href` is present."
                                                                          },
-                                                            "form":  {
-                                                                         "type":  "string | null",
-                                                                         "default":  "null",
-                                                                         "description":  "The \"form owner\" to associate the button with. If omitted, the closest containing form will be used instead. The\nvalue of this attribute must be an id of a form in the same document or shadow root as the button."
-                                                                     },
                                                             "formaction":  {
                                                                                "type":  "string",
                                                                                "default":  null,
@@ -455,6 +457,7 @@
                                                "className":  "WaButtonGroup",
                                                "since":  "2.0",
                                                "status":  "stable",
+                                               "pro":  false,
                                                "attributes":  {
                                                                   "label":  {
                                                                                 "type":  "string",
@@ -465,12 +468,7 @@
                                                                                       "type":  "\u0027horizontal\u0027 | \u0027vertical\u0027",
                                                                                       "default":  "\u0027horizontal\u0027",
                                                                                       "description":  "The button group\u0027s orientation."
-                                                                                  },
-                                                                  "variant":  {
-                                                                                  "type":  "\u0027neutral\u0027 | \u0027brand\u0027 | \u0027success\u0027 | \u0027warning\u0027 | \u0027danger\u0027",
-                                                                                  "default":  "\u0027neutral\u0027",
-                                                                                  "description":  "The button group\u0027s theme variant. Defaults to `neutral` if not within another element with a variant."
-                                                                              }
+                                                                                  }
                                                               },
                                                "events":  {
 
@@ -489,6 +487,7 @@
                                           "className":  "WaCallout",
                                           "since":  "3.0",
                                           "status":  "stable",
+                                          "pro":  false,
                                           "attributes":  {
                                                              "appearance":  {
                                                                                 "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027plain\u0027 | \u0027filled-outlined\u0027",
@@ -525,9 +524,10 @@
                                        "className":  "WaCard",
                                        "since":  "2.0",
                                        "status":  "stable",
+                                       "pro":  false,
                                        "attributes":  {
                                                           "appearance":  {
-                                                                             "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027plain\u0027",
+                                                                             "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027 | \u0027plain\u0027",
                                                                              "default":  "\u0027outlined\u0027",
                                                                              "description":  "The card\u0027s visual appearance."
                                                                          },
@@ -578,6 +578,7 @@
                                            "className":  "WaCarousel",
                                            "since":  "2.2",
                                            "status":  "experimental",
+                                           "pro":  false,
                                            "attributes":  {
                                                               "autoplay":  {
                                                                                "type":  "boolean",
@@ -677,6 +678,7 @@
                                                 "className":  "WaCarouselItem",
                                                 "since":  "2.0",
                                                 "status":  "experimental",
+                                                "pro":  false,
                                                 "attributes":  {
 
                                                                },
@@ -697,17 +699,13 @@
                                                "className":  "WaColorPicker",
                                                "since":  "2.0",
                                                "status":  "stable",
+                                               "pro":  false,
                                                "attributes":  {
                                                                   "disabled":  {
                                                                                    "type":  "boolean",
                                                                                    "default":  "false",
                                                                                    "description":  "Disables the color picker."
                                                                                },
-                                                                  "form":  {
-                                                                               "type":  "null",
-                                                                               "default":  "null",
-                                                                               "description":  "By default, form controls are associated with the nearest containing `\u003cform\u003e` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work."
-                                                                           },
                                                                   "format":  {
                                                                                  "type":  "\u0027hex\u0027 | \u0027rgb\u0027 | \u0027hsl\u0027 | \u0027hsv\u0027",
                                                                                  "default":  "\u0027hex\u0027",
@@ -889,10 +887,211 @@
                                                                 "trigger"
                                                             ]
                                            },
+                       "wa-combobox":  {
+                                           "className":  "WaCombobox",
+                                           "since":  "3.1",
+                                           "status":  "experimental",
+                                           "pro":  true,
+                                           "attributes":  {
+                                                              "allow-custom-value":  {
+                                                                                         "type":  "boolean",
+                                                                                         "default":  "false",
+                                                                                         "description":  "When true, allows the user to enter a value that doesn\u0027t match any of the options. Only applies to single-select\ncomboboxes. When false, the combobox will only accept values that match an option."
+                                                                                     },
+                                                              "appearance":  {
+                                                                                 "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
+                                                                                 "default":  "\u0027outlined\u0027",
+                                                                                 "description":  "The combobox\u0027s visual appearance."
+                                                                             },
+                                                              "autocomplete":  {
+                                                                                   "type":  "\u0027list\u0027 | \u0027none\u0027",
+                                                                                   "default":  "\u0027list\u0027",
+                                                                                   "description":  "The autocomplete behavior of the combobox.\n- `list`: When the popup is triggered, it presents suggested values that complete or logically correspond to the\n  characters typed in the combobox. The character string the user has typed will become the value of the combobox\n  unless the user selects a value in the popup.\n- `none`: The combobox is editable, and when the popup is triggered, the suggested values it contains are the same\n  regardless of the characters typed in the combobox."
+                                                                               },
+                                                              "disabled":  {
+                                                                               "type":  "boolean",
+                                                                               "default":  "false",
+                                                                               "description":  "Disables the combobox control."
+                                                                           },
+                                                              "hint":  {
+                                                                           "type":  "string",
+                                                                           "default":  "\u0027\u0027",
+                                                                           "description":  "The combobox\u0027s hint. If you need to display HTML, use the `hint` slot instead."
+                                                                       },
+                                                              "label":  {
+                                                                            "type":  "string",
+                                                                            "default":  "\u0027\u0027",
+                                                                            "description":  "The combobox\u0027s label. If you need to display HTML, use the `label` slot instead."
+                                                                        },
+                                                              "max-options-visible":  {
+                                                                                          "type":  "number",
+                                                                                          "default":  "3",
+                                                                                          "description":  "The maximum number of selected options to show when `multiple` is true. After the maximum, \"+n\" will be shown to\nindicate the number of additional items that are selected. Set to 0 to remove the limit."
+                                                                                      },
+                                                              "multiple":  {
+                                                                               "type":  "boolean",
+                                                                               "default":  "false",
+                                                                               "description":  "Allows more than one option to be selected."
+                                                                           },
+                                                              "name":  {
+                                                                           "type":  "string",
+                                                                           "default":  "\u0027\u0027",
+                                                                           "description":  "The name of the combobox, submitted as a name/value pair with form data."
+                                                                       },
+                                                              "open":  {
+                                                                           "type":  "boolean",
+                                                                           "default":  "false",
+                                                                           "description":  "Indicates whether or not the combobox is open. You can toggle this attribute to show and hide the menu, or you can\nuse the `show()` and `hide()` methods and this attribute will reflect the combobox\u0027s open state."
+                                                                       },
+                                                              "pill":  {
+                                                                           "type":  "boolean",
+                                                                           "default":  "false",
+                                                                           "description":  "Draws a pill-style combobox with rounded edges."
+                                                                       },
+                                                              "placeholder":  {
+                                                                                  "type":  "string",
+                                                                                  "default":  "\u0027\u0027",
+                                                                                  "description":  "Placeholder text to show as a hint when the combobox is empty."
+                                                                              },
+                                                              "placement":  {
+                                                                                "type":  "\u0027top\u0027 | \u0027bottom\u0027",
+                                                                                "default":  "\u0027bottom\u0027",
+                                                                                "description":  "The preferred placement of the combobox\u0027s menu. Note that the actual placement may vary as needed to keep the\nlistbox inside of the viewport."
+                                                                            },
+                                                              "required":  {
+                                                                               "type":  "boolean",
+                                                                               "default":  "false",
+                                                                               "description":  "The combobox\u0027s required attribute."
+                                                                           },
+                                                              "size":  {
+                                                                           "type":  "\u0027small\u0027 | \u0027medium\u0027 | \u0027large\u0027",
+                                                                           "default":  "\u0027medium\u0027",
+                                                                           "description":  "The combobox\u0027s size."
+                                                                       },
+                                                              "value":  {
+                                                                            "type":  null,
+                                                                            "default":  null,
+                                                                            "description":  "The combobox\u0027s value. This will be a string for single select or an array for multi-select."
+                                                                        },
+                                                              "with-clear":  {
+                                                                                 "type":  "boolean",
+                                                                                 "default":  "false",
+                                                                                 "description":  "Adds a clear button when the combobox is not empty."
+                                                                             },
+                                                              "with-hint":  {
+                                                                                "type":  "boolean",
+                                                                                "default":  "false",
+                                                                                "description":  "Used for SSR purposes when hint is slotted in. Will show the hint on first render."
+                                                                            },
+                                                              "with-label":  {
+                                                                                 "type":  "boolean",
+                                                                                 "default":  "false",
+                                                                                 "description":  "Used for SSR purposes when a label is slotted in. Will show the label on first render."
+                                                                             }
+                                                          },
+                                           "events":  {
+                                                          "blur":  {
+                                                                       "type":  null,
+                                                                       "eventName":  "BlurEvent",
+                                                                       "description":  "Emitted when the control loses focus."
+                                                                   },
+                                                          "focus":  {
+                                                                        "type":  null,
+                                                                        "eventName":  "FocusEvent",
+                                                                        "description":  "Emitted when the control gains focus."
+                                                                    },
+                                                          "change":  {
+                                                                         "type":  "Event",
+                                                                         "eventName":  "ChangeEvent",
+                                                                         "description":  "Emitted when the control\u0027s value changes."
+                                                                     },
+                                                          "input":  {
+                                                                        "type":  "InputEvent",
+                                                                        "eventName":  "InputEvent",
+                                                                        "description":  "Emitted when the control receives input."
+                                                                    },
+                                                          "wa-after-hide":  {
+                                                                                "type":  null,
+                                                                                "eventName":  "WaAfterHideEvent",
+                                                                                "description":  "Emitted after the combobox\u0027s menu closes and all animations are complete."
+                                                                            },
+                                                          "wa-after-show":  {
+                                                                                "type":  null,
+                                                                                "eventName":  "WaAfterShowEvent",
+                                                                                "description":  "Emitted after the combobox\u0027s menu opens and all animations are complete."
+                                                                            },
+                                                          "wa-clear":  {
+                                                                           "type":  null,
+                                                                           "eventName":  "WaClearEvent",
+                                                                           "description":  "Emitted when the control\u0027s value is cleared."
+                                                                       },
+                                                          "wa-hide":  {
+                                                                          "type":  null,
+                                                                          "eventName":  "WaHideEvent",
+                                                                          "description":  "Emitted when the combobox\u0027s menu closes."
+                                                                      },
+                                                          "wa-invalid":  {
+                                                                             "type":  null,
+                                                                             "eventName":  "WaInvalidEvent",
+                                                                             "description":  "Emitted when the form control has been checked for validity and its constraints aren\u0027t satisfied."
+                                                                         },
+                                                          "wa-show":  {
+                                                                          "type":  null,
+                                                                          "eventName":  "WaShowEvent",
+                                                                          "description":  "Emitted when the combobox\u0027s menu opens."
+                                                                      }
+                                                      },
+                                           "slots":  {
+                                                         "(default)":  "The listbox options. Must be `\u003cwa-option\u003e` elements. You can use `\u003cwa-divider\u003e` to group items visually.",
+                                                         "clear-icon":  "An icon to use in lieu of the default clear icon.",
+                                                         "end":  "An element, such as `\u003cwa-icon\u003e`, placed at the end of the combobox.",
+                                                         "expand-icon":  "The icon to show when the control is expanded and collapsed. Rotates on open and close.",
+                                                         "hint":  "Text that describes how to use the input. Alternatively, you can use the `hint` attribute.",
+                                                         "label":  "The input\u0027s label. Alternatively, you can use the `label` attribute.",
+                                                         "start":  "An element, such as `\u003cwa-icon\u003e`, placed at the start of the combobox."
+                                                     },
+                                           "methods":  {
+                                                           "blur":  {
+                                                                        "signature":  "blur() =\u003e void",
+                                                                        "description":  "Removes focus from the control."
+                                                                    },
+                                                           "focus":  {
+                                                                         "signature":  "focus(options?: FocusOptions) =\u003e void",
+                                                                         "description":  "Sets focus on the control."
+                                                                     },
+                                                           "hide":  {
+                                                                        "signature":  "hide() =\u003e void",
+                                                                        "description":  "Hides the listbox."
+                                                                    },
+                                                           "show":  {
+                                                                        "signature":  "show() =\u003e void",
+                                                                        "description":  "Shows the listbox."
+                                                                    }
+                                                       },
+                                           "cssParts":  [
+                                                            "clear-button",
+                                                            "combobox",
+                                                            "combobox-input",
+                                                            "end",
+                                                            "expand-icon",
+                                                            "form-control",
+                                                            "form-control-input",
+                                                            "form-control-label",
+                                                            "hint",
+                                                            "listbox",
+                                                            "start",
+                                                            "tag",
+                                                            "tag__content",
+                                                            "tag__remove-button",
+                                                            "tag__remove-button__base",
+                                                            "tags"
+                                                        ]
+                                       },
                        "wa-comparison":  {
                                              "className":  "WaComparison",
                                              "since":  "2.0",
                                              "status":  "stable",
+                                             "pro":  false,
                                              "attributes":  {
                                                                 "position":  {
                                                                                  "type":  "number",
@@ -927,6 +1126,7 @@
                                               "className":  "WaCopyButton",
                                               "since":  "2.7",
                                               "status":  "experimental",
+                                              "pro":  false,
                                               "attributes":  {
                                                                  "copy-label":  {
                                                                                     "type":  "string",
@@ -1004,6 +1204,7 @@
                                           "className":  "WaDetails",
                                           "since":  "2.0",
                                           "status":  "stable",
+                                          "pro":  false,
                                           "attributes":  {
                                                              "appearance":  {
                                                                                 "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027 | \u0027plain\u0027",
@@ -1086,6 +1287,7 @@
                                          "className":  "WaDialog",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "label":  {
                                                                           "type":  "string",
@@ -1154,6 +1356,7 @@
                                           "className":  "WaDivider",
                                           "since":  "2.0",
                                           "status":  "stable",
+                                          "pro":  false,
                                           "attributes":  {
                                                              "orientation":  {
                                                                                  "type":  "\u0027horizontal\u0027 | \u0027vertical\u0027",
@@ -1178,6 +1381,7 @@
                                          "className":  "WaDrawer",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "label":  {
                                                                           "type":  "string",
@@ -1251,6 +1455,7 @@
                                            "className":  "WaDropdown",
                                            "since":  "2.0",
                                            "status":  "stable",
+                                           "pro":  false,
                                            "attributes":  {
                                                               "distance":  {
                                                                                "type":  "number",
@@ -1321,6 +1526,7 @@
                                                 "className":  "WaDropdownItem",
                                                 "since":  "3.0",
                                                 "status":  "experimental",
+                                                "pro":  false,
                                                 "attributes":  {
                                                                    "disabled":  {
                                                                                     "type":  "boolean",
@@ -1394,6 +1600,7 @@
                                                "className":  "WaFormatBytes",
                                                "since":  "2.0",
                                                "status":  "stable",
+                                               "pro":  false,
                                                "attributes":  {
                                                                   "display":  {
                                                                                   "type":  "\u0027long\u0027 | \u0027short\u0027 | \u0027narrow\u0027",
@@ -1428,6 +1635,7 @@
                                               "className":  "WaFormatDate",
                                               "since":  "2.0",
                                               "status":  "stable",
+                                              "pro":  false,
                                               "attributes":  {
                                                                  "date":  {
                                                                               "type":  "Date | string",
@@ -1507,6 +1715,7 @@
                                                 "className":  "WaFormatNumber",
                                                 "since":  "2.0",
                                                 "status":  "stable",
+                                                "pro":  false,
                                                 "attributes":  {
                                                                    "currency":  {
                                                                                     "type":  "string",
@@ -1576,17 +1785,13 @@
                                            "className":  "WaCheckbox",
                                            "since":  "2.0",
                                            "status":  "stable",
+                                           "pro":  false,
                                            "attributes":  {
                                                               "disabled":  {
                                                                                "type":  "boolean",
                                                                                "default":  "false",
                                                                                "description":  "Disables the checkbox."
                                                                            },
-                                                              "form":  {
-                                                                           "type":  "null",
-                                                                           "default":  "null",
-                                                                           "description":  "By default, form controls are associated with the nearest containing `\u003cform\u003e` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work."
-                                                                       },
                                                               "hint":  {
                                                                            "type":  "string",
                                                                            "default":  "\u0027\u0027",
@@ -1686,6 +1891,7 @@
                                        "className":  "WaIcon",
                                        "since":  "2.0",
                                        "status":  "stable",
+                                       "pro":  false,
                                        "attributes":  {
                                                           "auto-width":  {
                                                                              "type":  "boolean",
@@ -1755,6 +1961,7 @@
                                           "className":  "WaInclude",
                                           "since":  "2.0",
                                           "status":  "stable",
+                                          "pro":  false,
                                           "attributes":  {
                                                              "allow-scripts":  {
                                                                                    "type":  "boolean",
@@ -1798,6 +2005,7 @@
                                         "className":  "WaInput",
                                         "since":  "2.0",
                                         "status":  "stable",
+                                        "pro":  false,
                                         "attributes":  {
                                                            "appearance":  {
                                                                               "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
@@ -1829,11 +2037,6 @@
                                                                                 "default":  null,
                                                                                 "description":  "Used to customize the label or icon of the Enter key on virtual keyboards."
                                                                             },
-                                                           "form":  {
-                                                                        "type":  "null",
-                                                                        "default":  "null",
-                                                                        "description":  "By default, form controls are associated with the nearest containing `\u003cform\u003e` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work."
-                                                                    },
                                                            "hint":  {
                                                                         "type":  "string",
                                                                         "default":  "\u0027\u0027",
@@ -2045,6 +2248,7 @@
                                                         "className":  "WaIntersectionObserver",
                                                         "since":  "2.0",
                                                         "status":  "stable",
+                                                        "pro":  false,
                                                         "attributes":  {
                                                                            "disabled":  {
                                                                                             "type":  "boolean",
@@ -2098,6 +2302,7 @@
                                                     "className":  "WaMutationObserver",
                                                     "since":  "2.0",
                                                     "status":  "stable",
+                                                    "pro":  false,
                                                     "attributes":  {
                                                                        "attr":  {
                                                                                     "type":  "string",
@@ -2151,6 +2356,7 @@
                                          "className":  "WaOption",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "disabled":  {
                                                                              "type":  "boolean",
@@ -2195,6 +2401,7 @@
                                        "className":  "WaPage",
                                        "since":  "3.0",
                                        "status":  "stable",
+                                       "pro":  true,
                                        "attributes":  {
                                                           "disable-navigation-toggle":  {
                                                                                             "type":  "boolean",
@@ -2254,7 +2461,11 @@
                                                        "toggleNavigation":  {
                                                                                 "signature":  "toggleNavigation() =\u003e void",
                                                                                 "description":  "Toggles the mobile navigation drawer"
-                                                                            }
+                                                                            },
+                                                       "visiblePixelsInViewport":  {
+                                                                                       "signature":  "visiblePixelsInViewport(element: HTMLElement | null) =\u003e void",
+                                                                                       "description":  "https://stackoverflow.com/a/26831113\nThis prevents awkward gaps when scrolling the page and the aside / menu dont \"fill\" the gaps."
+                                                                                   }
                                                    },
                                        "cssParts":  [
                                                         "aside",
@@ -2282,6 +2493,7 @@
                                           "className":  "WaPopover",
                                           "since":  "3.0",
                                           "status":  "stable",
+                                          "pro":  false,
                                           "attributes":  {
                                                              "distance":  {
                                                                               "type":  "number",
@@ -2361,6 +2573,7 @@
                                         "className":  "WaPopup",
                                         "since":  "2.0",
                                         "status":  "stable",
+                                        "pro":  false,
                                         "attributes":  {
                                                            "active":  {
                                                                           "type":  "boolean",
@@ -2500,6 +2713,7 @@
                                                "className":  "WaProgressBar",
                                                "since":  "2.0",
                                                "status":  "stable",
+                                               "pro":  false,
                                                "attributes":  {
                                                                   "indeterminate":  {
                                                                                         "type":  "boolean",
@@ -2536,6 +2750,7 @@
                                                 "className":  "WaProgressRing",
                                                 "since":  "2.0",
                                                 "status":  "stable",
+                                                "pro":  false,
                                                 "attributes":  {
                                                                    "label":  {
                                                                                  "type":  "string",
@@ -2566,6 +2781,7 @@
                                           "className":  "WaQrCode",
                                           "since":  "2.0",
                                           "status":  "stable",
+                                          "pro":  false,
                                           "attributes":  {
                                                              "background":  {
                                                                                 "type":  "string",
@@ -2620,6 +2836,7 @@
                                         "className":  "WaRadio",
                                         "since":  "2.0",
                                         "status":  "stable",
+                                        "pro":  false,
                                         "attributes":  {
                                                            "appearance":  {
                                                                               "type":  "\u0027default\u0027 | \u0027button\u0027",
@@ -2631,11 +2848,6 @@
                                                                             "default":  "false",
                                                                             "description":  "Disables the radio."
                                                                         },
-                                                           "form":  {
-                                                                        "type":  "string | null",
-                                                                        "default":  "null",
-                                                                        "description":  "The string pointing to a form\u0027s id."
-                                                                    },
                                                            "size":  {
                                                                         "type":  "\u0027small\u0027 | \u0027medium\u0027 | \u0027large\u0027",
                                                                         "default":  "\u0027medium\u0027",
@@ -2675,6 +2887,7 @@
                                               "className":  "WaRadioGroup",
                                               "since":  "2.0",
                                               "status":  "stable",
+                                              "pro":  false,
                                               "attributes":  {
                                                                  "disabled":  {
                                                                                   "type":  "boolean",
@@ -2767,6 +2980,7 @@
                                          "className":  "WaRating",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "disabled":  {
                                                                              "type":  "boolean",
@@ -2842,6 +3056,7 @@
                                                 "className":  "WaRelativeTime",
                                                 "since":  "2.0",
                                                 "status":  "stable",
+                                                "pro":  false,
                                                 "attributes":  {
                                                                    "date":  {
                                                                                 "type":  "Date | string",
@@ -2881,6 +3096,7 @@
                                                   "className":  "WaResizeObserver",
                                                   "since":  "2.0",
                                                   "status":  "stable",
+                                                  "pro":  false,
                                                   "attributes":  {
                                                                      "disabled":  {
                                                                                       "type":  "boolean",
@@ -2909,6 +3125,7 @@
                                            "className":  "WaScroller",
                                            "since":  "3.0",
                                            "status":  "stable",
+                                           "pro":  false,
                                            "attributes":  {
                                                               "orientation":  {
                                                                                   "type":  "\u0027horizontal\u0027 | \u0027vertical\u0027",
@@ -2943,6 +3160,7 @@
                                          "className":  "WaSelect",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "appearance":  {
                                                                                "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
@@ -2954,11 +3172,6 @@
                                                                              "default":  "false",
                                                                              "description":  "Disables the select control."
                                                                          },
-                                                            "form":  {
-                                                                         "type":  "null",
-                                                                         "default":  "null",
-                                                                         "description":  "By default, form controls are associated with the nearest containing `\u003cform\u003e` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work."
-                                                                     },
                                                             "hint":  {
                                                                          "type":  "string",
                                                                          "default":  "\u0027\u0027",
@@ -3137,6 +3350,7 @@
                                            "className":  "WaSkeleton",
                                            "since":  "2.0",
                                            "status":  "stable",
+                                           "pro":  false,
                                            "attributes":  {
                                                               "effect":  {
                                                                              "type":  "\u0027pulse\u0027 | \u0027sheen\u0027 | \u0027none\u0027",
@@ -3161,6 +3375,7 @@
                                          "className":  "WaSlider",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "autofocus":  {
                                                                               "type":  "boolean",
@@ -3172,11 +3387,6 @@
                                                                              "default":  "false",
                                                                              "description":  "Disables the slider."
                                                                          },
-                                                            "form":  {
-                                                                         "type":  "null",
-                                                                         "default":  "null",
-                                                                         "description":  "The form to associate this control with. If omitted, the closest containing `\u003cform\u003e` will be used. The value of\nthis attribute must be an ID of a form in the same document or shadow root."
-                                                                     },
                                                             "hint":  {
                                                                          "type":  "string",
                                                                          "default":  "\u0027\u0027",
@@ -3345,6 +3555,7 @@
                                           "className":  "WaSpinner",
                                           "since":  "2.0",
                                           "status":  "stable",
+                                          "pro":  false,
                                           "attributes":  {
 
                                                          },
@@ -3365,6 +3576,7 @@
                                               "className":  "WaSplitPanel",
                                               "since":  "2.0",
                                               "status":  "stable",
+                                              "pro":  false,
                                               "attributes":  {
                                                                  "disabled":  {
                                                                                   "type":  "boolean",
@@ -3428,17 +3640,13 @@
                                          "className":  "WaSwitch",
                                          "since":  "2.0",
                                          "status":  "stable",
+                                         "pro":  false,
                                          "attributes":  {
                                                             "disabled":  {
                                                                              "type":  "boolean",
                                                                              "default":  "false",
                                                                              "description":  "Disables the switch."
                                                                          },
-                                                            "form":  {
-                                                                         "type":  "null",
-                                                                         "default":  "null",
-                                                                         "description":  "By default, form controls are associated with the nearest containing `\u003cform\u003e` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work."
-                                                                     },
                                                             "hint":  {
                                                                          "type":  "string",
                                                                          "default":  "\u0027\u0027",
@@ -3537,6 +3745,7 @@
                                       "className":  "WaTab",
                                       "since":  "2.0",
                                       "status":  "stable",
+                                      "pro":  false,
                                       "attributes":  {
                                                          "disabled":  {
                                                                           "type":  "boolean",
@@ -3566,6 +3775,7 @@
                                             "className":  "WaTabGroup",
                                             "since":  "2.0",
                                             "status":  "stable",
+                                            "pro":  false,
                                             "attributes":  {
                                                                "activation":  {
                                                                                   "type":  "\u0027auto\u0027 | \u0027manual\u0027",
@@ -3622,6 +3832,7 @@
                                             "className":  "WaTabPanel",
                                             "since":  "2.0",
                                             "status":  "stable",
+                                            "pro":  false,
                                             "attributes":  {
                                                                "active":  {
                                                                               "type":  "boolean",
@@ -3651,6 +3862,7 @@
                                       "className":  "WaTag",
                                       "since":  "2.0",
                                       "status":  "stable",
+                                      "pro":  false,
                                       "attributes":  {
                                                          "appearance":  {
                                                                             "type":  "\u0027accent\u0027 | \u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
@@ -3702,6 +3914,7 @@
                                            "className":  "WaTextarea",
                                            "since":  "2.0",
                                            "status":  "stable",
+                                           "pro":  false,
                                            "attributes":  {
                                                               "appearance":  {
                                                                                  "type":  "\u0027filled\u0027 | \u0027outlined\u0027 | \u0027filled-outlined\u0027",
@@ -3738,11 +3951,6 @@
                                                                                    "default":  null,
                                                                                    "description":  "Used to customize the label or icon of the Enter key on virtual keyboards."
                                                                                },
-                                                              "form":  {
-                                                                           "type":  "null",
-                                                                           "default":  "null",
-                                                                           "description":  "By default, form controls are associated with the nearest containing `\u003cform\u003e` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work."
-                                                                       },
                                                               "hint":  {
                                                                            "type":  "string",
                                                                            "default":  "\u0027\u0027",
@@ -3871,7 +4079,7 @@
                                                                      },
                                                            "scrollPosition":  {
                                                                                   "signature":  "scrollPosition(position?: { top?: number; left?: number }) =\u003e { top: number; left: number } | undefined",
-                                                                                  "description":  "The textarea\u0027s scroll position."
+                                                                                  "description":  "Gets or sets the textarea\u0027s scroll position."
                                                                               },
                                                            "select":  {
                                                                           "signature":  "select() =\u003e void",
@@ -3898,6 +4106,7 @@
                                           "className":  "WaTooltip",
                                           "since":  "2.0",
                                           "status":  "stable",
+                                          "pro":  false,
                                           "attributes":  {
                                                              "disabled":  {
                                                                               "type":  "boolean",
@@ -3996,6 +4205,7 @@
                                        "className":  "WaTree",
                                        "since":  "2.0",
                                        "status":  "stable",
+                                       "pro":  false,
                                        "attributes":  {
                                                           "selection":  {
                                                                             "type":  "\u0027single\u0027 | \u0027multiple\u0027 | \u0027leaf\u0027",
@@ -4026,6 +4236,7 @@
                                             "className":  "WaTreeItem",
                                             "since":  "2.0",
                                             "status":  "stable",
+                                            "pro":  false,
                                             "attributes":  {
                                                                "disabled":  {
                                                                                 "type":  "boolean",
@@ -4112,6 +4323,7 @@
                                                  "className":  "WaZoomableFrame",
                                                  "since":  "3.0",
                                                  "status":  "stable",
+                                                 "pro":  false,
                                                  "attributes":  {
                                                                     "allowfullscreen":  {
                                                                                             "type":  "boolean",

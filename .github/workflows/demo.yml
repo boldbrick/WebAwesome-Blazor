@@ -30,6 +30,21 @@ jobs:
             9.0.x
             10.0.x
 
+      # Web Awesome Pro assets for the published demo: set the WA_PRO_CDN_BASE repository
+      # VARIABLE to your kit base URL with a literal {version} placeholder, e.g.
+      #   https://ka-p.webawesome.com/kit/<kit>/webawesome@{version}
+      # The library substitutes its own bound WA version at runtime, so the variable is set
+      # once and survives releases untouched. Deliberately a variable, not a secret - the URL
+      # ends up verbatim in the published page anyway, and Web Awesome kits are domain-locked.
+      # When unset, the demo uses the free CDN and Pro components render inert (their pages
+      # carry the Pro badge).
+      - name: Configure Pro assets (optional)
+        if: vars.WA_PRO_CDN_BASE != ''
+        shell: pwsh
+        env:
+          WA_PRO_CDN_BASE: ${{ vars.WA_PRO_CDN_BASE }}
+        run: ./tools/demo/Set-WaProAssets.ps1
+
       - name: Publish demo
         working-directory: src
         run: dotnet publish WebAwesome.Blazor.Demo/WebAwesome.Blazor.Demo.csproj /p:Configuration=Release
