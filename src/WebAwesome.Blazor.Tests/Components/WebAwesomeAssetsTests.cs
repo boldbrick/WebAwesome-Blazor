@@ -26,7 +26,7 @@ public class WebAwesomeAssetsTests
         var version = options.ResolveVersion();
 
         // Assert - the library version tracks the bound Web Awesome release
-        Assert.Equal("3.1.0", version);
+        Assert.Equal(BoundWaVersion.Value, version);
     }
 
     [Fact]
@@ -39,20 +39,20 @@ public class WebAwesomeAssetsTests
         var url = options.ResolveStylesheetUrl();
 
         // Assert
-        Assert.Equal("https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.1.0/dist-cdn/styles/webawesome.css", url);
+        Assert.Equal($"https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@{BoundWaVersion.Value}/dist-cdn/styles/webawesome.css", url);
     }
 
     [Fact]
     public void ResolveLoaderUrl_ExplicitVersion_OverridesLibraryVersion()
     {
-        // Arrange
-        var options = new WebAwesomeOptions { Version = "3.1.0" };
+        // Arrange - a deliberately fictitious version proves the explicit value wins over the library version
+        var options = new WebAwesomeOptions { Version = "99.0.0-explicit" };
 
         // Act
         var url = options.ResolveLoaderUrl();
 
         // Assert
-        Assert.Equal("https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.1.0/dist-cdn/webawesome.loader.js", url);
+        Assert.Equal("https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@99.0.0-explicit/dist-cdn/webawesome.loader.js", url);
     }
 
     [Fact]
@@ -126,11 +126,11 @@ public class WebAwesomeAssetsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddWebAwesome(options => options.Version = "3.2.0");
+        services.AddWebAwesome(options => options.Version = "99.0.0-explicit");
         var provider = services.BuildServiceProvider();
 
         // Assert
-        Assert.Equal("3.2.0", provider.GetRequiredService<WebAwesomeOptions>().ResolveVersion());
+        Assert.Equal("99.0.0-explicit", provider.GetRequiredService<WebAwesomeOptions>().ResolveVersion());
     }
 
     [Fact]
