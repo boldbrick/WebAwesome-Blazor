@@ -3,6 +3,8 @@
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <!-- multi-targeted library: packed, never published (solution-level dotnet publish would fail with NETSDK1129) -->
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <!-- NuGet package metadata -->

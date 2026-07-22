@@ -254,8 +254,5 @@ public class WaDetails : ComponentBase
         return string.Join(' ', classes);
     }
 
-    /// <summary>
-    /// Handles toggle events from the Web Awesome component
-    /// </summary>
     #endregion
 }

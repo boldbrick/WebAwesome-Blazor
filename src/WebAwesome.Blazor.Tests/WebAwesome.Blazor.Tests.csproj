@@ -3,6 +3,8 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <!-- BL0005: tests legitimately set [Parameter] properties directly when constructing components outside a renderer -->
+    <NoWarn>$(NoWarn);BL0005</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +14,8 @@
     <PackageReference Include="Moq" />
     <PackageReference Include="PublicApiGenerator" />
     <PackageReference Include="bunit" />
+    <!-- transitive via bunit; direct reference lifts the vulnerable 1.2.0 (see Directory.Packages.props) -->
+    <PackageReference Include="AngleSharp" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.JSInterop" />
