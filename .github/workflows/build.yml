@@ -2,11 +2,13 @@ name: build
 
 # verification only: branch pushes and PRs on the mirror's main line and train subtrunks
 # (GitSync maps Plastic /main -> git master, /main/WA-x.y -> git master-WA-x.y).
+# GitSync flattens hierarchy with dashes, so task branches (master-WA-x.y-WAB-n) would also
+# match master-WA-* - the negation excludes them from push builds.
 # Releases are cut by release.yml on wa-blazor-* tags - this workflow never packs for
 # publication and holds no publishing permissions.
 on:
   push:
-    branches: [ "master", "master-WA-*" ]
+    branches: [ "master", "master-WA-*", "!master-WA-*-WAB-*" ]
   pull_request:
     branches: [ "master", "master-WA-*" ]
   workflow_dispatch:
