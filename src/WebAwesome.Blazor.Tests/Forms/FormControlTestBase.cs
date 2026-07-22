@@ -16,7 +16,7 @@ namespace WebAwesome.Blazor.Tests.Forms;
 /// the per-control test classes in this namespace. Mirrors the pattern established by
 /// Base/EditFormIntegrationTests.cs for WaInput and WaCheckbox.
 /// </summary>
-public abstract class FormControlTestBase : TestContext
+public abstract class FormControlTestBase : BunitContext
 {
     /// <summary>
     /// The module path registered by <see cref="WebAwesomeJSInterop"/>, mocked via <see cref="Bunit.JSInterop"/>
@@ -53,7 +53,7 @@ public abstract class FormControlTestBase : TestContext
         Action<EditContext>? onEditContext = null)
         where TComponent : IComponent
     {
-        return RenderComponent<EditForm>(parameters => parameters
+        return Render<EditForm>(parameters => parameters
             .Add(p => p.Model, model)
             .Add(p => p.ChildContent, (EditContext editContext) => builder =>
             {

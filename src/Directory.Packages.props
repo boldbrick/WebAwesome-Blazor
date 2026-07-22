@@ -11,13 +11,12 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
-    <!-- bunit 2.x is a major API rewrite; migrating the test suite to it is deliberate follow-up work -->
-    <PackageVersion Include="bunit" Version="1.40.0" />
-    <!-- transitive via bunit; referenced directly to lift it past the mXSS advisory CVE-2026-54570 (NU1902, fixed in 1.5.0) -->
+    <PackageVersion Include="bunit" Version="2.7.2" />
+    <!-- transitive via bunit (brings 1.4.0); referenced directly to lift it past the mXSS advisory CVE-2026-54570 (NU1902, fixed in 1.5.0) -->
     <PackageVersion Include="AngleSharp" Version="1.5.2" />
   </ItemGroup>
   <!-- framework-aligned packages per target framework.

@@ -19,7 +19,7 @@ namespace WebAwesome.Blazor.Tests.Base;
 /// validation CSS class merging, and the setCustomValidity JS interop round-trip.
 /// Rendered with bUnit against the real EditForm/EditContext plumbing.
 /// </summary>
-public class EditFormIntegrationTests : TestContext
+public class EditFormIntegrationTests : BunitContext
 {
     [Fact]
     public void WaInput_InEditForm_RendersBoundValueAndValidClass()
@@ -96,7 +96,7 @@ public class EditFormIntegrationTests : TestContext
     public void WaInput_WithoutValueExpression_ThrowsLikeBuiltInInputs()
     {
         // bare usage outside @bind-Value must fail exactly like Blazor's InputText
-        var exception = Assert.ThrowsAny<Exception>(() => RenderComponent<WaInput>());
+        var exception = Assert.ThrowsAny<Exception>(() => Render<WaInput>());
         Assert.Contains("ValueExpression", exception.Message);
     }
 
@@ -163,7 +163,7 @@ public class EditFormIntegrationTests : TestContext
 
     private IRenderedComponent<EditForm> RenderForm(TestModel model, Action<EditContext>? onEditContext = null)
     {
-        return RenderComponent<EditForm>(parameters => parameters
+        return Render<EditForm>(parameters => parameters
             .Add(p => p.Model, model)
             .Add(p => p.ChildContent, (EditContext editContext) => builder =>
             {
@@ -185,7 +185,7 @@ public class EditFormIntegrationTests : TestContext
 
     private IRenderedComponent<EditForm> RenderCheckboxForm(TestModel model)
     {
-        return RenderComponent<EditForm>(parameters => parameters
+        return Render<EditForm>(parameters => parameters
             .Add(p => p.Model, model)
             .Add(p => p.ChildContent, (EditContext editContext) => builder =>
             {

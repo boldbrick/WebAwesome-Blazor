@@ -93,7 +93,7 @@ public class WaRangeEditFormTests : FormControlTestBase
     {
         // bare usage outside @bind-Value must fail exactly like Blazor's built-in inputs, for the
         // decimal-valued control family (WaRange/WaRating)
-        var exception = Assert.ThrowsAny<Exception>(() => RenderComponent<WaRange>());
+        var exception = Assert.ThrowsAny<Exception>(() => Render<WaRange>());
         Assert.Contains("ValueExpression", exception.Message);
     }
 
