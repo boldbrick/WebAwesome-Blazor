@@ -16,6 +16,8 @@ Thanks for helping improve **Web Awesome Blazor Bindings**! This document explai
 
 **Monotonic promotion rule**: once `main` has merged from `wa-N+1`, it no longer accepts merges from `wa-N`.
 
+**New-train rule**: a new subtrunk (`main/wa-3.<x+1>`, `main/wa-4.0`) is branched **from `main`**, never from the previous subtrunk, and only after the previous train's release has been promoted to `main`. A pending patch release (e.g., `3.0.1` on `main/wa-3.0`) is the one allowed exception; once released to `main`, it reaches newer subtrunks by merging `main` down into them.
+
 ## What to contribute
 - New component wrappers (one per WA component)
 - Bug fixes or parity updates for existing wrappers

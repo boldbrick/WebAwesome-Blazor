@@ -46,6 +46,8 @@ To walk the whole train (e.g. 3.0.0 → 3.10.0), run `/wa-upgrade next --publish
 
 Phase numbers match the skill (0–6). `<major.minor>` is always taken from the **target** version; when a new train starts, the subtrunk, WAB epic, and `docs\prompts\WA-<major.minor>\` folder are created as part of preflight/ticketing. Versions are compared by SemVer precedence (`3.0.0-beta.6 < 3.0.0`, `3.2.0 < 3.10.0`).
 
+A new train's subtrunk is created **off `/main`**, and only behind the **release gate**: the previous train must have been released first (its subtrunk head promoted to `/main`); otherwise the pipeline refuses to start the new train. Pending *patch* work (`x.y.z` on top of an already-released version) on the old subtrunk is the one allowed exception — a released patch is propagated to newer trains by merging `/main` down into the newer subtrunk, never subtrunk-to-subtrunk.
+
 0. **Preflight** — clean Plastic workspace, on the subtrunk (`/main/WA-<major.minor>`) or this upgrade's own task branch (resume), baseline build + tests green, target version validated against the gradual-upgrade rule.
 1. **Ticket & branch** (idempotent — reruns reuse existing) — JIRA Task `WA bindings for <version>` under the train's epic (e.g. WAB-1) with a `Source tag:` link, moved to In Progress; Plastic task branch `/main/WA-<major.minor>/WAB-<n>` created and switched to.
 2. **Ingest & analyze** — surfaces exported for current and target versions, change report generated, plan document written to `docs\prompts\WA-<major.minor>\upgrade-v<from>-to-v<to>-plan.md`. `inputs\WebAwesome` is refreshed to the target version's documentation: from the public GitHub tag (`packages/webawesome/docs/docs`) for free components, and from `webawesome.com/docs/components/<name>` for Pro components absent there (as of 3.1.0: `combobox`, `page`); the refresh is checked in as its own changeset. `--dry-run` stops here, with the plan document checked in and the ticket/branch left ready for the real run.
@@ -54,7 +56,7 @@ Phase numbers match the skill (0–6). `<major.minor>` is always taken from the 
 5. **Test & docs** — `wa-test-engineer` adds integration and version-scoped breaking-change tests; `docs\MIGRATION-<version>.md` written when there are breaking changes; the `docs\CHANGELOG.md` entry for the version is drafted from the change report; demo page skeletons generated for new components (`tools\demo\New-WaDemoPages.ps1 -PruneRemoved`); Debug + Release builds and full suite green.
 6. **Deliver** — phased check-ins on the task branch (established comment style), JIRA comment + transition to In Review; with `--publish`, merge to the subtrunk (never forced on conflict) and transition to Done.
 
-Releasing to NuGet stays a deliberate manual act: promote the subtrunk to `/main` and tag `wa-blazor-<version>` — the GitHub mirror's CI (`.github\workflows\build.yml`) packs on that tag.
+Releasing to NuGet stays a deliberate manual act: promote the subtrunk to `/main` and tag `wa-blazor-<version>` — the GitHub mirror's CI (`.github\workflows\build.yml`) packs on that tag. The full release/publication runbook (Trusted Publishing setup, go-live switch, Pages) is `docs\PUBLISHING.md`.
 
 ## Testing strategy: functional equivalence
 

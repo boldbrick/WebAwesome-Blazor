@@ -23,7 +23,12 @@ Invocation arguments: `$ARGUMENTS`
 
 **Gradual-upgrade rule (hard):** never skip a downloaded release. If the requested target is not the immediate next downloaded version above the current one, refuse and state which version must be done first.
 
-**Train rule:** `<major.minor>` in branch, epic, and folder names is taken from the **target** version, matching the existing casing convention (`/main/WA-3.0`). If the subtrunk `/main/WA-<major.minor>` does not exist yet, create it off the previous train's subtrunk, create the matching WAB epic (`Web Awesome <major.minor>`), and create `docs\prompts\WA-<major.minor>\`.
+**Train rule:** `<major.minor>` in branch, epic, and folder names is taken from the **target** version, matching the existing casing convention (`/main/WA-3.0`). If the subtrunk `/main/WA-<major.minor>` does not exist yet:
+
+1. **Release gate (hard):** a new train may only start once the previous train has been **released** — the head of the previous train's subtrunk merged (promoted) into `/main`, so that the version in `src\Version.props` at the head of `/main` equals the previous train's released version. Verify this via `infra-ops:plastic-ops`. If the previous subtrunk carries unreleased, unmerged version work, **refuse to create the new train** and report what is pending — promotion of a subtrunk to `/main` is a deliberate owner release step, never done by this pipeline. Sole exception: pending **patch** work (`x.y.z`, `z > 0`, on top of a version already released to `/main`) on the previous subtrunk does not block a new train; note it in the report.
+2. Create the new subtrunk **off `/main`** — never off the previous train's subtrunk — then create the matching WAB epic (`Web Awesome <major.minor>`) and `docs\prompts\WA-<major.minor>\`.
+
+**Patch propagation rule:** a patch release is developed on its train's existing subtrunk (e.g. `3.0.1` on `/main/WA-3.0`) and released by promoting that subtrunk to `/main`; the fix then reaches newer trains by merging `/main` **down into** the newer subtrunk (e.g. into `/main/WA-3.1`) — never by merging subtrunk-to-subtrunk.
 
 ## Phase 0 — Preflight
 

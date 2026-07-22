@@ -10,7 +10,8 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 > **Status**
 > - Active train: **WA 3.0**
 > - Current alignment: **WA 3.0.0** (tagged releases use `wa-blazor-<version>`)
-> - **[Live demo](https://boldbrick.github.io/WebAwesome-Blazor/)** — every component, rendered from this library
+
+**[Live demo](https://boldbrick.github.io/WebAwesome-Blazor/)** — every component, rendered from this library; published to GitHub Pages as a Blazor WebAssembly app. It can also be built and run locally in server mode: `dotnet run --project src/WebAwesome.Blazor.Demo.Server`.
 
 ## Why this library
 
@@ -39,7 +40,7 @@ Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idi
 - [Changelog](docs/CHANGELOG.md) — keyed to Web Awesome versions, breaking changes called out per release
 
 ## Requirements
-- .NET 10 (LTS, primary target) or .NET 9 (compatibility; out of Microsoft support since May 2026)
+- .NET 10 (LTS, primary target) or .NET 9 (compatibility; in Microsoft support until November 2026)
 - WA 3.x assets available to your app (via your chosen delivery method)
 
 ## Install
@@ -163,6 +164,7 @@ We align binding versions to WA versions. Use the **same** semantic version when
 **Promotion model**
 - Active development stays in a **subtrunk**: `main/wa-<ver>` (e.g., `main/wa-3.0`).
 - When ready, we *promote* the subtrunk to `main` and **tag** (e.g., `wa-blazor-3.0.0-beta.6`).
+- A new subtrunk (minor `wa-3.<x+1>` or major `wa-4.0`) is branched **from `main`**, and only after the previous train's release has been promoted to `main`. Pending patch work (e.g., `3.0.1` on `main/wa-3.0`) is the one allowed exception; once released to `main`, the patch propagates to newer subtrunks by merging `main` down into them.
 - After WA 3.0 stabilizes, we create `release-3.0` for maintenance; `main` moves on to `main/wa-3.1` or `main/wa-4.0`.
 
 **Monotonic merge rule**

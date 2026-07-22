@@ -63,12 +63,17 @@ jobs:
 
   # Prepared but inert: publishes to nuget.org only when the repository variable
   # NUGET_PUBLISH_ENABLED is set to 'true' (go-live step, see docs/prompts/WA-3.0/hardening-at-beta6-plan.md WP-I).
+  # Authentication uses nuget.org Trusted Publishing (OIDC): a policy on nuget.org for this
+  # repository + workflow file exchanges the GitHub OIDC token for a short-lived API key
+  # (NuGet/login). Requires the repository variable NUGET_USER = the nuget.org profile name
+  # owning the policy. No long-lived API key secret is stored.
   publish:
     needs: build
     if: startsWith(github.ref, 'refs/tags/wa-blazor-') && vars.NUGET_PUBLISH_ENABLED == 'true'
     runs-on: windows-latest
     permissions:
       contents: write
+      id-token: write
 
     steps:
       - name: Checkout
@@ -85,10 +90,16 @@ jobs:
           name: nupkg
           path: packages
 
+      - name: NuGet login (Trusted Publishing)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
       - name: Push to nuget.org
         working-directory: packages
         run: |
-          dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push *.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Create GitHub release
         working-directory: packages
