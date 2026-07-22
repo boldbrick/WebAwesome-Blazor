@@ -1,4 +1,4 @@
-@using System.Linq
+﻿@using System.Linq
 @using System.Reflection
 @inject ApiSurfaceService SurfaceService
 
@@ -120,7 +120,7 @@
     /// </summary>
     /// <param name="attributeKey">Kebab-case attribute name, e.g. "direction"</param>
     /// <param name="rawType">The raw type string from the API surface document, e.g. "PlaybackDirection"</param>
-    /// <returns>A comma-separated list of allowed values, or <see langword="null"/> when the type isn't a resolvable enum</returns>
+    /// <returns>A comma-separated list of allowed values, or null when the type isn't a resolvable enum</returns>
     private string? GetEnumValues(string attributeKey, string? rawType)
     {
         // primitive types and already-expanded TS unions (e.g. "'small' | 'medium'") need no further expansion
@@ -142,7 +142,7 @@
     /// </summary>
     /// <param name="className">The wrapper's class name, e.g. "WaAnimation"</param>
     /// <param name="attributeKey">Kebab-case attribute name</param>
-    /// <returns>The enum type, or <see langword="null"/> when the wrapper or a matching enum property can't be found</returns>
+    /// <returns>The enum type, or null when the wrapper or a matching enum property can't be found</returns>
     private static Type? ResolveEnumType(string? className, string attributeKey)
     {
         if (string.IsNullOrEmpty(className)) return null;
@@ -160,7 +160,7 @@
     /// Finds the static <c>ToHtmlValue</c> extension method for the given enum type, if one exists.
     /// </summary>
     /// <param name="enumType">The enum type to find a converter for</param>
-    /// <returns>The matching method, or <see langword="null"/> when no dedicated converter exists</returns>
+    /// <returns>The matching method, or null when no dedicated converter exists</returns>
     private static MethodInfo? FindToHtmlValueMethod(Type enumType)
         => enumType.Assembly.GetTypes()
             .Where(type => type.IsAbstract && type.IsSealed)

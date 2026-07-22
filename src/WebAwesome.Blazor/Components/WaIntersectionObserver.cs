@@ -32,13 +32,13 @@ public class WaIntersectionObserver : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -79,6 +79,11 @@ public class WaIntersectionObserver : ComponentBase
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
+    /// <summary>
+    /// Whether to disconnect the observer after the first time the wrapped elements intersect.
+    /// </summary>
+    [Parameter] public bool Once { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -117,10 +122,11 @@ public class WaIntersectionObserver : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(12, "root-margin", RootMargin);
         builder.AddAttributeIfNotNullOrEmpty(13, "intersect-class", IntersectClass);
         builder.AddAttribute(14, "disabled", Disabled);
+        builder.AddAttribute(15, "once", Once);
 
-        // Add event handlers
-        if (OnIntersect.HasDelegate)
-            builder.AddAttribute(20, "wa-intersect", EventCallback.Factory.Create(this, HandleIntersectEvent));
+        // Add event handlers; the interop module's createEventArgs flattens the
+        // IntersectionObserverEntry from the event detail into the typed args
+        builder.AddAttributeIfHasDelegate(20, "onwa-intersect", OnIntersect);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __intersectionObserverReference => Element = __intersectionObserverReference);
@@ -149,22 +155,6 @@ public class WaIntersectionObserver : ComponentBase
             classes.Add(Class);
 
         return string.Join(' ', classes);
-    }
-
-    /// <summary>
-    /// Handles intersection events from the Web Awesome component
-    /// </summary>
-    private async Task HandleIntersectEvent()
-    {
-        // Note: In a real implementation, the event args would be populated
-        // from the JavaScript event data. For now, creating basic args.
-        var args = new WaIntersectionEventArgs
-        {
-            IsIntersecting = true, // This would come from the JS event
-            IntersectionRatio = 0.0, // This would come from the JS event
-            Target = Element ?? default
-        };
-        await OnIntersect.InvokeAsync(args);
     }
 
     #endregion

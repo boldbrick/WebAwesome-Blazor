@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright © 2025 BoldBrick, s.r.o. and contributors
+Copyright © 2025–2026 BoldBrick, s.r.o. and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

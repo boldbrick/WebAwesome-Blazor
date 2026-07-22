@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
 using System;
@@ -30,13 +30,13 @@ public class WaPopup : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -186,6 +186,16 @@ public class WaPopup : ComponentBase
 
     #endregion
 
+    #region ------ Events ------
+
+    /// <summary>
+    /// Invoked when the popup is repositioned. This can happen when the anchor or popup's dimension change,
+    /// when scrolling, or programmatically after calling <see cref="RepositionAsync"/>.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnReposition { get; set; }
+
+    #endregion
+
     #region ------ Content Slots ------
 
     /// <summary>
@@ -271,6 +281,9 @@ public class WaPopup : ComponentBase
 
         // Add boundary
         builder.AddAttributeIfNotNullOrEmpty(80, "boundary", Boundary);
+
+        // Add event handlers
+        builder.AddAttributeIfHasDelegate(85, "onwa-reposition", OnReposition);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(90, __popupReference => Element = __popupReference);

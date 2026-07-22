@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -28,13 +28,13 @@ public class WaTooltip : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -75,6 +75,31 @@ public class WaTooltip : ComponentBase
     /// </summary>
     [Parameter] public bool WithoutArrow { get; set; }
 
+    /// <summary>
+    /// Disables the tooltip so that it won't show when triggered.
+    /// </summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// The distance in pixels from which to offset the tooltip away from its target.
+    /// </summary>
+    [Parameter] public int? Distance { get; set; }
+
+    /// <summary>
+    /// The amount of time to wait, in milliseconds, before hiding the tooltip after activation.
+    /// </summary>
+    [Parameter] public int? HideDelay { get; set; }
+
+    /// <summary>
+    /// The amount of time to wait, in milliseconds, before showing the tooltip after activation.
+    /// </summary>
+    [Parameter] public int? ShowDelay { get; set; }
+
+    /// <summary>
+    /// The distance in pixels from which to offset the tooltip along its target.
+    /// </summary>
+    [Parameter] public int? Skidding { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -98,6 +123,16 @@ public class WaTooltip : ComponentBase
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
 
+    /// <summary>
+    /// Invoked after the tooltip shows and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+
+    /// <summary>
+    /// Invoked after the tooltip hides and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -120,13 +155,20 @@ public class WaTooltip : ComponentBase
             builder.AddAttribute(12, "trigger", Trigger.ToHtmlValue());
         builder.AddAttribute(13, "open", Open);
         builder.AddAttribute(14, "without-arrow", WithoutArrow);
+        builder.AddAttribute(15, "disabled", Disabled);
+        builder.AddAttributeIfNotNull(16, "distance", Distance);
+        builder.AddAttributeIfNotNull(17, "hide-delay", HideDelay);
+        builder.AddAttributeIfNotNull(18, "show-delay", ShowDelay);
+        builder.AddAttributeIfNotNull(19, "skidding", Skidding);
 
         // Add event handlers
-        if (OnShow.HasDelegate)
-            builder.AddAttribute(20, "wa-show", OnShow);
+        builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);
 
-        if (OnHide.HasDelegate)
-            builder.AddAttribute(21, "wa-hide", OnHide);
+        builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
+
+        builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
+
+        builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(22, __tooltipReference => Element = __tooltipReference);
@@ -185,17 +227,8 @@ public class WaTooltip : ComponentBase
         await JSInterop.InvokeMethodAsync(Element.Value, "hide");
     }
 
-    /// <summary>
-    /// Recalculates and updates the tooltip position
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task RepositionAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot reposition tooltip: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
-    }
+    // note: no RepositionAsync - wa-tooltip exposes no reposition() method in WA 3.0
+    // (repositioning is handled internally by its anchored wa-popup)
 
     #endregion
 }

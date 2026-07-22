@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,13 @@ public class WaAvatar : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -66,6 +66,15 @@ public class WaAvatar : ComponentBase
 
     #endregion
 
+    #region ------ Events ------
+
+    /// <summary>
+    /// Emitted when the image fails to load.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnError { get; set; }
+
+    #endregion
+
     #region ------ Content ------
 
     /// <summary>
@@ -100,6 +109,9 @@ public class WaAvatar : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(13, "label", Label);
         if (Shape != WaAvatarShape.Circle)
             builder.AddAttribute(14, "shape", Shape.ToHtmlValue());
+
+        // Add event handlers
+        builder.AddAttributeIfHasDelegate(16, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(15, __avatarReference => Element = __avatarReference);

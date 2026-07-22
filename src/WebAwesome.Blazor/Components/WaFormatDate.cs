@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,13 @@ public class WaFormatDate : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -55,6 +55,12 @@ public class WaFormatDate : ComponentBase
     /// Whether to use 12-hour or 24-hour time when displaying the hour.
     /// </summary>
     [Parameter] public WaHourFormat? HourFormat { get; set; }
+
+    /// <summary>
+    /// The time zone to express the date/time in, e.g. "America/New_York". When unset, the browser's default
+    /// time zone is used.
+    /// </summary>
+    [Parameter] public string? TimeZone { get; set; }
 
     // Intl.DateTimeFormat options
     /// <summary>
@@ -118,6 +124,7 @@ public class WaFormatDate : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(4, "date", Date);
         builder.AddAttributeIfNotNullOrEmpty(5, "lang", Lang);
         builder.AddAttributeIfNotNull(6, "hour-format", HourFormat?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(7, "time-zone", TimeZone);
 
         // Add formatting options
         builder.AddAttributeIfNotNull(10, "weekday", Weekday?.ToHtmlValue());

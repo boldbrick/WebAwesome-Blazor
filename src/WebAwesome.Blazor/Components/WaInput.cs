@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -71,6 +72,52 @@ public class WaInput : WaInputBase<string?>
     /// </summary>
     [Parameter] public decimal? Step { get; set; }
 
+    /// <summary>
+    /// Controls whether and how text input is automatically capitalized as it is entered by the user.
+    /// </summary>
+    [Parameter] public string? AutoCapitalize { get; set; }
+
+    /// <summary>
+    /// Indicates whether the browser's autocorrect feature is on or off.
+    /// </summary>
+    [Parameter] public string? AutoCorrect { get; set; }
+
+    /// <summary>
+    /// Indicates that the input should receive focus on page load.
+    /// </summary>
+    [Parameter] public bool AutoFocus { get; set; }
+
+    /// <summary>
+    /// Used to customize the label or icon of the Enter key on virtual keyboards.
+    /// </summary>
+    [Parameter] public string? EnterKeyHint { get; set; }
+
+    /// <summary>
+    /// Tells the browser what type of data will be entered by the user, allowing it to display the appropriate
+    /// virtual keyboard on supportive devices.
+    /// </summary>
+    [Parameter] public string? InputMode { get; set; }
+
+    /// <summary>
+    /// Determines whether or not the password is currently visible. Only applies to password input types.
+    /// </summary>
+    [Parameter] public bool PasswordVisible { get; set; }
+
+    /// <summary>
+    /// Used for SSR. Determines whether the SSRed component has the hint slot rendered on initial paint.
+    /// </summary>
+    [Parameter] public bool WithHint { get; set; }
+
+    /// <summary>
+    /// Used for SSR. Determines whether the SSRed component has the label slot rendered on initial paint.
+    /// </summary>
+    [Parameter] public bool WithLabel { get; set; }
+
+    /// <summary>
+    /// Hides the browser's built-in increment/decrement spin buttons for number inputs.
+    /// </summary>
+    [Parameter] public bool WithoutSpinButtons { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -89,6 +136,11 @@ public class WaInput : WaInputBase<string?>
     /// Invoked when the password's visibility changes.
     /// </summary>
     [Parameter] public EventCallback<bool> OnPasswordVisibilityChange { get; set; }
+
+    /// <summary>
+    /// Invoked when the form control has been checked for validity and its constraints aren't satisfied.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
     #endregion
 
@@ -138,6 +190,15 @@ public class WaInput : WaInputBase<string?>
         builder.AddAttributeIfNotNull(28, "min", Min);
         builder.AddAttributeIfNotNull(29, "max", Max);
         builder.AddAttributeIfNotNull(30, "step", Step);
+        builder.AddAttributeIfNotNullOrEmpty(33, "autocapitalize", AutoCapitalize);
+        builder.AddAttributeIfNotNullOrEmpty(34, "autocorrect", AutoCorrect);
+        builder.AddAttribute(35, "autofocus", AutoFocus);
+        builder.AddAttributeIfNotNullOrEmpty(36, "enterkeyhint", EnterKeyHint);
+        builder.AddAttributeIfNotNullOrEmpty(37, "inputmode", InputMode);
+        builder.AddAttribute(38, "password-visible", PasswordVisible);
+        builder.AddAttribute(39, "with-hint", WithHint);
+        builder.AddAttribute(46, "with-label", WithLabel);
+        builder.AddAttribute(48, "without-spin-buttons", WithoutSpinButtons);
 
         // Add value binding
         builder.AddAttribute(31, "value", CurrentValueAsString);
@@ -148,14 +209,13 @@ public class WaInput : WaInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add input-specific event handlers
-        if (OnClear.HasDelegate)
-            builder.AddAttribute(50, "wa-clear", OnClear);
+        builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
 
-        if (OnPasswordToggle.HasDelegate)
-            builder.AddAttribute(51, "wa-password-toggle", OnPasswordToggle);
+        builder.AddAttributeIfHasDelegate(51, "onwa-password-toggle", OnPasswordToggle);
 
-        if (OnPasswordVisibilityChange.HasDelegate)
-            builder.AddAttribute(52, "wa-password-visibility-change", OnPasswordVisibilityChange);
+        builder.AddAttributeIfHasDelegate(52, "onwa-password-visibility-change", OnPasswordVisibilityChange);
+
+        builder.AddAttributeIfHasDelegate(49, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(53, __inputReference => Element = __inputReference);
@@ -198,6 +258,128 @@ public class WaInput : WaInputBase<string?>
         result = value;
         validationErrorMessage = null;
         return true;
+    }
+
+    #endregion
+
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Sets focus on the input.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus the input before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
+
+    /// <summary>
+    /// Removes focus from the input.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task BlurAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot blur the input before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
+    }
+
+    /// <summary>
+    /// Selects all the text in the input.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task SelectAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot select text before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "select");
+    }
+
+    /// <summary>
+    /// Replaces a range of text with a new string.
+    /// </summary>
+    /// <param name="replacement">The replacement text</param>
+    /// <param name="start">The zero-based index of the first character to replace</param>
+    /// <param name="end">The zero-based index of the character after the last character to replace</param>
+    /// <param name="selectMode">How the selection should be set after the text is replaced. One of
+    /// <c>select</c>, <c>start</c>, <c>end</c>, or <c>preserve</c> (default)</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task SetRangeTextAsync(string replacement, int? start = null, int? end = null, string selectMode = "preserve")
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set range text before the component is rendered. Element reference is null.");
+
+        // the DOM setRangeText overloads accept either one argument or all four; null start/end would coerce to 0 in JS
+        if (start.HasValue && end.HasValue)
+            await JSInterop.InvokeMethodAsync(Element.Value, "setRangeText", replacement, start.Value, end.Value, selectMode);
+        else
+            await JSInterop.InvokeMethodAsync(Element.Value, "setRangeText", replacement);
+    }
+
+    /// <summary>
+    /// Sets the start and end positions of the text selection (0-based).
+    /// </summary>
+    /// <param name="selectionStart">The zero-based index of the first selected character</param>
+    /// <param name="selectionEnd">The zero-based index of the character after the last selected character</param>
+    /// <param name="selectionDirection">The direction in which selection is considered to have occurred. One of
+    /// <c>forward</c>, <c>backward</c>, or <c>none</c> (default)</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task SetSelectionRangeAsync(int selectionStart, int selectionEnd, string selectionDirection = "none")
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot set the selection range before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "setSelectionRange", selectionStart, selectionEnd, selectionDirection);
+    }
+
+    /// <summary>
+    /// Displays the browser picker for the input element (only works if the browser supports it for the input
+    /// type).
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task ShowPickerAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot show the picker before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "showPicker");
+    }
+
+    /// <summary>
+    /// Decrements the value of a numeric input type by the value of the <see cref="Step"/> attribute.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task StepDownAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot step down before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "stepDown");
+    }
+
+    /// <summary>
+    /// Increments the value of a numeric input type by the value of the <see cref="Step"/> attribute.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task StepUpAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot step up before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "stepUp");
     }
 
     #endregion

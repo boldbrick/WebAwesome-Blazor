@@ -32,13 +32,13 @@ public class WaInclude : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -65,6 +65,12 @@ public class WaInclude : ComponentBase
     /// </summary>
     [Parameter] public WaMode Mode { get; set; } = WaMode.Cors;
 
+    /// <summary>
+    /// Allows scripts included as part of the requested file to be executed. Be extra careful to use this feature
+    /// only with trusted content, as it can result in XSS attacks.
+    /// </summary>
+    [Parameter] public bool AllowScripts { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -75,9 +81,9 @@ public class WaInclude : ComponentBase
     [Parameter] public EventCallback<EventArgs> OnLoad { get; set; }
 
     /// <summary>
-    /// Emitted when the content fails to load
+    /// Emitted when the included file fails to load due to an error.
     /// </summary>
-    [Parameter] public EventCallback<IncludeErrorEventArgs> OnError { get; set; }
+    [Parameter] public EventCallback<IncludeErrorEventArgs> OnIncludeError { get; set; }
 
     #endregion
 
@@ -97,12 +103,12 @@ public class WaInclude : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(10, "src", Src);
         if (Mode != WaMode.Cors)
             builder.AddAttribute(11, "mode", Mode.ToHtmlValue());
+        if (AllowScripts)
+            builder.AddAttribute(12, "allow-scripts", AllowScripts);
 
         // Add event handlers
-        if (OnLoad.HasDelegate)
-            builder.AddAttribute(20, "wa-load", OnLoad);
-        if (OnError.HasDelegate)
-            builder.AddAttribute(21, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(20, "onwa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(21, "onwa-include-error", OnIncludeError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __includeReference => Element = __includeReference);
@@ -114,18 +120,9 @@ public class WaInclude : ComponentBase
 
     #region ------ Public Methods ------
 
-    /// <summary>
-    /// Reloads the included content
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ReloadAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot reload content: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "reload");
-    }
+    // note: no ReloadAsync - wa-include exposes no reload() method in WA 3.0 and Lit's
+    // reactive src property ignores same-value re-assignment; re-fetching requires changing
+    // the Src parameter (e.g. via a cache-busting query string)
 
     #endregion
 

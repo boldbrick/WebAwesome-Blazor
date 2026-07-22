@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,13 @@ public class WaProgressRing : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -44,6 +44,12 @@ public class WaProgressRing : ComponentBase
     /// The current progress as a percentage, 0 to 100.
     /// </summary>
     [Parameter] public int Value { get; set; }
+
+    /// <summary>
+    /// A label used for assistive devices, such as screen readers. If in doubt, this label should describe
+    /// the progress ring in its current state, e.g. "Copying files, 30% complete".
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
 
     #endregion
 
@@ -68,6 +74,7 @@ public class WaProgressRing : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
         builder.AddAttribute(4, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(5, "label", Label);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __progressRingReference => Element = __progressRingReference);

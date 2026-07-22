@@ -28,13 +28,13 @@ public class WaDetails : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -88,6 +88,16 @@ public class WaDetails : ComponentBase
     /// Invoked when the details is toggled open or closed.
     /// </summary>
     [Parameter] public EventCallback<WaDetailsToggleEventArgs> OnToggle { get; set; }
+
+    /// <summary>
+    /// Invoked after the details opens and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+
+    /// <summary>
+    /// Invoked after the details closes and all animations are complete.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
     #endregion
 
@@ -143,11 +153,12 @@ public class WaDetails : ComponentBase
         builder.AddAttribute(8, "icon-placement", IconPlacement.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(9, "name", Name);
 
-        // Add event handlers
-        if (OnToggle.HasDelegate)
-            builder.AddAttribute(20, "wa-show", EventCallback.Factory.Create(this, () => HandleToggleEvent(true)));
-        if (OnToggle.HasDelegate)
-            builder.AddAttribute(21, "wa-hide", EventCallback.Factory.Create(this, () => HandleToggleEvent(false)));
+        // Add event handlers; the interop module's createEventArgs derives IsOpen from the
+        // event type (wa-show -> true, wa-hide -> false), so both events share OnToggle
+        builder.AddAttributeIfHasDelegate(52, "onwa-show", OnToggle);
+        builder.AddAttributeIfHasDelegate(53, "onwa-hide", OnToggle);
+        builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
+        builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __detailsReference => Element = __detailsReference);
@@ -241,15 +252,6 @@ public class WaDetails : ComponentBase
             classes.Add(Class);
 
         return string.Join(' ', classes);
-    }
-
-    /// <summary>
-    /// Handles toggle events from the Web Awesome component
-    /// </summary>
-    private async Task HandleToggleEvent(bool isOpen)
-    {
-        var args = new WaDetailsToggleEventArgs { IsOpen = isOpen };
-        await OnToggle.InvokeAsync(args);
     }
 
     #endregion

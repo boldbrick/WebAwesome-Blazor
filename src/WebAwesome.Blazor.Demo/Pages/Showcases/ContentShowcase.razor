@@ -1,0 +1,176 @@
+@page "/showcases/content"
+@using System.Text.Json
+
+<PageTitle>Showcase: Content &amp; Observers</PageTitle>
+
+<WaBreadcrumb Label="You are here">
+    <WaBreadcrumbItem Href="/" StartIconName="house">Nova Docs</WaBreadcrumbItem>
+    <WaBreadcrumbItem Href="/showcases/content">Releases</WaBreadcrumbItem>
+    <WaBreadcrumbItem>Nova Studio 3.2</WaBreadcrumbItem>
+</WaBreadcrumb>
+
+<WaSplit Direction="SplitDirection.Row" AlignItems="AlignItems.Center">
+    <h1>Nova Studio 3.2 — Release Notes</h1>
+    <WaCluster Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center">
+        <WaText Variant="TextVariant.Caption">Updated <WaRelativeTime Date="lastUpdated" /></WaText>
+        <WaCopyButton Value="https://docs.meridianlabs.example/releases/nova-3-2" CopyLabel="Copy permalink" />
+    </WaCluster>
+</WaSplit>
+
+<WaFlank FlankSize="16rem" ContentPercentage="55%" Gap="GapSize.Gap_L">
+    <nav aria-label="Release navigation">
+        <WaText Variant="TextVariant.Heading" Element="h2">Documents</WaText>
+        <WaTree OnSelectionChange="HandleTreeSelection">
+            <WaTreeItem Expanded="true">
+                3.2 release
+                <WaTreeItem Selected="true">Release notes</WaTreeItem>
+                <WaTreeItem>Upgrade guide</WaTreeItem>
+                <WaTreeItem>Known issues</WaTreeItem>
+            </WaTreeItem>
+            <WaTreeItem>
+                3.1 release
+                <WaTreeItem>Release notes</WaTreeItem>
+                <WaTreeItem>Upgrade guide</WaTreeItem>
+            </WaTreeItem>
+            <WaTreeItem Disabled="true">3.0 archive</WaTreeItem>
+        </WaTree>
+        <WaText Variant="TextVariant.Caption" Element="p">
+            Selected: <strong>@(selectedDocument ?? "Release notes")</strong>
+        </WaText>
+    </nav>
+
+    <div>
+        <WaCallout Variant="WaVariant.Brand" IconName="rocket">
+            Nova Studio 3.2 ships on March 12, 2026. The highlights below are included from a static
+            HTML fragment via <code>WaInclude</code>.
+        </WaCallout>
+
+        <WaInclude Src="fragments/release-notes.html" />
+
+        <WaDivider Style="margin-block: var(--wa-space-l);" />
+
+        <WaText Variant="TextVariant.Heading" Size="TextSize.L" Element="h2">Observer playground</WaText>
+        <WaText Element="p">
+            The panels below use the observer wrappers, whose events deliver real payloads to Blazor handlers.
+        </WaText>
+
+        <WaText Variant="TextVariant.Heading" Element="h3">Split panel + resize observer</WaText>
+        <WaText Element="p">
+            Drag the divider — the split panel reports its position and the resize observer reads the
+            measured width from the <code>ResizeObserverEntry</code> payload.
+        </WaText>
+        <WaSplitPanel Position="55" OnReposition="@(e => splitPosition = e.Position)">
+            <StartContent>
+                <WaResizeObserver OnResize="HandleResize">
+                    <div style="min-height: 8rem; padding: var(--wa-space-m); background: var(--wa-color-brand-fill-quiet);">
+                        <strong>Draft pane</strong>
+                        <p>@(observedWidth is null ? "Drag the divider to measure this pane." : $"This pane is {observedWidth:0} px wide.")</p>
+                    </div>
+                </WaResizeObserver>
+            </StartContent>
+            <EndContent>
+                <div style="min-height: 8rem; padding: var(--wa-space-m); background: var(--wa-color-neutral-fill-quiet);">
+                    <strong>Preview pane</strong>
+                    <p>Split position: @splitPosition.ToString("0")%</p>
+                </div>
+            </EndContent>
+        </WaSplitPanel>
+
+        <WaText Variant="TextVariant.Heading" Element="h3" Style="margin-block-start: var(--wa-space-l);">Mutation observer</WaText>
+        <WaText Element="p">
+            Adding a reviewer changes the observed element's child list; the handler receives the
+            actual <code>MutationRecord</code> data.
+        </WaText>
+        <WaMutationObserver ChildList="true" OnMutation="HandleMutation">
+            <WaCluster Gap="GapSize.Gap_2XS">
+                @foreach (var reviewer in reviewers)
+                {
+                    <WaTag Pill="true">@reviewer</WaTag>
+                }
+            </WaCluster>
+        </WaMutationObserver>
+        <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center" Style="margin-block-start: var(--wa-space-s);">
+            <WaButton Size="WaSize.Small" StartIconName="user-plus" OnClick="AddReviewer" Disabled="@(reviewers.Count >= reviewerPool.Length)">
+                Add reviewer
+            </WaButton>
+            <WaText Variant="TextVariant.Caption">@mutationMessage</WaText>
+        </WaCluster>
+
+        <WaText Variant="TextVariant.Heading" Element="h3" Style="margin-block-start: var(--wa-space-l);">Intersection observer</WaText>
+        <WaText Element="p">
+            Scroll the changelog below — the sign-off card reports whether it is visible and how much
+            of it intersects the scrollport.
+        </WaText>
+        <div style="height: 12rem; overflow: auto; border: 1px solid var(--wa-color-surface-border); border-radius: var(--wa-border-radius-m); padding: var(--wa-space-m);">
+            <WaText Element="p">3.2.0-rc.1 — staged rollout to 5% of workspaces</WaText>
+            <WaText Element="p">3.2.0-beta.4 — export pipeline color-profile fixes</WaText>
+            <WaText Element="p">3.2.0-beta.3 — co-editing presence indicators</WaText>
+            <WaText Element="p">3.2.0-beta.2 — command palette shortcuts</WaText>
+            <WaText Element="p">3.2.0-beta.1 — first public beta</WaText>
+            <WaIntersectionObserver Threshold="0.5" OnIntersect="HandleIntersect">
+                <WaCard Appearance="WaAppearance.OutlinedFilled">
+                    <strong>Release sign-off</strong>
+                    <p>QA, security and docs have approved 3.2 for general availability.</p>
+                </WaCard>
+            </WaIntersectionObserver>
+        </div>
+        <WaText Variant="TextVariant.Caption" Element="p">
+            Sign-off card: <strong>@(signOffVisible ? "visible" : "out of view")</strong>
+            (intersection ratio @signOffRatio.ToString("0.00"))
+        </WaText>
+    </div>
+</WaFlank>
+
+@code {
+    private readonly DateTime lastUpdated = DateTime.Now.AddHours(-3);
+    private string? selectedDocument;
+    private decimal splitPosition = 55;
+    private double? observedWidth;
+    private string mutationMessage = "No mutations observed yet";
+    private bool signOffVisible;
+    private double signOffRatio;
+
+    private readonly List<string> reviewers = ["Mara Lindqvist", "Priya Anand"];
+    private readonly string[] reviewerPool = ["Mara Lindqvist", "Priya Anand", "Jonas Petrov", "Tomás Ruiz", "Elena Fischer"];
+
+    private void HandleTreeSelection(WaTreeSelectionChangeEventArgs args)
+    {
+        // the initializer projects each selected wa-tree-item to { id, textContent }
+        if (args.Selection is [JsonElement item, ..] && item.TryGetProperty("textContent", out var text))
+        {
+            // nested items report their whole subtree text; keep the first line only
+            selectedDocument = text.GetString()?.Split('\n')[0].Trim();
+        }
+    }
+
+    private void HandleResize(ResizeEventArgs args)
+    {
+        // the payload mirrors ResizeObserverEntry.contentRect, serialized by the JS initializer
+        if (args.ResizeObserverEntries is [JsonElement entry, ..]
+            && entry.TryGetProperty("contentRect", out var rect)
+            && rect.ValueKind == JsonValueKind.Object
+            && rect.TryGetProperty("width", out var width))
+        {
+            observedWidth = width.GetDouble();
+        }
+    }
+
+    private void HandleMutation(MutationEventArgs args)
+    {
+        var count = args.MutationRecords?.Length ?? 0;
+        mutationMessage = $"Observed {count} mutation record(s) at {DateTime.Now:T}";
+    }
+
+    private void HandleIntersect(WaIntersectionEventArgs args)
+    {
+        signOffVisible = args.IsIntersecting;
+        signOffRatio = args.IntersectionRatio;
+    }
+
+    private void AddReviewer()
+    {
+        // pick the first pool member not on the review list yet
+        var next = Array.Find(reviewerPool, candidate => !reviewers.Contains(candidate));
+        if (next is not null) reviewers.Add(next);
+    }
+}

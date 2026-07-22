@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -32,13 +32,13 @@ public class WaZoomableFrame : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -85,6 +85,26 @@ public class WaZoomableFrame : ComponentBase
     /// Disables interaction with the frame content.
     /// </summary>
     [Parameter] public bool WithoutInteraction { get; set; }
+
+    /// <summary>
+    /// Whether the iframe is allowed to be displayed in fullscreen mode.
+    /// </summary>
+    [Parameter] public bool AllowFullScreen { get; set; }
+
+    /// <summary>
+    /// Indicates when the browser should load the iframe.
+    /// </summary>
+    [Parameter] public WaLoading? Loading { get; set; }
+
+    /// <summary>
+    /// Indicates which referrer to send when fetching the frame's content.
+    /// </summary>
+    [Parameter] public string? ReferrerPolicy { get; set; }
+
+    /// <summary>
+    /// Applies extra restrictions to the content in the frame, e.g. <c>allow-scripts allow-same-origin</c>.
+    /// </summary>
+    [Parameter] public string? Sandbox { get; set; }
 
     #endregion
 
@@ -152,13 +172,16 @@ public class WaZoomableFrame : ComponentBase
         builder.AddAttribute(30, "without-controls", WithoutControls);
         builder.AddAttribute(31, "without-interaction", WithoutInteraction);
 
+        // Add remaining iframe passthrough attributes
+        builder.AddAttribute(32, "allowfullscreen", AllowFullScreen);
+        builder.AddAttributeIfNotNull(33, "loading", Loading?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(34, "referrerpolicy", ReferrerPolicy);
+        builder.AddAttributeIfNotNullOrEmpty(35, "sandbox", Sandbox);
+
         // Add event handlers
-        if (OnZoomChange.HasDelegate)
-            builder.AddAttribute(40, "wa-zoom-change", OnZoomChange);
-        if (OnLoad.HasDelegate)
-            builder.AddAttribute(41, "wa-load", OnLoad);
-        if (OnError.HasDelegate)
-            builder.AddAttribute(42, "wa-error", OnError);
+        builder.AddAttributeIfHasDelegate(40, "onwa-zoom-change", OnZoomChange);
+        builder.AddAttributeIfHasDelegate(41, "onwa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(42, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(50, __frameReference => Element = __frameReference);
@@ -184,12 +207,15 @@ public class WaZoomableFrame : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot set zoom: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "setZoom", zoomLevel);
+        // wa-zoomable-frame exposes no setZoom() method in WA 3.0 - zoom is a reactive
+        // property; only zoomIn()/zoomOut() exist as methods
+        await JSInterop.SetPropertyAsync(Element.Value, "zoom", zoomLevel);
         Zoom = zoomLevel;
     }
 
     /// <summary>
-    /// Resets zoom to 100% and centers the content
+    /// Resets zoom to 100% (wa-zoomable-frame exposes no reset() method in WA 3.0; this sets
+    /// the zoom property back to 1.0).
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task ResetAsync()
@@ -197,7 +223,8 @@ public class WaZoomableFrame : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot reset zoom: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "reset");
+        await JSInterop.SetPropertyAsync(Element.Value, "zoom", 1.0);
+        Zoom = 1.0;
     }
 
     /// <summary>

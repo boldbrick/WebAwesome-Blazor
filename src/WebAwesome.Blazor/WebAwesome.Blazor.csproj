@@ -3,6 +3,8 @@
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <!-- multi-targeted library: packed, never published (solution-level dotnet publish would fail with NETSDK1129) -->
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <!-- NuGet package metadata -->
@@ -17,7 +19,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
-    <PackageReleaseNotes>See https://github.com/boldbrick/WebAwesome-Blazor/blob/main/docs/CHANGELOG.md</PackageReleaseNotes>
+    <PackageReleaseNotes>See https://github.com/boldbrick/WebAwesome-Blazor/blob/master/docs/CHANGELOG.md</PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

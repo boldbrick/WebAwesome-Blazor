@@ -93,6 +93,9 @@ public class ParityConfig
     [JsonPropertyName("componentClassOverrides")]
     public Dictionary<string, string> ComponentClassOverrides { get; set; } = new();
 
+    [JsonPropertyName("nativeElementMethods")]
+    public List<string> NativeElementMethods { get; set; } = new();
+
     [JsonPropertyName("components")]
     public Dictionary<string, ComponentParityConfig> Components { get; set; } = new();
 }
@@ -119,6 +122,9 @@ public class ComponentParityConfig
 
     [JsonPropertyName("ignoredMethods")]
     public List<string> IgnoredMethods { get; set; } = new();
+
+    [JsonPropertyName("extraElementMethods")]
+    public List<string> ExtraElementMethods { get; set; } = new();
 }
 
 #nullable restore

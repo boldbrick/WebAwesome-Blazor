@@ -1,0 +1,108 @@
+name: release
+
+# Cuts a release from a wa-blazor-<version> tag, whenever the tag arrives - the tagged
+# changeset is rebuilt from scratch, so tagging long after the changeset was mirrored
+# works and every published package has passed the tag guard and the test suite.
+#
+# Publication is gated: the nuget.org push and the GitHub release only happen when the
+# repository variable NUGET_PUBLISH_ENABLED is 'true' (go-live switch). Authentication
+# uses nuget.org Trusted Publishing (OIDC): a policy on nuget.org for this repository
+# and workflow file exchanges the GitHub OIDC token for a short-lived API key
+# (NuGet/login). Requires the repository variable NUGET_USER = the nuget.org profile
+# name owning the policy. No long-lived API key secret is stored.
+on:
+  push:
+    tags: [ "wa-blazor-*" ]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: src
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      # workflow_dispatch is a manual retry button - it must still point at a release tag
+      - name: Guard ref is a release tag
+        working-directory: .
+        shell: pwsh
+        run: |
+          if (-not "${{ github.ref }}".StartsWith("refs/tags/wa-blazor-")) {
+            Write-Error "This workflow must run on a wa-blazor-* tag, got '${{ github.ref }}'"
+            exit 1
+          }
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            9.0.x
+            10.0.x
+
+      # the tag version must match Version.props - fail loudly instead of shipping a mismatch
+      - name: Guard tag version
+        shell: pwsh
+        run: |
+          $tagVersion = "${{ github.ref }}".Substring("refs/tags/wa-blazor-".Length)
+          [xml]$props = Get-Content Version.props
+          $propsVersion = ($props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          if ($tagVersion -ne $propsVersion) {
+            Write-Error "Tag version '$tagVersion' does not match Version.props version '$propsVersion'"
+            exit 1
+          }
+          Write-Output "Tag version $tagVersion matches Version.props"
+
+      - name: Restore
+        run: dotnet restore WebAwesome.slnx /p:Configuration=Release
+
+      - name: Build and pack
+        run: dotnet build WebAwesome.slnx --no-restore /p:Configuration=Release
+
+      - name: Test
+        run: dotnet test WebAwesome.slnx --no-build /p:Configuration=Release
+
+      # Note a step that "uses" ignores the default working directory
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nupkg
+          path: |
+            src/output/packages/Release/*.nupkg
+            src/output/packages/Release/*.snupkg
+          if-no-files-found: error
+          overwrite: true
+
+      - name: NuGet login (Trusted Publishing)
+        if: vars.NUGET_PUBLISH_ENABLED == 'true'
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Push to nuget.org
+        if: vars.NUGET_PUBLISH_ENABLED == 'true'
+        working-directory: src/output/packages/Release
+        run: |
+          dotnet nuget push *.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Create GitHub release
+        if: vars.NUGET_PUBLISH_ENABLED == 'true'
+        working-directory: src/output/packages/Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag.Substring("wa-blazor-".Length)
+          gh release create $tag (Get-ChildItem *.nupkg, *.snupkg | ForEach-Object { $_.FullName }) `
+            --title "Web Awesome Blazor Bindings $version" `
+            --notes "See the [changelog](https://github.com/${{ github.repository }}/blob/master/docs/CHANGELOG.md) for details." `
+            --verify-tag

@@ -2,4 +2,5 @@
   <Project Path="WebAwesome.Blazor/WebAwesome.Blazor.csproj" />
   <Project Path="WebAwesome.Blazor.Tests/WebAwesome.Blazor.Tests.csproj" />
   <Project Path="WebAwesome.Blazor.Demo/WebAwesome.Blazor.Demo.csproj" />
+  <Project Path="WebAwesome.Blazor.Demo.Server/WebAwesome.Blazor.Demo.Server.csproj" />
 </Solution>

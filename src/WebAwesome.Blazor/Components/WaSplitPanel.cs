@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -28,13 +28,13 @@ public class WaSplitPanel : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -134,9 +134,9 @@ public class WaSplitPanel : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(9, "snap", Snap);
         builder.AddAttribute(10, "snap-threshold", SnapThreshold);
 
-        // Add event handlers
-        if (OnReposition.HasDelegate)
-            builder.AddAttribute(20, "wa-reposition", EventCallback.Factory.Create<ChangeEventArgs>(this, HandleRepositionEvent));
+        // Add event handlers; the interop module's createEventArgs reads position and
+        // position-in-pixels from the element, as the wa-reposition event carries no detail
+        builder.AddAttributeIfHasDelegate(21, "onwa-reposition", OnReposition);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __splitPanelReference => Element = __splitPanelReference);
@@ -216,25 +216,6 @@ public class WaSplitPanel : ComponentBase
             classes.Add(Class);
 
         return string.Join(' ', classes);
-    }
-
-    /// <summary>
-    /// Handles reposition events from the Web Awesome component
-    /// </summary>
-    private async Task HandleRepositionEvent(ChangeEventArgs args)
-    {
-        // The wa-reposition event typically provides position information
-        // We'll get the current position values from the component
-        var position = await GetPositionAsync();
-        var positionInPixels = await GetPositionInPixelsAsync();
-
-        var eventArgs = new WaSplitPanelRepositionEventArgs
-        {
-            Position = position,
-            PositionInPixels = positionInPixels
-        };
-
-        await OnReposition.InvokeAsync(eventArgs);
     }
 
     #endregion

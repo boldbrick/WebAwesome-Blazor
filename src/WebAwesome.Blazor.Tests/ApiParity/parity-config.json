@@ -1,12 +1,15 @@
-﻿{
-  "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons').",
-  "enabled": false,
-  "targetWaVersion": "3.0.0-beta.6",
+{
+  "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, ElementMethodInvocationTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
+  "enabled": true,
+  "targetWaVersion": "3.0.0",
   "globalIgnoredAttributes": [
     "title"
   ],
   "ignoredComponents": [],
-  "componentClassOverrides": {},
+  "componentClassOverrides": {
+    "wa-textarea": "WaTextArea"
+  },
+  "nativeElementMethods": [ "focus", "blur", "click" ],
   "components": {
     "wa-details": {
       "eventOverrides": {
@@ -15,13 +18,111 @@
         "wa-after-show": "OnAfterShow",
         "wa-after-hide": "OnAfterHide"
       }
+    },
+    "wa-checkbox": {
+      "ignoredAttributes": [ "name", "form", "checked" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-color-picker": {
+      "ignoredAttributes": [ "name", "form" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-input": {
+      "attributeOverrides": {
+        "maxlength": "MaxLength",
+        "minlength": "MinLength",
+        "autocapitalize": "AutoCapitalize",
+        "autocorrect": "AutoCorrect",
+        "autofocus": "AutoFocus",
+        "enterkeyhint": "EnterKeyHint",
+        "inputmode": "InputMode"
+      },
+      "ignoredAttributes": [ "form" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-button": {
+      "attributeOverrides": {
+        "formaction": "FormAction",
+        "formenctype": "FormEncType",
+        "formmethod": "FormMethod",
+        "formnovalidate": "FormNoValidate",
+        "formtarget": "FormTarget"
+      }
+    },
+    "wa-zoomable-frame": {
+      "attributeOverrides": {
+        "srcdoc": "SrcDoc",
+        "allowfullscreen": "AllowFullScreen",
+        "referrerpolicy": "ReferrerPolicy"
+      }
+    },
+    "wa-select": {
+      "ignoredAttributes": [ "name", "form" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-slider": {
+      "attributeOverrides": {
+        "autofocus": "AutoFocus"
+      },
+      "ignoredAttributes": [ "name", "form" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-switch": {
+      "ignoredAttributes": [ "name", "form" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-radio": {
+      "ignoredAttributes": [ "form" ]
+    },
+    "wa-radio-group": {
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-textarea": {
+      "attributeOverrides": {
+        "maxlength": "MaxLength",
+        "minlength": "MinLength",
+        "autocapitalize": "AutoCapitalize",
+        "autocorrect": "AutoCorrect",
+        "autofocus": "AutoFocus",
+        "enterkeyhint": "EnterKeyHint",
+        "inputmode": "InputMode"
+      },
+      "ignoredAttributes": [ "name", "form" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-rating": {
+      "ignoredAttributes": [ "getSymbol" ],
+      "ignoredEvents": [ "change" ]
+    },
+    "wa-carousel": {
+      "ignoredAttributes": [ "currentSlide", "slides" ]
+    },
+    "wa-dropdown-item": {
+      "ignoredAttributes": [ "submenuOpen" ]
+    },
+    "wa-mutation-observer": {
+      "extraElementMethods": [ "stopObserver", "startObserver" ]
+    },
+    "wa-resize-observer": {
+      "extraElementMethods": [ "stopObserver", "startObserver" ]
+    },
+    "wa-relative-time": {
+      "extraElementMethods": [ "update" ]
     }
   },
   "ignoreReasons": {
-    "title": "native HTML attribute, passed through via AdditionalAttributes"
+    "title": "native HTML attribute, passed through via AdditionalAttributes",
+    "change": "native change event folded into Blazor two-way binding (ValueChanged / @bind-Value)",
+    "name": "form-control name is handled by Blazor InputBase form integration (NameAttributeValue / EditContext), not a discrete parameter",
+    "form": "form association is handled by Blazor EditForm / EditContext, not a discrete attribute parameter",
+    "checked": "checkbox checked state is the two-way-bound Value on WaInputBase<bool>",
+    "maxlength": "exposed as MaxLength on WaInputBase (idiomatic .NET casing); mapped via attributeOverrides",
+    "minlength": "exposed as MinLength on WaInputBase (idiomatic .NET casing); mapped via attributeOverrides",
+    "getSymbol": "function-valued property (custom symbol renderer callback), not an authorable HTML attribute",
+    "currentSlide": "read-only JS state property of wa-carousel, not an authorable HTML attribute",
+    "slides": "read-only JS collection property of wa-carousel, not an authorable HTML attribute",
+    "submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute",
+    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19), not CEM-documented"
   }
 }
-
-
-
-

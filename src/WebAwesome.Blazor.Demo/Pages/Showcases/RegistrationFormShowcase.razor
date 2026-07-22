@@ -1,0 +1,170 @@
+@page "/showcases/registration-form"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Showcase: Registration Form</PageTitle>
+
+<h1>Nova Summit 2026 — Registration</h1>
+<p>
+    A realistic event-registration form demonstrating every Web Awesome form control inside a single
+    <code>EditForm</code> with <code>DataAnnotationsValidator</code>-backed validation.
+</p>
+
+<WaVisuallyHidden>All fields marked required must be completed before the registration can be submitted.</WaVisuallyHidden>
+
+@if (submitted)
+{
+    <WaCallout Variant="WaVariant.Success" IconName="circle-check">
+        <strong>You're in, @model.FullName!</strong><br />
+        Your @model.TicketType ticket for the @model.Track track is reserved. A confirmation was sent
+        to @model.Email. See you at Nova Summit 2026!
+    </WaCallout>
+    <div style="margin-top: var(--wa-space-m);">
+        <WaButton Appearance="WaAppearance.Outlined" OnClick="ResetForm">Register another attendee</WaButton>
+    </div>
+}
+else
+{
+    <WaCard WithHeader="true" WithFooter="true">
+        <HeaderContent>
+            <WaFlank>
+                <WaIcon Name="ticket" Variant="solid" Style="font-size: 1.5rem; color: var(--wa-color-brand-fill-loud);" />
+                <div>
+                    <WaText Variant="TextVariant.Heading" Size="TextSize.L" Element="h2">Attendee details</WaText>
+                    <WaText Variant="TextVariant.Caption">March 12–14, 2026 · Meridian Convention Center</WaText>
+                </div>
+            </WaFlank>
+        </HeaderContent>
+        <ChildContent>
+            <EditForm EditContext="editContext">
+                <DataAnnotationsValidator />
+
+                <WaStack Gap="GapSize.Gap_L">
+                    <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
+                        <WaInput Label="Full name" Hint="As it should appear on your badge" StartIconName="user"
+                                 Placeholder="Ada Lovelace" @bind-Value="model.FullName" />
+                        <WaInput Label="Work e-mail" Hint="Your ticket and schedule will be sent here" StartIconName="envelope"
+                                 Type="WaInputType.Email" Placeholder="ada@example.com" @bind-Value="model.Email" />
+                    </WaGrid>
+
+                    <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
+                        <WaSelect Label="Conference track" Hint="You can switch talks freely within your track"
+                                  StartIconName="map" Placeholder="Pick a track" @bind-Value="model.Track">
+                            <WaOption Value="platform">Platform engineering</WaOption>
+                            <WaOption Value="frontend">Frontend &amp; design systems</WaOption>
+                            <WaOption Value="ai">Applied AI</WaOption>
+                            <WaOption Value="leadership">Engineering leadership</WaOption>
+                        </WaSelect>
+
+                        <WaRadioGroup Label="Ticket type" Hint="Team tickets include a shared workspace"
+                                      Name="ticket-type" @bind-Value="model.TicketType">
+                            <WaRadio Value="standard">Standard</WaRadio>
+                            <WaRadio Value="pro">Pro (incl. workshops)</WaRadio>
+                            <WaRadio Value="team">Team (5 seats)</WaRadio>
+                        </WaRadioGroup>
+                    </WaGrid>
+
+                    <WaTextArea Label="Dietary requirements &amp; accessibility notes"
+                                Hint="Shared only with the catering and venue teams" Rows="3"
+                                Placeholder="e.g. vegetarian, step-free access" @bind-Value="model.Notes" />
+
+                    <WaDivider />
+
+                    <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
+                        <WaSlider Label="Workshop sessions" Hint="How many hands-on workshops do you plan to attend?"
+                                  Min="0" Max="4" Step="1" WithMarkers="true" WithTooltip="true" @bind-Value="model.Workshops" />
+                        <WaRange Label="Years of professional experience" Hint="Helps us balance workshop groups"
+                                 Min="0" Max="30" Step="1" @bind-Value="model.ExperienceYears" />
+                    </WaGrid>
+
+                    <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
+                        <WaRating Label="How excited are you about Nova Summit?" Precision="0.5m" @bind-Value="model.Excitement" />
+                        <WaColorPicker Label="Badge accent color" Hint="Printed on the lanyard edge of your badge"
+                                       Swatches="#4a7dff; #16a34a; #d97706; #dc2626; #7c3aed" @bind-Value="model.BadgeColor" />
+                    </WaGrid>
+
+                    <WaDivider />
+
+                    <WaStack Gap="GapSize.Gap_S">
+                        <WaCheckbox @bind-Value="model.AcceptTerms">
+                            I accept the <a href="#" @onclick:preventDefault>code of conduct</a> and terms of attendance
+                        </WaCheckbox>
+                        <WaSwitch Hint="Roughly one e-mail per month, no spam" @bind-Value="model.Newsletter">
+                            Keep me posted about future Meridian Labs events
+                        </WaSwitch>
+                    </WaStack>
+
+                    <ValidationSummary />
+                </WaStack>
+            </EditForm>
+        </ChildContent>
+        <FooterContent>
+            <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+                <WaButton Variant="WaVariant.Brand" StartIconName="paper-plane" OnClick="SubmitAsync">Complete registration</WaButton>
+                <WaButton Appearance="WaAppearance.Plain" OnClick="ResetForm">Clear form</WaButton>
+            </WaCluster>
+        </FooterContent>
+    </WaCard>
+}
+
+@code {
+    private RegistrationModel model = new();
+    private EditContext editContext = null!;
+    private bool submitted;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(model);
+    }
+
+    private Task SubmitAsync()
+    {
+        // run DataAnnotations validation; the success callout replaces the card only when everything is valid
+        if (editContext.Validate())
+        {
+            submitted = true;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void ResetForm()
+    {
+        model = new RegistrationModel();
+        editContext = new EditContext(model);
+        submitted = false;
+    }
+
+    private class RegistrationModel
+    {
+        [Required(ErrorMessage = "Please enter your full name.")]
+        [StringLength(60, ErrorMessage = "Names on badges are limited to 60 characters.")]
+        public string? FullName { get; set; }
+
+        [Required(ErrorMessage = "Please enter your e-mail address.")]
+        [EmailAddress(ErrorMessage = "That doesn't look like a valid e-mail address.")]
+        public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Please choose a conference track.")]
+        public string? Track { get; set; }
+
+        [Required(ErrorMessage = "Please pick a ticket type.")]
+        public string? TicketType { get; set; }
+
+        [StringLength(300, ErrorMessage = "Notes are limited to 300 characters.")]
+        public string? Notes { get; set; }
+
+        public decimal? Workshops { get; set; } = 1;
+
+        public decimal ExperienceYears { get; set; } = 5;
+
+        public decimal Excitement { get; set; } = 4;
+
+        public string BadgeColor { get; set; } = "#4a7dff";
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the code of conduct to attend.")]
+        public bool AcceptTerms { get; set; }
+
+        public bool Newsletter { get; set; } = true;
+    }
+}

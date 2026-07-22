@@ -43,6 +43,8 @@ public enum WaInputAppearance
     Outlined,
     /// <summary>Draws the input with a filled background.</summary>
     Filled,
+    /// <summary>Draws the input with both an outline and a filled background.</summary>
+    FilledOutlined,
 }
 /// <summary>
 /// Visual appearance style for Web Awesome components
@@ -72,9 +74,9 @@ public static class WaAppearanceExt
     /// Converts the value to the string used by the underlying HTML/CSS appearance token.
     /// </summary>
     /// <param name="appearance">The appearance value to convert</param>
-    /// <returns>The lowercase string representation, with <see cref="WaAppearance.OutlinedFilled"/> rendered as "outlined filled"</returns>
+    /// <returns>The lowercase string representation, with <see cref="WaAppearance.OutlinedFilled"/> rendered as "filled-outlined"</returns>
     public static string ToStringForHtml(this WaAppearance appearance)
-        => appearance == WaAppearance.OutlinedFilled ? "outlined filled" : appearance.ToString().ToLowerInvariant();
+        => appearance == WaAppearance.OutlinedFilled ? "filled-outlined" : appearance.ToString().ToLowerInvariant();
 }
 
 /// <summary>
@@ -661,6 +663,28 @@ public enum WaIconPlacement
 }
 
 /// <summary>
+/// Placement of the navigation in the mobile viewport for the page component.
+/// </summary>
+public enum WaPageNavigationPlacement
+{
+    /// <summary>Places the navigation at the logical start edge.</summary>
+    Start,
+    /// <summary>Places the navigation at the logical end edge.</summary>
+    End
+}
+
+/// <summary>
+/// View mode of the page component, reflecting its width relative to the mobile breakpoint.
+/// </summary>
+public enum WaPageView
+{
+    /// <summary>The page is narrower than the mobile breakpoint.</summary>
+    Mobile,
+    /// <summary>The page is at least as wide as the mobile breakpoint.</summary>
+    Desktop
+}
+
+/// <summary>
 /// Selection behavior for the tree component
 /// </summary>
 public enum WaTreeSelection
@@ -722,7 +746,7 @@ public static class WaEnumExtensions
     /// Converts the value to its Web Awesome attribute string.
     /// </summary>
     /// <param name="appearance">The appearance value to convert</param>
-    /// <returns>The attribute string, e.g. "filled" or "outlined filled"</returns>
+    /// <returns>The attribute string, e.g. "filled" or "filled-outlined"</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="appearance"/> is not a defined enum value</exception>
     public static string ToHtmlValue(this WaAppearance appearance)
     {
@@ -730,7 +754,7 @@ public static class WaEnumExtensions
         {
             WaAppearance.Filled => "filled",
             WaAppearance.Outlined => "outlined",
-            WaAppearance.OutlinedFilled => "outlined filled",
+            WaAppearance.OutlinedFilled => "filled-outlined",
             WaAppearance.Text => "text",
             WaAppearance.Plain => "plain",
             WaAppearance.Accent => "accent",
@@ -750,6 +774,7 @@ public static class WaEnumExtensions
         {
             WaInputAppearance.Outlined => "outlined",
             WaInputAppearance.Filled => "filled",
+            WaInputAppearance.FilledOutlined => "filled-outlined",
             _ => throw new ArgumentOutOfRangeException(nameof(appearance), appearance, null)
         };
     }
@@ -1401,6 +1426,38 @@ public static class WaEnumExtensions
             WaTreeSelection.Multiple => "multiple",
             WaTreeSelection.Leaf => "leaf",
             _ => throw new ArgumentOutOfRangeException(nameof(selection), selection, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="placement">The page navigation placement value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "start"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="placement"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaPageNavigationPlacement placement)
+    {
+        return placement switch
+        {
+            WaPageNavigationPlacement.Start => "start",
+            WaPageNavigationPlacement.End => "end",
+            _ => throw new ArgumentOutOfRangeException(nameof(placement), placement, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="view">The page view value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "desktop"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="view"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaPageView view)
+    {
+        return view switch
+        {
+            WaPageView.Mobile => "mobile",
+            WaPageView.Desktop => "desktop",
+            _ => throw new ArgumentOutOfRangeException(nameof(view), view, null)
         };
     }
 }

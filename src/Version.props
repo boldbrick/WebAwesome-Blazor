@@ -39,10 +39,10 @@
 
   <!-- Framework targeting: net10.0 (LTS) is the primary target, net9.0 kept for compatibility;
        applications target net10.0 only -->
+  <!-- no RuntimeFrameworkVersion pinning: the baseline x.0.0 runtime of each target major applies,
+       consistent with the dependency floors policy (docs\technical.md) -->
   <PropertyGroup Condition="'$(BbComponentGroup)' != 'Apps'">
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
-    <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net9.0'">9.0.8</RuntimeFrameworkVersion>
-    <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net10.0'">10.0.10</RuntimeFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BbComponentGroup)' == 'Apps'">
     <TargetFramework>net10.0</TargetFramework>
@@ -65,7 +65,7 @@
     <Copyright>Copyright © 2025–$([System.DateTime]::Today.Year) $(Company) and contributors</Copyright>
 
     <!-- version numbers - these flow SDK-style projects -->
-    <Version>3.0.0-beta.6</Version>
+    <Version>3.0.0</Version>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
     <!-- full semver, readable at runtime (WebAwesomeOptions derives the default CDN version from it) -->

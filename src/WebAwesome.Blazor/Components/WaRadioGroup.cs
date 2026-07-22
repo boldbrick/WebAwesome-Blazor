@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -25,6 +25,16 @@ public class WaRadioGroup : WaInputBase<string?>
     /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
 
+    /// <summary>
+    /// Reserves space for the hint even when it is not populated.
+    /// </summary>
+    [Parameter] public bool WithHint { get; set; }
+
+    /// <summary>
+    /// Reserves space for the label even when it is not populated.
+    /// </summary>
+    [Parameter] public bool WithLabel { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -33,6 +43,11 @@ public class WaRadioGroup : WaInputBase<string?>
     /// Invoked when the radio group's selected value changes.
     /// </summary>
     [Parameter] public EventCallback<string?> OnValueChange { get; set; }
+
+    /// <summary>
+    /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
     #endregion
 
@@ -58,6 +73,8 @@ public class WaRadioGroup : WaInputBase<string?>
         // Add radio group specific attributes
         builder.AddAttributeIfNotNullOrEmpty(20, "name", Name);
         builder.AddAttributeIfNotNull(21, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttribute(22, "with-hint", WithHint);
+        builder.AddAttribute(23, "with-label", WithLabel);
 
         // Add value binding
         builder.AddAttribute(30, "value", CurrentValueAsString);
@@ -68,11 +85,11 @@ public class WaRadioGroup : WaInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add radio group specific event handlers
-        if (OnValueChange.HasDelegate)
-            builder.AddAttribute(50, "wa-change", OnValueChange);
+        builder.AddAttributeIfHasDelegate(50, "onwa-change", OnValueChange);
+        builder.AddAttributeIfHasDelegate(52, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
-        builder.AddElementReferenceCapture(51, __radioGroupReference => Element = __radioGroupReference);
+        builder.AddElementReferenceCapture(53, __radioGroupReference => Element = __radioGroupReference);
 
         // Add child content (radio buttons)
         if (ChildContent is not null)
@@ -92,6 +109,23 @@ public class WaRadioGroup : WaInputBase<string?>
         result = value;
         validationErrorMessage = null;
         return true;
+    }
+
+    #endregion
+
+    #region ------ Public Methods ------
+
+    /// <summary>
+    /// Sets focus on the radio group.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task FocusAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
     }
 
     #endregion

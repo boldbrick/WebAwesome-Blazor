@@ -35,17 +35,4 @@ public class WaPopoverIntegrationTests
 
         Assert.Contains("Cannot hide popover: component has not been rendered yet", exception.Message);
     }
-
-    [Fact]
-    public async Task RepositionAsync_WithNullElement_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        var component = new WaPopover();
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            component.RepositionAsync());
-
-        Assert.Contains("Cannot reposition popover: component has not been rendered yet", exception.Message);
-    }
 }

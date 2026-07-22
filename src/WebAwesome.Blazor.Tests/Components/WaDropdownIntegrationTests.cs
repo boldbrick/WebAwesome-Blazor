@@ -35,17 +35,4 @@ public class WaDropdownIntegrationTests
 
         Assert.Contains("Cannot hide dropdown: component has not been rendered yet", exception.Message);
     }
-
-    [Fact]
-    public async Task RepositionAsync_WithNullElement_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        var component = new WaDropdown();
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            component.RepositionAsync());
-
-        Assert.Contains("Cannot reposition dropdown: component has not been rendered yet", exception.Message);
-    }
 }

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -26,13 +26,13 @@ public class WaTabGroup : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -63,6 +63,11 @@ public class WaTabGroup : ComponentBase
     /// </summary>
     [Parameter] public WaActivation Activation { get; set; } = WaActivation.Auto;
 
+    /// <summary>
+    /// Disables the scroll arrows that appear when tabs overflow the tab group's width.
+    /// </summary>
+    [Parameter] public bool WithoutScrollControls { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -73,9 +78,14 @@ public class WaTabGroup : ComponentBase
     [Parameter] public EventCallback<WaTabChangeEventArgs> OnTabChange { get; set; }
 
     /// <summary>
-    /// Invoked when a closable tab's close button is activated.
+    /// Invoked when a tab panel is shown.
     /// </summary>
-    [Parameter] public EventCallback<WaTabCloseEventArgs> OnTabClose { get; set; }
+    [Parameter] public EventCallback<WaTabChangeEventArgs> OnTabShow { get; set; }
+
+    /// <summary>
+    /// Invoked when a tab panel is hidden.
+    /// </summary>
+    [Parameter] public EventCallback<WaTabChangeEventArgs> OnTabHide { get; set; }
 
     #endregion
 
@@ -107,13 +117,15 @@ public class WaTabGroup : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(4, "active", Active);
         builder.AddAttribute(5, "placement", Placement.ToHtmlValue());
         builder.AddAttribute(6, "activation", Activation.ToHtmlValue());
+        builder.AddAttribute(9, "without-scroll-controls", WithoutScrollControls);
 
-        // Add event handlers
-        if (OnTabChange.HasDelegate)
-            builder.AddAttribute(7, "wa-tab-change", OnTabChange);
+        // Add event handlers; the element emits wa-tab-show/wa-tab-hide only (there is no
+        // wa-tab-change or wa-tab-close event in Web Awesome 3.0), so OnTabChange is served
+        // by the same browser event as OnTabShow
+        if (OnTabShow.HasDelegate || OnTabChange.HasDelegate)
+            builder.AddAttribute(11, "onwa-tab-show", EventCallback.Factory.Create<WaTabChangeEventArgs>(this, HandleTabShownAsync));
 
-        if (OnTabClose.HasDelegate)
-            builder.AddAttribute(8, "wa-tab-close", OnTabClose);
+        builder.AddAttributeIfHasDelegate(12, "onwa-tab-hide", OnTabHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __tabGroupReference => Element = __tabGroupReference);
@@ -171,6 +183,13 @@ public class WaTabGroup : ComponentBase
             classes.Add(Class);
 
         return string.Join(' ', classes);
+    }
+
+    // one wa-tab-show browser event serves both callbacks
+    private async Task HandleTabShownAsync(WaTabChangeEventArgs args)
+    {
+        await OnTabShow.InvokeAsync(args);
+        await OnTabChange.InvokeAsync(args);
     }
 
     #endregion

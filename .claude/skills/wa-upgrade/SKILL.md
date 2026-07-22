@@ -9,7 +9,7 @@ argument-hint: [target-version|next] [--dry-run] [--publish]
 
 # Web Awesome Bindings Upgrade Pipeline
 
-Execute a **no-touch upgrade** of the WebAwesome.Blazor bindings to a new Web Awesome release, per these instructions and your orchestrator rules. Work autonomously; only stop for genuinely unresolvable conflicts. Full background: `docs\UPGRADE-PROCESS.md`. Wrapper authoring contract: `docs\prompts\WA-3.0\build-wa-blazor-wrappers.md` + `CLAUDE.md`.
+Execute a **no-touch upgrade** of the WebAwesome.Blazor bindings to a new Web Awesome release, per these instructions and your orchestrator rules. Work autonomously; only stop for genuinely unresolvable conflicts. Full background: `docs\UPGRADE-PROCESS.md`. Wrapper authoring contract: `docs\technical.md` + `CLAUDE.md`.
 
 ## Arguments
 
@@ -23,7 +23,12 @@ Invocation arguments: `$ARGUMENTS`
 
 **Gradual-upgrade rule (hard):** never skip a downloaded release. If the requested target is not the immediate next downloaded version above the current one, refuse and state which version must be done first.
 
-**Train rule:** `<major.minor>` in branch, epic, and folder names is taken from the **target** version, matching the existing casing convention (`/main/WA-3.0`). If the subtrunk `/main/WA-<major.minor>` does not exist yet, create it off the previous train's subtrunk, create the matching WAB epic (`Web Awesome <major.minor>`), and create `docs\prompts\WA-<major.minor>\`.
+**Train rule:** `<major.minor>` in branch, epic, and folder names is taken from the **target** version, matching the existing casing convention (`/main/WA-3.0`). If the subtrunk `/main/WA-<major.minor>` does not exist yet:
+
+1. **Release gate (hard):** a new train may only start once the previous train has been **released** — the head of the previous train's subtrunk merged (promoted) into `/main`, so that the version in `src\Version.props` at the head of `/main` equals the previous train's released version. Verify this via `infra-ops:plastic-ops`. If the previous subtrunk carries unreleased, unmerged version work, **refuse to create the new train** and report what is pending — promotion of a subtrunk to `/main` is a deliberate owner release step, never done by this pipeline. Sole exception: pending **patch** work (`x.y.z`, `z > 0`, on top of a version already released to `/main`) on the previous subtrunk does not block a new train; note it in the report.
+2. Create the new subtrunk **off `/main`** — never off the previous train's subtrunk — then create the matching WAB epic (`Web Awesome <major.minor>`) and `tasks\WA-<major.minor>\`.
+
+**Patch release rule:** a patch release is developed on its train's existing subtrunk (e.g. `3.0.1` on `/main/WA-3.0`) and released by labeling `wa-blazor-<x.y.z>` **on that subtrunk** — `/main` is not involved and receives only `<major.minor>.0` promotions. A fix that matters to newer trains is merged from the older subtrunk **directly into** the newer one (e.g. `/main/WA-3.0` → `/main/WA-3.1`), skipping `/main`.
 
 ## Phase 0 — Preflight
 
@@ -65,7 +70,7 @@ Notes:
 
 **Pro-source rule (hard):** everything extracted from the Pro release zips stays under `temp\` (ignored by Plastic and git). The only CEM-derived artifact ever checked in is the API surface JSON (names, types, defaults, doc descriptions — no implementation code); plan documents and migration guides may describe APIs but must never embed upstream JS/TS/CSS source.
 
-Produce the plan document `docs\prompts\WA-<major.minor>\upgrade-v<current>-to-v<target>-plan.md` following the structure of `upgrade-v3-beta-4-to-beta-6-plan.md`: phased change list (breaking → new components → enhancements), per-file actions, validation checklist, risks.
+Produce the plan document `tasks\WA-<major.minor>\WAB-<n>\upgrade-v<current>-to-v<target>-plan.md` (n = this upgrade's JIRA task from Phase 1; create the task folder if missing) following the structure of `tasks\WA-3.0\WAB-4\upgrade-v3-beta-4-to-beta-6-plan.md`: phased change list (breaking → new components → enhancements), per-file actions, validation checklist, risks.
 
 If `--dry-run`, stop here — but leave a clean, resumable state: check in the plan document on the task branch (comment: `Upgrade plan for Web Awesome <target>`), add a JIRA comment linking the plan, leave the task In Progress, and report that ticket `WAB-<n>` and branch `/main/WA-<major.minor>/WAB-<n>` were created and will be reused by the real run.
 
@@ -85,15 +90,19 @@ Follow the plan document, in this order, checking in per phase (check-in rules a
 2. **New components**: delegate to the **wa-wrapper-engineer** agent (`.claude\agents\wa-wrapper-engineer.md`), in groups of at most 10 components per agent, giving each agent the relevant `addedComponents` excerpt of the change report. Run agents for independent groups in parallel.
 3. **Modified components** (additive changes): new attributes/events/slots/methods on existing wrappers — also via wa-wrapper-engineer with the `modifiedComponents` excerpts.
 4. **Intentional deviations**: where the Blazor wrapper deliberately deviates (e.g. an attribute covered by `InputBase.Value`, an event folded into one callback, a native attribute passed through via `AdditionalAttributes`), record it in `parity-config.json`: add the member to the component's `ignoredAttributes`/`ignoredEvents`/`ignoredMethods` list (or an `attributeOverrides`/`eventOverrides` mapping for a deliberate rename), **and** add a matching entry with the rationale to the top-level `ignoreReasons` map — never silence a gap without a reason.
-5. Iterate `dotnet build` + `dotnet test` until parity tests and the whole suite are green.
+5. **Event delivery contract**: every newly bound `wa-*` event uses the `onwa-` attribute prefix and is registered in `src\WebAwesome.Blazor\wwwroot\WebAwesome.Blazor.lib.module.js` (with a `specialArgs` payload mapping when the detail carries DOM nodes or the typed args need derived values); event args classes inherit `System.EventArgs`. `EventBindingRegistrationTests` fails on violations.
+6. **Element method audit**: every JS element method a wrapper invokes must exist in the target CEM or be allowlisted in `parity-config.json` (`extraElementMethods`) with a reason; **re-verify every existing `extraElementMethods` entry against the target version's source** (these are exactly the methods the CEM diff cannot see — the observers' `stopObserver`/`startObserver` rename shipped through this hole). `ElementMethodInvocationTests` enforces the allowlist.
+7. Iterate `dotnet build` + `dotnet test` until parity tests and the whole suite are green.
 
 ## Phase 5 — Tests and docs
 
-1. Delegate to the **wa-test-engineer** agent (`.claude\agents\wa-test-engineer.md`): integration tests for each new component (pattern: existing `Wa*IntegrationTests.cs`), breaking-change validation tests for this version, updates to affected existing tests.
+1. Delegate to the **wa-test-engineer** agent (`.claude\agents\wa-test-engineer.md`): integration tests for each new component (pattern: existing `Wa*IntegrationTests.cs`), breaking-change validation tests for this version, updates to affected existing tests. **Coverage rule for new form controls:** every new wrapper deriving from `WaInputBase<T>`/`InputBase<T>` additionally gets bUnit EditForm integration coverage (pattern: the form-control tests under `src\WebAwesome.Blazor.Tests\Base\` — binding, change propagation, validation lifecycle, custom validity).
 2. If there are breaking changes, write `docs\MIGRATION-<target-version>.md` following `docs\MIGRATION-3.0.0-beta.6.md` (breaking changes, new features, checklist, find/replace patterns).
 3. Draft the `docs\CHANGELOG.md` entry for `<target>` from the change report (`temp\wa-api\changes_*.json`/`.md`): a `## [<target>] — <date>` section with `### Breaking changes` (verbatim from `breakingChanges`), `### New components`, `### Changed`, `### Library` subsections per the existing entries' style, plus a link to the migration doc when one exists. Fold any accumulated `## [Unreleased]` items into the new section.
-4. Demo pages: run `tools\demo\New-WaDemoPages.ps1 -PruneRemoved` — new components get skeleton demo pages (TODO-marked; curating them is deliberate follow-up work, not part of the upgrade), removed components' pages are deleted. The demo project must build.
-5. Full suite green: `dotnet build` Debug **and** Release (includes the demo app), `dotnet test`.
+4. Demo pages: run `tools\demo\New-WaDemoPages.ps1 -PruneRemoved` — new components get skeleton demo pages (TODO-marked; curating them is deliberate follow-up work, not part of the upgrade), removed components' pages are deleted. The demo project must build. Additionally review the curated showcase pages (`src\WebAwesome.Blazor.Demo\Pages\Showcases\`, when present): components **removed** by the upgrade must be removed from showcases (they would break the build); components **added** are noted in the plan document as showcase-curation follow-up work, and any new *form control* should be added to the form showcase in the same run when the addition is mechanical.
+5. **Public API snapshot**: the intentional API changes of this upgrade will fail `PublicApiSnapshotTests` — diff the emitted `received-public-api.txt` against the baseline, confirm every difference is explained by the change report, promote it to `src\WebAwesome.Blazor.Tests\PublicApi\approved-public-api.txt`, and mention notable surface changes in the CHANGELOG entry. Never promote a diff containing changes the report does not explain.
+6. Full suite green: `dotnet build` Debug **and** Release (includes the demo app), `dotnet test`.
+7. **Browser verification**: start the demo (`dotnet run --project src\WebAwesome.Blazor.Demo --configuration Debug --no-build`) and run the Playwright suite from `tools\e2e` (`npm test`; first run may need `npm install` + `npm run install-browsers`). The sweep must be green — it catches the runtime/DOM classes of bug (JS interop failures, event delivery, real rendering) that neither the build nor bUnit can see. Stop the demo afterwards.
 
 ## Phase 6 — Check in and deliver
 

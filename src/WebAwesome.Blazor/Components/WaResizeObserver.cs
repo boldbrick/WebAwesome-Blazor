@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -32,13 +32,13 @@ public class WaResizeObserver : ComponentBase
     /// <summary>
     /// The associated <see cref="ElementReference"/>.
     /// <para>
-    /// May be <see langword="null"/> if accessed before the component is rendered.
+    /// May be null if accessed before the component is rendered.
     /// </para>
     /// </summary>
     [DisallowNull] public ElementReference? Element { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
+    /// A collection of additional attributes that will be applied to the created element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -95,8 +95,7 @@ public class WaResizeObserver : ComponentBase
         builder.AddAttribute(10, "disabled", Disabled);
 
         // Add event handlers
-        if (OnResize.HasDelegate)
-            builder.AddAttribute(20, "wa-resize", OnResize);
+        builder.AddAttributeIfHasDelegate(20, "onwa-resize", OnResize);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __observerReference => Element = __observerReference);
