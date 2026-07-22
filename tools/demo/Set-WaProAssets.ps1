@@ -28,8 +28,10 @@ Precedence when several are set: WA_PRO_DIST, then WA_PRO_CDN_BASE, then the exp
 With -Clear, the generated file and the copied dist folder are removed and the demo falls back
 to the committed default (free CDN, library version).
 
-The generated file is consumed by both demo hosts: the WebAssembly host fetches it at startup,
-the server host loads it as an optional configuration file. NEVER check the generated file in.
+The override is generated in two places, one per demo host: the WebAssembly host fetches
+wwwroot\appsettings.Local.json over HTTP at startup, while the server host
+(WebAwesome.Blazor.Demo.Server) loads appsettings.Local.json from its own content root as an
+optional configuration file. NEVER check the generated files in.
 
 .PARAMETER Clear
 Remove the generated override and copied dist folder.
@@ -53,11 +55,19 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $wwwroot = Join-Path $RepoRoot 'src\WebAwesome.Blazor.Demo\wwwroot'
-$settingsPath = Join-Path $wwwroot 'appsettings.Local.json'
 $distTarget = Join-Path $wwwroot 'webawesome'
 
+# two consumers, two locations: the WebAssembly host fetches the file from its wwwroot over HTTP,
+# the server host (WebAwesome.Blazor.Demo.Server) loads it from its own content root
+$settingsPaths = @(
+    (Join-Path $wwwroot 'appsettings.Local.json'),
+    (Join-Path $RepoRoot 'src\WebAwesome.Blazor.Demo.Server\appsettings.Local.json')
+)
+
 if ($Clear) {
-    if (Test-Path $settingsPath) { Remove-Item $settingsPath -Force }
+    foreach ($path in $settingsPaths) {
+        if (Test-Path $path) { Remove-Item $path -Force }
+    }
     if (Test-Path $distTarget) { Remove-Item $distTarget -Recurse -Force }
     Write-Output 'Pro asset override cleared - demo uses the committed default (free CDN).'
     return
@@ -114,5 +124,9 @@ else {
     throw 'Set WA_PRO_DIST, WA_PRO_CDN_BASE, or both WA_PRO_STYLESHEET_URL and WA_PRO_LOADER_URL, before running this script (or use -Clear).'
 }
 
-$settings | ConvertTo-Json -Depth 5 | Out-File $settingsPath -Encoding utf8
-Write-Output "Wrote $settingsPath ($mode). This file is ignored by version control - never check it in."
+$json = $settings | ConvertTo-Json -Depth 5
+foreach ($path in $settingsPaths) {
+    $json | Out-File $path -Encoding utf8
+    Write-Output "Wrote $path ($mode)."
+}
+Write-Output 'These files are ignored by version control - never check them in.'
