@@ -9,7 +9,7 @@ argument-hint: [target-version|next] [--dry-run] [--publish]
 
 # Web Awesome Bindings Upgrade Pipeline
 
-Execute a **no-touch upgrade** of the WebAwesome.Blazor bindings to a new Web Awesome release, per these instructions and your orchestrator rules. Work autonomously; only stop for genuinely unresolvable conflicts. Full background: `docs\UPGRADE-PROCESS.md`. Wrapper authoring contract: `docs\prompts\WA-3.0\build-wa-blazor-wrappers.md` + `CLAUDE.md`.
+Execute a **no-touch upgrade** of the WebAwesome.Blazor bindings to a new Web Awesome release, per these instructions and your orchestrator rules. Work autonomously; only stop for genuinely unresolvable conflicts. Full background: `docs\UPGRADE-PROCESS.md`. Wrapper authoring contract: `docs\technical.md` + `CLAUDE.md`.
 
 ## Arguments
 
@@ -26,7 +26,7 @@ Invocation arguments: `$ARGUMENTS`
 **Train rule:** `<major.minor>` in branch, epic, and folder names is taken from the **target** version, matching the existing casing convention (`/main/WA-3.0`). If the subtrunk `/main/WA-<major.minor>` does not exist yet:
 
 1. **Release gate (hard):** a new train may only start once the previous train has been **released** — the head of the previous train's subtrunk merged (promoted) into `/main`, so that the version in `src\Version.props` at the head of `/main` equals the previous train's released version. Verify this via `infra-ops:plastic-ops`. If the previous subtrunk carries unreleased, unmerged version work, **refuse to create the new train** and report what is pending — promotion of a subtrunk to `/main` is a deliberate owner release step, never done by this pipeline. Sole exception: pending **patch** work (`x.y.z`, `z > 0`, on top of a version already released to `/main`) on the previous subtrunk does not block a new train; note it in the report.
-2. Create the new subtrunk **off `/main`** — never off the previous train's subtrunk — then create the matching WAB epic (`Web Awesome <major.minor>`) and `docs\prompts\WA-<major.minor>\`.
+2. Create the new subtrunk **off `/main`** — never off the previous train's subtrunk — then create the matching WAB epic (`Web Awesome <major.minor>`) and `tasks\WA-<major.minor>\`.
 
 **Patch release rule:** a patch release is developed on its train's existing subtrunk (e.g. `3.0.1` on `/main/WA-3.0`) and released by labeling `wa-blazor-<x.y.z>` **on that subtrunk** — `/main` is not involved and receives only `<major.minor>.0` promotions. A fix that matters to newer trains is merged from the older subtrunk **directly into** the newer one (e.g. `/main/WA-3.0` → `/main/WA-3.1`), skipping `/main`.
 
@@ -70,7 +70,7 @@ Notes:
 
 **Pro-source rule (hard):** everything extracted from the Pro release zips stays under `temp\` (ignored by Plastic and git). The only CEM-derived artifact ever checked in is the API surface JSON (names, types, defaults, doc descriptions — no implementation code); plan documents and migration guides may describe APIs but must never embed upstream JS/TS/CSS source.
 
-Produce the plan document `docs\prompts\WA-<major.minor>\upgrade-v<current>-to-v<target>-plan.md` following the structure of `upgrade-v3-beta-4-to-beta-6-plan.md`: phased change list (breaking → new components → enhancements), per-file actions, validation checklist, risks.
+Produce the plan document `tasks\WA-<major.minor>\WAB-<n>\upgrade-v<current>-to-v<target>-plan.md` (n = this upgrade's JIRA task from Phase 1; create the task folder if missing) following the structure of `tasks\WA-3.0\WAB-4\upgrade-v3-beta-4-to-beta-6-plan.md`: phased change list (breaking → new components → enhancements), per-file actions, validation checklist, risks.
 
 If `--dry-run`, stop here — but leave a clean, resumable state: check in the plan document on the task branch (comment: `Upgrade plan for Web Awesome <target>`), add a JIRA comment linking the plan, leave the task In Progress, and report that ticket `WAB-<n>` and branch `/main/WA-<major.minor>/WAB-<n>` were created and will be reused by the real run.
 

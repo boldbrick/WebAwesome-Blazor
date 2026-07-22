@@ -44,13 +44,13 @@ To walk the whole train (e.g. 3.0.0 → 3.10.0), run `/wa-upgrade next --publish
 
 ## Pipeline phases
 
-Phase numbers match the skill (0–6). `<major.minor>` is always taken from the **target** version; when a new train starts, the subtrunk, WAB epic, and `docs\prompts\WA-<major.minor>\` folder are created as part of preflight/ticketing. Versions are compared by SemVer precedence (`3.0.0-beta.6 < 3.0.0`, `3.2.0 < 3.10.0`).
+Phase numbers match the skill (0–6). `<major.minor>` is always taken from the **target** version; when a new train starts, the subtrunk, WAB epic, and `tasks\WA-<major.minor>\` folder are created as part of preflight/ticketing. Versions are compared by SemVer precedence (`3.0.0-beta.6 < 3.0.0`, `3.2.0 < 3.10.0`).
 
 A new train's subtrunk is created **off `/main`**, and only behind the **release gate**: the previous train must have been released first (its subtrunk head promoted to `/main`); otherwise the pipeline refuses to start the new train. Pending *patch* work (`x.y.z` on top of an already-released version) on the old subtrunk is the one allowed exception — patch releases are developed and tagged on their train's subtrunk (never promoted to `/main`), and a fix that matters to newer trains is merged from the older subtrunk directly into the newer one.
 
 0. **Preflight** — clean Plastic workspace, on the subtrunk (`/main/WA-<major.minor>`) or this upgrade's own task branch (resume), baseline build + tests green, target version validated against the gradual-upgrade rule.
 1. **Ticket & branch** (idempotent — reruns reuse existing) — JIRA Task `WA bindings for <version>` under the train's epic (e.g. WAB-1) with a `Source tag:` link, moved to In Progress; Plastic task branch `/main/WA-<major.minor>/WAB-<n>` created and switched to.
-2. **Ingest & analyze** — surfaces exported for current and target versions, change report generated, plan document written to `docs\prompts\WA-<major.minor>\upgrade-v<from>-to-v<to>-plan.md`. `inputs\WebAwesome` is refreshed to the target version's documentation: from the public GitHub tag (`packages/webawesome/docs/docs`) for free components, and from `webawesome.com/docs/components/<name>` for Pro components absent there (as of 3.1.0: `combobox`, `page`); the refresh is checked in as its own changeset. `--dry-run` stops here, with the plan document checked in and the ticket/branch left ready for the real run.
+2. **Ingest & analyze** — surfaces exported for current and target versions, change report generated, plan document written to `tasks\WA-<major.minor>\WAB-<n>\upgrade-v<from>-to-v<to>-plan.md`. `inputs\WebAwesome` is refreshed to the target version's documentation: from the public GitHub tag (`packages/webawesome/docs/docs`) for free components, and from `webawesome.com/docs/components/<name>` for Pro components absent there (as of 3.1.0: `combobox`, `page`); the refresh is checked in as its own changeset. `--dry-run` stops here, with the plan document checked in and the ticket/branch left ready for the real run.
 3. **Arm parity & bump** — target surface copied to `ApiParity\expected-api-surface.json`, `parity-config.json` enabled and retargeted, `src\Version.props` + `README.md` bumped, demo app synced (CDN version in `index.html`, surface copy to `wwwroot\data\api-surface.json`). Failing parity tests now enumerate the exact remaining work.
 4. **Implement** — breaking changes first (including deleting wrappers of removed components), then new components, then additive modifications; wrapper work fanned out to `wa-wrapper-engineer` agents in groups of ≤10 components.
 5. **Test & docs** — `wa-test-engineer` adds integration and version-scoped breaking-change tests; `docs\MIGRATION-<version>.md` written when there are breaking changes; the `docs\CHANGELOG.md` entry for the version is drafted from the change report; demo page skeletons generated for new components (`tools\demo\New-WaDemoPages.ps1 -PruneRemoved`); Debug + Release builds and full suite green.
@@ -79,7 +79,7 @@ No Web Awesome Pro source code is ever committed. Release zips and everything ex
 
 - **Branching** (`CONTRIBUTING.md`): work on `/main/WA-<train>/WAB-<n>`; monotonic promotion of subtrunks into `main`; release tags `wa-blazor-<version>`.
 - **Ticketing**: WAB project, Tasks named `WA bindings for <version>` under the train epic, `Source tag:` GitHub link in the description; states In Progress → In Review → Done.
-- **Code style**: `CLAUDE.md` (regions, explicit usings, central package management, constant render-tree sequence numbers per `docs\prompts\WA-3.0\fix-render-tree-numbering.md`).
+- **Code style**: `CLAUDE.md` (regions, explicit usings, central package management) and the wrapper technical standards in `docs\technical.md` (constant render-tree sequence numbers, API conventions, event contract).
 
 ## Coverage gates for newly added components and features
 
