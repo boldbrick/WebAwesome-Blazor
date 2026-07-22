@@ -34,6 +34,21 @@ Add-Gate 'workspace-clean' ($pending.Count -eq 0) ("pending items: {0}" -f $pend
 $statusHeader = (cm status --header 2>&1 | Select-Object -First 1)
 Write-Host ("Workspace position: {0}" -f $statusHeader)
 
+# --- gate: gitsync author mapping --------------------------------------------
+# without an [email-mapping] entry for the current Plastic user, GitSync exports
+# commits with an empty author email and GitHub cannot attribute them to an account
+$plasticUser = (cm whoami 2>&1 | Select-Object -First 1)
+if ($plasticUser) { $plasticUser = $plasticUser.ToString().Trim() }
+$gitsyncConf = Join-Path $env:LOCALAPPDATA 'plastic4\gitsync.conf'
+if ([string]::IsNullOrEmpty($plasticUser)) {
+    Add-Gate 'gitsync-author-mapping' $false 'cm whoami returned no user'
+} elseif (-not (Test-Path $gitsyncConf)) {
+    Add-Gate 'gitsync-author-mapping' $false ("{0} not found (mapping for '{1}' required)" -f $gitsyncConf, $plasticUser)
+} else {
+    $mapped = @(Get-Content $gitsyncConf | Where-Object { $_.TrimStart().StartsWith($plasticUser) })
+    Add-Gate 'gitsync-author-mapping' ($mapped.Count -gt 0) ("mapping for '{0}' in {1}" -f $plasticUser, $gitsyncConf)
+}
+
 # --- gate: version alignment ------------------------------------------------
 [xml]$props = Get-Content src\Version.props
 $version = ($props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
