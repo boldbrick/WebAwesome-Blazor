@@ -5,7 +5,7 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Validation tests for breaking changes in Web Awesome 3.0.0-beta.6 upgrade
+/// Validation tests for breaking changes in Web Awesome 3.0.0-beta.6 and 3.1.0 upgrades
 /// </summary>
 public class WaBreakingChangesValidationTests
 {
@@ -134,12 +134,38 @@ public class WaBreakingChangesValidationTests
         // Act
         component.Label = "Test Group";
         component.Orientation = WaOrientation.Vertical;
-        component.Variant = WaVariant.Brand;
 
         // Assert
         Assert.Equal("Test Group", component.Label);
         Assert.Equal(WaOrientation.Vertical, component.Orientation);
-        Assert.Equal(WaVariant.Brand, component.Variant);
+    }
+
+    #endregion
+
+    #region ------ 3.1.0 Breaking Changes ------
+
+    [Fact]
+    public void WaButtonGroup_DoesNotHaveVariantProperty()
+    {
+        // Arrange & Act
+        var component = new WaButtonGroup();
+        var type = component.GetType();
+
+        // Assert - Variant property was removed in Web Awesome 3.1.0
+        var variantProperty = type.GetProperty("Variant");
+        Assert.Null(variantProperty);
+    }
+
+    [Fact]
+    public void WaButton_DoesNotHaveFormProperty()
+    {
+        // Arrange & Act
+        var component = new WaButton();
+        var type = component.GetType();
+
+        // Assert - Form property was removed in Web Awesome 3.1.0
+        var formProperty = type.GetProperty("Form");
+        Assert.Null(formProperty);
     }
 
     #endregion

@@ -2,6 +2,26 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.1.0] — 2026-07-22
+
+Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](MIGRATION-3.1.0.md) for the migration guide.
+
+### Breaking changes
+- Removed `WaButton.Form` — WA 3.1.0 removed the `form` attribute override from `wa-button` (and from all form controls, where the wrappers never exposed it; Blazor form association goes through `EditForm`/`EditContext`). The other `formaction`/`formmethod`/`formenctype`/`formnovalidate`/`formtarget` overrides remain.
+- Removed `WaButtonGroup.Variant` — WA 3.1.0 removed the `variant` attribute from `wa-button-group`; set variants on the individual buttons instead.
+
+### New components
+- `WaCombobox` (Pro, experimental upstream, new in WA 3.1.0): filterable single/multi-select form control modeled on `WaSelect` — `WaInputBase<string?>` with `WaOption` children, `Multiple` + `SelectedValues`/`SelectedValuesChanged`, `AllowCustomValue`, `MaxOptionsVisible`, `WithClear`, `Pill`, `Appearance`, `Placement`, `Open`, start/end/clear-icon/expand-icon slots, `OnClear`/`OnShow`/`OnHide`/`OnAfterShow`/`OnAfterHide`/`OnInvalid`, and `ShowAsync`/`HideAsync`/`FocusAsync`/`BlurAsync`. All six `wa-*` events were already registered in the JS initializer; no interop changes were needed.
+
+### Changed
+- `WaCard.Appearance` now accepts `WaAppearance.OutlinedFilled` upstream — WA 3.1.0 added `filled-outlined` to the card appearance union; the enum already emitted the token, so this is upstream catching up, not a wrapper change.
+- `wa-page`'s new `visiblePixelsInViewport(element)` method is intentionally not wrapped — it is an internal scroll-gap layout helper taking a live DOM element, not marshalable from Blazor (recorded as a parity deviation).
+
+### Next-release check outcomes (carried from 3.0.0)
+- `WaCheckbox`/`WaSwitch` `.checked` two-way-binding workaround: carried forward unchanged — Blazor-runtime behavior, unaffected by WA 3.1.0.
+- Removed `initialize()` calls: still correct — no WA 3.1.0 element reintroduces an explicit init step.
+- Observer `stopObserver()`/`startObserver()` method names and `wa-relative-time` `update()`: re-verified against the 3.1.0 sources — still present; the allowlist stands.
+
 ## [3.0.0] — 2026-07-22
 
 Alignment with the Web Awesome 3.0.0 stable release, plus the browser-verified correctness sweep that made every `wa-*` event and imperative method actually work. See [MIGRATION-3.0.0.md](MIGRATION-3.0.0.md) for the migration guide.

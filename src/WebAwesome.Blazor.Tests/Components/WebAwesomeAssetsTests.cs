@@ -26,7 +26,7 @@ public class WebAwesomeAssetsTests
         var version = options.ResolveVersion();
 
         // Assert - the library version tracks the bound Web Awesome release
-        Assert.Equal("3.0.0", version);
+        Assert.Equal("3.1.0", version);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class WebAwesomeAssetsTests
         var url = options.ResolveStylesheetUrl();
 
         // Assert
-        Assert.Equal("https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0/dist-cdn/styles/webawesome.css", url);
+        Assert.Equal("https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.1.0/dist-cdn/styles/webawesome.css", url);
     }
 
     [Fact]

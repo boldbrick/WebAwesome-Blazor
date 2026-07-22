@@ -61,6 +61,7 @@ public static class ComponentCategoryMap
 
         ["wa-checkbox"] = "Form Controls",
         ["wa-color-picker"] = "Form Controls",
+        ["wa-combobox"] = "Form Controls",
         ["wa-input"] = "Form Controls",
         ["wa-option"] = "Form Controls",
         ["wa-radio"] = "Form Controls",

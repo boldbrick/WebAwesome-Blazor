@@ -63,6 +63,15 @@ else
                         </WaRadioGroup>
                     </WaGrid>
 
+                    <WaCombobox Label="Job role" Hint="Pick a suggestion or type your own" StartIconName="briefcase"
+                                Placeholder="e.g. Platform engineer" AllowCustomValue="true" WithClear="true" @bind-Value="model.Role">
+                        <WaOption Value="Software engineer">Software engineer</WaOption>
+                        <WaOption Value="Platform engineer">Platform engineer</WaOption>
+                        <WaOption Value="UX designer">UX designer</WaOption>
+                        <WaOption Value="Product manager">Product manager</WaOption>
+                        <WaOption Value="Engineering manager">Engineering manager</WaOption>
+                    </WaCombobox>
+
                     <WaTextArea Label="Dietary requirements &amp; accessibility notes"
                                 Hint="Shared only with the catering and venue teams" Rows="3"
                                 Placeholder="e.g. vegetarian, step-free access" @bind-Value="model.Notes" />
@@ -150,6 +159,9 @@ else
 
         [Required(ErrorMessage = "Please pick a ticket type.")]
         public string? TicketType { get; set; }
+
+        [StringLength(60, ErrorMessage = "Job roles are limited to 60 characters.")]
+        public string? Role { get; set; }
 
         [StringLength(300, ErrorMessage = "Notes are limited to 300 characters.")]
         public string? Notes { get; set; }

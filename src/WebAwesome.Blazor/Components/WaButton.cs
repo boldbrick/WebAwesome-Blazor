@@ -112,13 +112,6 @@ public class WaButton : ComponentBase, IFormValidation
 
     // Form-submission properties
     /// <summary>
-    /// The "form owner" to associate the button with. If omitted, the closest containing form will be used
-    /// instead. The value of this attribute must be an id of a form in the same document or shadow root as the
-    /// button.
-    /// </summary>
-    [Parameter] public string? Form { get; set; }
-
-    /// <summary>
     /// Used to override the form owner's <c>action</c> attribute.
     /// </summary>
     [Parameter] public string? FormAction { get; set; }
@@ -237,7 +230,6 @@ public class WaButton : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(15, "rel", Rel);
 
         // Form-submission attributes
-        builder.AddAttributeIfNotNullOrEmpty(16, "form", Form);
         builder.AddAttributeIfNotNullOrEmpty(17, "formaction", FormAction);
         builder.AddAttributeIfNotNullOrEmpty(18, "formenctype", FormEncType);
         builder.AddAttributeIfNotNullOrEmpty(19, "formmethod", FormMethod);
