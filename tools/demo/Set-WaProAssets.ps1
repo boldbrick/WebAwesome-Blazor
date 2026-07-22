@@ -7,18 +7,26 @@ touching any version-controlled file.
 Generates src\WebAwesome.Blazor.Demo\wwwroot\appsettings.Local.json (ignored by both PlasticSCM
 and the GitHub mirror) from one of two supply channels:
 
-  1. Pro CDN / kit URLs:
+  1. Pro CDN base URL (preferred - version-independent, set once):
+       WA_PRO_CDN_BASE       - kit base URL with a literal {version} placeholder, e.g.
+                               https://ka-p.webawesome.com/kit/<kit>/webawesome@{version}
+                               Maps to WebAwesomeOptions.CdnBaseUrl: {version} resolves to the
+                               library's own bound WA version at runtime, and the stylesheet
+                               (styles/webawesome.css) and loader (webawesome.loader.js) URLs
+                               are derived - so releases never require touching the variable.
+  2. Explicit Pro asset URLs (fallback when the kit CDN layout ever diverges):
        WA_PRO_STYLESHEET_URL - absolute URL of the Pro webawesome.css
        WA_PRO_LOADER_URL     - absolute URL of the Pro webawesome.loader.js
-  2. Self-hosted Pro dist (works offline, nothing secret leaves the machine):
+  3. Self-hosted Pro dist (works offline, nothing secret leaves the machine):
        WA_PRO_DIST           - path to an extracted Pro package root or its dist-cdn folder;
                                dist-cdn is copied to the ignored folder wwwroot\webawesome and
                                served by the app itself. Note it must be the dist-cdn build -
                                the npm-style dist build's loader only re-exports and never
                                starts the autoloader, so components would not upgrade.
 
-If both are set, WA_PRO_DIST wins. With -Clear, the generated file and the copied dist folder are
-removed and the demo falls back to the committed default (free CDN, library version).
+Precedence when several are set: WA_PRO_DIST, then WA_PRO_CDN_BASE, then the explicit URL pair.
+With -Clear, the generated file and the copied dist folder are removed and the demo falls back
+to the committed default (free CDN, library version).
 
 The generated file is consumed by both demo hosts: the WebAssembly host fetches it at startup,
 the server host loads it as an optional configuration file. NEVER check the generated file in.
@@ -56,6 +64,7 @@ if ($Clear) {
 }
 
 $proDist = $env:WA_PRO_DIST
+$proCdnBase = $env:WA_PRO_CDN_BASE
 $proStylesheet = $env:WA_PRO_STYLESHEET_URL
 $proLoader = $env:WA_PRO_LOADER_URL
 
@@ -81,6 +90,17 @@ if ($proDist) {
     }
     $mode = "self-hosted Pro dist copied from $proDist"
 }
+elseif ($proCdnBase) {
+    if ($proCdnBase -notmatch '\{version\}') {
+        Write-Warning 'WA_PRO_CDN_BASE has no {version} placeholder - the URL is pinned and will need manual updates on every release.'
+    }
+    $settings = [ordered]@{
+        WebAwesome = [ordered]@{
+            CdnBaseUrl = $proCdnBase
+        }
+    }
+    $mode = 'Pro CDN base URL, version resolved by the library'
+}
 elseif ($proStylesheet -and $proLoader) {
     $settings = [ordered]@{
         WebAwesome = [ordered]@{
@@ -88,10 +108,10 @@ elseif ($proStylesheet -and $proLoader) {
             LoaderUrl     = $proLoader
         }
     }
-    $mode = 'Pro CDN/kit URLs'
+    $mode = 'explicit Pro asset URLs'
 }
 else {
-    throw 'Set WA_PRO_DIST, or both WA_PRO_STYLESHEET_URL and WA_PRO_LOADER_URL, before running this script (or use -Clear).'
+    throw 'Set WA_PRO_DIST, WA_PRO_CDN_BASE, or both WA_PRO_STYLESHEET_URL and WA_PRO_LOADER_URL, before running this script (or use -Clear).'
 }
 
 $settings | ConvertTo-Json -Depth 5 | Out-File $settingsPath -Encoding utf8
