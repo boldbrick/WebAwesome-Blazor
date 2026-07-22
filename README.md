@@ -1,9 +1,8 @@
 # Web Awesome Blazor Bindings
 
-[![build-and-pack](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/build.yml/badge.svg)](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/build.yml)
-<!-- NuGet badge — activate at publication go-live (WP-I):
+[![build](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/build.yml/badge.svg)](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/build.yml)
+[![release](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/release.yml/badge.svg)](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/release.yml)
 [![NuGet](https://img.shields.io/nuget/v/WebAwesome.Blazor.svg)](https://www.nuget.org/packages/WebAwesome.Blazor)
--->
 
 Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. No additional application logic and no additional / extension components.
 
@@ -156,23 +155,25 @@ We align binding versions to WA versions. Use the **same** semantic version when
 
 | Web Awesome | Bindings Tag                          | Branch (GitHub)       |
 |-------------|----------------------------------------|-----------------------|
-| 3.0.0       | `wa-blazor-3.0.0`           | `main` (promoted)     |
-| 3.0.0-beta.6| `wa-blazor-3.0.0-beta.6`     | `main` (promoted)     |
-| 3.0 train   | rolling prereleases → tags as above    | `main/wa-3.0`         |
-| 3.0 stable  | `v3.0.x` maintained on release branch  | `release-3.0` (later) |
+| 3.0.0       | `wa-blazor-3.0.0`           | `master` (promoted)     |
+| 3.0.0-beta.6| `wa-blazor-3.0.0-beta.6`     | `master` (promoted)     |
+| 3.0 train   | rolling prereleases → tags as above    | `master-WA-3.0`         |
+| 3.0 patches | `wa-blazor-3.0.x` tagged on the subtrunk | `master-WA-3.0`       |
+
+> Development happens in PlasticSCM on hierarchical branches (`/main`, `/main/WA-3.0`); the GitHub mirror is produced by GitSync, whose fixed naming maps `/main` → `master` and flattens hierarchy with dashes (`/main/WA-3.0` → `master-WA-3.0`).
 
 **Promotion model**
-- Active development stays in a **subtrunk**: `main/wa-<ver>` (e.g., `main/wa-3.0`).
-- When ready, we *promote* the subtrunk to `main` and **tag** (e.g., `wa-blazor-3.0.0-beta.6`).
-- A new subtrunk (minor `wa-3.<x+1>` or major `wa-4.0`) is branched **from `main`**, and only after the previous train's release has been promoted to `main`. Pending patch work (e.g., `3.0.1` on `main/wa-3.0`) is the one allowed exception; once released to `main`, the patch propagates to newer subtrunks by merging `main` down into them.
-- After WA 3.0 stabilizes, we create `release-3.0` for maintenance; `main` moves on to `main/wa-3.1` or `main/wa-4.0`.
+- Active development stays in a **subtrunk**: `/main/WA-<ver>` (e.g., `/main/WA-3.0`).
+- When ready, we *promote* the subtrunk to `/main` and **tag** (e.g., `wa-blazor-3.0.0`).
+- A new subtrunk (minor `WA-3.<x+1>` or major `WA-4.0`) is branched **from `/main`**, and only after the previous train's release has been promoted to `/main`.
+- **Patch releases** (e.g., `3.0.1`) stay on the train's subtrunk: developed and tagged there, never promoted to `/main`. A fix that matters to newer trains is merged from the older subtrunk directly into the newer one (e.g., `/main/WA-3.0` → `/main/WA-3.1`).
 
 **Monotonic merge rule**
-`main` only accepts merges from the **current** active subtrunk or a **newer** one. After `main` merges from `wa-N+1`, it **no longer** accepts merges from `wa-N`.
+`/main` only accepts merges from the **current** active subtrunk or a **newer** one. After `/main` merges from `WA-N+1`, it **no longer** accepts merges from `WA-N`.
 
 ## Branches & contributions (high level)
-- **Open PRs to the active subtrunk** (e.g., `main/wa-3.0`).
-- Once a stable release branch exists (e.g., `release-3.0`), 3.0.x fixes target that branch; new/breaking work targets the next subtrunk (e.g., `main/wa-3.1`).
+- **Open PRs to the active subtrunk** (on GitHub: `master-WA-3.0`); patch fixes for a shipped train target that same subtrunk, new/breaking work targets the next one (e.g., `master-WA-3.1`).
+- **Web Awesome version upgrades are maintainer work**, executed by the automated upgrade pipeline ([docs/UPGRADE-PROCESS.md](docs/UPGRADE-PROCESS.md)) — contributions are welcome for bug fixes and supplemental improvements (demo app, docs, tests), not for implementing WA releases.
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Build & pack locally

@@ -1,8 +1,9 @@
 name: deploy-demo
 
+# GitSync maps Plastic /main to git master - deploys on every promotion to the main line
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "master" ]
   workflow_dispatch:
 
 permissions:

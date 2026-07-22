@@ -1,11 +1,14 @@
-name: build-and-pack
+name: build
 
+# verification only: branch pushes and PRs on the mirror's main line and train subtrunks
+# (GitSync maps Plastic /main -> git master, /main/WA-x.y -> git master-WA-x.y).
+# Releases are cut by release.yml on wa-blazor-* tags - this workflow never packs for
+# publication and holds no publishing permissions.
 on:
   push:
-    branches: [ "main", "master", "release-**", "master-**" ]
-    tags: [ "wa-blazor-*" ]
+    branches: [ "master", "master-WA-*" ]
   pull_request:
-    branches: [ "main", "master", "release-**", "master-**" ]
+    branches: [ "master", "master-WA-*" ]
   workflow_dispatch:
 
 defaults:
@@ -27,89 +30,11 @@ jobs:
             9.0.x
             10.0.x
 
-      # on wa-blazor-* tags the tag version must match Version.props - fail loudly instead of shipping a mismatch
-      - name: Guard tag version
-        if: startsWith(github.ref, 'refs/tags/wa-blazor-')
-        shell: pwsh
-        run: |
-          $tagVersion = "${{ github.ref }}".Substring("refs/tags/wa-blazor-".Length)
-          [xml]$props = Get-Content Version.props
-          $propsVersion = ($props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
-          if ($tagVersion -ne $propsVersion) {
-            Write-Error "Tag version '$tagVersion' does not match Version.props version '$propsVersion'"
-            exit 1
-          }
-          Write-Output "Tag version $tagVersion matches Version.props"
-
       - name: Restore
         run: dotnet restore WebAwesome.slnx /p:Configuration=Release
 
-      - name: Build and pack
+      - name: Build
         run: dotnet build WebAwesome.slnx --no-restore /p:Configuration=Release
 
       - name: Test
         run: dotnet test WebAwesome.slnx --no-build /p:Configuration=Release
-
-      # Note a step that "uses" ignores the default working directory
-      - name: Upload package artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: nupkg
-          path: |
-            src/output/packages/Release/*.nupkg
-            src/output/packages/Release/*.snupkg
-          if-no-files-found: error
-          overwrite: true
-
-  # Prepared but inert: publishes to nuget.org only when the repository variable
-  # NUGET_PUBLISH_ENABLED is set to 'true' (go-live step, see docs/prompts/WA-3.0/hardening-at-beta6-plan.md WP-I).
-  # Authentication uses nuget.org Trusted Publishing (OIDC): a policy on nuget.org for this
-  # repository + workflow file exchanges the GitHub OIDC token for a short-lived API key
-  # (NuGet/login). Requires the repository variable NUGET_USER = the nuget.org profile name
-  # owning the policy. No long-lived API key secret is stored.
-  publish:
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/wa-blazor-') && vars.NUGET_PUBLISH_ENABLED == 'true'
-    runs-on: windows-latest
-    permissions:
-      contents: write
-      id-token: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Download package artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: nupkg
-          path: packages
-
-      - name: NuGet login (Trusted Publishing)
-        id: nuget-login
-        uses: NuGet/login@v1
-        with:
-          user: ${{ vars.NUGET_USER }}
-
-      - name: Push to nuget.org
-        working-directory: packages
-        run: |
-          dotnet nuget push *.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-
-      - name: Create GitHub release
-        working-directory: packages
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          $tag = "${{ github.ref_name }}"
-          $version = $tag.Substring("wa-blazor-".Length)
-          gh release create $tag (Get-ChildItem *.nupkg, *.snupkg | ForEach-Object { $_.FullName }) `
-            --title "Web Awesome Blazor Bindings $version" `
-            --notes "See the [changelog](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md) for details." `
-            --verify-tag
