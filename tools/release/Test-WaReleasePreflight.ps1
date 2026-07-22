@@ -75,18 +75,36 @@ $serverApp = Get-Content src\WebAwesome.Blazor.Demo.Server\App.razor -Raw
 $noPins = (-not ($demoIndex -match 'webawesome@\d')) -and (-not ($serverApp -match 'webawesome@\d'))
 Add-Gate 'demo-no-hardcoded-cdn' $noPins 'demo hosts must not hard-code Web Awesome CDN URLs (WebAwesomeAssets emits them from configuration)'
 
+# --- gate: default asset state -------------------------------------------------
+# release verification must run against the committed default (free CDN): an active Pro
+# override would make builds/e2e exercise a different asset source than what ships
+$overrideArtifacts = @(
+    'src\WebAwesome.Blazor.Demo\wwwroot\appsettings.Local.json',
+    'src\WebAwesome.Blazor.Demo.Server\appsettings.Local.json',
+    'src\WebAwesome.Blazor.Demo\wwwroot\webawesome'
+) | Where-Object { Test-Path $_ }
+Add-Gate 'default-asset-state' (@($overrideArtifacts).Count -eq 0) `
+    ($(if (@($overrideArtifacts).Count -eq 0) { 'no Pro asset override active' }
+       else { 'Pro asset override active ({0}) - run tools\demo\Set-WaProAssets.ps1 -Clear and re-run preflight' -f ($overrideArtifacts -join ', ') }))
+
 # --- gate: no Pro asset leakage ----------------------------------------------
 # Pro kit URLs / dist overrides are supplied via env vars and the generated (ignored)
-# appsettings.Local.json only - fail if the override artifacts are versioned or a kit-like
-# URL sneaked into sources/workflows (inputs\ docs legitimately mention the public ka-f host)
-$localSettingsLeak = (cm ls 'src\WebAwesome.Blazor.Demo\wwwroot' --format='{name}' 2>$null) -match 'appsettings\.Local\.json|^webawesome$'
+# appsettings.Local.json only - fail if the override artifacts are version-controlled
+# (cm fileinfo: 'controlled' vs 'private'/error) or a kit-like URL sneaked into
+# sources/workflows (inputs\ docs legitimately mention the public ka-f host)
+$versionedOverrides = @(
+    'src\WebAwesome.Blazor.Demo\wwwroot\appsettings.Local.json',
+    'src\WebAwesome.Blazor.Demo.Server\appsettings.Local.json',
+    'src\WebAwesome.Blazor.Demo\wwwroot\webawesome'
+) | Where-Object { (Test-Path $_) -and ((cm fileinfo $_ --format='{status}' 2>$null) -eq 'controlled') }
 $kitLeak = Get-ChildItem src, .github -Recurse -File -Include *.cs, *.razor, *.html, *.json, *.yml, *.props |
-    Where-Object { (Get-Content $_.FullName -Raw) -match 'ka-f\.webawesome\.com/[A-Za-z0-9]{8,}|_authToken' }
+    Where-Object { $_.Name -ne 'appsettings.Local.json' } |
+    Where-Object { (Get-Content $_.FullName -Raw) -match 'ka-f\.webawesome\.com/[A-Za-z0-9]{8,}|ka-p\.webawesome\.com/kit/[A-Za-z0-9]|_authToken' }
 $ignoreConf = Get-Content ignore.conf -Raw
 $gitIgnore = Get-Content .gitignore -Raw
 $ignoresPresent = $ignoreConf.Contains('appsettings.Local.json') -and $gitIgnore.Contains('appsettings.Local.json')
-Add-Gate 'pro-asset-leak' ((-not $localSettingsLeak) -and (@($kitLeak).Count -eq 0) -and $ignoresPresent) `
-    ('leak check: versioned override={0}, kit-like URLs in sources={1}, ignore rules present={2}' -f [bool]$localSettingsLeak, @($kitLeak).Count, $ignoresPresent)
+Add-Gate 'pro-asset-leak' ((@($versionedOverrides).Count -eq 0) -and (@($kitLeak).Count -eq 0) -and $ignoresPresent) `
+    ('leak check: versioned overrides={0}, kit-like URLs in sources={1}, ignore rules present={2}' -f @($versionedOverrides).Count, @($kitLeak).Count, $ignoresPresent)
 
 # --- gate: changelog and migration doc ---------------------------------------
 $changelog = Get-Content docs\CHANGELOG.md -Raw
