@@ -96,6 +96,21 @@ public class WaIcon : ComponentBase
     /// </summary>
     [Parameter] public bool SwapOpacity { get; set; }
 
+    /// <summary>
+    /// Sets the animation for the icon.
+    /// </summary>
+    [Parameter] public WaIconAnimation? Animation { get; set; }
+
+    /// <summary>
+    /// Sets the flip direction of the icon along the x (horizontal), y (vertical), or both axes.
+    /// </summary>
+    [Parameter] public WaFlip? Flip { get; set; }
+
+    /// <summary>
+    /// Sets the rotation degree of the icon.
+    /// </summary>
+    [Parameter] public int Rotate { get; set; } = 0;
+
     #endregion
 
     #region ------ Events ------
@@ -133,14 +148,17 @@ public class WaIcon : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(15, "label", Label);
         builder.AddAttribute(16, "auto-width", AutoWidth);
         builder.AddAttribute(17, "swap-opacity", SwapOpacity);
+        builder.AddAttributeIfNotNull(18, "animation", Animation?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(19, "flip", Flip?.ToHtmlValue());
+        builder.AddAttribute(20, "rotate", Rotate);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "onwa-load", OnLoad);
+        builder.AddAttributeIfHasDelegate(30, "onwa-load", OnLoad);
 
-        builder.AddAttributeIfHasDelegate(21, "onwa-error", OnError);
+        builder.AddAttributeIfHasDelegate(31, "onwa-error", OnError);
 
         // Add element reference capture
-        builder.AddElementReferenceCapture(22, __iconReference => Element = __iconReference);
+        builder.AddElementReferenceCapture(32, __iconReference => Element = __iconReference);
 
         builder.CloseElement();
     }

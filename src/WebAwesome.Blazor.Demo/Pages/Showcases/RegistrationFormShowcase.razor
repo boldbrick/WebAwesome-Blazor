@@ -72,6 +72,9 @@ else
                         <WaOption Value="Engineering manager">Engineering manager</WaOption>
                     </WaCombobox>
 
+                    <WaNumberInput Label="Additional guest passes" Hint="Reserve extra passes for guests (0–10)"
+                                   StartIconName="user-plus" Min="0" Max="10" Step="1" @bind-Value="model.GuestPasses" />
+
                     <WaTextArea Label="Dietary requirements &amp; accessibility notes"
                                 Hint="Shared only with the catering and venue teams" Rows="3"
                                 Placeholder="e.g. vegetarian, step-free access" @bind-Value="model.Notes" />
@@ -165,6 +168,9 @@ else
 
         [StringLength(300, ErrorMessage = "Notes are limited to 300 characters.")]
         public string? Notes { get; set; }
+
+        [Range(0, 10, ErrorMessage = "Guest passes must be between 0 and 10.")]
+        public decimal? GuestPasses { get; set; } = 0;
 
         public decimal? Workshops { get; set; } = 1;
 
