@@ -774,6 +774,93 @@ public enum WaFlip
     Both
 }
 
+/// <summary>
+/// The type of chart rendered by the chart components.
+/// </summary>
+public enum WaChartType
+{
+    /// <summary>A bar chart.</summary>
+    Bar,
+    /// <summary>A line chart.</summary>
+    Line,
+    /// <summary>A pie chart.</summary>
+    Pie,
+    /// <summary>A doughnut chart.</summary>
+    Doughnut,
+    /// <summary>A polar area chart.</summary>
+    PolarArea,
+    /// <summary>A radar chart.</summary>
+    Radar,
+    /// <summary>A scatter chart.</summary>
+    Scatter,
+    /// <summary>A bubble chart.</summary>
+    Bubble
+}
+
+/// <summary>
+/// Which axes a chart shows grid lines on.
+/// </summary>
+public enum WaChartGrid
+{
+    /// <summary>Grid lines on the x-axis only.</summary>
+    X,
+    /// <summary>Grid lines on the y-axis only.</summary>
+    Y,
+    /// <summary>Grid lines on both axes.</summary>
+    Both,
+    /// <summary>No grid lines.</summary>
+    None
+}
+
+/// <summary>
+/// The base axis of a chart's dataset.
+/// </summary>
+public enum WaChartAxis
+{
+    /// <summary>The x-axis (vertical bars).</summary>
+    X,
+    /// <summary>The y-axis (horizontal bars).</summary>
+    Y
+}
+
+/// <summary>
+/// The position of a chart's legend relative to the chart.
+/// </summary>
+public enum WaChartLegendPosition
+{
+    /// <summary>Above the chart.</summary>
+    Top,
+    /// <summary>To the left of the chart.</summary>
+    Left,
+    /// <summary>Below the chart.</summary>
+    Bottom,
+    /// <summary>To the right of the chart.</summary>
+    Right,
+    /// <summary>At the logical start of the chart.</summary>
+    Start,
+    /// <summary>At the logical end of the chart.</summary>
+    End
+}
+
+/// <summary>
+/// The placement of a toast stack on the screen.
+/// </summary>
+public enum WaToastPlacement
+{
+    /// <summary>Top, aligned to the logical start.</summary>
+    TopStart,
+    /// <summary>Top, centered.</summary>
+    TopCenter,
+    /// <summary>Top, aligned to the logical end.</summary>
+    TopEnd,
+    /// <summary>Bottom, aligned to the logical start.</summary>
+    BottomStart,
+    /// <summary>Bottom, centered.</summary>
+    BottomCenter,
+    /// <summary>Bottom, aligned to the logical end.</summary>
+    BottomEnd
+}
+
 #endregion
 
 #region ------ Extension Methods ------
@@ -1626,6 +1713,102 @@ public static class WaEnumExtensions
             WaFlip.Y => "y",
             WaFlip.Both => "both",
             _ => throw new ArgumentOutOfRangeException(nameof(flip), flip, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="type">The chart type value to convert</param>
+    /// <returns>The attribute string, e.g. "bar" or "polarArea"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaChartType type)
+    {
+        return type switch
+        {
+            WaChartType.Bar => "bar",
+            WaChartType.Line => "line",
+            WaChartType.Pie => "pie",
+            WaChartType.Doughnut => "doughnut",
+            WaChartType.PolarArea => "polarArea",
+            WaChartType.Radar => "radar",
+            WaChartType.Scatter => "scatter",
+            WaChartType.Bubble => "bubble",
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="grid">The chart grid value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "both"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="grid"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaChartGrid grid)
+    {
+        return grid switch
+        {
+            WaChartGrid.X => "x",
+            WaChartGrid.Y => "y",
+            WaChartGrid.Both => "both",
+            WaChartGrid.None => "none",
+            _ => throw new ArgumentOutOfRangeException(nameof(grid), grid, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="axis">The chart axis value to convert</param>
+    /// <returns>The lowercase attribute string, "x" or "y"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="axis"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaChartAxis axis)
+    {
+        return axis switch
+        {
+            WaChartAxis.X => "x",
+            WaChartAxis.Y => "y",
+            _ => throw new ArgumentOutOfRangeException(nameof(axis), axis, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="position">The chart legend position value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "top"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="position"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaChartLegendPosition position)
+    {
+        return position switch
+        {
+            WaChartLegendPosition.Top => "top",
+            WaChartLegendPosition.Left => "left",
+            WaChartLegendPosition.Bottom => "bottom",
+            WaChartLegendPosition.Right => "right",
+            WaChartLegendPosition.Start => "start",
+            WaChartLegendPosition.End => "end",
+            _ => throw new ArgumentOutOfRangeException(nameof(position), position, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="placement">The toast placement value to convert</param>
+    /// <returns>The kebab-case attribute string, e.g. "top-end"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="placement"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaToastPlacement placement)
+    {
+        return placement switch
+        {
+            WaToastPlacement.TopStart => "top-start",
+            WaToastPlacement.TopCenter => "top-center",
+            WaToastPlacement.TopEnd => "top-end",
+            WaToastPlacement.BottomStart => "bottom-start",
+            WaToastPlacement.BottomCenter => "bottom-center",
+            WaToastPlacement.BottomEnd => "bottom-end",
+            _ => throw new ArgumentOutOfRangeException(nameof(placement), placement, null)
         };
     }
 }

@@ -68,6 +68,26 @@ public class WaBadge : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// An element, such as a <c>wa-icon</c>, rendered into the "start" slot before the badge's label.
+    /// </summary>
+    [Parameter] public RenderFragment? StartContent { get; set; }
+
+    /// <summary>
+    /// An element, such as a <c>wa-icon</c>, rendered into the "end" slot after the badge's label.
+    /// </summary>
+    [Parameter] public RenderFragment? EndContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? StartIconName { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="EndContent"/>; ignored when the fragment is set.
+    /// </summary>
+    [Parameter] public string? EndIconName { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -89,10 +109,36 @@ public class WaBadge : ComponentBase
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __badgeReference => Element = __badgeReference);
 
+        // Add start slot content (icon-shaped slot: fragment wins, icon name is the convenience fallback)
+        if (StartContent is not null)
+        {
+            builder.OpenElement(15, "span");
+            builder.AddAttribute(16, "slot", "start");
+            builder.AddContent(17, StartContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(18, "start", StartIconName);
+        }
+
         // Add child content
         if (ChildContent is not null)
         {
             builder.AddContent(20, ChildContent);
+        }
+
+        // Add end slot content
+        if (EndContent is not null)
+        {
+            builder.OpenElement(25, "span");
+            builder.AddAttribute(26, "slot", "end");
+            builder.AddContent(27, EndContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(28, "end", EndIconName);
         }
 
         builder.CloseElement();

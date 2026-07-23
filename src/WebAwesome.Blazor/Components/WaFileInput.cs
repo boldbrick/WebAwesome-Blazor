@@ -74,6 +74,11 @@ public class WaFileInput : ComponentBase, IFormValidation
     [Parameter] public bool Multiple { get; set; }
 
     /// <summary>
+    /// Disables the file input, preventing user interaction.
+    /// </summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
     /// Marks the file input as required for form validation.
     /// </summary>
     [Parameter] public bool Required { get; set; }
@@ -166,6 +171,7 @@ public class WaFileInput : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
         builder.AddAttribute(13, "multiple", Multiple);
         builder.AddAttribute(14, "required", Required);
+        builder.AddAttribute(18, "disabled", Disabled);
         builder.AddAttributeIfNotNull(15, "size", Size?.ToHtmlValue());
         builder.AddAttribute(16, "with-hint", WithHint);
         builder.AddAttribute(17, "with-label", WithLabel);
@@ -277,6 +283,15 @@ public class WaFileInput : ComponentBase, IFormValidation
             throw new InvalidOperationException("Cannot set custom validity before the component is rendered. Element reference is null.");
 
         await JSInterop.SetCustomValidityAsync(Element.Value, message);
+    }
+
+    /// <inheritdoc />
+    public async Task ResetValidityAsync()
+    {
+        if (Element is null)
+            throw new InvalidOperationException("Cannot reset validity before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "resetValidity");
     }
 
     #endregion

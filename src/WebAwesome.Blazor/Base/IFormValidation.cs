@@ -20,4 +20,15 @@ public interface IFormValidation
     /// being properly loaded in the page.
     /// </remarks>
     Task SetCustomValidityAsync(string message);
+
+    /// <summary>
+    /// Clears any manually defined custom error and resets native constraint validation on the control.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <remarks>
+    /// This maps to the Web Awesome form control's resetValidity method (introduced in Web Awesome 3.3.0)
+    /// via JavaScript interop; it is the counterpart to <see cref="SetCustomValidityAsync"/> for removing
+    /// custom errors without re-submitting the form.
+    /// </remarks>
+    Task ResetValidityAsync();
 }
