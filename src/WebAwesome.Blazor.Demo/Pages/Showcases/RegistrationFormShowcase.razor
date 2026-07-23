@@ -16,7 +16,9 @@
     <WaCallout Variant="WaVariant.Success" IconName="circle-check">
         <strong>You're in, @model.FullName!</strong><br />
         Your @model.TicketType ticket for the @model.Track track is reserved. A confirmation was sent
-        to @model.Email. See you at Nova Summit 2026!
+        to @model.Email.
+        @(model.BadgePhotoSelected ? "Your badge will be printed with the photo you uploaded." : "Your badge will use the default Nova Summit artwork.")
+        See you at Nova Summit 2026!
     </WaCallout>
     <div style="margin-top: var(--wa-space-m);">
         <WaButton Appearance="WaAppearance.Outlined" OnClick="ResetForm">Register another attendee</WaButton>
@@ -78,6 +80,9 @@ else
                     <WaTextArea Label="Dietary requirements &amp; accessibility notes"
                                 Hint="Shared only with the catering and venue teams" Rows="3"
                                 Placeholder="e.g. vegetarian, step-free access" @bind-Value="model.Notes" />
+
+                    <WaFileInput Label="Badge photo" Hint="Optional — a square PNG or JPG up to 5 MB, printed on your badge"
+                                 Accept="image/png,image/jpeg" OnChange="@(() => model.BadgePhotoSelected = true)" />
 
                     <WaDivider />
 
@@ -179,6 +184,9 @@ else
         public decimal Excitement { get; set; } = 4;
 
         public string BadgeColor { get; set; } = "#4a7dff";
+
+        // selected files are runtime File objects; the flag only records that a photo was chosen
+        public bool BadgePhotoSelected { get; set; }
 
         [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the code of conduct to attend.")]
         public bool AcceptTerms { get; set; }

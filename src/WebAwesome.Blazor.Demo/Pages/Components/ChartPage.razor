@@ -1,18 +1,102 @@
-﻿@page "/components/chart"
+@page "/components/chart"
 
 <PageTitle>Chart</PageTitle>
 
-<h1>Chart</h1>
-<p><code>&lt;wa-chart&gt;</code> wrapped by <code>WaChart</code>.</p>
+<h1>Chart <ComponentBadges Tag="wa-chart" /></h1>
+<p>Charts are a flexible wrapper around Chart.js for building themed data visualizations, with the configuration supplied as a JSON script in the default slot. <code>&lt;wa-chart&gt;</code> wrapped by <code>WaChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaChart>WaChart example</WaChart>
+    <WaChart Label="Monthly Performance" Description="A chart comparing monthly revenue and expenses over six months">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "type": "bar",
+              "data": {
+                "labels": ["January", "February", "March", "April", "May", "June"],
+                "datasets": [
+                  { "label": "Revenue", "data": [48, 56, 62, 58, 71, 68] },
+                  { "label": "Expenses", "data": [35, 38, 40, 42, 45, 43] }
+                ]
+              }
+            }
+        </script>
+    </WaChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\chart.md) *@
+<ExampleSection Title="Chart Type" Code="@TypeExample">
+    <WaChart Type="WaChartType.Line" Label="Weekly Signups" Description="A line chart showing new signups per week">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
+                "datasets": [{ "label": "Signups", "data": [120, 145, 132, 168, 190] }]
+              }
+            }
+        </script>
+    </WaChart>
+</ExampleSection>
+
+<ExampleSection Title="Mixed Types" Code="@MixedExample">
+    <WaChart Type="WaChartType.Bar" Label="Sales vs. Trend" Description="A chart combining bar sales data with a line trend" XLabel="Quarter" YLabel="Units">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Q1", "Q2", "Q3", "Q4"],
+                "datasets": [
+                  { "label": "Sales", "data": [42, 58, 51, 67] },
+                  { "type": "line", "label": "Trend", "data": [45, 52, 56, 62] }
+                ]
+              }
+            }
+        </script>
+    </WaChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-chart" />
 
 @code {
-    private const string DefaultExample = "<WaChart>WaChart example</WaChart>";
+    private const string DefaultExample = """
+        <WaChart Label="Monthly Performance" Description="A chart comparing monthly revenue and expenses over six months">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "type": "bar",
+                  "data": {
+                    "labels": ["January", "February", "March", "April", "May", "June"],
+                    "datasets": [
+                      { "label": "Revenue", "data": [48, 56, 62, 58, 71, 68] },
+                      { "label": "Expenses", "data": [35, 38, 40, 42, 45, 43] }
+                    ]
+                  }
+                }
+            </script>
+        </WaChart>
+        """;
+
+    private const string TypeExample = """
+        <WaChart Type="WaChartType.Line" Label="Weekly Signups" Description="A line chart showing new signups per week">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
+                    "datasets": [{ "label": "Signups", "data": [120, 145, 132, 168, 190] }]
+                  }
+                }
+            </script>
+        </WaChart>
+        """;
+
+    private const string MixedExample = """
+        <WaChart Type="WaChartType.Bar" Label="Sales vs. Trend" Description="A chart combining bar sales data with a line trend" XLabel="Quarter" YLabel="Units">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Q1", "Q2", "Q3", "Q4"],
+                    "datasets": [
+                      { "label": "Sales", "data": [42, 58, 51, 67] },
+                      { "type": "line", "label": "Trend", "data": [45, 52, 56, 62] }
+                    ]
+                  }
+                }
+            </script>
+        </WaChart>
+        """;
 }

@@ -1,18 +1,100 @@
-﻿@page "/components/radar-chart"
+@page "/components/radar-chart"
 
 <PageTitle>Radar Chart</PageTitle>
 
-<h1>Radar Chart</h1>
-<p><code>&lt;wa-radar-chart&gt;</code> wrapped by <code>WaRadarChart</code>.</p>
+<h1>Radar Chart <ComponentBadges Tag="wa-radar-chart" /></h1>
+<p>Radar charts compare multiple variables at once by plotting data on a radial grid. <code>&lt;wa-radar-chart&gt;</code> wrapped by <code>WaRadarChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaRadarChart>WaRadarChart example</WaRadarChart>
+    <WaRadarChart Label="Employee Skills" Description="A radar chart comparing skill levels across six categories">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Communication", "Technical", "Leadership", "Creativity", "Teamwork", "Problem Solving"],
+                "datasets": [
+                  { "label": "Alice", "data": [85, 92, 70, 88, 95, 78], "fill": true },
+                  { "label": "Bob", "data": [72, 78, 90, 65, 80, 88], "fill": true }
+                ]
+              }
+            }
+        </script>
+    </WaRadarChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\radar-chart.md) *@
+<ExampleSection Title="Value Axis Bounds" Code="@BoundsExample">
+    <WaRadarChart Min="0" Max="100" Label="Product Ratings" Description="A radar chart with the value axis fixed from 0 to 100">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Performance", "Reliability", "Usability", "Design", "Support"],
+                "datasets": [{ "label": "Model X", "data": [82, 74, 90, 68, 77], "fill": true }]
+              }
+            }
+        </script>
+    </WaRadarChart>
+</ExampleSection>
+
+<ExampleSection Title="Legend Position" Code="@LegendPositionExample">
+    <WaRadarChart LegendPosition="WaChartLegendPosition.Bottom" Label="Team Comparison" Description="A radar chart with the legend below the chart">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Speed", "Accuracy", "Coverage", "Stability"],
+                "datasets": [
+                  { "label": "Team A", "data": [70, 85, 60, 90] },
+                  { "label": "Team B", "data": [88, 65, 80, 72] }
+                ]
+              }
+            }
+        </script>
+    </WaRadarChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-radar-chart" />
 
 @code {
-    private const string DefaultExample = "<WaRadarChart>WaRadarChart example</WaRadarChart>";
+    private const string DefaultExample = """
+        <WaRadarChart Label="Employee Skills" Description="A radar chart comparing skill levels across six categories">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Communication", "Technical", "Leadership", "Creativity", "Teamwork", "Problem Solving"],
+                    "datasets": [
+                      { "label": "Alice", "data": [85, 92, 70, 88, 95, 78], "fill": true },
+                      { "label": "Bob", "data": [72, 78, 90, 65, 80, 88], "fill": true }
+                    ]
+                  }
+                }
+            </script>
+        </WaRadarChart>
+        """;
+
+    private const string BoundsExample = """
+        <WaRadarChart Min="0" Max="100" Label="Product Ratings" Description="A radar chart with the value axis fixed from 0 to 100">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Performance", "Reliability", "Usability", "Design", "Support"],
+                    "datasets": [{ "label": "Model X", "data": [82, 74, 90, 68, 77], "fill": true }]
+                  }
+                }
+            </script>
+        </WaRadarChart>
+        """;
+
+    private const string LegendPositionExample = """
+        <WaRadarChart LegendPosition="WaChartLegendPosition.Bottom" Label="Team Comparison" Description="A radar chart with the legend below the chart">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Speed", "Accuracy", "Coverage", "Stability"],
+                    "datasets": [
+                      { "label": "Team A", "data": [70, 85, 60, 90] },
+                      { "label": "Team B", "data": [88, 65, 80, 72] }
+                    ]
+                  }
+                }
+            </script>
+        </WaRadarChart>
+        """;
 }

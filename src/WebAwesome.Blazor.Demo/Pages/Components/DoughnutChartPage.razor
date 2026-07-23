@@ -1,18 +1,88 @@
-﻿@page "/components/doughnut-chart"
+@page "/components/doughnut-chart"
 
 <PageTitle>Doughnut Chart</PageTitle>
 
-<h1>Doughnut Chart</h1>
-<p><code>&lt;wa-doughnut-chart&gt;</code> wrapped by <code>WaDoughnutChart</code>.</p>
+<h1>Doughnut Chart <ComponentBadges Tag="wa-doughnut-chart" /></h1>
+<p>Doughnut charts display proportional data as slices arranged in a ring with a hollow center. <code>&lt;wa-doughnut-chart&gt;</code> wrapped by <code>WaDoughnutChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaDoughnutChart>WaDoughnutChart example</WaDoughnutChart>
+    <WaDoughnutChart Label="Project Time Allocation" Description="A doughnut chart showing how project time is distributed across activities">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Development", "Design", "Testing", "Meetings", "Planning"],
+                "datasets": [{ "label": "Hours", "data": [35, 20, 15, 18, 12] }]
+              }
+            }
+        </script>
+    </WaDoughnutChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\doughnut-chart.md) *@
+<ExampleSection Title="Legend Position" Code="@LegendPositionExample">
+    <WaDoughnutChart LegendPosition="WaChartLegendPosition.Right" Label="Storage Usage" Description="A doughnut chart with the legend to the right of the chart">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Documents", "Media", "Backups", "Free"],
+                "datasets": [{ "label": "GB", "data": [120, 260, 80, 40] }]
+              }
+            }
+        </script>
+    </WaDoughnutChart>
+</ExampleSection>
+
+<ExampleSection Title="Without Legend &amp; Tooltip" Code="@WithoutExample">
+    <WaDoughnutChart WithoutLegend="true" WithoutTooltip="true" Label="Task Status" Description="A minimal doughnut chart with the legend and tooltips hidden">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Done", "In Progress", "Blocked"],
+                "datasets": [{ "label": "Tasks", "data": [24, 9, 3] }]
+              }
+            }
+        </script>
+    </WaDoughnutChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-doughnut-chart" />
 
 @code {
-    private const string DefaultExample = "<WaDoughnutChart>WaDoughnutChart example</WaDoughnutChart>";
+    private const string DefaultExample = """
+        <WaDoughnutChart Label="Project Time Allocation" Description="A doughnut chart showing how project time is distributed across activities">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Development", "Design", "Testing", "Meetings", "Planning"],
+                    "datasets": [{ "label": "Hours", "data": [35, 20, 15, 18, 12] }]
+                  }
+                }
+            </script>
+        </WaDoughnutChart>
+        """;
+
+    private const string LegendPositionExample = """
+        <WaDoughnutChart LegendPosition="WaChartLegendPosition.Right" Label="Storage Usage" Description="A doughnut chart with the legend to the right of the chart">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Documents", "Media", "Backups", "Free"],
+                    "datasets": [{ "label": "GB", "data": [120, 260, 80, 40] }]
+                  }
+                }
+            </script>
+        </WaDoughnutChart>
+        """;
+
+    private const string WithoutExample = """
+        <WaDoughnutChart WithoutLegend="true" WithoutTooltip="true" Label="Task Status" Description="A minimal doughnut chart with the legend and tooltips hidden">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Done", "In Progress", "Blocked"],
+                    "datasets": [{ "label": "Tasks", "data": [24, 9, 3] }]
+                  }
+                }
+            </script>
+        </WaDoughnutChart>
+        """;
 }

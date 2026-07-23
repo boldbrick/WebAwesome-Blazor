@@ -47,6 +47,12 @@
 
         <WaInclude Src="fragments/release-notes.html" />
 
+        <WaText Variant="TextVariant.Heading" Element="h3" Style="margin-block-start: var(--wa-space-l);">Upgrade checklist</WaText>
+        <WaText Element="p">
+            The checklist below is authored in plain markdown and rendered client-side by <code>WaMarkdown</code>.
+        </WaText>
+        <WaMarkdown Content="@upgradeChecklist" />
+
         <WaDivider Style="margin-block: var(--wa-space-l);" />
 
         <WaText Variant="TextVariant.Heading" Size="TextSize.L" Element="h2">Observer playground</WaText>
@@ -129,6 +135,17 @@
     private string mutationMessage = "No mutations observed yet";
     private bool signOffVisible;
     private double signOffRatio;
+
+    private const string upgradeChecklist = """
+        Before upgrading a workspace to **Nova Studio 3.2**, walk through these steps:
+
+        1. Back up your workspace with `nova backup --full`.
+        2. Update all export pipeline plugins to the *3.2-compatible* releases.
+        3. Review the [known issues](/showcases/content) list for your platform.
+
+        - Co-editing requires the collaboration service **1.8 or later**.
+        - Custom color profiles are migrated automatically — no action needed.
+        """;
 
     private readonly List<string> reviewers = ["Mara Lindqvist", "Priya Anand"];
     private readonly string[] reviewerPool = ["Mara Lindqvist", "Priya Anand", "Jonas Petrov", "Tomás Ruiz", "Elena Fischer"];

@@ -1,18 +1,54 @@
-﻿@page "/components/sparkline"
+@page "/components/sparkline"
 
 <PageTitle>Sparkline</PageTitle>
 
-<h1>Sparkline</h1>
-<p><code>&lt;wa-sparkline&gt;</code> wrapped by <code>WaSparkline</code>.</p>
+<h1>Sparkline <ComponentBadges Tag="wa-sparkline" /></h1>
+<p>Sparklines display inline data trends as compact, word-sized charts. <code>&lt;wa-sparkline&gt;</code> wrapped by <code>WaSparkline</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaSparkline />
+    <WaSparkline Label="Weekly sales performance showing growth" Data="10 25 15 40 30 45 35" Style="height: 2rem;" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\sparkline.md) *@
+<ExampleSection Title="Trend" Code="@TrendExample">
+    <WaSparkline Label="Positive trend" Trend="WaSparklineTrend.Positive" Data="10 15 12 25 20 35 45" Style="height: 2rem;" />
+    <WaSparkline Label="Negative trend" Trend="WaSparklineTrend.Negative" Data="45 35 40 25 30 15 10" Style="height: 2rem;" />
+    <WaSparkline Label="Neutral trend" Trend="WaSparklineTrend.Neutral" Data="25 30 22 28 24 29 26" Style="height: 2rem;" />
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaSparkline Label="Solid appearance" Appearance="WaSparklineAppearance.Solid" Data="10 25 15 40 30 45 35" Style="height: 2rem;" />
+    <WaSparkline Label="Gradient appearance" Appearance="WaSparklineAppearance.Gradient" Data="10 25 15 40 30 45 35" Style="height: 2rem;" />
+    <WaSparkline Label="Line appearance" Appearance="WaSparklineAppearance.Line" Data="10 25 15 40 30 45 35" Style="height: 2rem;" />
+</ExampleSection>
+
+<ExampleSection Title="Curve" Code="@CurveExample">
+    <WaSparkline Label="Linear curve" Curve="WaSparklineCurve.Linear" Data="10 40 20 45 25 50 30" Style="height: 2rem;" />
+    <WaSparkline Label="Natural curve" Curve="WaSparklineCurve.Natural" Data="10 40 20 45 25 50 30" Style="height: 2rem;" />
+    <WaSparkline Label="Step curve" Curve="WaSparklineCurve.Step" Data="10 40 20 45 25 50 30" Style="height: 2rem;" />
+</ExampleSection>
 
 <ApiTable Tag="wa-sparkline" />
 
 @code {
-    private const string DefaultExample = "<WaSparkline />";
+    private const string DefaultExample = """
+        <WaSparkline Label="Weekly sales performance showing growth" Data="10 25 15 40 30 45 35" Style="height: 2rem;" />
+        """;
+
+    private const string TrendExample = """
+        <WaSparkline Label="Positive trend" Trend="WaSparklineTrend.Positive" Data="10 15 12 25 20 35 45" Style="height: 2rem;" />
+        <WaSparkline Label="Negative trend" Trend="WaSparklineTrend.Negative" Data="45 35 40 25 30 15 10" Style="height: 2rem;" />
+        <WaSparkline Label="Neutral trend" Trend="WaSparklineTrend.Neutral" Data="25 30 22 28 24 29 26" Style="height: 2rem;" />
+        """;
+
+    private const string AppearanceExample = """
+        <WaSparkline Label="Solid appearance" Appearance="WaSparklineAppearance.Solid" Data="10 25 15 40 30 45 35" Style="height: 2rem;" />
+        <WaSparkline Label="Gradient appearance" Appearance="WaSparklineAppearance.Gradient" Data="10 25 15 40 30 45 35" Style="height: 2rem;" />
+        <WaSparkline Label="Line appearance" Appearance="WaSparklineAppearance.Line" Data="10 25 15 40 30 45 35" Style="height: 2rem;" />
+        """;
+
+    private const string CurveExample = """
+        <WaSparkline Label="Linear curve" Curve="WaSparklineCurve.Linear" Data="10 40 20 45 25 50 30" Style="height: 2rem;" />
+        <WaSparkline Label="Natural curve" Curve="WaSparklineCurve.Natural" Data="10 40 20 45 25 50 30" Style="height: 2rem;" />
+        <WaSparkline Label="Step curve" Curve="WaSparklineCurve.Step" Data="10 40 20 45 25 50 30" Style="height: 2rem;" />
+        """;
 }
