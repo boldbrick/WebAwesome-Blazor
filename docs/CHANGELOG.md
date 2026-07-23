@@ -2,6 +2,43 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.5.0] — 2026-07-23
+
+Alignment with the Web Awesome 3.5.0 release, opening the **WA-3.5 train**. An additive upgrade: a new `WaMarkdown` component, a cluster of SSR hydration-hint attributes across several components, a color-picker popup placement, a copy-button trigger slot, and the promotion of `WaRating` into a full form-associated control. **No breaking changes** — the four upstream "breaking" entries in the change report are all non-destructive for the wrappers. No migration guide is required.
+
+### New components
+- `WaMarkdown` (`wa-markdown`, free/experimental) — renders markdown as HTML via the upstream Marked integration. The source is supplied through a `Content` string (or `ChildContent`) that the wrapper emits into the required child `<script type="text/markdown">` element; `TabSize` maps to `tab-size`. Exposes `RenderMarkdownAsync()` for re-rendering after the source changes.
+
+### Changed
+- `WaButton` gained the SSR hydration-hint attributes `WithStart` (`with-start`) and `WithEnd` (`with-end`).
+- `WaColorPicker` gained `Placement` (`placement`, reusing the existing `WaPlacement` enum) — the preferred placement of the popup.
+- `WaCopyButton` gained a default-slot `ChildContent` for a custom trigger element (previously only the icon slots were exposed).
+- `WaDialog` and `WaDrawer` gained the SSR footer hint `WithFooter` (`with-footer`).
+- `WaSlider` gained the SSR hints `WithHint` (`with-hint`) and `WithLabel` (`with-label`).
+- `WaTextArea` gained `WithCount` (`with-count`) — shows a character count below the textarea (remaining characters when `MaxLength` is set).
+- `WaToastItem` gained the SSR icon hint `WithIcon` (`with-icon`).
+- `WaRating` became a full form-associated control upstream: gained `DefaultValue` (`default-value`, the form-reset value) and the `OnInvalid` callback (`wa-invalid`). The `name`/`required` attributes and custom-validity (`setCustomValidity`/`resetValidity`) are already provided by the shared `WaInputBase<decimal>` base; `wa-invalid` was already registered in the JS event initializer.
+
+### Non-breaking upstream "breaking" changes (no wrapper action)
+- `wa-rating` `change` event: the CEM `type` metadata changed (now null); the event is unchanged and remains folded into the two-way `@bind-Value` binding.
+- `wa-rating` `blur`/`focus` methods removed from the CEM: the underlying native `HTMLElement.blur()`/`focus()` remain, so `WaRating.BlurAsync()`/`FocusAsync()` stand (covered by the global `nativeElementMethods` allowlist).
+- `wa-textarea` `autocorrect`: the JS property type widened from `string` to `boolean`; the **attribute** form is still `"off"`/`"on"`, so `WaTextArea.AutoCorrect` (`string?`, rendered as the attribute) is unchanged — the same widening handled for `wa-input`/`wa-combobox` in 3.4.0.
+
+### Library
+- Versioned reference docs refreshed to the `v3.5.0` tag: the public GitHub docs tree replaces `inputs\WebAwesome` (including the new `markdown.md`); the 14 Pro/non-GitHub docs (charts family, combobox, file-input, toast, toast-item) were carried forward and re-stamped, with `toast-item.md` updated for the new `with-icon` attribute.
+- New train WA-3.5: subtrunk `/main/WA-3.5` branched off `/main` (released 3.4.0, cs:160); developed on `/main/WA-3.5/WAB-30`.
+
+### Public API
+- Baseline promoted: additions for `WaMarkdown` (+ its members), `WaButton.WithStart`/`WithEnd`, `WaColorPicker.Placement`, `WaCopyButton.ChildContent`, `WaDialog.WithFooter`, `WaDrawer.WithFooter`, `WaRating.DefaultValue`/`OnInvalid`, `WaSlider.WithHint`/`WithLabel`, `WaTextArea.WithCount`, `WaToastItem.WithIcon`. All additive, no removals; every diff explained by the WA 3.5.0 change report.
+
+### Deviations recorded (parity-config.json)
+- `wa-rating`: `name`/`custom-error` added to `ignoredAttributes`, `formStateRestoreCallback` to `ignoredMethods` (same rationale as the other form controls, now that rating is form-associated).
+- `wa-markdown`: `getMarked`/`updateAll` added to `ignoredMethods` — both are static class-level methods (verified in `markdown.d.ts`), not per-element instance methods, and `getMarked` returns a non-marshalable JS `Marked` object.
+
+### Next-release check outcomes (carried from 3.4.0)
+- Observer `stopObserver()`/`startObserver()` method names and `wa-relative-time` `update()`: re-verified against the 3.5.0 sources (`stopObserver`/`startObserver` still private members in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle method, only `updateTimeout` appears in `relative-time.d.ts`) — the allowlist stands. `wa-page` `visiblePixelsInViewport` still present.
+- `WaButton.Form` (CEM-invisible since 3.1.0) and the `WaCheckbox`/`WaSwitch` `.checked` binding workaround: unaffected by WA 3.5.0, carried forward unchanged.
+
 ## [3.4.0] — 2026-07-23
 
 Alignment with the Web Awesome 3.4.0 release, opening the **WA-3.4 train**. A small additive upgrade: new text-input attributes and a create event on `WaCombobox`, and a theme-sync attribute on `WaZoomableFrame`. **No breaking changes** — the four upstream "breaking" entries in the change report are all non-destructive for the wrappers (two are type widenings that leave the existing parameter functional, two are removals of attributes the wrappers only inherited from the shared `WaInputBase<TValue>` base). No migration guide is required.

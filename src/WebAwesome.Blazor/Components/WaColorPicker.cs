@@ -59,6 +59,12 @@ public class WaColorPicker : WaInputBase<string>
     /// </summary>
     [Parameter] public bool WithLabel { get; set; }
 
+    /// <summary>
+    /// The preferred placement of the color picker's popup. The actual placement may vary to keep the panel
+    /// inside the viewport.
+    /// </summary>
+    [Parameter] public WaPlacement? Placement { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -110,6 +116,7 @@ public class WaColorPicker : WaInputBase<string>
         builder.AddAttribute(26, "uppercase", Uppercase);
         builder.AddAttribute(27, "with-hint", WithHint);
         builder.AddAttribute(28, "with-label", WithLabel);
+        builder.AddAttributeIfNotNull(29, "placement", Placement?.ToHtmlValue());
 
         // Add value binding
         builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));

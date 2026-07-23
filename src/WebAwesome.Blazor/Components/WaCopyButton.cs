@@ -120,6 +120,12 @@ public class WaCopyButton : ComponentBase
     #region ------ Content Slots ------
 
     /// <summary>
+    /// The trigger element. By default a copy icon button is rendered, so this is optional. Slot in a custom
+    /// element such as a <see cref="WaButton"/> or a native button to override it.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
     /// Icon to display for the copy state
     /// </summary>
     [Parameter] public RenderFragment? CopyIcon { get; set; }
@@ -216,6 +222,12 @@ public class WaCopyButton : ComponentBase
         else
         {
             builder.AddIconSlot(70, "error-icon", ErrorIconName);
+        }
+
+        // default slot: custom trigger element (optional)
+        if (ChildContent is not null)
+        {
+            builder.AddContent(80, ChildContent);
         }
 
         builder.CloseElement();

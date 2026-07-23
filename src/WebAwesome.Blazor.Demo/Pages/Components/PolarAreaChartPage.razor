@@ -1,18 +1,88 @@
-﻿@page "/components/polar-area-chart"
+@page "/components/polar-area-chart"
 
 <PageTitle>Polar Area Chart</PageTitle>
 
-<h1>Polar Area Chart</h1>
-<p><code>&lt;wa-polar-area-chart&gt;</code> wrapped by <code>WaPolarAreaChart</code>.</p>
+<h1>Polar Area Chart <ComponentBadges Tag="wa-polar-area-chart" /></h1>
+<p>Polar area charts compare values using segments that radiate from a center point with varying radius, keeping each segment at an equal angle. <code>&lt;wa-polar-area-chart&gt;</code> wrapped by <code>WaPolarAreaChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaPolarAreaChart>WaPolarAreaChart example</WaPolarAreaChart>
+    <WaPolarAreaChart Label="Monthly Rainfall" Description="A polar area chart showing monthly rainfall in millimeters">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["January", "February", "March", "April", "May", "June"],
+                "datasets": [{ "label": "Rainfall (mm)", "data": [78, 62, 85, 110, 95, 45] }]
+              }
+            }
+        </script>
+    </WaPolarAreaChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\polar-area-chart.md) *@
+<ExampleSection Title="Legend Position" Code="@LegendPositionExample">
+    <WaPolarAreaChart LegendPosition="WaChartLegendPosition.Right" Label="Energy Mix" Description="A polar area chart with the legend to the right of the chart">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Solar", "Wind", "Hydro", "Nuclear", "Gas"],
+                "datasets": [{ "label": "Share (%)", "data": [18, 25, 15, 22, 20] }]
+              }
+            }
+        </script>
+    </WaPolarAreaChart>
+</ExampleSection>
+
+<ExampleSection Title="Value Axis Maximum" Code="@MaxExample">
+    <WaPolarAreaChart Max="120" Label="Monthly Rainfall" Description="A polar area chart with a fixed radial maximum of 120 mm">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["January", "February", "March", "April", "May", "June"],
+                "datasets": [{ "label": "Rainfall (mm)", "data": [78, 62, 85, 110, 95, 45] }]
+              }
+            }
+        </script>
+    </WaPolarAreaChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-polar-area-chart" />
 
 @code {
-    private const string DefaultExample = "<WaPolarAreaChart>WaPolarAreaChart example</WaPolarAreaChart>";
+    private const string DefaultExample = """
+        <WaPolarAreaChart Label="Monthly Rainfall" Description="A polar area chart showing monthly rainfall in millimeters">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["January", "February", "March", "April", "May", "June"],
+                    "datasets": [{ "label": "Rainfall (mm)", "data": [78, 62, 85, 110, 95, 45] }]
+                  }
+                }
+            </script>
+        </WaPolarAreaChart>
+        """;
+
+    private const string LegendPositionExample = """
+        <WaPolarAreaChart LegendPosition="WaChartLegendPosition.Right" Label="Energy Mix" Description="A polar area chart with the legend to the right of the chart">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Solar", "Wind", "Hydro", "Nuclear", "Gas"],
+                    "datasets": [{ "label": "Share (%)", "data": [18, 25, 15, 22, 20] }]
+                  }
+                }
+            </script>
+        </WaPolarAreaChart>
+        """;
+
+    private const string MaxExample = """
+        <WaPolarAreaChart Max="120" Label="Monthly Rainfall" Description="A polar area chart with a fixed radial maximum of 120 mm">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["January", "February", "March", "April", "May", "June"],
+                    "datasets": [{ "label": "Rainfall (mm)", "data": [78, 62, 85, 110, 95, 45] }]
+                  }
+                }
+            </script>
+        </WaPolarAreaChart>
+        """;
 }

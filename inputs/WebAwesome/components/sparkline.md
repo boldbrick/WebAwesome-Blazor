@@ -1,4 +1,4 @@
-<!-- Source: https://webawesome.com/docs/components/sparkline (fetched 2026-07-23 for Web Awesome 3.3.0; Pro component — absent from the public GitHub docs tree). -->
+<!-- Source: https://webawesome.com/docs/components/sparkline (public web docs -- component absent from the public GitHub docs tree; carried forward and re-verified 2026-07-23 for Web Awesome 3.5.0, no 3.5.0 API changes). -->
 
 # Sparkline Component Reference
 

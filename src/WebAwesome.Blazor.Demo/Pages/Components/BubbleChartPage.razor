@@ -1,18 +1,98 @@
-﻿@page "/components/bubble-chart"
+@page "/components/bubble-chart"
 
 <PageTitle>Bubble Chart</PageTitle>
 
-<h1>Bubble Chart</h1>
-<p><code>&lt;wa-bubble-chart&gt;</code> wrapped by <code>WaBubbleChart</code>.</p>
+<h1>Bubble Chart <ComponentBadges Tag="wa-bubble-chart" /></h1>
+<p>Bubble charts add a third dimension to scatter plots by varying the size of each data point. <code>&lt;wa-bubble-chart&gt;</code> wrapped by <code>WaBubbleChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaBubbleChart>WaBubbleChart example</WaBubbleChart>
+    <WaBubbleChart Label="City Comparison" Description="A bubble chart comparing cities by cost of living, quality of life, and population">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "datasets": [
+                  { "label": "North America", "data": [{ "x": 65, "y": 7.8, "r": 18 }, { "x": 50, "y": 7.0, "r": 12 }, { "x": 55, "y": 7.5, "r": 14 }] },
+                  { "label": "Europe", "data": [{ "x": 40, "y": 8.2, "r": 16 }, { "x": 30, "y": 7.6, "r": 10 }, { "x": 45, "y": 8.0, "r": 13 }] }
+                ]
+              }
+            }
+        </script>
+    </WaBubbleChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\bubble-chart.md) *@
+<ExampleSection Title="Axis Labels" Code="@AxisLabelsExample">
+    <WaBubbleChart XLabel="Cost of living index" YLabel="Quality of life" Label="City Comparison" Description="A bubble chart with labeled axes">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "datasets": [
+                  { "label": "Cities", "data": [{ "x": 65, "y": 7.8, "r": 18 }, { "x": 40, "y": 8.2, "r": 16 }, { "x": 30, "y": 7.6, "r": 10 }] }
+                ]
+              }
+            }
+        </script>
+    </WaBubbleChart>
+</ExampleSection>
+
+<ExampleSection Title="Legend Position &amp; Grid" Code="@LegendGridExample">
+    <WaBubbleChart LegendPosition="WaChartLegendPosition.Bottom" Grid="WaChartGrid.None" Label="Campaign Reach" Description="A bubble chart with the legend below the chart and no grid lines">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "datasets": [
+                  { "label": "Social", "data": [{ "x": 20, "y": 35, "r": 15 }, { "x": 35, "y": 50, "r": 20 }] },
+                  { "label": "Email", "data": [{ "x": 15, "y": 60, "r": 10 }, { "x": 28, "y": 42, "r": 12 }] }
+                ]
+              }
+            }
+        </script>
+    </WaBubbleChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-bubble-chart" />
 
 @code {
-    private const string DefaultExample = "<WaBubbleChart>WaBubbleChart example</WaBubbleChart>";
+    private const string DefaultExample = """
+        <WaBubbleChart Label="City Comparison" Description="A bubble chart comparing cities by cost of living, quality of life, and population">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "datasets": [
+                      { "label": "North America", "data": [{ "x": 65, "y": 7.8, "r": 18 }, { "x": 50, "y": 7.0, "r": 12 }, { "x": 55, "y": 7.5, "r": 14 }] },
+                      { "label": "Europe", "data": [{ "x": 40, "y": 8.2, "r": 16 }, { "x": 30, "y": 7.6, "r": 10 }, { "x": 45, "y": 8.0, "r": 13 }] }
+                    ]
+                  }
+                }
+            </script>
+        </WaBubbleChart>
+        """;
+
+    private const string AxisLabelsExample = """
+        <WaBubbleChart XLabel="Cost of living index" YLabel="Quality of life" Label="City Comparison" Description="A bubble chart with labeled axes">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "datasets": [
+                      { "label": "Cities", "data": [{ "x": 65, "y": 7.8, "r": 18 }, { "x": 40, "y": 8.2, "r": 16 }, { "x": 30, "y": 7.6, "r": 10 }] }
+                    ]
+                  }
+                }
+            </script>
+        </WaBubbleChart>
+        """;
+
+    private const string LegendGridExample = """
+        <WaBubbleChart LegendPosition="WaChartLegendPosition.Bottom" Grid="WaChartGrid.None" Label="Campaign Reach" Description="A bubble chart with the legend below the chart and no grid lines">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "datasets": [
+                      { "label": "Social", "data": [{ "x": 20, "y": 35, "r": 15 }, { "x": 35, "y": 50, "r": 20 }] },
+                      { "label": "Email", "data": [{ "x": 15, "y": 60, "r": 10 }, { "x": 28, "y": 42, "r": 12 }] }
+                    ]
+                  }
+                }
+            </script>
+        </WaBubbleChart>
+        """;
 }

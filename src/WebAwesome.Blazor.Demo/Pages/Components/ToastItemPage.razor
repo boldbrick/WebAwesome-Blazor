@@ -1,18 +1,152 @@
-﻿@page "/components/toast-item"
+@page "/components/toast-item"
 
 <PageTitle>Toast Item</PageTitle>
 
-<h1>Toast Item</h1>
-<p><code>&lt;wa-toast-item&gt;</code> wrapped by <code>WaToastItem</code>.</p>
+<h1>Toast Item <ComponentBadges Tag="wa-toast-item" /></h1>
+<p>Toast items are individual notifications displayed within a <code>WaToast</code> stack, which manages their lifecycle and positioning. <code>&lt;wa-toast-item&gt;</code> wrapped by <code>WaToastItem</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaToastItem>WaToastItem example</WaToastItem>
+    <WaToastItem Variant="WaVariant.Brand" Duration="0" IconName="bell">This is how a toast item looks!</WaToastItem>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\toast-item.md) *@
+<ExampleSection Title="Variants" Code="@VariantsExample">
+    <WaToastItem Variant="WaVariant.Neutral" Duration="0">Neutral</WaToastItem>
+    <WaToastItem Variant="WaVariant.Brand" Duration="0">Brand</WaToastItem>
+    <WaToastItem Variant="WaVariant.Success" Duration="0">Success</WaToastItem>
+    <WaToastItem Variant="WaVariant.Warning" Duration="0">Warning</WaToastItem>
+    <WaToastItem Variant="WaVariant.Danger" Duration="0">Danger</WaToastItem>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaToastItem Size="WaSize.Small" Duration="0">Small</WaToastItem>
+    <WaToastItem Size="WaSize.Medium" Duration="0">Medium</WaToastItem>
+    <WaToastItem Size="WaSize.Large" Duration="0">Large</WaToastItem>
+</ExampleSection>
+
+<ExampleSection Title="Icons" Code="@IconsExample">
+    <WaToastItem Variant="WaVariant.Brand" Duration="0" IconName="bell">Set a simple icon with <code>IconName</code>.</WaToastItem>
+    <WaToastItem Variant="WaVariant.Success" Duration="0">
+        <IconContent>
+            <WaIcon Name="circle-check" />
+        </IconContent>
+        <ChildContent>
+            Or slot rich markup with <code>IconContent</code>.
+        </ChildContent>
+    </WaToastItem>
+</ExampleSection>
+
+<ExampleSection Title="Duration, Events &amp; Hiding Programmatically" Code="@EventsExample">
+    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => showEventItem = true)">Show toast item</WaButton>
+    <WaButton OnClick="HideEventItemAsync">Hide toast item</WaButton>
+    <WaToast>
+        @if (showEventItem)
+        {
+            <WaToastItem @ref="eventItem" Variant="WaVariant.Brand" Duration="0" IconName="bell"
+                         OnShow="@(() => LogEvent("wa-show"))"
+                         OnAfterShow="@(() => LogEvent("wa-after-show"))"
+                         OnHide="@(() => LogEvent("wa-hide"))"
+                         OnAfterHide="@(() => OnEventItemHidden())">
+                Watch the event log below.
+            </WaToastItem>
+        }
+    </WaToast>
+    <p>Event log: @(eventLog.Count == 0 ? "(empty)" : string.Join(", ", eventLog))</p>
+</ExampleSection>
 
 <ApiTable Tag="wa-toast-item" />
 
 @code {
-    private const string DefaultExample = "<WaToastItem>WaToastItem example</WaToastItem>";
+    private WaToastItem? eventItem;
+    private bool showEventItem;
+    private readonly List<string> eventLog = new();
+
+    private void LogEvent(string name)
+    {
+        eventLog.Add(name);
+    }
+
+    private void OnEventItemHidden()
+    {
+        LogEvent("wa-after-hide");
+
+        // the toast item removes itself from the DOM after hiding, so drop it from the render tree as well
+        showEventItem = false;
+    }
+
+    private async Task HideEventItemAsync()
+    {
+        if (eventItem is not null && showEventItem) await eventItem.HideAsync();
+    }
+
+    private const string DefaultExample = """
+        <WaToastItem Variant="WaVariant.Brand" Duration="0" IconName="bell">This is how a toast item looks!</WaToastItem>
+        """;
+
+    private const string VariantsExample = """
+        <WaToastItem Variant="WaVariant.Neutral" Duration="0">Neutral</WaToastItem>
+        <WaToastItem Variant="WaVariant.Brand" Duration="0">Brand</WaToastItem>
+        <WaToastItem Variant="WaVariant.Success" Duration="0">Success</WaToastItem>
+        <WaToastItem Variant="WaVariant.Warning" Duration="0">Warning</WaToastItem>
+        <WaToastItem Variant="WaVariant.Danger" Duration="0">Danger</WaToastItem>
+        """;
+
+    private const string SizesExample = """
+        <WaToastItem Size="WaSize.Small" Duration="0">Small</WaToastItem>
+        <WaToastItem Size="WaSize.Medium" Duration="0">Medium</WaToastItem>
+        <WaToastItem Size="WaSize.Large" Duration="0">Large</WaToastItem>
+        """;
+
+    private const string IconsExample = """
+        <WaToastItem Variant="WaVariant.Brand" Duration="0" IconName="bell">Set a simple icon with <code>IconName</code>.</WaToastItem>
+        <WaToastItem Variant="WaVariant.Success" Duration="0">
+            <IconContent>
+                <WaIcon Name="circle-check" />
+            </IconContent>
+            <ChildContent>
+                Or slot rich markup with <code>IconContent</code>.
+            </ChildContent>
+        </WaToastItem>
+        """;
+
+    private const string EventsExample = """
+        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => showEventItem = true)">Show toast item</WaButton>
+        <WaButton OnClick="HideEventItemAsync">Hide toast item</WaButton>
+        <WaToast>
+            @if (showEventItem)
+            {
+                <WaToastItem @ref="eventItem" Variant="WaVariant.Brand" Duration="0" IconName="bell"
+                             OnShow="@(() => LogEvent("wa-show"))"
+                             OnAfterShow="@(() => LogEvent("wa-after-show"))"
+                             OnHide="@(() => LogEvent("wa-hide"))"
+                             OnAfterHide="@(() => OnEventItemHidden())">
+                    Watch the event log below.
+                </WaToastItem>
+            }
+        </WaToast>
+        <p>Event log: @(eventLog.Count == 0 ? "(empty)" : string.Join(", ", eventLog))</p>
+
+        @code {
+            private WaToastItem? eventItem;
+            private bool showEventItem;
+            private readonly List<string> eventLog = new();
+
+            private void LogEvent(string name)
+            {
+                eventLog.Add(name);
+            }
+
+            private void OnEventItemHidden()
+            {
+                LogEvent("wa-after-hide");
+
+                // the toast item removes itself from the DOM after hiding, so drop it from the render tree as well
+                showEventItem = false;
+            }
+
+            private async Task HideEventItemAsync()
+            {
+                if (eventItem is not null && showEventItem) await eventItem.HideAsync();
+            }
+        }
+        """;
 }
