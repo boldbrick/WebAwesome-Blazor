@@ -2,6 +2,37 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.3.0] — 2026-07-23
+
+Alignment with the Web Awesome 3.3.0 release. A substantial but additive upgrade: eleven new components (a nine-member Chart.js chart family plus `WaToast`/`WaToastItem`), a new form-control validity-reset method, and new start/end slots on `WaBadge`. **No breaking changes** — the eight upstream "breaking" entries in the change report are all non-destructive (a `string` → `string | null` nullability annotation on the `name` attribute of five form controls, already covered by the wrappers, and three empty/`null` "removed" array entries that are CEM-export artifacts, not real removals). No migration guide is required.
+
+### New components
+- **Chart family** (all new in WA 3.3.0, experimental upstream): `WaChart` (the flexible Chart.js wrapper) plus eight presets — `WaBarChart`, `WaBubbleChart`, `WaDoughnutChart`, `WaLineChart`, `WaPieChart`, `WaPolarAreaChart`, `WaRadarChart`, `WaScatterChart`. Implemented over a shared abstract `WaChartBase` (each preset supplies its own tag; `WaBarChart` adds `Orientation`). Common surface: `Label`, `Description`, `Type` (`WaChartType`), `Grid` (`WaChartGrid`), `IndexAxis` (`WaChartAxis`), `LegendPosition` (`WaChartLegendPosition`), `Min`/`Max` (`double?`, invariant-culture emission), `Stacked`, `WithoutAnimation`/`WithoutLegend`/`WithoutTooltip`, `XLabel`/`YLabel`, and the default slot for the `<script type="application/json">` Chart.js config. The Chart.js `plugins` array is a JS-only property (not an authorable attribute) and is recorded as a parity deviation.
+- `WaToast` (new in WA 3.3.0, experimental upstream): a toast stack (`ComponentBase`). `Placement` (`WaToastPlacement`), default slot for `WaToastItem` children, and `CreateAsync(message)` for programmatic notifications.
+- `WaToastItem` (new in WA 3.3.0, experimental upstream): an individual notification (`ComponentBase`). `Duration` (ms, `int?`), `Size` (`WaSize`), `Variant` (`WaVariant`); default + `icon` slots (icon-slot convenience via `IconName`); `OnShow`/`OnAfterShow`/`OnHide`/`OnAfterHide` events; `HideAsync()`. All four events were already registered in the JS initializer — no interop change was needed.
+
+### Changed
+- Form controls gained `ResetValidityAsync()` (WA 3.3.0 added `resetValidity` to the form-associated custom-element validation surface). Added to `IFormValidation` and implemented once on `WaInputBase<TValue>` (covering `WaCheckbox`, `WaColorPicker`, `WaCombobox`, `WaInput`, `WaNumberInput`, `WaRadioGroup`, `WaSelect`, `WaSlider`, `WaSwitch`) plus the four non-`WaInputBase` controls (`WaButton`, `WaFileInput`, `WaRadio`, `WaTextArea`).
+- `setCustomValidity` became CEM-documented for the form controls in WA 3.3.0; the existing `SetCustomValidityAsync` wrappers now satisfy method parity directly (no code change).
+- `WaBadge` gained `start` and `end` slots (both documented as accepting a `wa-icon`): new `StartContent`/`EndContent` render fragments with `StartIconName`/`EndIconName` icon-slot convenience parameters.
+- `WaFileInput` gained a `Disabled` parameter (`wa-file-input` added the `disabled` attribute upstream).
+
+### Library
+- Versioned reference docs refreshed to the `v3.3.0` tag (the public GitHub docs tree; the 15 CEM components with no public doc page — the nine charts, `toast`, `toast-item`, and the Pro `combobox`/`page`/`file-input`/`sparkline` — were captured from the public web docs at `webawesome.com`, source URL noted at the top of each file).
+- Demo: skeleton pages generated for the eleven new components (TODO-marked; showcase curation for the chart/toast components is deliberate follow-up). No components were removed.
+
+### Public API
+- Baseline promoted: additions for the eleven new wrappers, `WaChartBase`, the new enums (`WaChartType`, `WaChartGrid`, `WaChartAxis`, `WaChartLegendPosition`, `WaToastPlacement`) and their `ToHtmlValue` extensions, `ResetValidityAsync` on `IFormValidation` and every form control, `WaBadge` start/end slot parameters, and `WaFileInput.Disabled`. All additions, no removals; every diff is explained by the WA 3.3.0 change report.
+
+### Deviations recorded (parity-config.json)
+- Global `dir`/`lang`/`did-ssr` (added to every component's base element in WA 3.3.0) are ignored: `dir`/`lang` are native HTML globals passed through via `AdditionalAttributes`; `did-ssr` is an internal SSR hydration marker.
+- Per form control: `custom-error` (managed via `SetCustomValidityAsync`/`ResetValidityAsync`, not an authorable attribute) and `formStateRestoreCallback` (a FACE lifecycle callback, not consumer-facing) are ignored; `name` remains form-integration-managed.
+- Per chart: `plugins` (JS-only `never[]` property) is ignored.
+
+### Next-release check outcomes (carried from 3.2.1)
+- Observer `stopObserver()`/`startObserver()` method names and `wa-relative-time` `update()`: re-verified against the 3.3.0 sources (`stopObserver`/`startObserver` still private members in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle method, only `updateTimeout` appears in `relative-time.d.ts`) — the allowlist stands.
+- `WaButton.Form` (CEM-invisible since 3.1.0) and the `WaCheckbox`/`WaSwitch` `.checked` binding workaround: unaffected by WA 3.3.0, carried forward unchanged.
+
 ## [3.2.1] — 2026-07-23
 
 Alignment with the Web Awesome 3.2.1 release. A pure version-alignment patch: no wrapper code changes, no new/removed components, no breaking changes. The CEM API surface is byte-identical to 3.2.0 apart from the version string.
