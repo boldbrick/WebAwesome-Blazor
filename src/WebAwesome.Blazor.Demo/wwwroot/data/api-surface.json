@@ -1,5 +1,5 @@
 {
-  "version": "3.3.0",
+  "version": "3.3.1",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-animated-image": {
