@@ -1,5 +1,5 @@
 {
-  "version": "3.4.0",
+  "version": "3.5.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-animated-image": {
@@ -715,6 +715,16 @@
           "type": "boolean",
           "default": "false",
           "description": "Draws the button with a caret. Used to indicate that the button triggers a dropdown menu or similar behavior."
+        },
+        "with-end": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in an `end` element so the server-rendered markup\nincludes the end slot before the component hydrates on the client."
+        },
+        "with-start": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `start` element so the server-rendered markup\nincludes the start slot before the component hydrates on the client."
         }
       },
       "events": {
@@ -897,17 +907,17 @@
         "with-footer": {
           "type": "boolean",
           "default": "false",
-          "description": "Renders the card with a footer. Only needed for SSR, otherwise is automatically added."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `footer` element so the server-rendered markup\nincludes the footer before the component hydrates on the client."
         },
         "with-header": {
           "type": "boolean",
           "default": "false",
-          "description": "Renders the card with a header. Only needed for SSR, otherwise is automatically added."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `header` element so the server-rendered markup\nincludes the header before the component hydrates on the client."
         },
         "with-media": {
           "type": "boolean",
           "default": "false",
-          "description": "Renders the card with an image. Only needed for SSR, otherwise is automatically added."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `media` element so the server-rendered markup\nincludes the media before the component hydrates on the client."
         }
       },
       "events": {},
@@ -1133,6 +1143,11 @@
           "default": "false",
           "description": "Indicates whether or not the popup is open. You can toggle this attribute to show and hide the popup, or you\ncan use the `show()` and `hide()` methods and this attribute will reflect the popup's open state."
         },
+        "placement": {
+          "type": "| 'top'\n    | 'top-start'\n    | 'top-end'\n    | 'bottom'\n    | 'bottom-start'\n    | 'bottom-end'\n    | 'right'\n    | 'right-start'\n    | 'right-end'\n    | 'left'\n    | 'left-start'\n    | 'left-end'",
+          "default": "'bottom-start'",
+          "description": "The preferred placement of the color picker's popup. Note that the actual placement will vary as configured to\nkeep the panel inside of the viewport."
+        },
         "required": {
           "type": "boolean",
           "default": "false",
@@ -1161,12 +1176,12 @@
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": null
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         },
         "with-label": {
           "type": "boolean",
           "default": "false",
-          "description": null
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         },
         "without-format-toggle": {
           "type": "boolean",
@@ -1435,12 +1450,12 @@
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR purposes when hint is slotted in. Will show the hint on first render."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         },
         "with-label": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR purposes when a label is slotted in. Will show the label on first render."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         }
       },
       "events": {
@@ -1681,6 +1696,7 @@
         }
       },
       "slots": {
+        "(default)": "The trigger element. By default, a copy icon button is rendered so this is optional. If desired, you can slot in a custom element such as `<wa-button>` or `<button>`.",
         "copy-icon": "The icon to show in the default copy state. Works best with `<wa-icon>`.",
         "error-icon": "The icon to show when a copy error occurs. Works best with `<wa-icon>`.",
         "success-icon": "The icon to show when the content is copied. Works best with `<wa-icon>`."
@@ -1830,6 +1846,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Indicates whether or not the dialog is open. Toggle this attribute to show and hide the dialog."
+        },
+        "with-footer": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `footer` element so the server-rendered markup\nincludes the footer before the component hydrates on the client."
         },
         "without-header": {
           "type": "boolean",
@@ -2053,6 +2074,11 @@
           "type": "'top' | 'end' | 'bottom' | 'start'",
           "default": "'end'",
           "description": "The direction from which the drawer will open."
+        },
+        "with-footer": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `footer` element so the server-rendered markup\nincludes the footer before the component hydrates on the client."
         },
         "without-header": {
           "type": "boolean",
@@ -2342,12 +2368,12 @@
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. Will determine if the SSRed component will have the hint slot rendered on initial paint."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         },
         "with-label": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. Will determine if the SSRed component will have the label slot rendered on initial paint."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         }
       },
       "events": {
@@ -3194,12 +3220,12 @@
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. Will determine if the SSRed component will have the hint slot rendered on initial paint."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         },
         "with-label": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. Will determine if the SSRed component will have the label slot rendered on initial paint."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         },
         "without-spin-buttons": {
           "type": "boolean",
@@ -3474,6 +3500,51 @@
       "methods": {},
       "cssParts": []
     },
+    "wa-markdown": {
+      "className": "WaMarkdown",
+      "since": "3.4",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "tab-size": {
+          "type": "number",
+          "default": "4",
+          "description": "The tab stop width used when converting leading tabs to spaces during whitespace normalization."
+        }
+      },
+      "events": {},
+      "slots": {},
+      "methods": {
+        "getMarked": {
+          "signature": "getMarked() => Marked",
+          "description": "Returns the shared Marked instance used by all `<wa-markdown>` components."
+        },
+        "renderMarkdown": {
+          "signature": "renderMarkdown() => void",
+          "description": "Reads the script content, normalizes whitespace, parses markdown, and injects the result."
+        },
+        "updateAll": {
+          "signature": "updateAll() => void",
+          "description": "Re-renders all connected `<wa-markdown>` instances. Call this after changing the Marked configuration."
+        }
+      },
+      "cssParts": []
+    },
     "wa-mutation-observer": {
       "className": "WaMutationObserver",
       "since": "2.0",
@@ -3663,12 +3734,12 @@
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. Will determine if the SSRed component will have the hint slot rendered on initial paint."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         },
         "with-label": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. Will determine if the SSRed component will have the label slot rendered on initial paint."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         },
         "without-steppers": {
           "type": "boolean",
@@ -4793,12 +4864,12 @@
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. if true, will show slotted hint on initial render."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         },
         "with-label": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. if true, will show slotted label on initial render."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         }
       },
       "events": {
@@ -4855,6 +4926,16 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "default-value": {
+          "type": "number",
+          "default": "0",
+          "description": "The default value of the form control. Used to reset the rating to its initial value."
+        },
         "did-ssr": {
           "type": null,
           "default": null,
@@ -4890,6 +4971,11 @@
           "default": "5",
           "description": "The highest rating to show."
         },
+        "name": {
+          "type": "string | null",
+          "default": "null",
+          "description": "The name of the rating, submitted as a name/value pair with form data."
+        },
         "precision": {
           "type": "number",
           "default": "1",
@@ -4899,6 +4985,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Makes the rating readonly."
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the rating a required field."
         },
         "size": {
           "type": "'small' | 'medium' | 'large'",
@@ -4913,7 +5004,7 @@
       },
       "events": {
         "change": {
-          "type": "Event",
+          "type": null,
           "eventName": "ChangeEvent",
           "description": "Emitted when the rating's value changes."
         },
@@ -4921,17 +5012,26 @@
           "type": "{ phase: 'start' | 'move' | 'end', value: number }",
           "eventName": "WaHoverEvent",
           "description": "Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value."
+        },
+        "wa-invalid": {
+          "type": null,
+          "eventName": "WaInvalidEvent",
+          "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
       "slots": {},
       "methods": {
-        "blur": {
-          "signature": "blur() => void",
-          "description": "Removes focus from the rating."
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
         },
-        "focus": {
-          "signature": "focus(options?: FocusOptions) => void",
-          "description": "Sets focus on the rating."
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         }
       },
       "cssParts": [
@@ -5279,12 +5379,12 @@
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR purposes when hint is slotted in. Will show the hint on first render."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         },
         "with-label": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR purposes when a label is slotted in. Will show the label on first render."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         }
       },
       "events": {
@@ -5546,6 +5646,16 @@
           "type": "number",
           "default": null,
           "description": "The default value of the form control. Primarily used for resetting the form control."
+        },
+        "with-hint": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         },
         "with-markers": {
           "type": "boolean",
@@ -5869,7 +5979,7 @@
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. If you slot in hint, make sure to add `with-hint` to your component to get it to properly render with SSR."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         }
       },
       "events": {
@@ -6176,9 +6286,9 @@
           "description": "Specifies what permission the browser has to provide assistance in filling out form field values. Refer to\n[this page on MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete) for available values."
         },
         "autocorrect": {
-          "type": "string",
+          "type": "boolean",
           "default": null,
-          "description": "Indicates whether the browser's autocorrect feature is on or off."
+          "description": "Indicates whether the browser's autocorrect feature is on or off. When set as an attribute, use `\"off\"` or `\"on\"`.\nWhen set as a property, use `true` or `false`."
         },
         "autofocus": {
           "type": "boolean",
@@ -6290,15 +6400,20 @@
           "default": null,
           "description": "The default value of the form control. Primarily used for resetting the form control."
         },
+        "with-count": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows a character count below the textarea. When `maxlength` is set, shows remaining characters instead."
+        },
         "with-hint": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. If you're slotting in a `hint` element, make sure to set this to `true`."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
         },
         "with-label": {
           "type": "boolean",
           "default": "false",
-          "description": "Used for SSR. If you're slotting in a `label` element, make sure to set this to `true`."
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
         }
       },
       "events": {
@@ -6372,6 +6487,7 @@
       },
       "cssParts": [
         "base",
+        "count",
         "form-control-input",
         "hint",
         "label",
@@ -6454,6 +6570,11 @@
           "type": "'brand' | 'success' | 'warning' | 'danger' | 'neutral'",
           "default": "'neutral'",
           "description": "The toast item's variant."
+        },
+        "with-icon": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in an `icon` element so the server-rendered markup\nincludes the icon before the component hydrates on the client."
         }
       },
       "events": {

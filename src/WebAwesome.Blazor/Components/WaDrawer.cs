@@ -75,6 +75,12 @@ public class WaDrawer : ComponentBase
     /// </summary>
     [Parameter] public bool LightDismiss { get; set; }
 
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting content into the footer (via <see cref="FooterContent"/>)
+    /// so the server-rendered markup includes the footer before the component hydrates on the client.
+    /// </summary>
+    [Parameter] public bool WithFooter { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -145,6 +151,7 @@ public class WaDrawer : ComponentBase
             builder.AddAttribute(12, "placement", Placement.ToHtmlValue());
         builder.AddAttribute(13, "without-header", WithoutHeader);
         builder.AddAttribute(14, "light-dismiss", LightDismiss);
+        builder.AddAttribute(15, "with-footer", WithFooter);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);

@@ -26,6 +26,11 @@ public class WaRating : WaInputBase<decimal>
     /// </summary>
     [Parameter] public decimal Precision { get; set; } = 1;
 
+    /// <summary>
+    /// The default value of the form control. Used to reset the rating to its initial value.
+    /// </summary>
+    [Parameter] public decimal DefaultValue { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -34,6 +39,11 @@ public class WaRating : WaInputBase<decimal>
     /// Invoked when the user hovers over a value. The event args indicate the hover phase and the value that would be committed if the user were to select it.
     /// </summary>
     [Parameter] public EventCallback<WaRatingHoverEventArgs> OnHover { get; set; }
+
+    /// <summary>
+    /// Invoked when the form control has been checked for validity and its constraints aren't satisfied.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
     #endregion
 
@@ -52,6 +62,7 @@ public class WaRating : WaInputBase<decimal>
         builder.AddAttribute(21, "precision", Precision);
         builder.AddAttribute(22, "readonly", Readonly);
         builder.AddAttribute(23, "value", BindConverter.FormatValue(CurrentValue));
+        builder.AddAttribute(24, "default-value", DefaultValue);
 
         // Add value binding
         builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<decimal>(this, __value => CurrentValue = __value, CurrentValue));
@@ -59,6 +70,7 @@ public class WaRating : WaInputBase<decimal>
 
         // Add rating-specific event handlers
         builder.AddAttributeIfHasDelegate(40, "onwa-hover", OnHover);
+        builder.AddAttributeIfHasDelegate(41, "onwa-invalid", OnInvalid);
 
         // Add common event handlers
         AddCommonEventHandlers(builder, 50);

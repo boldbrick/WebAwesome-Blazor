@@ -98,6 +98,18 @@ public class WaSlider : WaInputBase<decimal?>
     /// </summary>
     [Parameter] public bool AutoFocus { get; set; }
 
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting in a hint element so the server-rendered markup includes
+    /// the hint before the component hydrates on the client.
+    /// </summary>
+    [Parameter] public bool WithHint { get; set; }
+
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting in a label element so the server-rendered markup includes
+    /// the label before the component hydrates on the client.
+    /// </summary>
+    [Parameter] public bool WithLabel { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -159,6 +171,8 @@ public class WaSlider : WaInputBase<decimal?>
         builder.AddAttributeIfNotNull(28, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
         builder.AddAttributeIfNotNull(29, "tooltip-distance", TooltipDistance);
         builder.AddAttribute(33, "autofocus", AutoFocus);
+        builder.AddAttribute(34, "with-hint", WithHint);
+        builder.AddAttribute(35, "with-label", WithLabel);
 
         // Add value binding - handle both single and range mode
         if (Range)
