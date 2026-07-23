@@ -170,6 +170,59 @@ public class WaBreakingChangesValidationTests
 
     #endregion
 
+    #region ------ 3.2.0 Breaking Changes ------
+
+    [Fact]
+    public void WaQrCode_FillAndBackground_DefaultToNull()
+    {
+        // Arrange & Act - Web Awesome 3.2.0 changed both attribute defaults to '' (inherit theme),
+        // so the wrapper now exposes them as nullable strings defaulting to null instead of the
+        // previous non-nullable "black"/"white" defaults
+        var component = new WaQrCode();
+
+        // Assert
+        Assert.Null(component.Fill);
+        Assert.Null(component.Background);
+    }
+
+    [Fact]
+    public void WaQrCode_FillAndBackground_CanBeSet()
+    {
+        // Arrange
+        var component = new WaQrCode();
+
+        // Act
+        component.Fill = "#ff0000";
+        component.Background = "transparent";
+
+        // Assert
+        Assert.Equal("#ff0000", component.Fill);
+        Assert.Equal("transparent", component.Background);
+    }
+
+    [Fact]
+    public void WaIcon_RotateProperty_DefaultsToZero()
+    {
+        // Arrange & Act
+        var component = new WaIcon();
+
+        // Assert
+        Assert.Equal(0, component.Rotate);
+    }
+
+    [Fact]
+    public void WaIcon_AnimationAndFlipProperties_DefaultToNull()
+    {
+        // Arrange & Act
+        var component = new WaIcon();
+
+        // Assert
+        Assert.Null(component.Animation);
+        Assert.Null(component.Flip);
+    }
+
+    #endregion
+
     #region ------ Enum Breaking Changes ------
 
     [Fact]
