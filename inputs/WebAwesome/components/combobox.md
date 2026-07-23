@@ -1,11 +1,12 @@
-<!-- Source: https://webawesome.com/docs/components/combobox (fetched 2026-07-23 for Web Awesome 3.2.0).
-     wa-combobox is a Pro component and is not documented in the public GitHub docs repo; content mirrored from the public web docs.
-     The web docs track the latest release, so version-specific examples may drift. The CEM API surface
-     (temp/wa-api/surface_3.2.0.json) is authoritative where this reference differs. -->
+<!-- Source: https://webawesome.com/docs/components/combobox (fetched 2026-07-23 for Web Awesome 3.3.0; Pro component — absent from the public GitHub docs tree). -->
 
-# Combobox (Pro)
+# Combobox Component Reference
 
-The `<wa-combobox>` component merges a text input with a listbox, enabling users to filter and select from predefined options or enter custom values. It follows the ARIA APG Combobox pattern and includes live region announcements for screen readers.
+## Overview
+
+The `<wa-combobox>` component combines a text input with a listbox, allowing users to filter and select from predefined options or enter custom values. It follows the ARIA APG Combobox pattern.
+
+**Status:** Pro component. **Category:** Forms. **Available Since:** v3.1
 
 ## Basic Usage
 
@@ -19,75 +20,72 @@ The `<wa-combobox>` component merges a text input with a listbox, enabling users
 
 ## Slots
 
-| Name        | Description |
-|-------------|-------------|
-| (default)   | Listbox options using `<wa-option>` elements; use `<wa-divider>` for visual grouping. |
-| clear-icon  | Custom icon for the clear button. |
-| end         | Element (e.g., `<wa-icon>`) at the combobox end. |
-| expand-icon | Icon displayed when expanded/collapsed; rotates on state change. |
-| hint        | Descriptive text (or use the `hint` attribute). |
-| label       | Input label (or use the `label` attribute). |
-| start       | Element (e.g., `<wa-icon>`) at the combobox start. |
+| Name | Description |
+|------|-------------|
+| (default) | The listbox options. Must be `<wa-option>` elements. |
+| clear-icon | An icon to use in lieu of the default clear icon. |
+| end | An element, such as `<wa-icon>`, placed at the end of the combobox. |
+| expand-icon | The icon to show when the control is expanded and collapsed. |
+| hint | Text that describes how to use the input. |
+| label | The input's label. |
+| start | An element, such as `<wa-icon>`, placed at the start of the combobox. |
 
 ## Attributes & Properties
 
-| Name                 | Type | Default | Description |
-|----------------------|------|---------|-------------|
-| allow-create         | boolean | false | Creates new options on-the-fly; fires `wa-create` before creation. |
-| allow-custom-value   | boolean | false | Permits values not matching existing options (single-select only). |
-| appearance           | `'filled' \| 'outlined' \| 'filled-outlined'` | `'outlined'` | Visual style. |
-| autocapitalize       | string | — | Text capitalization behavior. |
-| autocorrect          | boolean | false | Enables browser autocorrect. |
-| disabled             | boolean | false | Disables the control. |
-| enterkeyhint         | string | — | Virtual keyboard Enter key label. |
-| hint                 | string | `''` | Descriptive hint text. |
-| inputmode            | string | — | Virtual keyboard type. |
-| label                | string | `''` | Control label. |
-| max-options-visible  | number | 3 | Max selected options shown before collapse (0 = no limit). |
-| multiple             | boolean | false | Allows multiple selections. |
-| name                 | string \| null | `''` | Form submission name. |
-| open                 | boolean | false | Menu visibility toggle. |
-| pill                 | boolean | false | Rounded edges styling. |
-| placeholder          | string | `''` | Empty state hint text. |
-| placement            | `'top' \| 'bottom'` | `'bottom'` | Preferred menu position. |
-| required             | boolean | false | Marks control as required. |
-| size                 | `'small' \| 'medium' \| 'large'` | `'medium'` | Control size. |
-| spellcheck           | boolean | false | Enables spell checking. |
-| value                | string \| string[] | — | Selected value(s). |
-| with-clear           | boolean | false | Adds clear button when not empty. |
-| with-hint            | boolean | false | SSR only; pre-render hint. |
-| with-label           | boolean | false | SSR only; pre-render label. |
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| allow-create | boolean | false | Show a "Create [value]" option when typed text matches no option. |
+| allow-custom-value | boolean | false | Allow a value that doesn't match any option. Single-select only. |
+| appearance | 'filled' \| 'outlined' \| 'filled-outlined' | 'outlined' | The combobox's visual appearance. |
+| autocapitalize | 'off' \| 'none' \| 'on' \| 'sentences' \| 'words' \| 'characters' | - | Automatic capitalization of text input. |
+| autocorrect | boolean | - | Browser autocorrect on/off. |
+| custom-error | string \| null | null | Manually defined custom error (managed via setCustomValidity). |
+| disabled | boolean | false | Disables the combobox control. |
+| enterkeyhint | 'enter' \| 'done' \| 'go' \| 'next' \| 'previous' \| 'search' \| 'send' | - | Enter-key hint for virtual keyboards. |
+| hint | string | '' | The combobox's hint. |
+| inputmode | 'none' \| 'text' \| 'decimal' \| 'numeric' \| 'tel' \| 'search' \| 'email' \| 'url' | - | Virtual keyboard input mode. |
+| label | string | '' | The combobox's label. |
+| max-options-visible | number | 3 | Max selected options shown when multiple. 0 removes the limit. |
+| multiple | boolean | false | Allow more than one option selected. |
+| name | string \| null | '' | Name submitted with form data. |
+| open | boolean | false | Whether the combobox is open. |
+| pill | boolean | false | Pill-style combobox with rounded edges. |
+| placeholder | string | '' | Placeholder text. |
+| placement | 'top' \| 'bottom' | 'bottom' | Preferred menu placement. |
+| required | boolean | false | Required attribute. |
+| size | 'small' \| 'medium' \| 'large' | 'medium' | The combobox's size. |
+| spellcheck | boolean | false | Enables spell checking. |
+| value | string \| array | - | String for single select, array for multi-select. |
+| with-clear | boolean | false | Adds a clear button when not empty. |
 
 ## Methods
 
-| Name                | Arguments | Description |
-|---------------------|-----------|-------------|
-| blur()              | — | Removes focus. |
-| focus()             | `options: FocusOptions` | Sets focus. |
-| hide()              | — | Closes the listbox. |
-| show()              | — | Opens the listbox. |
-| setCustomValidity() | `message: string` | Sets custom validation error. |
+| Name | Arguments | Description |
+|------|-----------|-------------|
+| blur() | - | Removes focus from the control. |
+| focus() | options: FocusOptions | Sets focus on the control. |
+| formStateRestoreCallback() | state, reason | Called when the browser restores element state or fulfills autofill. |
+| hide() | - | Hides the listbox. |
+| resetValidity() | - | Remove manual custom errors and native validation. |
+| setCustomValidity() | message: string | Set a manually defined custom error. |
+| show() | - | Shows the listbox. |
 
 ## Events
 
-| Event         | Description |
-|---------------|-------------|
-| blur          | Control loses focus. |
-| change        | Value changes. |
-| focus         | Control gains focus. |
-| input         | Control receives input. |
-| wa-after-hide | Menu closes; animations complete. |
-| wa-after-show | Menu opens; animations complete. |
-| wa-clear      | Value is cleared. |
-| wa-create     | User selects "create" option (cancelable; detail: `{ inputValue: string }`). |
-| wa-hide       | Menu closes. |
-| wa-invalid    | Validation fails. |
-| wa-show       | Menu opens. |
-
-## CSS Parts
-
-`clear-button`, `combobox`, `combobox-input`, `end`, `expand-icon`, `form-control`, `form-control-input`, `form-control-label`, `hint`, `listbox`, `start`, `tag`, `tags`.
+| Name | Description |
+|------|-------------|
+| blur | Emitted when the control loses focus. |
+| change | Emitted when the control's value changes. |
+| focus | Emitted when the control gains focus. |
+| input | Emitted when the control receives input. |
+| wa-after-hide | Emitted after the menu closes and animations complete. |
+| wa-after-show | Emitted after the menu opens and animations complete. |
+| wa-clear | Emitted when the control's value is cleared. |
+| wa-create | Emitted when the user selects the "create" option. Detail: { inputValue: string }. |
+| wa-hide | Emitted when the menu closes. |
+| wa-invalid | Emitted when constraints aren't satisfied. |
+| wa-show | Emitted when the menu opens. |
 
 ## Dependencies
 
-Automatically imports `<wa-button>`, `<wa-icon>`, `<wa-option>`, `<wa-popup>`, `<wa-spinner>`, `<wa-tag>`.
+`<wa-button>`, `<wa-icon>`, `<wa-option>`, `<wa-popup>`, `<wa-spinner>`, `<wa-tag>`.

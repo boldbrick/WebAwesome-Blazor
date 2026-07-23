@@ -1,22 +1,56 @@
 ---
 title: Changelog
-dateLastUpdated: 2025-11-07
 description: Changes to each version of the project are documented here.
 layout: page-outline
 ---
-
-<p class="wa-caption-s">Last updated: <wa-format-date month="long" day="numeric" year="numeric" date="{{ dateLastUpdated }}"></wa-format-date></p>
 
 Web Awesome follows [Semantic Versioning](https://semver.org/). Breaking changes in components with the <wa-badge variant="brand">Stable</wa-badge> badge will not be accepted until the next major version. As such, all contributions must consider the project's roadmap and take this into consideration. Features that are deemed no longer necessary will be deprecated but not removed.
 
 Components with the <wa-badge variant="warning">Experimental</wa-badge> badge should not be used in production. They are made available as release candidates for development and testing purposes. As such, changes to experimental components will not be subject to semantic versioning.
 
+## 3.3.0
+
+<small>March 3rd, 2026</small>
+
+- Added `wa-button` class for styling `<a>` elements as buttons [pr:2040]
+- Added `<wa-chart>` and other chart types as experimental pro components
+- Added `--popup-border-width` parameter to `<wa-popup>`. This must be set to match the width of any border added to the popup element [pr:2070]
+- Added `start` and `end` slots to `<wa-badge>` [pr:2082]
+- Fixed a bug in `<wa-switch>` and `<wa-checkbox>` not rendering properly on first load [pr:2105]
+- Fixed a bug in `<wa-drawer>` and `<wa-dialog>` where it was attempting to register global event listeners in server environments. [pr:2105]
+- Fixed a bug in `<wa-textarea>` and `<wa-input>` where the internally rendered form controls were not resetting their value properly. [pr:2105]
+- Fixed a bug in HasSlotController where it would attempt to call APIs not available on the server. [pr:2105]
+- Fixed a bug in `<wa-page>` where it was attempting to insert styles during SSR with unsupported APIs. [issue:1862]
+- Fixed a bug in `<wa-page>` where the hamburger navigation would show up if there was no slot content. [issue:1601]
+- Fixed a bug in `<wa-dropdown-item>` where a click event would fire on `disabled`. [pr:2023]
+- Fixed a bug in the custom elements manifest where events may not have a name. [pr:2026]
+- Fixed a bug in `<wa-select>` where options with `selected` set via framework property binding (e.g., Vue's `:selected`) were not respected when `with-clear` was present [pr:1985]
+- Fixed a bug in `<wa-radio-group>`, `<wa-slider>`, `<wa-checkbox>`, and `<wa-switch>` to align with how browsers differentiate attributes vs properties. [pr:2105]
+- Fixed a bug in `<wa-input>` where it stays invalid when updating value property. [pr:2105]
+- Fixed a bug `<wa-color-picker>` that prevented it from flipping horizontally when position to the right of the viewport. [pr:2024]
+- Fixed a bug by adding `color: inherit` to the `<wa-dialog>` and `<wa-drawer>` styles so they inherit the text color from the document context rather than the browser default. [pr:2064]
+- Fixed a bug that caused 0ms animations to not fire correctly in the internal `animateWithClass()` function [pr#2068]
+- Fixed a bug that caused `<wa-dropdown>` elements to scroll the document in Chrome 145
+- Fixed a bug in native styles so `border-radius` does not apply to `svg` elements by default [pr:2078]
+- Fixed a bug in `<wa-popup>` that caused arrows to point the wrong direction for `-start` and `-end` placements
+- Fixed a bug in `<wa-split-panel>` that caused a ResizeObserver error in Chromium-based browser when resizing the primary panel [issue:2018]
+- Fixed a bug that caused the `Escape` key to close more than just the active dismissible component when nested inside other dismissible elements [pr:2096]
+- Fixed a bug that forced a box-sizing opinion on host elements
+- Updated `<wa-icon>` to use [Font Awesome 7.2.0](https://fontawesome.com/changelog#v7-2-0) [pr:2059]
+- Updated `<wa-popup>` arrow styling to prevent larger sized arrow from overlapping the contents of the popup [pr:2070]
+- Modified native styles so that `border-radius` does not apply to `svg` elements by default [pr:2078]
+
 ## 3.2.1
+
+<small>February 4, 2026</small>
 
 - Fixed a bug in the build script causing `llms.txt` and `dist/skills` to be omitted from Web Awesome Pro packages. [pr:2022]
 
 ## 3.2.0
 
+<small>February 4, 2026</small>
+
+- Fixed a bug in `<wa-select>` where the `selected` attribute on `<wa-option>` was ignored when `with-clear` was present [#1922]
 - Added `<wa-file-input>` as an experimental pro component [issue:1240]
 - Added `<wa-sparkline>` as an experimental pro component
 - Added `<wa-number-input>` as an experimental component for numeric input with stepper buttons [issue:1688]
@@ -60,6 +94,8 @@ Components with the <wa-badge variant="warning">Experimental</wa-badge> badge sh
 
 ## 3.1.0
 
+<small>December 16, 2025</small>
+
 - Added `<wa-combobox>` as an experimental pro component [issue:1074]
 - Added version 2.0.0 of the [official Web Awesome Figma Design Kit](/docs/resources/figma)
 - Added npm support for Web Awesome Pro
@@ -84,6 +120,8 @@ Components with the <wa-badge variant="warning">Experimental</wa-badge> badge sh
 - Modified the default `transition` styles of `<wa-dropdown-item>` to use design tokens [pr:1693]
 
 ## 3.0.0
+
+<small>December 2, 2025</small>
 
 - 🚨 BREAKING: Changed `appearance="filled outlined"` to `appearance="filled-outlined"` in the following elements [issue:1127]
   - `<wa-button>`
@@ -122,6 +160,10 @@ Components with the <wa-badge variant="warning">Experimental</wa-badge> badge sh
 - Improved Native Styles to use the `--wa-font-weight-code` design token
 - Modified `<wa-slider>` to only show the tooltip on the handle being dragged when in range mode [issue:1320]
 - Upgraded `<wa-page>` from _experimental_ to _stable_
+
+<details>
+
+<summary>Pre-release Versions</summary>
 
 ## 3.0.0-beta.6
 
@@ -309,9 +351,6 @@ Many of these changes and improvements were the direct result of feedback from u
 - `<wa-menu>`, `<wa-menu-item>`, `<wa-menu-label>` were dropped; use `<wa-dropdown-item>` instead
 - `<wa-icon-button>` was removed; icon buttons can be added via `<wa-button>` now
 - `<wa-radio-button>` was dropped; use `<wa-radio appearance="button">` instead
-
-<details>
-<summary>Alpha Changelogs</summary>
 
 ## 3.0.0-alpha.13
 
@@ -566,3 +605,10 @@ Many of these changes and improvements were the direct result of feedback from u
 </details>
 
 Did we miss something? [Let us know!](https://github.com/shoelace-style/webawesome/discussions)
+
+<style>
+  /* This page only */
+  h2 + p:has(> small) {
+    margin-block-start: -1.5rem;
+  }
+</style>
