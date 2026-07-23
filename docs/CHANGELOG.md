@@ -2,6 +2,33 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.2.0] — 2026-07-23
+
+Alignment with the Web Awesome 3.2.0 release. See [MIGRATION-3.2.0.md](MIGRATION-3.2.0.md) for the migration guide. A small, mostly additive upgrade: three new components, three new `WaIcon` attributes, and one behavioral breaking change to `WaQrCode` colors.
+
+### Breaking changes
+- `WaQrCode.Fill` and `WaQrCode.Background` changed from non-nullable `string` (defaulting to `"black"`/`"white"`, always emitted) to nullable `string?` (defaulting to `null`, emitted only when set). WA 3.2.0 changed both `wa-qr-code` attribute defaults from `'black'`/`'white'` to `''`, so an unset QR code now inherits theme colors instead of being forced to black-on-white. Set `Fill`/`Background` explicitly to keep the old look. (Upstream flags this as a breaking attribute change; it is the only one of the four upstream "breaking" default changes that alters the wrapper's public surface.)
+- Not breaking for the bindings: WA 3.2.0 also changed the `size` default of `wa-radio` and `wa-radio-group` from `'medium'` to unset. The wrappers already exposed `Size` as nullable `WaSize?` with no forced default, so they already matched the new behavior — no signature or emission change.
+
+### New components
+- `WaSparkline` (new in WA 3.2.0, experimental upstream): compact inline trend chart (`ComponentBase`). `Appearance` (`WaSparklineAppearance`), `Curve` (`WaSparklineCurve`), `Data` (space-separated numbers), `Label`, `Trend` (`WaSparklineTrend`). No events, slots, or methods.
+- `WaNumberInput` (new in WA 3.2.0, experimental upstream): numeric input form control, `WaInputBase<decimal?>` with full `@bind-Value`/`EditForm` integration (invariant-culture parse). `Appearance`, `Min`/`Max`/`Step`, `Pill`, `Placeholder`, `AutoFocus`, `InputMode`, `EnterKeyHint`, `WithoutSteppers`, `WithHint`/`WithLabel`; start/end/label/hint/increment-icon/decrement-icon slots; `OnInvalid`; `FocusAsync`/`BlurAsync`/`SelectAsync`/`StepUpAsync`/`StepDownAsync`.
+- `WaFileInput` (new in WA 3.2.0, experimental upstream): file-selection form control with a click/drag-and-drop dropzone. Modeled as `ComponentBase, IFormValidation` rather than `WaInputBase` because the CEM exposes no bindable scalar `value` (selected files are runtime `File` objects). `Accept`, `Multiple`, `Required`, `Size`, `Label`/`Hint`; dropzone/file-icon/label/hint slots; `OnChange`/`OnInput`/`OnFocus`/`OnBlur`/`OnInvalid`; `FocusAsync`/`BlurAsync`; `SetCustomValidityAsync`. Read files via the change/input events plus JS interop. The bound `wa-invalid` event was already registered in the JS initializer; no interop changes were needed.
+
+### Changed
+- `WaIcon` gains three WA 3.2.0 attributes: `Animation` (new `WaIconAnimation` enum — Beat, Fade, BeatFade, Bounce, Flip, Shake, Spin, SpinPulse, SpinReverse), `Flip` (new `WaFlip` enum — X, Y, Both), and `Rotate` (degrees, `int`).
+- `wa-progress-ring` added the `indicator` and `track` CSS parts upstream. CSS parts are not part of the C# wrapper surface (the parity suite tracks attributes/events/methods), so this is styling-only with no wrapper change. (The change report's Markdown rendering showed spurious `.NET` array-property entries for this component — a report-generator display artifact; the JSON change report is authoritative.)
+
+### Fixed
+- Demo (server host): `WebAwesome.Blazor.Demo.Server\App.razor` rendered `<WebAwesomeAssets />` statically in its head *and* received the shared demo `App.razor`'s copy through `HeadContent`/`HeadOutlet`, duplicating the `webawesome.css` link and loader script tags (caught by the e2e `component-badges` asset-tag test, which only ran against the WASM host until now). The static instance was removed — both hosts now rely solely on the documented `HeadContent` pattern. Because the loader now arrives with the interactive render, the click-driven e2e tests gained a `waitForWaReady` helper (`tools\e2e\tests\helpers\wa-ready.js`) that awaits custom-element definition + first render before interacting; a pre-upgrade click is silently ignored (a human just clicks again, a test must wait).
+
+### Public API
+- Baseline promoted: additions for `WaFileInput`, `WaNumberInput`, `WaSparkline` (+ their enums and `ToHtmlValue` extensions), `WaIcon.Animation`/`Flip`/`Rotate`, and the `WaQrCode.Fill`/`Background` nullability change. Every diff is explained by the WA 3.2.0 change report.
+
+### Next-release check outcomes (carried from 3.1.0)
+- Observer `stopObserver()`/`startObserver()` method names and `wa-relative-time` `update()`: re-verified against the 3.2.0 sources (`stopObserver`/`startObserver` still private members in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle method, only `updateTimeout` appears in `relative-time.d.ts`) — the allowlist stands.
+- `WaButton.Form` (CEM-invisible since 3.1.0) and the `WaCheckbox`/`WaSwitch` `.checked` binding workaround: unaffected by WA 3.2.0, carried forward unchanged.
+
 ## [3.1.0] — 2026-07-22
 
 Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](MIGRATION-3.1.0.md) for the migration guide.

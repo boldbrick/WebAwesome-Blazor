@@ -7,7 +7,7 @@ html, body {
 
 .demo-shell {
     display: grid;
-    grid-template-columns: 16rem 1fr;
+    grid-template-columns: 17.125rem 1fr;
     min-height: 100vh;
 }
 

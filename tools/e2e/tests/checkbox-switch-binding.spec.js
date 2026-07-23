@@ -1,5 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { waitForWaReady } = require('./helpers/wa-ready');
 
 // Regression coverage for a real bug: WaCheckbox/WaSwitch's @bind-Value never reflected the
 // real checked state (Blazor's built-in change-event value extraction only reads .checked for
@@ -8,6 +9,7 @@ const { test, expect } = require('@playwright/test');
 test('checkbox two-way binding reflects clicks back into Blazor state', async ({ page }) => {
   await page.goto('/components/checkbox');
   await page.waitForSelector('.demo-shell');
+  await waitForWaReady(page, ['wa-checkbox']);
 
   const agreeCheckbox = page.locator('wa-checkbox', { hasText: 'Accept terms' }).first();
   const paragraph = page.locator('p', { hasText: 'Agreed:' });
@@ -24,6 +26,7 @@ test('checkbox two-way binding reflects clicks back into Blazor state', async ({
 test('switch two-way binding reflects clicks back into Blazor state', async ({ page }) => {
   await page.goto('/');
   await page.waitForSelector('.demo-shell');
+  await waitForWaReady(page, ['wa-switch']);
 
   const darkSwitch = page.locator('wa-switch', { hasText: 'Dark mode' }).first();
   await expect(darkSwitch).not.toHaveJSProperty('checked', true);

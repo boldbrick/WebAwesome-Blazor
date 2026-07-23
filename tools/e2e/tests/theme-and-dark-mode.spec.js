@@ -1,5 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { waitForWaReady } = require('./helpers/wa-ready');
 
 // Regression coverage for a real bug: the dark-mode switch and theme selector visibly did
 // nothing, because (a) WaSwitch/WaCheckbox's two-way @bind-Value never received the real
@@ -10,6 +11,7 @@ test.describe('theme switching', () => {
   test('dark mode switch actually toggles the color scheme', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('.demo-shell');
+    await waitForWaReady(page, ['wa-switch']);
 
     const bgBefore = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
@@ -30,6 +32,7 @@ test.describe('theme switching', () => {
   test('theme selector applies both the stylesheet and the wa-theme-{name} class', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('.demo-shell');
+    await waitForWaReady(page, ['wa-select', 'wa-option']);
 
     await page.locator('wa-select[label="Theme"]').click();
     await page.locator('wa-option', { hasText: 'Awesome' }).click();
