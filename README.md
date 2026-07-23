@@ -7,8 +7,8 @@
 Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. No additional application logic and no additional / extension components.
 
 > **Status**
-> - Active train: **WA 3.1**
-> - Current alignment: **WA 3.2.1** (tagged releases use `wa-blazor-<version>`)
+> - Active train: **WA 3.3**
+> - Current alignment: **WA 3.3.0** (tagged releases use `wa-blazor-<version>`)
 
 **[Live demo](https://boldbrick.github.io/WebAwesome-Blazor/)** — every component, rendered from this library; published to GitHub Pages as a Blazor WebAssembly app. It can also be built and run locally in server mode: `dotnet run --project src/WebAwesome.Blazor.Demo.Server`.
 
@@ -92,8 +92,8 @@ By default it loads the matching Web Awesome version from the official CDN. Ever
 In standalone WebAssembly apps `index.html` is static, so add the equivalent tags directly (adjust the version to the release you use — it always matches this package's version):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.2.1/dist-cdn/styles/webawesome.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.2.1/dist-cdn/webawesome.loader.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.0/dist-cdn/styles/webawesome.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.0/dist-cdn/webawesome.loader.js"></script>
 ```
 
 ## Quick start (wrapper usage)
@@ -191,10 +191,10 @@ The repo uses a single-output-directory build system and produces nugets into `s
 A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every component with source-visible examples, grouped into the same categories Web Awesome's own documentation uses. It is deployed to GitHub Pages on every merge to `main`: **<https://boldbrick.github.io/WebAwesome-Blazor/>**. It doubles as a manual regression harness for upgrades and is swept by automated Playwright tests (`tools/e2e`).
 
 ## Component coverage
-- **63 component wrappers** — one Blazor wrapper per WA 3.2.1 component, following WA naming (`WaButton` ↔ `wa-button`). Every public member carries XML documentation that ships in the package, so the full API reference is available as IntelliSense; for component behavior, use the [official Web Awesome docs](https://webawesome.com/docs) together with the [live demo](https://boldbrick.github.io/WebAwesome-Blazor/) for the Blazor-specific syntax.
+- **74 component wrappers** — one Blazor wrapper per WA 3.3.0 component, following WA naming (`WaButton` ↔ `wa-button`). Every public member carries XML documentation that ships in the package, so the full API reference is available as IntelliSense; for component behavior, use the [official Web Awesome docs](https://webawesome.com/docs) together with the [live demo](https://boldbrick.github.io/WebAwesome-Blazor/) for the Blazor-specific syntax.
 - **8 CSS layout components** covering Web Awesome's CSS-only layout system (`WaStack`, `WaCluster`, `WaFlank`, `WaFrame`, `WaGrid`, `WaSplit`, `WaText`, `WaVisuallyHidden`).
 - Coverage is enforced by the API parity test suite against Web Awesome's custom-elements manifest.
-- Components introduced after WA 3.2.1 (date/time pickers, toast, …) arrive with the corresponding version upgrades on the release train.
+- Components introduced after WA 3.3.0 (date/time pickers, …) arrive with the corresponding version upgrades on the release train.
 - Missing something? File an issue or PR against the active subtrunk.
 
 ## Roadmap (contributions welcome!)

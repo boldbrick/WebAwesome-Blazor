@@ -1,5 +1,5 @@
 {
-  "version": "3.2.1",
+  "version": "3.3.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-animated-image": {
@@ -12,6 +12,21 @@
           "type": "string",
           "default": null,
           "description": "A description of the image used by assistive devices."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "play": {
           "type": "boolean",
@@ -56,6 +71,16 @@
           "default": "0",
           "description": "The number of milliseconds to delay the start of the animation."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "direction": {
           "type": "PlaybackDirection",
           "default": "'normal'",
@@ -90,6 +115,11 @@
           "type": "number",
           "default": "Infinity",
           "description": "The number of iterations to run before the animation completes. Defaults to `Infinity`, which loops."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "name": {
           "type": "string",
@@ -145,6 +175,16 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "image": {
           "type": "string",
           "default": "''",
@@ -159,6 +199,11 @@
           "type": "string",
           "default": "''",
           "description": "A label to use to describe the avatar to assistive devices."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "loading": {
           "type": "'eager' | 'lazy'",
@@ -204,6 +249,21 @@
           "default": "'none'",
           "description": "Adds an animation to draw attention to the badge."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "pill": {
           "type": "boolean",
           "default": "false",
@@ -217,12 +277,125 @@
       },
       "events": {},
       "slots": {
-        "(default)": "The badge's content."
+        "(default)": "The badge's content.",
+        "end": "An element, such as `<wa-icon>`, placed after the label.",
+        "start": "An element, such as `<wa-icon>`, placed before the label."
       },
       "methods": {},
       "cssParts": [
-        "base"
+        "base",
+        "end",
+        "start"
       ]
+    },
+    "wa-bar-chart": {
+      "className": "WaBarChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "orientation": {
+          "type": "'vertical' | 'horizontal'",
+          "default": "'vertical'",
+          "description": null
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'bar'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
     },
     "wa-breadcrumb": {
       "className": "WaBreadcrumb",
@@ -230,10 +403,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "label": {
           "type": "string",
           "default": "''",
           "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         }
       },
       "events": {},
@@ -252,10 +440,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "href": {
           "type": "string | undefined",
           "default": null,
           "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "rel": {
           "type": "string",
@@ -283,6 +486,110 @@
         "start"
       ]
     },
+    "wa-bubble-chart": {
+      "className": "WaBubbleChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'bubble'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
+    },
     "wa-button": {
       "className": "WaButton",
       "since": "2.0",
@@ -293,6 +600,21 @@
           "type": "'accent' | 'filled' | 'outlined' | 'filled-outlined' | 'plain'",
           "default": "'accent'",
           "description": "The button's visual appearance."
+        },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "disabled": {
           "type": "boolean",
@@ -334,14 +656,19 @@
           "default": null,
           "description": "When set, the underlying button will be rendered as an `<a>` with this `href` instead of a `<button>`."
         },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "loading": {
           "type": "boolean",
           "default": "false",
           "description": "Draws the button in a loading state."
         },
         "name": {
-          "type": "string",
-          "default": null,
+          "type": "string | null",
+          "default": "null",
           "description": "The name of the button, submitted as a name/value pair with form data, but only when this button is the submitter.\nThis attribute is ignored when `href` is present."
         },
         "pill": {
@@ -424,6 +751,18 @@
         "focus": {
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the button."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         }
       },
       "cssParts": [
@@ -441,10 +780,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "label": {
           "type": "string",
           "default": "''",
           "description": "A label to use for the button group. This won't be displayed on the screen, but it will be announced by assistive\ndevices when interacting with the control and is strongly recommended."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "orientation": {
           "type": "'horizontal' | 'vertical'",
@@ -471,6 +825,21 @@
           "type": "'accent' | 'filled' | 'outlined' | 'plain' | 'filled-outlined'",
           "default": null,
           "description": "The callout's visual appearance."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "size": {
           "type": "'small' | 'medium' | 'large'",
@@ -504,6 +873,21 @@
           "type": "'accent' | 'filled' | 'outlined' | 'filled-outlined' | 'plain'",
           "default": "'outlined'",
           "description": "The card's visual appearance."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "orientation": {
           "type": "'horizontal' | 'vertical'",
@@ -563,6 +947,21 @@
         "currentSlide": {
           "type": "number",
           "default": "0",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
           "description": null
         },
         "loop": {
@@ -649,7 +1048,23 @@
       "since": "2.0",
       "status": "experimental",
       "pro": false,
-      "attributes": {},
+      "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        }
+      },
       "events": {},
       "slots": {
         "(default)": "The carousel item's content.."
@@ -663,6 +1078,21 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -682,6 +1112,11 @@
           "type": "string",
           "default": "''",
           "description": "The color picker's label. This will not be displayed, but it will be announced by assistive devices. If you need to\ndisplay HTML, you can use the `label` slot` instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "name": {
           "type": "string | null",
@@ -799,6 +1234,10 @@
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the color picker."
         },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
         "getFormattedValue": {
           "signature": "getFormattedValue(format: 'hex' | 'hexa' | 'rgb' | 'rgba' | 'hsl' | 'hsla' | 'hsv' | 'hsva' = 'hex') => void",
           "description": "Returns the current value as a string in the specified format."
@@ -814,6 +1253,14 @@
         "reportValidity": {
           "signature": "reportValidity() => void",
           "description": "Checks for validity and shows the browser's validation message if the control is invalid."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         },
         "show": {
           "signature": "show() => void",
@@ -870,6 +1317,21 @@
           "default": "'list'",
           "description": "The autocomplete behavior of the combobox.\n- `list`: When the popup is triggered, it presents suggested values that complete or logically correspond to the\n  characters typed in the combobox. The character string the user has typed will become the value of the combobox\n  unless the user selects a value in the popup.\n- `none`: The combobox is editable, and when the popup is triggered, the suggested values it contains are the same\n  regardless of the characters typed in the combobox."
         },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -885,6 +1347,11 @@
           "default": "''",
           "description": "The combobox's label. If you need to display HTML, use the `label` slot instead."
         },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "max-options-visible": {
           "type": "number",
           "default": "3",
@@ -896,7 +1363,7 @@
           "description": "Allows more than one option to be selected."
         },
         "name": {
-          "type": "string",
+          "type": "string | null",
           "default": "''",
           "description": "The name of the combobox, submitted as a name/value pair with form data."
         },
@@ -1021,9 +1488,21 @@
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the control."
         },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
         "hide": {
           "signature": "hide() => void",
           "description": "Hides the listbox."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         },
         "show": {
           "signature": "show() => void",
@@ -1055,6 +1534,21 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "position": {
           "type": "number",
           "default": "50",
@@ -1093,6 +1587,16 @@
           "default": "''",
           "description": "A custom label to show in the tooltip."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -1112,6 +1616,11 @@
           "type": "string",
           "default": "''",
           "description": "An id that references an element in the same document from which data will be copied. If both this and `value` are\npresent, this value will take precedence. By default, the target element's `textContent` will be copied. To copy an\nattribute, append the attribute name wrapped in square brackets, e.g. `from=\"el[value]\"`. To copy a property,\nappend a dot and the property name, e.g. `from=\"el.value\"`."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "success-label": {
           "type": "string",
@@ -1169,6 +1678,16 @@
           "default": "'outlined'",
           "description": "The element's visual appearance."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -1178,6 +1697,11 @@
           "type": "'start' | 'end'",
           "default": "'end'",
           "description": "The location of the expand/collapse icon."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "name": {
           "type": "string",
@@ -1247,10 +1771,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "label": {
           "type": "string",
           "default": "''",
           "description": "The dialog's label as displayed in the header. You should always include a relevant label, as it is required for\nproper accessibility. If you need to display HTML, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "light-dismiss": {
           "type": "boolean",
@@ -1314,6 +1853,21 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "orientation": {
           "type": "'horizontal' | 'vertical'",
           "default": "'horizontal'",
@@ -1325,16 +1879,135 @@
       "methods": {},
       "cssParts": []
     },
+    "wa-doughnut-chart": {
+      "className": "WaDoughnutChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'doughnut'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
+    },
     "wa-drawer": {
       "className": "WaDrawer",
       "since": "2.0",
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "label": {
           "type": "string",
           "default": "''",
           "description": "The drawer's label as displayed in the header. You should always include a relevant label, as it is required for\nproper accessibility. If you need to display HTML, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "light-dismiss": {
           "type": "boolean",
@@ -1403,10 +2076,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "distance": {
           "type": "number",
           "default": "0",
           "description": "The distance of the dropdown menu from its trigger."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "open": {
           "type": "boolean",
@@ -1472,6 +2160,16 @@
       "status": "experimental",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -1481,6 +2179,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Set to true to check the dropdown item. Only valid when `type` is `checkbox`."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "submenuOpen": {
           "type": "boolean",
@@ -1551,6 +2254,26 @@
           "default": "''",
           "description": "A comma-separated list of acceptable file types. Must be a list of\n[unique file type specifiers](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers)."
         },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the form control."
+        },
         "hint": {
           "type": "string",
           "default": "''",
@@ -1561,10 +2284,20 @@
           "default": "''",
           "description": "The file input's label. If you need to display HTML, use the `label` slot instead."
         },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "multiple": {
           "type": "boolean",
           "default": "false",
           "description": "Allows more than one file to be selected."
+        },
+        "name": {
+          "type": "string | null",
+          "default": "null",
+          "description": "The name of the input, submitted as a name/value pair with form data."
         },
         "required": {
           "type": "boolean",
@@ -1628,6 +2361,18 @@
         "focus": {
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the file input."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         }
       },
       "cssParts": [
@@ -1654,10 +2399,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "display": {
           "type": "'long' | 'short' | 'narrow'",
           "default": "'short'",
           "description": "Determines how to display the result, e.g. \"100 bytes\", \"100 b\", or \"100b\"."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "unit": {
           "type": "'byte' | 'bit'",
@@ -1691,6 +2451,16 @@
           "default": null,
           "description": "The format for displaying the day."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "era": {
           "type": "'narrow' | 'short' | 'long'",
           "default": null,
@@ -1705,6 +2475,11 @@
           "type": "'auto' | '12' | '24'",
           "default": "'auto'",
           "description": "The format for displaying the hour."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "minute": {
           "type": "'numeric' | '2-digit'",
@@ -1763,6 +2538,21 @@
           "default": "'symbol'",
           "description": "How to display the currency."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "maximum-fraction-digits": {
           "type": "number",
           "default": null,
@@ -1809,12 +2599,131 @@
       "methods": {},
       "cssParts": []
     },
+    "wa-chart": {
+      "className": "WaChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'bar'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
+    },
     "wa-checkbox": {
       "className": "WaCheckbox",
       "since": "2.0",
       "status": "stable",
       "pro": false,
       "attributes": {
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -1835,9 +2744,14 @@
           "default": "false",
           "description": "Draws the checkbox in an indeterminate state. This is usually applied to checkboxes that represents a \"select\nall/none\" behavior when associated checkboxes have a mix of checked and unchecked states."
         },
-        "name": {
+        "lang": {
           "type": "string",
-          "default": "''",
+          "default": null,
+          "description": null
+        },
+        "name": {
+          "type": "string | null",
+          "default": "null",
           "description": "The name of the checkbox, submitted as a name/value pair with form data."
         },
         "required": {
@@ -1904,6 +2818,18 @@
         "focus": {
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the checkbox."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         }
       },
       "cssParts": [
@@ -1931,6 +2857,16 @@
           "default": "false",
           "description": "Sets the width of the icon to match the cropped SVG viewBox. This operates like the Font `fa-width-auto` class."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "family": {
           "type": "string",
           "default": null,
@@ -1945,6 +2881,11 @@
           "type": "string",
           "default": "''",
           "description": "An alternate description to use for assistive devices. If omitted, the icon will be considered presentational and\nignored by assistive devices."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "library": {
           "type": "string",
@@ -2007,6 +2948,21 @@
           "default": "false",
           "description": "Allows included scripts to be executed. Be sure you trust the content you are including as it will be executed as\ncode and can result in XSS attacks."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "mode": {
           "type": "'cors' | 'no-cors' | 'same-origin'",
           "default": "'cors'",
@@ -2065,6 +3021,26 @@
           "default": null,
           "description": "Indicates that the input should receive focus on page load."
         },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the form control."
+        },
         "enterkeyhint": {
           "type": "'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'",
           "default": null,
@@ -2085,6 +3061,11 @@
           "default": "''",
           "description": "The input's label. If you need to display HTML, use the `label` slot instead."
         },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "max": {
           "type": "number | string",
           "default": null,
@@ -2104,6 +3085,11 @@
           "type": "number",
           "default": null,
           "description": "The minimum length of input that will be considered valid."
+        },
+        "name": {
+          "type": "string | null",
+          "default": "null",
+          "description": "The name of the input, submitted as a name/value pair with form data."
         },
         "password-toggle": {
           "type": "boolean",
@@ -2241,9 +3227,21 @@
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the input."
         },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
         "select": {
           "signature": "select() => void",
           "description": "Selects all the text in the input."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         },
         "setRangeText": {
           "signature": "setRangeText(replacement: string, start?: number, end?: number, selectMode: 'select' | 'start' | 'end' | 'preserve' = 'preserve') => void",
@@ -2283,6 +3281,16 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -2292,6 +3300,11 @@
           "type": "string",
           "default": "''",
           "description": "CSS class applied to elements during intersection. Automatically removed when elements leave\nthe viewport, enabling pure CSS styling based on visibility state."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "once": {
           "type": "boolean",
@@ -2327,6 +3340,110 @@
       "methods": {},
       "cssParts": []
     },
+    "wa-line-chart": {
+      "className": "WaLineChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'line'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
+    },
     "wa-mutation-observer": {
       "className": "WaMutationObserver",
       "since": "2.0",
@@ -2342,6 +3459,16 @@
           "type": "boolean",
           "default": "false",
           "description": "Indicates whether or not the attribute's previous value should be recorded when monitoring changes."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "disabled": {
           "type": "boolean",
@@ -2362,6 +3489,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Watches for the addition or removal of new child nodes."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         }
       },
       "events": {
@@ -2398,6 +3530,26 @@
           "default": null,
           "description": "Indicates that the input should receive focus on page load."
         },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the form control."
+        },
         "enterkeyhint": {
           "type": "'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'",
           "default": null,
@@ -2418,6 +3570,11 @@
           "default": "''",
           "description": "The input's label. If you need to display HTML, use the `label` slot instead."
         },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "max": {
           "type": "number",
           "default": null,
@@ -2427,6 +3584,11 @@
           "type": "number",
           "default": null,
           "description": "The input's minimum value."
+        },
+        "name": {
+          "type": "string | null",
+          "default": "null",
+          "description": "The name of the input, submitted as a name/value pair with form data."
         },
         "pill": {
           "type": "boolean",
@@ -2528,9 +3690,21 @@
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the input."
         },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
         "select": {
           "signature": "select() => void",
           "description": "Selects all the text in the input."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         },
         "stepDown": {
           "signature": "stepDown() => void",
@@ -2560,6 +3734,16 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -2569,6 +3753,11 @@
           "type": "string",
           "default": null,
           "description": "The option’s plain text label.\nUsually automatically generated, but can be useful to provide manually for cases involving complex content."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "selected": {
           "type": "boolean",
@@ -2601,10 +3790,25 @@
       "status": "stable",
       "pro": true,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disable-navigation-toggle": {
           "type": "boolean",
           "default": "false",
           "description": "Determines whether or not to hide the default hamburger button.\nThis will automatically flip to \"true\" if you add an element with `data-toggle-nav` anywhere in the element light DOM.\nGenerally this will be set for you and you don't need to do anything, unless you're using SSR, in which case you should set this manually for initial page loads."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "mobile-breakpoint": {
           "type": "string",
@@ -2685,12 +3889,230 @@
         "subheader"
       ]
     },
+    "wa-pie-chart": {
+      "className": "WaPieChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'pie'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
+    },
+    "wa-polar-area-chart": {
+      "className": "WaPolarAreaChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'polarArea'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
+    },
     "wa-popover": {
       "className": "WaPopover",
       "since": "3.0",
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "distance": {
           "type": "number",
           "default": "8",
@@ -2700,6 +4122,11 @@
           "type": "string | null",
           "default": "null",
           "description": "The ID of the popover's anchor element. This must be an interactive/focusable element such as a button."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "open": {
           "type": "boolean",
@@ -2816,6 +4243,16 @@
           "default": "'viewport'",
           "description": "The bounding box to use for flipping, shifting, and auto-sizing."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "distance": {
           "type": "number",
           "default": "0",
@@ -2850,6 +4287,11 @@
           "type": "boolean",
           "default": "false",
           "description": "When a gap exists between the anchor and the popup element, this option will add a \"hover bridge\" that fills the\ngap using an invisible element. This makes listening for events such as `mouseenter` and `mouseleave` more sane\nbecause the pointer never technically leaves the element. The hover bridge will only be drawn when the popover is\nactive."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "placement": {
           "type": "| 'top'\n    | 'top-start'\n    | 'top-end'\n    | 'bottom'\n    | 'bottom-start'\n    | 'bottom-end'\n    | 'right'\n    | 'right-start'\n    | 'right-end'\n    | 'left'\n    | 'left-start'\n    | 'left-end'",
@@ -2911,6 +4353,16 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "indeterminate": {
           "type": "boolean",
           "default": "false",
@@ -2920,6 +4372,11 @@
           "type": "string",
           "default": "''",
           "description": "A custom label for assistive devices."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "value": {
           "type": "number",
@@ -2944,10 +4401,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "label": {
           "type": "string",
           "default": "''",
           "description": "A custom label for assistive devices."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "value": {
           "type": "number",
@@ -2978,6 +4450,16 @@
           "default": "''",
           "description": "The background color. This can be any valid CSS color or `transparent`. It cannot be a CSS custom property."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "error-correction": {
           "type": "'L' | 'M' | 'Q' | 'H'",
           "default": "'H'",
@@ -2992,6 +4474,11 @@
           "type": "string",
           "default": "''",
           "description": "The label for assistive devices to announce. If unspecified, the value will be used instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "radius": {
           "type": "number",
@@ -3016,6 +4503,110 @@
         "base"
       ]
     },
+    "wa-radar-chart": {
+      "className": "WaRadarChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'radar'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
+    },
     "wa-radio": {
       "className": "WaRadio",
       "since": "2.0",
@@ -3027,10 +4618,35 @@
           "default": "'default'",
           "description": "The radio's visual appearance."
         },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
           "description": "Disables the radio."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "name": {
+          "type": "string | null",
+          "default": "null",
+          "description": "The name of the input, submitted as a name/value pair with form data."
         },
         "size": {
           "type": "'small' | 'medium' | 'large'",
@@ -3058,7 +4674,20 @@
       "slots": {
         "(default)": "The radio's label."
       },
-      "methods": {},
+      "methods": {
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
+        }
+      },
       "cssParts": [
         "control",
         "checked-icon",
@@ -3071,6 +4700,21 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -3085,6 +4729,11 @@
           "type": "string",
           "default": "''",
           "description": "The radio group's label. Required for proper accessibility. If you need to display HTML, use the `label` slot\ninstead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "name": {
           "type": "string | null",
@@ -3148,6 +4797,18 @@
         "focus": {
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the radio group."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         }
       },
       "cssParts": [
@@ -3164,6 +4825,16 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -3178,6 +4849,11 @@
           "type": "string",
           "default": "''",
           "description": "A label that describes the rating to assistive devices."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "max": {
           "type": "number",
@@ -3243,10 +4919,25 @@
           "default": "new Date()",
           "description": "The date from which to calculate time from. If not set, the current date and time will be used. When passing a\nstring, it's strongly recommended to use the ISO 8601 format to ensure timezones are handled correctly. To convert\na date to this format in JavaScript, use [`date.toISOString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "format": {
           "type": "'long' | 'short' | 'narrow'",
           "default": "'long'",
           "description": "The formatting style to use."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "numeric": {
           "type": "'always' | 'auto'",
@@ -3270,10 +4961,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
           "description": "Disables the observer."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         }
       },
       "events": {
@@ -3289,12 +4995,131 @@
       "methods": {},
       "cssParts": []
     },
+    "wa-scatter-chart": {
+      "className": "WaScatterChart",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "description": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A description of the chart, used for accessibility."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "grid": {
+          "type": "'x' | 'y' | 'both' | 'none'",
+          "default": "'both'",
+          "description": "Which axes to show grid lines on."
+        },
+        "index-axis": {
+          "type": "'x' | 'y'",
+          "default": "'x'",
+          "description": "The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the chart, used for accessibility."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "legend-position": {
+          "type": "LayoutPosition | 'start' | 'end'",
+          "default": "'top'",
+          "description": "The position of the legend relative to the chart."
+        },
+        "max": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The maximum value for the value axis."
+        },
+        "min": {
+          "type": "number | null",
+          "default": "null",
+          "description": "The minimum value for the value axis."
+        },
+        "plugins": {
+          "type": "array",
+          "default": "[]",
+          "description": "Additional Chart.js plugins to register for this chart instance."
+        },
+        "stacked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Stacks datasets on top of each other along the value axis."
+        },
+        "type": {
+          "type": "ChartType",
+          "default": "'scatter'",
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+        },
+        "without-animation": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables chart animations"
+        },
+        "without-legend": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the legend"
+        },
+        "without-tooltip": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides tooltips over data points"
+        },
+        "xLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the x-axis."
+        },
+        "yLabel": {
+          "type": "string | null",
+          "default": "null",
+          "description": "A label for the y-axis."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
+      },
+      "methods": {},
+      "cssParts": []
+    },
     "wa-scroller": {
       "className": "WaScroller",
       "since": "3.0",
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "orientation": {
           "type": "'horizontal' | 'vertical'",
           "default": "'horizontal'",
@@ -3331,6 +5156,21 @@
           "default": "'outlined'",
           "description": "The select's visual appearance."
         },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -3346,6 +5186,11 @@
           "default": "''",
           "description": "The select's label. If you need to display HTML, use the `label` slot instead."
         },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "max-options-visible": {
           "type": "number",
           "default": "3",
@@ -3357,7 +5202,7 @@
           "description": "Allows more than one option to be selected."
         },
         "name": {
-          "type": "string",
+          "type": "string | null",
           "default": "''",
           "description": "The name of the select, submitted as a name/value pair with form data."
         },
@@ -3482,9 +5327,21 @@
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the control."
         },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
         "hide": {
           "signature": "hide() => void",
           "description": "Hides the listbox."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         },
         "show": {
           "signature": "show() => void",
@@ -3516,10 +5373,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "effect": {
           "type": "'pulse' | 'sheen' | 'none'",
           "default": "'none'",
           "description": "Determines which effect the skeleton will use."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         }
       },
       "events": {},
@@ -3540,6 +5412,21 @@
           "default": null,
           "description": "Tells the browser to focus the slider when the page loads or a dialog is shown."
         },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -3559,6 +5446,11 @@
           "type": "string",
           "default": "''",
           "description": "The slider's label. If you need to provide HTML in the label, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "max": {
           "type": "number",
@@ -3581,8 +5473,8 @@
           "description": "The minimum value of a range selection. Used only when range attribute is set."
         },
         "name": {
-          "type": "string",
-          "default": null,
+          "type": "string | null",
+          "default": "null",
           "description": "The name of the slider. This will be submitted with the form as a name/value pair."
         },
         "orientation": {
@@ -3682,6 +5574,18 @@
           "signature": "focus() => void",
           "description": "Sets focus to the slider."
         },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
+        },
         "stepDown": {
           "signature": "stepDown() => void",
           "description": "Decreases the slider's value by `step`. This is a programmatic change, so `input` and `change` events will not be\nemitted when this is called."
@@ -3730,10 +5634,25 @@
           "default": "''",
           "description": "Space-separated numeric values to visualize (e.g., \"10 20 40 25 35\")."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "label": {
           "type": "string",
           "default": "''",
           "description": "An accessible label describing the sparkline for screen readers."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "trend": {
           "type": "'positive' | 'negative' | 'neutral'",
@@ -3755,7 +5674,23 @@
       "since": "2.0",
       "status": "stable",
       "pro": false,
-      "attributes": {},
+      "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        }
+      },
       "events": {},
       "slots": {},
       "methods": {},
@@ -3769,10 +5704,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
           "description": "Disables resizing. Note that the position may still change as a result of resizing the host element."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "orientation": {
           "type": "'horizontal' | 'vertical'",
@@ -3831,6 +5781,21 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -3845,6 +5810,11 @@
           "type": "boolean",
           "default": null,
           "description": "The default value of the form control. Primarily used for resetting the form control."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "name": {
           "type": "string | null",
@@ -3920,6 +5890,18 @@
         "focus": {
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the switch."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         }
       },
       "cssParts": [
@@ -3936,10 +5918,25 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
           "description": "Disables the tab and prevents selection."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "panel": {
           "type": "string",
@@ -3971,6 +5968,21 @@
           "type": "string",
           "default": "''",
           "description": "Sets the active tab."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "placement": {
           "type": "'top' | 'bottom' | 'start' | 'end'",
@@ -4022,6 +6034,21 @@
           "default": "false",
           "description": "When true, the tab panel will be shown."
         },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "name": {
           "type": "string",
           "default": "''",
@@ -4047,6 +6074,21 @@
           "type": "'accent' | 'filled' | 'outlined' | 'filled-outlined'",
           "default": "'filled-outlined'",
           "description": "The tag's visual appearance."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "pill": {
           "type": "boolean",
@@ -4118,6 +6160,21 @@
           "default": null,
           "description": "Indicates that the input should receive focus on page load."
         },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -4142,6 +6199,11 @@
           "type": "string",
           "default": "''",
           "description": "The textarea's label. If you need to display HTML, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "maxlength": {
           "type": "number",
@@ -4254,6 +6316,14 @@
           "signature": "focus(options?: FocusOptions) => void",
           "description": "Sets focus on the textarea."
         },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
         "scrollPosition": {
           "signature": "scrollPosition(position?: { top?: number; left?: number }) => { top: number; left: number } | undefined",
           "description": "Gets or sets the textarea's scroll position."
@@ -4261,6 +6331,10 @@
         "select": {
           "signature": "select() => void",
           "description": "Selects all the text in the textarea."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
         },
         "setRangeText": {
           "signature": "setRangeText(replacement: string, start?: number, end?: number, selectMode: 'select' | 'start' | 'end' | 'preserve' = 'preserve') => void",
@@ -4279,12 +6353,147 @@
         "textarea"
       ]
     },
+    "wa-toast": {
+      "className": "WaToast",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "placement": {
+          "type": "| 'top-start'\n    | 'top-center'\n    | 'top-end'\n    | 'bottom-start'\n    | 'bottom-center'\n    | 'bottom-end'",
+          "default": "'top-end'",
+          "description": "The placement of the toast stack on the screen."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "Place `<wa-toast-item>` elements here to show them as notifications."
+      },
+      "methods": {
+        "create": {
+          "signature": "create(message: string, options?: ToastCreateOptions) => Promise<WaToastItem>",
+          "description": "Creates a toast notification programmatically and adds it to the stack. Returns a reference to the created toast\nitem element."
+        }
+      },
+      "cssParts": [
+        "stack"
+      ]
+    },
+    "wa-toast-item": {
+      "className": "WaToastItem",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "duration": {
+          "type": "number",
+          "default": "5000",
+          "description": "The length of time in milliseconds before the toast item is automatically dismissed. Set to 0 to keep the toast\nitem open until the user dismisses it."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "size": {
+          "type": "'small' | 'medium' | 'large'",
+          "default": "'medium'",
+          "description": "The toast item's size."
+        },
+        "variant": {
+          "type": "'brand' | 'success' | 'warning' | 'danger' | 'neutral'",
+          "default": "'neutral'",
+          "description": "The toast item's variant."
+        }
+      },
+      "events": {
+        "wa-after-hide": {
+          "type": null,
+          "eventName": "WaAfterHideEvent",
+          "description": "Emitted after the toast item has finished hiding."
+        },
+        "wa-after-show": {
+          "type": null,
+          "eventName": "WaAfterShowEvent",
+          "description": "Emitted after the toast item has finished showing."
+        },
+        "wa-hide": {
+          "type": null,
+          "eventName": "WaHideEvent",
+          "description": "Emitted when the toast item begins to hide."
+        },
+        "wa-show": {
+          "type": null,
+          "eventName": "WaShowEvent",
+          "description": "Emitted when the toast item begins to show."
+        }
+      },
+      "slots": {
+        "(default)": "The toast item's message content.",
+        "icon": "An optional icon to show at the start of the toast item."
+      },
+      "methods": {
+        "hide": {
+          "signature": "hide() => void",
+          "description": "Hides the toast item with animation and removes it from the DOM."
+        }
+      },
+      "cssParts": [
+        "accent",
+        "close-button",
+        "close-icon",
+        "close-icon__svg",
+        "content",
+        "icon",
+        "progress-ring",
+        "progress-ring__base",
+        "progress-ring__indicator",
+        "progress-ring__label",
+        "progress-ring__track",
+        "toast-item"
+      ]
+    },
     "wa-tooltip": {
       "className": "WaTooltip",
       "since": "2.0",
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -4304,6 +6513,11 @@
           "type": "number",
           "default": "0",
           "description": "The amount of time to wait before hiding the tooltip when the user mouses out."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "open": {
           "type": "boolean",
@@ -4384,6 +6598,21 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "selection": {
           "type": "'single' | 'multiple' | 'leaf'",
           "default": "'single'",
@@ -4413,6 +6642,16 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
         "disabled": {
           "type": "boolean",
           "default": "false",
@@ -4422,6 +6661,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Expands the tree item."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "lazy": {
           "type": "boolean",
@@ -4504,6 +6748,21 @@
           "type": "boolean",
           "default": "false",
           "description": "Allows fullscreen mode."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
         },
         "loading": {
           "type": "'eager' | 'lazy'",
