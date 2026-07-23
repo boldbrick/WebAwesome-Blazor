@@ -9,9 +9,9 @@
     <title>Web Awesome Blazor Bindings</title>
     <base href="/" />
 
-    <!-- Web Awesome asset tags emitted from configuration (WebAwesomeOptions); statically rendered
-         into the initial document, version defaults to the library version -->
-    <WebAwesome.Blazor.Components.WebAwesomeAssets />
+    <!-- Web Awesome asset tags are emitted by the WebAwesomeAssets component in the shared demo
+         App.razor via HeadContent (delivered through the HeadOutlet below), same as the standalone
+         WebAssembly host; rendering it here too would duplicate the tags -->
 
     <link rel="stylesheet" href="css/app.css" />
 

@@ -1,5 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { waitForWaReady } = require('./helpers/wa-ready');
 
 // Regression coverage for a real bug: every wa-* custom event bound in the wrappers was
 // bound under a bare "wa-..." attribute name and no event type was registered with
@@ -14,6 +15,7 @@ const { test, expect } = require('@playwright/test');
 test('wa-* custom event delivers its typed payload into the Blazor handler', async ({ page }) => {
   await page.goto('/components/tab-group');
   await page.waitForSelector('.demo-shell');
+  await waitForWaReady(page, ['wa-tab-group', 'wa-tab']);
 
   // the "Reacting to Tab Changes" example is the group with exactly two tabs
   const group = page.locator('wa-tab-group', { has: page.locator('wa-tab[panel="custom"]') }).last();
@@ -34,6 +36,7 @@ test('wa-show/wa-hide reach Blazor without event dispatch errors', async ({ page
 
   await page.goto('/components/details');
   await page.waitForSelector('.demo-shell');
+  await waitForWaReady(page, ['wa-details']);
 
   const details = page.locator('wa-details').first();
   await details.click();
