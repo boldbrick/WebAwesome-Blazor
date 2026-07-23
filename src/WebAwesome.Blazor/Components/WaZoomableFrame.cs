@@ -87,6 +87,12 @@ public class WaZoomableFrame : ComponentBase
     [Parameter] public bool WithoutInteraction { get; set; }
 
     /// <summary>
+    /// Enables automatic theme syncing (light/dark mode and theme selector classes) from the host document to the
+    /// iframe.
+    /// </summary>
+    [Parameter] public bool WithThemeSync { get; set; }
+
+    /// <summary>
     /// Whether the iframe is allowed to be displayed in fullscreen mode.
     /// </summary>
     [Parameter] public bool AllowFullScreen { get; set; }
@@ -171,6 +177,7 @@ public class WaZoomableFrame : ComponentBase
         // Add control attributes
         builder.AddAttribute(30, "without-controls", WithoutControls);
         builder.AddAttribute(31, "without-interaction", WithoutInteraction);
+        builder.AddAttribute(36, "with-theme-sync", WithThemeSync);
 
         // Add remaining iframe passthrough attributes
         builder.AddAttribute(32, "allowfullscreen", AllowFullScreen);

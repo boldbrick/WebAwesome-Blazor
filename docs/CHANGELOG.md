@@ -2,6 +2,34 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.4.0] — 2026-07-23
+
+Alignment with the Web Awesome 3.4.0 release, opening the **WA-3.4 train**. A small additive upgrade: new text-input attributes and a create event on `WaCombobox`, and a theme-sync attribute on `WaZoomableFrame`. **No breaking changes** — the four upstream "breaking" entries in the change report are all non-destructive for the wrappers (two are type widenings that leave the existing parameter functional, two are removals of attributes the wrappers only inherited from the shared `WaInputBase<TValue>` base). No migration guide is required.
+
+### Changed
+- `WaCombobox` gained the text-input attributes WA 3.4.0 added to `wa-combobox`: `AllowCreate` (`allow-create`), `AutoCapitalize`, `AutoCorrect`, `EnterKeyHint`, `InputMode` (idiomatic .NET casing, mapped via `attributeOverrides`) and `Spellcheck`. `AutoCorrect` is exposed as `string?` (attribute form `"off"`/`"on"`), matching `WaInput.AutoCorrect`, even though the CEM now types the JS property as `boolean`.
+- `WaCombobox` gained the cancelable `wa-create` event as `OnCreate` (`EventCallback<WaCreateEventArgs>`); the new `WaCreateEventArgs` carries the typed `InputValue`. Registered in the JS event initializer (JSON-safe string detail, default payload).
+- `WaZoomableFrame` gained `WithThemeSync` (`with-theme-sync`), enabling automatic light/dark and theme-selector-class syncing from the host document into the iframe.
+
+### Non-breaking upstream "breaking" changes (no wrapper action)
+- `wa-color-picker` `swatches`: the type was widened to also accept an array of `{ color, label }` objects. The semicolon-separated string attribute is unchanged; `WaColorPicker.Swatches` (string) and `SetSwatchesAsync(string[])` stand. The labeled-object form remains a JS-only capability, not marshaled from Blazor.
+- `wa-input` `autocorrect`: the JS property type changed from `'off' | 'on'` to `boolean`; the **attribute** form is still `"off"`/`"on"`, so `WaInput.AutoCorrect` (`string?`, rendered as the attribute) is unchanged.
+- `wa-combobox` `autocomplete` removed and `wa-slider` `required` removed: neither was a component-specific wrapper parameter; both are inherited from `WaInputBase<TValue>` (still valid on other form controls) and now render only as inert passthroughs on those two elements when explicitly set. No wrapper public API was removed.
+
+### Library
+- Versioned reference docs refreshed to the `v3.4.0` tag: 35 public-docs files changed upstream (re-downloaded); the Pro `combobox.md` already documented the 3.4.0 additions (webawesome.com tracks latest) — its header was re-stamped for 3.4.0.
+- New train WA-3.4: subtrunk `/main/WA-3.4` branched off `/main` (released 3.3.1); developed on `/main/WA-3.4/WAB-28`.
+
+### Public API
+- Baseline promoted: additions for the six new `WaCombobox` parameters, `WaCombobox.OnCreate`, the new `WaCreateEventArgs` class, and `WaZoomableFrame.WithThemeSync`. All additions, no removals; every diff is explained by the WA 3.4.0 change report.
+
+### Deviations recorded (parity-config.json)
+- `wa-combobox` `attributeOverrides` for `autocapitalize`/`autocorrect`/`enterkeyhint`/`inputmode` (idiomatic .NET casing, mirroring the existing `wa-input` overrides).
+
+### Next-release check outcomes (carried from 3.3.1)
+- Observer `stopObserver()`/`startObserver()` method names and `wa-relative-time` `update()`: re-verified against the 3.4.0 sources (`stopObserver`/`startObserver` still private members in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle method, only `updateTimeout` appears in `relative-time.d.ts`) — the allowlist stands.
+- `WaButton.Form` (CEM-invisible since 3.1.0) and the `WaCheckbox`/`WaSwitch` `.checked` binding workaround: unaffected by WA 3.4.0, carried forward unchanged.
+
 ## [3.3.1] — 2026-07-23
 
 Alignment with the Web Awesome 3.3.1 release. A pure version-alignment patch: no wrapper code changes, no new/removed/modified components, no breaking changes. The CEM API surface is byte-identical to 3.3.0 apart from the version string. Developed on the WA-3.3 train subtrunk (patch release — `/main` is not involved).

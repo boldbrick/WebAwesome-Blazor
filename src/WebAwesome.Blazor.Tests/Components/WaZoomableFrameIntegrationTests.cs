@@ -11,6 +11,22 @@ namespace WebAwesome.Blazor.Tests.Components;
 public class WaZoomableFrameIntegrationTests
 {
     [Fact]
+    public void WithThemeSync_DefaultsToFalseAndCanBeSet()
+    {
+        // Arrange - WA 3.4.0 added the with-theme-sync attribute to wa-zoomable-frame
+        var component = new WaZoomableFrame();
+
+        // Assert - default
+        Assert.False(component.WithThemeSync);
+
+        // Act
+        component.WithThemeSync = true;
+
+        // Assert
+        Assert.True(component.WithThemeSync);
+    }
+
+    [Fact]
     public async Task SetZoomAsync_WithNullElement_ThrowsInvalidOperationException()
     {
         // Arrange
