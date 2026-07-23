@@ -203,3 +203,18 @@ public class WaIntersectionEventArgs : EventArgs
 }
 
 #endregion
+
+#region ------ Combobox Events ------
+
+/// <summary>
+/// Event arguments for the combobox create event
+/// </summary>
+public class WaCreateEventArgs : EventArgs
+{
+    /// <summary>
+    /// The text the user typed that will be used to create a new option.
+    /// </summary>
+    public string InputValue { get; set; } = string.Empty;
+}
+
+#endregion

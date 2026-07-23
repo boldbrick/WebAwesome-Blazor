@@ -19,6 +19,7 @@ const eventNames = [
   'wa-clear',
   'wa-collapse',
   'wa-copy',
+  'wa-create',
   'wa-error',
   'wa-expand',
   'wa-finish',

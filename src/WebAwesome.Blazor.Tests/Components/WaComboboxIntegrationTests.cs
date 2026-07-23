@@ -35,6 +35,12 @@ public class WaComboboxIntegrationTests
         Assert.False(component.WithHint);
         Assert.False(component.WithLabel);
         Assert.Null(component.SelectedValues);
+        Assert.False(component.AllowCreate);
+        Assert.Null(component.AutoCapitalize);
+        Assert.Null(component.AutoCorrect);
+        Assert.Null(component.EnterKeyHint);
+        Assert.Null(component.InputMode);
+        Assert.Null(component.Spellcheck);
     }
 
     #endregion
@@ -84,6 +90,29 @@ public class WaComboboxIntegrationTests
 
         // Assert
         Assert.Equal(3, component.MaxOptionsVisible);
+    }
+
+    [Fact]
+    public void TextInputAttributes_CanBeSetAndRetrieved()
+    {
+        // Arrange
+        var component = new WaCombobox();
+
+        // Act - WA 3.4.0 added these text-input attributes to wa-combobox
+        component.AllowCreate = true;
+        component.AutoCapitalize = "words";
+        component.AutoCorrect = "on";
+        component.EnterKeyHint = "search";
+        component.InputMode = "text";
+        component.Spellcheck = true;
+
+        // Assert
+        Assert.True(component.AllowCreate);
+        Assert.Equal("words", component.AutoCapitalize);
+        Assert.Equal("on", component.AutoCorrect);
+        Assert.Equal("search", component.EnterKeyHint);
+        Assert.Equal("text", component.InputMode);
+        Assert.True(component.Spellcheck);
     }
 
     [Fact]
@@ -290,6 +319,25 @@ public class WaComboboxIntegrationTests
         Assert.True(component.OnAfterShow.HasDelegate);
         Assert.True(component.OnAfterHide.HasDelegate);
         Assert.True(component.OnInvalid.HasDelegate);
+    }
+
+    [Fact]
+    public async Task OnCreate_CanBeWired_AndCarriesInputValue()
+    {
+        // Arrange - WA 3.4.0 added the cancelable wa-create event (detail { inputValue })
+        var component = new WaCombobox();
+        var receiver = new object();
+        WaCreateEventArgs? received = null;
+        var callback = EventCallback.Factory.Create<WaCreateEventArgs>(receiver, args => received = args);
+
+        // Act
+        component.OnCreate = callback;
+        await component.OnCreate.InvokeAsync(new WaCreateEventArgs { InputValue = "new-fruit" });
+
+        // Assert
+        Assert.True(component.OnCreate.HasDelegate);
+        Assert.NotNull(received);
+        Assert.Equal("new-fruit", received.InputValue);
     }
 
     #endregion

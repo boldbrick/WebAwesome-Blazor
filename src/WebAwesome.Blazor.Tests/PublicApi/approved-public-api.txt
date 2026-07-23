@@ -735,9 +735,15 @@ namespace WebAwesome.Blazor.Components
     {
         public WaCombobox() { }
         [Microsoft.AspNetCore.Components.Parameter]
+        public bool AllowCreate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool AllowCustomValue { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? AutoCapitalize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? AutoCorrect { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -747,7 +753,11 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EndIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? EnterKeyHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? InputMode { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -758,6 +768,8 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaCreateEventArgs> OnCreate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -776,6 +788,8 @@ namespace WebAwesome.Blazor.Components
         public string[]? SelectedValues { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<string[]?> SelectedValuesChanged { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool? Spellcheck { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -870,6 +884,11 @@ namespace WebAwesome.Blazor.Components
         public string? Value { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task CopyAsync() { }
+    }
+    public class WaCreateEventArgs : System.EventArgs
+    {
+        public WaCreateEventArgs() { }
+        public string InputValue { get; set; }
     }
     public enum WaCurrencyDisplay
     {
@@ -2921,6 +2940,8 @@ namespace WebAwesome.Blazor.Components
         public string? SrcDoc { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithThemeSync { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithoutControls { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]

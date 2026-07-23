@@ -72,6 +72,39 @@ public class WaCombobox : WaInputBase<string?>
     /// </summary>
     [Parameter] public bool WithLabel { get; set; }
 
+    /// <summary>
+    /// When true, if the user types text that does not match any existing option, a "Create [value]" option
+    /// appears in the listbox. Selecting it creates a new option in the DOM and selects it; a cancelable
+    /// <see cref="OnCreate"/> event fires before creation.
+    /// </summary>
+    [Parameter] public bool AllowCreate { get; set; }
+
+    /// <summary>
+    /// Controls whether and how text input is automatically capitalized as it is entered by the user.
+    /// </summary>
+    [Parameter] public string? AutoCapitalize { get; set; }
+
+    /// <summary>
+    /// Indicates whether the browser's autocorrect feature is on or off. As an attribute, use "off" or "on".
+    /// </summary>
+    [Parameter] public string? AutoCorrect { get; set; }
+
+    /// <summary>
+    /// Used to customize the label or icon of the Enter key on virtual keyboards.
+    /// </summary>
+    [Parameter] public string? EnterKeyHint { get; set; }
+
+    /// <summary>
+    /// Tells the browser what type of data will be entered by the user, allowing it to display the appropriate
+    /// virtual keyboard on supportive devices.
+    /// </summary>
+    [Parameter] public string? InputMode { get; set; }
+
+    /// <summary>
+    /// Enables spell checking on the combobox.
+    /// </summary>
+    [Parameter] public bool? Spellcheck { get; set; }
+
     #endregion
 
     #region ------ Multiple Selection Support ------
@@ -119,6 +152,12 @@ public class WaCombobox : WaInputBase<string?>
     /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
+
+    /// <summary>
+    /// Invoked when the user selects the "create" option (requires <see cref="AllowCreate"/>). The event detail
+    /// carries the typed input value.
+    /// </summary>
+    [Parameter] public EventCallback<WaCreateEventArgs> OnCreate { get; set; }
 
     #endregion
 
@@ -183,6 +222,12 @@ public class WaCombobox : WaInputBase<string?>
         builder.AddAttribute(28, "open", Open);
         builder.AddAttribute(29, "with-hint", WithHint);
         builder.AddAttribute(30, "with-label", WithLabel);
+        builder.AddAttribute(33, "allow-create", AllowCreate);
+        builder.AddAttributeIfNotNullOrEmpty(34, "autocapitalize", AutoCapitalize);
+        builder.AddAttributeIfNotNullOrEmpty(35, "autocorrect", AutoCorrect);
+        builder.AddAttributeIfNotNullOrEmpty(36, "enterkeyhint", EnterKeyHint);
+        builder.AddAttributeIfNotNullOrEmpty(37, "inputmode", InputMode);
+        builder.AddAttributeIfNotNull(38, "spellcheck", Spellcheck);
 
         // Add value binding - handle both single and multiple selection
         if (Multiple)
@@ -206,6 +251,7 @@ public class WaCombobox : WaInputBase<string?>
 
         // Add combobox-specific event handlers
         builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
+        builder.AddAttributeIfHasDelegate(51, "onwa-create", OnCreate);
         builder.AddAttributeIfHasDelegate(52, "onwa-show", OnShow);
         builder.AddAttributeIfHasDelegate(53, "onwa-hide", OnHide);
         builder.AddAttributeIfHasDelegate(54, "onwa-after-show", OnAfterShow);
