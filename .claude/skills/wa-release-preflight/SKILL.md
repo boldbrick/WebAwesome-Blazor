@@ -1,7 +1,6 @@
 ---
 name: wa-release-preflight
 description: Go/no-go release preflight for WebAwesome.Blazor — runs the automated gate script (version alignment, changelog/migration shape, builds, tests, nupkg dependency floors, browser e2e), verifies VCS and ticketing state, and reports blockers plus the owner-side checklist. Invoke as /wa-release-preflight before merging a task branch for release or promoting the subtrunk to /main. Add --skip-e2e to omit the browser sweep, --docs-only for a quick docs/version check without builds.
-disable-model-invocation: true
 argument-hint: [--skip-e2e] [--docs-only]
 ---
 

@@ -3,7 +3,6 @@ name: wa-upgrade
 description: Runs the automated Web Awesome version upgrade pipeline for the Blazor bindings — from JIRA ticket and Plastic branch creation, through CEM-driven analysis and wrapper implementation, to green tests, migration docs, and check-in. Invoke as /wa-upgrade <target-version> (e.g. /wa-upgrade 3.1.0), or /wa-upgrade next to auto-pick the next downloaded release. Add --publish to also merge to the subtrunk after completion, or --dry-run to stop after analysis with just the plan document.
 context: fork
 agent: wa-orchestrator
-disable-model-invocation: true
 argument-hint: [target-version|next] [--dry-run] [--publish]
 ---
 
