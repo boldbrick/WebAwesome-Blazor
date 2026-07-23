@@ -2,6 +2,22 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.2.1] — 2026-07-23
+
+Alignment with the Web Awesome 3.2.1 release. A pure version-alignment patch: no wrapper code changes, no new/removed components, no breaking changes. The CEM API surface is byte-identical to 3.2.0 apart from the version string.
+
+### Changed
+- Bound Web Awesome version bumped to 3.2.1 (library version, README alignment/CDN references, demo asset version tracks the library version structurally). Upstream 3.2.1 is a build-script fix so `llms.txt` and `dist/skills` are no longer omitted from the Web Awesome **Pro** packages ([pr:2022]) — no effect on the public component API.
+
+### Library
+- Versioned reference docs refreshed to the `v3.2.1` tag: only `components/animation.md` and `components/popup.md` changed upstream, and both are documentation-example edits (the interactive demos now drive their sandboxes with `wa-combobox` instead of `wa-select`) — no attribute/event/slot/method/enum changes.
+
+### Public API
+- No change. The public API snapshot (`approved-public-api.txt`) is unchanged — there are no wrapper source changes to promote.
+
+### Next-release check outcomes (carried from 3.2.0)
+- Observer `stopObserver()`/`startObserver()` method names, `wa-relative-time` `update()`, and `wa-page` `visiblePixelsInViewport(element)`: re-verified against the 3.2.1 sources (`stopObserver`/`startObserver` still private members in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle method; `visiblePixelsInViewport` still present in `page.d.ts`) — the allowlist and deviations stand.
+
 ## [3.2.0] — 2026-07-23
 
 Alignment with the Web Awesome 3.2.0 release. See [MIGRATION-3.2.0.md](MIGRATION-3.2.0.md) for the migration guide. A small, mostly additive upgrade: three new components, three new `WaIcon` attributes, and one behavioral breaking change to `WaQrCode` colors.
