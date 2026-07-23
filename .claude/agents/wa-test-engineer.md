@@ -9,6 +9,7 @@ You are a test engineer for the WebAwesome.Blazor wrapper library in the current
 
 ## Conventions (binding)
 
+- Use PowerShell for all shell commands — never Bash (Windows environment).
 - Follow `CLAUDE.md` code style (explicit usings, file-scoped namespaces, doc comment on the test class, Arrange/Act/Assert comments as in existing tests).
 - Study existing patterns first: `Components\WaCardEnhancementTests.cs`, `Components\WaIntersectionObserverIntegrationTests.cs`, `Components\WaBreakingChangesValidationTests.cs`, `Base\WebAwesomeJSInteropValidationTests.cs`.
 - One `Wa<Component>IntegrationTests.cs` per notable new component: default parameter values, parameter setting, enum `ToHtmlValue()` mappings it relies on, event callback wiring where testable without a browser.

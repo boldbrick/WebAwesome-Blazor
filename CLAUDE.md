@@ -183,6 +183,10 @@ When working on this codebase:
 
 ## Hard Rules (Must Follow)
 
+### Shell Rules
+- **ALWAYS use PowerShell** for shell commands — **NEVER use Bash**. This is a Windows environment.
+- This rule applies to **all agents, subagents, and skills** operating in this repository — pass it along when delegating work.
+
 ### Package Management Rules
 - **NEVER add version numbers** to PackageReference items in .csproj files
 - **ALWAYS add packages** to Directory.Packages.props first with version numbers

@@ -15,6 +15,7 @@ Read before writing any code:
 3. Two or three existing wrappers closest in nature to your assignment (e.g. `src\WebAwesome.Blazor\Components\WaButton.cs` for simple elements, `WaDetails.cs` for custom events + imperative methods, `Base\WaInputBase.cs` descendants for form controls).
 
 Key rules distilled (the files above win on conflict):
+- Use PowerShell for all shell commands — never Bash (Windows environment).
 - Pure C# `BuildRenderTree` components — no `.razor` files, no JavaScript beyond the existing `webawesome-interop.js` module.
 - **Constant render-tree sequence numbers** with gaps by section (attributes, events, element ref, slots). Never `sequence++`.
 - Tag `wa-foo-bar` → class `WaFooBar` in `src\WebAwesome.Blazor\Components\`, one class per file; kebab-case attribute `icon-placement` → `[Parameter] IconPlacement`.
