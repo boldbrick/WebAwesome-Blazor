@@ -1,18 +1,94 @@
-﻿@page "/components/line-chart"
+@page "/components/line-chart"
 
 <PageTitle>Line Chart</PageTitle>
 
-<h1>Line Chart</h1>
-<p><code>&lt;wa-line-chart&gt;</code> wrapped by <code>WaLineChart</code>.</p>
+<h1>Line Chart <ComponentBadges Tag="wa-line-chart" /></h1>
+<p>Line charts display trends over time by connecting data points with line segments. <code>&lt;wa-line-chart&gt;</code> wrapped by <code>WaLineChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaLineChart>WaLineChart example</WaLineChart>
+    <WaLineChart Label="Monthly Visitors" Description="A line chart showing website visitors over seven months">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["January", "February", "March", "April", "May", "June", "July"],
+                "datasets": [{ "label": "Visitors", "data": [4200, 4800, 5100, 4900, 5500, 6200, 5800] }]
+              }
+            }
+        </script>
+    </WaLineChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\line-chart.md) *@
+<ExampleSection Title="Multiple Series" Code="@MultipleSeriesExample">
+    <WaLineChart Label="Revenue vs. Expenses" Description="A line chart comparing revenue and expenses over six months">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["January", "February", "March", "April", "May", "June"],
+                "datasets": [
+                  { "label": "Revenue", "data": [48, 56, 62, 58, 71, 68] },
+                  { "label": "Expenses", "data": [35, 38, 40, 42, 45, 43] }
+                ]
+              }
+            }
+        </script>
+    </WaLineChart>
+</ExampleSection>
+
+<ExampleSection Title="Axis Labels &amp; Bounds" Code="@BoundsExample">
+    <WaLineChart Min="0" Max="8000" XLabel="Month" YLabel="Visitors" Label="Monthly Visitors" Description="A line chart with labeled axes and a fixed value range">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["January", "February", "March", "April", "May", "June", "July"],
+                "datasets": [{ "label": "Visitors", "data": [4200, 4800, 5100, 4900, 5500, 6200, 5800] }]
+              }
+            }
+        </script>
+    </WaLineChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-line-chart" />
 
 @code {
-    private const string DefaultExample = "<WaLineChart>WaLineChart example</WaLineChart>";
+    private const string DefaultExample = """
+        <WaLineChart Label="Monthly Visitors" Description="A line chart showing website visitors over seven months">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["January", "February", "March", "April", "May", "June", "July"],
+                    "datasets": [{ "label": "Visitors", "data": [4200, 4800, 5100, 4900, 5500, 6200, 5800] }]
+                  }
+                }
+            </script>
+        </WaLineChart>
+        """;
+
+    private const string MultipleSeriesExample = """
+        <WaLineChart Label="Revenue vs. Expenses" Description="A line chart comparing revenue and expenses over six months">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["January", "February", "March", "April", "May", "June"],
+                    "datasets": [
+                      { "label": "Revenue", "data": [48, 56, 62, 58, 71, 68] },
+                      { "label": "Expenses", "data": [35, 38, 40, 42, 45, 43] }
+                    ]
+                  }
+                }
+            </script>
+        </WaLineChart>
+        """;
+
+    private const string BoundsExample = """
+        <WaLineChart Min="0" Max="8000" XLabel="Month" YLabel="Visitors" Label="Monthly Visitors" Description="A line chart with labeled axes and a fixed value range">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["January", "February", "March", "April", "May", "June", "July"],
+                    "datasets": [{ "label": "Visitors", "data": [4200, 4800, 5100, 4900, 5500, 6200, 5800] }]
+                  }
+                }
+            </script>
+        </WaLineChart>
+        """;
 }

@@ -1,20 +1,107 @@
-﻿@page "/components/number-input"
+@page "/components/number-input"
 
 <PageTitle>Number Input</PageTitle>
 
-<h1>Number Input</h1>
-<p><code>&lt;wa-number-input&gt;</code> wrapped by <code>WaNumberInput</code>.</p>
+<h1>Number Input <ComponentBadges Tag="wa-number-input" /></h1>
+<p>Number inputs allow users to enter and edit numeric values with optional stepper buttons. <code>&lt;wa-number-input&gt;</code> wrapped by <code>WaNumberInput</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaNumberInput Label="Number Input" @bind-Value="value" />
+    <WaNumberInput Label="Quantity" @bind-Value="quantity" />
+    <p>Current value: <strong>@(quantity?.ToString() ?? "(empty)")</strong></p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\number-input.md) *@
+<ExampleSection Title="Label &amp; Hint" Code="@LabelHintExample">
+    <WaNumberInput Label="Order quantity" Hint="Enter the number of items you'd like to order" @bind-Value="orderQuantity" />
+</ExampleSection>
+
+<ExampleSection Title="Min, Max &amp; Step" Code="@MinMaxStepExample">
+    <WaNumberInput Label="Donation amount" Hint="Amount in dollars (10-100, increments of 5)" Min="10" Max="100" Step="5" @bind-Value="donation" />
+</ExampleSection>
+
+<ExampleSection Title="Appearance, Pill &amp; Disabled" Code="@AppearanceExample">
+    <WaNumberInput Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filledValue" />
+    <WaNumberInput Label="Pill" Pill="true" @bind-Value="pillValue" />
+    <WaNumberInput Label="Disabled" Disabled="true" @bind-Value="disabledValue" />
+</ExampleSection>
+
+<ExampleSection Title="Without Steppers" Code="@WithoutSteppersExample">
+    <WaNumberInput Label="No steppers" Hint="Arrow keys still increment and decrement the value." WithoutSteppers="true" @bind-Value="noSteppersValue" />
+</ExampleSection>
+
+<ExampleSection Title="Programmatic Stepping" Code="@SteppingExample">
+    <WaNumberInput Label="Stepped from outside" Step="10" @ref="steppedInput" @bind-Value="steppedValue" />
+    <WaButton OnClick="@(() => steppedInput!.StepDownAsync())">-10</WaButton>
+    <WaButton OnClick="@(() => steppedInput!.StepUpAsync())">+10</WaButton>
+</ExampleSection>
 
 <ApiTable Tag="wa-number-input" />
 
 @code {
-    private decimal? value;
+    private decimal? quantity = 1;
+    private decimal? orderQuantity;
+    private decimal? donation = 25;
+    private decimal? filledValue = 42;
+    private decimal? pillValue = 42;
+    private decimal? disabledValue = 100;
+    private decimal? noSteppersValue = 50;
+    private decimal? steppedValue = 50;
+    private WaNumberInput? steppedInput;
 
-    private const string DefaultExample = "<WaNumberInput Label=\"Number Input\" @bind-Value=\"value\" />";
+    private const string DefaultExample = """
+        <WaNumberInput Label="Quantity" @bind-Value="quantity" />
+        <p>Current value: @quantity</p>
+
+        @code {
+            private decimal? quantity = 1;
+        }
+        """;
+
+    private const string LabelHintExample = """
+        <WaNumberInput Label="Order quantity" Hint="Enter the number of items you'd like to order" @bind-Value="orderQuantity" />
+
+        @code {
+            private decimal? orderQuantity;
+        }
+        """;
+
+    private const string MinMaxStepExample = """
+        <WaNumberInput Label="Donation amount" Hint="Amount in dollars (10-100, increments of 5)"
+                       Min="10" Max="100" Step="5" @bind-Value="donation" />
+
+        @code {
+            private decimal? donation = 25;
+        }
+        """;
+
+    private const string AppearanceExample = """
+        <WaNumberInput Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filledValue" />
+        <WaNumberInput Label="Pill" Pill="true" @bind-Value="pillValue" />
+        <WaNumberInput Label="Disabled" Disabled="true" @bind-Value="disabledValue" />
+
+        @code {
+            private decimal? filledValue = 42;
+            private decimal? pillValue = 42;
+            private decimal? disabledValue = 100;
+        }
+        """;
+
+    private const string WithoutSteppersExample = """
+        <WaNumberInput Label="No steppers" Hint="Arrow keys still increment and decrement the value."
+                       WithoutSteppers="true" @bind-Value="noSteppersValue" />
+
+        @code {
+            private decimal? noSteppersValue = 50;
+        }
+        """;
+
+    private const string SteppingExample = """
+        <WaNumberInput Label="Stepped from outside" Step="10" @ref="steppedInput" @bind-Value="steppedValue" />
+        <WaButton OnClick="@(() => steppedInput!.StepDownAsync())">-10</WaButton>
+        <WaButton OnClick="@(() => steppedInput!.StepUpAsync())">+10</WaButton>
+
+        @code {
+            private decimal? steppedValue = 50;
+            private WaNumberInput? steppedInput;
+        }
+        """;
 }

@@ -1,18 +1,88 @@
-﻿@page "/components/toast"
+@page "/components/toast"
 
 <PageTitle>Toast</PageTitle>
 
-<h1>Toast</h1>
-<p><code>&lt;wa-toast&gt;</code> wrapped by <code>WaToast</code>.</p>
+<h1>Toast <ComponentBadges Tag="wa-toast" /></h1>
+<p>Toasts display brief, non-blocking notifications that stack above page content. <code>&lt;wa-toast&gt;</code> wrapped by <code>WaToast</code>, with <code>&lt;wa-toast-item&gt;</code> wrapped by <code>WaToastItem</code>.</p>
 
-<ExampleSection Title="Default" Code="@DefaultExample">
-    <WaToast>WaToast example</WaToast>
+<ExampleSection Title="Programmatic Notifications" Code="@ProgrammaticExample">
+    <WaButton Appearance="WaAppearance.Filled" OnClick="ShowNotificationAsync">Show notification</WaButton>
+    <WaToast @ref="notificationToast" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\toast.md) *@
+<ExampleSection Title="Declarative Toast Items" Code="@DeclarativeExample">
+    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => showDeclarativeItems = true)">Show toast items</WaButton>
+    <WaToast>
+        @if (showDeclarativeItems)
+        {
+            <WaToastItem Variant="WaVariant.Brand" IconName="bell" Duration="0">This is how a toast item looks!</WaToastItem>
+            <WaToastItem Variant="WaVariant.Success" IconName="circle-check">Your changes have been saved.</WaToastItem>
+        }
+    </WaToast>
+</ExampleSection>
+
+<ExampleSection Title="Placement" Code="@PlacementExample">
+    <WaButton OnClick="ShowBottomNotificationAsync">Notify at bottom center</WaButton>
+    <WaToast @ref="bottomToast" Placement="WaToastPlacement.BottomCenter" />
+</ExampleSection>
 
 <ApiTable Tag="wa-toast" />
 
 @code {
-    private const string DefaultExample = "<WaToast>WaToast example</WaToast>";
+    private WaToast? notificationToast;
+    private WaToast? bottomToast;
+    private bool showDeclarativeItems;
+
+    private async Task ShowNotificationAsync()
+    {
+        if (notificationToast is not null) await notificationToast.CreateAsync("This is a toast notification!");
+    }
+
+    private async Task ShowBottomNotificationAsync()
+    {
+        if (bottomToast is not null) await bottomToast.CreateAsync("Hello from the bottom of the screen!");
+    }
+
+    private const string ProgrammaticExample = """
+        <WaButton Appearance="WaAppearance.Filled" OnClick="ShowNotificationAsync">Show notification</WaButton>
+        <WaToast @ref="notificationToast" />
+
+        @code {
+            private WaToast? notificationToast;
+
+            private async Task ShowNotificationAsync()
+            {
+                if (notificationToast is not null) await notificationToast.CreateAsync("This is a toast notification!");
+            }
+        }
+        """;
+
+    private const string DeclarativeExample = """
+        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => showDeclarativeItems = true)">Show toast items</WaButton>
+        <WaToast>
+            @if (showDeclarativeItems)
+            {
+                <WaToastItem Variant="WaVariant.Brand" IconName="bell" Duration="0">This is how a toast item looks!</WaToastItem>
+                <WaToastItem Variant="WaVariant.Success" IconName="circle-check">Your changes have been saved.</WaToastItem>
+            }
+        </WaToast>
+
+        @code {
+            private bool showDeclarativeItems;
+        }
+        """;
+
+    private const string PlacementExample = """
+        <WaButton OnClick="ShowBottomNotificationAsync">Notify at bottom center</WaButton>
+        <WaToast @ref="bottomToast" Placement="WaToastPlacement.BottomCenter" />
+
+        @code {
+            private WaToast? bottomToast;
+
+            private async Task ShowBottomNotificationAsync()
+            {
+                if (bottomToast is not null) await bottomToast.CreateAsync("Hello from the bottom of the screen!");
+            }
+        }
+        """;
 }

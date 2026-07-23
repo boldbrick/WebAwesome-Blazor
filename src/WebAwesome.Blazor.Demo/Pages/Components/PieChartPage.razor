@@ -1,18 +1,88 @@
-﻿@page "/components/pie-chart"
+@page "/components/pie-chart"
 
 <PageTitle>Pie Chart</PageTitle>
 
-<h1>Pie Chart</h1>
-<p><code>&lt;wa-pie-chart&gt;</code> wrapped by <code>WaPieChart</code>.</p>
+<h1>Pie Chart <ComponentBadges Tag="wa-pie-chart" /></h1>
+<p>Pie charts display the proportional composition of a whole as slices of a circle. <code>&lt;wa-pie-chart&gt;</code> wrapped by <code>WaPieChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaPieChart>WaPieChart example</WaPieChart>
+    <WaPieChart Label="Browser Market Share" Description="A pie chart showing browser market share with Chrome leading at 65%">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Chrome", "Safari", "Firefox", "Edge", "Other"],
+                "datasets": [{ "label": "Market Share", "data": [65, 18, 8, 5, 4] }]
+              }
+            }
+        </script>
+    </WaPieChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\pie-chart.md) *@
+<ExampleSection Title="Legend Position" Code="@LegendPositionExample">
+    <WaPieChart LegendPosition="WaChartLegendPosition.Bottom" Label="Traffic Sources" Description="A pie chart with the legend below the chart">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Search", "Direct", "Referral", "Social"],
+                "datasets": [{ "label": "Sessions", "data": [45, 30, 15, 10] }]
+              }
+            }
+        </script>
+    </WaPieChart>
+</ExampleSection>
+
+<ExampleSection Title="Without Legend" Code="@WithoutLegendExample">
+    <WaPieChart WithoutLegend="true" Label="Vote Distribution" Description="A pie chart with the legend hidden">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Yes", "No", "Abstain"],
+                "datasets": [{ "label": "Votes", "data": [58, 32, 10] }]
+              }
+            }
+        </script>
+    </WaPieChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-pie-chart" />
 
 @code {
-    private const string DefaultExample = "<WaPieChart>WaPieChart example</WaPieChart>";
+    private const string DefaultExample = """
+        <WaPieChart Label="Browser Market Share" Description="A pie chart showing browser market share with Chrome leading at 65%">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Chrome", "Safari", "Firefox", "Edge", "Other"],
+                    "datasets": [{ "label": "Market Share", "data": [65, 18, 8, 5, 4] }]
+                  }
+                }
+            </script>
+        </WaPieChart>
+        """;
+
+    private const string LegendPositionExample = """
+        <WaPieChart LegendPosition="WaChartLegendPosition.Bottom" Label="Traffic Sources" Description="A pie chart with the legend below the chart">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Search", "Direct", "Referral", "Social"],
+                    "datasets": [{ "label": "Sessions", "data": [45, 30, 15, 10] }]
+                  }
+                }
+            </script>
+        </WaPieChart>
+        """;
+
+    private const string WithoutLegendExample = """
+        <WaPieChart WithoutLegend="true" Label="Vote Distribution" Description="A pie chart with the legend hidden">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Yes", "No", "Abstain"],
+                    "datasets": [{ "label": "Votes", "data": [58, 32, 10] }]
+                  }
+                }
+            </script>
+        </WaPieChart>
+        """;
 }

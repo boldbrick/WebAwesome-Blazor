@@ -1,18 +1,126 @@
-﻿@page "/components/bar-chart"
+@page "/components/bar-chart"
 
 <PageTitle>Bar Chart</PageTitle>
 
-<h1>Bar Chart</h1>
-<p><code>&lt;wa-bar-chart&gt;</code> wrapped by <code>WaBarChart</code>.</p>
+<h1>Bar Chart <ComponentBadges Tag="wa-bar-chart" /></h1>
+<p>Bar charts compare quantities across categories using rectangular bars. <code>&lt;wa-bar-chart&gt;</code> wrapped by <code>WaBarChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaBarChart>WaBarChart example</WaBarChart>
+    <WaBarChart Label="Quarterly Revenue" Description="A bar chart comparing online and in-store revenue across four quarters">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Q1", "Q2", "Q3", "Q4"],
+                "datasets": [
+                  { "label": "Online", "data": [42, 58, 63, 71] },
+                  { "label": "In-Store", "data": [65, 53, 48, 52] }
+                ]
+              }
+            }
+        </script>
+    </WaBarChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\bar-chart.md) *@
+<ExampleSection Title="Horizontal Orientation" Code="@HorizontalExample">
+    <WaBarChart Orientation="WaOrientation.Horizontal" Label="Top Languages" Description="A horizontal bar chart ranking programming languages by usage">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["C#", "TypeScript", "Python", "Rust"],
+                "datasets": [{ "label": "Usage (%)", "data": [64, 55, 48, 21] }]
+              }
+            }
+        </script>
+    </WaBarChart>
+</ExampleSection>
+
+<ExampleSection Title="Stacked" Code="@StackedExample">
+    <WaBarChart Stacked="true" Label="Support Tickets" Description="A stacked bar chart showing open and resolved tickets per month">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["January", "February", "March", "April"],
+                "datasets": [
+                  { "label": "Resolved", "data": [30, 42, 38, 45] },
+                  { "label": "Open", "data": [12, 8, 15, 6] }
+                ]
+              }
+            }
+        </script>
+    </WaBarChart>
+</ExampleSection>
+
+<ExampleSection Title="Axis Labels &amp; Bounds" Code="@BoundsExample">
+    <WaBarChart Min="0" Max="100" XLabel="Quarter" YLabel="Revenue ($k)" Label="Quarterly Revenue" Description="A bar chart with labeled axes and a fixed value range">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "labels": ["Q1", "Q2", "Q3", "Q4"],
+                "datasets": [{ "label": "Revenue", "data": [42, 58, 63, 71] }]
+              }
+            }
+        </script>
+    </WaBarChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-bar-chart" />
 
 @code {
-    private const string DefaultExample = "<WaBarChart>WaBarChart example</WaBarChart>";
+    private const string DefaultExample = """
+        <WaBarChart Label="Quarterly Revenue" Description="A bar chart comparing online and in-store revenue across four quarters">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Q1", "Q2", "Q3", "Q4"],
+                    "datasets": [
+                      { "label": "Online", "data": [42, 58, 63, 71] },
+                      { "label": "In-Store", "data": [65, 53, 48, 52] }
+                    ]
+                  }
+                }
+            </script>
+        </WaBarChart>
+        """;
+
+    private const string HorizontalExample = """
+        <WaBarChart Orientation="WaOrientation.Horizontal" Label="Top Languages" Description="A horizontal bar chart ranking programming languages by usage">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["C#", "TypeScript", "Python", "Rust"],
+                    "datasets": [{ "label": "Usage (%)", "data": [64, 55, 48, 21] }]
+                  }
+                }
+            </script>
+        </WaBarChart>
+        """;
+
+    private const string StackedExample = """
+        <WaBarChart Stacked="true" Label="Support Tickets" Description="A stacked bar chart showing open and resolved tickets per month">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["January", "February", "March", "April"],
+                    "datasets": [
+                      { "label": "Resolved", "data": [30, 42, 38, 45] },
+                      { "label": "Open", "data": [12, 8, 15, 6] }
+                    ]
+                  }
+                }
+            </script>
+        </WaBarChart>
+        """;
+
+    private const string BoundsExample = """
+        <WaBarChart Min="0" Max="100" XLabel="Quarter" YLabel="Revenue ($k)" Label="Quarterly Revenue" Description="A bar chart with labeled axes and a fixed value range">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "labels": ["Q1", "Q2", "Q3", "Q4"],
+                    "datasets": [{ "label": "Revenue", "data": [42, 58, 63, 71] }]
+                  }
+                }
+            </script>
+        </WaBarChart>
+        """;
 }

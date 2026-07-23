@@ -5,7 +5,7 @@
 <h1>Nova Studio — Overlays &amp; Menus</h1>
 <p>
     Everything in Nova Studio that floats above the page: a modal dialog with a small form, a drawer,
-    a popover, an anchored popup, tooltips and a dropdown menu — each opened from a real trigger.
+    a popover, an anchored popup, tooltips, a dropdown menu and toast notifications — each opened from a real trigger.
 </p>
 
 @if (feedback is not null)
@@ -97,7 +97,35 @@
             </WaDropdown>
         </ChildContent>
     </WaCard>
+
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Toasts</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <p>Brief notifications stack in the corner of the viewport — created programmatically or declared as items.</p>
+            <WaCluster Gap="GapSize.Gap_S">
+                <WaButton Appearance="WaAppearance.Outlined" StartIconName="floppy-disk"
+                          OnClick="@(() => toastStack.CreateAsync("Draft saved to the workspace."))">
+                    Save draft
+                </WaButton>
+                <WaButton Variant="WaVariant.Brand" StartIconName="rocket" OnClick="QueueDeploymentToast">
+                    Deploy to staging
+                </WaButton>
+            </WaCluster>
+        </ChildContent>
+    </WaCard>
 </WaGrid>
+
+<WaToast @ref="toastStack" Placement="WaToastPlacement.BottomEnd">
+    @foreach (var toast in deploymentToasts)
+    {
+        <WaToastItem @key="toast" Variant="WaVariant.Success" IconName="rocket" Duration="5000"
+                     OnAfterHide="@(() => deploymentToasts.Remove(toast))">
+            @toast
+        </WaToastItem>
+    }
+</WaToast>
 
 <WaDialog Label="Invite a teammate" Open="@inviteDialogOpen" OnHide="@(() => inviteDialogOpen = false)">
     <ChildContent>
@@ -137,6 +165,9 @@
     private bool activityDrawerOpen;
     private bool popupActive;
     private string? feedback;
+    private WaToast toastStack = null!;
+    private int deploymentCounter;
+    private readonly List<string> deploymentToasts = [];
     private string? inviteEmail;
     private string? inviteRole = "editor";
 
@@ -147,5 +178,12 @@
             ? "Invitation drafted — add an e-mail address to send it."
             : $"Invitation sent to {inviteEmail} as {inviteRole}.";
         inviteEmail = null;
+    }
+
+    private void QueueDeploymentToast()
+    {
+        // declaratively rendered toast items show as soon as they appear in the stack
+        deploymentCounter++;
+        deploymentToasts.Add($"Build 3.2.0-rc.{deploymentCounter} deployed to staging.");
     }
 }

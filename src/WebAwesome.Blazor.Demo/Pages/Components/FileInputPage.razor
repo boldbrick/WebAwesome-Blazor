@@ -1,18 +1,83 @@
-﻿@page "/components/file-input"
+@page "/components/file-input"
 
 <PageTitle>File Input</PageTitle>
 
-<h1>File Input</h1>
-<p><code>&lt;wa-file-input&gt;</code> wrapped by <code>WaFileInput</code>.</p>
+<h1>File Input <ComponentBadges Tag="wa-file-input" /></h1>
+<p>File inputs let users choose files from their device via a dropzone that supports both click and drag-and-drop. <code>&lt;wa-file-input&gt;</code> wrapped by <code>WaFileInput</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaFileInput />
+    <WaFileInput Label="Select a file" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\file-input.md) *@
+<ExampleSection Title="Label &amp; Hint" Code="@LabelHintExample">
+    <WaFileInput Label="Profile photo" Hint="A square image works best." />
+</ExampleSection>
+
+<ExampleSection Title="Accept &amp; Multiple" Code="@AcceptMultipleExample">
+    <WaFileInput Label="Upload images" Hint="PNG or JPEG only, multiple files allowed." Accept="image/png,image/jpeg" Multiple="true" />
+</ExampleSection>
+
+<ExampleSection Title="Sizes &amp; Disabled" Code="@SizesExample">
+    <WaFileInput Label="Small" Size="WaSize.Small" />
+    <WaFileInput Label="Large" Size="WaSize.Large" />
+    <WaFileInput Label="Disabled" Disabled="true" />
+</ExampleSection>
+
+<ExampleSection Title="Custom Dropzone" Code="@DropzoneExample">
+    <WaFileInput Label="Drop it like it's hot">
+        <DropzoneContent>
+            <strong>Drag your files here</strong> or click to browse.
+        </DropzoneContent>
+    </WaFileInput>
+</ExampleSection>
+
+<ExampleSection Title="Change Event" Code="@ChangeExample">
+    <WaFileInput Label="Pick a file" OnChange="HandleChange" />
+    <p>Selection changed <strong>@changeCount</strong> time(s).</p>
+</ExampleSection>
 
 <ApiTable Tag="wa-file-input" />
 
 @code {
-    private const string DefaultExample = "<WaFileInput />";
+    private int changeCount;
+
+    private void HandleChange(EventArgs e) => changeCount++;
+
+    private const string DefaultExample = """
+        <WaFileInput Label="Select a file" />
+        """;
+
+    private const string LabelHintExample = """
+        <WaFileInput Label="Profile photo" Hint="A square image works best." />
+        """;
+
+    private const string AcceptMultipleExample = """
+        <WaFileInput Label="Upload images" Hint="PNG or JPEG only, multiple files allowed."
+                     Accept="image/png,image/jpeg" Multiple="true" />
+        """;
+
+    private const string SizesExample = """
+        <WaFileInput Label="Small" Size="WaSize.Small" />
+        <WaFileInput Label="Large" Size="WaSize.Large" />
+        <WaFileInput Label="Disabled" Disabled="true" />
+        """;
+
+    private const string DropzoneExample = """
+        <WaFileInput Label="Drop it like it's hot">
+            <DropzoneContent>
+                <strong>Drag your files here</strong> or click to browse.
+            </DropzoneContent>
+        </WaFileInput>
+        """;
+
+    private const string ChangeExample = """
+        <WaFileInput Label="Pick a file" OnChange="HandleChange" />
+        <p>Selection changed: @changeCount time(s)</p>
+
+        @code {
+            private int changeCount;
+
+            private void HandleChange(EventArgs e) => changeCount++;
+        }
+        """;
 }

@@ -1,18 +1,100 @@
-﻿@page "/components/scatter-chart"
+@page "/components/scatter-chart"
 
 <PageTitle>Scatter Chart</PageTitle>
 
-<h1>Scatter Chart</h1>
-<p><code>&lt;wa-scatter-chart&gt;</code> wrapped by <code>WaScatterChart</code>.</p>
+<h1>Scatter Chart <ComponentBadges Tag="wa-scatter-chart" /></h1>
+<p>Scatter charts reveal relationships between two variables by plotting data points on a grid. <code>&lt;wa-scatter-chart&gt;</code> wrapped by <code>WaScatterChart</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaScatterChart>WaScatterChart example</WaScatterChart>
+    <WaScatterChart Label="Height vs. Weight" Description="A scatter chart showing the relationship between height and weight">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "datasets": [{
+                  "label": "Measurements",
+                  "data": [{ "x": 158, "y": 55 }, { "x": 163, "y": 62 }, { "x": 170, "y": 72 }, { "x": 178, "y": 78 }, { "x": 188, "y": 90 }]
+                }]
+              }
+            }
+        </script>
+    </WaScatterChart>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\scatter-chart.md) *@
+<ExampleSection Title="Axis Labels" Code="@AxisLabelsExample">
+    <WaScatterChart XLabel="Height (cm)" YLabel="Weight (kg)" Label="Height vs. Weight" Description="A scatter chart with labeled axes">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "datasets": [{
+                  "label": "Measurements",
+                  "data": [{ "x": 158, "y": 55 }, { "x": 163, "y": 62 }, { "x": 170, "y": 72 }, { "x": 178, "y": 78 }, { "x": 188, "y": 90 }]
+                }]
+              }
+            }
+        </script>
+    </WaScatterChart>
+</ExampleSection>
+
+<ExampleSection Title="Multiple Series" Code="@MultipleSeriesExample">
+    <WaScatterChart Label="Study Time vs. Score" Description="A scatter chart comparing two study groups by hours studied and exam score">
+        <script type="application/json" suppress-error="BL9992">
+            {
+              "data": {
+                "datasets": [
+                  { "label": "Group A", "data": [{ "x": 2, "y": 61 }, { "x": 4, "y": 72 }, { "x": 6, "y": 80 }, { "x": 8, "y": 89 }] },
+                  { "label": "Group B", "data": [{ "x": 1, "y": 55 }, { "x": 3, "y": 64 }, { "x": 5, "y": 70 }, { "x": 7, "y": 76 }] }
+                ]
+              }
+            }
+        </script>
+    </WaScatterChart>
+</ExampleSection>
 
 <ApiTable Tag="wa-scatter-chart" />
 
 @code {
-    private const string DefaultExample = "<WaScatterChart>WaScatterChart example</WaScatterChart>";
+    private const string DefaultExample = """
+        <WaScatterChart Label="Height vs. Weight" Description="A scatter chart showing the relationship between height and weight">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "datasets": [{
+                      "label": "Measurements",
+                      "data": [{ "x": 158, "y": 55 }, { "x": 163, "y": 62 }, { "x": 170, "y": 72 }, { "x": 178, "y": 78 }, { "x": 188, "y": 90 }]
+                    }]
+                  }
+                }
+            </script>
+        </WaScatterChart>
+        """;
+
+    private const string AxisLabelsExample = """
+        <WaScatterChart XLabel="Height (cm)" YLabel="Weight (kg)" Label="Height vs. Weight" Description="A scatter chart with labeled axes">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "datasets": [{
+                      "label": "Measurements",
+                      "data": [{ "x": 158, "y": 55 }, { "x": 163, "y": 62 }, { "x": 170, "y": 72 }, { "x": 178, "y": 78 }, { "x": 188, "y": 90 }]
+                    }]
+                  }
+                }
+            </script>
+        </WaScatterChart>
+        """;
+
+    private const string MultipleSeriesExample = """
+        <WaScatterChart Label="Study Time vs. Score" Description="A scatter chart comparing two study groups by hours studied and exam score">
+            <script type="application/json" suppress-error="BL9992">
+                {
+                  "data": {
+                    "datasets": [
+                      { "label": "Group A", "data": [{ "x": 2, "y": 61 }, { "x": 4, "y": 72 }, { "x": 6, "y": 80 }, { "x": 8, "y": 89 }] },
+                      { "label": "Group B", "data": [{ "x": 1, "y": 55 }, { "x": 3, "y": 64 }, { "x": 5, "y": 70 }, { "x": 7, "y": 76 }] }
+                    ]
+                  }
+                }
+            </script>
+        </WaScatterChart>
+        """;
 }

@@ -1,18 +1,144 @@
-﻿@page "/components/markdown"
+@page "/components/markdown"
 
 <PageTitle>Markdown</PageTitle>
 
-<h1>Markdown</h1>
-<p><code>&lt;wa-markdown&gt;</code> wrapped by <code>WaMarkdown</code>.</p>
+<h1>Markdown <ComponentBadges Tag="wa-markdown" /></h1>
+<p>A declarative utility that renders markdown as plain HTML using the Marked library. <code>&lt;wa-markdown&gt;</code> wrapped by <code>WaMarkdown</code>; the wrapper emits the required <code>&lt;script type="text/markdown"&gt;</code> child automatically from <code>Content</code> or child content.</p>
 
-<ExampleSection Title="Default" Code="@DefaultExample">
-    <WaMarkdown />
+<ExampleSection Title="Providing Content" Code="@ProvidingContentExample">
+    <WaMarkdown>
+        ## Getting Started
+
+        Here's a quick overview with **bold**, *italic*, and `inline code`.
+
+        - Install the package
+        - Import the component
+        - Start writing markdown
+    </WaMarkdown>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\markdown.md) *@
+<ExampleSection Title="Formatting Features" Code="@FormattingExample">
+    <WaMarkdown Content="@FormattingMarkdown" />
+</ExampleSection>
+
+<ExampleSection Title="Tab Size" Code="@TabSizeExample">
+    <WaMarkdown TabSize="2" Content="@TabSizeMarkdown" />
+</ExampleSection>
+
+<ExampleSection Title="Updating Content Dynamically" Code="@DynamicExample">
+    <WaMarkdown @ref="dynamicMarkdown" Content="@dynamicContent" />
+    <WaButton OnClick="UpdateContent">Update content</WaButton>
+</ExampleSection>
 
 <ApiTable Tag="wa-markdown" />
 
 @code {
-    private const string DefaultExample = "<WaMarkdown />";
+    private WaMarkdown? dynamicMarkdown;
+    private string dynamicContent = "Click the button to swap this content out.";
+    private bool renderPending;
+
+    private void UpdateContent()
+    {
+        dynamicContent = "## Fresh Content\n\nThis was **swapped in** by calling `RenderMarkdownAsync()`.";
+
+        // the component does not watch the script for changes, so re-render after the new source is in the DOM
+        renderPending = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (renderPending && dynamicMarkdown is not null)
+        {
+            renderPending = false;
+            await dynamicMarkdown.RenderMarkdownAsync();
+        }
+    }
+
+    private const string FormattingMarkdown = """
+        ## Feature Overview
+
+        Steps to set up your project:
+
+        1. Clone the repository
+        2. Install dependencies
+        3. Run the dev server
+
+        A relevant quote:
+
+        > "Simplicity is the ultimate sophistication." — Leonardo da Vinci
+
+            Lines with extra indentation render as a code block.
+        """;
+
+    private const string TabSizeMarkdown = "## Tab Size\n\n\tLeading tabs are converted to spaces using the configured tab stop width (2 here),\n\tso this tab-indented text renders as a code block.";
+
+    private const string ProvidingContentExample = """
+        <WaMarkdown>
+            ## Getting Started
+
+            Here's a quick overview with **bold**, *italic*, and `inline code`.
+
+            - Install the package
+            - Import the component
+            - Start writing markdown
+        </WaMarkdown>
+        """;
+
+    private const string FormattingExample = """"
+        <WaMarkdown Content="@FormattingMarkdown" />
+
+        @code {
+            private const string FormattingMarkdown = """
+                ## Feature Overview
+
+                Steps to set up your project:
+
+                1. Clone the repository
+                2. Install dependencies
+                3. Run the dev server
+
+                A relevant quote:
+
+                > "Simplicity is the ultimate sophistication." — Leonardo da Vinci
+
+                    Lines with extra indentation render as a code block.
+                """;
+        }
+        """";
+
+    private const string TabSizeExample = """
+        <WaMarkdown TabSize="2" Content="@TabSizeMarkdown" />
+
+        @code {
+            private const string TabSizeMarkdown = "## Tab Size\n\n\tLeading tabs are converted to spaces using the configured tab stop width (2 here),\n\tso this tab-indented text renders as a code block.";
+        }
+        """;
+
+    private const string DynamicExample = """
+        <WaMarkdown @ref="dynamicMarkdown" Content="@dynamicContent" />
+        <WaButton OnClick="UpdateContent">Update content</WaButton>
+
+        @code {
+            private WaMarkdown? dynamicMarkdown;
+            private string dynamicContent = "Click the button to swap this content out.";
+            private bool renderPending;
+
+            private void UpdateContent()
+            {
+                dynamicContent = "## Fresh Content\n\nThis was **swapped in** by calling `RenderMarkdownAsync()`.";
+
+                // the component does not watch the script for changes, so re-render after the new source is in the DOM
+                renderPending = true;
+            }
+
+            protected override async Task OnAfterRenderAsync(bool firstRender)
+            {
+                if (renderPending && dynamicMarkdown is not null)
+                {
+                    renderPending = false;
+                    await dynamicMarkdown.RenderMarkdownAsync();
+                }
+            }
+        }
+        """;
 }

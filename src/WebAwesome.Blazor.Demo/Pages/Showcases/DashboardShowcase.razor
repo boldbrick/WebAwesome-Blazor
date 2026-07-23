@@ -7,7 +7,7 @@
         <h1>Nova Studio — Release Dashboard</h1>
         <p>
             Sprint 42 status for the Nova Studio 3.2 release, showing cards, badges, progress indicators,
-            formatted values, avatars, tags and skeleton placeholders on a responsive grid.
+            formatted values, avatars, tags, charts, sparklines and skeleton placeholders on a responsive grid.
         </p>
     </div>
     <WaButton Variant="WaVariant.Brand" StartIconName="rotate" OnClick="RefreshAsync" Loading="refreshing">Refresh</WaButton>
@@ -20,6 +20,10 @@
             <WaFormatNumber Value="128450" Type="WaFormatNumberType.Currency" Currency="EUR" MaximumFractionDigits="0" />
         </WaText>
         <WaBadge Variant="WaVariant.Success" Appearance="WaAppearance.OutlinedFilled">+8.2% vs. last month</WaBadge>
+        <WaSparkline Data="96.2 101.5 99.8 104.9 110.3 118.7 128.45" Trend="WaSparklineTrend.Positive"
+                     Curve="WaSparklineCurve.Natural" Appearance="WaSparklineAppearance.Gradient"
+                     Label="Monthly recurring revenue over the last seven months"
+                     Style="width: 100%; height: 2.5rem; margin-block-start: var(--wa-space-xs);" />
     </WaCard>
 
     <WaCard>
@@ -140,6 +144,52 @@
             </ChildContent>
         </WaCard>
     </WaStack>
+</WaGrid>
+
+<WaGrid MinColumnSize="22rem" Gap="GapSize.Gap_L" Style="margin-block-start: var(--wa-space-l);">
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Issue burndown</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <WaLineChart Label="Issue burndown" Description="Open issues remaining per sprint day compared to the ideal pace"
+                         XLabel="Sprint day" YLabel="Open issues" Min="0" Grid="WaChartGrid.Y"
+                         LegendPosition="WaChartLegendPosition.Bottom">
+                <script type="application/json">
+                    {
+                        "data": {
+                            "labels": ["Day 1", "Day 3", "Day 5", "Day 7", "Day 9", "Day 11", "Day 13"],
+                            "datasets": [
+                                { "label": "Remaining", "data": [75, 70, 63, 55, 44, 32, 21] },
+                                { "label": "Ideal pace", "data": [75, 64, 53, 42, 31, 20, 9], "borderDash": [6, 4], "pointRadius": 0 }
+                            ]
+                        }
+                    }
+                </script>
+            </WaLineChart>
+        </ChildContent>
+    </WaCard>
+
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Open issues by workstream</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <WaDoughnutChart Label="Open issues by workstream" Description="How the 21 remaining issues are distributed across workstreams"
+                             LegendPosition="WaChartLegendPosition.End">
+                <script type="application/json">
+                    {
+                        "data": {
+                            "labels": ["Realtime editor", "Export pipeline", "Accessibility pass", "Billing integration"],
+                            "datasets": [
+                                { "label": "Open issues", "data": [4, 8, 2, 7] }
+                            ]
+                        }
+                    }
+                </script>
+            </WaDoughnutChart>
+        </ChildContent>
+    </WaCard>
 </WaGrid>
 
 @code {
