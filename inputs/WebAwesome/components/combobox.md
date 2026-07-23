@@ -1,4 +1,4 @@
-<!-- Source: https://webawesome.com/docs/components/combobox (re-fetched 2026-07-23 for Web Awesome 3.4.0; Pro component — absent from the public GitHub docs tree). WA 3.4.0 combobox additions (allow-create, autocapitalize, autocorrect, enterkeyhint, inputmode, spellcheck, wa-create event) and the removal of the autocomplete attribute are reflected below. -->
+<!-- Source: https://webawesome.com/docs/components/combobox (public web docs -- component absent from the public GitHub docs tree; carried forward and re-verified 2026-07-23 for Web Awesome 3.5.0, no 3.5.0 API changes). -->
 
 # Combobox Component Reference
 

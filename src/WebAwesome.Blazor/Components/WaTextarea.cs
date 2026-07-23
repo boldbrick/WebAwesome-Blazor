@@ -143,6 +143,12 @@ public class WaTextArea : InputBase<string?>, IFormValidation
     /// </summary>
     [Parameter] public bool WithLabel { get; set; }
 
+    /// <summary>
+    /// Shows a character count below the textarea. When <see cref="MaxLength"/> is set, shows the remaining
+    /// characters instead.
+    /// </summary>
+    [Parameter] public bool WithCount { get; set; }
+
     // Labels & hint (string or RenderFragment via MarkupX)
     /// <summary>
     /// Plain-text label rendered via the element's "label" attribute.
@@ -222,6 +228,7 @@ public class WaTextArea : InputBase<string?>, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(34, "inputmode", InputMode);
         builder.AddAttribute(35, "with-hint", WithHint);
         builder.AddAttribute(36, "with-label", WithLabel);
+        builder.AddAttribute(37, "with-count", WithCount);
 
         // Event handlers
         builder.AddAttributeIfHasDelegate(40, "onblur", OnBlur);

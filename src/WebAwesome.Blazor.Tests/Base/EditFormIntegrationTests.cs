@@ -142,6 +142,51 @@ public class EditFormIntegrationTests : BunitContext
         Assert.True(cut.Find("wa-checkbox").HasAttribute("checked"));
     }
 
+    [Fact]
+    public void WaRating_InEditForm_RendersBoundValueAndDefaultValue()
+    {
+        // wa-rating became a full form-associated control in Web Awesome 3.5.0
+        var model = new TestModel { Name = "Ada", Score = 3 };
+        var cut = RenderRatingForm(model);
+
+        var rating = cut.Find("wa-rating");
+        Assert.Equal("3", rating.GetAttribute("value"));
+        // DefaultValue (new in 3.5.0) always renders; defaults to 0
+        Assert.Equal("0", rating.GetAttribute("default-value"));
+    }
+
+    [Fact]
+    public void WaRating_UserChange_UpdatesModelThroughBinding()
+    {
+        var model = new TestModel { Name = "Ada", Score = 3 };
+        var cut = RenderRatingForm(model);
+
+        cut.Find("wa-rating").Change("4");
+
+        Assert.Equal(4m, model.Score);
+    }
+
+    [Fact]
+    public void WaRating_DefaultValue_WhenSet_RendersAttribute()
+    {
+        var model = new TestModel { Name = "Ada", Score = 3 };
+        var cut = RenderRatingForm(model, defaultValue: 2);
+
+        Assert.Equal("2", cut.Find("wa-rating").GetAttribute("default-value"));
+    }
+
+    [Fact]
+    public void WaRating_OnInvalid_WiredToDomEvent()
+    {
+        var invalidCount = 0;
+        var model = new TestModel { Name = "Ada", Score = 3 };
+        var cut = RenderRatingForm(model, onInvalid: () => invalidCount++);
+
+        cut.Find("wa-rating").TriggerEvent("onwa-invalid", new EventArgs());
+
+        Assert.Equal(1, invalidCount);
+    }
+
     #region ------ Internals ------
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
@@ -153,6 +198,9 @@ public class EditFormIntegrationTests : BunitContext
         public string? Name { get; set; }
 
         public bool Accepted { get; set; }
+
+        [Range(1, 5)]
+        public decimal Score { get; set; }
     }
 
     public EditFormIntegrationTests()
@@ -179,6 +227,30 @@ public class EditFormIntegrationTests : BunitContext
                 builder.AddComponentParameter(4, nameof(WaInput.ValueExpression),
                     (Expression<Func<string?>>)(() => model.Name));
                 builder.AddComponentParameter(5, nameof(WaInput.Class), "user-class");
+                builder.CloseComponent();
+            }));
+    }
+
+    private IRenderedComponent<EditForm> RenderRatingForm(TestModel model, decimal? defaultValue = null, Action? onInvalid = null)
+    {
+        return Render<EditForm>(parameters => parameters
+            .Add(p => p.Model, model)
+            .Add(p => p.ChildContent, (EditContext editContext) => builder =>
+            {
+                builder.OpenComponent<DataAnnotationsValidator>(0);
+                builder.CloseComponent();
+
+                builder.OpenComponent<WaRating>(1);
+                builder.AddComponentParameter(2, nameof(WaRating.Value), model.Score);
+                builder.AddComponentParameter(3, nameof(WaRating.ValueChanged),
+                    EventCallback.Factory.Create<decimal>(this, value => model.Score = value));
+                builder.AddComponentParameter(4, nameof(WaRating.ValueExpression),
+                    (Expression<Func<decimal>>)(() => model.Score));
+                if (defaultValue.HasValue)
+                    builder.AddComponentParameter(5, nameof(WaRating.DefaultValue), defaultValue.Value);
+                if (onInvalid is not null)
+                    builder.AddComponentParameter(6, nameof(WaRating.OnInvalid),
+                        EventCallback.Factory.Create<EventArgs>(this, onInvalid));
                 builder.CloseComponent();
             }));
     }

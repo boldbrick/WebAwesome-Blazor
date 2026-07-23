@@ -1,4 +1,4 @@
-<!-- Source: https://webawesome.com/docs/components/toast-item (fetched 2026-07-23 for Web Awesome 3.3.0; public web docs — component absent from the public GitHub docs tree). Note: the target CEM (expected-api-surface.json) is authoritative for the wrapper surface; it lists size as 'small' | 'medium' | 'large' (default 'medium') and does not expose a withIcon attribute. -->
+<!-- Source: https://webawesome.com/docs/components/toast-item (public web docs — component absent from the public GitHub docs tree; carried forward and re-verified 2026-07-23 for Web Awesome 3.5.0). Note: the target CEM (expected-api-surface.json) is authoritative for the wrapper surface; it lists size as 'small' | 'medium' | 'large' (default 'medium'). WA 3.5.0 added the SSR hydration hint attribute with-icon (boolean, default false). -->
 
 # Toast Item Component Reference
 
@@ -31,6 +31,7 @@ The `<wa-toast-item>` component represents individual notifications displayed wi
 | `duration` | number | 5000 | Length of time in milliseconds before auto-dismissal. Set to 0 to keep open until user dismisses it. |
 | `size` | 'small' \| 'medium' \| 'large' | 'medium' | The toast item's size. (CEM-authoritative values.) |
 | `variant` | 'brand' \| 'success' \| 'warning' \| 'danger' \| 'neutral' | 'neutral' | The toast item's visual style variant. |
+| `with-icon` | boolean | false | Only required for SSR. Set to `true` if you're slotting in an `icon` element so the server-rendered markup includes the icon before the component hydrates on the client. |
 
 ## Methods
 

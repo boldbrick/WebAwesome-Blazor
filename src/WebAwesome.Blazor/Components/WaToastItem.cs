@@ -61,6 +61,13 @@ public class WaToastItem : ComponentBase
     /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
 
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting content into the "icon" slot (via
+    /// <see cref="IconContent"/>) so the server-rendered markup includes the icon before the component hydrates
+    /// on the client.
+    /// </summary>
+    [Parameter] public bool WithIcon { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -119,6 +126,7 @@ public class WaToastItem : ComponentBase
         builder.AddAttributeIfNotNull(4, "duration", Duration);
         builder.AddAttributeIfNotNull(5, "size", Size?.ToHtmlValue());
         builder.AddAttributeIfNotNull(6, "variant", Variant?.ToHtmlValue());
+        builder.AddAttribute(7, "with-icon", WithIcon);
 
         // event handlers (onwa- prefix; all four events are registered in the JS initializer)
         builder.AddAttributeIfHasDelegate(10, "onwa-show", OnShow);

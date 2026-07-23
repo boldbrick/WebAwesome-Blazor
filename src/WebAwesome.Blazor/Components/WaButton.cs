@@ -78,6 +78,20 @@ public class WaButton : ComponentBase, IFormValidation
     [Parameter] public bool Loading { get; set; }
 
     /// <summary>
+    /// Only required for SSR. Set to true when slotting content into the "start" slot (via
+    /// <see cref="StartContent"/>) so the server-rendered markup includes the start slot before the component
+    /// hydrates on the client.
+    /// </summary>
+    [Parameter] public bool WithStart { get; set; }
+
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting content into the "end" slot (via
+    /// <see cref="EndContent"/>) so the server-rendered markup includes the end slot before the component
+    /// hydrates on the client.
+    /// </summary>
+    [Parameter] public bool WithEnd { get; set; }
+
+    /// <summary>
     /// Disables the button. Does not apply to link buttons.
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
@@ -247,6 +261,10 @@ public class WaButton : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(61, "formtarget", FormTarget);
         builder.AddAttributeIfNotNullOrEmpty(62, "name", Name);
         builder.AddAttributeIfNotNullOrEmpty(63, "value", Value);
+
+        // SSR hydration hints for the start/end slots
+        builder.AddAttribute(64, "with-start", WithStart);
+        builder.AddAttribute(65, "with-end", WithEnd);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);
