@@ -56,15 +56,16 @@ public class WaQrCode : ComponentBase
     [Parameter] public int Size { get; set; } = 128;
 
     /// <summary>
-    /// The fill color. This can be any valid CSS color, but not a CSS custom property.
+    /// The fill color. This can be any valid CSS color, but not a CSS custom property. When unset, the
+    /// underlying element inherits its color from the current theme.
     /// </summary>
-    [Parameter] public string Fill { get; set; } = "black";
+    [Parameter] public string? Fill { get; set; }
 
     /// <summary>
     /// The background color. This can be any valid CSS color or <c>transparent</c>. It cannot be a CSS
-    /// custom property.
+    /// custom property. When unset, the underlying element inherits its background from the current theme.
     /// </summary>
-    [Parameter] public string Background { get; set; } = "white";
+    [Parameter] public string? Background { get; set; }
 
     /// <summary>
     /// The edge radius of each module. Must be between 0 and 0.5.
@@ -92,8 +93,8 @@ public class WaQrCode : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
         builder.AddAttributeIfNotNullOrEmpty(5, "label", Label);
         builder.AddAttribute(6, "size", Size);
-        builder.AddAttribute(7, "fill", Fill);
-        builder.AddAttribute(8, "background", Background);
+        builder.AddAttributeIfNotNullOrEmpty(7, "fill", Fill);
+        builder.AddAttributeIfNotNullOrEmpty(8, "background", Background);
         builder.AddAttribute(9, "radius", Radius);
         builder.AddAttribute(10, "error-correction", ErrorCorrection.ToHtmlValue());
 

@@ -1,0 +1,20 @@
+﻿@page "/components/number-input"
+
+<PageTitle>Number Input</PageTitle>
+
+<h1>Number Input</h1>
+<p><code>&lt;wa-number-input&gt;</code> wrapped by <code>WaNumberInput</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaNumberInput Label="Number Input" @bind-Value="value" />
+</ExampleSection>
+
+@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\number-input.md) *@
+
+<ApiTable Tag="wa-number-input" />
+
+@code {
+    private decimal? value;
+
+    private const string DefaultExample = "<WaNumberInput Label=\"Number Input\" @bind-Value=\"value\" />";
+}

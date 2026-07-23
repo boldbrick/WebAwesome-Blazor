@@ -697,6 +697,83 @@ public enum WaTreeSelection
     Leaf
 }
 
+/// <summary>
+/// Sparkline visual appearance
+/// </summary>
+public enum WaSparklineAppearance
+{
+    /// <summary>Draws a gradient fill beneath the sparkline.</summary>
+    Gradient,
+    /// <summary>Draws only the sparkline stroke.</summary>
+    Line,
+    /// <summary>Draws a solid fill beneath the sparkline.</summary>
+    Solid
+}
+
+/// <summary>
+/// Sparkline curve interpolation
+/// </summary>
+public enum WaSparklineCurve
+{
+    /// <summary>Connects data points with straight line segments.</summary>
+    Linear,
+    /// <summary>Connects data points with a smooth, natural curve.</summary>
+    Natural,
+    /// <summary>Connects data points with a stepped line.</summary>
+    Step
+}
+
+/// <summary>
+/// Sparkline trend indicator
+/// </summary>
+public enum WaSparklineTrend
+{
+    /// <summary>Represents a positive trend.</summary>
+    Positive,
+    /// <summary>Represents a negative trend.</summary>
+    Negative,
+    /// <summary>Represents a neutral trend.</summary>
+    Neutral
+}
+
+/// <summary>
+/// Icon animation effects
+/// </summary>
+public enum WaIconAnimation
+{
+    /// <summary>Pulses the icon by scaling it up and down.</summary>
+    Beat,
+    /// <summary>Fades the icon in and out.</summary>
+    Fade,
+    /// <summary>Combines the beat and fade animations.</summary>
+    BeatFade,
+    /// <summary>Bounces the icon vertically.</summary>
+    Bounce,
+    /// <summary>Flips the icon horizontally on a repeating cycle.</summary>
+    Flip,
+    /// <summary>Shakes the icon from side to side.</summary>
+    Shake,
+    /// <summary>Spins the icon continuously.</summary>
+    Spin,
+    /// <summary>Spins the icon continuously with a pulsing, stepped motion.</summary>
+    SpinPulse,
+    /// <summary>Spins the icon continuously in the reverse direction.</summary>
+    SpinReverse
+}
+
+/// <summary>
+/// Icon flip directions
+/// </summary>
+public enum WaFlip
+{
+    /// <summary>Flips the icon along the horizontal axis.</summary>
+    X,
+    /// <summary>Flips the icon along the vertical axis.</summary>
+    Y,
+    /// <summary>Flips the icon along both the horizontal and vertical axes.</summary>
+    Both
+}
+
 #endregion
 
 #region ------ Extension Methods ------
@@ -1458,6 +1535,97 @@ public static class WaEnumExtensions
             WaPageView.Mobile => "mobile",
             WaPageView.Desktop => "desktop",
             _ => throw new ArgumentOutOfRangeException(nameof(view), view, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="appearance">The sparkline appearance value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "solid"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="appearance"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaSparklineAppearance appearance)
+    {
+        return appearance switch
+        {
+            WaSparklineAppearance.Gradient => "gradient",
+            WaSparklineAppearance.Line => "line",
+            WaSparklineAppearance.Solid => "solid",
+            _ => throw new ArgumentOutOfRangeException(nameof(appearance), appearance, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="curve">The sparkline curve value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "linear"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="curve"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaSparklineCurve curve)
+    {
+        return curve switch
+        {
+            WaSparklineCurve.Linear => "linear",
+            WaSparklineCurve.Natural => "natural",
+            WaSparklineCurve.Step => "step",
+            _ => throw new ArgumentOutOfRangeException(nameof(curve), curve, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="trend">The sparkline trend value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "positive"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="trend"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaSparklineTrend trend)
+    {
+        return trend switch
+        {
+            WaSparklineTrend.Positive => "positive",
+            WaSparklineTrend.Negative => "negative",
+            WaSparklineTrend.Neutral => "neutral",
+            _ => throw new ArgumentOutOfRangeException(nameof(trend), trend, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="animation">The icon animation value to convert</param>
+    /// <returns>The kebab-case attribute string, e.g. "beat-fade"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="animation"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaIconAnimation animation)
+    {
+        return animation switch
+        {
+            WaIconAnimation.Beat => "beat",
+            WaIconAnimation.Fade => "fade",
+            WaIconAnimation.BeatFade => "beat-fade",
+            WaIconAnimation.Bounce => "bounce",
+            WaIconAnimation.Flip => "flip",
+            WaIconAnimation.Shake => "shake",
+            WaIconAnimation.Spin => "spin",
+            WaIconAnimation.SpinPulse => "spin-pulse",
+            WaIconAnimation.SpinReverse => "spin-reverse",
+            _ => throw new ArgumentOutOfRangeException(nameof(animation), animation, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="flip">The icon flip direction value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "x"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="flip"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaFlip flip)
+    {
+        return flip switch
+        {
+            WaFlip.X => "x",
+            WaFlip.Y => "y",
+            WaFlip.Both => "both",
+            _ => throw new ArgumentOutOfRangeException(nameof(flip), flip, null)
         };
     }
 }
