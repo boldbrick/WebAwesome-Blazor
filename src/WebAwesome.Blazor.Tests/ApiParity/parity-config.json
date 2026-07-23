@@ -1,7 +1,7 @@
 {
   "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, ElementMethodInvocationTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
   "enabled": true,
-  "targetWaVersion": "3.2.0",
+  "targetWaVersion": "3.2.1",
   "globalIgnoredAttributes": [
     "title"
   ],
@@ -133,7 +133,7 @@
     "currentSlide": "read-only JS state property of wa-carousel, not an authorable HTML attribute",
     "slides": "read-only JS collection property of wa-carousel, not an authorable HTML attribute",
     "submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute",
-    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22) and WA 3.2.0 (2026-07-23), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
-    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19) and source-re-verified against WA 3.1.0 (2026-07-22) and WA 3.2.0 (2026-07-23, the Lit ReactiveElement lifecycle update() inherited via WebAwesomeElement, hence absent from the component .d.ts - only updateTimeout appears in relative-time.d.ts), not CEM-documented"
+    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23) and WA 3.2.1 (2026-07-23), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19) and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23) and WA 3.2.1 (2026-07-23, the Lit ReactiveElement lifecycle update() inherited via WebAwesomeElement, hence absent from the component .d.ts - only updateTimeout appears in relative-time.d.ts), not CEM-documented"
   }
 }
