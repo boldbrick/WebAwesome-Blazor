@@ -2,6 +2,23 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.3.1] — 2026-07-23
+
+Alignment with the Web Awesome 3.3.1 release. A pure version-alignment patch: no wrapper code changes, no new/removed/modified components, no breaking changes. The CEM API surface is byte-identical to 3.3.0 apart from the version string. Developed on the WA-3.3 train subtrunk (patch release — `/main` is not involved).
+
+### Changed
+- Bound Web Awesome version bumped to 3.3.1 (library version, README alignment/CDN references, demo asset version tracks the library version structurally). Upstream 3.3.1 is a packaging fix that removes a `preinstall` script in `webawesome-pro` which was causing issues in some package managers — no effect on the public component API.
+
+### Library
+- Versioned reference docs refreshed to the `v3.3.1` tag: only `resources/changelog.md` changed upstream (the new 3.3.1 release note); no component doc, attribute, event, slot, method, or enum changes.
+
+### Public API
+- No change. The public API snapshot (`approved-public-api.txt`) is unchanged — there are no wrapper source changes to promote.
+
+### Next-release check outcomes (carried from 3.3.0)
+- Observer `stopObserver()`/`startObserver()` method names and `wa-relative-time` `update()`: re-verified against the 3.3.1 sources (`stopObserver`/`startObserver` still private members in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle method, only `updateTimeout` appears in `relative-time.d.ts`) — the allowlist and deviations stand.
+- `WaButton.Form` (CEM-invisible since 3.1.0) and the `WaCheckbox`/`WaSwitch` `.checked` binding workaround: unaffected by WA 3.3.1, carried forward unchanged.
+
 ## [3.3.0] — 2026-07-23
 
 Alignment with the Web Awesome 3.3.0 release. A substantial but additive upgrade: eleven new components (a nine-member Chart.js chart family plus `WaToast`/`WaToastItem`), a new form-control validity-reset method, and new start/end slots on `WaBadge`. **No breaking changes** — the eight upstream "breaking" entries in the change report are all non-destructive (a `string` → `string | null` nullability annotation on the `name` attribute of five form controls, already covered by the wrappers, and three empty/`null` "removed" array entries that are CEM-export artifacts, not real removals). No migration guide is required.
