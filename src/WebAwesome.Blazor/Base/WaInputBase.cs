@@ -256,5 +256,14 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
         await JSInterop.SetCustomValidityAsync(Element.Value, message);
     }
 
+    /// <inheritdoc />
+    public virtual async Task ResetValidityAsync()
+    {
+        if (Element is null)
+            throw new InvalidOperationException("Cannot reset validity before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "resetValidity");
+    }
+
     #endregion
 }

@@ -368,5 +368,14 @@ public class WaButton : ComponentBase, IFormValidation
         await JSInterop.SetCustomValidityAsync(Element.Value, message);
     }
 
+    /// <inheritdoc />
+    public async Task ResetValidityAsync()
+    {
+        if (Element is null)
+            throw new InvalidOperationException("Cannot reset validity before the component is rendered. Element reference is null.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "resetValidity");
+    }
+
     #endregion
 }

@@ -1,77 +1,52 @@
-<!-- Source: https://webawesome.com/docs/components/page (fetched 2026-07-23 for Web Awesome 3.2.0).
-     wa-page is a Pro component and is not documented in the public GitHub docs repo; content mirrored from the public web docs.
-     The web docs track the latest release, so version-specific examples may drift. The CEM API surface
-     (temp/wa-api/surface_3.2.0.json) is authoritative where this reference differs. -->
+<!-- Source: https://webawesome.com/docs/components/page (fetched 2026-07-23 for Web Awesome 3.3.0; Pro component — absent from the public GitHub docs tree). -->
 
-# Page (Pro)
+# Page Component Reference
 
-The `<wa-page>` component scaffolds full application layouts with header, navigation, sidebar, main content, aside, and footer regions. It is designed to structure complete pages with minimal markup and built-in responsive behavior.
+## Overview
 
-Available since 3.0.
+The `<wa-page>` component scaffolds complete application layouts with header, navigation, sidebar, main content, aside, and footer regions. It provides full pages with minimal markup and responsive behavior built in.
 
-## Important Setup
-
-When using `<wa-page>`, reset HTML and body styling:
-
-```css
-html,
-body {
-  min-height: 100%;
-  padding: 0;
-  margin: 0;
-}
-```
+**Status:** Pro component.
 
 ## Slots
 
-| Name                    | Description |
-|-------------------------|-------------|
-| (default)               | The page's main content. |
-| aside                   | Right-side content (table of contents, ads, etc.); sticky by default. |
-| banner                  | Banner displayed above header. |
-| footer                  | Footer content, always below viewport. |
-| header                  | Top-of-page header. |
-| main-footer             | Footer inline below main content. |
-| main-header             | Header inline above main content. |
-| menu                    | Left-side content; overrides default navigation slot. |
-| navigation              | Main navigation area (left side, collapses to drawer on mobile). |
-| navigation-footer       | Navigation area footer. |
-| navigation-header       | Navigation area header. |
-| navigation-toggle       | Custom button for toggling navigation drawer. |
-| navigation-toggle-icon  | Custom icon for navigation toggle. |
-| skip-to-content         | Overridable "skip to content" link. |
-| subheader               | Subheader below header (breadcrumbs, etc.). |
+| Name | Description |
+|------|-------------|
+| (default) | The page's main content. |
+| aside | Right-side content; sticks to top while scrolling. |
+| banner | Banner displayed above the header; hidden if empty. |
+| footer | Footer content below viewport, making page scrollable. |
+| header | Top-of-page header; appears below banner if present. |
+| main-footer | Footer displayed inline below main content. |
+| main-header | Header displayed inline above main content. |
+| menu | Left-side custom navigation; overrides navigation slot; sticks while scrolling. |
+| navigation | Main navigation area; displayed left side on desktop; sticks while scrolling. |
+| navigation-footer | Navigation area footer; becomes `<wa-drawer>` footer on mobile. |
+| navigation-header | Navigation area header; becomes `<wa-drawer>` header on mobile. |
+| navigation-toggle | Custom button for toggling navigation drawer. |
+| navigation-toggle-icon | Custom icon for navigation toggle. |
+| skip-to-content | Overridable "skip to content" link for keyboard navigation. |
+| subheader | Subheader below main header (breadcrumbs, etc.); hidden if empty. |
 
 ## Attributes & Properties
 
-| Name                        | Type | Default | Description |
-|-----------------------------|------|---------|-------------|
-| disable-navigation-toggle   | boolean | false | Hide the default hamburger button. |
-| mobile-breakpoint           | string | `'768px'` | Viewport width to collapse navigation; accepts px or CSS lengths. |
-| navigation-placement        | `'start' \| 'end'` | `'start'` | Navigation drawer placement on mobile. |
-| nav-open                    | boolean | false | Whether navigation drawer is open (mobile only). |
-| view                        | `'mobile' \| 'desktop'` | `'desktop'` | Reflects current viewport relative to mobile-breakpoint. |
-| disable-sticky              | string | — | Space-delimited list of sections to exclude from sticky behavior. |
-
-Sticky sections by default: banner, header, subheader, menu, aside.
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| disable-navigation-toggle | boolean | false | Hides default hamburger button; auto-enabled if a `data-toggle-nav` element exists in light DOM. |
+| mobile-breakpoint | string | '768px' | Viewport width threshold for collapsing to hamburger; accepts numbers (px) or CSS lengths. |
+| navigation-placement | 'start' \| 'end' | 'start' | Mobile navigation drawer placement. |
+| nav-open | boolean | false | Mobile navigation drawer open state (mobile only). |
+| view | 'mobile' \| 'desktop' | 'desktop' | Reflects current viewport state relative to mobile-breakpoint. |
 
 ## Methods
 
-| Name                | Description | Arguments |
-|---------------------|-------------|-----------|
-| hideNavigation()    | Hides mobile navigation drawer. | — |
-| showNavigation()    | Shows mobile navigation drawer. | — |
-| toggleNavigation()  | Toggles mobile navigation drawer. | — |
+| Name | Description | Arguments |
+|------|-------------|-----------|
+| hideNavigation() | Hides the mobile navigation drawer. | None |
+| showNavigation() | Shows the mobile navigation drawer. | None |
+| toggleNavigation() | Toggles the mobile navigation drawer. | None |
+| visiblePixelsInViewport() | Internal scroll-gap layout helper. | element: HTMLElement \| null |
 
 ## CSS Custom Properties
 
-`--aside-width`, `--banner-height`, `--header-height`, `--main-width`, `--menu-width`, `--subheader-height`.
-
-## CSS Parts
-
-`page`, `banner`, `header`, `subheader`, `navigation`, `navigation-desktop`, `navigation-header`, `navigation-footer`, `navigation-toggle`, `navigation-toggle-icon`, `menu`, `body`, `main`, `main-header`, `main-content`, `main-footer`, `aside`, `footer`, `drawer`, `dialog-wrapper`, `skip-to-content`.
-
-## Utility Classes
-
-- `.wa-mobile-only` — hides element on desktop.
-- `.wa-desktop-only` — hides element on mobile.
+`--aside-width` (auto), `--banner-height` (0px), `--header-height` (0px), `--main-width` (1fr), `--menu-width` (auto), `--subheader-height` (0px).
