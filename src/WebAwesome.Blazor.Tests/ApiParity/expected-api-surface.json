@@ -1,5 +1,5 @@
 {
-  "version": "3.3.1",
+  "version": "3.4.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-animated-image": {
@@ -1144,9 +1144,9 @@
           "description": "Determines the size of the color picker's trigger"
         },
         "swatches": {
-          "type": "string | string[]",
+          "type": "string | string[] | WaColorPickerSwatch[]",
           "default": "''",
-          "description": "One or more predefined color swatches to display as presets in the color picker. Can include any format the color\npicker can parse, including HEX(A), RGB(A), HSL(A), HSV(A), and CSS color names. Each color must be separated by a\nsemicolon (`;`). Alternatively, you can pass an array of color values to this property using JavaScript."
+          "description": "One or more predefined color swatches to display as presets in the color picker. Can include any format the color\npicker can parse, including HEX(A), RGB(A), HSL(A), HSV(A), and CSS color names. Each color must be separated by a\nsemicolon (`;`). Alternatively, you can pass an array of color values or an array of `{ color, label }` objects to\nthis property using JavaScript. When using objects with labels, the label will be used for the swatch's accessible\nname instead of the raw color value."
         },
         "uppercase": {
           "type": "boolean",
@@ -1302,6 +1302,11 @@
       "status": "experimental",
       "pro": true,
       "attributes": {
+        "allow-create": {
+          "type": "boolean",
+          "default": "false",
+          "description": "When true, if the user types text that doesn't match any existing option, a \"Create [value]\" option appears in the\nlistbox. Selecting it creates a new `<wa-option>` in the DOM and selects it. A cancelable `wa-create` event fires\nbefore creation."
+        },
         "allow-custom-value": {
           "type": "boolean",
           "default": "false",
@@ -1312,10 +1317,15 @@
           "default": "'outlined'",
           "description": "The combobox's visual appearance."
         },
-        "autocomplete": {
-          "type": "'list' | 'none'",
-          "default": "'list'",
-          "description": "The autocomplete behavior of the combobox.\n- `list`: When the popup is triggered, it presents suggested values that complete or logically correspond to the\n  characters typed in the combobox. The character string the user has typed will become the value of the combobox\n  unless the user selects a value in the popup.\n- `none`: The combobox is editable, and when the popup is triggered, the suggested values it contains are the same\n  regardless of the characters typed in the combobox."
+        "autocapitalize": {
+          "type": "'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters'",
+          "default": null,
+          "description": "Controls whether and how text input is automatically capitalized as it is entered/edited by the user."
+        },
+        "autocorrect": {
+          "type": "boolean",
+          "default": null,
+          "description": "Indicates whether the browser's autocorrect feature is on or off. When set as an attribute, use `\"off\"` or `\"on\"`.\nWhen set as a property, use `true` or `false`."
         },
         "custom-error": {
           "type": "string | null",
@@ -1337,10 +1347,20 @@
           "default": "false",
           "description": "Disables the combobox control."
         },
+        "enterkeyhint": {
+          "type": "'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'",
+          "default": null,
+          "description": "Used to customize the label or icon of the Enter key on virtual keyboards."
+        },
         "hint": {
           "type": "string",
           "default": "''",
           "description": "The combobox's hint. If you need to display HTML, use the `hint` slot instead."
+        },
+        "inputmode": {
+          "type": "'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url'",
+          "default": null,
+          "description": "Tells the browser what type of data will be entered by the user, allowing it to display the appropriate virtual\nkeyboard on supportive devices."
         },
         "label": {
           "type": "string",
@@ -1396,6 +1416,11 @@
           "type": "'small' | 'medium' | 'large'",
           "default": "'medium'",
           "description": "The combobox's size."
+        },
+        "spellcheck": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables spell checking on the combobox."
         },
         "value": {
           "type": null,
@@ -1453,6 +1478,11 @@
           "type": null,
           "eventName": "WaClearEvent",
           "description": "Emitted when the control's value is cleared."
+        },
+        "wa-create": {
+          "type": null,
+          "eventName": "WaCreateEvent",
+          "description": "Emitted when the user selects the \"create\" option. Call `event.preventDefault()` to handle creation yourself. The event `detail` contains `{ inputValue: string }`."
         },
         "wa-hide": {
           "type": null,
@@ -3012,9 +3042,9 @@
           "description": "Specifies what permission the browser has to provide assistance in filling out form field values. Refer to\n[this page on MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete) for available values."
         },
         "autocorrect": {
-          "type": "'off' | 'on'",
+          "type": "boolean",
           "default": null,
-          "description": "Indicates whether the browser's autocorrect feature is on or off."
+          "description": "Indicates whether the browser's autocorrect feature is on or off. When set as an attribute, use `\"off\"` or `\"on\"`.\nWhen set as a property, use `true` or `false`."
         },
         "autofocus": {
           "type": "boolean",
@@ -5492,11 +5522,6 @@
           "default": "false",
           "description": "Makes the slider a read-only field."
         },
-        "required": {
-          "type": "boolean",
-          "default": "false",
-          "description": "Makes the slider a required field."
-        },
         "size": {
           "type": "'small' | 'medium' | 'large'",
           "default": "'medium'",
@@ -6788,6 +6813,11 @@
           "type": "string",
           "default": null,
           "description": "Inline HTML to display."
+        },
+        "with-theme-sync": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables automatic theme syncing (light/dark mode and theme selector classes) from the host document to the iframe."
         },
         "without-controls": {
           "type": "boolean",
