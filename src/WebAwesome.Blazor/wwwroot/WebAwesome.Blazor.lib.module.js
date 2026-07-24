@@ -23,6 +23,7 @@ const eventNames = [
   'wa-error',
   'wa-expand',
   'wa-finish',
+  'wa-focus-day',
   'wa-hide',
   'wa-hover',
   'wa-include-error',
@@ -49,6 +50,7 @@ const eventNames = [
   'wa-tab-hide',
   'wa-tab-show',
   'wa-video-change',
+  'wa-view-change',
   'wa-zoom-change',
 ];
 
@@ -88,9 +90,32 @@ function detailArgs(event) {
   return detail && typeof detail === 'object' && !Array.isArray(detail) ? detail : {};
 }
 
+// formats a JS Date (or ISO-parseable string) as a YYYY-MM-DD string; null when not a valid date
+function isoDate(value) {
+  const date = value instanceof Date ? value : (value != null ? new Date(value) : null);
+  if (!date || isNaN(date.getTime())) return null;
+  const year = String(date.getFullYear()).padStart(4, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // events needing a hand-rolled payload because their detail is not JSON-safe, is empty, or
 // the typed args derive values from the event itself
 const specialArgs = {
+  // detail is { date: Date } - project the day to an ISO string (WaDatePickerFocusDayEventArgs)
+  'wa-focus-day': event => ({ date: isoDate(event.detail && event.detail.date) }),
+
+  // detail is { view, date } where date is a Date - project the date to an ISO string
+  // (WaDatePickerViewChangeEventArgs)
+  'wa-view-change': event => {
+    const detail = event.detail || {};
+    return {
+      view: typeof detail.view === 'string' ? detail.view : null,
+      date: isoDate(detail.date),
+    };
+  },
+
   // WaDetailsToggleEventArgs.IsOpen is derived from which of the two events fired; the
   // extra property is ignored by every other wa-show/wa-hide consumer
   'wa-show': event => ({ ...detailArgs(event), isOpen: true }),

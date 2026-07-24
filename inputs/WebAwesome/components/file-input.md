@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/file-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/file-input -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/file-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/file-input -->
 
 # File Input [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/file-input
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-file-input>` Stable Since 3.2 Pro Included with Web Awesome Pro
+`<wa-file-input>`
+
+ProIncluded with Web Awesome Pro Stable [Forms](https://webawesome.com/docs/components/?category=forms) [Since 3.2](https://webawesome.com/docs/resources/changelog#wa_320)
 
 File inputs allow users to select files from their device.
 
@@ -34,7 +36,11 @@ This component works with standard `<form>` elements. Please refer to the sectio
 
 ## Examples
 
+Link to This Section
+
 ### Labels
+
+Link to This Section
 
 Use the `label` attribute to give the file input an accessible label. For labels that contain HTML, use the `label` slot instead.
 
@@ -44,28 +50,27 @@ Use the `label` attribute to give the file input an accessible label. For labels
 
 ### Hints
 
+Link to This Section
+
 Add descriptive help text with the `hint` attribute. For hints that contain HTML, use the `hint` slot instead.
 
 ```html
-<wa-file-input
-  label="Profile photo"
-  hint="Upload a photo to personalize your account."
-></wa-file-input>
+<wa-file-input label="Profile photo" hint="Upload a photo to personalize your account."></wa-file-input>
 ```
 
 ### Multiple Files
 
+Link to This Section
+
 Add the `multiple` attribute to allow the file input to accept more than one file. If the user drops a folder, all files within it will be added to the file input.
 
 ```html
-<wa-file-input
-  label="Upload documents"
-  hint="You can select multiple files at once."
-  multiple
-></wa-file-input>
+<wa-file-input label="Upload documents" hint="You can select multiple files at once." multiple></wa-file-input>
 ```
 
 ### Accepting File Types
+
+Link to This Section
 
 Use the `accept` attribute to limit the file input to certain file types. Set it to a comma-separated string of [unique file type specifiers](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers).
 
@@ -80,14 +85,29 @@ Use the `accept` attribute to limit the file input to certain file types. Set it
 You can also use file extensions such as `accept="pdf, .doc, .docx"`.
 
 ```html
+<wa-file-input label="Upload a document" hint="PDF and Word documents only." accept=".pdf, .doc, .docx"></wa-file-input>
+```
+
+### Capturing from a Camera
+
+Link to This Section
+
+On mobile devices, use the `capture` attribute to capture media directly from the device's camera or microphone instead of selecting an existing file. Set it to `user` for the front-facing camera or `environment` for the rear-facing one.
+
+The `capture` attribute is only used when `accept` includes an image, video, or audio type. On desktop browsers and devices without the corresponding hardware, it is ignored and the file input behaves normally.
+
+```html
 <wa-file-input
-  label="Upload a document"
-  hint="PDF and Word documents only."
-  accept=".pdf, .doc, .docx"
+  label="Take a photo"
+  hint="Opens the rear-facing camera on supported mobile devices."
+  accept="image/*"
+  capture="environment"
 ></wa-file-input>
 ```
 
 ### Disabled
+
+Link to This Section
 
 Use the `disabled` attribute to disable the file input.
 
@@ -97,21 +117,25 @@ Use the `disabled` attribute to disable the file input.
 
 ### Sizes
 
+Link to This Section
+
 Use the `size` attribute to change the file input's size.
 
 ```html
 <wa-file-input label="Extra Small" size="xs"></wa-file-input>
-<br>
+<br />
 <wa-file-input label="Small" size="s"></wa-file-input>
-<br>
+<br />
 <wa-file-input label="Medium" size="m"></wa-file-input>
-<br>
+<br />
 <wa-file-input label="Large" size="l"></wa-file-input>
-<br>
+<br />
 <wa-file-input label="Extra Large" size="xl"></wa-file-input>
 ```
 
 ### Custom Dropzone Content
+
+Link to This Section
 
 Use the `dropzone` slot to customize what appears inside the dropzone area.
 
@@ -127,6 +151,8 @@ Use the `dropzone` slot to customize what appears inside the dropzone area.
 
 ### Working with Files
 
+Link to This Section
+
 The `files` property gives you access to an array of selected files. Unlike the native file input's `FileList`, this is a standard JavaScript array, making it easier to manipulate.
 
 ```html
@@ -137,7 +163,7 @@ The `files` property gives you access to an array of selected files. Unlike the 
   multiple
 ></wa-file-input>
 
-<br>
+<br />
 
 <wa-button id="reverse-btn" appearance="filled">Reverse Order</wa-button>
 <wa-button id="clear-btn" appearance="filled">Clear All</wa-button>
@@ -167,21 +193,14 @@ The `files` property must be reassigned, not mutated! Avoid using functions that
 
 ### Uploading with Forms
 
+Link to This Section
+
 When uploading files from a form, add `method="post"` and `enctype="multipart/form-data"` to the form so files are sent correctly to the server.
 
 ```html
-<form
-  id="upload-form"
-  method="post"
-  enctype="multipart/form-data"
-  action="about:blank"
->
-  <wa-file-input
-    name="documents"
-    label="Select files to upload"
-    multiple
-  ></wa-file-input>
-  <br>
+<form id="upload-form" method="post" enctype="multipart/form-data" action="about:blank">
+  <wa-file-input name="documents" label="Select files to upload" multiple></wa-file-input>
+  <br />
   <wa-button appearance="filled" type="submit" variant="brand">Upload</wa-button>
 </form>
 
@@ -198,23 +217,22 @@ When uploading files from a form, add `method="post"` and `enctype="multipart/fo
 
 ### Required Validation
 
+Link to This Section
+
 Add the `required` attribute to make file selection mandatory. Form submission will be blocked until a file is selected.
 
 ```html
 <form id="required-form" action="about:blank" method="get">
-  <wa-file-input
-    name="file"
-    label="Required file"
-    hint="You must select a file to submit."
-    required
-  ></wa-file-input>
-  <br>
+  <wa-file-input name="file" label="Required file" hint="You must select a file to submit." required></wa-file-input>
+  <br />
   <wa-button appearance="filled" type="submit" variant="brand">Submit</wa-button>
   <wa-button type="reset" appearance="filled">Reset</wa-button>
 </form>
 ```
 
 ### Custom Validation
+
+Link to This Section
 
 Use the `setCustomValidity()` method to set a custom error message. This will override standard validation and prevent form submission. Clear the error by passing an empty string.
 
@@ -226,7 +244,7 @@ Use the `setCustomValidity()` method to set a custom error message. This will ov
     label="Upload a small file"
     hint="Files must be smaller than 500 KB."
   ></wa-file-input>
-  <br>
+  <br />
   <wa-button appearance="filled" type="submit" variant="brand">Submit</wa-button>
   <wa-button type="reset" appearance="filled">Reset</wa-button>
 </form>
@@ -255,16 +273,14 @@ Use the `setCustomValidity()` method to set a custom error message. This will ov
 
 ### Styling Validation States
 
+Link to This Section
+
 Use the `:state(user-valid)` and `:state(user-invalid)` custom states to style the file input based on its validation status. These states only apply after the user has interacted with the control or attempted to submit the form.
 
 ```html
 <form id="styling-form" action="about:blank" method="get" class="validation-styles">
-  <wa-file-input
-    name="file"
-    label="Select a file"
-    required
-  ></wa-file-input>
-  <br>
+  <wa-file-input name="file" label="Select a file" required></wa-file-input>
+  <br />
   <wa-button appearance="filled" type="submit" variant="brand">Submit</wa-button>
   <wa-button type="reset" appearance="filled">Reset</wa-button>
 </form>
@@ -285,11 +301,7 @@ Use the `:state(user-valid)` and `:state(user-invalid)` custom states to style t
 You can also style based on the `:state(blank)` and `:state(dragging)` states:
 
 ```html
-<wa-file-input
-  class="drag-styles"
-  label="Watch the border change while dragging"
-  multiple
-></wa-file-input>
+<wa-file-input class="drag-styles" label="Watch the border change while dragging" multiple></wa-file-input>
 
 <style>
   .drag-styles::part(dropzone) {
@@ -304,6 +316,8 @@ You can also style based on the `:state(blank)` and `:state(dragging)` states:
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -311,7 +325,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/file-input/file-input.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/file-input/file-input.js';
 ```
 
 \*\*npm\*\*
@@ -340,6 +354,8 @@ import WaFileInput from '@awesome.me/webawesome/dist/react/file-input/index.js';
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -350,12 +366,14 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
 | \`accept\` accept | \`string\` A comma-separated list of acceptable file types. Must be a list of unique file type specifiers. Type Default '' | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default \[sizeStyles, formControlStyles, styles\] | | |
+| \`capture\` capture | \`user\` On mobile devices, specifies which camera or microphone to use for capturing media. Use for the front-facing camera/microphone or environment for the rear-facing one. This attribute is only used when accept includes an image, video, or audio type and may be ignored on devices that lack the corresponding hardware. Type 'user' \\| 'environment' | | |
 | \`disabled\` disabled | \`boolean\` Disables the form control. Type Default false | | |
 | \`dragging\` | \`boolean\` Whether files are being dragged over the dropzone. Type Default false | | |
 | \`fileCount\` | \`number\` The of selected files. Used for validation. Type number | | |
@@ -376,6 +394,8 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 
 ## Methods
 
+Link to This Section
+
 Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 
 | Name | Description | Arguments |
@@ -387,6 +407,8 @@ Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 | \`setCustomValidity()\` | Do not use this when creating a "Validator". This is intended for end users of components. We track manually defined custom errors so we don't clear them on accident in our validators. | \`message: string\` |
 
 ## Events
+
+Link to This Section
 
 Learn more about [events](https://webawesome.com/docs/usage/#events).
 
@@ -400,6 +422,8 @@ Learn more about [events](https://webawesome.com/docs/usage/#events).
 
 ## Custom States
 
+Link to This Section
+
 Learn more about [custom states](https://webawesome.com/docs/usage/#custom-states).
 
 | Name | Description | CSS selector |
@@ -408,6 +432,8 @@ Learn more about [custom states](https://webawesome.com/docs/usage/#custom-state
 | \`dragging\` | Files being dragged over dropzone. | \`:state(dragging)\` |
 
 ## CSS parts
+
+Link to This Section
 
 Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 
@@ -430,6 +456,8 @@ Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 | \`remove-button\` | The remove button for each file. | \`::part(remove-button)\` |
 
 ## Dependencies
+
+Link to This Section
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 

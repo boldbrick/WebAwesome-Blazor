@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/bar-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bar-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/bar-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bar-chart -->
 
 # Bar Chart [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/bar-chart
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-bar-chart>` Stable Since 3.3 Pro Included with Web Awesome Pro
+`<wa-bar-chart>`
+
+ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
 
 Bar charts compare quantities across categories using rectangular bars. They work well for showing rankings, highlighting differences between groups, and tracking changes across time periods.
 
@@ -50,7 +52,11 @@ For advanced configuration such as mixed chart types, custom plugins, and direct
 
 ## Examples
 
+Link to This Section
+
 ### Providing Data with JavaScript
+
+Link to This Section
 
 For dynamic data, set the `config` property directly. The chart will re-render automatically.
 
@@ -78,6 +84,8 @@ Note that `config` is shallowly reactive. If you mutate the existing object in p
 
 ### Providing Data with JSON
 
+Link to This Section
+
 Place a `<script type="application/json">` tag inside the component with your chart data. The `type` field can be omitted since `wa-bar-chart` already knows its chart type.
 
 ```html
@@ -99,6 +107,8 @@ Place a `<script type="application/json">` tag inside the component with your ch
 ```
 
 ### Multiple Datasets
+
+Link to This Section
 
 Add multiple objects to the `datasets` array to compare groups side by side.
 
@@ -126,6 +136,8 @@ Add multiple objects to the `datasets` array to compare groups side by side.
 ```
 
 ### Custom Colors
+
+Link to This Section
 
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
 
@@ -159,6 +171,8 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
 
 ### Horizontal Bars
 
+Link to This Section
+
 Use the `orientation="horizontal"` attribute to render bars horizontally. This is useful when category labels are long or when you want to emphasize ranking.
 
 ```html
@@ -188,6 +202,8 @@ Use the `orientation="horizontal"` attribute to render bars horizontally. This i
 
 ### Stacked Bars
 
+Link to This Section
+
 Use the `stacked` attribute to stack datasets on top of each other. This is helpful for showing how parts contribute to a total.
 
 ```html
@@ -215,6 +231,8 @@ Use the `stacked` attribute to stack datasets on top of each other. This is help
 ```
 
 ### Border Width
+
+Link to This Section
 
 Use the `--border-width` CSS custom property to control the thickness of bar borders.
 
@@ -245,6 +263,8 @@ Use the `--border-width` CSS custom property to control the thickness of bar bor
 
 ### Legend
 
+Link to This Section
+
 Use the `legend-position` attribute to control where the legend appears. Supported values include `top` (default), `bottom`, `left`, `right`, `start`, and `end`. The `start` and `end` values are direction-aware and will flip in RTL layouts. Add `without-legend` to hide it entirely.
 
 ```html
@@ -271,6 +291,8 @@ Use the `legend-position` attribute to control where the legend appears. Support
 ```
 
 ### Grid Lines
+
+Link to This Section
 
 Use the `grid` attribute to control which axes show grid lines. Options are `both` (default), `x`, `y`, and `none`.
 
@@ -300,6 +322,8 @@ Use the `grid` attribute to control which axes show grid lines. Options are `bot
 ```
 
 ### Axis Labels
+
+Link to This Section
 
 Use the `x-label` and `y-label` attributes to add descriptive labels to each axis.
 
@@ -331,6 +355,8 @@ Use the `x-label` and `y-label` attributes to add descriptive labels to each axi
 
 ### Axis Range
 
+Link to This Section
+
 Use the `min` and `max` attributes to constrain the value axis.
 
 ```html
@@ -361,6 +387,8 @@ Use the `min` and `max` attributes to constrain the value axis.
 
 ### Disabling Tooltips
 
+Link to This Section
+
 Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over data points.
 
 ```html
@@ -384,6 +412,8 @@ Use the `without-tooltip` attribute to hide the tooltips that appear when hoveri
 ```
 
 ### Disabling Animations
+
+Link to This Section
 
 Use the `without-animation` attribute to disable chart transitions.
 
@@ -409,6 +439,8 @@ Use the `without-animation` attribute to disable chart transitions.
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -416,7 +448,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/bar-chart/bar-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/bar-chart/bar-chart.js';
 ```
 
 \*\*npm\*\*
@@ -445,6 +477,8 @@ import WaBarChart from '@awesome.me/webawesome/dist/react/bar-chart/index.js';
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -453,12 +487,13 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
 | \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default \[styles\] | | |
 | \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | | |
 | \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | | |
 | \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | | |
@@ -476,6 +511,8 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 | \`yLabel\` yLabel | \`string \\| null\` A label for the y-axis. Type Default null | | |
 
 ## CSS custom properties
+
+Link to This Section
 
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 

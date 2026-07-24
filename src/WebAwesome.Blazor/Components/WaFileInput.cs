@@ -90,6 +90,13 @@ public class WaFileInput : ComponentBase, IFormValidation
     [Parameter] public WaSize? Size { get; set; }
 
     /// <summary>
+    /// On mobile devices, which camera or microphone to use when capturing media. Only applies when
+    /// <see cref="Accept"/> includes an image, video, or audio type and may be ignored on devices lacking the
+    /// corresponding hardware.
+    /// </summary>
+    [Parameter] public WaCaptureMode? Capture { get; set; }
+
+    /// <summary>
     /// Used for SSR. Determines whether the SSRed component has the hint slot rendered on initial paint.
     /// </summary>
     [Parameter] public bool WithHint { get; set; }
@@ -169,6 +176,7 @@ public class WaFileInput : ComponentBase, IFormValidation
         builder.AddAttribute(14, "required", Required);
         builder.AddAttribute(18, "disabled", Disabled);
         builder.AddAttributeIfNotNull(15, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(19, "capture", Capture?.ToHtmlValue());
         builder.AddAttribute(16, "with-hint", WithHint);
         builder.AddAttribute(17, "with-label", WithLabel);
 

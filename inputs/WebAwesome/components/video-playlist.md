@@ -1,13 +1,15 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
 
 # Video Playlist [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/video-playlist
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-video-playlist>` Experimental Since 3.3 Pro Included with Web Awesome Pro
+`<wa-video-playlist>`
 
-Video playlists wrap multiple `<wa-video>` elements into a playlist with navigation controls.
+ProIncluded with Web Awesome Pro Experimental [Media](https://webawesome.com/docs/components/?category=media) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
+
+Video playlists wrap multiple [`<wa-video>`](https://webawesome.com/docs/components/video) elements into a playlist with navigation controls.
 
 **[Get Video Playlist with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=video-playlist)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
@@ -45,20 +47,30 @@ Get Web Awesome Pro + Video Playlist!
       label="English"
     />
   </wa-video>
-   <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
-    <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4" type="video/mp4" />
+  <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
+    <source
+      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
+      type="video/mp4"
+    />
   </wa-video>
-   <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
-    <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4" type="video/mp4" />
+  <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
+    <source
+      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
+      type="video/mp4"
+    />
   </wa-video>
 </wa-video-playlist>
 ```
 
 ## Examples
 
+Link to This Section
+
 ### Controls Preset
 
-Use the `controls` attribute to set the controls preset for all videos in the playlist. Accepts the same values as `<wa-video>`: `none`, `standard`, or `full` (default).
+Link to This Section
+
+Use the `controls` attribute to set the controls preset for all videos in the playlist. Accepts the same values as [`<wa-video>`](https://webawesome.com/docs/components/video): `none`, `standard`, or `full` (default).
 
 ```html
 <wa-video-playlist controls="standard">
@@ -81,16 +93,24 @@ Use the `controls` attribute to set the controls preset for all videos in the pl
       label="English"
     />
   </wa-video>
-   <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
-    <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4" type="video/mp4" />
+  <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
+    <source
+      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
+      type="video/mp4"
+    />
   </wa-video>
-   <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
-    <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4" type="video/mp4" />
+  <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
+    <source
+      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
+      type="video/mp4"
+    />
   </wa-video>
 </wa-video-playlist>
 ```
 
 ### Navigating Programmatically
+
+Link to This Section
 
 Use the `next()`, `previous()`, and `goTo(index)` methods to navigate between videos programmatically.
 
@@ -115,11 +135,17 @@ Use the `next()`, `previous()`, and `goTo(index)` methods to navigate between vi
       label="English"
     />
   </wa-video>
-   <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
-    <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4" type="video/mp4" />
+  <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
+    <source
+      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
+      type="video/mp4"
+    />
   </wa-video>
-   <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
-    <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4" type="video/mp4" />
+  <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
+    <source
+      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
+      type="video/mp4"
+    />
   </wa-video>
 </wa-video-playlist>
 
@@ -131,6 +157,8 @@ Use the `next()`, `previous()`, and `goTo(index)` methods to navigate between vi
 ```
 
 ### Listening for Changes
+
+Link to This Section
 
 The `wa-video-change` event fires when the active video changes, providing the previous index, current index, and the incoming video's metadata.
 
@@ -155,11 +183,17 @@ The `wa-video-change` event fires when the active video changes, providing the p
       label="English"
     />
   </wa-video>
-   <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
-    <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4" type="video/mp4" />
+  <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
+    <source
+      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
+      type="video/mp4"
+    />
   </wa-video>
-   <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
-    <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4" type="video/mp4" />
+  <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
+    <source
+      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
+      type="video/mp4"
+    />
   </wa-video>
 </wa-video-playlist>
 
@@ -179,6 +213,8 @@ The `wa-video-change` event fires when the active video changes, providing the p
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -186,7 +222,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/video-playlist/video-playlist.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/video-playlist/video-playlist.js';
 ```
 
 \*\*npm\*\*
@@ -215,6 +251,8 @@ import WaVideoPlaylist from '@awesome.me/webawesome/dist/react/video-playlist/in
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -223,15 +261,18 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
 | \`controls\` controls | \`\` The controls preset forwarded to each child . Type 'none' \\| 'standard' \\| 'full' Default 'full' | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default styles | | |
 | \`iconLibrary\` icon-library | \`string\` Icon library used for placeholder icons. Type Default 'system' | | |
 
 ## Methods
+
+Link to This Section
 
 Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 
@@ -243,6 +284,8 @@ Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 
 ## Events
 
+Link to This Section
+
 Learn more about [events](https://webawesome.com/docs/usage/#events).
 
 | Name | Description |
@@ -250,6 +293,8 @@ Learn more about [events](https://webawesome.com/docs/usage/#events).
 | \`wa-video-change\` | Emitted when the active video changes. |
 
 ## CSS parts
+
+Link to This Section
 
 Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 
@@ -263,6 +308,8 @@ Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 | \`playlist-title\` | The title text within a playlist item. | \`::part(playlist-title)\` |
 
 ## Dependencies
+
+Link to This Section
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 

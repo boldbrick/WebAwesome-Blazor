@@ -904,6 +904,114 @@ public enum WaCopyButtonTooltip
     None
 }
 
+/// <summary>
+/// Controls how items in an accordion can be expanded.
+/// </summary>
+public enum WaAccordionMode
+{
+    /// <summary>Only one item may be open at a time; clicking an open item does not collapse it.</summary>
+    Single,
+    /// <summary>Like <see cref="Single"/>, but clicking the open item collapses it (zero open items is valid).</summary>
+    SingleCollapsible,
+    /// <summary>Any number of items may be open at once.</summary>
+    Multiple
+}
+
+/// <summary>
+/// Selection mode for the date input and date picker.
+/// </summary>
+public enum WaDateSelectionMode
+{
+    /// <summary>Selects a single date.</summary>
+    Single,
+    /// <summary>Selects a start/end date range.</summary>
+    Range
+}
+
+/// <summary>
+/// The first day of the week in a calendar.
+/// </summary>
+public enum WaFirstDayOfWeek
+{
+    /// <summary>Uses the resolved locale's week info to determine the first day.</summary>
+    Auto,
+    /// <summary>Sunday.</summary>
+    Sun,
+    /// <summary>Monday.</summary>
+    Mon,
+    /// <summary>Tuesday.</summary>
+    Tue,
+    /// <summary>Wednesday.</summary>
+    Wed,
+    /// <summary>Thursday.</summary>
+    Thu,
+    /// <summary>Friday.</summary>
+    Fri,
+    /// <summary>Saturday.</summary>
+    Sat
+}
+
+/// <summary>
+/// Whether a calendar's prev/next navigation advances by the visible range or one month at a time.
+/// </summary>
+public enum WaDatePageBy
+{
+    /// <summary>Advances by the visible range of months.</summary>
+    Months,
+    /// <summary>Advances one month at a time.</summary>
+    Single
+}
+
+/// <summary>
+/// The weekday header format in a calendar.
+/// </summary>
+public enum WaWeekdayFormat
+{
+    /// <summary>Narrow form, e.g. "M".</summary>
+    Narrow,
+    /// <summary>Short form, e.g. "Mon".</summary>
+    Short,
+    /// <summary>Long form, e.g. "Monday".</summary>
+    Long
+}
+
+/// <summary>
+/// The active view of the date picker.
+/// </summary>
+public enum WaDatePickerView
+{
+    /// <summary>Shows the days-of-month grid.</summary>
+    Days,
+    /// <summary>Shows the month picker.</summary>
+    Months,
+    /// <summary>Shows the year picker.</summary>
+    Years
+}
+
+/// <summary>
+/// Whether the time input's UI uses a 12-hour or 24-hour clock.
+/// </summary>
+public enum WaTimeHourFormat
+{
+    /// <summary>Follows the resolved locale.</summary>
+    Auto,
+    /// <summary>Uses a 12-hour clock.</summary>
+    Twelve,
+    /// <summary>Uses a 24-hour clock.</summary>
+    TwentyFour
+}
+
+/// <summary>
+/// The camera or microphone to use when capturing media on mobile devices.
+/// </summary>
+public enum WaCaptureMode
+{
+    /// <summary>The front-facing camera or microphone.</summary>
+    User,
+    /// <summary>The rear-facing camera or microphone.</summary>
+    Environment
+}
+
 #endregion
 
 #region ------ Extension Methods ------
@@ -1905,6 +2013,144 @@ public static class WaEnumExtensions
             WaCopyButtonTooltip.Copy => "copy",
             WaCopyButtonTooltip.None => "none",
             _ => throw new ArgumentOutOfRangeException(nameof(tooltip), tooltip, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="mode">The accordion mode value to convert</param>
+    /// <returns>The kebab-case attribute string, e.g. "single-collapsible"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="mode"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaAccordionMode mode)
+    {
+        return mode switch
+        {
+            WaAccordionMode.Single => "single",
+            WaAccordionMode.SingleCollapsible => "single-collapsible",
+            WaAccordionMode.Multiple => "multiple",
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="mode">The date selection mode value to convert</param>
+    /// <returns>The lowercase attribute string, "single" or "range"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="mode"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaDateSelectionMode mode)
+    {
+        return mode switch
+        {
+            WaDateSelectionMode.Single => "single",
+            WaDateSelectionMode.Range => "range",
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="day">The first-day-of-week value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "mon"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="day"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaFirstDayOfWeek day)
+    {
+        return day switch
+        {
+            WaFirstDayOfWeek.Auto => "auto",
+            WaFirstDayOfWeek.Sun => "sun",
+            WaFirstDayOfWeek.Mon => "mon",
+            WaFirstDayOfWeek.Tue => "tue",
+            WaFirstDayOfWeek.Wed => "wed",
+            WaFirstDayOfWeek.Thu => "thu",
+            WaFirstDayOfWeek.Fri => "fri",
+            WaFirstDayOfWeek.Sat => "sat",
+            _ => throw new ArgumentOutOfRangeException(nameof(day), day, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="pageBy">The page-by value to convert</param>
+    /// <returns>The lowercase attribute string, "months" or "single"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="pageBy"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaDatePageBy pageBy)
+    {
+        return pageBy switch
+        {
+            WaDatePageBy.Months => "months",
+            WaDatePageBy.Single => "single",
+            _ => throw new ArgumentOutOfRangeException(nameof(pageBy), pageBy, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="format">The weekday format value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "short"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="format"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaWeekdayFormat format)
+    {
+        return format switch
+        {
+            WaWeekdayFormat.Narrow => "narrow",
+            WaWeekdayFormat.Short => "short",
+            WaWeekdayFormat.Long => "long",
+            _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="view">The date picker view value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "days"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="view"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaDatePickerView view)
+    {
+        return view switch
+        {
+            WaDatePickerView.Days => "days",
+            WaDatePickerView.Months => "months",
+            WaDatePickerView.Years => "years",
+            _ => throw new ArgumentOutOfRangeException(nameof(view), view, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="format">The time hour format value to convert</param>
+    /// <returns>The attribute string, "auto", "12", or "24"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="format"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaTimeHourFormat format)
+    {
+        return format switch
+        {
+            WaTimeHourFormat.Auto => "auto",
+            WaTimeHourFormat.Twelve => "12",
+            WaTimeHourFormat.TwentyFour => "24",
+            _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="capture">The capture mode value to convert</param>
+    /// <returns>The lowercase attribute string, "user" or "environment"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="capture"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaCaptureMode capture)
+    {
+        return capture switch
+        {
+            WaCaptureMode.User => "user",
+            WaCaptureMode.Environment => "environment",
+            _ => throw new ArgumentOutOfRangeException(nameof(capture), capture, null)
         };
     }
 }

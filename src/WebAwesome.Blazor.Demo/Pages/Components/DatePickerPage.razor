@@ -1,0 +1,65 @@
+@page "/components/date-picker"
+
+<PageTitle>Date Picker</PageTitle>
+
+<h1>Date Picker <ComponentBadges Tag="wa-date-picker" /></h1>
+<p>Date pickers display an inline month grid for choosing a single date or a range. Unlike <a href="/components/date-input"><code>WaDateInput</code></a> it is not form-associated — bind its value directly with <code>@@bind-Value</code>. <code>&lt;wa-date-picker&gt;</code> wrapped by <code>WaDatePicker</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaDatePicker Style="max-width: 300px;" @bind-Value="defaultValue" />
+    <p>Value: <code>@(defaultValue ?? "(empty)")</code></p>
+</ExampleSection>
+
+<ExampleSection Title="Initial Value" Code="@ValueExample">
+    <WaDatePicker Style="max-width: 300px;" @bind-Value="presetValue" />
+</ExampleSection>
+
+<ExampleSection Title="Range Mode" Code="@RangeExample">
+    <WaDatePicker Style="max-width: 560px;" Mode="WaDateSelectionMode.Range" Months="2" @bind-Value="rangeValue" />
+</ExampleSection>
+
+<ExampleSection Title="Week Numbers &amp; Outside Days" Code="@WeekNumbersExample">
+    <WaDatePicker Style="max-width: 320px;" WithWeekNumbers="true" WithOutsideDays="true" WeekdayFormat="WaWeekdayFormat.Narrow" @bind-Value="weekValue" />
+</ExampleSection>
+
+<ApiTable Tag="wa-date-picker" />
+
+@code {
+    private string? defaultValue;
+    private string? presetValue = "2026-05-11";
+    private string? rangeValue = "2026-05-11/2026-05-18";
+    private string? weekValue;
+
+    private const string DefaultExample = """
+        <WaDatePicker Style="max-width: 300px;" @bind-Value="defaultValue" />
+
+        @code {
+            private string? defaultValue;
+        }
+        """;
+
+    private const string ValueExample = """
+        <WaDatePicker Style="max-width: 300px;" @bind-Value="presetValue" />
+
+        @code {
+            private string? presetValue = "2026-05-11";
+        }
+        """;
+
+    private const string RangeExample = """
+        <WaDatePicker Style="max-width: 560px;" Mode="WaDateSelectionMode.Range" Months="2" @bind-Value="rangeValue" />
+
+        @code {
+            private string? rangeValue = "2026-05-11/2026-05-18";
+        }
+        """;
+
+    private const string WeekNumbersExample = """
+        <WaDatePicker Style="max-width: 320px;" WithWeekNumbers="true" WithOutsideDays="true"
+                      WeekdayFormat="WaWeekdayFormat.Narrow" @bind-Value="weekValue" />
+
+        @code {
+            private string? weekValue;
+        }
+        """;
+}

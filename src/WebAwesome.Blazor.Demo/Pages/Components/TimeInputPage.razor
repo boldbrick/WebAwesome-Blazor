@@ -1,0 +1,64 @@
+@page "/components/time-input"
+
+<PageTitle>Time Input</PageTitle>
+
+<h1>Time Input <ComponentBadges Tag="wa-time-input" /></h1>
+<p>Time inputs enter a time of day through a segmented field or a column popup. The submitted value matches native <code>&lt;input type="time"&gt;</code> (<code>HH:mm</code>, or <code>HH:mm:ss</code> when seconds are shown). <code>&lt;wa-time-input&gt;</code> wrapped by <code>WaTimeInput</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaTimeInput Label="Pick a time" @bind-Value="defaultValue" />
+    <p>Value: <code>@(defaultValue ?? "(empty)")</code></p>
+</ExampleSection>
+
+<ExampleSection Title="Initial Value &amp; Now Button" Code="@ValueExample">
+    <WaTimeInput Label="Meeting time" WithClear="true" WithNow="true" @bind-Value="meetingValue" />
+</ExampleSection>
+
+<ExampleSection Title="24-Hour &amp; Seconds" Code="@FormatExample">
+    <WaTimeInput Label="24-hour with seconds" HourFormat="WaTimeHourFormat.TwentyFour" Step="1" @bind-Value="preciseValue" />
+</ExampleSection>
+
+<ExampleSection Title="Min &amp; Max" Code="@ConstraintsExample">
+    <WaTimeInput Label="Office hours" Min="09:00" Max="17:00" @bind-Value="officeValue" />
+</ExampleSection>
+
+<ApiTable Tag="wa-time-input" />
+
+@code {
+    private string? defaultValue;
+    private string? meetingValue = "14:30";
+    private string? preciseValue;
+    private string? officeValue;
+
+    private const string DefaultExample = """
+        <WaTimeInput Label="Pick a time" @bind-Value="defaultValue" />
+
+        @code {
+            private string? defaultValue;
+        }
+        """;
+
+    private const string ValueExample = """
+        <WaTimeInput Label="Meeting time" WithClear="true" WithNow="true" @bind-Value="meetingValue" />
+
+        @code {
+            private string? meetingValue = "14:30";
+        }
+        """;
+
+    private const string FormatExample = """
+        <WaTimeInput Label="24-hour with seconds" HourFormat="WaTimeHourFormat.TwentyFour" Step="1" @bind-Value="preciseValue" />
+
+        @code {
+            private string? preciseValue;
+        }
+        """;
+
+    private const string ConstraintsExample = """
+        <WaTimeInput Label="Office hours" Min="09:00" Max="17:00" @bind-Value="officeValue" />
+
+        @code {
+            private string? officeValue;
+        }
+        """;
+}

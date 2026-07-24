@@ -1,0 +1,82 @@
+@page "/components/accordion"
+
+<PageTitle>Accordion</PageTitle>
+
+<h1>Accordion <ComponentBadges Tag="wa-accordion" /></h1>
+<p>Accordions group <a href="/components/accordion-item"><code>WaAccordionItem</code></a> elements into a vertically stacked set of expandable sections. <code>&lt;wa-accordion&gt;</code> wrapped by <code>WaAccordion</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaAccordion>
+        <WaAccordionItem Label="What is Web Awesome?">
+            Web Awesome is a comprehensive library of web components you can use to build beautiful, accessible web applications.
+        </WaAccordionItem>
+        <WaAccordionItem Label="Is it free to use?">
+            The core Web Awesome library is completely free and open source. A Pro tier is also available.
+        </WaAccordionItem>
+        <WaAccordionItem Label="Does it work with my framework?">
+            Yes! Web Awesome components are native web components, so they work with any framework.
+        </WaAccordionItem>
+    </WaAccordion>
+</ExampleSection>
+
+<ExampleSection Title="Single Mode" Code="@SingleExample">
+    <WaAccordion Mode="WaAccordionMode.Single">
+        <WaAccordionItem Label="Step one" Expanded="true">Only one item stays open at a time.</WaAccordionItem>
+        <WaAccordionItem Label="Step two">Opening this one collapses the previous.</WaAccordionItem>
+        <WaAccordionItem Label="Step three">And so on.</WaAccordionItem>
+    </WaAccordion>
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaAccordion Appearance="WaAppearance.Filled">
+        <WaAccordionItem Label="Filled item" Expanded="true">Rendered with a filled appearance.</WaAccordionItem>
+        <WaAccordionItem Label="Another item">More content.</WaAccordionItem>
+    </WaAccordion>
+</ExampleSection>
+
+<ExampleSection Title="Icon Placement" Code="@IconPlacementExample">
+    <WaAccordion IconPlacement="WaIconPlacement.Start">
+        <WaAccordionItem Label="Expand/collapse icon at the start">Content.</WaAccordionItem>
+        <WaAccordionItem Label="Second item">More content.</WaAccordionItem>
+    </WaAccordion>
+</ExampleSection>
+
+<ApiTable Tag="wa-accordion" />
+
+@code {
+    private const string DefaultExample = """
+        <WaAccordion>
+            <WaAccordionItem Label="What is Web Awesome?">
+                Web Awesome is a comprehensive library of web components you can use to build beautiful, accessible web applications.
+            </WaAccordionItem>
+            <WaAccordionItem Label="Is it free to use?">
+                The core Web Awesome library is completely free and open source. A Pro tier is also available.
+            </WaAccordionItem>
+            <WaAccordionItem Label="Does it work with my framework?">
+                Yes! Web Awesome components are native web components, so they work with any framework.
+            </WaAccordionItem>
+        </WaAccordion>
+        """;
+
+    private const string SingleExample = """
+        <WaAccordion Mode="WaAccordionMode.Single">
+            <WaAccordionItem Label="Step one" Expanded="true">Only one item stays open at a time.</WaAccordionItem>
+            <WaAccordionItem Label="Step two">Opening this one collapses the previous.</WaAccordionItem>
+            <WaAccordionItem Label="Step three">And so on.</WaAccordionItem>
+        </WaAccordion>
+        """;
+
+    private const string AppearanceExample = """
+        <WaAccordion Appearance="WaAppearance.Filled">
+            <WaAccordionItem Label="Filled item" Expanded="true">Rendered with a filled appearance.</WaAccordionItem>
+            <WaAccordionItem Label="Another item">More content.</WaAccordionItem>
+        </WaAccordion>
+        """;
+
+    private const string IconPlacementExample = """
+        <WaAccordion IconPlacement="WaIconPlacement.Start">
+            <WaAccordionItem Label="Expand/collapse icon at the start">Content.</WaAccordionItem>
+            <WaAccordionItem Label="Second item">More content.</WaAccordionItem>
+        </WaAccordion>
+        """;
+}

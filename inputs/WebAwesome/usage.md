@@ -31,7 +31,7 @@ If you're new to custom elements, often referred to as "web components," this se
 Many components have properties that can be set using attributes. For example, buttons accept a `size` attribute that maps to the `size` property which dictates the button's size.
 
 ```html
-<wa-button size="small">Click me</wa-button>
+<wa-button size="s">Click me</wa-button>
 ```
 
 Some properties are boolean, so they only have true/false values. To activate a boolean property, add the corresponding attribute without a value.
@@ -181,6 +181,7 @@ To wait for multiple components to update, await all of their `updateComplete` p
 ```js
 await Promise.all(elements.map(el => el.updateComplete));
 ```
+
 :::
 
 ## Code Completion
@@ -235,7 +236,7 @@ Most popular editors support custom code completion with a bit of configuration.
 
 ## Where to Go Next
 
-- [Customizing](/docs/customizing) — themes, CSS parts, custom properties, and custom states.
+- [Customizing & Theming](/docs/customizing) — themes, CSS parts, custom properties, and custom states.
 - [Form Controls](/docs/form-controls) — using Web Awesome inputs, validation, and form submission.
 - [Frameworks](/docs/frameworks) — guides for React, Vue, Angular, and Svelte.
 - [Localization](/docs/localization) — translating component strings and configuring text direction.

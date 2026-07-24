@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/sparkline.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/sparkline -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/sparkline.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/sparkline -->
 
 # Sparkline [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/sparkline
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-sparkline>` Stable Since 3.2 Pro Included with Web Awesome Pro
+`<wa-sparkline>`
+
+ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.2](https://webawesome.com/docs/resources/changelog#wa_320)
 
 Sparklines display inline data trends as compact, visual charts.
 
@@ -38,7 +40,11 @@ Always include a descriptive `label` attribute for accessibility. The label won'
 
 ## Examples
 
+Link to This Section
+
 ### Basic Usage
+
+Link to This Section
 
 Provide numeric data as space-separated values. At least two values are required to generate the sparkline.
 
@@ -54,6 +60,8 @@ Provide numeric data as space-separated values. At least two values are required
 ```
 
 ### Appearance
+
+Link to This Section
 
 Use the `appearance` attribute to control how the sparkline fills. The default is `solid` which shows a filled area under the line. You can also choose `gradient` for a faded fill or `line` for stroke only.
 
@@ -83,6 +91,8 @@ Use the `appearance` attribute to control how the sparkline fills. The default i
 ```
 
 ### Trend Colors
+
+Link to This Section
 
 Apply semantic coloring with the `trend` attribute to visually indicate the nature of the data.
 
@@ -129,6 +139,8 @@ Apply semantic coloring with the `trend` attribute to visually indicate the natu
 
 ### Curve Types
 
+Link to This Section
+
 Control how data points connect with the `curve` attribute. Use `linear` (default), `natural`, or `step`.
 
 ```html
@@ -161,6 +173,8 @@ Control how data points connect with the `curve` attribute. Use `linear` (defaul
 
 ### Sizing
 
+Link to This Section
+
 Sparklines default to `height: 1em` and `aspect-ratio: 4/1` so they fit naturally within text. Override these with CSS for larger displays.
 
 ```html
@@ -174,6 +188,8 @@ Sparklines default to `height: 1em` and `aspect-ratio: 4/1` so they fit naturall
 ```
 
 ### Custom Colors
+
+Link to This Section
 
 Override the default colors using CSS custom properties.
 
@@ -192,6 +208,8 @@ Override the default colors using CSS custom properties.
 ```
 
 ### In Tables
+
+Link to This Section
 
 Sparklines work well in data tables to visualize trends alongside other metrics.
 
@@ -244,6 +262,8 @@ Sparklines work well in data tables to visualize trends alongside other metrics.
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -251,7 +271,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/sparkline/sparkline.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/sparkline/sparkline.js';
 ```
 
 \*\*npm\*\*
@@ -280,18 +300,21 @@ import WaSparkline from '@awesome.me/webawesome/dist/react/sparkline/index.js';
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
 | \`appearance\` appearance | \`'gradient' \\| 'line' \\| 'solid'\` The visual fill style of the sparkline. Type Default 'solid' | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default \[styles\] | | |
 | \`curve\` curve | \`'linear' \\| 'natural' \\| 'step'\` The type of curve used to connect data points. Type Default 'linear' | | |
 | \`data\` data | \`string\` Space-separated numeric values to visualize (e.g., "10 20 40 25 35"). Type Default '' | | |
 | \`label\` label | \`string\` An accessible label describing the sparkline for screen readers. Type Default '' | | |
 | \`trend\` trend | \`'positive' \\| 'negative' \\| 'neutral'\` A trend to indicate, which will affect the sparkline's default color. Type | | |
 
 ## CSS custom properties
+
+Link to This Section
 
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 
@@ -302,6 +325,8 @@ Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#cust
 | \`--line-width\` | The width of the sparkline stroke. |
 
 ## CSS parts
+
+Link to This Section
 
 Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 

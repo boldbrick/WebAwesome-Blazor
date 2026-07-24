@@ -2,6 +2,45 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.8.0] — 2026-07-24
+
+Alignment with the Web Awesome 3.8.0 release, opening the **WA-3.8 train**. An additive upgrade: six new experimental components (an accordion pair and a date/time family), additive attributes on four existing components, and one upstream behavioral realignment (`wa-drawer` light-dismiss default). **No wrapper APIs were removed or renamed.** See [MIGRATION-3.8.0.md](MIGRATION-3.8.0.md).
+
+### Breaking changes
+- None to the wrapper API. Two entries in the upstream change report are flagged breaking but are non-destructive for the wrappers (see below).
+
+### New components
+- `WaAccordion` (`wa-accordion`, free/experimental) — groups `WaAccordionItem` elements. Exposes `Appearance` (`WaAppearance`), `HeadingLevel`, `IconPlacement` (`WaIconPlacement`), `Mode` (`WaAccordionMode` — `Single`/`SingleCollapsible`/`Multiple`), the `OnExpand`/`OnCollapse`/`OnAfterExpand`/`OnAfterCollapse` callbacks, and `ExpandAllAsync()`/`CollapseAllAsync()`.
+- `WaAccordionItem` (`wa-accordion-item`, free/experimental) — a single accordion panel. Exposes `Label`/`Expanded`/`Disabled`, the `label` and `icon` slots, and `ExpandAsync()`/`CollapseAsync()`/`ToggleAsync()`/`FocusAsync()`.
+- `WaDateInput` (`wa-date-input`, **Pro**/experimental) — segmented date entry with a popup calendar; a `WaInputBase<string?>` form control. Exposes `Mode` (`WaDateSelectionMode`), `Min`/`Max`/`MinRange`/`MaxRange`, `DisablePast`/`DisableFuture`/`DisabledDates`/`DisabledDaysOfWeek`, `FirstDayOfWeek` (`WaFirstDayOfWeek`), `Months`, `PageBy` (`WaDatePageBy`), `WeekdayFormat` (`WaWeekdayFormat`), `Today`/`Placement`/`Distance`/`Open`/`Pill`/`WithClear`/`WithOutsideDays`/`WithWeekNumbers`, the `OnShow`/`OnHide`/`OnAfterShow`/`OnAfterHide`/`OnClear`/`OnInvalid` events, and `ShowAsync`/`HideAsync`/`ClearAsync`/`FocusAsync`/`BlurAsync`.
+- `WaTimeInput` (`wa-time-input`, free/experimental) — segmented time entry with a column popup; a `WaInputBase<string?>` form control. Exposes `HourFormat` (`WaTimeHourFormat`), `Min`/`Max`/`Step`, `Placement`/`Distance`/`Open`/`Pill`/`WithClear`/`WithNow`, the same popup event set, and `ShowAsync`/`HideAsync`/`FocusAsync`/`BlurAsync` (no `clear()` method upstream — the clear button emits `wa-clear` only).
+- `WaKnownDate` (`wa-known-date`, free/experimental) — a day/month/year field group form control (`WaInputBase<string?>`). Exposes `Appearance`/`Locale`/`Min`/`Max`/`Pill`, `OnInvalid`, and `FocusAsync`/`BlurAsync`.
+- `WaDatePicker` (`wa-date-picker`, free/experimental) — the standalone inline calendar. **Not** form-associated: exposes manual `Value`/`ValueChanged` two-way binding plus `Mode`/`View` (`WaDatePickerView`)/`Min`/`Max`/`FirstDayOfWeek`/`FocusedDate`/`Locale`/`Months`/`PageBy`/`Size`/`WeekdayFormat`, the typed `OnFocusDay` (`WaDatePickerFocusDayEventArgs`) and `OnViewChange` (`WaDatePickerViewChangeEventArgs`) callbacks and `OnInput`, and `ClearAsync`/`FocusAsync`/`GoToDateAsync`/`GoToTodayAsync`.
+
+### Changed
+- `WaCard` gained the SSR hydration-hint flags `WithHeaderActions` (`with-header-actions`) and `WithFooterActions` (`with-footer-actions`); like the existing `WithHeader`/`WithFooter`, they are set automatically when the matching actions content is provided.
+- `WaFileInput` gained `Capture` (`WaCaptureMode` — `User`/`Environment`), binding the mobile camera/microphone selection attribute.
+- `WaQrCode` gained `Image`, `ImageBackground`, `ImageCoverage` (0–1), and `ImagePadding` (px) for rendering a centered logo inside the code.
+
+### Non-breaking upstream "breaking" changes (no wrapper action)
+- `wa-drawer` `light-dismiss` default changed `true` → `false`. The wrapper's `LightDismiss` has always defaulted to `false` and only emits the attribute when `true`, so this realigns the implicit default; drawers left with `LightDismiss` unset no longer close on outside click. Documented in the migration guide.
+- `wa-video` `timeupdate` event type annotation changed `null` → `Event`. Annotation-only; the event is already bound as `OnTimeUpdate` via `eventOverrides`. No change.
+
+### Library
+- Versioned reference docs refreshed to the `v3.8.0` tag: 135 public-docs files updated; 18 Pro/reference docs (including the new `date-input`/`date-picker`) filled from the release zip's bundled references; 0 needed manual capture.
+- New train WA-3.8: subtrunk `/main/WA-3.8` branched off `/main` (released 3.7.0, cs:195); developed on `/main/WA-3.8/WAB-37`.
+- Event delivery: `wa-focus-day` and `wa-view-change` registered in the JS initializer with `specialArgs` mappings that project their live JavaScript `Date` details to ISO date strings (Blazor cannot marshal `Date` objects). The accordion's `wa-expand`/`wa-collapse`/`wa-after-expand`/`wa-after-collapse` events were already registered; their `{ item }` detail (a live DOM node) is dropped by the sanitizer, so they are exposed as plain `EventCallback<EventArgs>`.
+
+### Public API
+- Baseline promoted: purely additive — the six new components, the `WaAccordionMode`/`WaDateSelectionMode`/`WaFirstDayOfWeek`/`WaDatePageBy`/`WaWeekdayFormat`/`WaDatePickerView`/`WaTimeHourFormat`/`WaCaptureMode` enums, the `WaDatePickerFocusDayEventArgs`/`WaDatePickerViewChangeEventArgs` event args, and the additive members on `WaCard`/`WaFileInput`/`WaQrCode`. No removals; every diff explained by the WA 3.8.0 change report.
+
+### Deviations recorded (parity-config.json)
+- `role` and `tabindex` added to `globalIgnoredAttributes`: WA 3.8.0 reflects internal ARIA defaults (`role` on `wa-rating`/`wa-tab`/`wa-tab-panel`/`wa-tree`/`wa-tree-item`; `tabindex` on `wa-tree`/`wa-tree-item` for roving-tabindex navigation) onto the host; these are native global HTML attributes passed through via `AdditionalAttributes`, not consumer-authorable parameters.
+- New form controls `wa-date-input`/`wa-time-input`/`wa-known-date`: `ignoredAttributes` `name`/`custom-error`, `ignoredEvents` `change`, `ignoredMethods` `formStateRestoreCallback` — the standard `WaInputBase<T>` form-integration deviations. `wa-date-picker`: `ignoredEvents` `change` (folded into `@bind-Value`).
+
+### Next-release check outcomes
+- Observer `stopObserver()`/`startObserver()` and `wa-relative-time` `update()`: re-verified against the 3.8.0 sources (`startObserver`/`stopObserver` still private in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle, only `updateTimeout` in `relative-time.d.ts`) — the `extraElementMethods` allowlist stands, verification stamps updated.
+
 ## [3.7.0] — 2026-07-24
 
 Alignment with the Web Awesome 3.7.0 release, opening the **WA-3.7 train**. An additive upgrade with **no breaking changes**: two new Pro media components (`WaVideo`, `WaVideoPlaylist`) and a new tooltip attribute on `WaCopyButton`. No migration guide is required.
