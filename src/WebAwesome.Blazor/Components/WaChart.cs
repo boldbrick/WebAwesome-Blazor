@@ -5,6 +5,9 @@ namespace WebAwesome.Blazor.Components;
 /// advanced configuration such as mixed chart types, custom plugins, and direct Chart.js access.
 /// Corresponds to the wa-chart Web Awesome component.
 /// </summary>
+/// <remarks>
+/// This is a Pro component.
+/// </remarks>
 public class WaChart : WaChartBase
 {
     /// <inheritdoc />

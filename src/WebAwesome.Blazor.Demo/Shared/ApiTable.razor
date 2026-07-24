@@ -7,6 +7,8 @@
     <section class="api-reference">
         <h2>API Reference</h2>
 
+        <p class="api-docs-link">Canonical documentation: <a href="@DocsUrl" target="_blank" rel="noopener">@DocsUrl</a></p>
+
         @if (component.Attributes is { Count: > 0 })
         {
             <h3>Parameters</h3>
@@ -99,6 +101,11 @@
     [Parameter, EditorRequired] public string Tag { get; set; } = string.Empty;
 
     private ComponentSurface? component;
+
+    /// <summary>
+    /// Canonical upstream documentation URL of the component, derived from the tag.
+    /// </summary>
+    private string DocsUrl => $"https://webawesome.com/docs/components/{(Tag.StartsWith("wa-", StringComparison.Ordinal) ? Tag["wa-".Length..] : Tag)}";
 
     /// <inheritdoc />
     protected override async Task OnParametersSetAsync()

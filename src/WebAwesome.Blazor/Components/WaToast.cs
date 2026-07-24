@@ -13,6 +13,9 @@ namespace WebAwesome.Blazor.Components;
 /// A single instance manages multiple <see cref="WaToastItem"/> notifications.
 /// Corresponds to the wa-toast Web Awesome component.
 /// </summary>
+/// <remarks>
+/// This is a Pro component.
+/// </remarks>
 public class WaToast : ComponentBase
 {
     #region ------ Dependency Injection ------
