@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/video.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video -->
+<!-- Source: reference doc bundled in the Web Awesome 3.9.0 release zip (dist/skills/webawesome/references/components/video.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video -->
 
 # Video [Pro]
 
@@ -7,7 +7,7 @@
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
 `<wa-video>`
 
-ProIncluded with Web Awesome Pro Experimental [Media](https://webawesome.com/docs/components/?category=media) [Since 3.6](https://webawesome.com/docs/resources/changelog#wa_360)
+ProIncluded with Web Awesome Pro Experimental [Media](https://webawesome.com/docs/components/?category=media) [Since 3.7](https://webawesome.com/docs/resources/changelog#wa_370)
 
 Videos are used to embed and play video content with custom controls and captions.
 
@@ -206,176 +206,100 @@ Link to This Section | Setting | Recommended | Reason |
 | --- | --- | --- |
 | Format | WebVTT (.vtt) | \`\` Only format supported by the HTML element |
 | Encoding | UTF-8 | Ensures special characters and non-Latin scripts render correctly |
-| Timing | Frame accurate | Prevents captions from appearing early or late |  
-
-## Importing
-
-Link to This Section
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/video/video.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/video/video.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/video/video.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaVideo from '@awesome.me/webawesome/dist/react/video/index.js';
-```
+| Timing | Frame accurate | Prevents captions from appearing early or late |
 
 ## Slots
 
-Link to This Section
+Valid slot names for this component (use exactly these — any other `slot` value
+is silently ignored and the element falls back to the default slot):
 
-Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
-
-| Name | Description |
-| --- | --- |
-| (default) | \`\` The default slot. Place and  elements for a single video. Alternatively, use the src attribute for a single source. |
-| \`controls-after-play\` | \`\` Content inserted immediately after the play/pause button. Used by to inject the next button. |
-| \`controls-start\` | \`\` Content inserted at the start of the controls bar (before play/pause). Used by to inject the prev button. |
-| \`exit-fullscreen-icon\` | Icon shown on the fullscreen button when in fullscreen. |
-| \`fullscreen-icon\` | Icon shown on the fullscreen button when not in fullscreen. |
-| \`mute-icon\` | Icon shown on the volume/mute button when muted or volume is 0. |
-| \`pause-icon\` | Icon shown on the play/pause button when playing. |
-| \`play-icon\` | Icon shown on the play/pause button when paused. |
-| \`poster-icon\` | Icon shown on the poster play button. Defaults to a play-circle icon. |
-| \`volume-icon\` | Icon shown on the volume/mute button when audio is active. |
+- `(default)` — The default slot. Place `<source>` and `<track>` elements for a single video. Alternatively, use the `src` attribute for a single source.
+- `controls-start` — Content inserted at the start of the controls bar (before play/pause). Used by `<wa-video-playlist>` to inject the prev button.
+- `controls-after-play` — Content inserted immediately after the play/pause button. Used by `<wa-video-playlist>` to inject the next button.
+- `poster-icon` — Icon shown on the poster play button. Defaults to a play-circle icon.
+- `play-icon` — Icon shown on the play/pause button when paused.
+- `pause-icon` — Icon shown on the play/pause button when playing.
+- `volume-icon` — Icon shown on the volume/mute button when audio is active.
+- `mute-icon` — Icon shown on the volume/mute button when muted or volume is 0.
+- `fullscreen-icon` — Icon shown on the fullscreen button when not in fullscreen.
+- `exit-fullscreen-icon` — Icon shown on the fullscreen button when in fullscreen.
 
 ## Attributes & Properties
 
-Link to This Section
-
-Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`autoplay\` autoplay | \`boolean\` Enables autoplay when the component connects. Type Default false | | |
-| \`autoplayMuted\` autoplay-muted | \`boolean\` Enables autoplay in a muted state. Type Default false | | |
-| \`autoplayOnVisible\` autoplay-on-visible | \`boolean\` Automatically resumes playback when the player scrolls back into view after being paused by scrolling out. Type Default false | | |
-| \`controls\` controls | \`none\` The video's controls preset. - — no controls are shown. - standard — shows the timeline, play/pause, volume, captions, and fullscreen. - full — all of the above plus playback speed and picture-in-picture. Type 'none' \\| 'standard' \\| 'full' Default 'standard' | | |
-| \`currentTime\` currentTime | \`number\` The current playback position in seconds. Type Default 0 | | |
-| \`duration\` duration | \`number\` The total duration of the video in seconds. Type Default 0 | | |
-| \`iconLibrary\` icon-library | \`string\` Icon library used for all built-in control icons. Defaults to 'system'. Type Default 'system' | | |
-| \`loop\` loop | \`boolean\` Loops the video when playback ends. Type Default false | | |
-| \`muted\` muted | \`boolean\` When set, the video will be muted. Type Default false | | |
-| \`playing\` playing | \`boolean\` Indicates whether the video is currently playing. Type Default false | | |
-| \`poster\` poster | \`string\` Poster image URL Type Default '' | | |
-| \`preload\` preload | \`'auto' \\| 'metadata' \\| 'none'\` Controls how the browser preloads the video. Defaults to 'metadata' to minimize data usage. Type Default 'metadata' | | |
-| \`src\` src | \`\` The URL of the video source. For multiple formats, use elements instead. Type string Default '' | | |
-| \`thumbnails\` thumbnails | \`string\` A URL pointing to a WebVTT file for timeline thumbnail previews. Type Default '' | | |
-| \`title\` title | \`string\` The video's title. Type Default '' | | |
-| \`volume\` volume | \`number\` The video's volume. Type Default 1 | | |
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `controls` |  | `'none' \| 'standard' \| 'full'` | `'standard'` | The video's controls preset. - `none` — no controls are shown. - `standard` — shows the timeline, play/pause, volume, captions, and fullscreen. - `full` — all of the above plus playback speed and picture-in-picture. |
+| `thumbnails` |  | `string` | `''` | A URL pointing to a WebVTT file for timeline thumbnail previews. |
+| `src` |  | `string` | `''` | The URL of the video source. For multiple formats, use `<source>` elements instead. |
+| `poster` |  | `string` | `''` | Poster image URL |
+| `title` |  | `string` | `''` | The video's title. |
+| `playing` |  | `boolean` | `false` | Indicates whether the video is currently playing. |
+| `muted` |  | `boolean` | `false` | When set, the video will be muted. |
+| `volume` |  | `number` | `1` | The video's volume. |
+| `duration` |  | `number` | `0` | The total duration of the video in seconds. |
+| `currentTime` |  | `number` | `0` | The current playback position in seconds. |
+| `autoplay` |  | `boolean` | `false` | Enables autoplay when the component connects. |
+| `loop` |  | `boolean` | `false` | Loops the video when playback ends. |
+| `autoplay-muted` | `autoplayMuted` | `boolean` | `false` | Enables autoplay in a muted state. |
+| `autoplay-on-visible` | `autoplayOnVisible` | `boolean` | `false` | Automatically resumes playback when the player scrolls back into view after being paused by scrolling out. |
+| `preload` |  | `'auto' \| 'metadata' \| 'none'` | `'metadata'` | Controls how the browser preloads the video. Defaults to 'metadata' to minimize data usage. |
+| `icon-library` | `iconLibrary` | `string` | `'system'` | Icon library used for all built-in control icons. Defaults to 'system'. |
+| `dir` |  | `string` |  |  |
+| `lang` |  | `string` |  |  |
+| `did-ssr` | `didSSR` |  |  |  |
 
 ## Methods
 
-Link to This Section
-
-Learn more about [methods](https://webawesome.com/docs/usage/#methods).
-
-| Name | Description | Arguments |
+| Method | Description | Arguments |
 | --- | --- | --- |
-| \`exitFullscreen()\` | Exits fullscreen mode. | |
-| \`getState()\` | Gets the current playback state. | |
-| \`getVideoElement()\` | Gets the native video element. | |
-| \`pause()\` | Pauses playback. | |
-| \`play()\` | Starts playback. | |
-| \`requestFullscreen()\` | Enters fullscreen mode. | |
-| \`seek()\` | Seeks to a specific time in the video. | \`time: number\` |
-| \`setPlaybackRate()\` | Sets the playback rate (speed). | \`rate: number\` |
-| \`setVolume()\` | Sets the volume level. | \`volume: number\` |
-| \`toggleMute()\` | Toggles the muted state. | |
-| \`togglePlay()\` | Toggles between play and pause. | |
+| `play` | Starts playback. |  |
+| `pause` | Pauses playback. |  |
+| `togglePlay` | Toggles between play and pause. |  |
+| `toggleMute` | Toggles the muted state. |  |
+| `seek` | Seeks to a specific time in the video. | `time: number` |
+| `setVolume` | Sets the volume level. | `volume: number` |
+| `setPlaybackRate` | Sets the playback rate (speed). | `rate: number` |
+| `requestFullscreen` | Enters fullscreen mode. |  |
+| `exitFullscreen` | Exits fullscreen mode. |  |
+| `getVideoElement` | Gets the native video element. |  |
+| `getState` | Gets the current playback state. |  |
 
 ## Events
 
-Link to This Section
-
-Learn more about [events](https://webawesome.com/docs/usage/#events).
-
-| Name | Description |
+| Event | Description |
 | --- | --- |
-| \`ended\` | Emitted when playback ends. |
-| \`error\` | Emitted when an error occurs while loading/playing. |
-| \`loadedmetadata\` | Emitted when metadata has been loaded. |
-| \`pause\` | Emitted when playback stops. |
-| \`play\` | Emitted when playback begins. |
-| \`timeupdate\` | Emitted when the time changes. |
-| \`volumechange\` | Emitted when the volume changes. |
+| `timeupdate` | Emitted when the time changes. |
+| `play` | Emitted when playback begins. |
+| `pause` | Emitted when playback stops. |
+| `volumechange` | Emitted when the volume changes. |
+| `error` | Emitted when an error occurs while loading/playing. |
+| `ended` | Emitted when playback ends. |
+| `loadedmetadata` | Emitted when metadata has been loaded. |
 
-## CSS custom properties
+## CSS Parts
 
-Link to This Section
-
-Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
-
-| Name | Description |
+| Part | Description |
 | --- | --- |
-| \`--controls-background\` | \`var(--wa-color-surface-default)\` The background of the controls bar and mobile controls. Default |
-| \`--controls-color\` | \`white\` The text and icon color used throughout the controls overlay, title overlay, and mobile controls. Default |
-| \`--poster-play-button-background\` | \`var(--wa-color-surface-default)\` The background of the play button shown over the poster image. Also used to derive the hover state via color-mix(). Default |
+| `base` | The component's base wrapper. |
+| `video` | The video element. |
+| `controls` | The controls container. |
+| `controls-overlay` | The overlay wrapping timeline and controls bar. |
+| `timeline` | The timeline/scrubber container. |
+| `progress` | The progress bar. |
+| `thumbnail` | The thumbnail preview. |
+| `poster-overlay` | The poster image overlay. |
+| `poster-play-button` | The play button on the poster overlay. |
+| `video-title-overlay` | The title text overlay. |
+| `caption-overlay` | The custom caption overlay container. |
+| `caption` | The caption text element. |
+| `timeline-track` | The timeline slider's track (forwarded from wa-slider). |
+| `timeline-indicator` | The timeline slider's filled indicator (forwarded from wa-slider). |
+| `timeline-thumb` | The timeline slider's thumb (forwarded from wa-slider). |
 
-## CSS parts
+## CSS Custom Properties
 
-Link to This Section
-
-Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
-
-| Name | Description | CSS selector |
+| Property | Default | Description |
 | --- | --- | --- |
-| \`base\` | The component's base wrapper. | \`::part(base)\` |
-| \`caption\` | The caption text element. | \`::part(caption)\` |
-| \`caption-overlay\` | The custom caption overlay container. | \`::part(caption-overlay)\` |
-| \`controls\` | The controls container. | \`::part(controls)\` |
-| \`controls-overlay\` | The overlay wrapping timeline and controls bar. | \`::part(controls-overlay)\` |
-| \`poster-overlay\` | The poster image overlay. | \`::part(poster-overlay)\` |
-| \`poster-play-button\` | The play button on the poster overlay. | \`::part(poster-play-button)\` |
-| \`progress\` | The progress bar. | \`::part(progress)\` |
-| \`thumbnail\` | The thumbnail preview. | \`::part(thumbnail)\` |
-| \`timeline\` | The timeline/scrubber container. | \`::part(timeline)\` |
-| \`timeline-indicator\` | The timeline slider's filled indicator (forwarded from wa-slider). | \`::part(timeline-indicator)\` |
-| \`timeline-thumb\` | The timeline slider's thumb (forwarded from wa-slider). | \`::part(timeline-thumb)\` |
-| \`timeline-track\` | The timeline slider's track (forwarded from wa-slider). | \`::part(timeline-track)\` |
-| \`video\` | The video element. | \`::part(video)\` |
-| \`video-title-overlay\` | The title text overlay. | \`::part(video-title-overlay)\` |
-
-## Dependencies
-
-Link to This Section
-
-This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
-
--   [`<wa-button>`](https://webawesome.com/docs/components/button)
--   [`<wa-dropdown>`](https://webawesome.com/docs/components/dropdown)
--   [`<wa-dropdown-item>`](https://webawesome.com/docs/components/dropdown-item)
--   [`<wa-icon>`](https://webawesome.com/docs/components/icon)
--   [`<wa-popover>`](https://webawesome.com/docs/components/popover)
--   [`<wa-popup>`](https://webawesome.com/docs/components/popup)
--   [`<wa-slider>`](https://webawesome.com/docs/components/slider)
--   [`<wa-spinner>`](https://webawesome.com/docs/components/spinner)
--   [`<wa-tooltip>`](https://webawesome.com/docs/components/tooltip)
-
-**Need a hand?** Report a bug Ask for help
+| `--controls-color` | `white` | The text and icon color used throughout the controls overlay, title overlay, and mobile controls. |
+| `--controls-background` | `var(--wa-color-surface-default)` | The background of the controls bar and mobile controls. |
+| `--poster-play-button-background` | `var(--wa-color-surface-default)` | The background of the play button shown over the poster image. Also used to derive the hover state via color-mix(). |

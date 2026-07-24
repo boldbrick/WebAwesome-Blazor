@@ -53,6 +53,7 @@ public static class ComponentCategoryMap
         ["wa-dropdown-item"] = "Actions",
 
         ["wa-checkbox"] = "Forms",
+        ["wa-checkbox-group"] = "Forms",
         ["wa-color-picker"] = "Forms",
         ["wa-combobox"] = "Forms",
         ["wa-date-input"] = "Forms",

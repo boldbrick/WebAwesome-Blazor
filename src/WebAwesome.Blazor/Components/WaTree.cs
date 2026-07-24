@@ -43,6 +43,8 @@ public class WaTree : ComponentBase
     /// The selection behavior of the tree. <see cref="WaTreeSelection.Single"/> allows only one node to be
     /// selected at a time. <see cref="WaTreeSelection.Multiple"/> displays checkboxes and allows more than one
     /// node to be selected. <see cref="WaTreeSelection.Leaf"/> allows only leaf nodes to be selected.
+    /// <see cref="WaTreeSelection.LeafMultiple"/> allows multiple leaf nodes to be selected while parent nodes
+    /// only expand and collapse.
     /// </summary>
     [Parameter] public WaTreeSelection Selection { get; set; } = WaTreeSelection.Single;
 
