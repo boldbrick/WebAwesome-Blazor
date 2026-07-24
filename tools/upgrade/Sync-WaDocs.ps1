@@ -9,12 +9,16 @@ the destination folder's contents with it (default: inputs\WebAwesome).
 
 Pro components (e.g. combobox, page) are absent from the public GitHub docs tree. For every
 component present in the release CEM (temp\download\webawesome_<version>.zip ->
-dist/custom-elements.json) but missing from the fetched docs, the script:
-  1. carries the existing doc forward from the carry-from folder (default: inputs\WebAwesome),
-     re-stamping its source header with the target version and date, or
-  2. when no existing doc is available, records the component as NEEDS CAPTURE - its doc page
-     must be fetched from https://webawesome.com/docs/components/<name> and converted to
-     markdown manually (or by the upgrade pipeline), with the source URL noted at the top.
+dist/custom-elements.json) but missing from the fetched docs, the script fills the gap from
+the first available source:
+  1. the reference doc bundled in the release zip itself (dist/skills/webawesome/references/
+     components/<name>.md, present since Web Awesome 3.3.0) - versioned exactly and covering
+     all components including Pro; a source header naming the zip origin is prepended;
+  2. the existing doc carried forward from the carry-from folder (default: inputs\WebAwesome),
+     re-stamping its source header with the target version and date;
+  3. otherwise the component is recorded as NEEDS CAPTURE - its doc page must be fetched from
+     https://webawesome.com/docs/components/<name> and converted to markdown manually (or by
+     the upgrade pipeline), with the source URL noted at the top.
 
 The downloaded GitHub zip is cached in temp\wa-docs\ and reused; pass -Force to re-download.
 
@@ -151,9 +155,27 @@ $componentNames = @(
 ) | Sort-Object -Unique
 Write-Output "CEM lists $($componentNames.Count) components."
 
-# ------ fill Pro-component doc gaps by carrying forward existing docs ------
+# ------ index the reference docs bundled in the release zip (present since WA 3.3.0) ------
+
+$bundledRefs = @{}
+$zip = [System.IO.Compression.ZipFile]::OpenRead($releaseZipPath)
+try {
+    foreach ($entry in $zip.Entries) {
+        if ($entry.FullName -match '(^|/)dist/skills/webawesome/references/components/([a-z0-9\-]+)\.md$') {
+            $reader = New-Object System.IO.StreamReader($entry.Open())
+            try { $bundledRefs[$Matches[2]] = $reader.ReadToEnd() } finally { $reader.Dispose() }
+        }
+    }
+}
+finally {
+    $zip.Dispose()
+}
+if ($bundledRefs.Count -gt 0) { Write-Output "Release zip bundles $($bundledRefs.Count) component reference docs." }
+
+# ------ fill doc gaps: bundled reference, then carry-forward, then NEEDS CAPTURE ------
 
 $today = Get-Date -Format 'yyyy-MM-dd'
+$filledFromZip = @()
 $carriedForward = @()
 $needsCapture = @()
 
@@ -161,27 +183,38 @@ foreach ($name in $componentNames) {
     $stagingDoc = Join-Path $staging "components\$name.md"
     if (Test-Path $stagingDoc) { continue }
 
-    $existingDoc = Join-Path $CarryFromPath "components\$name.md"
-    if (Test-Path $existingDoc) {
-        $content = Get-Content $existingDoc -Raw
-        # re-stamp the source header comment (first line) with the target version and date
-        $header = "<!-- Source: https://webawesome.com/docs/components/$name (public web docs -- component absent from the public GitHub docs tree; carried forward $today for Web Awesome $Version - verify against the target CEM for API changes). -->"
-        if ($content -match '^\s*<!--[^\r\n]*-->') {
-            $content = $content -replace '^\s*<!--[^\r\n]*-->', $header
-        }
-        else {
-            $content = "$header`r`n`r`n$content"
-        }
-        $targetDir = Split-Path $stagingDoc -Parent
-        if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Force $targetDir | Out-Null }
-        Set-Content -Path $stagingDoc -Value $content -Encoding utf8 -NoNewline
-        $carriedForward += $name
+    $content = $null
+    if ($bundledRefs.ContainsKey($name)) {
+        $header = "<!-- Source: reference doc bundled in the Web Awesome $Version release zip (dist/skills/webawesome/references/components/$name.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/$name -->"
+        $content = "$header`r`n`r`n$($bundledRefs[$name])"
+        $filledFromZip += $name
     }
     else {
-        $needsCapture += $name
+        $existingDoc = Join-Path $CarryFromPath "components\$name.md"
+        if (Test-Path $existingDoc) {
+            $content = Get-Content $existingDoc -Raw
+            # re-stamp the source header comment (first line) with the target version and date
+            $header = "<!-- Source: https://webawesome.com/docs/components/$name (public web docs -- component absent from the public GitHub docs tree; carried forward $today for Web Awesome $Version - verify against the target CEM for API changes). -->"
+            if ($content -match '^\s*<!--[^\r\n]*-->') {
+                $content = $content -replace '^\s*<!--[^\r\n]*-->', $header
+            }
+            else {
+                $content = "$header`r`n`r`n$content"
+            }
+            $carriedForward += $name
+        }
+        else {
+            $needsCapture += $name
+            continue
+        }
     }
+
+    $targetDir = Split-Path $stagingDoc -Parent
+    if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Force $targetDir | Out-Null }
+    Set-Content -Path $stagingDoc -Value $content -Encoding utf8 -NoNewline
 }
 
+if ($filledFromZip) { Write-Output "Filled from the release zip's bundled references: $($filledFromZip -join ', ')" }
 if ($carriedForward) { Write-Output "Carried forward (re-stamped for $Version): $($carriedForward -join ', ')" }
 if ($needsCapture) {
     Write-Warning "NEEDS CAPTURE - no doc in GitHub tree or carry-from folder; fetch from https://webawesome.com/docs/components/<name> and convert to markdown:"
@@ -195,11 +228,12 @@ New-Item -ItemType Directory -Force (Split-Path $Destination -Parent) | Out-Null
 Move-Item $staging $Destination
 
 $total = (Get-ChildItem $Destination -Recurse -File).Count
-Write-Output "Docs for Web Awesome $Version written to $Destination ($total files; $($carriedForward.Count) carried forward, $($needsCapture.Count) need capture)."
+Write-Output "Docs for Web Awesome $Version written to $Destination ($total files; $($filledFromZip.Count) filled from the zip, $($carriedForward.Count) carried forward, $($needsCapture.Count) need capture)."
 
 return [pscustomobject]@{
     Destination    = $Destination
     FileCount      = $total
+    FilledFromZip  = $filledFromZip
     CarriedForward = $carriedForward
     NeedsCapture   = $needsCapture
 }
