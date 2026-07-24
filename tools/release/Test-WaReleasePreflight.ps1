@@ -120,12 +120,17 @@ Add-Gate 'changelog-unreleased-folded' (-not $unreleasedFixes) 'no leftover [Unr
 
 $entryHasBreaking = $false
 if ($changelog -match ('(?s)## \[' + [regex]::Escape($version) + '\](.*?)(\r?\n## \[|$)')) {
-    if ($Matches[1] -match '### Breaking changes') { $entryHasBreaking = $true }
+    $entryBody = $Matches[1]
+    if ($entryBody -match '(?s)### Breaking changes\s*(.*?)(\r?\n### |$)') {
+        # a section counts as breaking only if it declares something beyond a lone "None" bullet
+        $breakingBody = ($Matches[1] -replace '(?m)^\s*[-*]\s*', '').Trim()
+        if ($breakingBody -and $breakingBody -notmatch '^[Nn]one\b') { $entryHasBreaking = $true }
+    }
 }
 if ($entryHasBreaking) {
     Add-Gate 'migration-doc' (Test-Path ("docs\MIGRATION-{0}.md" -f $version)) ("breaking changes present, docs\MIGRATION-{0}.md required" -f $version)
 } else {
-    Add-Gate 'migration-doc' $true 'no breaking changes section, migration doc not required'
+    Add-Gate 'migration-doc' $true 'no breaking changes declared, migration doc not required'
 }
 
 # --- gates: build, tests, package -------------------------------------------
