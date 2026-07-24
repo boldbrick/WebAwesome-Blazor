@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.6.0 release zip (dist/skills/webawesome/references/components/line-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/line-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/line-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/line-chart -->
 
 # Line Chart [Pro]
 
@@ -9,7 +9,7 @@
 
 Line charts show trends over time by connecting data points with line segments. Use them when the x-axis represents a sequential dimension and you want to emphasize the shape and direction of the data.
 
- **[Get Line Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=line-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
+**[Get Line Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=line-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
 -   Responsive [Layout Tools](https://webawesome.com/docs/utilities)
@@ -388,7 +388,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.6.0/components/line-chart/line-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/line-chart/line-chart.js';
 ```
 
 \*\*npm\*\*

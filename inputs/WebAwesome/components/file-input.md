@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.6.0 release zip (dist/skills/webawesome/references/components/file-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/file-input -->
+<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/file-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/file-input -->
 
 # File Input [Pro]
 
@@ -9,7 +9,7 @@
 
 File inputs allow users to select files from their device.
 
- **[Get File Input with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=file-input)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
+**[Get File Input with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=file-input)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
 -   Responsive [Layout Tools](https://webawesome.com/docs/utilities)
@@ -311,7 +311,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.6.0/components/file-input/file-input.js';
+import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/file-input/file-input.js';
 ```
 
 \*\*npm\*\*
