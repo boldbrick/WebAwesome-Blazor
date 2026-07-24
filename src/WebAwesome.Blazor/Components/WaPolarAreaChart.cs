@@ -4,6 +4,9 @@ namespace WebAwesome.Blazor.Components;
 /// A polar area chart that compares values using segments radiating from a center point with varying radius.
 /// Corresponds to the wa-polar-area-chart Web Awesome component.
 /// </summary>
+/// <remarks>
+/// This is a Pro component.
+/// </remarks>
 public class WaPolarAreaChart : WaChartBase
 {
     /// <inheritdoc />

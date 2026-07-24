@@ -4,6 +4,9 @@ namespace WebAwesome.Blazor.Components;
 /// A pie chart that displays the proportional composition of a whole as slices of a circle.
 /// Corresponds to the wa-pie-chart Web Awesome component.
 /// </summary>
+/// <remarks>
+/// This is a Pro component.
+/// </remarks>
 public class WaPieChart : WaChartBase
 {
     /// <inheritdoc />

@@ -75,12 +75,51 @@ else {
 $cem = $cemJson | ConvertFrom-Json
 
 # ------ Pro component list ------
-# the CEM carries no Pro marker; tools\upgrade\pro-components.json is the curated source of truth
-# (maintained per upgrade - see the comment inside that file)
+# the CEM carries no Pro marker. Since Web Awesome 3.3.0 the release zip bundles reference docs
+# (dist/skills/webawesome/references/components/<name>.md) whose first heading marks Pro
+# components with "[Pro]" - that is the authoritative, versioned source. For older releases
+# (no bundled references) tools\upgrade\pro-components.json is the curated fallback.
 $proTags = @()
-$proListPath = Join-Path $PSScriptRoot 'pro-components.json'
-if (Test-Path $proListPath) {
-    $proTags = @((Get-Content $proListPath -Raw | ConvertFrom-Json).proComponents)
+
+# prefer the extracted source tree, then the release zip
+$refsDir = Join-Path $RepoRoot "temp\wa-src\$Version\dist\skills\webawesome\references\components"
+if (Test-Path $refsDir) {
+    foreach ($file in Get-ChildItem $refsDir -Filter '*.md') {
+        $firstLine = Get-Content $file.FullName -TotalCount 1
+        if ($firstLine -match '\[Pro\]') { $proTags += "wa-$($file.BaseName)" }
+    }
+}
+else {
+    $zipPath = Join-Path $RepoRoot "temp\download\webawesome_$Version.zip"
+    if (Test-Path $zipPath) {
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
+        try {
+            foreach ($entry in $zip.Entries) {
+                if ($entry.FullName -match '(^|/)dist/skills/webawesome/references/components/([a-z0-9\-]+)\.md$') {
+                    $componentName = $Matches[2]
+                    $reader = New-Object System.IO.StreamReader($entry.Open())
+                    try { $firstLine = $reader.ReadLine() } finally { $reader.Dispose() }
+                    if ($firstLine -match '\[Pro\]') { $proTags += "wa-$componentName" }
+                }
+            }
+        }
+        finally {
+            $zip.Dispose()
+        }
+    }
+}
+
+if ($proTags.Count -gt 0) {
+    Write-Verbose "Pro components derived from the bundled reference docs: $($proTags -join ', ')"
+}
+else {
+    # pre-3.3.0 release (or no zip available): fall back to the curated list
+    $proListPath = Join-Path $PSScriptRoot 'pro-components.json'
+    if (Test-Path $proListPath) {
+        $proTags = @((Get-Content $proListPath -Raw | ConvertFrom-Json).proComponents)
+        Write-Verbose "Pro components taken from the curated fallback list: $($proTags -join ', ')"
+    }
 }
 
 # ------ helpers ------

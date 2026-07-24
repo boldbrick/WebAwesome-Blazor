@@ -12,6 +12,9 @@ namespace WebAwesome.Blazor.Components;
 /// An individual notification displayed within a <see cref="WaToast"/> stack.
 /// Corresponds to the wa-toast-item Web Awesome component.
 /// </summary>
+/// <remarks>
+/// This is a Pro component.
+/// </remarks>
 public class WaToastItem : ComponentBase
 {
     #region ------ Dependency Injection ------
