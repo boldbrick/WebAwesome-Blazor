@@ -86,6 +86,11 @@ public class WaNumberInput : WaInputBase<decimal?>
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
+    /// <summary>
+    /// Invoked before the value changes. The change can be prevented by cancelling the event.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnBeforeInput { get; set; }
+
     #endregion
 
     #region ------ Slots ------
@@ -156,6 +161,7 @@ public class WaNumberInput : WaInputBase<decimal?>
 
         // Add number-input-specific event handlers
         builder.AddAttributeIfHasDelegate(49, "onwa-invalid", OnInvalid);
+        builder.AddAttributeIfHasDelegate(50, "onbeforeinput", OnBeforeInput);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(53, __numberInputReference => Element = __numberInputReference);

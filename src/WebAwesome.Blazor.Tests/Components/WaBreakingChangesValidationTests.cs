@@ -242,4 +242,31 @@ public class WaBreakingChangesValidationTests
     }
 
     #endregion
+
+    #region ------ 3.6.0 Breaking Changes ------
+
+    [Fact]
+    public void WaFileInput_DoesNotHaveFileIconContentProperty()
+    {
+        // Arrange & Act - the upstream "file-icon" slot was removed in Web Awesome 3.6.0
+        var type = typeof(WaFileInput);
+
+        // Assert - FileIconContent property should not exist
+        var fileIconContentProperty = type.GetProperty("FileIconContent");
+        Assert.Null(fileIconContentProperty);
+    }
+
+    [Fact]
+    public void WaSize_ToHtmlValue_ReturnsCorrectStringsForAllValues()
+    {
+        // Assert - WaSize gained ExtraSmall/ExtraLarge in Web Awesome 3.6.0; existing
+        // Small/Medium/Large mappings must remain unchanged
+        Assert.Equal("small", WaSize.Small.ToHtmlValue());
+        Assert.Equal("medium", WaSize.Medium.ToHtmlValue());
+        Assert.Equal("large", WaSize.Large.ToHtmlValue());
+        Assert.Equal("xs", WaSize.ExtraSmall.ToHtmlValue());
+        Assert.Equal("xl", WaSize.ExtraLarge.ToHtmlValue());
+    }
+
+    #endregion
 }

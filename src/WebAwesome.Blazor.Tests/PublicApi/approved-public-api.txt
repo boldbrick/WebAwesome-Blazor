@@ -1262,8 +1262,6 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? DropzoneContent { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? FileIconContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public string? Hint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? HintContent { get; set; }
@@ -1743,6 +1741,8 @@ namespace WebAwesome.Blazor.Components
         public decimal? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal? Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnBeforeInput { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2340,6 +2340,8 @@ namespace WebAwesome.Blazor.Components
         Small = 0,
         Medium = 1,
         Large = 2,
+        ExtraSmall = 3,
+        ExtraLarge = 4,
     }
     public class WaSkeleton : Microsoft.AspNetCore.Components.ComponentBase
     {

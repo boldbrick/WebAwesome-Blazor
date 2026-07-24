@@ -1,5 +1,5 @@
 {
-  "version": "3.5.0",
+  "version": "3.6.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-animated-image": {
@@ -291,7 +291,7 @@
     "wa-bar-chart": {
       "className": "WaBarChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -489,7 +489,7 @@
     "wa-bubble-chart": {
       "className": "WaBubbleChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -682,8 +682,8 @@
           "description": "When using `href`, this attribute will map to the underlying link's `rel` attribute."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The button's size."
         },
         "target": {
@@ -852,8 +852,8 @@
           "description": null
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The callout's size."
         },
         "variant": {
@@ -1154,8 +1154,8 @@
           "description": "Makes the color picker a required field."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "Determines the size of the color picker's trigger"
         },
         "swatches": {
@@ -1314,7 +1314,7 @@
     "wa-combobox": {
       "className": "WaCombobox",
       "since": "3.1",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "allow-create": {
@@ -1428,8 +1428,8 @@
           "description": "The combobox's required attribute."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The combobox's size."
         },
         "spellcheck": {
@@ -1933,7 +1933,7 @@
     "wa-doughnut-chart": {
       "className": "WaDoughnutChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -2163,8 +2163,8 @@
           "description": "The placement of the dropdown menu in reference to the trigger. The menu will shift to a more optimal location if\nthe preferred placement doesn't have enough room."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The dropdown's size."
         },
         "skidding": {
@@ -2213,7 +2213,7 @@
     "wa-dropdown-item": {
       "className": "WaDropdownItem",
       "since": "3.0",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "did-ssr": {
@@ -2302,7 +2302,7 @@
     "wa-file-input": {
       "className": "WaFileInput",
       "since": "3.2",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "accept": {
@@ -2361,8 +2361,8 @@
           "description": "Makes the file input a required field."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The file input's size."
         },
         "with-hint": {
@@ -2405,7 +2405,6 @@
       },
       "slots": {
         "dropzone": "Custom content to show in the dropzone.",
-        "file-icon": "Custom icon for non-image files.",
         "hint": "Text that describes how to use the file input. Alternatively, you can use the `hint` attribute.",
         "label": "The file input's label. Alternatively, you can use the `label` attribute."
       },
@@ -2658,7 +2657,7 @@
     "wa-chart": {
       "className": "WaChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -2816,8 +2815,8 @@
           "description": "Makes the checkbox a required field."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The checkbox's size."
         },
         "title": {
@@ -3183,8 +3182,8 @@
           "description": "Makes the input a required field."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The input's size."
         },
         "spellcheck": {
@@ -3399,7 +3398,7 @@
     "wa-line-chart": {
       "className": "WaLineChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -3613,7 +3612,7 @@
     "wa-number-input": {
       "className": "WaNumberInput",
       "since": "3.2",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "appearance": {
@@ -3712,8 +3711,8 @@
           "description": "Makes the input a required field."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The input's size."
         },
         "step": {
@@ -3748,6 +3747,11 @@
         }
       },
       "events": {
+        "beforeinput": {
+          "type": null,
+          "eventName": "BeforeinputEvent",
+          "description": "Emitted before the value changes. Can be cancelled with `event.preventDefault()` to prevent the value from changing."
+        },
         "blur": {
           "type": null,
           "eventName": "BlurEvent",
@@ -3993,7 +3997,7 @@
     "wa-pie-chart": {
       "className": "WaPieChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -4097,7 +4101,7 @@
     "wa-polar-area-chart": {
       "className": "WaPolarAreaChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -4607,7 +4611,7 @@
     "wa-radar-chart": {
       "className": "WaRadarChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -4750,7 +4754,7 @@
           "description": "The name of the input, submitted as a name/value pair with form data."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
           "default": null,
           "description": "The radio's size. When used inside a radio group, the size will be determined by the radio group's size, which will\noverride this attribute."
         },
@@ -4852,7 +4856,7 @@
           "description": "Ensures a child radio is checked before allowing the containing form to submit."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
           "default": null,
           "description": "The radio group's size. When present, this size will be applied to all `<wa-radio>` items inside."
         },
@@ -4992,8 +4996,8 @@
           "description": "Makes the rating a required field."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The component's size."
         },
         "value": {
@@ -5128,7 +5132,7 @@
     "wa-scatter-chart": {
       "className": "WaScatterChart",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "description": {
@@ -5362,8 +5366,8 @@
           "description": "The select's required attribute."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The select's size."
         },
         "value": {
@@ -5623,8 +5627,8 @@
           "description": "Makes the slider a read-only field."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The slider's size."
         },
         "step": {
@@ -5751,7 +5755,7 @@
     "wa-sparkline": {
       "className": "WaSparkline",
       "since": "3.2",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "appearance": {
@@ -5962,8 +5966,8 @@
           "description": "Makes the switch a required field."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The switch's size."
         },
         "title": {
@@ -6231,8 +6235,8 @@
           "description": "Draws a pill-style tag with rounded edges."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The tag's size."
         },
         "variant": {
@@ -6381,8 +6385,8 @@
           "description": "The number of rows to display by default."
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The textarea's size."
         },
         "spellcheck": {
@@ -6497,7 +6501,7 @@
     "wa-toast": {
       "className": "WaToast",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "did-ssr": {
@@ -6538,7 +6542,7 @@
     "wa-toast-item": {
       "className": "WaToastItem",
       "since": "3.3",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "did-ssr": {
@@ -6562,8 +6566,8 @@
           "description": null
         },
         "size": {
-          "type": "'small' | 'medium' | 'large'",
-          "default": "'medium'",
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
           "description": "The toast item's size."
         },
         "variant": {

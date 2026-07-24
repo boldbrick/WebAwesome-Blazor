@@ -1,8 +1,15 @@
 ---
 title: Copy Button
-description: Copies data to the clipboard when the user clicks the button.
 layout: component
 category: Actions
+synonyms:
+  - clipboard
+  - copy to clipboard
+  - copy icon
+use-cases:
+  - code copy
+  - text copy
+  - share link
 ---
 
 ```html {.example}
