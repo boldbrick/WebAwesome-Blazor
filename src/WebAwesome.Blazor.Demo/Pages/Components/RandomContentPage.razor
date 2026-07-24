@@ -1,0 +1,199 @@
+@page "/components/random-content"
+
+<PageTitle>Random Content</PageTitle>
+
+<h1>Random Content <ComponentBadges Tag="wa-random-content" /></h1>
+<p>
+    Randomly picks and displays one or more of its slotted children, hiding the rest — for rotating
+    testimonials, a tip of the day, or featured content. <code>&lt;wa-random-content&gt;</code>
+    wrapped by <code>WaRandomContent</code>.
+</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaRandomContent @ref="overview">
+        <WaCallout Variant="WaVariant.Brand" IconName="paperclip-vertical">
+            <strong>It looks like you're writing a letter!</strong><br />
+            Want a hand with the formatting?
+        </WaCallout>
+        <WaCallout Variant="WaVariant.Brand" IconName="paperclip-vertical">
+            <strong>It looks like you're building a web app!</strong><br />
+            I can recommend a few components.
+        </WaCallout>
+        <WaCallout Variant="WaVariant.Brand" IconName="paperclip-vertical">
+            <strong>It looks like you're stuck.</strong><br />
+            Have you tried turning it off and on again?
+        </WaCallout>
+    </WaRandomContent>
+    <WaDivider />
+    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => overview!.RandomizeAsync())">Shuffle</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Providing Content" Code="@ProvidingExample">
+    <WaRandomContent @ref="providing">
+        <p>Plain text works fine.</p>
+        <WaBadge Variant="WaVariant.Brand">So do components</WaBadge>
+        <WaCard>Even rich cards with their own content.</WaCard>
+    </WaRandomContent>
+    <WaDivider />
+    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => providing!.RandomizeAsync())">Shuffle</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Number of Items" Code="@ItemsExample">
+    <WaRandomContent @ref="itemsDemo" Items="2">
+        <WaBadge Variant="WaVariant.Brand">New</WaBadge>
+        <WaBadge Variant="WaVariant.Success">Sale</WaBadge>
+        <WaBadge Variant="WaVariant.Warning">Low stock</WaBadge>
+        <WaBadge Variant="WaVariant.Neutral">Popular</WaBadge>
+        <WaBadge Variant="WaVariant.Danger">Last chance</WaBadge>
+    </WaRandomContent>
+    <WaDivider />
+    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => itemsDemo!.RandomizeAsync())">Shuffle</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Changing the Mode" Code="@ModeExample">
+    <WaRandomContent @ref="modeDemo" Mode="WaRandomContentMode.Sequence">
+        <WaTag Variant="WaVariant.Brand">A</WaTag>
+        <WaTag Variant="WaVariant.Success">B</WaTag>
+        <WaTag Variant="WaVariant.Warning">C</WaTag>
+        <WaTag Variant="WaVariant.Danger">D</WaTag>
+    </WaRandomContent>
+    <WaDivider />
+    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => modeDemo!.RandomizeAsync())">Next</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Animating New Content" Code="@AnimationExample">
+    <WaRandomContent @ref="animationDemo" Animation="WaRandomContentAnimation.FadeUp">
+        <p>Good morning!</p>
+        <p>Welcome back.</p>
+        <p>What are you building today?</p>
+    </WaRandomContent>
+    <WaDivider />
+    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => animationDemo!.RandomizeAsync())">Next</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Autoplay" Code="@AutoplayExample">
+    <WaRandomContent Mode="WaRandomContentMode.Unique" Animation="WaRandomContentAnimation.FadeUp" Autoplay="true" AutoplayInterval="3000">
+        <div><WaIcon Name="octopus" /> Octopuses have three hearts.</div>
+        <div><WaIcon Name="bee" /> Honey never spoils.</div>
+        <div><WaIcon Name="feather" /> A group of flamingos is called a flamboyance.</div>
+        <div><WaIcon Name="banana" /> Bananas are botanically berries.</div>
+    </WaRandomContent>
+</ExampleSection>
+
+<ExampleSection Title="Styling the Container" Code="@LayoutExample">
+    <WaRandomContent @ref="layoutDemo" Items="3" Style="display: flex; gap: var(--wa-space-m); flex-wrap: wrap">
+        <WaAvatar Label="Jordan Hayes" Initials="JH" />
+        <WaAvatar Label="Mara Goldberg" Initials="MG" />
+        <WaAvatar Label="Beck Watts" Initials="BW" />
+        <WaAvatar Label="Avi Lin" Initials="AL" />
+        <WaAvatar Label="Rae Park" Initials="RP" />
+        <WaAvatar Label="Sam Cho" Initials="SC" />
+    </WaRandomContent>
+    <WaDivider />
+    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => layoutDemo!.RandomizeAsync())">Shuffle</WaButton>
+</ExampleSection>
+
+<ApiTable Tag="wa-random-content" />
+
+@code {
+    private WaRandomContent? overview;
+    private WaRandomContent? providing;
+    private WaRandomContent? itemsDemo;
+    private WaRandomContent? modeDemo;
+    private WaRandomContent? animationDemo;
+    private WaRandomContent? layoutDemo;
+
+    private const string DefaultExample = """
+        <WaRandomContent @ref="overview">
+            <WaCallout Variant="WaVariant.Brand" IconName="paperclip-vertical">
+                <strong>It looks like you're writing a letter!</strong><br />
+                Want a hand with the formatting?
+            </WaCallout>
+            <WaCallout Variant="WaVariant.Brand" IconName="paperclip-vertical">
+                <strong>It looks like you're building a web app!</strong><br />
+                I can recommend a few components.
+            </WaCallout>
+            <WaCallout Variant="WaVariant.Brand" IconName="paperclip-vertical">
+                <strong>It looks like you're stuck.</strong><br />
+                Have you tried turning it off and on again?
+            </WaCallout>
+        </WaRandomContent>
+        <WaDivider />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => overview!.RandomizeAsync())">Shuffle</WaButton>
+
+        @code {
+            private WaRandomContent? overview;
+        }
+        """;
+
+    private const string ProvidingExample = """
+        <WaRandomContent @ref="providing">
+            <p>Plain text works fine.</p>
+            <WaBadge Variant="WaVariant.Brand">So do components</WaBadge>
+            <WaCard>Even rich cards with their own content.</WaCard>
+        </WaRandomContent>
+        <WaDivider />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => providing!.RandomizeAsync())">Shuffle</WaButton>
+        """;
+
+    private const string ItemsExample = """
+        @* Items shows more than one child at a time; clamped to the child count *@
+        <WaRandomContent @ref="itemsDemo" Items="2">
+            <WaBadge Variant="WaVariant.Brand">New</WaBadge>
+            <WaBadge Variant="WaVariant.Success">Sale</WaBadge>
+            <WaBadge Variant="WaVariant.Warning">Low stock</WaBadge>
+            <WaBadge Variant="WaVariant.Neutral">Popular</WaBadge>
+            <WaBadge Variant="WaVariant.Danger">Last chance</WaBadge>
+        </WaRandomContent>
+        <WaDivider />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => itemsDemo!.RandomizeAsync())">Shuffle</WaButton>
+        """;
+
+    private const string ModeExample = """
+        @* Mode: Unique (default) never repeats; Random may repeat; Sequence steps in DOM order *@
+        <WaRandomContent @ref="modeDemo" Mode="WaRandomContentMode.Sequence">
+            <WaTag Variant="WaVariant.Brand">A</WaTag>
+            <WaTag Variant="WaVariant.Success">B</WaTag>
+            <WaTag Variant="WaVariant.Warning">C</WaTag>
+            <WaTag Variant="WaVariant.Danger">D</WaTag>
+        </WaRandomContent>
+        <WaDivider />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => modeDemo!.RandomizeAsync())">Next</WaButton>
+        """;
+
+    private const string AnimationExample = """
+        <WaRandomContent @ref="animationDemo" Animation="WaRandomContentAnimation.FadeUp">
+            <p>Good morning!</p>
+            <p>Welcome back.</p>
+            <p>What are you building today?</p>
+        </WaRandomContent>
+        <WaDivider />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => animationDemo!.RandomizeAsync())">Next</WaButton>
+        """;
+
+    private const string AutoplayExample = """
+        @* Rotates on a timer; pauses on hover/focus and respects reduced motion.
+           Always give autoplay content a visible pause control in production. *@
+        <WaRandomContent Mode="WaRandomContentMode.Unique" Animation="WaRandomContentAnimation.FadeUp"
+                         Autoplay="true" AutoplayInterval="3000">
+            <div><WaIcon Name="octopus" /> Octopuses have three hearts.</div>
+            <div><WaIcon Name="bee" /> Honey never spoils.</div>
+            <div><WaIcon Name="feather" /> A group of flamingos is called a flamboyance.</div>
+            <div><WaIcon Name="banana" /> Bananas are botanically berries.</div>
+        </WaRandomContent>
+        """;
+
+    private const string LayoutExample = """
+        @* The host is display:contents by default; give it its own display to lay several items out *@
+        <WaRandomContent @ref="layoutDemo" Items="3" Style="display: flex; gap: var(--wa-space-m); flex-wrap: wrap">
+            <WaAvatar Label="Jordan Hayes" Initials="JH" />
+            <WaAvatar Label="Mara Goldberg" Initials="MG" />
+            <WaAvatar Label="Beck Watts" Initials="BW" />
+            <WaAvatar Label="Avi Lin" Initials="AL" />
+            <WaAvatar Label="Rae Park" Initials="RP" />
+            <WaAvatar Label="Sam Cho" Initials="SC" />
+        </WaRandomContent>
+        <WaDivider />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => layoutDemo!.RandomizeAsync())">Shuffle</WaButton>
+        """;
+}

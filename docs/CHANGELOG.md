@@ -2,6 +2,34 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.10.0] — 2026-07-24
+
+Alignment with the Web Awesome 3.10.0 release, opening the **WA-3.10 train**. A small additive upgrade: one new content-rotation component (`WaRandomContent`) and one additive attribute on `WaIcon`. **No wrapper APIs were removed or renamed**, so no migration guide is needed.
+
+### Breaking changes
+- None. The upstream change report lists zero breaking changes.
+
+### New components
+- `WaRandomContent` (`wa-random-content`, free/experimental) — selects one or more slotted children at random and displays them, hiding the rest (rotating testimonials, tip of the day, featured content). Derives from `ComponentBase`. Exposes `Items` (count shown, default 1), `Mode` (`WaRandomContentMode` — `Random`/`Unique`/`Sequence`, default `Unique`), `Autoplay`/`AutoplayInterval` (ms, default 3000), and `Animation` (`WaRandomContentAnimation` — `None`/`Fade`/`FadeUp`/`FadeDown`/`FadeLeft`/`FadeRight`, default `None`); the default `ChildContent` slot is the pool; the `OnContentChange` (`WaContentChangeEventArgs`) callback fires on every rotation; and `RandomizeAsync()` re-selects.
+
+### Changed
+- `WaIcon` gained `Canvas` (`WaIconCanvas` — `Fixed`/`Auto`/`Square`/`Roomy`), setting the box the icon is centered within. Unset renders as the fixed 1.25em × 1em box; `Auto` hugs the icon's width, `Square` is 1.25em × 1.25em, `Roomy` is 1.5em × 1.5em. Mirrors Font Awesome's `fa-fixed-width`/`fa-width-auto`/`fa-canvas-square`/`fa-canvas-roomy`.
+- `wa-known-date` removed its `error` CSS `::part`. The wrapper never exposed it as a parameter, so there is no wrapper API change — noted for completeness.
+
+### Library
+- Versioned reference docs refreshed to the `v3.10.0` tag: 147 public-docs files updated, 1 added (`random-content`); 18 Pro/reference docs filled from the release zip's bundled references; 0 needed manual capture.
+- New train WA-3.10: subtrunk `/main/WA-3.10` branched off `/main` (released 3.9.0); developed on `/main/WA-3.10/WAB-41`.
+- Event delivery: `wa-content-change` registered in the JS initializer with a `specialArgs` projection — its detail carries live child elements (DOM nodes), projected to `{ count, items: [{ id, textContent }] }` for `WaContentChangeEventArgs`, mirroring `wa-selection-change`.
+
+### Public API
+- Baseline promoted: purely additive — the new `WaRandomContent` class, the `WaRandomContentMode`/`WaRandomContentAnimation`/`WaIconCanvas` enums, `WaContentChangeEventArgs`, and `WaIcon.Canvas`. No removals; every diff explained by the WA 3.10.0 change report.
+
+### Deviations recorded (parity-config.json)
+- None. All five consumer-authorable attributes of `wa-random-content` (`items`, `mode`, `autoplay`, `autoplay-interval`, `animation`) are bound directly; its `wa-content-change` event and `randomize()` method are both surfaced. `WaIcon.Canvas` covers the new `canvas` attribute.
+
+### Next-release check outcomes
+- Observer `stopObserver()`/`startObserver()` and `wa-relative-time` `update()`: re-verified against the 3.10.0 sources (`startObserver`/`stopObserver` still private in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle, only `updateTimeout`/`willUpdate` in `relative-time.d.ts`) — the `extraElementMethods` allowlist stands, verification stamps updated.
+
 ## [3.9.0] — 2026-07-24
 
 Alignment with the Web Awesome 3.9.0 release, opening the **WA-3.9 train**. A small additive upgrade: one new form-grouping component (`WaCheckboxGroup`) and one additive enum value on `WaTree`. **No wrapper APIs were removed or renamed.** See [MIGRATION-3.9.0.md](MIGRATION-3.9.0.md).
