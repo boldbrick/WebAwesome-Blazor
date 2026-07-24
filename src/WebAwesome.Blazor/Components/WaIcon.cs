@@ -111,6 +111,15 @@ public class WaIcon : ComponentBase
     /// </summary>
     [Parameter] public int Rotate { get; set; } = 0;
 
+    /// <summary>
+    /// Sets the icon canvas — the box the icon is centered within. Unset renders as fixed
+    /// (1.25em × 1em); <see cref="WaIconCanvas.Auto"/> hugs the icon's width;
+    /// <see cref="WaIconCanvas.Square"/> is 1.25em × 1.25em; <see cref="WaIconCanvas.Roomy"/> is
+    /// 1.5em × 1.5em. Mirrors Font Awesome's <c>fa-fixed-width</c>, <c>fa-width-auto</c>,
+    /// <c>fa-canvas-square</c>, and <c>fa-canvas-roomy</c>. Scales with <c>font-size</c>.
+    /// </summary>
+    [Parameter] public WaIconCanvas? Canvas { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -151,6 +160,7 @@ public class WaIcon : ComponentBase
         builder.AddAttributeIfNotNull(18, "animation", Animation?.ToHtmlValue());
         builder.AddAttributeIfNotNull(19, "flip", Flip?.ToHtmlValue());
         builder.AddAttribute(20, "rotate", Rotate);
+        builder.AddAttributeIfNotNull(21, "canvas", Canvas?.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(30, "onwa-load", OnLoad);

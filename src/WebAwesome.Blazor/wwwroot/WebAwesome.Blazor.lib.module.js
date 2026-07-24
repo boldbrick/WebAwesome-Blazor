@@ -18,6 +18,7 @@ const eventNames = [
   'wa-change',
   'wa-clear',
   'wa-collapse',
+  'wa-content-change',
   'wa-copy',
   'wa-create',
   'wa-error',
@@ -145,6 +146,19 @@ const specialArgs = {
       contentRect: entry.contentRect && entry.contentRect.toJSON ? entry.contentRect.toJSON() : null,
     })),
   }),
+
+  // detail is { items: Element[] } - live child elements now shown; project to identifying data
+  // and expose the count (WaContentChangeEventArgs)
+  'wa-content-change': event => {
+    const items = (event.detail && event.detail.items) || [];
+    return {
+      count: items.length,
+      items: items.map(item => ({
+        id: item.id || null,
+        textContent: (item.textContent || '').trim(),
+      })),
+    };
+  },
 
   // detail is { selection: WaTreeItem[] } - project the live elements to identifying data
   'wa-selection-change': event => ({

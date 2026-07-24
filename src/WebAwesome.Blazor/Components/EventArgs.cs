@@ -282,3 +282,32 @@ public class WaVideoChangeEventArgs : EventArgs
 }
 
 #endregion
+
+#region ------ Random Content Events ------
+
+/// <summary>
+/// Event arguments for the random-content content-change event, raised whenever the displayed
+/// selection changes (including on first render, on RandomizeAsync, and on each autoplay tick).
+/// </summary>
+/// <remarks>
+/// The wa-content-change event's detail carries the live child elements now shown; DOM elements
+/// cannot be marshaled into Blazor <see cref="ElementReference"/>s from event payloads, so
+/// <see cref="Items"/> is left as raw deserialized objects (each projected to its id and trimmed
+/// text content), mirroring <see cref="WaTreeSelectionChangeEventArgs.Selection"/>, and
+/// <see cref="Count"/> exposes how many children are now shown.
+/// </remarks>
+public class WaContentChangeEventArgs : EventArgs
+{
+    /// <summary>
+    /// Number of children currently shown.
+    /// </summary>
+    public int Count { get; set; }
+
+    /// <summary>
+    /// Selection data projected from the wa-content-change event's detail, one entry per shown
+    /// child; each entry carries the element's id and trimmed text content.
+    /// </summary>
+    public object[]? Items { get; set; }
+}
+
+#endregion
