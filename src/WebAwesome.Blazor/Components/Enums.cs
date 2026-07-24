@@ -698,7 +698,9 @@ public enum WaTreeSelection
     /// <summary>Displays checkboxes and allows more than one node to be selected.</summary>
     Multiple,
     /// <summary>Only leaf nodes can be selected.</summary>
-    Leaf
+    Leaf,
+    /// <summary>Multiple leaf nodes can be selected while parent nodes only expand and collapse.</summary>
+    LeafMultiple
 }
 
 /// <summary>
@@ -1742,6 +1744,7 @@ public static class WaEnumExtensions
             WaTreeSelection.Single => "single",
             WaTreeSelection.Multiple => "multiple",
             WaTreeSelection.Leaf => "leaf",
+            WaTreeSelection.LeafMultiple => "leaf-multiple",
             _ => throw new ArgumentOutOfRangeException(nameof(selection), selection, null)
         };
     }
