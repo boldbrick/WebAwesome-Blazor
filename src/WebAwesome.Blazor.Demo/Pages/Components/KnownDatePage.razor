@@ -1,0 +1,68 @@
+@page "/components/known-date"
+
+<PageTitle>Known Date</PageTitle>
+
+<h1>Known Date <ComponentBadges Tag="wa-known-date" /></h1>
+<p>Known Date collects a date the user already knows — a birthday, a document date — through separate day, month, and year fields. It submits a single canonical ISO date (<code>YYYY-MM-DD</code>). <code>&lt;wa-known-date&gt;</code> wrapped by <code>WaKnownDate</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaKnownDate Label="When was your passport issued?" @bind-Value="defaultValue" />
+    <p>Value: <code>@(defaultValue ?? "(empty)")</code></p>
+</ExampleSection>
+
+<ExampleSection Title="Initial Value &amp; Hint" Code="@ValueExample">
+    <WaKnownDate Label="Date of birth" Hint="We use this to verify your age." @bind-Value="dobValue" />
+</ExampleSection>
+
+<ExampleSection Title="Min, Max &amp; Locale" Code="@ConstraintsExample">
+    <WaKnownDate Label="Issue date" Locale="en-GB" Min="1900-01-01" Max="2026-12-31" @bind-Value="issueValue" />
+</ExampleSection>
+
+<ExampleSection Title="Appearance &amp; Pill" Code="@AppearanceExample">
+    <WaKnownDate Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filledValue" />
+    <WaKnownDate Label="Pill" Pill="true" @bind-Value="pillValue" />
+</ExampleSection>
+
+<ApiTable Tag="wa-known-date" />
+
+@code {
+    private string? defaultValue;
+    private string? dobValue = "1990-05-25";
+    private string? issueValue;
+    private string? filledValue;
+    private string? pillValue;
+
+    private const string DefaultExample = """
+        <WaKnownDate Label="When was your passport issued?" @bind-Value="defaultValue" />
+
+        @code {
+            private string? defaultValue;
+        }
+        """;
+
+    private const string ValueExample = """
+        <WaKnownDate Label="Date of birth" Hint="We use this to verify your age." @bind-Value="dobValue" />
+
+        @code {
+            private string? dobValue = "1990-05-25";
+        }
+        """;
+
+    private const string ConstraintsExample = """
+        <WaKnownDate Label="Issue date" Locale="en-GB" Min="1900-01-01" Max="2026-12-31" @bind-Value="issueValue" />
+
+        @code {
+            private string? issueValue;
+        }
+        """;
+
+    private const string AppearanceExample = """
+        <WaKnownDate Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filledValue" />
+        <WaKnownDate Label="Pill" Pill="true" @bind-Value="pillValue" />
+
+        @code {
+            private string? filledValue;
+            private string? pillValue;
+        }
+        """;
+}

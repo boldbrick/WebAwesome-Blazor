@@ -1,0 +1,58 @@
+@page "/components/accordion-item"
+
+<PageTitle>Accordion Item</PageTitle>
+
+<h1>Accordion Item <ComponentBadges Tag="wa-accordion-item" /></h1>
+<p>A single expandable section within an <a href="/components/accordion"><code>WaAccordion</code></a>. <code>&lt;wa-accordion-item&gt;</code> wrapped by <code>WaAccordionItem</code>.</p>
+
+<ExampleSection Title="Expanded &amp; Disabled" Code="@StatesExample">
+    <WaAccordion>
+        <WaAccordionItem Label="Already open" Expanded="true">
+            This item is expanded by default. Click the header to collapse it.
+        </WaAccordionItem>
+        <WaAccordionItem Label="Click to open">
+            This item starts collapsed. Click the header to expand it.
+        </WaAccordionItem>
+        <WaAccordionItem Label="Disabled item" Disabled="true">
+            This item is disabled and cannot be toggled.
+        </WaAccordionItem>
+    </WaAccordion>
+</ExampleSection>
+
+<ExampleSection Title="Custom Icon &amp; Label" Code="@SlotsExample">
+    <WaAccordion>
+        <WaAccordionItem>
+            <LabelContent><WaIcon Name="circle-question" /> Custom label markup</LabelContent>
+            <IconContent><WaIcon Name="plus" /></IconContent>
+            <ChildContent>The <code>label</code> and <code>icon</code> slots accept rich content.</ChildContent>
+        </WaAccordionItem>
+    </WaAccordion>
+</ExampleSection>
+
+<ApiTable Tag="wa-accordion-item" />
+
+@code {
+    private const string StatesExample = """
+        <WaAccordion>
+            <WaAccordionItem Label="Already open" Expanded="true">
+                This item is expanded by default. Click the header to collapse it.
+            </WaAccordionItem>
+            <WaAccordionItem Label="Click to open">
+                This item starts collapsed. Click the header to expand it.
+            </WaAccordionItem>
+            <WaAccordionItem Label="Disabled item" Disabled="true">
+                This item is disabled and cannot be toggled.
+            </WaAccordionItem>
+        </WaAccordion>
+        """;
+
+    private const string SlotsExample = """
+        <WaAccordion>
+            <WaAccordionItem>
+                <LabelContent><WaIcon Name="circle-question" /> Custom label markup</LabelContent>
+                <IconContent><WaIcon Name="plus" /></IconContent>
+                The label and icon slots accept rich content.
+            </WaAccordionItem>
+        </WaAccordion>
+        """;
+}

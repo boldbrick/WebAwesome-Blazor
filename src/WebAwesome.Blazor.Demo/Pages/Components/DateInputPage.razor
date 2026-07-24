@@ -1,0 +1,81 @@
+@page "/components/date-input"
+
+<PageTitle>Date Input</PageTitle>
+
+<h1>Date Input <ComponentBadges Tag="wa-date-input" /></h1>
+<p>Date inputs let users enter a date through a segmented field or select one from a popup calendar. The submitted value is always ISO 8601 (<code>YYYY-MM-DD</code>, or <code>YYYY-MM-DD/YYYY-MM-DD</code> for ranges). <code>&lt;wa-date-input&gt;</code> wrapped by <code>WaDateInput</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaDateInput Label="Pick a date" @bind-Value="defaultValue" />
+    <p>Value: <code>@(defaultValue ?? "(empty)")</code></p>
+</ExampleSection>
+
+<ExampleSection Title="Initial Value &amp; Clearable" Code="@ValueExample">
+    <WaDateInput Label="Event date" Hint="Choose the day of the event." WithClear="true" @bind-Value="eventValue" />
+</ExampleSection>
+
+<ExampleSection Title="Range Mode" Code="@RangeExample">
+    <WaDateInput Label="Stay" Mode="WaDateSelectionMode.Range" Months="2" @bind-Value="rangeValue" />
+</ExampleSection>
+
+<ExampleSection Title="Min, Max &amp; Constraints" Code="@ConstraintsExample">
+    <WaDateInput Label="Within 2026" Min="2026-01-01" Max="2026-12-31" DisableFuture="false" @bind-Value="constrainedValue" />
+</ExampleSection>
+
+<ExampleSection Title="Appearance &amp; Pill" Code="@AppearanceExample">
+    <WaDateInput Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filledValue" />
+    <WaDateInput Label="Pill" Pill="true" @bind-Value="pillValue" />
+</ExampleSection>
+
+<ApiTable Tag="wa-date-input" />
+
+@code {
+    private string? defaultValue;
+    private string? eventValue = "2026-05-20";
+    private string? rangeValue;
+    private string? constrainedValue;
+    private string? filledValue;
+    private string? pillValue;
+
+    private const string DefaultExample = """
+        <WaDateInput Label="Pick a date" @bind-Value="defaultValue" />
+
+        @code {
+            private string? defaultValue;
+        }
+        """;
+
+    private const string ValueExample = """
+        <WaDateInput Label="Event date" Hint="Choose the day of the event." WithClear="true" @bind-Value="eventValue" />
+
+        @code {
+            private string? eventValue = "2026-05-20";
+        }
+        """;
+
+    private const string RangeExample = """
+        <WaDateInput Label="Stay" Mode="WaDateSelectionMode.Range" Months="2" @bind-Value="rangeValue" />
+
+        @code {
+            private string? rangeValue;
+        }
+        """;
+
+    private const string ConstraintsExample = """
+        <WaDateInput Label="Within 2026" Min="2026-01-01" Max="2026-12-31" @bind-Value="constrainedValue" />
+
+        @code {
+            private string? constrainedValue;
+        }
+        """;
+
+    private const string AppearanceExample = """
+        <WaDateInput Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filledValue" />
+        <WaDateInput Label="Pill" Pill="true" @bind-Value="pillValue" />
+
+        @code {
+            private string? filledValue;
+            private string? pillValue;
+        }
+        """;
+}

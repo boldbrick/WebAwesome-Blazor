@@ -53,6 +53,24 @@
         </WaText>
         <WaMarkdown Content="@upgradeChecklist" />
 
+        <WaText Variant="TextVariant.Heading" Element="h3" Style="margin-block-start: var(--wa-space-l);">Frequently asked questions</WaText>
+        <WaText Element="p">
+            Common upgrade questions, grouped into an <code>WaAccordion</code> so only the relevant answer is expanded.
+        </WaText>
+        <WaAccordion Mode="WaAccordionMode.Single">
+            <WaAccordionItem Label="Is the 3.2 upgrade backwards compatible?" Expanded="true">
+                Yes. Workspaces on 3.1 upgrade in place; the export pipeline plugins are the only components that
+                need the matching 3.2 releases.
+            </WaAccordionItem>
+            <WaAccordionItem Label="Will co-editing work during a staged rollout?">
+                Co-editing requires every participant to be on the collaboration service 1.8 or later. Mixed
+                sessions fall back to single-editor mode automatically.
+            </WaAccordionItem>
+            <WaAccordionItem Label="Do I need to migrate custom color profiles?">
+                No — custom color profiles are migrated automatically the first time a workspace opens on 3.2.
+            </WaAccordionItem>
+        </WaAccordion>
+
         <WaDivider Style="margin-block: var(--wa-space-l);" />
 
         <WaText Variant="TextVariant.Heading" Size="TextSize.L" Element="h2">Observer playground</WaText>

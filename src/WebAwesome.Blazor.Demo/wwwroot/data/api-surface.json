@@ -640,7 +640,7 @@
       "className": "WaBubbleChart",
       "since": "3.3",
       "status": "stable",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -1475,7 +1475,7 @@
       "className": "WaCombobox",
       "since": "3.1",
       "status": "stable",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "allow-create": {
           "type": "boolean",
@@ -2189,7 +2189,7 @@
       "className": "WaDatePicker",
       "since": "3.8",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "did-ssr": {
           "type": null,
@@ -2626,7 +2626,7 @@
       "className": "WaDoughnutChart",
       "since": "3.3",
       "status": "stable",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -2995,7 +2995,7 @@
       "className": "WaFileInput",
       "since": "3.2",
       "status": "stable",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "accept": {
           "type": "string",
@@ -3355,7 +3355,7 @@
       "className": "WaChart",
       "since": "3.3",
       "status": "stable",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -5508,7 +5508,7 @@
       "className": "WaRadarChart",
       "since": "3.3",
       "status": "stable",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -6034,7 +6034,7 @@
       "className": "WaScatterChart",
       "since": "3.3",
       "status": "stable",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -7705,7 +7705,7 @@
       "className": "WaToastItem",
       "since": "3.3",
       "status": "stable",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "did-ssr": {
           "type": null,

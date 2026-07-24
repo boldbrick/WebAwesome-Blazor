@@ -93,6 +93,12 @@ ARIA/global reflected attributes added to `wa-rating/tab/tab-panel/tree/tree-ite
 - [ ] Playwright e2e sweep green
 - [ ] Check-ins per phase; JIRA → In Review
 
+## Showcase integration outcome
+
+- **Registration form showcase** — WaDateInput (arrival date), WaTimeInput (preferred session time), and WaKnownDate (date of birth) worked into the Nova Summit registration form with DataAnnotations validation.
+- **Content showcase** — WaAccordion FAQ section added to the Nova Studio release notes.
+- **WaDatePicker deferred from showcases** — its sibling WaDateInput already represents date entry in the form showcase, and the standalone inline calendar has no distinct narrative slot in any existing showcase. It ships with a full curated demo page (`DatePickerPage.razor`). Deferral noted per the showcase rule.
+
 ## Risks
 
 - **Date/time family complexity.** wa-date-input has 37 attributes and several opaque named union types (`WaDateInputMode`, `WaDateInputFirstDayOfWeek`, …). Engineer resolves concrete values from `inputs\WebAwesome\components\*.md` (refreshed) / `temp\wa-src\3.8.0\dist\components\*.d.ts`; ambiguities recorded here.
