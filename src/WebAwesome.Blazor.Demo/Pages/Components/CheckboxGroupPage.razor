@@ -1,0 +1,133 @@
+@page "/components/checkbox-group"
+
+<PageTitle>Checkbox Group</PageTitle>
+
+<h1>Checkbox Group <ComponentBadges Tag="wa-checkbox-group" /></h1>
+<p>
+    Checkbox groups give a set of related checkboxes or switches a shared label, hint, and grouping
+    semantics. <code>&lt;wa-checkbox-group&gt;</code> wrapped by <code>WaCheckboxGroup</code>. Each grouped
+    <code>WaCheckbox</code> (or <code>WaSwitch</code>) stays an independent control with its own value and
+    validation; the group itself carries no value.
+</p>
+
+<ExampleSection Title="Basics" Code="@BasicExample">
+    <WaCheckboxGroup Label="Interests">
+        <WaCheckbox @bind-Value="design">Design</WaCheckbox>
+        <WaCheckbox @bind-Value="development">Development</WaCheckbox>
+        <WaCheckbox @bind-Value="marketing">Marketing</WaCheckbox>
+    </WaCheckboxGroup>
+</ExampleSection>
+
+<ExampleSection Title="Hint" Code="@HintExample">
+    <WaCheckboxGroup Label="Workdays" Hint="Choose as many as you like.">
+        <WaCheckbox @bind-Value="monday">Monday</WaCheckbox>
+        <WaCheckbox @bind-Value="wednesday">Wednesday</WaCheckbox>
+        <WaCheckbox @bind-Value="friday">Friday</WaCheckbox>
+    </WaCheckboxGroup>
+</ExampleSection>
+
+<ExampleSection Title="Orientation" Code="@OrientationExample">
+    <WaCheckboxGroup Label="Sizes" Orientation="WaOrientation.Horizontal">
+        <WaCheckbox @bind-Value="sizeSmall">Small</WaCheckbox>
+        <WaCheckbox @bind-Value="sizeMedium">Medium</WaCheckbox>
+        <WaCheckbox @bind-Value="sizeLarge">Large</WaCheckbox>
+    </WaCheckboxGroup>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaCheckboxGroup Label="Options" Hint="The group's size applies to every item." Size="WaSize.Large">
+        <WaCheckbox @bind-Value="option1">Option 1</WaCheckbox>
+        <WaCheckbox @bind-Value="option2">Option 2</WaCheckbox>
+        <WaCheckbox @bind-Value="option3">Option 3</WaCheckbox>
+    </WaCheckboxGroup>
+</ExampleSection>
+
+<ExampleSection Title="Disabling" Code="@DisablingExample">
+    <WaCheckboxGroup Label="Add-ons">
+        <WaCheckbox @bind-Value="insurance" Disabled="true">Insurance</WaCheckbox>
+        <WaCheckbox @bind-Value="giftWrap" Disabled="true">Gift wrap</WaCheckbox>
+        <WaCheckbox @bind-Value="expressShipping">Express shipping</WaCheckbox>
+        <WaCheckbox @bind-Value="extendedWarranty">Extended warranty</WaCheckbox>
+    </WaCheckboxGroup>
+</ExampleSection>
+
+<ExampleSection Title="Switches" Code="@SwitchesExample">
+    <WaCheckboxGroup Label="Notifications" Hint="Pick at least one channel.">
+        <WaSwitch @bind-Value="notifyEmail">Email</WaSwitch>
+        <WaSwitch @bind-Value="notifySms">SMS</WaSwitch>
+        <WaSwitch @bind-Value="notifyPush">Push</WaSwitch>
+    </WaCheckboxGroup>
+</ExampleSection>
+
+<ExampleSection Title="Required" Code="@RequiredExample">
+    <WaCheckboxGroup Label="Accept terms" Required="true">
+        <WaCheckbox @bind-Value="acceptTerms" Required="true">I agree to the terms and conditions</WaCheckbox>
+    </WaCheckboxGroup>
+</ExampleSection>
+
+<ApiTable Tag="wa-checkbox-group" />
+
+@code {
+    private bool design, development, marketing;
+    private bool monday, wednesday, friday;
+    private bool sizeSmall, sizeMedium, sizeLarge;
+    private bool option1, option2, option3;
+    private bool insurance, giftWrap, expressShipping, extendedWarranty;
+    private bool notifyEmail, notifySms, notifyPush;
+    private bool acceptTerms;
+
+    private const string BasicExample = """
+        <WaCheckboxGroup Label="Interests">
+            <WaCheckbox @bind-Value="design">Design</WaCheckbox>
+            <WaCheckbox @bind-Value="development">Development</WaCheckbox>
+            <WaCheckbox @bind-Value="marketing">Marketing</WaCheckbox>
+        </WaCheckboxGroup>
+        """;
+
+    private const string HintExample = """
+        <WaCheckboxGroup Label="Workdays" Hint="Choose as many as you like.">
+            <WaCheckbox @bind-Value="monday">Monday</WaCheckbox>
+            <WaCheckbox @bind-Value="wednesday">Wednesday</WaCheckbox>
+            <WaCheckbox @bind-Value="friday">Friday</WaCheckbox>
+        </WaCheckboxGroup>
+        """;
+
+    private const string OrientationExample = """
+        <WaCheckboxGroup Label="Sizes" Orientation="WaOrientation.Horizontal">
+            <WaCheckbox @bind-Value="small">Small</WaCheckbox>
+            <WaCheckbox @bind-Value="medium">Medium</WaCheckbox>
+            <WaCheckbox @bind-Value="large">Large</WaCheckbox>
+        </WaCheckboxGroup>
+        """;
+
+    private const string SizesExample = """
+        <WaCheckboxGroup Label="Options" Hint="The group's size applies to every item." Size="WaSize.Large">
+            <WaCheckbox @bind-Value="option1">Option 1</WaCheckbox>
+            <WaCheckbox @bind-Value="option2">Option 2</WaCheckbox>
+            <WaCheckbox @bind-Value="option3">Option 3</WaCheckbox>
+        </WaCheckboxGroup>
+        """;
+
+    private const string DisablingExample = """
+        <WaCheckboxGroup Label="Add-ons">
+            <WaCheckbox @bind-Value="insurance" Disabled="true">Insurance</WaCheckbox>
+            <WaCheckbox @bind-Value="giftWrap" Disabled="true">Gift wrap</WaCheckbox>
+            <WaCheckbox @bind-Value="expressShipping">Express shipping</WaCheckbox>
+            <WaCheckbox @bind-Value="extendedWarranty">Extended warranty</WaCheckbox>
+        </WaCheckboxGroup>
+        """;
+
+    private const string SwitchesExample = """
+        <WaCheckboxGroup Label="Notifications" Hint="Pick at least one channel.">
+            <WaSwitch @bind-Value="email">Email</WaSwitch>
+            <WaSwitch @bind-Value="sms">SMS</WaSwitch>
+            <WaSwitch @bind-Value="push">Push</WaSwitch>
+        </WaCheckboxGroup>
+        """;
+
+    private const string RequiredExample = """
+        <WaCheckboxGroup Label="Accept terms" Required="true">
+            <WaCheckbox @bind-Value="acceptTerms" Required="true">I agree to the terms and conditions</WaCheckbox>
+        </WaCheckboxGroup>
+        """;
+}

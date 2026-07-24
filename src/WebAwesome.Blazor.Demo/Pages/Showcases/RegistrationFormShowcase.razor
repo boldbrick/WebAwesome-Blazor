@@ -77,6 +77,13 @@ else
                     <WaNumberInput Label="Additional guest passes" Hint="Reserve extra passes for guests (0–10)"
                                    StartIconName="user-plus" Min="0" Max="10" Step="1" @bind-Value="model.GuestPasses" />
 
+                    <WaCheckboxGroup Label="Optional add-ons" Hint="Choose any extras — each is billed separately"
+                                     Orientation="WaOrientation.Horizontal">
+                        <WaCheckbox @bind-Value="model.AddWorkshopKit">Workshop hardware kit</WaCheckbox>
+                        <WaCheckbox @bind-Value="model.AddCertificate">Proctored certificate</WaCheckbox>
+                        <WaCheckbox @bind-Value="model.AddDinner">Speakers' dinner</WaCheckbox>
+                    </WaCheckboxGroup>
+
                     <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
                         <WaDateInput Label="Arrival date" Hint="When will you arrive on-site?"
                                      Min="2026-03-12" Max="2026-03-14" WithClear="true" @bind-Value="model.ArrivalDate" />
@@ -210,5 +217,12 @@ else
         public bool AcceptTerms { get; set; }
 
         public bool Newsletter { get; set; } = true;
+
+        // optional add-ons, grouped under a shared label by WaCheckboxGroup (each remains an independent control)
+        public bool AddWorkshopKit { get; set; }
+
+        public bool AddCertificate { get; set; }
+
+        public bool AddDinner { get; set; }
     }
 }
