@@ -96,6 +96,13 @@ public class WaCopyButton : ComponentBase
     /// </summary>
     [Parameter] public WaPlacement? TooltipPlacement { get; set; }
 
+    /// <summary>
+    /// Controls the built-in tooltip. <see cref="WaCopyButtonTooltip.Full"/> (default) shows the tooltip on hover
+    /// and focus and during copy feedback; <see cref="WaCopyButtonTooltip.Copy"/> keeps it silent on hover/focus and
+    /// only shows it briefly to confirm a copy; <see cref="WaCopyButtonTooltip.None"/> disables it entirely.
+    /// </summary>
+    [Parameter] public WaCopyButtonTooltip Tooltip { get; set; } = WaCopyButtonTooltip.Full;
+
     #endregion
 
     #region ------ Events ------
@@ -176,6 +183,7 @@ public class WaCopyButton : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(9, "error-label", ErrorLabel);
         builder.AddAttribute(10, "feedback-duration", FeedbackDuration);
         builder.AddAttributeIfNotNull(11, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
+        builder.AddAttribute(12, "tooltip", Tooltip.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-copy", OnCopy);
