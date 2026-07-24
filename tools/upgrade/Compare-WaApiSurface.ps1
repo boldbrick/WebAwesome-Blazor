@@ -215,6 +215,13 @@ if ($MarkdownPath) {
                     continue
                 }
                 $s = $d[$section]
+                if ($section -eq 'cssParts') {
+                    # cssParts diff lists are plain string arrays, not name->detail maps; Get-Keys
+                    # on an array would enumerate the array object's properties (Length, Count, ...)
+                    foreach ($name in $s.added) { [void]$md.AppendLine("- ${section}: added ``$name``") }
+                    foreach ($name in $s.removed) { [void]$md.AppendLine("- ${section}: removed ``$name``") }
+                    continue
+                }
                 foreach ($name in (Get-Keys $s.added)) { [void]$md.AppendLine("- ${section}: added ``$name``") }
                 foreach ($name in $s.removed) { [void]$md.AppendLine("- ${section}: removed ``$name``") }
                 foreach ($name in (Get-Keys $s.changed)) { [void]$md.AppendLine("- ${section}: changed ``$name``") }
