@@ -5,8 +5,8 @@
 <h1>Nova Studio — Media Gallery</h1>
 <p>
     The asset review screen of Nova Studio: a carousel of renders, a before/after comparison,
-    a zoomable embedded preview, an animated sticker, a QR code for mobile review and a
-    scrollable strip of gallery thumbnails.
+    a video clip preview, a zoomable embedded preview, an animated sticker, a QR code for mobile
+    review and a scrollable strip of gallery thumbnails.
 </p>
 
 <WaGrid MinColumnSize="22rem" Gap="GapSize.Gap_L">
@@ -57,6 +57,20 @@
                     </div>
                 </AfterContent>
             </WaComparison>
+        </ChildContent>
+    </WaCard>
+
+    <WaCard WithHeader="true">
+        <HeaderContent>
+            <WaText Variant="TextVariant.Heading" Element="h2">Launch clip preview</WaText>
+        </HeaderContent>
+        <ChildContent>
+            <p>The cut for review, with full playback controls and captions.</p>
+            <WaVideo Controls="WaVideoControls.Full" Title="Nova launch teaser"
+                     Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+                <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+                <track src="https://uploads.webawesome.com/02-using-kits-in-your-project.vtt" kind="subtitles" srclang="en" label="English" />
+            </WaVideo>
         </ChildContent>
     </WaCard>
 

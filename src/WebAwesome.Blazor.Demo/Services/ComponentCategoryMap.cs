@@ -103,6 +103,8 @@ public static class ComponentCategoryMap
         ["wa-icon"] = "Media",
         ["wa-markdown"] = "Media",
         ["wa-qr-code"] = "Media",
+        ["wa-video"] = "Media",
+        ["wa-video-playlist"] = "Media",
         ["wa-zoomable-frame"] = "Media",
 
         ["wa-bar-chart"] = "Data Viz",
