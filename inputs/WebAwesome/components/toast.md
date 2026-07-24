@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/toast.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/toast.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast -->
 
 # Toast [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/toast
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-toast>` Stable Since 3.3 Pro Included with Web Awesome Pro
+`<wa-toast>`
+
+ProIncluded with Web Awesome Pro Stable [Feedback](https://webawesome.com/docs/components/?category=feedback) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
 
 Toasts display brief, non-blocking notifications that appear temporarily above the page content.
 
@@ -51,7 +53,11 @@ This documentation page features numerous toast elements for demonstrative purpo
 
 ## Examples
 
+Link to This Section
+
 ### Variants
+
+Link to This Section
 
 Set the `variant` option to `brand`, `success`, `warning`, `danger`, or `neutral` to change the type of notification.
 
@@ -80,13 +86,15 @@ Set the `variant` option to `brand`, `success`, `warning`, `danger`, or `neutral
 
     toast.create(`This is a ${variant} notification`, {
       variant,
-      icon
+      icon,
     });
   });
 </script>
 ```
 
 ### Sizes
+
+Link to This Section
 
 Set the `size` option to `xs`, `s`, `m`, `l`, or `xl` to change the size of the toast item.
 
@@ -115,13 +123,15 @@ Set the `size` option to `xs`, `s`, `m`, `l`, or `xl` to change the size of the 
 
     toast.create(`This is a ${size} notification`, {
       size,
-      icon
+      icon,
     });
   });
 </script>
 ```
 
 ### With Icons
+
+Link to This Section
 
 Pass an `icon` option to display an icon at the start of the toast item. You can pass a simple string for the icon name, or an object with additional options like `library`, `family`, and `variant`.
 
@@ -139,7 +149,7 @@ Pass an `icon` option to display an icon at the start of the toast item. You can
   button.addEventListener('click', () => {
     toast.create('Your message has been sent successfully!', {
       variant: 'success',
-      icon: 'paper-plane'
+      icon: 'paper-plane',
     });
   });
 </script>
@@ -167,8 +177,8 @@ For more control over the icon, pass an object with `name` and optional `library
       icon: {
         name: 'bell',
         family: 'duotone',
-        variant: 'solid'
-      }
+        variant: 'solid',
+      },
     });
   });
 
@@ -177,14 +187,16 @@ For more control over the icon, pass an object with `name` and optional `library
       variant: 'neutral',
       icon: {
         name: 'github',
-        family: 'brands'
-      }
+        family: 'brands',
+      },
     });
   });
 </script>
 ```
 
 ### Duration
+
+Link to This Section
 
 Set the `duration` option to control how long notifications show before disappearing. The value is in milliseconds and defaults to `5000` (5 seconds). A value of `0` will keep the notification open until the user dismisses it.
 
@@ -210,13 +222,15 @@ Set the `duration` option to control how long notifications show before disappea
 
     toast.create(duration > 0 ? `This will disappear in ${duration / 1000} seconds` : 'Dismiss me manually!', {
       duration,
-      variant: 'brand'
+      variant: 'brand',
     });
   });
 </script>
 ```
 
 ### Placement
+
+Link to This Section
 
 Use the `placement` attribute to set the position of the toast stack on the screen.
 
@@ -230,7 +244,7 @@ Use the `placement` attribute to set the position of the toast stack on the scre
     <wa-option value="bottom-center">bottom-center</wa-option>
     <wa-option value="bottom-end">bottom-end</wa-option>
   </wa-select>
-  <br>
+  <br />
   <wa-button appearance="filled">Show notification</wa-button>
   <wa-toast placement="top-end"></wa-toast>
 </div>
@@ -248,13 +262,15 @@ Use the `placement` attribute to set the position of the toast stack on the scre
   button.addEventListener('click', () => {
     toast.create('This notification appears at ' + toast.placement, {
       variant: 'brand',
-      icon: 'location-dot'
+      icon: 'location-dot',
     });
   });
 </script>
 ```
 
 ### Hover and Focus Behavior
+
+Link to This Section
 
 Toast items automatically pause their countdown timer when you hover over them or when the close button receives focus. This gives users more time to read the content before it disappears. When the mouse leaves or focus moves away, the timer resets and starts counting down again.
 
@@ -273,13 +289,15 @@ Toast items automatically pause their countdown timer when you hover over them o
     toast.create('Hover over me to pause the countdown timer!', {
       duration: 5000,
       variant: 'brand',
-      icon: 'clock'
+      icon: 'clock',
     });
   });
 </script>
 ```
 
 ### Using HTML Content
+
+Link to This Section
 
 Set `allowHtml` to `true` to render HTML content in notifications. Make sure you trust the content to avoid XSS vulnerabilities.
 
@@ -295,20 +313,25 @@ Set `allowHtml` to `true` to render HTML content in notifications. Make sure you
   const button = container.querySelector('wa-button');
 
   button.addEventListener('click', () => {
-    toast.create(`
+    toast.create(
+      `
       <wa-icon slot="icon" name="bell"></wa-icon>
       <strong>New message!</strong><br>
       You have <em>3 unread messages</em> in your inbox.
-    `, {
-      allowHtml: true,
-      variant: 'brand',
-      duration: 0
-    });
+    `,
+      {
+        allowHtml: true,
+        variant: 'brand',
+        duration: 0,
+      },
+    );
   });
 </script>
 ```
 
 ### Responding to Custom Buttons
+
+Link to This Section
 
 You can add custom buttons or other interactive elements to a toast item using `allowHtml`. Use the returned toast item reference to query for your elements and attach event listeners.
 
@@ -324,18 +347,21 @@ You can add custom buttons or other interactive elements to a toast item using `
   const showButton = container.querySelector('wa-button');
 
   showButton.addEventListener('click', async () => {
-    const toastItem = await toast.create(`
+    const toastItem = await toast.create(
+      `
       <wa-icon slot="icon" name="gift"></wa-icon>
       You have a new reward!
       <div style="margin-block-start: var(--wa-space-xs);">
         <wa-button class="claim-button" variant="brand" size="s">Claim</wa-button>
         <wa-button class="dismiss-button" appearance="filled" size="s">No Thanks</wa-button>
       </div>
-    `, {
-      allowHtml: true,
-      variant: 'brand',
-      duration: 0
-    });
+    `,
+      {
+        allowHtml: true,
+        variant: 'brand',
+        duration: 0,
+      },
+    );
 
     const claimButton = toastItem.querySelector('.claim-button');
     const dismissButton = toastItem.querySelector('.dismiss-button');
@@ -358,6 +384,8 @@ You can add custom buttons or other interactive elements to a toast item using `
 
 ### Responding to Events
 
+Link to This Section
+
 The `create()` method returns a promise that resolves to the generated toast item. You can use this reference to add event listeners.
 
 ```html
@@ -374,7 +402,7 @@ The `create()` method returns a promise that resolves to the generated toast ite
   button.addEventListener('click', async () => {
     const toastItem = await toast.create('Click me or let me disappear...', {
       variant: 'brand',
-      icon: 'hand-pointer'
+      icon: 'hand-pointer',
     });
 
     toastItem.addEventListener('click', () => {
@@ -390,7 +418,9 @@ The `create()` method returns a promise that resolves to the generated toast ite
 
 ### Creating Toast Items Manually
 
-While `toast.create()` is the easiest way to show notifications, you can also create `<wa-toast-item>` elements manually. This approach gives you full control over the toast item's content and is useful when you need to add custom elements or complex layouts.
+Link to This Section
+
+While `toast.create()` is the easiest way to show notifications, you can also create [`<wa-toast-item>`](https://webawesome.com/docs/components/toast-item) elements manually. This approach gives you full control over the toast item's content and is useful when you need to add custom elements or complex layouts.
 
 ```html
 <div id="toast-append">
@@ -418,6 +448,8 @@ While `toast.create()` is the easiest way to show notifications, you can also cr
 
 ## Accessibility Considerations
 
+Link to This Section
+
 Toasts have a number of accessibility limitations. For example:
 
 -   Due to their transient nature, toasts can be missed entirely by screen magnifier users and difficult to perceive for others depending on their visual and cognitive abilities.
@@ -434,6 +466,8 @@ Rarely will toasts offer the best usability for all of your users, so consider i
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -441,7 +475,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/toast/toast.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/toast/toast.js';
 ```
 
 \*\*npm\*\*
@@ -470,6 +504,8 @@ import WaToast from '@awesome.me/webawesome/dist/react/toast/index.js';
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -478,14 +514,17 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default styles | | |
 | \`placement\` placement | \`'top-start' \\| 'top-center' \\| 'top-end' \\| 'bottom-start' \\| 'bottom-center' \\| 'bottom-end'\` The placement of the toast stack on the screen. Type Default 'top-end' | | |
 
 ## Methods
+
+Link to This Section
 
 Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 
@@ -494,6 +533,8 @@ Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 | \`create()\` | Creates a toast notification programmatically and adds it to the stack. Returns a reference to the created toast item element. | \`message: string, options: ToastCreateOptions\` |
 
 ## CSS custom properties
+
+Link to This Section
 
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 
@@ -504,6 +545,8 @@ Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#cust
 
 ## Custom States
 
+Link to This Section
+
 Learn more about [custom states](https://webawesome.com/docs/usage/#custom-states).
 
 | Name | Description | CSS selector |
@@ -512,6 +555,8 @@ Learn more about [custom states](https://webawesome.com/docs/usage/#custom-state
 
 ## CSS parts
 
+Link to This Section
+
 Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 
 | Name | Description | CSS selector |
@@ -519,6 +564,8 @@ Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 | \`stack\` | The container that holds the toast items. | \`::part(stack)\` |
 
 ## Dependencies
+
+Link to This Section
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 

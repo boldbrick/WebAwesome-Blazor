@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/scatter-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/scatter-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/scatter-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/scatter-chart -->
 
 # Scatter Chart [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/scatter-chart
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-scatter-chart>` Stable Since 3.3 Pro Included with Web Awesome Pro
+`<wa-scatter-chart>`
+
+ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
 
 Scatter charts reveal relationships between two variables by plotting data points on a grid. They are ideal for identifying correlations, clusters, and outliers in datasets.
 
@@ -58,7 +60,11 @@ For advanced configuration such as mixed chart types, custom plugins, and direct
 
 ## Examples
 
+Link to This Section
+
 ### Providing Data with JavaScript
+
+Link to This Section
 
 For dynamic data, set the `config` property directly. The chart will re-render automatically.
 
@@ -92,6 +98,8 @@ Note that `config` is shallowly reactive. If you mutate the existing object in p
 
 ### Providing Data with JSON
 
+Link to This Section
+
 Place a `<script type="application/json">` tag inside the component. Each data point is an object with `x` and `y` properties.
 
 ```html
@@ -119,6 +127,8 @@ Place a `<script type="application/json">` tag inside the component. Each data p
 ```
 
 ### Multiple Datasets
+
+Link to This Section
 
 Use multiple datasets to compare groups. Each dataset is plotted in its own color.
 
@@ -159,6 +169,8 @@ Use multiple datasets to compare groups. Each dataset is plotted in its own colo
 
 ### Custom Colors
 
+Link to This Section
+
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
 
 ```html
@@ -195,6 +207,8 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
 
 ### Point Radius
 
+Link to This Section
+
 Use the `--point-radius` CSS custom property to control the size of each plotted dot.
 
 ```html
@@ -222,6 +236,8 @@ Use the `--point-radius` CSS custom property to control the size of each plotted
 ```
 
 ### Legend
+
+Link to This Section
 
 Use the `legend-position` attribute to control where the legend appears. Add `without-legend` to hide it entirely.
 
@@ -260,6 +276,8 @@ Use the `legend-position` attribute to control where the legend appears. Add `wi
 
 ### Grid Lines
 
+Link to This Section
+
 Use the `grid` attribute to control which axes show grid lines. Options are `both` (default), `x`, `y`, and `none`.
 
 ```html
@@ -286,6 +304,8 @@ Use the `grid` attribute to control which axes show grid lines. Options are `bot
 ```
 
 ### Axis Labels
+
+Link to This Section
 
 Use the `x-label` and `y-label` attributes to add descriptive labels to each axis.
 
@@ -314,6 +334,8 @@ Use the `x-label` and `y-label` attributes to add descriptive labels to each axi
 
 ### Disabling Tooltips
 
+Link to This Section
+
 Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over data points.
 
 ```html
@@ -340,6 +362,8 @@ Use the `without-tooltip` attribute to hide the tooltips that appear when hoveri
 ```
 
 ### Disabling Animations
+
+Link to This Section
 
 Use the `without-animation` attribute to disable chart transitions.
 
@@ -368,6 +392,8 @@ Use the `without-animation` attribute to disable chart transitions.
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -375,7 +401,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/scatter-chart/scatter-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/scatter-chart/scatter-chart.js';
 ```
 
 \*\*npm\*\*
@@ -404,6 +430,8 @@ import WaScatterChart from '@awesome.me/webawesome/dist/react/scatter-chart/inde
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -412,12 +440,13 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
 | \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default \[styles\] | | |
 | \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | | |
 | \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | | |
 | \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | | |
@@ -435,6 +464,8 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 | \`yLabel\` yLabel | \`string \\| null\` A label for the y-axis. Type Default null | | |
 
 ## CSS custom properties
+
+Link to This Section
 
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 

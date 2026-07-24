@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/doughnut-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/doughnut-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/doughnut-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/doughnut-chart -->
 
 # Doughnut Chart [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/doughnut-chart
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-doughnut-chart>` Stable Since 3.3 Pro Included with Web Awesome Pro
+`<wa-doughnut-chart>`
+
+ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
 
 Doughnut charts show proportional data as slices of a ring with a hollow center. They offer a cleaner look than pie charts and work well in dashboards where the center space can provide additional context.
 
@@ -48,7 +50,11 @@ For advanced configuration such as custom plugins and direct Chart.js access, se
 
 ## Examples
 
+Link to This Section
+
 ### Providing Data with JavaScript
+
+Link to This Section
 
 For dynamic data, set the `config` property directly. The chart will re-render automatically.
 
@@ -74,6 +80,8 @@ Note that `config` is shallowly reactive. If you mutate the existing object in p
 
 ### Providing Data with JSON
 
+Link to This Section
+
 Place a `<script type="application/json">` tag inside the component with your chart data. Each value in the `data` array corresponds to a label.
 
 ```html
@@ -93,6 +101,8 @@ Place a `<script type="application/json">` tag inside the component with your ch
 ```
 
 ### Custom Slice Colors
+
+Link to This Section
 
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties to apply custom colors to each slice.
 
@@ -128,6 +138,8 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
 
 ### Cutout Size
 
+Link to This Section
+
 Control the size of the center hole through the Chart.js `cutout` option. The default is `'50%'`. Use a higher percentage for a thinner ring or a lower one for a thicker ring.
 
 ```html
@@ -153,6 +165,8 @@ Control the size of the center hole through the Chart.js `cutout` option. The de
 
 ### Legend
 
+Link to This Section
+
 Use the `legend-position` attribute to control where the legend appears. Add `without-legend` to hide it entirely.
 
 ```html
@@ -174,6 +188,8 @@ Use the `legend-position` attribute to control where the legend appears. Add `wi
 ```
 
 ### Disabling Tooltips
+
+Link to This Section
 
 Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over slices.
 
@@ -197,6 +213,8 @@ Use the `without-tooltip` attribute to hide the tooltips that appear when hoveri
 
 ### Disabling Animations
 
+Link to This Section
+
 Use the `without-animation` attribute to disable chart transitions.
 
 ```html
@@ -219,6 +237,8 @@ Use the `without-animation` attribute to disable chart transitions.
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -226,7 +246,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/doughnut-chart/doughnut-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/doughnut-chart/doughnut-chart.js';
 ```
 
 \*\*npm\*\*
@@ -255,6 +275,8 @@ import WaDoughnutChart from '@awesome.me/webawesome/dist/react/doughnut-chart/in
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -263,12 +285,13 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
 | \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default \[styles\] | | |
 | \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | | |
 | \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | | |
 | \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | | |
@@ -286,6 +309,8 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 | \`yLabel\` yLabel | \`string \\| null\` A label for the y-axis. Type Default null | | |
 
 ## CSS custom properties
+
+Link to This Section
 
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 
