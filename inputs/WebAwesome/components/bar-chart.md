@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.6.0 release zip (dist/skills/webawesome/references/components/bar-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bar-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/bar-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bar-chart -->
 
 # Bar Chart [Pro]
 
@@ -9,7 +9,7 @@
 
 Bar charts compare quantities across categories using rectangular bars. They work well for showing rankings, highlighting differences between groups, and tracking changes across time periods.
 
- **[Get Bar Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=bar-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
+**[Get Bar Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=bar-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
 -   Responsive [Layout Tools](https://webawesome.com/docs/utilities)
@@ -416,7 +416,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.6.0/components/bar-chart/bar-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/bar-chart/bar-chart.js';
 ```
 
 \*\*npm\*\*

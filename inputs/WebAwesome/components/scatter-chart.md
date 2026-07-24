@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.6.0 release zip (dist/skills/webawesome/references/components/scatter-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/scatter-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/scatter-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/scatter-chart -->
 
 # Scatter Chart [Pro]
 
@@ -9,7 +9,7 @@
 
 Scatter charts reveal relationships between two variables by plotting data points on a grid. They are ideal for identifying correlations, clusters, and outliers in datasets.
 
- **[Get Scatter Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=scatter-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
+**[Get Scatter Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=scatter-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
 -   Responsive [Layout Tools](https://webawesome.com/docs/utilities)
@@ -375,7 +375,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.6.0/components/scatter-chart/scatter-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/scatter-chart/scatter-chart.js';
 ```
 
 \*\*npm\*\*

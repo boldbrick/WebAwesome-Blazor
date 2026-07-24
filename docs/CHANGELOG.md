@@ -2,6 +2,32 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.7.0] — 2026-07-24
+
+Alignment with the Web Awesome 3.7.0 release, opening the **WA-3.7 train**. An additive upgrade with **no breaking changes**: two new Pro media components (`WaVideo`, `WaVideoPlaylist`) and a new tooltip attribute on `WaCopyButton`. No migration guide is required.
+
+### New components
+- `WaVideo` (`wa-video`, Pro/experimental) — embeds and plays video content with custom controls and captions. Exposes the `Controls` (`WaVideoControls`) and `Preload` (`WaVideoPreload`) presets, `Src`/`Poster`/`Thumbnails`/`Title`/`IconLibrary`, the `Playing`/`Muted`/`Autoplay`/`Loop`/`AutoplayMuted`/`AutoplayOnVisible` flags, and `Volume`/`Duration`/`CurrentTime`; the icon slots (`poster-icon`, `play-icon`, `pause-icon`, `volume-icon`, `mute-icon`, `fullscreen-icon`, `exit-fullscreen-icon`) plus `controls-start`/`controls-after-play`; the native media events `OnPlay`/`OnPause`/`OnEnded`/`OnError`/`OnTimeUpdate`/`OnVolumeChange`/`OnLoadedMetadata`; and the playback methods `PlayAsync`/`PauseAsync`/`TogglePlayAsync`/`ToggleMuteAsync`/`SeekAsync`/`SetVolumeAsync`/`SetPlaybackRateAsync`/`RequestFullscreenAsync`/`ExitFullscreenAsync`/`GetStateAsync` (returning a `WaVideoState` record).
+- `WaVideoPlaylist` (`wa-video-playlist`, Pro/experimental) — wraps multiple `WaVideo` elements into a playlist with navigation. Exposes `Controls`/`IconLibrary`, the `OnVideoChange` callback (`WaVideoChangeEventArgs`, carrying `PreviousIndex`/`CurrentIndex`/`VideoTitle`), and the `NextAsync`/`PreviousAsync`/`GoToAsync` navigation methods.
+
+### Changed
+- `WaCopyButton` gained the `Tooltip` parameter (`WaCopyButtonTooltip` — `Full`/`Copy`/`None`, default `Full`), binding the WA 3.7.0 `tooltip` attribute that controls the built-in tooltip behavior. `wa-copy-button` was also promoted **experimental → stable** upstream (no wrapper API change; the demo badge is data-driven and clears automatically).
+
+### Library
+- Versioned reference docs refreshed to the `v3.7.0` tag: 132 public-docs files updated; 16 Pro/reference docs (chart family, combobox, file-input, toast/toast-item, sparkline, and the new `video`/`video-playlist`) filled from the release zip's bundled references; 0 needed manual capture.
+- New train WA-3.7: subtrunk `/main/WA-3.7` branched off `/main` (released 3.6.0, cs:185); developed on `/main/WA-3.7/WAB-35`.
+- Event delivery: `WaVideo`'s seven media events are re-dispatched by the element as non-bubbling, non-composed events on the host and delivered through Blazor's built-in non-bubbling event registration (no `registerCustomEventType` needed); `wa-video-change` is a real custom event, registered in the JS initializer with a `specialArgs` mapping that projects the marshalable payload (indices + incoming video title) and drops the live DOM node.
+
+### Public API
+- Baseline promoted: additions for `WaVideo`, `WaVideoPlaylist`, `WaVideoState`, `WaVideoChangeEventArgs`, the `WaVideoControls`/`WaVideoPreload`/`WaCopyButtonTooltip` enums, and `WaCopyButton.Tooltip`. All additive, no removals; every diff explained by the WA 3.7.0 change report.
+
+### Deviations recorded (parity-config.json)
+- `wa-video` `eventOverrides`: `timeupdate` → `OnTimeUpdate`, `volumechange` → `OnVolumeChange`, `loadedmetadata` → `OnLoadedMetadata` (natural .NET PascalCase; mechanical conversion would lowercase the second word), each with a rationale in `ignoreReasons`.
+- `wa-video` `ignoredMethods`: `getVideoElement` — returns the live native `HTMLVideoElement`, a DOM node that is not marshalable across Blazor JS interop.
+
+### Next-release check outcomes
+- Observer `stopObserver()`/`startObserver()` and `wa-relative-time` `update()`: re-verified against the 3.7.0 sources (`startObserver`/`stopObserver` still private in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle, only `updateTimeout` in `relative-time.d.ts`) — the `extraElementMethods` allowlist stands, verification stamps updated.
+
 ## [3.6.0] — 2026-07-24
 
 Alignment with the Web Awesome 3.6.0 release, opening the **WA-3.6 train**. A focused upgrade with **no new or removed components**: an expanded size scale, one new event on `WaNumberInput`, one removed `WaFileInput` slot, and the promotion of the chart family and several Pro components from experimental to stable. See [MIGRATION-3.6.0.md](MIGRATION-3.6.0.md).

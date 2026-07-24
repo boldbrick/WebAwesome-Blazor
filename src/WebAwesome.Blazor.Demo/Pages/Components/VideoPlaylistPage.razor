@@ -1,0 +1,127 @@
+@page "/components/video-playlist"
+
+<PageTitle>Video Playlist</PageTitle>
+
+<h1>Video Playlist <ComponentBadges Tag="wa-video-playlist" /></h1>
+<p>Video playlists wrap multiple videos into a playlist with navigation controls. <code>&lt;wa-video-playlist&gt;</code> wrapped by <code>WaVideoPlaylist</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaVideoPlaylist>
+        <WaVideo Title="Creating a Font Awesome Kit" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+            <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+        </WaVideo>
+        <WaVideo Title="Using Kits in Your Projects" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+            <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+        </WaVideo>
+    </WaVideoPlaylist>
+</ExampleSection>
+
+<ExampleSection Title="Controls Preset" Code="@ControlsExample">
+    <WaVideoPlaylist Controls="WaVideoControls.Standard">
+        <WaVideo Title="Creating a Font Awesome Kit" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+            <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+        </WaVideo>
+        <WaVideo Title="Using Kits in Your Projects" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+            <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+        </WaVideo>
+    </WaVideoPlaylist>
+</ExampleSection>
+
+<ExampleSection Title="Navigating Programmatically" Code="@NavigateExample">
+    <WaVideoPlaylist @ref="navPlaylist">
+        <WaVideo Title="Creating a Font Awesome Kit" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+            <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+        </WaVideo>
+        <WaVideo Title="Using Kits in Your Projects" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+            <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+        </WaVideo>
+    </WaVideoPlaylist>
+    <div class="wa-cluster wa-gap-xs" style="margin-top: 1rem;">
+        <WaButton @onclick="@(() => navPlaylist!.PreviousAsync())">Previous</WaButton>
+        <WaButton @onclick="@(() => navPlaylist!.GoToAsync(0))">First</WaButton>
+        <WaButton @onclick="@(() => navPlaylist!.NextAsync())">Next</WaButton>
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Listening for Changes" Code="@ChangeExample">
+    <WaVideoPlaylist OnVideoChange="HandleVideoChange">
+        <WaVideo Title="Creating a Font Awesome Kit" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+            <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+        </WaVideo>
+        <WaVideo Title="Using Kits in Your Projects" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+            <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+        </WaVideo>
+    </WaVideoPlaylist>
+    <p style="margin-top: 1rem;">@changeLog</p>
+</ExampleSection>
+
+<ApiTable Tag="wa-video-playlist" />
+
+@code {
+    private WaVideoPlaylist? navPlaylist;
+    private string changeLog = "No change yet.";
+
+    private void HandleVideoChange(WaVideoChangeEventArgs args)
+    {
+        changeLog = $"Changed from index {args.PreviousIndex} to {args.CurrentIndex}: \"{args.VideoTitle}\"";
+    }
+
+    private const string DefaultExample = """
+        <WaVideoPlaylist>
+            <WaVideo Title="Creating a Font Awesome Kit" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+                <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+            </WaVideo>
+            <WaVideo Title="Using Kits in Your Projects" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+                <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+            </WaVideo>
+        </WaVideoPlaylist>
+        """;
+
+    private const string ControlsExample = """
+        <WaVideoPlaylist Controls="WaVideoControls.Standard">
+            <WaVideo Title="Creating a Font Awesome Kit" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+                <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+            </WaVideo>
+            <WaVideo Title="Using Kits in Your Projects" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+                <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+            </WaVideo>
+        </WaVideoPlaylist>
+        """;
+
+    private const string NavigateExample = """
+        <WaVideoPlaylist @ref="navPlaylist">
+            <WaVideo Title="Creating a Font Awesome Kit" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+                <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+            </WaVideo>
+            <WaVideo Title="Using Kits in Your Projects" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+                <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+            </WaVideo>
+        </WaVideoPlaylist>
+
+        <WaButton @onclick="@(() => navPlaylist!.PreviousAsync())">Previous</WaButton>
+        <WaButton @onclick="@(() => navPlaylist!.GoToAsync(0))">First</WaButton>
+        <WaButton @onclick="@(() => navPlaylist!.NextAsync())">Next</WaButton>
+
+        @code {
+            private WaVideoPlaylist? navPlaylist;
+        }
+        """;
+
+    private const string ChangeExample = """
+        <WaVideoPlaylist OnVideoChange="HandleVideoChange">
+            <WaVideo Title="Creating a Font Awesome Kit" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+                <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+            </WaVideo>
+            <WaVideo Title="Using Kits in Your Projects" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+                <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+            </WaVideo>
+        </WaVideoPlaylist>
+
+        @code {
+            private void HandleVideoChange(WaVideoChangeEventArgs args)
+            {
+                // args.PreviousIndex, args.CurrentIndex, args.VideoTitle
+            }
+        }
+        """;
+}
