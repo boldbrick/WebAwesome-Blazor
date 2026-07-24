@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/sparkline.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/sparkline -->
+<!-- Source: reference doc bundled in the Web Awesome 3.9.0 release zip (dist/skills/webawesome/references/components/sparkline.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/sparkline -->
 
 # Sparkline [Pro]
 
@@ -260,80 +260,31 @@ Sparklines work well in data tables to visualize trends alongside other metrics.
 </table>
 ```
 
-## Importing
-
-Link to This Section
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/sparkline/sparkline.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/sparkline/sparkline.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/sparkline/sparkline.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaSparkline from '@awesome.me/webawesome/dist/react/sparkline/index.js';
-```
-
 ## Attributes & Properties
 
-Link to This Section
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `label` |  | `string` | `''` | An accessible label describing the sparkline for screen readers. |
+| `data` |  | `string` | `''` | Space-separated numeric values to visualize (e.g., "10 20 40 25 35"). |
+| `appearance` |  | `'gradient' \| 'line' \| 'solid'` | `'solid'` | The visual fill style of the sparkline. |
+| `trend` |  | `'positive' \| 'negative' \| 'neutral'` |  | A trend to indicate, which will affect the sparkline's default color. |
+| `curve` |  | `'linear' \| 'natural' \| 'step'` | `'linear'` | The type of curve used to connect data points. |
+| `dir` |  | `string` |  |  |
+| `lang` |  | `string` |  |  |
+| `did-ssr` | `didSSR` |  |  |  |
 
-Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
+## CSS Parts
 
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`appearance\` appearance | \`'gradient' \\| 'line' \\| 'solid'\` The visual fill style of the sparkline. Type Default 'solid' | | |
-| \`curve\` curve | \`'linear' \\| 'natural' \\| 'step'\` The type of curve used to connect data points. Type Default 'linear' | | |
-| \`data\` data | \`string\` Space-separated numeric values to visualize (e.g., "10 20 40 25 35"). Type Default '' | | |
-| \`label\` label | \`string\` An accessible label describing the sparkline for screen readers. Type Default '' | | |
-| \`trend\` trend | \`'positive' \\| 'negative' \\| 'neutral'\` A trend to indicate, which will affect the sparkline's default color. Type | | |
-
-## CSS custom properties
-
-Link to This Section
-
-Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
-
-| Name | Description |
+| Part | Description |
 | --- | --- |
-| \`--fill-color\` | The fill color for the area under the line. |
-| \`--line-color\` | The color of the sparkline stroke. |
-| \`--line-width\` | The width of the sparkline stroke. |
+| `base` | The SVG container element. |
+| `line` | The sparkline stroke path. |
+| `fill` | The filled area under the line (visible with gradient or solid appearance). |
 
-## CSS parts
+## CSS Custom Properties
 
-Link to This Section
-
-Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
-
-| Name | Description | CSS selector |
+| Property | Default | Description |
 | --- | --- | --- |
-| \`base\` | The SVG container element. | \`::part(base)\` |
-| \`fill\` | The filled area under the line (visible with gradient or solid appearance). | \`::part(fill)\` |
-| \`line\` | The sparkline stroke path. | \`::part(line)\` |
-
-**Need a hand?** Report a bug Ask for help
+| `--fill-color` |  | The fill color for the area under the line. |
+| `--line-color` |  | The color of the sparkline stroke. |
+| `--line-width` |  | The width of the sparkline stroke. |

@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
+<!-- Source: reference doc bundled in the Web Awesome 3.9.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
 
 # Video Playlist [Pro]
 
@@ -7,7 +7,7 @@
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
 `<wa-video-playlist>`
 
-ProIncluded with Web Awesome Pro Experimental [Media](https://webawesome.com/docs/components/?category=media) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
+ProIncluded with Web Awesome Pro Experimental [Media](https://webawesome.com/docs/components/?category=media) [Since 3.7](https://webawesome.com/docs/resources/changelog#wa_370)
 
 Video playlists wrap multiple [`<wa-video>`](https://webawesome.com/docs/components/video) elements into a playlist with navigation controls.
 
@@ -211,117 +211,44 @@ The `wa-video-change` event fires when the active video changes, providing the p
 </script>
 ```
 
-## Importing
-
-Link to This Section
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/video-playlist/video-playlist.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/video-playlist/video-playlist.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/video-playlist/video-playlist.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaVideoPlaylist from '@awesome.me/webawesome/dist/react/video-playlist/index.js';
-```
-
 ## Slots
 
-Link to This Section
+Valid slot names for this component (use exactly these — any other `slot` value
+is silently ignored and the element falls back to the default slot):
 
-Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
-
-| Name | Description |
-| --- | --- |
-| (default) | \`\` The default slot. Place elements to create a playlist. |
+- `(default)` — The default slot. Place `<wa-video>` elements to create a playlist.
 
 ## Attributes & Properties
 
-Link to This Section
-
-Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`controls\` controls | \`\` The controls preset forwarded to each child . Type 'none' \\| 'standard' \\| 'full' Default 'full' | | |
-| \`iconLibrary\` icon-library | \`string\` Icon library used for placeholder icons. Type Default 'system' | | |
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `controls` |  | `'none' \| 'standard' \| 'full'` | `'full'` | The controls preset forwarded to each child `<wa-video>`. |
+| `icon-library` | `iconLibrary` | `string` | `'system'` | Icon library used for placeholder icons. |
+| `dir` |  | `string` |  |  |
+| `lang` |  | `string` |  |  |
+| `did-ssr` | `didSSR` |  |  |  |
 
 ## Methods
 
-Link to This Section
-
-Learn more about [methods](https://webawesome.com/docs/usage/#methods).
-
-| Name | Description | Arguments |
+| Method | Description | Arguments |
 | --- | --- | --- |
-| \`goTo()\` | Jumps to the video at the given index. | \`index: number\` |
-| \`next()\` | Plays the next video in the playlist. | |
-| \`previous()\` | Plays the previous video in the playlist. | |
+| `next` | Plays the next video in the playlist. |  |
+| `previous` | Plays the previous video in the playlist. |  |
+| `goTo` | Jumps to the video at the given index. | `index: number` |
 
 ## Events
 
-Link to This Section
-
-Learn more about [events](https://webawesome.com/docs/usage/#events).
-
-| Name | Description |
+| Event | Description |
 | --- | --- |
-| \`wa-video-change\` | Emitted when the active video changes. |
+| `wa-video-change` | Emitted when the active video changes. |
 
-## CSS parts
+## CSS Parts
 
-Link to This Section
-
-Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
-
-| Name | Description | CSS selector |
-| --- | --- | --- |
-| \`base\` | The component's base wrapper. | \`::part(base)\` |
-| \`playlist\` | The playlist sidebar container. | \`::part(playlist)\` |
-| \`playlist-duration\` | The duration text within a playlist item. | \`::part(playlist-duration)\` |
-| \`playlist-item\` | An individual playlist item button. | \`::part(playlist-item)\` |
-| \`playlist-thumbnail\` | The thumbnail image within a playlist item. | \`::part(playlist-thumbnail)\` |
-| \`playlist-title\` | The title text within a playlist item. | \`::part(playlist-title)\` |
-
-## Dependencies
-
-Link to This Section
-
-This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
-
--   [`<wa-button>`](https://webawesome.com/docs/components/button)
--   [`<wa-dropdown>`](https://webawesome.com/docs/components/dropdown)
--   [`<wa-dropdown-item>`](https://webawesome.com/docs/components/dropdown-item)
--   [`<wa-icon>`](https://webawesome.com/docs/components/icon)
--   [`<wa-popover>`](https://webawesome.com/docs/components/popover)
--   [`<wa-popup>`](https://webawesome.com/docs/components/popup)
--   [`<wa-slider>`](https://webawesome.com/docs/components/slider)
--   [`<wa-spinner>`](https://webawesome.com/docs/components/spinner)
--   [`<wa-tooltip>`](https://webawesome.com/docs/components/tooltip)
--   [`<wa-video>`](https://webawesome.com/docs/components/video)
-
-**Need a hand?** Report a bug Ask for help
+| Part | Description |
+| --- | --- |
+| `base` | The component's base wrapper. |
+| `playlist` | The playlist sidebar container. |
+| `playlist-item` | An individual playlist item button. |
+| `playlist-thumbnail` | The thumbnail image within a playlist item. |
+| `playlist-title` | The title text within a playlist item. |
+| `playlist-duration` | The duration text within a playlist item. |

@@ -5,7 +5,7 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Validation tests for breaking changes in Web Awesome 3.0.0-beta.6 and 3.1.0 upgrades
+/// Validation tests for breaking changes across the Web Awesome upgrades (3.0.0-beta.6 through 3.9.0)
 /// </summary>
 public class WaBreakingChangesValidationTests
 {
@@ -266,6 +266,41 @@ public class WaBreakingChangesValidationTests
         Assert.Equal("large", WaSize.Large.ToHtmlValue());
         Assert.Equal("xs", WaSize.ExtraSmall.ToHtmlValue());
         Assert.Equal("xl", WaSize.ExtraLarge.ToHtmlValue());
+    }
+
+    #endregion
+
+    #region ------ 3.9.0 Breaking Changes ------
+
+    [Fact]
+    public void WaTreeSelection_LeafMultiple_IsDefinedAndMapsToHtmlValue()
+    {
+        // Assert - Web Awesome 3.9.0 widened wa-tree's selection attribute with a new
+        // 'leaf-multiple' option (additive; existing values are unchanged)
+        Assert.True(Enum.IsDefined(typeof(WaTreeSelection), WaTreeSelection.LeafMultiple));
+        Assert.Equal("leaf-multiple", WaTreeSelection.LeafMultiple.ToHtmlValue());
+    }
+
+    [Fact]
+    public void WaTreeSelection_ExistingValues_MappingsUnchanged()
+    {
+        // Assert - the existing selection values must keep their mappings
+        Assert.Equal("single", WaTreeSelection.Single.ToHtmlValue());
+        Assert.Equal("multiple", WaTreeSelection.Multiple.ToHtmlValue());
+        Assert.Equal("leaf", WaTreeSelection.Leaf.ToHtmlValue());
+    }
+
+    [Fact]
+    public void WaTree_Selection_CanBeSetToLeafMultiple()
+    {
+        // Arrange
+        var component = new WaTree();
+
+        // Act
+        component.Selection = WaTreeSelection.LeafMultiple;
+
+        // Assert
+        Assert.Equal(WaTreeSelection.LeafMultiple, component.Selection);
     }
 
     #endregion

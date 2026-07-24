@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/toast-item.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast-item -->
+<!-- Source: reference doc bundled in the Web Awesome 3.9.0 release zip (dist/skills/webawesome/references/components/toast-item.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast-item -->
 
 # Toast Item [Pro]
 
@@ -246,131 +246,62 @@ Use the `--padding` custom property to adjust the internal spacing.
 </div>
 ```
 
-## Importing
-
-Link to This Section
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/toast-item/toast-item.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/toast-item/toast-item.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/toast-item/toast-item.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaToastItem from '@awesome.me/webawesome/dist/react/toast-item/index.js';
-```
-
 ## Slots
 
-Link to This Section
+Valid slot names for this component (use exactly these — any other `slot` value
+is silently ignored and the element falls back to the default slot):
 
-Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
-
-| Name | Description |
-| --- | --- |
-| (default) | The toast item's message content. |
-| \`icon\` | An optional icon to show at the start of the toast item. |
+- `(default)` — The toast item's message content.
+- `icon` — An optional icon to show at the start of the toast item.
 
 ## Attributes & Properties
 
-Link to This Section
-
-Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`duration\` duration | \`number\` The length of time in milliseconds before the toast item is automatically dismissed. Set to 0 to keep the toast item open until the user dismisses it. Type Default 5000 | | |
-| \`size\` size | \`'xs' \\| 's' \\| 'm' \\| 'l' \\| 'xl' \\| 'small' \\| 'medium' \\| 'large'\` The toast item's size. Type Default 'm' | | |
-| \`variant\` variant | \`'brand' \\| 'success' \\| 'warning' \\| 'danger' \\| 'neutral'\` The toast item's variant. Type Default 'neutral' | | |
-| \`withIcon\` with-icon | \`true\` Only required for SSR. Set to if you're slotting in an icon element so the server-rendered markup includes the icon before the component hydrates on the client. Type boolean Default false | | |
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `variant` |  | `'brand' \| 'success' \| 'warning' \| 'danger' \| 'neutral'` | `'neutral'` | The toast item's variant. |
+| `size` |  | `'xs' \| 's' \| 'm' \| 'l' \| 'xl' \| 'small' \| 'medium' \| 'large'` | `'m'` | The toast item's size. |
+| `duration` |  | `number` | `5000` | The length of time in milliseconds before the toast item is automatically dismissed. Set to 0 to keep the toast item open until the user dismisses it. |
+| `with-icon` | `withIcon` | `boolean` | `false` | Only required for SSR. Set to `true` if you're slotting in an `icon` element so the server-rendered markup includes the icon before the component hydrates on the client. |
+| `dir` |  | `string` |  |  |
+| `lang` |  | `string` |  |  |
+| `did-ssr` | `didSSR` |  |  |  |
 
 ## Methods
 
-Link to This Section
-
-Learn more about [methods](https://webawesome.com/docs/usage/#methods).
-
-| Name | Description | Arguments |
+| Method | Description | Arguments |
 | --- | --- | --- |
-| \`hide()\` | Hides the toast item with animation and removes it from the DOM. | |
+| `hide` | Hides the toast item with animation and removes it from the DOM. |  |
 
 ## Events
 
-Link to This Section
-
-Learn more about [events](https://webawesome.com/docs/usage/#events).
-
-| Name | Description |
+| Event | Description |
 | --- | --- |
-| \`wa-after-hide\` | Emitted after the toast item has finished hiding. |
-| \`wa-after-show\` | Emitted after the toast item has finished showing. |
-| \`wa-hide\` | Emitted when the toast item begins to hide. |
-| \`wa-show\` | Emitted when the toast item begins to show. |
+| `wa-show` | Emitted when the toast item begins to show. |
+| `wa-after-show` | Emitted after the toast item has finished showing. |
+| `wa-hide` | Emitted when the toast item begins to hide. |
+| `wa-after-hide` | Emitted after the toast item has finished hiding. |
 
-## CSS custom properties
+## CSS Parts
 
-Link to This Section
-
-Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
-
-| Name | Description |
+| Part | Description |
 | --- | --- |
-| \`--accent-width\` | The width of the accent line. Defaults to 4px. |
-| \`--hide-duration\` | \`var(--wa-transition-normal)\` The animation duration when hiding. Default |
-| \`--show-duration\` | \`var(--wa-transition-normal)\` The animation duration when showing. Default |
+| `toast-item` | The toast item's main container. |
+| `accent` | The colored accent line on the start side. |
+| `icon` | The icon container. |
+| `content` | The message content container. |
+| `close-button` | The close button element. |
+| `progress-ring` | The progress ring component. |
+| `progress-ring__base` | The progress ring's exported base part. |
+| `progress-ring__label` | The progress ring's exported label part. |
+| `progress-ring__track` | The progress ring's exported track part. |
+| `progress-ring__indicator` | The progress ring's exported indicator part. |
+| `close-icon` | The close icon element. |
+| `close-icon__svg` | The close icon's exported svg part. |
 
-## CSS parts
+## CSS Custom Properties
 
-Link to This Section
-
-Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
-
-| Name | Description | CSS selector |
+| Property | Default | Description |
 | --- | --- | --- |
-| \`accent\` | The colored accent line on the start side. | \`::part(accent)\` |
-| \`close-button\` | The close button element. | \`::part(close-button)\` |
-| \`close-icon\` | The close icon element. | \`::part(close-icon)\` |
-| \`close-icon\_\_svg\` | The close icon's exported svg part. | \`::part(close-icon\_\_svg)\` |
-| \`content\` | The message content container. | \`::part(content)\` |
-| \`icon\` | The icon container. | \`::part(icon)\` |
-| \`progress-ring\` | The progress ring component. | \`::part(progress-ring)\` |
-| \`progress-ring\_\_base\` | The progress ring's exported base part. | \`::part(progress-ring\_\_base)\` |
-| \`progress-ring\_\_indicator\` | The progress ring's exported indicator part. | \`::part(progress-ring\_\_indicator)\` |
-| \`progress-ring\_\_label\` | The progress ring's exported label part. | \`::part(progress-ring\_\_label)\` |
-| \`progress-ring\_\_track\` | The progress ring's exported track part. | \`::part(progress-ring\_\_track)\` |
-| \`toast-item\` | The toast item's main container. | \`::part(toast-item)\` |
-
-## Dependencies
-
-Link to This Section
-
-This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
-
--   [`<wa-icon>`](https://webawesome.com/docs/components/icon)
--   [`<wa-progress-ring>`](https://webawesome.com/docs/components/progress-ring)
-
-**Need a hand?** Report a bug Ask for help
+| `--accent-width` |  | The width of the accent line. Defaults to 4px. |
+| `--show-duration` | `var(--wa-transition-normal)` | The animation duration when showing. |
+| `--hide-duration` | `var(--wa-transition-normal)` | The animation duration when hiding. |

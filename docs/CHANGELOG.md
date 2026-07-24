@@ -2,6 +2,36 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.9.0] — 2026-07-24
+
+Alignment with the Web Awesome 3.9.0 release, opening the **WA-3.9 train**. A small additive upgrade: one new form-grouping component (`WaCheckboxGroup`) and one additive enum value on `WaTree`. **No wrapper APIs were removed or renamed.** See [MIGRATION-3.9.0.md](MIGRATION-3.9.0.md).
+
+### Breaking changes
+- None to the wrapper API. The single entry flagged breaking in the upstream change report is a non-destructive enum widening (see below).
+
+### New components
+- `WaCheckboxGroup` (`wa-checkbox-group`, free/stable) — gives a set of related `WaCheckbox`/`WaSwitch` items a shared label, hint, sizing, and accessible grouping. It is a **grouping wrapper, not a form control**: the grouped items remain independent controls with their own `name`/`value`/validation, so `WaCheckboxGroup` carries no value binding and no events. Derives from `ComponentBase` (like `WaTree`), not `WaInputBase<T>`. Exposes `Label`/`Hint` (plus the `MarkupLabel`/`MarkupHint` slots), `Orientation` (`WaOrientation`), `Size` (`WaSize`, applied to all grouped items), and the `Required`/`WithHint`/`WithLabel` flags.
+
+### Changed
+- `WaTree.Selection` (`WaTreeSelection`) gained the `LeafMultiple` value (`selection="leaf-multiple"`), allowing multiple leaf nodes to be selected while parent nodes only expand and collapse. Additive — the existing `Single`/`Multiple`/`Leaf` values and the `Single` default are unchanged.
+
+### Non-breaking upstream "breaking" changes (no wrapper action)
+- `wa-tree` `selection` attribute type widened from `'single' | 'multiple' | 'leaf'` to add `'leaf-multiple'`. Surfaced as the new `WaTreeSelection.LeafMultiple` enum member; no existing value removed or renamed, so consumer code is source-compatible.
+
+### Library
+- Versioned reference docs refreshed to the `v3.9.0` tag: 145 public-docs files updated; 18 Pro/reference docs filled from the release zip's bundled references; 0 needed manual capture.
+- New train WA-3.9: subtrunk `/main/WA-3.9` branched off `/main` (released 3.8.0, cs:203); developed on `/main/WA-3.9/WAB-39`.
+- Event delivery: `wa-checkbox-group` defines no custom events, so no JS initializer registration was required.
+
+### Public API
+- Baseline promoted: purely additive — the new `WaCheckboxGroup` class and `WaTreeSelection.LeafMultiple`. No removals; every diff explained by the WA 3.9.0 change report.
+
+### Deviations recorded (parity-config.json)
+- None. All seven consumer-authorable attributes of `wa-checkbox-group` (`label`, `hint`, `orientation`, `size`, `required`, `with-hint`, `with-label`) are bound directly; the group defines no events or methods. `wa-tree` needed no parity change — the enum widening leaves the `selection` attribute name unchanged.
+
+### Next-release check outcomes
+- Observer `stopObserver()`/`startObserver()` and `wa-relative-time` `update()`: re-verified against the 3.9.0 sources (`startObserver`/`stopObserver` still private in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle, only `updateTimeout`/`willUpdate` in `relative-time.d.ts`) — the `extraElementMethods` allowlist stands, verification stamps updated.
+
 ## [3.8.0] — 2026-07-24
 
 Alignment with the Web Awesome 3.8.0 release, opening the **WA-3.8 train**. An additive upgrade: six new experimental components (an accordion pair and a date/time family), additive attributes on four existing components, and one upstream behavioral realignment (`wa-drawer` light-dismiss default). **No wrapper APIs were removed or renamed.** See [MIGRATION-3.8.0.md](MIGRATION-3.8.0.md).

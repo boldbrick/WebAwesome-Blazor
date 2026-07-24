@@ -1,5 +1,5 @@
 {
-  "version": "3.8.0",
+  "version": "3.9.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-accordion": {
@@ -3591,6 +3591,77 @@
         "checked-icon",
         "indeterminate-icon",
         "label"
+      ]
+    },
+    "wa-checkbox-group": {
+      "className": "WaCheckboxGroup",
+      "since": "3.9",
+      "status": "stable",
+      "pro": false,
+      "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "hint": {
+          "type": "string",
+          "default": "''",
+          "description": "The checkbox group's hint. If you need to display HTML, use the `hint` slot instead."
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "The checkbox group's label. Required for proper accessibility. If you need to display HTML, use the `label` slot\ninstead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "orientation": {
+          "type": "'horizontal' | 'vertical'",
+          "default": "'vertical'",
+          "description": "The orientation in which to show grouped checkboxes."
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Indicates that at least one option should be selected. This only adds a visual indicator to the label. To enforce\nthe requirement, use the `required` attribute on the individual checkboxes and/or their `setCustomValidity()`\nmethod."
+        },
+        "size": {
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": null,
+          "description": "The group's size. When present, this size will be applied to all `<wa-checkbox>` and `<wa-switch>` items inside."
+        },
+        "with-hint": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup includes\nthe hint before the component hydrates on the client."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup includes\nthe label before the component hydrates on the client."
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "The default slot where `<wa-checkbox>` or `<wa-switch>` elements are placed.",
+        "hint": "Text that describes how to use the checkbox group. Alternatively, you can use the `hint` attribute.",
+        "label": "The checkbox group's label. Required for proper accessibility. Alternatively, you can use the `label` attribute."
+      },
+      "methods": {},
+      "cssParts": [
+        "form-control",
+        "form-control-input",
+        "form-control-label",
+        "hint"
       ]
     },
     "wa-icon": {
@@ -7931,9 +8002,9 @@
           "description": null
         },
         "selection": {
-          "type": "'single' | 'multiple' | 'leaf'",
+          "type": "'single' | 'multiple' | 'leaf' | 'leaf-multiple'",
           "default": "'single'",
-          "description": "The selection behavior of the tree. Single selection allows only one node to be selected at a time. Multiple\ndisplays checkboxes and allows more than one node to be selected. Leaf allows only leaf nodes to be selected."
+          "description": "The selection behavior of the tree. Single selection allows only one node to be selected at a time. Multiple\ndisplays checkboxes and allows more than one node to be selected. Leaf allows only leaf nodes to be selected.\nLeaf-multiple allows multiple leaf nodes to be selected while parent nodes only expand and collapse."
         },
         "tabindex": {
           "type": "number",
@@ -8072,7 +8143,7 @@
     },
     "wa-video": {
       "className": "WaVideo",
-      "since": "3.6",
+      "since": "3.7",
       "status": "experimental",
       "pro": true,
       "attributes": {
@@ -8287,7 +8358,7 @@
     },
     "wa-video-playlist": {
       "className": "WaVideoPlaylist",
-      "since": "3.3",
+      "since": "3.7",
       "status": "experimental",
       "pro": true,
       "attributes": {
