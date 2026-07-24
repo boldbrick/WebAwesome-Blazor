@@ -6,9 +6,6 @@ All notable changes to the Web Awesome Blazor Bindings. Versions mirror the boun
 
 Alignment with the Web Awesome 3.7.0 release, opening the **WA-3.7 train**. An additive upgrade with **no breaking changes**: two new Pro media components (`WaVideo`, `WaVideoPlaylist`) and a new tooltip attribute on `WaCopyButton`. No migration guide is required.
 
-### Breaking changes
-- None.
-
 ### New components
 - `WaVideo` (`wa-video`, Pro/experimental) — embeds and plays video content with custom controls and captions. Exposes the `Controls` (`WaVideoControls`) and `Preload` (`WaVideoPreload`) presets, `Src`/`Poster`/`Thumbnails`/`Title`/`IconLibrary`, the `Playing`/`Muted`/`Autoplay`/`Loop`/`AutoplayMuted`/`AutoplayOnVisible` flags, and `Volume`/`Duration`/`CurrentTime`; the icon slots (`poster-icon`, `play-icon`, `pause-icon`, `volume-icon`, `mute-icon`, `fullscreen-icon`, `exit-fullscreen-icon`) plus `controls-start`/`controls-after-play`; the native media events `OnPlay`/`OnPause`/`OnEnded`/`OnError`/`OnTimeUpdate`/`OnVolumeChange`/`OnLoadedMetadata`; and the playback methods `PlayAsync`/`PauseAsync`/`TogglePlayAsync`/`ToggleMuteAsync`/`SeekAsync`/`SetVolumeAsync`/`SetPlaybackRateAsync`/`RequestFullscreenAsync`/`ExitFullscreenAsync`/`GetStateAsync` (returning a `WaVideoState` record).
 - `WaVideoPlaylist` (`wa-video-playlist`, Pro/experimental) — wraps multiple `WaVideo` elements into a playlist with navigation. Exposes `Controls`/`IconLibrary`, the `OnVideoChange` callback (`WaVideoChangeEventArgs`, carrying `PreviousIndex`/`CurrentIndex`/`VideoTitle`), and the `NextAsync`/`PreviousAsync`/`GoToAsync` navigation methods.
