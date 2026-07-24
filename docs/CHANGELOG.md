@@ -6,9 +6,6 @@ All notable changes to the Web Awesome Blazor Bindings. Versions mirror the boun
 
 Alignment with the Web Awesome 3.10.0 release, opening the **WA-3.10 train**. A small additive upgrade: one new content-rotation component (`WaRandomContent`) and one additive attribute on `WaIcon`. **No wrapper APIs were removed or renamed**, so no migration guide is needed.
 
-### Breaking changes
-- None. The upstream change report lists zero breaking changes.
-
 ### New components
 - `WaRandomContent` (`wa-random-content`, free/experimental) — selects one or more slotted children at random and displays them, hiding the rest (rotating testimonials, tip of the day, featured content). Derives from `ComponentBase`. Exposes `Items` (count shown, default 1), `Mode` (`WaRandomContentMode` — `Random`/`Unique`/`Sequence`, default `Unique`), `Autoplay`/`AutoplayInterval` (ms, default 3000), and `Animation` (`WaRandomContentAnimation` — `None`/`Fade`/`FadeUp`/`FadeDown`/`FadeLeft`/`FadeRight`, default `None`); the default `ChildContent` slot is the pool; the `OnContentChange` (`WaContentChangeEventArgs`) callback fires on every rotation; and `RandomizeAsync()` re-selects.
 
