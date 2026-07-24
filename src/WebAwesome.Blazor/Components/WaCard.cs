@@ -67,6 +67,20 @@ public class WaCard : ComponentBase
     /// </summary>
     [Parameter] public bool WithMedia { get; set; }
 
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting in header actions (via <see cref="HeaderActionsContent"/>)
+    /// so the server-rendered markup includes them before the component hydrates. This is set automatically when
+    /// <see cref="HeaderActionsContent"/> is provided.
+    /// </summary>
+    [Parameter] public bool WithHeaderActions { get; set; }
+
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting in footer actions (via <see cref="FooterActionsContent"/>)
+    /// so the server-rendered markup includes them before the component hydrates. This is set automatically when
+    /// <see cref="FooterActionsContent"/> is provided.
+    /// </summary>
+    [Parameter] public bool WithFooterActions { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -122,6 +136,8 @@ public class WaCard : ComponentBase
         builder.AddAttribute(12, "with-header", WithHeader || HeaderContent is not null || HeaderActionsContent is not null);
         builder.AddAttribute(13, "with-footer", WithFooter || FooterContent is not null || FooterActionsContent is not null);
         builder.AddAttribute(14, "with-media", WithMedia || MediaContent is not null);
+        builder.AddAttribute(16, "with-header-actions", WithHeaderActions || HeaderActionsContent is not null);
+        builder.AddAttribute(17, "with-footer-actions", WithFooterActions || FooterActionsContent is not null);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(15, __cardReference => Element = __cardReference);

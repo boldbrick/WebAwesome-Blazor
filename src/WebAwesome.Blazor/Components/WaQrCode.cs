@@ -77,6 +77,28 @@ public class WaQrCode : ComponentBase
     /// </summary>
     [Parameter] public WaErrorCorrection ErrorCorrection { get; set; } = WaErrorCorrection.M;
 
+    /// <summary>
+    /// A URL to an image (typically a logo) rendered in the center of the QR code. When set, the error
+    /// correction level is automatically raised to keep the code scannable.
+    /// </summary>
+    [Parameter] public string? Image { get; set; }
+
+    /// <summary>
+    /// The background color drawn behind the center <see cref="Image"/>. Any valid CSS color, or <c>transparent</c>.
+    /// </summary>
+    [Parameter] public string? ImageBackground { get; set; }
+
+    /// <summary>
+    /// How much of the QR code the center <see cref="Image"/> is allowed to cover, from 0 to 1. Higher values make
+    /// the code harder to scan.
+    /// </summary>
+    [Parameter] public decimal? ImageCoverage { get; set; }
+
+    /// <summary>
+    /// The padding, in pixels, around the center <see cref="Image"/>.
+    /// </summary>
+    [Parameter] public int? ImagePadding { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -97,6 +119,10 @@ public class WaQrCode : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(8, "background", Background);
         builder.AddAttribute(9, "radius", Radius);
         builder.AddAttribute(10, "error-correction", ErrorCorrection.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(11, "image", Image);
+        builder.AddAttributeIfNotNullOrEmpty(12, "image-background", ImageBackground);
+        builder.AddAttributeIfNotNull(13, "image-coverage", ImageCoverage);
+        builder.AddAttributeIfNotNull(14, "image-padding", ImagePadding);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __qrCodeReference => Element = __qrCodeReference);

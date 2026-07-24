@@ -218,6 +218,42 @@ public class WaCreateEventArgs : EventArgs
 }
 
 #endregion
+
+#region ------ Date Picker Events ------
+
+/// <summary>
+/// Event arguments for the date picker's focused-day change event.
+/// </summary>
+public class WaDatePickerFocusDayEventArgs : EventArgs
+{
+    /// <summary>
+    /// The newly focused day as an ISO date string (<c>YYYY-MM-DD</c>).
+    /// </summary>
+    /// <remarks>
+    /// The wa-focus-day event's detail carries a live JavaScript <c>Date</c>; it is projected to an
+    /// ISO date string by the interop module, since <c>Date</c> objects do not marshal into Blazor.
+    /// </remarks>
+    public string? Date { get; set; }
+}
+
+/// <summary>
+/// Event arguments for the date picker's view change event.
+/// </summary>
+public class WaDatePickerViewChangeEventArgs : EventArgs
+{
+    /// <summary>
+    /// The view the picker switched to: <c>days</c>, <c>months</c>, or <c>years</c>.
+    /// </summary>
+    public string? View { get; set; }
+
+    /// <summary>
+    /// The anchor date of the new view as an ISO date string (<c>YYYY-MM-DD</c>).
+    /// </summary>
+    public string? Date { get; set; }
+}
+
+#endregion
+
 #region ------ Video Playlist Events ------
 
 /// <summary>
