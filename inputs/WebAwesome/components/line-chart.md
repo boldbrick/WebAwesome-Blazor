@@ -1,10 +1,9 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.9.0 release zip (dist/skills/webawesome/references/components/line-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/line-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/line-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/line-chart -->
 
 # Line Chart [Pro]
 
-**Full documentation:** https://webawesome.com/docs/components/line-chart
-
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
+
 `<wa-line-chart>`
 
 ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
@@ -20,7 +19,8 @@ Line charts show trends over time by connecting data points with line segments. 
 -   Pre-Built [Pro Themes](https://webawesome.com/docs/themes)
 -   Pro Theme Builder
 -   Pro Color Tools
--   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma)
+-   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma) Newer additions to Web Awesome, like [`<wa-toast>`](https://webawesome.com/docs/components/toast), aren't included in the currently available kit, but a new version is in the works.  
+    Track its progress on GitHub.
 -   [WA Pro Perpetual License](https://webawesome.com/license/pro)
 -   Actual Human™ Support
 
@@ -46,13 +46,96 @@ Get Web Awesome Pro + Line Chart!
 
 For advanced configuration such as mixed chart types, custom plugins, and direct Chart.js access, see [`<wa-chart>`](https://webawesome.com/docs/components/chart).
 
+## Importing
+
+If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
+
+\*\*CDN\*\*
+
+Import this component directly from the CDN:
+
+```js
+import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/line-chart/line-chart.js';
+```
+
+\*\*npm\*\*
+
+After installing Web Awesome via npm, import this component:
+
+```js
+import '@awesome.me/webawesome/dist/components/line-chart/line-chart.js';
+```
+
+\*\*Self-Hosted\*\*
+
+If you're self-hosting Web Awesome, import this component from your server:
+
+```js
+import './webawesome/dist/components/line-chart/line-chart.js';
+```
+
+\*\*React\*\*
+
+To import this component for React 18 or below, use the following code:
+
+```js
+import WaLineChart from '@awesome.me/webawesome/dist/react/line-chart/index.js';
+```
+
+## Slots
+
+Valid slot names for this component (use exactly these — any other `slot` value is
+silently ignored and the element falls back to the default slot):
+
+- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
+
+## Attributes & Properties
+
+| Property | Attribute | Description | Type | Default |
+| --- | --- | --- | --- | --- |
+| `type` | `type` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. | `ChartType` | `'line'` |
+| `label` | `label` | A label for the chart, used for accessibility. | `string \| null` | `null` |
+| `description` | `description` | A description of the chart, used for accessibility. | `string \| null` | `null` |
+| `xLabel` | `xLabel` | A label for the x-axis. | `string \| null` | `null` |
+| `yLabel` | `yLabel` | A label for the y-axis. | `string \| null` | `null` |
+| `legendPosition` | `legend-position` | The position of the legend relative to the chart. | `LayoutPosition \| 'start' \| 'end'` | `'top'` |
+| `stacked` | `stacked` | Stacks datasets on top of each other along the value axis. | `boolean` | `false` |
+| `indexAxis` | `index-axis` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. | `'x' \| 'y'` | `'x'` |
+| `grid` | `grid` | Which axes to show grid lines on. | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` |
+| `min` | `min` | The minimum value for the value axis. | `number \| null` | `null` |
+| `max` | `max` | The maximum value for the value axis. | `number \| null` | `null` |
+| `withoutAnimation` | `without-animation` | Disables chart animations | `boolean` | `false` |
+| `withoutLegend` | `without-legend` | Hides the legend | `boolean` | `false` |
+| `withoutTooltip` | `without-tooltip` | Hides tooltips over data points | `boolean` | `false` |
+| `config` | — | The Chart.js configuration object. Setting this property will automatically re-render the chart. | `ChartJS['config']` | — |
+| `plugins` | `plugins` | Additional Chart.js plugins to register for this chart instance. | `array` | `[]` |
+
+## CSS Custom Properties
+
+| Name | Description |
+| --- | --- |
+| \`--border-color-1\` | \`var(--wa-color-blue-60)\` Border color for the first dataset. Default |
+| \`--border-color-2\` | \`var(--wa-color-pink-60)\` Border color for the second dataset. Default |
+| \`--border-color-3\` | \`var(--wa-color-green-60)\` Border color for the third dataset. Default |
+| \`--border-color-4\` | \`var(--wa-color-yellow-60)\` Border color for the fourth dataset. Default |
+| \`--border-color-5\` | \`var(--wa-color-purple-60)\` Border color for the fifth dataset. Default |
+| \`--border-color-6\` | \`var(--wa-color-orange-60)\` Border color for the sixth dataset. Default |
+| \`--border-radius\` | \`var(--wa-border-radius-s)\` Border radius for bar charts. Default |
+| \`--border-width\` | \`var(--wa-border-width-s)\` Border width for bars and arcs. Default |
+| \`--fill-color-1\` | \`color-mix(in srgb, var(--wa-color-blue-60) 40%, transparent)\` Fill color for the first dataset. Default |
+| \`--fill-color-2\` | \`color-mix(in srgb, var(--wa-color-pink-60) 40%, transparent)\` Fill color for the second dataset. Default |
+| \`--fill-color-3\` | \`color-mix(in srgb, var(--wa-color-green-60) 40%, transparent)\` Fill color for the third dataset. Default |
+| \`--fill-color-4\` | \`color-mix(in srgb, var(--wa-color-yellow-60) 40%, transparent)\` Fill color for the fourth dataset. Default |
+| \`--fill-color-5\` | \`color-mix(in srgb, var(--wa-color-purple-60) 40%, transparent)\` Fill color for the fifth dataset. Default |
+| \`--fill-color-6\` | \`color-mix(in srgb, var(--wa-color-orange-60) 40%, transparent)\` Fill color for the sixth dataset. Default |
+| \`--grid-border-width\` | \`var(--wa-border-width-s)\` Border width for chart grid lines and axis borders. Default |
+| \`--grid-color\` | \`var(--wa-color-neutral-border-quiet)\` Color of the chart grid lines and axis borders. Default |
+| \`--line-border-width\` | \`var(--wa-border-width-m)\` Border width for line and radar charts. Default |
+| \`--point-radius\` | \`var(--wa-border-width-m)\` Radius of data point dots. Default |
+
 ## Examples
 
-Link to This Section
-
 ### Providing Data with JavaScript
-
-Link to This Section
 
 For dynamic data, set the `config` property directly. The chart will re-render automatically.
 
@@ -78,8 +161,6 @@ Note that `config` is shallowly reactive. If you mutate the existing object in p
 
 ### Providing Data with JSON
 
-Link to This Section
-
 Place a `<script type="application/json">` tag inside the component with your chart data. The `type` field can be omitted since `wa-line-chart` already knows its chart type.
 
 ```html
@@ -99,8 +180,6 @@ Place a `<script type="application/json">` tag inside the component with your ch
 ```
 
 ### Multiple Lines
-
-Link to This Section
 
 Add multiple datasets to compare trends across different series.
 
@@ -124,8 +203,6 @@ Add multiple datasets to compare trends across different series.
 ```
 
 ### Custom Colors
-
-Link to This Section
 
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
 
@@ -159,8 +236,6 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
 
 ### Fill Area
 
-Link to This Section
-
 Set `fill` to `true` on a dataset to fill the area beneath the line. This works well for emphasizing volume or magnitude.
 
 ```html
@@ -183,8 +258,6 @@ Set `fill` to `true` on a dataset to fill the area beneath the line. This works 
 ```
 
 ### Stacked Area
-
-Link to This Section
 
 Combine the `stacked` attribute with `fill: true` on each dataset to create a stacked area chart.
 
@@ -221,8 +294,6 @@ Combine the `stacked` attribute with `fill: true` on each dataset to create a st
 
 ### Border Width
 
-Link to This Section
-
 Use the `--line-border-width` CSS custom property to control the thickness of the lines.
 
 ```html
@@ -244,8 +315,6 @@ Use the `--line-border-width` CSS custom property to control the thickness of th
 ```
 
 ### Point Radius
-
-Link to This Section
 
 Use the `--point-radius` CSS custom property to control the size of the dots drawn at each data point. Set it to `0` to hide points entirely.
 
@@ -269,8 +338,6 @@ Use the `--point-radius` CSS custom property to control the size of the dots dra
 
 ### Legend
 
-Link to This Section
-
 Use the `legend-position` attribute to control where the legend appears. Add `without-legend` to hide it entirely.
 
 ```html
@@ -292,8 +359,6 @@ Use the `legend-position` attribute to control where the legend appears. Add `wi
 ```
 
 ### Grid Lines
-
-Link to This Section
 
 Use the `grid` attribute to control which axes show grid lines. Options are `both` (default), `x`, `y`, and `none`.
 
@@ -317,8 +382,6 @@ Use the `grid` attribute to control which axes show grid lines. Options are `bot
 
 ### Axis Labels
 
-Link to This Section
-
 Use the `x-label` and `y-label` attributes to add descriptive labels to each axis.
 
 ```html
@@ -340,8 +403,6 @@ Use the `x-label` and `y-label` attributes to add descriptive labels to each axi
 ```
 
 ### Axis Range
-
-Link to This Section
 
 Use the `min` and `max` attributes to constrain the value axis.
 
@@ -365,8 +426,6 @@ Use the `min` and `max` attributes to constrain the value axis.
 
 ### Disabling Tooltips
 
-Link to This Section
-
 Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over data points.
 
 ```html
@@ -389,8 +448,6 @@ Use the `without-tooltip` attribute to hide the tooltips that appear when hoveri
 
 ### Disabling Animations
 
-Link to This Section
-
 Use the `without-animation` attribute to disable chart transitions.
 
 ```html
@@ -410,56 +467,3 @@ Use the `without-animation` attribute to disable chart transitions.
   };
 </script>
 ```
-
-## Slots
-
-Valid slot names for this component (use exactly these — any other `slot` value
-is silently ignored and the element falls back to the default slot):
-
-- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
-
-## Attributes & Properties
-
-| Attribute | Property | Type | Default | Description |
-| --- | --- | --- | --- | --- |
-| `type` |  | `ChartType` | `'line'` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. |
-| `label` |  | `string \| null` | `null` | A label for the chart, used for accessibility. |
-| `description` |  | `string \| null` | `null` | A description of the chart, used for accessibility. |
-| `xLabel` |  | `string \| null` | `null` | A label for the x-axis. |
-| `yLabel` |  | `string \| null` | `null` | A label for the y-axis. |
-| `legend-position` | `legendPosition` | `LayoutPosition \| 'start' \| 'end'` | `'top'` | The position of the legend relative to the chart. |
-| `stacked` |  | `boolean` | `false` | Stacks datasets on top of each other along the value axis. |
-| `index-axis` | `indexAxis` | `'x' \| 'y'` | `'x'` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. |
-| `grid` |  | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` | Which axes to show grid lines on. |
-| `min` |  | `number \| null` | `null` | The minimum value for the value axis. |
-| `max` |  | `number \| null` | `null` | The maximum value for the value axis. |
-| `without-animation` | `withoutAnimation` | `boolean` | `false` | Disables chart animations |
-| `without-legend` | `withoutLegend` | `boolean` | `false` | Hides the legend |
-| `without-tooltip` | `withoutTooltip` | `boolean` | `false` | Hides tooltips over data points |
-| `plugins` |  | `array` | `[]` | Additional Chart.js plugins to register for this chart instance. |
-| `dir` |  | `string` |  |  |
-| `lang` |  | `string` |  |  |
-| `did-ssr` | `didSSR` |  |  |  |
-
-## CSS Custom Properties
-
-| Property | Default | Description |
-| --- | --- | --- |
-| `--fill-color-1` | `color-mix(in srgb, var(--wa-color-blue-60) 40%, transparent)` | Fill color for the first dataset. |
-| `--fill-color-2` | `color-mix(in srgb, var(--wa-color-pink-60) 40%, transparent)` | Fill color for the second dataset. |
-| `--fill-color-3` | `color-mix(in srgb, var(--wa-color-green-60) 40%, transparent)` | Fill color for the third dataset. |
-| `--fill-color-4` | `color-mix(in srgb, var(--wa-color-yellow-60) 40%, transparent)` | Fill color for the fourth dataset. |
-| `--fill-color-5` | `color-mix(in srgb, var(--wa-color-purple-60) 40%, transparent)` | Fill color for the fifth dataset. |
-| `--fill-color-6` | `color-mix(in srgb, var(--wa-color-orange-60) 40%, transparent)` | Fill color for the sixth dataset. |
-| `--border-color-1` | `var(--wa-color-blue-60)` | Border color for the first dataset. |
-| `--border-color-2` | `var(--wa-color-pink-60)` | Border color for the second dataset. |
-| `--border-color-3` | `var(--wa-color-green-60)` | Border color for the third dataset. |
-| `--border-color-4` | `var(--wa-color-yellow-60)` | Border color for the fourth dataset. |
-| `--border-color-5` | `var(--wa-color-purple-60)` | Border color for the fifth dataset. |
-| `--border-color-6` | `var(--wa-color-orange-60)` | Border color for the sixth dataset. |
-| `--grid-color` | `var(--wa-color-neutral-border-quiet)` | Color of the chart grid lines and axis borders. |
-| `--border-width` | `var(--wa-border-width-s)` | Border width for bars and arcs. |
-| `--border-radius` | `var(--wa-border-radius-s)` | Border radius for bar charts. |
-| `--grid-border-width` | `var(--wa-border-width-s)` | Border width for chart grid lines and axis borders. |
-| `--line-border-width` | `var(--wa-border-width-m)` | Border width for line and radar charts. |
-| `--point-radius` | `var(--wa-border-width-m)` | Radius of data point dots. |
