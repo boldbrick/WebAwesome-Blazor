@@ -77,6 +77,16 @@ else
                     <WaNumberInput Label="Additional guest passes" Hint="Reserve extra passes for guests (0–10)"
                                    StartIconName="user-plus" Min="0" Max="10" Step="1" @bind-Value="model.GuestPasses" />
 
+                    <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
+                        <WaDateInput Label="Arrival date" Hint="When will you arrive on-site?"
+                                     Min="2026-03-12" Max="2026-03-14" WithClear="true" @bind-Value="model.ArrivalDate" />
+                        <WaTimeInput Label="Preferred session time" Hint="We'll prioritize workshops around this time"
+                                     WithNow="true" @bind-Value="model.SessionTime" />
+                    </WaGrid>
+
+                    <WaKnownDate Label="Date of birth" Hint="Required for age verification at the venue"
+                                 @bind-Value="model.DateOfBirth" />
+
                     <WaTextArea Label="Dietary requirements &amp; accessibility notes"
                                 Hint="Shared only with the catering and venue teams" Rows="3"
                                 Placeholder="e.g. vegetarian, step-free access" @bind-Value="model.Notes" />
@@ -176,6 +186,14 @@ else
 
         [Range(0, 10, ErrorMessage = "Guest passes must be between 0 and 10.")]
         public decimal? GuestPasses { get; set; } = 0;
+
+        [Required(ErrorMessage = "Please choose your arrival date.")]
+        public string? ArrivalDate { get; set; }
+
+        public string? SessionTime { get; set; }
+
+        [Required(ErrorMessage = "Please provide your date of birth.")]
+        public string? DateOfBirth { get; set; }
 
         public decimal? Workshops { get; set; } = 1;
 

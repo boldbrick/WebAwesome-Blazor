@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/chart -->
 
 # Chart [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/chart
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-chart>` Stable Since 3.3 Pro Included with Web Awesome Pro
+`<wa-chart>`
+
+ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
 
 Charts provide a flexible wrapper around Chart.js for building themed data visualizations. Use this component for advanced configuration such as mixed chart types, custom plugins, and direct Chart.js instance access.
 
@@ -53,9 +55,13 @@ For quick, type-specific examples see the individual component pages: [Bar Chart
 
 ## Examples
 
+Link to This Section
+
 ### Chart Types
 
-The `wa-chart` element supports all Chart.js types by setting `type` in the config. Web Awesome also provides dedicated elements for each type — such as `<wa-bar-chart>`, `<wa-line-chart>`, and `<wa-pie-chart>` — that set the type automatically.
+Link to This Section
+
+The `wa-chart` element supports all Chart.js types by setting `type` in the config. Web Awesome also provides dedicated elements for each type — such as [`<wa-bar-chart>`](https://webawesome.com/docs/components/bar-chart), [`<wa-line-chart>`](https://webawesome.com/docs/components/line-chart), and [`<wa-pie-chart>`](https://webawesome.com/docs/components/pie-chart) — that set the type automatically.
 
 ```html
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 1rem;">
@@ -126,6 +132,8 @@ The `wa-chart` element supports all Chart.js types by setting `type` in the conf
 
 ### Providing Data with JSON
 
+Link to This Section
+
 The simplest way to provide chart data is with a `<script type="application/json">` tag inside the component. The JSON follows the [Chart.js configuration format](https://www.chartjs.org/docs/latest/configuration/).
 
 ```html
@@ -146,6 +154,8 @@ The simplest way to provide chart data is with a `<script type="application/json
 ```
 
 ### Providing Data with JavaScript
+
+Link to This Section
 
 For dynamic data, set the `config` property and call `renderChart()`. This approach works well when data comes from an API or needs to be computed at runtime.
 
@@ -173,6 +183,8 @@ For dynamic data, set the `config` property and call `renderChart()`. This appro
 ```
 
 ### Theming
+
+Link to This Section
 
 Charts use six pairs of CSS custom properties for dataset colors: `--fill-color-1` through `--fill-color-6` for backgrounds and `--border-color-1` through `--border-color-6` for borders. Background colors default to semi-transparent fills using `color-mix()`, while border colors default to the solid variant of each color. The `--grid-color` property controls the color of grid lines and axis borders.
 
@@ -212,9 +224,13 @@ Override them to apply a custom color palette.
 
 ### Dark Mode
 
+Link to This Section
+
 Charts automatically respond to theme changes. Because chart colors are derived from CSS custom properties, switching between light and dark mode triggers a re-render with updated colors. No additional code is required.
 
 ### Using CSS Variables in Data
+
+Link to This Section
 
 You can use CSS variables such as `var(--wa-color-*)` and `color-mix()` directly in dataset `backgroundColor` and `borderColor` values. The component resolves these automatically at render time.
 
@@ -246,6 +262,8 @@ You can use CSS variables such as `var(--wa-color-*)` and `color-mix()` directly
 ```
 
 ### Mixed Charts
+
+Link to This Section
 
 Use the `wa-chart` element directly to combine different chart types in a single visualization. Set the `type` on each dataset to control how it renders.
 
@@ -299,6 +317,8 @@ Use the `wa-chart` element directly to combine different chart types in a single
 
 ### Legend Position
 
+Link to This Section
+
 Use the `legend-position` attribute to control where the legend appears. Supported values include `top`, `bottom`, `left`, and `right`. The `start` and `end` values are direction-aware and will flip in RTL layouts.
 
 ```html
@@ -325,6 +345,8 @@ Use the `legend-position` attribute to control where the legend appears. Support
 ```
 
 ### Axis Labels
+
+Link to This Section
 
 Use the `x-label` and `y-label` attributes to add labels to the chart axes.
 
@@ -357,6 +379,8 @@ Use the `x-label` and `y-label` attributes to add labels to the chart axes.
 
 ### Grid Lines
 
+Link to This Section
+
 Use the `grid` attribute to control which axes show grid lines. Options are `both` (default), `x`, `y`, and `none`.
 
 ```html
@@ -388,6 +412,8 @@ Use the `grid` attribute to control which axes show grid lines. Options are `bot
 
 ### Disabling Features
 
+Link to This Section
+
 Use `without-animation` to disable transitions, `without-legend` to hide the legend, and `without-tooltip` to remove hover tooltips.
 
 ```html
@@ -408,6 +434,8 @@ Use `without-animation` to disable transitions, `without-legend` to hide the leg
 ```
 
 ### Stacked Data
+
+Link to This Section
 
 Use the `stacked` attribute to stack datasets on top of each other instead of placing them side by side.
 
@@ -440,6 +468,8 @@ Use the `stacked` attribute to stack datasets on top of each other instead of pl
 
 ### Axis Range
 
+Link to This Section
+
 Use the `min` and `max` attributes to constrain the value axis.
 
 ```html
@@ -470,6 +500,8 @@ Use the `min` and `max` attributes to constrain the value axis.
 ```
 
 ### Accessing the Chart.js Instance
+
+Link to This Section
 
 After calling `renderChart()`, the underlying Chart.js instance is available on the `chart` property. Use it for programmatic updates, exporting images, or any [Chart.js API method](https://www.chartjs.org/docs/latest/api/classes/Chart.html).
 
@@ -505,6 +537,8 @@ After calling `renderChart()`, the underlying Chart.js instance is available on 
 ```
 
 ### Using Plugins
+
+Link to This Section
 
 Pass [Chart.js plugins](https://www.chartjs.org/docs/latest/developers/plugins.html) through the `plugins` property. A plugin is an object with an `id` and one or more hook methods. This example draws a dashed target line across the chart by hooking into `afterDraw`.
 
@@ -567,6 +601,8 @@ Pass [Chart.js plugins](https://www.chartjs.org/docs/latest/developers/plugins.h
 
 ### Accessibility
 
+Link to This Section
+
 Charts are rendered on a `<canvas>` element, which is not accessible to screen readers by default. Web Awesome addresses this with two built-in attributes.
 
 Use `label` to give the chart a short, descriptive name. This maps to `aria-label` on the canvas with `role="img"`, which is the pattern [recommended by Chart.js](https://www.chartjs.org/docs/latest/general/accessibility.html) and ARIA authoring guidelines. Use `description` for a longer explanation of what the chart shows, ideally including the key insight or takeaway, not just a restatement of the chart type. A description like _"Sales grew 40% quarter over quarter, with Q4 reaching a record $710K"_ is more useful than _"A bar chart with four bars."_
@@ -575,6 +611,8 @@ For complex charts where the underlying numbers matter, consider including a vis
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -582,7 +620,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/chart/chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/chart/chart.js';
 ```
 
 \*\*npm\*\*
@@ -611,6 +649,8 @@ import WaChart from '@awesome.me/webawesome/dist/react/chart/index.js';
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -619,12 +659,13 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
 | \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default \[styles\] | | |
 | \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | | |
 | \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | | |
 | \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | | |
@@ -641,7 +682,19 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 | \`xLabel\` xLabel | \`string \\| null\` A label for the x-axis. Type Default null | | |
 | \`yLabel\` yLabel | \`string \\| null\` A label for the y-axis. Type Default null | | |
 
+## SSR
+
+Link to This Section
+
+Using `<wa-chart>` with SSR
+
+Charts will not render in SSR because they require a canvas element to render, and there is no server side equivalent when using chart.js. The chart will take up the expected space to prevent layout shifting, but will not render anything meant to be rendered by chart.js in the canvas.
+
+Learn more about [Web Awesome and Server-Side Rendering](https://webawesome.com/docs/ssr).
+
 ## CSS custom properties
+
+Link to This Section
 
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 

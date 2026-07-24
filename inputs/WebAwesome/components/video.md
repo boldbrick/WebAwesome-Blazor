@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/video.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/video.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video -->
 
 # Video [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/video
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-video>` Experimental Since 3.6 Pro Included with Web Awesome Pro
+`<wa-video>`
+
+ProIncluded with Web Awesome Pro Experimental [Media](https://webawesome.com/docs/components/?category=media) [Since 3.6](https://webawesome.com/docs/resources/changelog#wa_360)
 
 Videos are used to embed and play video content with custom controls and captions.
 
@@ -25,19 +27,27 @@ Videos are used to embed and play video content with custom controls and caption
 Get Web Awesome Pro + Video!
 
 ```html
-<wa-video title="Web Awesome"  controls="full">
+<wa-video title="Web Awesome" controls="full">
   <source src="https://uploads.webawesome.com/waks_compressed.mp4" type="video/mp4" />
 </wa-video>
 ```
 
 ## Examples
 
+Link to This Section
+
 ### Adding Video Sources
+
+Link to This Section
 
 The simplest way to add a video is with the `src` attribute.
 
 ```html
-<wa-video src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" title="Using Kits in Your Project" poster="/assets/images/fa-part-1.jpg"></wa-video>
+<wa-video
+  src="https://uploads.webawesome.com/01-create-your-first-kit.mp4"
+  title="Using Kits in Your Project"
+  poster="/assets/images/fa-part-1.jpg"
+></wa-video>
 ```
 
 For multiple formats or additional options, use [`<source>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source) elements instead.
@@ -52,19 +62,28 @@ For multiple formats or additional options, use [`<source>`](https://developer.m
 
 ### Controls
 
+Link to This Section
+
 The video player offers three control presets: `none`, `standard`, and `full`.
 
 #### None
+
+Link to This Section
 
 No controls are displayed. The video can still be played programmatically via JavaScript, and the poster overlay and captions remain visible.
 
 ```html
 <wa-video controls="none" title="My Video" poster="/assets/images/kits.jpg">
-  <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4" type="video/mp4" />
+  <source
+    src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
+    type="video/mp4"
+  />
 </wa-video>
 ```
 
 #### Standard
+
+Link to This Section
 
 Displays playback, a seekable timeline, elapsed/total time, volume, captions, and fullscreen controls.
 
@@ -82,6 +101,8 @@ Displays playback, a seekable timeline, elapsed/total time, volume, captions, an
 
 #### Full
 
+Link to This Section
+
 Includes everything in standard, plus playback speed selection and picture-in-picture.
 
 ```html
@@ -98,15 +119,22 @@ Includes everything in standard, plus playback speed selection and picture-in-pi
 
 ### Poster Images
 
+Link to This Section
+
 Add a poster image that displays before the video plays. If no `poster` is provided, no overlay is shown and the browser will display the first frame of the video instead.
 
 ```html
 <wa-video title="Using Kits in Your Project" poster="/assets/images/teams.jpg" controls="full">
-  <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4" type="video/mp4" />
+  <source
+    src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
+    type="video/mp4"
+  />
 </wa-video>
 ```
 
 ### Captions and Subtitles
+
+Link to This Section
 
 Add a [`<track>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/track) element to enable captions using [standard WebVTT](https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API/Web_Video_Text_Tracks_Format) files.
 
@@ -126,28 +154,37 @@ Captions are rendered above the video controls and automatically adjust position
 
 ### Icon Slots
 
+Link to This Section
+
 Several slots like `poster-icon` and `pause-icon` are provided to let you customize which icons you'd like to show.
 
 ```html
 <wa-video title="Using Kits in Your Project" poster="/assets/images/teams.jpg" controls="full">
   <wa-icon slot="poster-icon" name="kiwi-bird" family="duotone" variant="solid"></wa-icon>
-  <wa-icon slot="play-icon" name="fish" family="duotone" variant="solid"></wa-icon>  
-  <wa-icon slot="pause-icon" name="fish-bones" family="duotone" variant="solid"></wa-icon>        
-  <source src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4" type="video/mp4" />
+  <wa-icon slot="play-icon" name="fish" family="duotone" variant="solid"></wa-icon>
+  <wa-icon slot="pause-icon" name="fish-bones" family="duotone" variant="solid"></wa-icon>
+  <source
+    src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
+    type="video/mp4"
+  />
 </wa-video>
 ```
 
 ### Playlists
 
+Link to This Section
+
 To group multiple videos into a playlist, use [`<wa-video-playlist>`](https://webawesome.com/docs/components/video-playlist).
 
 ### Video Recommendations
+
+Link to This Section
 
 Recommended to ensure fast loading, broad browser compatibility, and the best playback experience across devices.
 
 #### Video Encoding
 
-| Setting | Recommended | Reason |
+Link to This Section | Setting | Recommended | Reason |
 | --- | --- | --- |
 | Codec | H.264 (MP4) | Broadest browser and device support |
 | Resolution | 1280×720 (720p) | Good balance of quality and file size |
@@ -156,7 +193,7 @@ Recommended to ensure fast loading, broad browser compatibility, and the best pl
 
 #### Poster Images
 
-| Setting | Recommended | Reason |
+Link to This Section | Setting | Recommended | Reason |
 | --- | --- | --- |
 | Format | JPEG (80–85%) or WebP | Small file size with wide browser support |
 | File size | Under 200KB | Fast initial load before video starts |
@@ -165,13 +202,15 @@ Recommended to ensure fast loading, broad browser compatibility, and the best pl
 
 #### Caption Files
 
-| Setting | Recommended | Reason |
+Link to This Section | Setting | Recommended | Reason |
 | --- | --- | --- |
 | Format | WebVTT (.vtt) | \`\` Only format supported by the HTML element |
 | Encoding | UTF-8 | Ensures special characters and non-Latin scripts render correctly |
 | Timing | Frame accurate | Prevents captions from appearing early or late |  
 
 ## Importing
+
+Link to This Section
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -180,7 +219,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/video/video.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/video/video.js';
 ```
 
 \*\*npm\*\*
@@ -209,6 +248,8 @@ import WaVideo from '@awesome.me/webawesome/dist/react/video/index.js';
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -226,6 +267,8 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
@@ -234,7 +277,6 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 | \`autoplayMuted\` autoplay-muted | \`boolean\` Enables autoplay in a muted state. Type Default false | | |
 | \`autoplayOnVisible\` autoplay-on-visible | \`boolean\` Automatically resumes playback when the player scrolls back into view after being paused by scrolling out. Type Default false | | |
 | \`controls\` controls | \`none\` The video's controls preset. - — no controls are shown. - standard — shows the timeline, play/pause, volume, captions, and fullscreen. - full — all of the above plus playback speed and picture-in-picture. Type 'none' \\| 'standard' \\| 'full' Default 'standard' | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default styles | | |
 | \`currentTime\` currentTime | \`number\` The current playback position in seconds. Type Default 0 | | |
 | \`duration\` duration | \`number\` The total duration of the video in seconds. Type Default 0 | | |
 | \`iconLibrary\` icon-library | \`string\` Icon library used for all built-in control icons. Defaults to 'system'. Type Default 'system' | | |
@@ -249,6 +291,8 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 | \`volume\` volume | \`number\` The video's volume. Type Default 1 | | |
 
 ## Methods
+
+Link to This Section
 
 Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 
@@ -268,6 +312,8 @@ Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 
 ## Events
 
+Link to This Section
+
 Learn more about [events](https://webawesome.com/docs/usage/#events).
 
 | Name | Description |
@@ -282,6 +328,8 @@ Learn more about [events](https://webawesome.com/docs/usage/#events).
 
 ## CSS custom properties
 
+Link to This Section
+
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 
 | Name | Description |
@@ -291,6 +339,8 @@ Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#cust
 | \`--poster-play-button-background\` | \`var(--wa-color-surface-default)\` The background of the play button shown over the poster image. Also used to derive the hover state via color-mix(). Default |
 
 ## CSS parts
+
+Link to This Section
 
 Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 
@@ -313,6 +363,8 @@ Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 | \`video-title-overlay\` | The title text overlay. | \`::part(video-title-overlay)\` |
 
 ## Dependencies
+
+Link to This Section
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 

@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/combobox.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/combobox -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/combobox.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/combobox -->
 
 # Combobox [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/combobox
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-combobox>` Stable Since 3.1 Pro Included with Web Awesome Pro
+`<wa-combobox>`
+
+ProIncluded with Web Awesome Pro Stable [Forms](https://webawesome.com/docs/components/?category=forms) [Since 3.1](https://webawesome.com/docs/resources/changelog#wa_310)
 
 Comboboxes combine a text input with a listbox, allowing users to filter and select from predefined options or enter custom values.
 
@@ -41,7 +43,11 @@ This component works with standard `<form>` elements. Please refer to the sectio
 
 ## Examples
 
+Link to This Section
+
 ### Labels
+
+Link to This Section
 
 Use the `label` attribute to give the combobox an accessible label. For labels that contain HTML, use the `label` slot instead.
 
@@ -54,6 +60,8 @@ Use the `label` attribute to give the combobox an accessible label. For labels t
 ```
 
 ### Hint
+
+Link to This Section
 
 Add descriptive hint to a combobox with the `hint` attribute. For hints that contain HTML, use the `hint` slot instead.
 
@@ -69,6 +77,8 @@ Add descriptive hint to a combobox with the `hint` attribute. For hints that con
 
 ### Placeholders
 
+Link to This Section
+
 Use the `placeholder` attribute to add a placeholder.
 
 ```html
@@ -80,6 +90,8 @@ Use the `placeholder` attribute to add a placeholder.
 ```
 
 ### Clearable
+
+Link to This Section
 
 Use the `with-clear` attribute to make the control clearable. The clear button only appears when the combobox has a value or text input.
 
@@ -93,6 +105,8 @@ Use the `with-clear` attribute to make the control clearable. The clear button o
 
 ### Allow Custom Values
 
+Link to This Section
+
 By default, the combobox only accepts values that match an option. Use `allow-custom-value` to let users enter arbitrary values.
 
 ```html
@@ -105,7 +119,9 @@ By default, the combobox only accepts values that match an option. Use `allow-cu
 
 ### Creating New Items
 
-Use the `allow-create` attribute to let users create new options on the fly. When the user types text that doesn't match any existing option, a "Create \[value\]" option appears at the bottom of the listbox. Selecting it adds a new `<wa-option>` to the DOM and selects it.
+Link to This Section
+
+Use the `allow-create` attribute to let users create new options on the fly. When the user types text that doesn't match any existing option, a "Create \[value\]" option appears at the bottom of the listbox. Selecting it adds a new [`<wa-option>`](https://webawesome.com/docs/components/option) to the DOM and selects it.
 
 ```html
 <wa-combobox allow-create label="Select or create a tag" placeholder="Type to search or create...">
@@ -154,6 +170,8 @@ For advanced use cases, listen for the `wa-create` event and call `preventDefaul
 
 ### Custom Filter Function
 
+Link to This Section
+
 You can provide a custom filter function to control how options are matched. The function receives the option element and the current query string, and should return `true` to show the option or `false` to hide it.
 
 By default, the combobox filters options that contain the query anywhere in the label, but you can customize this to implement fuzzy matching, prefix-only matching, or apply any other filtering logic.
@@ -180,6 +198,8 @@ By default, the combobox filters options that contain the query anywhere in the 
 
 ### Appearance
 
+Link to This Section
+
 Use the `appearance` attribute to change the combobox's visual appearance.
 
 ```html
@@ -204,6 +224,8 @@ Use the `appearance` attribute to change the combobox's visual appearance.
 
 ### Pill
 
+Link to This Section
+
 Use the `pill` attribute to give comboboxes rounded edges.
 
 ```html
@@ -216,6 +238,8 @@ Use the `pill` attribute to give comboboxes rounded edges.
 
 ### Disabled
 
+Link to This Section
+
 Use the `disabled` attribute to disable a combobox.
 
 ```html
@@ -227,6 +251,8 @@ Use the `disabled` attribute to disable a combobox.
 ```
 
 ### Multiple
+
+Link to This Section
 
 To allow multiple options to be selected, use the `multiple` attribute. In multiple mode, selected options appear as tags and the input is used for filtering. It's a good practice to use `with-clear` when this option is enabled.
 
@@ -244,6 +270,8 @@ To allow multiple options to be selected, use the `multiple` attribute. In multi
 In multiple mode, the text input is used for filtering options only. After selecting an option, the input is cleared so you can continue filtering and selecting more options.
 
 ### Setting Initial Values
+
+Link to This Section
 
 Use the `selected` attribute on individual options to set the initial selection, similar to native HTML.
 
@@ -271,7 +299,9 @@ Framework users can bind directly to the `value` property for reactive data bind
 
 ### Grouping Options
 
-Use `<wa-divider>` to group listbox items visually. You can also use `<small>` to provide labels, but they won't be announced by most assistive devices.
+Link to This Section
+
+Use [`<wa-divider>`](https://webawesome.com/docs/components/divider) to group listbox items visually. You can also use `<small>` to provide labels, but they won't be announced by most assistive devices.
 
 ```html
 <wa-combobox label="Grouped Options">
@@ -288,6 +318,8 @@ Use `<wa-divider>` to group listbox items visually. You can also use `<small>` t
 ```
 
 ### Sizes
+
+Link to This Section
 
 Use the `size` attribute to change a combobox's size.
 
@@ -333,6 +365,8 @@ Use the `size` attribute to change a combobox's size.
 
 ### Placement
 
+Link to This Section
+
 The preferred placement of the combobox's listbox can be set with the `placement` attribute. Note that the actual position may vary to ensure the panel remains in the viewport. Valid placements are `top` and `bottom`.
 
 ```html
@@ -345,7 +379,9 @@ The preferred placement of the combobox's listbox can be set with the `placement
 
 ### Start & End Decorations
 
-Use the `start` and `end` slots to add presentational elements like `<wa-icon>` within the combobox.
+Link to This Section
+
+Use the `start` and `end` slots to add presentational elements like [`<wa-icon>`](https://webawesome.com/docs/components/icon) within the combobox.
 
 ```html
 <wa-combobox placeholder="Search locations..." size="s" with-clear>
@@ -375,7 +411,9 @@ Use the `start` and `end` slots to add presentational elements like `<wa-icon>` 
 
 ### Custom Tags
 
-When multiple options can be selected, you can provide custom tags by passing a function to the `getTag` property. Your function can return a string of HTML, a [Lit Template](https://lit.dev/docs/templates/overview/), or an [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement). The `getTag()` function will be called for each option. The first argument is an `<wa-option>` element and the second argument is the tag's index (its position in the tag list).
+Link to This Section
+
+When multiple options can be selected, you can provide custom tags by passing a function to the `getTag` property. Your function can return a string of HTML, a [Lit Template](https://lit.dev/docs/templates/overview/), or an [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement). The `getTag()` function will be called for each option. The first argument is an [`<wa-option>`](https://webawesome.com/docs/components/option) element and the second argument is the tag's index (its position in the tag list).
 
 Remember that custom tags are rendered in a shadow root. To style them, you can use the `style` attribute in your template or you can add your own [parts](https://webawesome.com/docs/customizing/#css-parts) and target them with the [`::part()`](https://developer.mozilla.org/en-US/docs/Web/CSS/::part) selector.
 
@@ -422,6 +460,8 @@ When using custom tags with `with-remove`, you must include the `data-value` att
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -429,7 +469,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/combobox/combobox.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/combobox/combobox.js';
 ```
 
 \*\*npm\*\*
@@ -458,6 +498,8 @@ import WaCombobox from '@awesome.me/webawesome/dist/react/combobox/index.js';
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -468,6 +510,8 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
@@ -477,7 +521,6 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 | \`appearance\` appearance | \`'filled' \\| 'outlined' \\| 'filled-outlined'\` The combobox's visual appearance. Type Default 'outlined' | | |
 | \`autocapitalize\` autocapitalize | \`'off' \\| 'none' \\| 'on' \\| 'sentences' \\| 'words' \\| 'characters'\` Controls whether and how text input is automatically capitalized as it is entered/edited by the user. Type | | |
 | \`autocorrect\` autocorrect | \`"off"\` Indicates whether the browser's autocorrect feature is on or off. When set as an attribute, use or "on". When set as a property, use true or false. Type boolean | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default \[styles, formControlStyles, sizeStyles\] | | |
 | \`disabled\` disabled | \`boolean\` Disables the combobox control. Type Default false | | |
 | \`enterkeyhint\` enterkeyhint | \`'enter' \\| 'done' \\| 'go' \\| 'next' \\| 'previous' \\| 'search' \\| 'send'\` Used to customize the label or icon of the Enter key on virtual keyboards. Type | | |
 | \`filter\` | \`true\` A function that customizes how options are filtered based on the input value. The function receives the option and the current input query string. Return to include the option in the filtered list, false to exclude. By default, options are filtered by checking if the option's label contains the query (case-insensitive). Type ((option: WaOption, query: string) => boolean) \\| null Default null | | |
@@ -506,6 +549,8 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 
 ## Methods
 
+Link to This Section
+
 Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 
 | Name | Description | Arguments |
@@ -519,6 +564,8 @@ Learn more about [methods](https://webawesome.com/docs/usage/#methods).
 | \`show()\` | Shows the listbox. | |
 
 ## Events
+
+Link to This Section
 
 Learn more about [events](https://webawesome.com/docs/usage/#events).
 
@@ -538,15 +585,19 @@ Learn more about [events](https://webawesome.com/docs/usage/#events).
 
 ## CSS custom properties
 
+Link to This Section
+
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 
 | Name | Description |
 | --- | --- |
-| \`--hide-duration\` | \`100ms\` The duration of the hide animation. Default |
-| \`--show-duration\` | \`100ms\` The duration of the show animation. Default |
+| \`--hide-duration\` | \`var(--wa-transition-fast)\` The duration of the hide animation. Default |
+| \`--show-duration\` | \`var(--wa-transition-fast)\` The duration of the show animation. Default |
 | \`--tag-max-size\` | \`multiple\` When using , the max size of tags before their content is truncated. Default 10ch |
 
 ## Custom States
+
+Link to This Section
 
 Learn more about [custom states](https://webawesome.com/docs/usage/#custom-states).
 
@@ -556,6 +607,8 @@ Learn more about [custom states](https://webawesome.com/docs/usage/#custom-state
 | \`disabled\` | The combobox is disabled. | \`:state(disabled)\` |
 
 ## CSS parts
+
+Link to This Section
 
 Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 
@@ -579,6 +632,8 @@ Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
 | \`tags\` | \`multiselect\` The container that houses option tags when is used. | \`::part(tags)\` |
 
 ## Dependencies
+
+Link to This Section
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 

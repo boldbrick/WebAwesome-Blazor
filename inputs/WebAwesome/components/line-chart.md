@@ -1,11 +1,13 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/line-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/line-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/line-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/line-chart -->
 
 # Line Chart [Pro]
 
 **Full documentation:** https://webawesome.com/docs/components/line-chart
 
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
-`<wa-line-chart>` Stable Since 3.3 Pro Included with Web Awesome Pro
+`<wa-line-chart>`
+
+ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.3](https://webawesome.com/docs/resources/changelog#wa_330)
 
 Line charts show trends over time by connecting data points with line segments. Use them when the x-axis represents a sequential dimension and you want to emphasize the shape and direction of the data.
 
@@ -46,7 +48,11 @@ For advanced configuration such as mixed chart types, custom plugins, and direct
 
 ## Examples
 
+Link to This Section
+
 ### Providing Data with JavaScript
+
+Link to This Section
 
 For dynamic data, set the `config` property directly. The chart will re-render automatically.
 
@@ -72,6 +78,8 @@ Note that `config` is shallowly reactive. If you mutate the existing object in p
 
 ### Providing Data with JSON
 
+Link to This Section
+
 Place a `<script type="application/json">` tag inside the component with your chart data. The `type` field can be omitted since `wa-line-chart` already knows its chart type.
 
 ```html
@@ -91,6 +99,8 @@ Place a `<script type="application/json">` tag inside the component with your ch
 ```
 
 ### Multiple Lines
+
+Link to This Section
 
 Add multiple datasets to compare trends across different series.
 
@@ -114,6 +124,8 @@ Add multiple datasets to compare trends across different series.
 ```
 
 ### Custom Colors
+
+Link to This Section
 
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
 
@@ -147,6 +159,8 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
 
 ### Fill Area
 
+Link to This Section
+
 Set `fill` to `true` on a dataset to fill the area beneath the line. This works well for emphasizing volume or magnitude.
 
 ```html
@@ -169,6 +183,8 @@ Set `fill` to `true` on a dataset to fill the area beneath the line. This works 
 ```
 
 ### Stacked Area
+
+Link to This Section
 
 Combine the `stacked` attribute with `fill: true` on each dataset to create a stacked area chart.
 
@@ -205,6 +221,8 @@ Combine the `stacked` attribute with `fill: true` on each dataset to create a st
 
 ### Border Width
 
+Link to This Section
+
 Use the `--line-border-width` CSS custom property to control the thickness of the lines.
 
 ```html
@@ -226,6 +244,8 @@ Use the `--line-border-width` CSS custom property to control the thickness of th
 ```
 
 ### Point Radius
+
+Link to This Section
 
 Use the `--point-radius` CSS custom property to control the size of the dots drawn at each data point. Set it to `0` to hide points entirely.
 
@@ -249,6 +269,8 @@ Use the `--point-radius` CSS custom property to control the size of the dots dra
 
 ### Legend
 
+Link to This Section
+
 Use the `legend-position` attribute to control where the legend appears. Add `without-legend` to hide it entirely.
 
 ```html
@@ -270,6 +292,8 @@ Use the `legend-position` attribute to control where the legend appears. Add `wi
 ```
 
 ### Grid Lines
+
+Link to This Section
 
 Use the `grid` attribute to control which axes show grid lines. Options are `both` (default), `x`, `y`, and `none`.
 
@@ -293,6 +317,8 @@ Use the `grid` attribute to control which axes show grid lines. Options are `bot
 
 ### Axis Labels
 
+Link to This Section
+
 Use the `x-label` and `y-label` attributes to add descriptive labels to each axis.
 
 ```html
@@ -314,6 +340,8 @@ Use the `x-label` and `y-label` attributes to add descriptive labels to each axi
 ```
 
 ### Axis Range
+
+Link to This Section
 
 Use the `min` and `max` attributes to constrain the value axis.
 
@@ -337,6 +365,8 @@ Use the `min` and `max` attributes to constrain the value axis.
 
 ### Disabling Tooltips
 
+Link to This Section
+
 Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over data points.
 
 ```html
@@ -358,6 +388,8 @@ Use the `without-tooltip` attribute to hide the tooltips that appear when hoveri
 ```
 
 ### Disabling Animations
+
+Link to This Section
 
 Use the `without-animation` attribute to disable chart transitions.
 
@@ -381,6 +413,8 @@ Use the `without-animation` attribute to disable chart transitions.
 
 ## Importing
 
+Link to This Section
+
 If you're using the autoloader or a hosted project, components load on demand â€” no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
 \*\*CDN\*\*
@@ -388,7 +422,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/line-chart/line-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/line-chart/line-chart.js';
 ```
 
 \*\*npm\*\*
@@ -417,6 +451,8 @@ import WaLineChart from '@awesome.me/webawesome/dist/react/line-chart/index.js';
 
 ## Slots
 
+Link to This Section
+
 Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 | Name | Description |
@@ -425,12 +461,13 @@ Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
 
 ## Attributes & Properties
 
+Link to This Section
+
 Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
 
 | Name | Description | Reflects |
 | --- | --- | --- |
 | \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | | |
-| \`css\` | \`CSSResultGroup \\| undefined\` One or more CSSResultGroup to include in the component's shadow root. Host styles are automatically prepended. Type Default \[styles\] | | |
 | \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | | |
 | \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | | |
 | \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | | |
@@ -448,6 +485,8 @@ Learn more about [attributes and properties](https://webawesome.com/docs/usage/#
 | \`yLabel\` yLabel | \`string \\| null\` A label for the y-axis. Type Default null | | |
 
 ## CSS custom properties
+
+Link to This Section
 
 Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
 

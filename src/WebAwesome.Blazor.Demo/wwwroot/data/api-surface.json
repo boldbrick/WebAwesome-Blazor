@@ -1,7 +1,157 @@
 {
-  "version": "3.7.0",
+  "version": "3.8.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
+    "wa-accordion": {
+      "className": "WaAccordion",
+      "since": "3.7",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "appearance": {
+          "type": "'filled' | 'outlined' | 'filled-outlined' | 'plain'",
+          "default": "'outlined'",
+          "description": "The accordion's visual appearance."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "heading-level": {
+          "type": "string",
+          "default": "'3'",
+          "description": "The heading level for child item triggers (1–6), or \"none\" to omit the heading wrapper. Defaults to 3."
+        },
+        "icon-placement": {
+          "type": "'start' | 'end'",
+          "default": "'end'",
+          "description": "The location of the expand/collapse icon in child items."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "mode": {
+          "type": "'single' | 'single-collapsible' | 'multiple'",
+          "default": "'multiple'",
+          "description": "Controls how items can be expanded. `multiple` (the default) allows any number of items to be open at\nonce. `single` allows only one item to be open at a time; opening a new item collapses the previously\nopen one, and clicking an open item does not collapse it. `single-collapsible` is the same as `single`\nexcept that clicking the open item collapses it, so zero open items is a valid state."
+        }
+      },
+      "events": {
+        "wa-after-collapse": {
+          "type": "{ item: WaAccordionItem }",
+          "eventName": "WaAfterCollapseEvent",
+          "description": "Emitted after an item finishes collapsing."
+        },
+        "wa-after-expand": {
+          "type": "{ item: WaAccordionItem }",
+          "eventName": "WaAfterExpandEvent",
+          "description": "Emitted after an item finishes expanding."
+        },
+        "wa-collapse": {
+          "type": "{ item: WaAccordionItem }",
+          "eventName": "WaCollapseEvent",
+          "description": "Emitted before an item collapses. Cancelable."
+        },
+        "wa-expand": {
+          "type": "{ item: WaAccordionItem }",
+          "eventName": "WaExpandEvent",
+          "description": "Emitted before an item expands. Cancelable."
+        }
+      },
+      "slots": {
+        "(default)": "One or more `<wa-accordion-item>` elements."
+      },
+      "methods": {
+        "collapseAll": {
+          "signature": "collapseAll() => void",
+          "description": "Collapses all accordion items."
+        },
+        "expandAll": {
+          "signature": "expandAll() => void",
+          "description": "Expands all accordion items. No-op when `mode` is `single` or `single-collapsible`."
+        }
+      },
+      "cssParts": []
+    },
+    "wa-accordion-item": {
+      "className": "WaAccordionItem",
+      "since": "1.0",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the accordion item so it can't be toggled."
+        },
+        "expanded": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Expands the accordion item."
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "The text label shown in the header. If you need HTML, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        }
+      },
+      "events": {},
+      "slots": {
+        "(default)": "The accordion item's body content.",
+        "icon": "Optional expand/collapse icon. Works best with `<wa-icon>`.",
+        "label": "The accordion item's label. Alternatively, use the `label` attribute."
+      },
+      "methods": {
+        "collapse": {
+          "signature": "collapse() => void",
+          "description": "Collapses the accordion item with animation."
+        },
+        "expand": {
+          "signature": "expand() => void",
+          "description": "Expands the accordion item with animation."
+        },
+        "focus": {
+          "signature": "focus(options?: FocusOptions) => void",
+          "description": "Focuses the accordion item's trigger button."
+        },
+        "toggle": {
+          "signature": "toggle() => void",
+          "description": "Toggles the accordion item's expanded state."
+        }
+      },
+      "cssParts": [
+        "base",
+        "button",
+        "content",
+        "heading",
+        "icon",
+        "label",
+        "panel"
+      ]
+    },
     "wa-animated-image": {
       "className": "WaAnimatedImage",
       "since": "2.0",
@@ -909,10 +1059,20 @@
           "default": "false",
           "description": "Only required for SSR. Set to `true` if you're slotting in a `footer` element so the server-rendered markup\nincludes the footer before the component hydrates on the client."
         },
+        "with-footer-actions": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `footer-actions` element so the server-rendered markup\nincludes the media before the component hydrates on the client."
+        },
         "with-header": {
           "type": "boolean",
           "default": "false",
           "description": "Only required for SSR. Set to `true` if you're slotting in a `header` element so the server-rendered markup\nincludes the header before the component hydrates on the client."
+        },
+        "with-header-actions": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `header-actions` element so the server-rendered markup\nincludes the media before the component hydrates on the client."
         },
         "with-media": {
           "type": "boolean",
@@ -1715,6 +1875,536 @@
         "success-icon"
       ]
     },
+    "wa-date-input": {
+      "className": "WaDateInput",
+      "since": "3.8",
+      "status": "experimental",
+      "pro": true,
+      "attributes": {
+        "appearance": {
+          "type": "'filled' | 'outlined' | 'filled-outlined'",
+          "default": "'outlined'",
+          "description": "The date input's visual appearance."
+        },
+        "autocomplete": {
+          "type": "string",
+          "default": "''",
+          "description": "Forwarded to the hidden form input (e.g., `'bday'`, `'cc-exp'`) to enable browser autofill."
+        },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disable-future": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disable all dates strictly after today."
+        },
+        "disable-past": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disable all dates strictly before today."
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the date input."
+        },
+        "disabled-dates": {
+          "type": "string | string[] | Date[]",
+          "default": "''",
+          "description": "Dates that cannot be selected."
+        },
+        "disabled-days-of-week": {
+          "type": "string",
+          "default": "''",
+          "description": "Days of the week that cannot be selected. Accepts a space-separated list of three-letter weekday names."
+        },
+        "distance": {
+          "type": "number",
+          "default": "0",
+          "description": "Distance in pixels between the popup and the input."
+        },
+        "first-day-of-week": {
+          "type": "WaDateInputFirstDayOfWeek",
+          "default": "'auto'",
+          "description": "The first day of the week in the popup calendar."
+        },
+        "hint": {
+          "type": "string",
+          "default": "''",
+          "description": "The date input's hint. If you need to display HTML, use the `hint` slot instead."
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "The date input's label. If you need to display HTML, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "max": {
+          "type": "string",
+          "default": "''",
+          "description": "Latest selectable date as `YYYY-MM-DD`. Out-of-range dates are disabled in the popup calendar and a\ncommitted value after `max` fails constraint validation with `rangeOverflow`."
+        },
+        "max-range": {
+          "type": "number",
+          "default": "0",
+          "description": "Maximum range length in days (range mode only). `0` disables."
+        },
+        "min": {
+          "type": "string",
+          "default": "''",
+          "description": "Earliest selectable date as `YYYY-MM-DD`. Out-of-range dates are disabled in the popup calendar and a\ncommitted value before `min` fails constraint validation with `rangeUnderflow`."
+        },
+        "min-range": {
+          "type": "number",
+          "default": "0",
+          "description": "Minimum range length in days (range mode only). `0` disables."
+        },
+        "mode": {
+          "type": "WaDateInputMode",
+          "default": "'single'",
+          "description": "Selection mode."
+        },
+        "months": {
+          "type": "1 | 2",
+          "default": "1",
+          "description": "Number of months rendered in the popup calendar."
+        },
+        "name": {
+          "type": "string | null",
+          "default": "''",
+          "description": "The date input's name, submitted as a name/value pair with form data."
+        },
+        "open": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the popup calendar is open."
+        },
+        "page-by": {
+          "type": "'months' | 'single'",
+          "default": "'months'",
+          "description": "Whether prev/next pages by the visible range or one month at a time."
+        },
+        "pill": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Draws a pill-style date input with rounded edges."
+        },
+        "placement": {
+          "type": "WaDateInputPlacement",
+          "default": "'bottom-start'",
+          "description": "Preferred popup placement."
+        },
+        "readonly": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the input non-editable. The popup still opens for browsing."
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the date input required for form submission."
+        },
+        "size": {
+          "type": "WaDateInputSize | 'small' | 'medium' | 'large'",
+          "default": "'m'",
+          "description": "The date input's size."
+        },
+        "today": {
+          "type": "string",
+          "default": "''",
+          "description": "Override \"today\" as `YYYY-MM-DD` (defaults to the runtime date)."
+        },
+        "value": {
+          "type": "string",
+          "default": null,
+          "description": "The default value of the form control. Used for form reset."
+        },
+        "weekday-format": {
+          "type": "'narrow' | 'short' | 'long'",
+          "default": "'short'",
+          "description": "Weekday header format in the popup calendar."
+        },
+        "with-clear": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows a clear button when the date input has a value."
+        },
+        "with-hint": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element."
+        },
+        "with-outside-days": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Show leading/trailing days from adjacent months in the popup calendar."
+        },
+        "with-week-numbers": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Show ISO 8601 week numbers in the popup calendar."
+        }
+      },
+      "events": {
+        "blur": {
+          "type": null,
+          "eventName": "BlurEvent",
+          "description": "Emitted when the control loses focus."
+        },
+        "focus": {
+          "type": null,
+          "eventName": "FocusEvent",
+          "description": "Emitted when the control receives focus."
+        },
+        "change": {
+          "type": "Event",
+          "eventName": "ChangeEvent",
+          "description": "Emitted on every committed value transition (each completed date edit, calendar selection, or clear), mirroring native `<input type=\"date\">` rather than the commit-on-blur behavior of `<wa-input>`/`<wa-select>`. This matches the sibling `<wa-time-input>`. It does NOT fire while a value is still incomplete."
+        },
+        "input": {
+          "type": "InputEvent",
+          "eventName": "InputEvent",
+          "description": "Emitted on every segment edit, step, calendar interaction, and clear, even while the value is incomplete."
+        },
+        "wa-after-hide": {
+          "type": null,
+          "eventName": "WaAfterHideEvent",
+          "description": "Emitted after the popup closes and animations complete."
+        },
+        "wa-after-show": {
+          "type": null,
+          "eventName": "WaAfterShowEvent",
+          "description": "Emitted after the popup opens and animations complete."
+        },
+        "wa-clear": {
+          "type": null,
+          "eventName": "WaClearEvent",
+          "description": "Emitted when the clear button is activated."
+        },
+        "wa-hide": {
+          "type": null,
+          "eventName": "WaHideEvent",
+          "description": "Emitted when the popup is about to close. Cancelable."
+        },
+        "wa-invalid": {
+          "type": null,
+          "eventName": "WaInvalidEvent",
+          "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
+        },
+        "wa-show": {
+          "type": null,
+          "eventName": "WaShowEvent",
+          "description": "Emitted when the popup is about to open. Cancelable."
+        }
+      },
+      "slots": {
+        "clear-icon": "An icon to use in lieu of the default clear icon.",
+        "day-YYYY-MM-DD": "Custom content for a specific day in the popup date picker. Slot name is dynamic (e.g., `day-2026-05-25`). Forwarded to `<wa-date-picker>`.",
+        "end": "An element placed at the end of the input.",
+        "expand-icon": "The icon to show on the date picker toggle button. Defaults to a calendar icon.",
+        "footer": "Content shown below the date picker inside the popup.",
+        "hint": "Text that describes how to use the date input. Alternatively, use the `hint` attribute.",
+        "label": "The date input's label. Alternatively, use the `label` attribute.",
+        "next-icon": "Icon for the date picker's next-page button. Forwarded to `<wa-date-picker>`.",
+        "previous-icon": "Icon for the date picker's previous-page button. Forwarded to `<wa-date-picker>`.",
+        "start": "An element placed at the start of the input."
+      },
+      "methods": {
+        "blur": {
+          "signature": "blur() => void",
+          "description": "Removes focus from the date input."
+        },
+        "clear": {
+          "signature": "clear() => void",
+          "description": "Clears the current value and emits `wa-clear`, `input`, and `change`. Mirrors activating the clear button. No-op\nwhen already empty or when disabled/readonly."
+        },
+        "focus": {
+          "signature": "focus(options?: FocusOptions) => void",
+          "description": "Sets focus on the first empty (else first) segment."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null) => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "hide": {
+          "signature": "hide() => Promise<void>",
+          "description": "Closes the popup calendar."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
+        },
+        "show": {
+          "signature": "show() => Promise<void>",
+          "description": "Opens the popup calendar."
+        }
+      },
+      "cssParts": [
+        "base",
+        "clear-button",
+        "date-picker",
+        "end",
+        "expand-button",
+        "expand-icon",
+        "form-control",
+        "form-control-input",
+        "form-control-label",
+        "hint",
+        "input",
+        "input-wrapper",
+        "popup",
+        "range-separator",
+        "segment",
+        "segment-literal",
+        "start"
+      ]
+    },
+    "wa-date-picker": {
+      "className": "WaDatePicker",
+      "since": "3.8",
+      "status": "experimental",
+      "pro": true,
+      "attributes": {
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disable-future": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disable all dates strictly after `today`."
+        },
+        "disable-past": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disable all dates strictly before `today`."
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the entire picker."
+        },
+        "disabled-dates": {
+          "type": "string | string[] | Date[]",
+          "default": null,
+          "description": "A list of whitespace-separated ISO dates that should be disabled. The property accepts an array."
+        },
+        "disabled-days-of-week": {
+          "type": "string",
+          "default": "''",
+          "description": "Weekdays to disable. Accepts a space-separated list of three-letter weekday names: `sun`, `mon`, `tue`, `wed`,\n`thu`, `fri`, `sat`"
+        },
+        "first-day-of-week": {
+          "type": "WaDatePickerFirstDayOfWeek",
+          "default": "'auto'",
+          "description": "The first day of the week. The default `auto` uses the current locale's week info. To set a specific day, pass a\nthree-letter weekday name: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, or `sat`."
+        },
+        "focused-date": {
+          "type": "string",
+          "default": "''",
+          "description": "The currently focused date as `YYYY-MM-DD`. Drives roving tabindex and the visible month."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "locale": {
+          "type": "string",
+          "default": "''",
+          "description": "BCP-47 locale override. When empty, the inherited `lang` attribute is used."
+        },
+        "max": {
+          "type": "string",
+          "default": "''",
+          "description": "The latest selectable date as `YYYY-MM-DD`."
+        },
+        "max-range": {
+          "type": "number",
+          "default": "0",
+          "description": "Maximum range length in days (`mode=\"range\"` only). `0` disables the check."
+        },
+        "min": {
+          "type": "string",
+          "default": "''",
+          "description": "The earliest selectable date as `YYYY-MM-DD`."
+        },
+        "min-range": {
+          "type": "number",
+          "default": "0",
+          "description": "Minimum range length in days (`mode=\"range\"` only). `0` disables the check."
+        },
+        "mode": {
+          "type": "WaDatePickerMode",
+          "default": "'single'",
+          "description": "The selection mode."
+        },
+        "months": {
+          "type": "1 | 2",
+          "default": "1",
+          "description": "Number of months rendered side-by-side. Either `1` or `2`. Set to `2` to see both ends of a range at once."
+        },
+        "page-by": {
+          "type": "WaDatePickerPageBy",
+          "default": "'months'",
+          "description": "Whether prev/next advances by the visible range (`months`) or one month at a time (`single`)."
+        },
+        "readonly": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Displays the current value without allowing changes. Cells remain focusable."
+        },
+        "size": {
+          "type": "WaDatePickerSize | 'small' | 'medium' | 'large'",
+          "default": "'m'",
+          "description": "Visual size."
+        },
+        "today": {
+          "type": "string",
+          "default": "''",
+          "description": "Overrides the date considered \"today\"."
+        },
+        "value": {
+          "type": "string",
+          "default": null,
+          "description": "The selected date(s). For `mode=\"single\"`, an ISO date string (`YYYY-MM-DD`) or empty. For `mode=\"range\"`, two ISO\ndates separated by `/` (`YYYY-MM-DD/YYYY-MM-DD`). The property setter also accepts `Date` objects and\n`{ from, to }` objects for ranges."
+        },
+        "view": {
+          "type": "WaDatePickerView",
+          "default": "'days'",
+          "description": "The current view."
+        },
+        "weekday-format": {
+          "type": "WaDatePickerWeekdayFormat",
+          "default": "'short'",
+          "description": "The weekday header format."
+        },
+        "with-outside-days": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows leading and trailing days from adjacent months."
+        },
+        "with-week-numbers": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows an ISO week-number column."
+        }
+      },
+      "events": {
+        "change": {
+          "type": "Event",
+          "eventName": "ChangeEvent",
+          "description": "Emitted when the user commits a new value. Read the current value from `event.target.value`."
+        },
+        "input": {
+          "type": "InputEvent",
+          "eventName": "InputEvent",
+          "description": "Emitted when the value changes during interaction. In range mode, this fires after the first click of a new range."
+        },
+        "wa-focus-day": {
+          "type": null,
+          "eventName": "WaFocusDayEvent",
+          "description": "Emitted when the focused day changes via keyboard navigation, paging, or pointer hover. `event.detail` is `{ date: Date }`."
+        },
+        "wa-view-change": {
+          "type": null,
+          "eventName": "WaViewChangeEvent",
+          "description": "Emitted when the date picker switches between day, month, and year views. `event.detail` is `{ view, date }`."
+        }
+      },
+      "slots": {
+        "footer": "Optional content rendered below the calendar grid. Empty by default.",
+        "header": "Replaces the entire header row including title and navigation buttons. Advanced use only.",
+        "next-icon": "Icon shown inside the next-page button. Defaults to a right chevron.",
+        "previous-icon": "Icon shown inside the previous-page button. Defaults to a left chevron."
+      },
+      "methods": {
+        "clear": {
+          "signature": "clear() => void",
+          "description": "Clears the current selection and emits `input` then `change`."
+        },
+        "focus": {
+          "signature": "focus(options?: FocusOptions) => void",
+          "description": "Focuses the calendar at the currently focused day."
+        },
+        "goToDate": {
+          "signature": "goToDate(date: string | Date) => void",
+          "description": "Scrolls the view to show the given date and sets the focused day."
+        },
+        "goToToday": {
+          "signature": "goToToday() => void",
+          "description": "Equivalent to `goToDate(today)`."
+        }
+      },
+      "cssParts": [
+        "base",
+        "day",
+        "day-disabled",
+        "day-label",
+        "day-outside",
+        "day-placeholder",
+        "day-range-end",
+        "day-range-inner",
+        "day-range-preview",
+        "day-range-start",
+        "day-selected",
+        "day-today",
+        "day-weekend",
+        "footer",
+        "grid",
+        "header",
+        "month",
+        "month-label",
+        "months",
+        "nav",
+        "next",
+        "previous",
+        "title",
+        "view-cell",
+        "view-grid",
+        "view-item",
+        "view-item-disabled",
+        "view-item-selected",
+        "view-item-today",
+        "view-row",
+        "weekday",
+        "weekdays",
+        "weeknumber",
+        "weeknumbers"
+      ]
+    },
     "wa-details": {
       "className": "WaDetails",
       "since": "2.0",
@@ -2064,7 +2754,7 @@
         },
         "light-dismiss": {
           "type": "boolean",
-          "default": "true",
+          "default": "false",
           "description": "When enabled, the drawer will be closed when the user clicks outside of it."
         },
         "open": {
@@ -2311,6 +3001,11 @@
           "type": "string",
           "default": "''",
           "description": "A comma-separated list of acceptable file types. Must be a list of\n[unique file type specifiers](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers)."
+        },
+        "capture": {
+          "type": "'user' | 'environment'",
+          "default": null,
+          "description": "On mobile devices, specifies which camera or microphone to use for capturing media. Use `user` for the front-facing\ncamera/microphone or `environment` for the rear-facing one. This attribute is only used when `accept` includes an\nimage, video, or audio type and may be ignored on devices that lack the corresponding hardware."
         },
         "custom-error": {
           "type": "string | null",
@@ -3396,6 +4091,185 @@
       },
       "methods": {},
       "cssParts": []
+    },
+    "wa-known-date": {
+      "className": "WaKnownDate",
+      "since": "3.8",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "appearance": {
+          "type": "WaKnownDateAppearance",
+          "default": "'outlined'",
+          "description": "The known date's visual appearance."
+        },
+        "autocomplete": {
+          "type": "string",
+          "default": "''",
+          "description": "Browser autofill family. When set to `bday`, the three fields receive `bday-day`, `bday-month`, and\n`bday-year` respectively. The field-agnostic directives `off` and `on` are applied to all three fields.\nAny other value is forwarded only to the year field."
+        },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the known date."
+        },
+        "hint": {
+          "type": "string",
+          "default": "''",
+          "description": "The known date's hint. If you need to display HTML, use the `hint` slot instead."
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "The known date's label. If you need to display HTML, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "locale": {
+          "type": "string",
+          "default": "''",
+          "description": "BCP-47 locale override. When empty, the inherited `lang` attribute is used."
+        },
+        "max": {
+          "type": "string",
+          "default": "''",
+          "description": "Latest selectable date as `YYYY-MM-DD`."
+        },
+        "min": {
+          "type": "string",
+          "default": "''",
+          "description": "Earliest selectable date as `YYYY-MM-DD`."
+        },
+        "name": {
+          "type": "string | null",
+          "default": "''",
+          "description": "The name submitted with form data."
+        },
+        "pill": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Draws pill-style fields with rounded edges."
+        },
+        "readonly": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the fields non-editable."
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the known date required for form submission."
+        },
+        "size": {
+          "type": "WaKnownDateSize | 'small' | 'medium' | 'large'",
+          "default": "'m'",
+          "description": "The known date's size."
+        },
+        "value": {
+          "type": "string",
+          "default": null,
+          "description": "The default value used for form reset."
+        },
+        "with-hint": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element."
+        }
+      },
+      "events": {
+        "blur": {
+          "type": null,
+          "eventName": "BlurEvent",
+          "description": "Emitted when the control loses focus."
+        },
+        "focus": {
+          "type": null,
+          "eventName": "FocusEvent",
+          "description": "Emitted when the control gains focus."
+        },
+        "change": {
+          "type": "Event",
+          "eventName": "ChangeEvent",
+          "description": "Emitted when the committed value transitions to a new ISO date."
+        },
+        "input": {
+          "type": "InputEvent",
+          "eventName": "InputEvent",
+          "description": "Emitted as the user types in any field."
+        },
+        "wa-invalid": {
+          "type": null,
+          "eventName": "WaInvalidEvent",
+          "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
+        }
+      },
+      "slots": {
+        "hint": "Text that describes how to use the known date. Alternatively, use the `hint` attribute.",
+        "label": "The known date's group label. Alternatively, use the `label` attribute."
+      },
+      "methods": {
+        "blur": {
+          "signature": "blur() => void",
+          "description": "Removes focus from the known date."
+        },
+        "focus": {
+          "signature": "focus(options?: FocusOptions) => void",
+          "description": "Focuses the first empty field, or the first field when all are filled."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null) => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
+        }
+      },
+      "cssParts": [
+        "base",
+        "error",
+        "field",
+        "field-day",
+        "field-input",
+        "field-label",
+        "field-month",
+        "field-year",
+        "fields",
+        "fieldset",
+        "form-control",
+        "form-control-input",
+        "form-control-label",
+        "hint",
+        "label",
+        "legend"
+      ]
     },
     "wa-line-chart": {
       "className": "WaLineChart",
@@ -4577,6 +5451,26 @@
           "default": "''",
           "description": "The fill color. This can be any valid CSS color, but not a CSS custom property."
         },
+        "image": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "image-background": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "image-coverage": {
+          "type": "number | null",
+          "default": "null",
+          "description": null
+        },
+        "image-padding": {
+          "type": "number | null",
+          "default": "null",
+          "description": null
+        },
         "label": {
           "type": "string",
           "default": "''",
@@ -4996,6 +5890,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Makes the rating a required field."
+        },
+        "role": {
+          "type": "string",
+          "default": "'slider'",
+          "description": null
         },
         "size": {
           "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
@@ -6083,6 +6982,11 @@
           "type": "string",
           "default": "''",
           "description": "The name of the tab panel this tab is associated with. The panel must be located in the same tab group."
+        },
+        "role": {
+          "type": "string",
+          "default": "'tab'",
+          "description": null
         }
       },
       "events": {},
@@ -6194,6 +7098,11 @@
           "type": "string",
           "default": "''",
           "description": "The tab panel's name."
+        },
+        "role": {
+          "type": "string",
+          "default": "'tabpanel'",
+          "description": null
         }
       },
       "events": {},
@@ -6500,6 +7409,257 @@
         "textarea"
       ]
     },
+    "wa-time-input": {
+      "className": "WaTimeInput",
+      "since": "3.8",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "appearance": {
+          "type": "'filled' | 'outlined' | 'filled-outlined'",
+          "default": "'outlined'",
+          "description": "The time picker's visual appearance."
+        },
+        "autocomplete": {
+          "type": "string",
+          "default": "''",
+          "description": "Forwarded to the hidden form input to enable browser autofill (`on`/`off`/custom tokens)."
+        },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the time picker."
+        },
+        "distance": {
+          "type": "number",
+          "default": "0",
+          "description": "Distance in pixels between the popup and the input."
+        },
+        "hint": {
+          "type": "string",
+          "default": "''",
+          "description": "The time picker's hint. If you need to display HTML, use the `hint` slot instead."
+        },
+        "hour-format": {
+          "type": "WaTimeInputHourFormat",
+          "default": "'auto'",
+          "description": "Whether the UI uses a 12-hour or 24-hour clock. `auto` follows the resolved locale."
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "The time picker's label. If you need to display HTML, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "max": {
+          "type": "string",
+          "default": "''",
+          "description": "The latest selectable time in wire format."
+        },
+        "min": {
+          "type": "string",
+          "default": "''",
+          "description": "The earliest selectable time in wire format. May be later than `max` to represent an overnight range. The picker\ndelegates reversed-range semantics to the mirrored native `<input type=\"time\">`."
+        },
+        "name": {
+          "type": "string | null",
+          "default": "''",
+          "description": "The time picker's name, submitted as a name/value pair with form data."
+        },
+        "open": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the popup is open."
+        },
+        "pill": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Draws a pill-style time picker with rounded edges."
+        },
+        "placement": {
+          "type": "WaTimeInputPlacement",
+          "default": "'bottom-start'",
+          "description": "Preferred popup placement."
+        },
+        "readonly": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the input non-editable. The popup still opens for browsing."
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the time picker required for form submission."
+        },
+        "size": {
+          "type": "WaTimeInputSize | 'small' | 'medium' | 'large'",
+          "default": "'m'",
+          "description": "The time picker's size."
+        },
+        "step": {
+          "type": "number | 'any'",
+          "default": "60",
+          "description": "The granularity, in seconds, matching HTML `<input type=\"time\">`. Default `60` hides the seconds segment.\nValues below 60 reveal the seconds segment. `'any'` disables `stepMismatch` enforcement."
+        },
+        "value": {
+          "type": "string",
+          "default": null,
+          "description": "The default value of the form control. Used for form reset."
+        },
+        "with-clear": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows a clear button when the time picker has a value."
+        },
+        "with-hint": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element."
+        },
+        "with-now": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Renders a \"Now\" button in the popup footer."
+        }
+      },
+      "events": {
+        "blur": {
+          "type": null,
+          "eventName": "BlurEvent",
+          "description": "Emitted when the control loses focus."
+        },
+        "focus": {
+          "type": null,
+          "eventName": "FocusEvent",
+          "description": "Emitted when the control receives focus."
+        },
+        "change": {
+          "type": "Event",
+          "eventName": "ChangeEvent",
+          "description": "Emitted when the committed value changes."
+        },
+        "input": {
+          "type": "InputEvent",
+          "eventName": "InputEvent",
+          "description": "Emitted as the user types into a segment or interacts with the popup columns."
+        },
+        "wa-after-hide": {
+          "type": null,
+          "eventName": "WaAfterHideEvent",
+          "description": "Emitted after the popup closes and animations complete."
+        },
+        "wa-after-show": {
+          "type": null,
+          "eventName": "WaAfterShowEvent",
+          "description": "Emitted after the popup opens and animations complete."
+        },
+        "wa-clear": {
+          "type": null,
+          "eventName": "WaClearEvent",
+          "description": "Emitted when the clear button is activated."
+        },
+        "wa-hide": {
+          "type": null,
+          "eventName": "WaHideEvent",
+          "description": "Emitted when the popup is about to close. Cancelable."
+        },
+        "wa-invalid": {
+          "type": null,
+          "eventName": "WaInvalidEvent",
+          "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
+        },
+        "wa-show": {
+          "type": null,
+          "eventName": "WaShowEvent",
+          "description": "Emitted when the popup is about to open. Cancelable."
+        }
+      },
+      "slots": {
+        "clear-icon": "An icon to use in lieu of the default clear icon.",
+        "end": "An element placed at the end of the input.",
+        "expand-icon": "The icon to show on the popup toggle button. Defaults to a clock icon.",
+        "footer": "Content shown below the column picker in the popup. Replaces the default Now button when present.",
+        "hint": "Text that describes how to use the time picker. Alternatively, use the `hint` attribute.",
+        "label": "The time picker's label. Alternatively, use the `label` attribute.",
+        "start": "An element placed at the start of the input."
+      },
+      "methods": {
+        "blur": {
+          "signature": "blur() => void",
+          "description": "Removes focus from the time picker."
+        },
+        "focus": {
+          "signature": "focus(options?: FocusOptions) => void",
+          "description": "Sets focus on the first empty (else first) segment."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null) => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "hide": {
+          "signature": "hide() => Promise<void>",
+          "description": "Closes the popup."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
+        },
+        "show": {
+          "signature": "show() => Promise<void>",
+          "description": "Opens the popup."
+        }
+      },
+      "cssParts": [
+        "base",
+        "clear-button",
+        "column",
+        "column-item",
+        "column-item-selected",
+        "columns",
+        "end",
+        "expand-button",
+        "expand-icon",
+        "form-control",
+        "form-control-input",
+        "form-control-label",
+        "hint",
+        "input",
+        "input-wrapper",
+        "now-button",
+        "popup",
+        "segment",
+        "segment-literal",
+        "start"
+      ]
+    },
     "wa-toast": {
       "className": "WaToast",
       "since": "3.3",
@@ -6765,10 +7925,20 @@
           "default": null,
           "description": null
         },
+        "role": {
+          "type": "string",
+          "default": "'tree'",
+          "description": null
+        },
         "selection": {
           "type": "'single' | 'multiple' | 'leaf'",
           "default": "'single'",
           "description": "The selection behavior of the tree. Single selection allows only one node to be selected at a time. Multiple\ndisplays checkboxes and allows more than one node to be selected. Leaf allows only leaf nodes to be selected."
+        },
+        "tabindex": {
+          "type": "number",
+          "default": "0",
+          "description": null
         }
       },
       "events": {
@@ -6824,10 +7994,20 @@
           "default": "false",
           "description": "Enables lazy loading behavior."
         },
+        "role": {
+          "type": "string",
+          "default": "'treeitem'",
+          "description": null
+        },
         "selected": {
           "type": "boolean",
           "default": "false",
           "description": "Draws the tree item in a selected state."
+        },
+        "tabindex": {
+          "type": "number",
+          "default": "-1",
+          "description": null
         }
       },
       "events": {
@@ -7019,7 +8199,7 @@
           "description": "Emitted when playback begins."
         },
         "timeupdate": {
-          "type": null,
+          "type": "Event",
           "eventName": "TimeupdateEvent",
           "description": "Emitted when the time changes."
         },

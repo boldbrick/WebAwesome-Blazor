@@ -60,9 +60,9 @@ Add the following stylesheet to the `<head>` section of your pages:
 {% markdown %}
 If you're using a [hosted project](/workspaces), CSS utilities can be toggled on from your project settings.
 
-1. Head over to your project's <wa-icon name="gear" variant="regular"></wa-icon> **Settings**.
-2. Next to **Features**, select the **CSS utilities** checkbox.
-3. **Save Changes** to immediately update anywhere you're using your project.
+1. Head over to your project's <wa-tag class="tag-ui" appearance="outlined"><wa-icon name="gear" variant="regular"></wa-icon> Settings</wa-tag>.
+2. Next to <wa-tag class="tag-ui" appearance="outlined">Features</wa-tag>, select the <wa-tag class="tag-ui" appearance="outlined">CSS utilities</wa-tag> checkbox.
+3. <wa-tag class="tag-ui" appearance="outlined">Save Changes</wa-tag> to immediately update anywhere you're using your project.
 {% endmarkdown %}
   </wa-tab-panel>
 </wa-tab-group>
@@ -77,7 +77,7 @@ Preset rules for customizing colors, typography, rounding, and more &mdash; fram
 <div class="modern-card-list">
   <section class="search-list-grid">
     {% for page in collections.styleUtilities | sort(false, false, 'data.title') %}
-      <a href="{{ page.url }}">
+      <a class="hover-grow hover-emphasize-border" href="{{ page.url }}">
         <wa-card>
           <span class="page-name">{{ page.data.title }}</span>
           {% if page.data.description %}
@@ -97,7 +97,7 @@ Named layouts like [`wa-stack`](/docs/utilities/stack), [`wa-cluster`](/docs/uti
 <div class="modern-card-list">
   <section class="search-list-grid">
     {% for page in collections.layoutUtilities | sort(false, false, 'data.title') %}
-      <a href="{{ page.url }}">
+      <a class="hover-grow hover-emphasize-border" href="{{ page.url }}">
         <wa-card>
           <span class="page-name">{{ page.data.title }}</span>
           {% if page.data.description %}
