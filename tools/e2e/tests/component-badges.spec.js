@@ -41,6 +41,25 @@ test('Pro badge and experimental flask render in nav and page header', async ({ 
   await expect(buttonItem.locator('.component-badges')).toHaveCount(0);
 });
 
+// the sidebar mirrors the webawesome.com docs taxonomy (Actions, Forms, Layout, Navigation,
+// Feedback, Media, Data Viz, Helpers) — e.g. charts live in Data Viz; no component may fall
+// into the "Other" bucket (that means ComponentCategoryMap is missing an entry)
+test('sidebar groups components by the upstream docs taxonomy', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForSelector('.demo-shell');
+
+  const headings = page.locator('.demo-sidebar nav h4');
+  await expect(headings).toHaveText([
+    'Getting Started', 'Showcases',
+    'Actions', 'Forms', 'Layout', 'Navigation', 'Feedback', 'Media', 'Data Viz', 'Helpers',
+    'Layout Utilities',
+  ]);
+
+  const dataVizList = page.locator('.demo-sidebar nav h4:has-text("Data Viz") + ul');
+  await expect(dataVizList.locator('a[href="components/line-chart"]')).toHaveCount(1);
+  await expect(dataVizList.locator('a[href="components/sparkline"]')).toHaveCount(1);
+});
+
 // every component page's API Reference links the canonical upstream documentation
 test('canonical documentation link renders in the API reference', async ({ page }) => {
   await page.goto('/components/button');

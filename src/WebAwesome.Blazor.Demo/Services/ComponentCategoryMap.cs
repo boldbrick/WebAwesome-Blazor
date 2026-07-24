@@ -4,17 +4,16 @@ namespace WebAwesome.Blazor.Demo.Services;
 
 /// <summary>
 /// Maps component tag names to the documentation category Web Awesome itself uses to group
-/// components in its own docs navigation (Actions, Feedback &amp; Status, Form Controls, Imagery,
-/// Navigation, Organization, Utilities). Sourced from the "category" front matter of each
-/// component's page under inputs\WebAwesome\components\*.md.
+/// components in its own docs navigation (Actions, Forms, Layout, Navigation, Feedback, Media,
+/// Data Viz, Helpers — the taxonomy of the webawesome.com components index).
 /// </summary>
 /// <remarks>
-/// This mapping lives here rather than in the generated API surface document because "category" is
-/// a docs-site concept from the component markdown front matter, not part of the Custom Elements
-/// Manifest that tools\upgrade\Export-WaApiSurface.ps1 exports (which is scoped to the CEM-derived
-/// API for upgrade diffing). Keep this list in sync when new components are added; there is no
-/// front matter for wa-intersection-observer, so it is classified as Utilities alongside its sibling
-/// observer components.
+/// This mapping lives here rather than in the generated API surface document because the category is
+/// a docs-site concept, not part of the Custom Elements Manifest that tools\upgrade\Export-WaApiSurface.ps1
+/// exports (which is scoped to the CEM-derived API for upgrade diffing). Keep this list in sync when new
+/// components are added — the upstream source is the category shown on
+/// https://webawesome.com/docs/components (the "Experimental" chip there is a status, not a category;
+/// experimental components are mapped by function here and the demo marks their status with the flask icon).
 /// </remarks>
 public static class ComponentCategoryMap
 {
@@ -24,12 +23,13 @@ public static class ComponentCategoryMap
     public static readonly string[] CategoryOrder =
     [
         "Actions",
-        "Feedback & Status",
-        "Form Controls",
-        "Imagery",
+        "Forms",
+        "Layout",
         "Navigation",
-        "Organization",
-        "Utilities"
+        "Feedback",
+        "Media",
+        "Data Viz",
+        "Helpers"
     ];
 
     /// <summary>
@@ -48,37 +48,30 @@ public static class ComponentCategoryMap
         ["wa-copy-button"] = "Actions",
         ["wa-dropdown"] = "Actions",
         ["wa-dropdown-item"] = "Actions",
-        ["wa-qr-code"] = "Actions",
 
-        ["wa-badge"] = "Feedback & Status",
-        ["wa-callout"] = "Feedback & Status",
-        ["wa-progress-bar"] = "Feedback & Status",
-        ["wa-progress-ring"] = "Feedback & Status",
-        ["wa-skeleton"] = "Feedback & Status",
-        ["wa-spinner"] = "Feedback & Status",
-        ["wa-tag"] = "Feedback & Status",
-        ["wa-tooltip"] = "Feedback & Status",
+        ["wa-checkbox"] = "Forms",
+        ["wa-color-picker"] = "Forms",
+        ["wa-combobox"] = "Forms",
+        ["wa-file-input"] = "Forms",
+        ["wa-input"] = "Forms",
+        ["wa-number-input"] = "Forms",
+        ["wa-option"] = "Forms",
+        ["wa-radio"] = "Forms",
+        ["wa-radio-group"] = "Forms",
+        ["wa-rating"] = "Forms",
+        ["wa-select"] = "Forms",
+        ["wa-slider"] = "Forms",
+        ["wa-switch"] = "Forms",
+        ["wa-textarea"] = "Forms",
 
-        ["wa-checkbox"] = "Form Controls",
-        ["wa-color-picker"] = "Form Controls",
-        ["wa-combobox"] = "Form Controls",
-        ["wa-input"] = "Form Controls",
-        ["wa-option"] = "Form Controls",
-        ["wa-radio"] = "Form Controls",
-        ["wa-radio-group"] = "Form Controls",
-        ["wa-rating"] = "Form Controls",
-        ["wa-select"] = "Form Controls",
-        ["wa-slider"] = "Form Controls",
-        ["wa-switch"] = "Form Controls",
-        ["wa-textarea"] = "Form Controls",
-
-        ["wa-animated-image"] = "Imagery",
-        ["wa-avatar"] = "Imagery",
-        ["wa-carousel"] = "Imagery",
-        ["wa-carousel-item"] = "Imagery",
-        ["wa-comparison"] = "Imagery",
-        ["wa-icon"] = "Imagery",
-        ["wa-zoomable-frame"] = "Imagery",
+        ["wa-card"] = "Layout",
+        ["wa-details"] = "Layout",
+        ["wa-dialog"] = "Layout",
+        ["wa-divider"] = "Layout",
+        ["wa-drawer"] = "Layout",
+        ["wa-page"] = "Layout",
+        ["wa-scroller"] = "Layout",
+        ["wa-split-panel"] = "Layout",
 
         ["wa-breadcrumb"] = "Navigation",
         ["wa-breadcrumb-item"] = "Navigation",
@@ -88,25 +81,50 @@ public static class ComponentCategoryMap
         ["wa-tree"] = "Navigation",
         ["wa-tree-item"] = "Navigation",
 
-        ["wa-card"] = "Organization",
-        ["wa-details"] = "Organization",
-        ["wa-dialog"] = "Organization",
-        ["wa-divider"] = "Organization",
-        ["wa-drawer"] = "Organization",
-        ["wa-scroller"] = "Organization",
-        ["wa-split-panel"] = "Organization",
+        ["wa-badge"] = "Feedback",
+        ["wa-callout"] = "Feedback",
+        ["wa-popover"] = "Feedback",
+        ["wa-popup"] = "Feedback",
+        ["wa-progress-bar"] = "Feedback",
+        ["wa-progress-ring"] = "Feedback",
+        ["wa-skeleton"] = "Feedback",
+        ["wa-spinner"] = "Feedback",
+        ["wa-tag"] = "Feedback",
+        ["wa-toast"] = "Feedback",
+        ["wa-toast-item"] = "Feedback",
+        ["wa-tooltip"] = "Feedback",
 
-        ["wa-animation"] = "Utilities",
-        ["wa-format-bytes"] = "Utilities",
-        ["wa-format-date"] = "Utilities",
-        ["wa-format-number"] = "Utilities",
-        ["wa-include"] = "Utilities",
-        ["wa-intersection-observer"] = "Utilities",
-        ["wa-mutation-observer"] = "Utilities",
-        ["wa-popover"] = "Utilities",
-        ["wa-popup"] = "Utilities",
-        ["wa-relative-time"] = "Utilities",
-        ["wa-resize-observer"] = "Utilities",
+        ["wa-animated-image"] = "Media",
+        ["wa-avatar"] = "Media",
+        ["wa-carousel"] = "Media",
+        ["wa-carousel-item"] = "Media",
+        ["wa-comparison"] = "Media",
+        ["wa-icon"] = "Media",
+        ["wa-zoomable-frame"] = "Media",
+
+        ["wa-bar-chart"] = "Data Viz",
+        ["wa-bubble-chart"] = "Data Viz",
+        ["wa-chart"] = "Data Viz",
+        ["wa-doughnut-chart"] = "Data Viz",
+        ["wa-line-chart"] = "Data Viz",
+        ["wa-pie-chart"] = "Data Viz",
+        ["wa-polar-area-chart"] = "Data Viz",
+        ["wa-radar-chart"] = "Data Viz",
+        ["wa-scatter-chart"] = "Data Viz",
+        ["wa-sparkline"] = "Data Viz",
+
+        // animation is listed under the "Experimental" status chip upstream; by function it is a helper
+        ["wa-animation"] = "Helpers",
+        ["wa-format-bytes"] = "Helpers",
+        ["wa-format-date"] = "Helpers",
+        ["wa-format-number"] = "Helpers",
+        ["wa-include"] = "Helpers",
+        ["wa-intersection-observer"] = "Helpers",
+        ["wa-markdown"] = "Helpers",
+        ["wa-mutation-observer"] = "Helpers",
+        ["wa-qr-code"] = "Helpers",
+        ["wa-relative-time"] = "Helpers",
+        ["wa-resize-observer"] = "Helpers",
     };
 
     #endregion
