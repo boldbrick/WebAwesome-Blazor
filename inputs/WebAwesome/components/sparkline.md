@@ -1,10 +1,9 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.9.0 release zip (dist/skills/webawesome/references/components/sparkline.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/sparkline -->
+<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/sparkline.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/sparkline -->
 
 # Sparkline [Pro]
 
-**Full documentation:** https://webawesome.com/docs/components/sparkline
-
 > This component requires [Web Awesome Pro](https://webawesome.com/purchase).
+
 `<wa-sparkline>`
 
 ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.2](https://webawesome.com/docs/resources/changelog#wa_320)
@@ -20,7 +19,8 @@ Sparklines display inline data trends as compact, visual charts.
 -   Pre-Built [Pro Themes](https://webawesome.com/docs/themes)
 -   Pro Theme Builder
 -   Pro Color Tools
--   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma)
+-   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma) Newer additions to Web Awesome, like [`<wa-toast>`](https://webawesome.com/docs/components/toast), aren't included in the currently available kit, but a new version is in the works.  
+    Track its progress on GitHub.
 -   [WA Pro Perpetual License](https://webawesome.com/license/pro)
 -   Actual Human™ Support
 
@@ -38,13 +38,71 @@ Sparklines are small, word-sized graphics designed to fit within text or table c
 
 Always include a descriptive `label` attribute for accessibility. The label won't be visible but will be announced by screen readers.
 
+## Importing
+
+If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
+
+\*\*CDN\*\*
+
+Import this component directly from the CDN:
+
+```js
+import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/sparkline/sparkline.js';
+```
+
+\*\*npm\*\*
+
+After installing Web Awesome via npm, import this component:
+
+```js
+import '@awesome.me/webawesome/dist/components/sparkline/sparkline.js';
+```
+
+\*\*Self-Hosted\*\*
+
+If you're self-hosting Web Awesome, import this component from your server:
+
+```js
+import './webawesome/dist/components/sparkline/sparkline.js';
+```
+
+\*\*React\*\*
+
+To import this component for React 18 or below, use the following code:
+
+```js
+import WaSparkline from '@awesome.me/webawesome/dist/react/sparkline/index.js';
+```
+
+## Attributes & Properties
+
+| Property | Attribute | Description | Type | Default |
+| --- | --- | --- | --- | --- |
+| `label` | `label` | An accessible label describing the sparkline for screen readers. | `string` | `''` |
+| `data` | `data` | Space-separated numeric values to visualize (e.g., "10 20 40 25 35"). | `string` | `''` |
+| `appearance` | `appearance` | The visual fill style of the sparkline. | `'gradient' \| 'line' \| 'solid'` | `'solid'` |
+| `trend` | `trend` | A trend to indicate, which will affect the sparkline's default color. | `'positive' \| 'negative' \| 'neutral'` | — |
+| `curve` | `curve` | The type of curve used to connect data points. | `'linear' \| 'natural' \| 'step'` | `'linear'` |
+
+## CSS Custom Properties
+
+| Name | Description |
+| --- | --- |
+| \`--fill-color\` | The fill color for the area under the line. |
+| \`--line-color\` | The color of the sparkline stroke. |
+| \`--line-width\` | The width of the sparkline stroke. |
+
+## CSS Parts
+
+| Name | Description | CSS selector |
+| --- | --- | --- |
+| \`base\` | The SVG container element. | \`::part(base)\` |
+| \`fill\` | The filled area under the line (visible with gradient or solid appearance). | \`::part(fill)\` |
+| \`line\` | The sparkline stroke path. | \`::part(line)\` |
+
 ## Examples
 
-Link to This Section
-
 ### Basic Usage
-
-Link to This Section
 
 Provide numeric data as space-separated values. At least two values are required to generate the sparkline.
 
@@ -60,8 +118,6 @@ Provide numeric data as space-separated values. At least two values are required
 ```
 
 ### Appearance
-
-Link to This Section
 
 Use the `appearance` attribute to control how the sparkline fills. The default is `solid` which shows a filled area under the line. You can also choose `gradient` for a faded fill or `line` for stroke only.
 
@@ -91,8 +147,6 @@ Use the `appearance` attribute to control how the sparkline fills. The default i
 ```
 
 ### Trend Colors
-
-Link to This Section
 
 Apply semantic coloring with the `trend` attribute to visually indicate the nature of the data.
 
@@ -139,8 +193,6 @@ Apply semantic coloring with the `trend` attribute to visually indicate the natu
 
 ### Curve Types
 
-Link to This Section
-
 Control how data points connect with the `curve` attribute. Use `linear` (default), `natural`, or `step`.
 
 ```html
@@ -173,8 +225,6 @@ Control how data points connect with the `curve` attribute. Use `linear` (defaul
 
 ### Sizing
 
-Link to This Section
-
 Sparklines default to `height: 1em` and `aspect-ratio: 4/1` so they fit naturally within text. Override these with CSS for larger displays.
 
 ```html
@@ -188,8 +238,6 @@ Sparklines default to `height: 1em` and `aspect-ratio: 4/1` so they fit naturall
 ```
 
 ### Custom Colors
-
-Link to This Section
 
 Override the default colors using CSS custom properties.
 
@@ -208,8 +256,6 @@ Override the default colors using CSS custom properties.
 ```
 
 ### In Tables
-
-Link to This Section
 
 Sparklines work well in data tables to visualize trends alongside other metrics.
 
@@ -259,32 +305,3 @@ Sparklines work well in data tables to visualize trends alongside other metrics.
   </tbody>
 </table>
 ```
-
-## Attributes & Properties
-
-| Attribute | Property | Type | Default | Description |
-| --- | --- | --- | --- | --- |
-| `label` |  | `string` | `''` | An accessible label describing the sparkline for screen readers. |
-| `data` |  | `string` | `''` | Space-separated numeric values to visualize (e.g., "10 20 40 25 35"). |
-| `appearance` |  | `'gradient' \| 'line' \| 'solid'` | `'solid'` | The visual fill style of the sparkline. |
-| `trend` |  | `'positive' \| 'negative' \| 'neutral'` |  | A trend to indicate, which will affect the sparkline's default color. |
-| `curve` |  | `'linear' \| 'natural' \| 'step'` | `'linear'` | The type of curve used to connect data points. |
-| `dir` |  | `string` |  |  |
-| `lang` |  | `string` |  |  |
-| `did-ssr` | `didSSR` |  |  |  |
-
-## CSS Parts
-
-| Part | Description |
-| --- | --- |
-| `base` | The SVG container element. |
-| `line` | The sparkline stroke path. |
-| `fill` | The filled area under the line (visible with gradient or solid appearance). |
-
-## CSS Custom Properties
-
-| Property | Default | Description |
-| --- | --- | --- |
-| `--fill-color` |  | The fill color for the area under the line. |
-| `--line-color` |  | The color of the sparkline stroke. |
-| `--line-width` |  | The width of the sparkline stroke. |

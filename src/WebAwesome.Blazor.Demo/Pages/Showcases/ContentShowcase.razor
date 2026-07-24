@@ -71,6 +71,20 @@
             </WaAccordionItem>
         </WaAccordion>
 
+        <WaText Variant="TextVariant.Heading" Element="h3" Style="margin-block-start: var(--wa-space-l);">Tip of the day</WaText>
+        <WaText Element="p">
+            A rotating highlight authored with <code>WaRandomContent</code>. It autoplays, and its
+            <code>OnContentChange</code> callback delivers the current pick to Blazor.
+        </WaText>
+        <WaRandomContent Autoplay="true" AutoplayInterval="4000" Mode="WaRandomContentMode.Unique"
+                         Animation="WaRandomContentAnimation.FadeUp" OnContentChange="HandleContentChange">
+            <WaCallout Variant="WaVariant.Brand" IconName="lightbulb">Press Ctrl+K to open the command palette.</WaCallout>
+            <WaCallout Variant="WaVariant.Brand" IconName="lightbulb">Drag a panel to the edge to dock it.</WaCallout>
+            <WaCallout Variant="WaVariant.Brand" IconName="lightbulb">Right-click a layer to duplicate it in place.</WaCallout>
+            <WaCallout Variant="WaVariant.Brand" IconName="lightbulb">Hold Alt while resizing to scale from the center.</WaCallout>
+        </WaRandomContent>
+        <WaText Variant="TextVariant.Caption" Element="p">@tipMessage</WaText>
+
         <WaDivider Style="margin-block: var(--wa-space-l);" />
 
         <WaText Variant="TextVariant.Heading" Size="TextSize.L" Element="h2">Observer playground</WaText>
@@ -153,6 +167,7 @@
     private string mutationMessage = "No mutations observed yet";
     private bool signOffVisible;
     private double signOffRatio;
+    private string tipMessage = "Waiting for the first tip…";
 
     private const string upgradeChecklist = """
         Before upgrading a workspace to **Nova Studio 3.2**, walk through these steps:
@@ -200,6 +215,15 @@
     {
         signOffVisible = args.IsIntersecting;
         signOffRatio = args.IntersectionRatio;
+    }
+
+    private void HandleContentChange(WaContentChangeEventArgs args)
+    {
+        // the initializer projects the shown children to { id, textContent } and a count
+        var shown = args.Items is [JsonElement item, ..] && item.TryGetProperty("textContent", out var text)
+            ? text.GetString()?.Trim()
+            : null;
+        tipMessage = shown is null ? $"Showing {args.Count} tip(s)" : $"Now showing: {shown}";
     }
 
     private void AddReviewer()

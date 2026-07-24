@@ -67,6 +67,16 @@
     </div>
 </ExampleSection>
 
+<ExampleSection Title="Canvas" Code="@CanvasExample">
+    <p>The <code>Canvas</code> box the icon is centered within. Unset renders as fixed (1.25em × 1em); <code>Auto</code> hugs the icon's width, <code>Square</code> is 1.25em × 1.25em, <code>Roomy</code> is 1.5em × 1.5em.</p>
+    <div class="wa-cluster" style="font-size: 1.5em; color: #193154;">
+        <WaIcon Canvas="WaIconCanvas.Fixed" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+        <WaIcon Canvas="WaIconCanvas.Auto" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+        <WaIcon Canvas="WaIconCanvas.Square" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+        <WaIcon Canvas="WaIconCanvas.Roomy" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+    </div>
+</ExampleSection>
+
 <ApiTable Tag="wa-icon" />
 
 @code {
@@ -129,6 +139,15 @@
             <WaIcon Family="duotone" Name="home" SwapOpacity="true" />
             <WaIcon Family="duotone" Name="envelope" />
             <WaIcon Family="duotone" Name="envelope" SwapOpacity="true" />
+        </div>
+        """;
+
+    private const string CanvasExample = """
+        <div class="wa-cluster" style="font-size: 1.5em; color: #193154;">
+            <WaIcon Canvas="WaIconCanvas.Fixed" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+            <WaIcon Canvas="WaIconCanvas.Auto" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+            <WaIcon Canvas="WaIconCanvas.Square" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
+            <WaIcon Canvas="WaIconCanvas.Roomy" Family="solid" Name="exclamation" Style="background: lightsalmon;" />
         </div>
         """;
 }

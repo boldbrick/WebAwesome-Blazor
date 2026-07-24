@@ -134,6 +134,7 @@ public static class ComponentCategoryMap
         ["wa-mutation-observer"] = "Helpers",
         ["wa-popover"] = "Helpers",
         ["wa-popup"] = "Helpers",
+        ["wa-random-content"] = "Helpers",
         ["wa-relative-time"] = "Helpers",
         ["wa-resize-observer"] = "Helpers",
     };

@@ -1,5 +1,5 @@
 {
-  "version": "3.9.0",
+  "version": "3.10.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-accordion": {
@@ -3504,7 +3504,7 @@
         "name": {
           "type": "string | null",
           "default": "null",
-          "description": "The name of the checkbox, submitted as a name/value pair with form data."
+          "description": "The name of the input, submitted as a name/value pair with form data."
         },
         "required": {
           "type": "boolean",
@@ -3679,6 +3679,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Sets the width of the icon to match the cropped SVG viewBox. This operates like the Font `fa-width-auto` class."
+        },
+        "canvas": {
+          "type": "IconCanvas | undefined",
+          "default": null,
+          "description": "Sets the icon canvas — the box the icon is centered within. Unset renders as `fixed` (1.25em × 1em); `auto` hugs the\nicon's width; `square` is 1.25em × 1.25em; `roomy` is 1.5em × 1.5em. Mirrors Font Awesome's `fa-fixed-width`,\n`fa-width-auto`, `fa-canvas-square`, and `fa-canvas-roomy`. Scales with `font-size`."
         },
         "did-ssr": {
           "type": null,
@@ -4325,7 +4330,6 @@
       },
       "cssParts": [
         "base",
-        "error",
         "field",
         "field-day",
         "field-input",
@@ -5890,6 +5894,71 @@
         "hint",
         "radios"
       ]
+    },
+    "wa-random-content": {
+      "className": "WaRandomContent",
+      "since": "3.9",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "animation": {
+          "type": "'none' | 'fade' | 'fade-up' | 'fade-down' | 'fade-left' | 'fade-right'",
+          "default": "'none'",
+          "description": "Entrance animation for newly shown children."
+        },
+        "autoplay": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Rotate the content automatically. Set the cadence with `autoplay-interval`."
+        },
+        "autoplay-interval": {
+          "type": "number",
+          "default": "3000",
+          "description": "Autoplay cadence in milliseconds."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "items": {
+          "type": "number",
+          "default": "1",
+          "description": "Number of children to show simultaneously. Clamped to [1, childCount]."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "mode": {
+          "type": "'random' | 'unique' | 'sequence'",
+          "default": "'unique'",
+          "description": "Selection strategy: `unique` (default), `random`, or `sequence`."
+        }
+      },
+      "events": {
+        "wa-content-change": {
+          "type": "{ items: Element[] }",
+          "eventName": "WaContentChangeEvent",
+          "description": "Emitted whenever the displayed selection changes, including on first render, on `randomize()`, and on each autoplay tick."
+        }
+      },
+      "slots": {
+        "(default)": "The pool of children to choose from. Only direct element children are eligible; unselected children are hidden with the `hidden` attribute."
+      },
+      "methods": {
+        "randomize": {
+          "signature": "randomize() => Element[]",
+          "description": "Selects a new set of children using the current mode. Returns the elements now shown."
+        }
+      },
+      "cssParts": []
     },
     "wa-rating": {
       "className": "WaRating",
