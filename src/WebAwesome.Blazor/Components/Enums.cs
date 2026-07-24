@@ -31,7 +31,11 @@ public enum WaSize
     /// <summary>Medium size.</summary>
     Medium,
     /// <summary>Large size.</summary>
-    Large
+    Large,
+    /// <summary>Extra-small size.</summary>
+    ExtraSmall,
+    /// <summary>Extra-large size.</summary>
+    ExtraLarge
 }
 
 /// <summary>
@@ -880,9 +884,11 @@ public static class WaEnumExtensions
     {
         return size switch
         {
+            WaSize.ExtraSmall => "xs",
             WaSize.Small => "small",
             WaSize.Medium => "medium",
             WaSize.Large => "large",
+            WaSize.ExtraLarge => "xl",
             _ => throw new ArgumentOutOfRangeException(nameof(size), size, null)
         };
     }

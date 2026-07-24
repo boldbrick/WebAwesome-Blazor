@@ -51,6 +51,12 @@ const eventNames = [
   'wa-zoom-change',
 ];
 
+// native-named events that Web Awesome re-dispatches as custom events (not Blazor built-ins,
+// so they need registerCustomEventType to reach .NET); empty detail -> default detailArgs
+const nativeCustomEventNames = [
+  'beforeinput',
+];
+
 // recursively copies JSON-safe values from an event detail, dropping DOM nodes, functions,
 // and anything too deep to marshal - custom event details may carry live Element references
 function sanitize(value, depth) {
@@ -140,6 +146,12 @@ function registerEventTypes(blazor) {
   eventTypesRegistered = true;
 
   for (const name of eventNames) {
+    blazor.registerCustomEventType(name, {
+      createEventArgs: specialArgs[name] || detailArgs,
+    });
+  }
+
+  for (const name of nativeCustomEventNames) {
     blazor.registerCustomEventType(name, {
       createEventArgs: specialArgs[name] || detailArgs,
     });

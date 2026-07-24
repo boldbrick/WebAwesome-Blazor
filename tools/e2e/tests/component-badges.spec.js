@@ -19,16 +19,17 @@ test('Pro badge and experimental flask render in nav and page header', async ({ 
   await page.goto('/components/combobox');
   await page.waitForSelector('.demo-shell');
 
-  // page header: combobox is Pro AND experimental
+  // page header: combobox is Pro and, since WA 3.6.0, stable (so no experimental flask)
   const header = page.locator('h1 .component-badges');
   await expect(header.locator('wa-badge.pro-badge')).toHaveText('Pro');
-  await expect(header.locator('wa-icon.experimental-flask')).toHaveCount(1);
+  await expect(header.locator('wa-icon.experimental-flask')).toHaveCount(0);
 
-  // nav: Line Chart is Pro + experimental (Pro since 3.3.0), Page carries no markers
-  // (free/stable upstream as of 3.5.0), Carousel is experimental only, Button has no markers
+  // nav: Line Chart is Pro + stable (Pro since 3.3.0, stabilized in 3.6.0 so no flask),
+  // Page carries no markers (free/stable upstream as of 3.5.0), Carousel is experimental only
+  // (free, still experimental in 3.6.0), Button has no markers
   const lineChartItem = page.locator('.demo-sidebar nav li', { has: page.locator('a[href="components/line-chart"]') });
   await expect(lineChartItem.locator('wa-badge.pro-badge')).toHaveCount(1);
-  await expect(lineChartItem.locator('wa-icon.experimental-flask')).toHaveCount(1);
+  await expect(lineChartItem.locator('wa-icon.experimental-flask')).toHaveCount(0);
 
   const pageItem = page.locator('.demo-sidebar nav li', { has: page.locator('a[href="components/page"]') });
   await expect(pageItem.locator('.component-badges')).toHaveCount(0);

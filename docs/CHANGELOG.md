@@ -2,6 +2,37 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.6.0] — 2026-07-24
+
+Alignment with the Web Awesome 3.6.0 release, opening the **WA-3.6 train**. A focused upgrade with **no new or removed components**: an expanded size scale, one new event on `WaNumberInput`, one removed `WaFileInput` slot, and the promotion of the chart family and several Pro components from experimental to stable. See [MIGRATION-3.6.0.md](MIGRATION-3.6.0.md).
+
+### Breaking changes
+- `wa-file-input` — slot `file-icon` removed upstream; `WaFileInput.FileIconContent` has been removed. Use `DropzoneContent` for custom dropzone visuals. (The 18 upstream `size` "breaking" entries are non-destructive for the wrappers — see below.)
+
+### New components
+- None.
+
+### Changed
+- `WaSize` enum gained `ExtraSmall` (`xs`) and `ExtraLarge` (`xl`), exposing the size scale Web Awesome 3.6.0 widened to `xs | s | m | l | xl` across the sized components (button, callout, tag, dropdown, radio/radio-group, toast-item, textarea, and every `WaInputBase<T>` form control). The existing `Small`/`Medium`/`Large` members are unchanged and still render `small`/`medium`/`large` (valid aliases upstream).
+- `WaNumberInput` gained the cancelable `OnBeforeInput` callback (`EventCallback<EventArgs>`), bound to the re-dispatched `beforeinput` custom event and registered in the JS event initializer.
+- 13 components promoted **experimental → stable** upstream (no wrapper API change): the chart family (`wa-chart`, `wa-bar-chart`, `wa-bubble-chart`, `wa-doughnut-chart`, `wa-line-chart`, `wa-pie-chart`, `wa-polar-area-chart`, `wa-radar-chart`, `wa-scatter-chart`), `wa-sparkline`, `wa-toast`, `wa-toast-item`, `wa-combobox`, `wa-dropdown-item`, `wa-file-input`, `wa-number-input`. The demo's experimental badge is data-driven from the API surface, so it clears automatically.
+
+### Non-breaking upstream "breaking" changes (no wrapper action)
+- `size` attribute on 18 components (button, callout, color-picker, combobox, dropdown, file-input, checkbox, input, number-input, radio, radio-group, rating, select, slider, switch, tag, textarea, toast-item): the type union widened to add `xs | s | m | l | xl` and the upstream default renamed `medium` → `m`. The legacy `small | medium | large` values remain valid, and the wrapper omits the attribute when `Size` is unset, so existing usage is unaffected; the new sizes are opt-in via `WaSize.ExtraSmall`/`ExtraLarge`.
+
+### Library
+- Versioned reference docs refreshed to the `v3.6.0` tag: 122 public-docs files updated; 14 Pro/reference docs (chart family, combobox, file-input, toast, toast-item, sparkline) filled from the release zip's bundled references; 0 needed manual capture.
+- New train WA-3.6: subtrunk `/main/WA-3.6` branched off `/main` (released 3.5.0, cs:170/178); developed on `/main/WA-3.6/WAB-33`.
+
+### Public API
+- Baseline promoted: `+WaSize.ExtraSmall`, `+WaSize.ExtraLarge`, `+WaNumberInput.OnBeforeInput`, `−WaFileInput.FileIconContent`. Every diff is explained by the WA 3.6.0 change report.
+
+### Deviations recorded (parity-config.json)
+- `wa-number-input` `eventOverrides`: `beforeinput` → `OnBeforeInput` (natural .NET PascalCase; mechanical conversion would yield `OnBeforeinput`), with a rationale in `ignoreReasons`.
+
+### Next-release check outcomes
+- Observer `stopObserver()`/`startObserver()` and `wa-relative-time` `update()`: re-verified against the 3.6.0 sources (`startObserver`/`stopObserver` still private in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle, only `updateTimeout` in `relative-time.d.ts`) — the `extraElementMethods` allowlist stands, verification stamps updated.
+
 ## [3.5.0] — 2026-07-23
 
 Alignment with the Web Awesome 3.5.0 release, opening the **WA-3.5 train**. An additive upgrade: a new `WaMarkdown` component, a cluster of SSR hydration-hint attributes across several components, a color-picker popup placement, a copy-button trigger slot, and the promotion of `WaRating` into a full form-associated control. **No breaking changes** — the four upstream "breaking" entries in the change report are all non-destructive for the wrappers. No migration guide is required.
