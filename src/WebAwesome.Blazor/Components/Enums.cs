@@ -1014,6 +1014,54 @@ public enum WaCaptureMode
     Environment
 }
 
+/// <summary>
+/// The box an icon is centered within (the icon canvas). Unset renders as fixed (1.25em × 1em).
+/// Mirrors Font Awesome's fa-fixed-width, fa-width-auto, fa-canvas-square, and fa-canvas-roomy.
+/// </summary>
+public enum WaIconCanvas
+{
+    /// <summary>Fixed 1.25em × 1em box (matches Font Awesome fa-fixed-width).</summary>
+    Fixed,
+    /// <summary>Hugs the icon's own width (matches Font Awesome fa-width-auto).</summary>
+    Auto,
+    /// <summary>Square 1.25em × 1.25em box (matches Font Awesome fa-canvas-square).</summary>
+    Square,
+    /// <summary>Roomy 1.5em × 1.5em box (matches Font Awesome fa-canvas-roomy).</summary>
+    Roomy
+}
+
+/// <summary>
+/// Entrance animation for newly shown children of a random-content component.
+/// </summary>
+public enum WaRandomContentAnimation
+{
+    /// <summary>No entrance animation.</summary>
+    None,
+    /// <summary>Fades the content in.</summary>
+    Fade,
+    /// <summary>Fades the content in while translating it upward.</summary>
+    FadeUp,
+    /// <summary>Fades the content in while translating it downward.</summary>
+    FadeDown,
+    /// <summary>Fades the content in while translating it from the left.</summary>
+    FadeLeft,
+    /// <summary>Fades the content in while translating it from the right.</summary>
+    FadeRight
+}
+
+/// <summary>
+/// Selection strategy a random-content component uses when choosing which children to show.
+/// </summary>
+public enum WaRandomContentMode
+{
+    /// <summary>Selects children at random, allowing repeats across rotations.</summary>
+    Random,
+    /// <summary>Selects children without repeating until the pool is exhausted (the default).</summary>
+    Unique,
+    /// <summary>Selects children in document order, cycling through the pool.</summary>
+    Sequence
+}
+
 #endregion
 
 #region ------ Extension Methods ------
@@ -1039,6 +1087,61 @@ public static class WaEnumExtensions
             WaSize.Large => "large",
             WaSize.ExtraLarge => "xl",
             _ => throw new ArgumentOutOfRangeException(nameof(size), size, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="canvas">The icon canvas value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "square"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="canvas"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaIconCanvas canvas)
+    {
+        return canvas switch
+        {
+            WaIconCanvas.Fixed => "fixed",
+            WaIconCanvas.Auto => "auto",
+            WaIconCanvas.Square => "square",
+            WaIconCanvas.Roomy => "roomy",
+            _ => throw new ArgumentOutOfRangeException(nameof(canvas), canvas, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="animation">The random-content animation value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "fade-up"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="animation"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRandomContentAnimation animation)
+    {
+        return animation switch
+        {
+            WaRandomContentAnimation.None => "none",
+            WaRandomContentAnimation.Fade => "fade",
+            WaRandomContentAnimation.FadeUp => "fade-up",
+            WaRandomContentAnimation.FadeDown => "fade-down",
+            WaRandomContentAnimation.FadeLeft => "fade-left",
+            WaRandomContentAnimation.FadeRight => "fade-right",
+            _ => throw new ArgumentOutOfRangeException(nameof(animation), animation, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="mode">The random-content selection mode to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "unique"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="mode"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRandomContentMode mode)
+    {
+        return mode switch
+        {
+            WaRandomContentMode.Random => "random",
+            WaRandomContentMode.Unique => "unique",
+            WaRandomContentMode.Sequence => "sequence",
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
         };
     }
 

@@ -953,6 +953,12 @@ namespace WebAwesome.Blazor.Components
         public string? Style { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
+    public class WaContentChangeEventArgs : System.EventArgs
+    {
+        public WaContentChangeEventArgs() { }
+        public int Count { get; set; }
+        public object[]? Items { get; set; }
+    }
     public class WaCopyButton : Microsoft.AspNetCore.Components.ComponentBase
     {
         public WaCopyButton() { }
@@ -1533,6 +1539,7 @@ namespace WebAwesome.Blazor.Components
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaFormatNumberType type) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaHourFormat format) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaIconAnimation animation) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaIconCanvas canvas) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaIconPlacement placement) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaInputAppearance appearance) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaInputType type) { }
@@ -1546,6 +1553,8 @@ namespace WebAwesome.Blazor.Components
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPlacement placement) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPrimary primary) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaRadioAppearance appearance) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaRandomContentAnimation animation) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaRandomContentMode mode) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaResize resize) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaSize size) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaSparklineAppearance appearance) { }
@@ -1771,6 +1780,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AutoWidth { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaIconCanvas? Canvas { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1810,6 +1821,13 @@ namespace WebAwesome.Blazor.Components
         Spin = 6,
         SpinPulse = 7,
         SpinReverse = 8,
+    }
+    public enum WaIconCanvas
+    {
+        Fixed = 0,
+        Auto = 1,
+        Square = 2,
+        Roomy = 3,
     }
     public enum WaIconPlacement
     {
@@ -2499,6 +2517,48 @@ namespace WebAwesome.Blazor.Components
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public class WaRandomContent : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaRandomContent() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaRandomContentAnimation Animation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Autoplay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int AutoplayInterval { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int Items { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaRandomContentMode Mode { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaContentChangeEventArgs> OnContentChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task RandomizeAsync() { }
+    }
+    public enum WaRandomContentAnimation
+    {
+        None = 0,
+        Fade = 1,
+        FadeUp = 2,
+        FadeDown = 3,
+        FadeLeft = 4,
+        FadeRight = 5,
+    }
+    public enum WaRandomContentMode
+    {
+        Random = 0,
+        Unique = 1,
+        Sequence = 2,
     }
     public class WaRange : WebAwesome.Blazor.Base.WaInputBase<decimal>
     {
