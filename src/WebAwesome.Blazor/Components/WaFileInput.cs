@@ -138,11 +138,6 @@ public class WaFileInput : ComponentBase, IFormValidation
     [Parameter] public RenderFragment? DropzoneContent { get; set; }
 
     /// <summary>
-    /// Rich markup rendered into the "file-icon" slot, replacing the default file icon.
-    /// </summary>
-    [Parameter] public RenderFragment? FileIconContent { get; set; }
-
-    /// <summary>
     /// Rich markup rendered into the "label" slot; takes precedence over <see cref="Label"/> when set.
     /// </summary>
     [Parameter] public RenderFragment? LabelContent { get; set; }
@@ -193,15 +188,6 @@ public class WaFileInput : ComponentBase, IFormValidation
             builder.OpenElement(50, "span");
             builder.AddAttribute(51, "slot", "dropzone");
             builder.AddContent(52, DropzoneContent);
-            builder.CloseElement();
-        }
-
-        // Add file-icon slot content
-        if (FileIconContent is not null)
-        {
-            builder.OpenElement(55, "span");
-            builder.AddAttribute(56, "slot", "file-icon");
-            builder.AddContent(57, FileIconContent);
             builder.CloseElement();
         }
 

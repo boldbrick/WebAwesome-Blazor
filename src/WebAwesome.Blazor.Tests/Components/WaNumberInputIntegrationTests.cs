@@ -133,6 +133,23 @@ public class WaNumberInputIntegrationTests : FormControlTestBase
     }
 
     [Fact]
+    public void OnBeforeInput_WhenWired_ReceivesDomEvent()
+    {
+        // Arrange
+        var beforeInputCount = 0;
+        var model = new NumberModel();
+        var cut = RenderControlForm<WaNumberInput, decimal?>(model, model.Amount, v => model.Amount = v, () => model.Amount,
+            builder => builder.AddComponentParameter(10, nameof(WaNumberInput.OnBeforeInput),
+                Microsoft.AspNetCore.Components.EventCallback.Factory.Create<EventArgs>(this, () => beforeInputCount++)));
+
+        // Act
+        cut.Find("wa-number-input").TriggerEvent("onbeforeinput", new EventArgs());
+
+        // Assert
+        Assert.Equal(1, beforeInputCount);
+    }
+
+    [Fact]
     public async Task FocusAsync_WithNullElement_ThrowsInvalidOperationException()
     {
         // Arrange
