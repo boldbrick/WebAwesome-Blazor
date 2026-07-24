@@ -865,6 +865,45 @@ public enum WaToastPlacement
     BottomEnd
 }
 
+/// <summary>
+/// Controls preset for the video player, determining which playback controls are shown.
+/// </summary>
+public enum WaVideoControls
+{
+    /// <summary>Shows the timeline, play/pause, volume, captions, and fullscreen.</summary>
+    Standard,
+    /// <summary>No controls are shown.</summary>
+    None,
+    /// <summary>Everything in standard, plus playback speed and picture-in-picture.</summary>
+    Full
+}
+
+/// <summary>
+/// Controls how the browser preloads video data.
+/// </summary>
+public enum WaVideoPreload
+{
+    /// <summary>Preloads only metadata (dimensions, duration) to minimize data usage.</summary>
+    Metadata,
+    /// <summary>Lets the browser decide, potentially preloading the entire video.</summary>
+    Auto,
+    /// <summary>Preloads nothing until playback is requested.</summary>
+    None
+}
+
+/// <summary>
+/// Controls the built-in tooltip behavior of a copy button.
+/// </summary>
+public enum WaCopyButtonTooltip
+{
+    /// <summary>Shows the tooltip on hover and focus and during copy feedback.</summary>
+    Full,
+    /// <summary>Keeps the tooltip silent on hover/focus and only shows it briefly to confirm a copy.</summary>
+    Copy,
+    /// <summary>Disables the tooltip entirely.</summary>
+    None
+}
+
 #endregion
 
 #region ------ Extension Methods ------
@@ -1815,6 +1854,57 @@ public static class WaEnumExtensions
             WaToastPlacement.BottomCenter => "bottom-center",
             WaToastPlacement.BottomEnd => "bottom-end",
             _ => throw new ArgumentOutOfRangeException(nameof(placement), placement, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="controls">The video controls preset value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "standard"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="controls"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaVideoControls controls)
+    {
+        return controls switch
+        {
+            WaVideoControls.Standard => "standard",
+            WaVideoControls.None => "none",
+            WaVideoControls.Full => "full",
+            _ => throw new ArgumentOutOfRangeException(nameof(controls), controls, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="preload">The video preload value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "metadata"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="preload"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaVideoPreload preload)
+    {
+        return preload switch
+        {
+            WaVideoPreload.Metadata => "metadata",
+            WaVideoPreload.Auto => "auto",
+            WaVideoPreload.None => "none",
+            _ => throw new ArgumentOutOfRangeException(nameof(preload), preload, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="tooltip">The copy button tooltip value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "full"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="tooltip"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaCopyButtonTooltip tooltip)
+    {
+        return tooltip switch
+        {
+            WaCopyButtonTooltip.Full => "full",
+            WaCopyButtonTooltip.Copy => "copy",
+            WaCopyButtonTooltip.None => "none",
+            _ => throw new ArgumentOutOfRangeException(nameof(tooltip), tooltip, null)
         };
     }
 }

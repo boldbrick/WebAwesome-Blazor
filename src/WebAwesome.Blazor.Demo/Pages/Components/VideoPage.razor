@@ -1,0 +1,72 @@
+@page "/components/video"
+
+<PageTitle>Video</PageTitle>
+
+<h1>Video <ComponentBadges Tag="wa-video" /></h1>
+<p>Videos embed and play video content with custom controls and captions. <code>&lt;wa-video&gt;</code> wrapped by <code>WaVideo</code>.</p>
+
+<ExampleSection Title="Adding Video Sources" Code="@SourcesExample">
+    <WaVideo Src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" Title="Using Kits in Your Project" Poster="https://uploads.webawesome.com/fa-part-1.jpg" />
+</ExampleSection>
+
+<ExampleSection Title="Controls Presets" Code="@ControlsExample">
+    <WaVideo Controls="WaVideoControls.None" Title="No controls" Poster="https://uploads.webawesome.com/kits.jpg">
+        <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+    </WaVideo>
+    <WaVideo Controls="WaVideoControls.Standard" Title="Standard controls" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+        <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+    </WaVideo>
+    <WaVideo Controls="WaVideoControls.Full" Title="Full controls" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+        <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+    </WaVideo>
+</ExampleSection>
+
+<ExampleSection Title="Captions and Subtitles" Code="@CaptionsExample">
+    <WaVideo Controls="WaVideoControls.Standard" Title="Using Kits in Your Project" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+        <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+        <track src="https://uploads.webawesome.com/01-create-your-first-kit.vtt" kind="subtitles" srclang="en" label="English" />
+    </WaVideo>
+</ExampleSection>
+
+<ExampleSection Title="Custom Icon Slots" Code="@IconsExample">
+    <WaVideo Title="Custom icons" Poster="https://uploads.webawesome.com/teams.jpg" Controls="WaVideoControls.Full"
+             PosterIconName="kiwi-bird" PlayIconName="fish" PauseIconName="fish-bones">
+        <source src="https://uploads.webawesome.com/02-using-teams.mp4" type="video/mp4" />
+    </WaVideo>
+</ExampleSection>
+
+<ApiTable Tag="wa-video" />
+
+@code {
+    private const string SourcesExample = """
+        <WaVideo Src="https://uploads.webawesome.com/01-create-your-first-kit.mp4"
+                 Title="Using Kits in Your Project"
+                 Poster="https://uploads.webawesome.com/fa-part-1.jpg" />
+        """;
+
+    private const string ControlsExample = """
+        <WaVideo Controls="WaVideoControls.None" Title="No controls" Poster="https://uploads.webawesome.com/kits.jpg">
+            <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+        </WaVideo>
+        <WaVideo Controls="WaVideoControls.Standard" Title="Standard controls" Poster="https://uploads.webawesome.com/fa-part-2.jpg">
+            <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
+        </WaVideo>
+        <WaVideo Controls="WaVideoControls.Full" Title="Full controls" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+            <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+        </WaVideo>
+        """;
+
+    private const string CaptionsExample = """
+        <WaVideo Controls="WaVideoControls.Standard" Title="Using Kits in Your Project" Poster="https://uploads.webawesome.com/fa-part-1.jpg">
+            <source src="https://uploads.webawesome.com/01-create-your-first-kit.mp4" type="video/mp4" />
+            <track src="https://uploads.webawesome.com/01-create-your-first-kit.vtt" kind="subtitles" srclang="en" label="English" />
+        </WaVideo>
+        """;
+
+    private const string IconsExample = """
+        <WaVideo Title="Custom icons" Poster="https://uploads.webawesome.com/teams.jpg" Controls="WaVideoControls.Full"
+                 PosterIconName="kiwi-bird" PlayIconName="fish" PauseIconName="fish-bones">
+            <source src="https://uploads.webawesome.com/02-using-teams.mp4" type="video/mp4" />
+        </WaVideo>
+        """;
+}

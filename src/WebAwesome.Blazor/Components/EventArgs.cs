@@ -218,3 +218,31 @@ public class WaCreateEventArgs : EventArgs
 }
 
 #endregion
+#region ------ Video Playlist Events ------
+
+/// <summary>
+/// Event arguments for the video playlist active-video change event.
+/// </summary>
+public class WaVideoChangeEventArgs : EventArgs
+{
+    /// <summary>
+    /// Zero-based index of the previously active video.
+    /// </summary>
+    public int PreviousIndex { get; set; }
+
+    /// <summary>
+    /// Zero-based index of the newly active video.
+    /// </summary>
+    public int CurrentIndex { get; set; }
+
+    /// <summary>
+    /// Title of the incoming video.
+    /// </summary>
+    /// <remarks>
+    /// The wa-video-change event's detail also carries the incoming video element itself; DOM
+    /// elements cannot be marshaled into Blazor from event payloads, so only its title is exposed.
+    /// </remarks>
+    public string? VideoTitle { get; set; }
+}
+
+#endregion

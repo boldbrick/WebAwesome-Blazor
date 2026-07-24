@@ -1,5 +1,5 @@
 {
-  "version": "3.6.0",
+  "version": "3.7.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-animated-image": {
@@ -1623,14 +1623,14 @@
     },
     "wa-copy-button": {
       "className": "WaCopyButton",
-      "since": "2.7",
-      "status": "experimental",
+      "since": "3.6",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "copy-label": {
           "type": "string",
           "default": "''",
-          "description": "A custom label to show in the tooltip."
+          "description": "A custom label to use as the accessible name and tooltip text in the default copy state."
         },
         "did-ssr": {
           "type": null,
@@ -1672,6 +1672,11 @@
           "default": "''",
           "description": "A custom label to show in the tooltip after copying."
         },
+        "tooltip": {
+          "type": "'full' | 'copy' | 'none'",
+          "default": "'full'",
+          "description": "Controls the built-in tooltip. `full` (default) shows the tooltip on hover and focus and during copy feedback.\n`copy` keeps the tooltip silent on hover/focus and only shows it briefly to confirm a successful or failed copy.\n`none` disables the tooltip entirely. Applies to both the default and custom triggers."
+        },
         "tooltip-placement": {
           "type": "'top' | 'right' | 'bottom' | 'left'",
           "default": "'top'",
@@ -1706,11 +1711,8 @@
         "button",
         "copy-icon",
         "error-icon",
-        "success-icon",
-        "tooltip__base",
-        "tooltip__base__arrow",
-        "tooltip__base__popup",
-        "tooltip__body"
+        "feedback",
+        "success-icon"
       ]
     },
     "wa-details": {
@@ -6886,6 +6888,286 @@
         "label",
         "spinner",
         "spinner__base"
+      ]
+    },
+    "wa-video": {
+      "className": "WaVideo",
+      "since": "3.6",
+      "status": "experimental",
+      "pro": true,
+      "attributes": {
+        "autoplay": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables autoplay when the component connects."
+        },
+        "autoplay-muted": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables autoplay in a muted state."
+        },
+        "autoplay-on-visible": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Automatically resumes playback when the player scrolls back into view after being paused by scrolling out."
+        },
+        "controls": {
+          "type": "'none' | 'standard' | 'full'",
+          "default": "'standard'",
+          "description": "The video's controls preset.\n- `none` — no controls are shown.\n- `standard` — shows the timeline, play/pause, volume, captions, and fullscreen.\n- `full` — all of the above plus playback speed and picture-in-picture."
+        },
+        "currentTime": {
+          "type": "number",
+          "default": "0",
+          "description": "The current playback position in seconds."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "duration": {
+          "type": "number",
+          "default": "0",
+          "description": "The total duration of the video in seconds."
+        },
+        "icon-library": {
+          "type": "string",
+          "default": "'system'",
+          "description": "Icon library used for all built-in control icons. Defaults to 'system'."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "loop": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Loops the video when playback ends."
+        },
+        "muted": {
+          "type": "boolean",
+          "default": "false",
+          "description": "When set, the video will be muted."
+        },
+        "playing": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Indicates whether the video is currently playing."
+        },
+        "poster": {
+          "type": "string",
+          "default": "''",
+          "description": "Poster image URL"
+        },
+        "preload": {
+          "type": "'auto' | 'metadata' | 'none'",
+          "default": "'metadata'",
+          "description": "Controls how the browser preloads the video. Defaults to 'metadata' to minimize data usage."
+        },
+        "src": {
+          "type": "string",
+          "default": "''",
+          "description": "The URL of the video source. For multiple formats, use `<source>` elements instead."
+        },
+        "thumbnails": {
+          "type": "string",
+          "default": "''",
+          "description": "A URL pointing to a WebVTT file for timeline thumbnail previews."
+        },
+        "title": {
+          "type": "string",
+          "default": "''",
+          "description": "The video's title."
+        },
+        "volume": {
+          "type": "number",
+          "default": "1",
+          "description": "The video's volume."
+        }
+      },
+      "events": {
+        "ended": {
+          "type": null,
+          "eventName": "EndedEvent",
+          "description": "Emitted when playback ends."
+        },
+        "error": {
+          "type": null,
+          "eventName": "ErrorEvent",
+          "description": "Emitted when an error occurs while loading/playing."
+        },
+        "loadedmetadata": {
+          "type": null,
+          "eventName": "LoadedmetadataEvent",
+          "description": "Emitted when metadata has been loaded."
+        },
+        "pause": {
+          "type": null,
+          "eventName": "PauseEvent",
+          "description": "Emitted when playback stops."
+        },
+        "play": {
+          "type": null,
+          "eventName": "PlayEvent",
+          "description": "Emitted when playback begins."
+        },
+        "timeupdate": {
+          "type": null,
+          "eventName": "TimeupdateEvent",
+          "description": "Emitted when the time changes."
+        },
+        "volumechange": {
+          "type": null,
+          "eventName": "VolumechangeEvent",
+          "description": "Emitted when the volume changes."
+        }
+      },
+      "slots": {
+        "(default)": "The default slot. Place `<source>` and `<track>` elements for a single video. Alternatively, use the `src` attribute for a single source.",
+        "controls-after-play": "Content inserted immediately after the play/pause button. Used by `<wa-video-playlist>` to inject the next button.",
+        "controls-start": "Content inserted at the start of the controls bar (before play/pause). Used by `<wa-video-playlist>` to inject the prev button.",
+        "exit-fullscreen-icon": "Icon shown on the fullscreen button when in fullscreen.",
+        "fullscreen-icon": "Icon shown on the fullscreen button when not in fullscreen.",
+        "mute-icon": "Icon shown on the volume/mute button when muted or volume is 0.",
+        "pause-icon": "Icon shown on the play/pause button when playing.",
+        "play-icon": "Icon shown on the play/pause button when paused.",
+        "poster-icon": "Icon shown on the poster play button. Defaults to a play-circle icon.",
+        "volume-icon": "Icon shown on the volume/mute button when audio is active."
+      },
+      "methods": {
+        "exitFullscreen": {
+          "signature": "exitFullscreen() => Promise<void>",
+          "description": "Exits fullscreen mode."
+        },
+        "getState": {
+          "signature": "getState() => {\n    playing: boolean;\n    currentTime: number;\n    duration: number;\n    volume: number;\n    muted: boolean;\n    playbackRate: number;\n  }",
+          "description": "Gets the current playback state."
+        },
+        "getVideoElement": {
+          "signature": "getVideoElement() => HTMLVideoElement | null",
+          "description": "Gets the native video element."
+        },
+        "pause": {
+          "signature": "pause() => void",
+          "description": "Pauses playback."
+        },
+        "play": {
+          "signature": "play() => void",
+          "description": "Starts playback."
+        },
+        "requestFullscreen": {
+          "signature": "requestFullscreen() => Promise<void>",
+          "description": "Enters fullscreen mode."
+        },
+        "seek": {
+          "signature": "seek(time: number) => void",
+          "description": "Seeks to a specific time in the video."
+        },
+        "setPlaybackRate": {
+          "signature": "setPlaybackRate(rate: number) => void",
+          "description": "Sets the playback rate (speed)."
+        },
+        "setVolume": {
+          "signature": "setVolume(volume: number) => void",
+          "description": "Sets the volume level."
+        },
+        "toggleMute": {
+          "signature": "toggleMute() => void",
+          "description": "Toggles the muted state."
+        },
+        "togglePlay": {
+          "signature": "togglePlay() => void",
+          "description": "Toggles between play and pause."
+        }
+      },
+      "cssParts": [
+        "base",
+        "caption",
+        "caption-overlay",
+        "controls",
+        "controls-overlay",
+        "poster-overlay",
+        "poster-play-button",
+        "progress",
+        "thumbnail",
+        "timeline",
+        "timeline-indicator",
+        "timeline-thumb",
+        "timeline-track",
+        "video",
+        "video-title-overlay"
+      ]
+    },
+    "wa-video-playlist": {
+      "className": "WaVideoPlaylist",
+      "since": "3.3",
+      "status": "experimental",
+      "pro": true,
+      "attributes": {
+        "controls": {
+          "type": "'none' | 'standard' | 'full'",
+          "default": "'full'",
+          "description": "The controls preset forwarded to each child `<wa-video>`."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "icon-library": {
+          "type": "string",
+          "default": "'system'",
+          "description": "Icon library used for placeholder icons."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        }
+      },
+      "events": {
+        "wa-video-change": {
+          "type": null,
+          "eventName": "WaVideoChangeEvent",
+          "description": "Emitted when the active video changes."
+        }
+      },
+      "slots": {
+        "(default)": "The default slot. Place `<wa-video>` elements to create a playlist."
+      },
+      "methods": {
+        "goTo": {
+          "signature": "goTo(index: number) => void",
+          "description": "Jumps to the video at the given index."
+        },
+        "next": {
+          "signature": "next() => void",
+          "description": "Plays the next video in the playlist."
+        },
+        "previous": {
+          "signature": "previous() => void",
+          "description": "Plays the previous video in the playlist."
+        }
+      },
+      "cssParts": [
+        "base",
+        "playlist",
+        "playlist-duration",
+        "playlist-item",
+        "playlist-thumbnail",
+        "playlist-title"
       ]
     },
     "wa-zoomable-frame": {

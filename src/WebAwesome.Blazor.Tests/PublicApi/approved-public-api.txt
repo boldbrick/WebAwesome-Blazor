@@ -887,11 +887,19 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? SuccessLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaCopyButtonTooltip Tooltip { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaPlacement? TooltipPlacement { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Value { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task CopyAsync() { }
+    }
+    public enum WaCopyButtonTooltip
+    {
+        Full = 0,
+        Copy = 1,
+        None = 2,
     }
     public class WaCreateEventArgs : System.EventArgs
     {
@@ -1203,6 +1211,7 @@ namespace WebAwesome.Blazor.Components
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaChartType type) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaColorFormat format) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaCompactDisplay display) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaCopyButtonTooltip tooltip) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaCurrencyDisplay display) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDateTimeStyle style) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDisplay display) { }
@@ -1239,6 +1248,8 @@ namespace WebAwesome.Blazor.Components
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaTreeSelection selection) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaTrigger trigger) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaVariant variant) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaVideoControls controls) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaVideoPreload preload) { }
     }
     public enum WaErrorCorrection
     {
@@ -2957,6 +2968,154 @@ namespace WebAwesome.Blazor.Components
         Warning = 3,
         Danger = 4,
     }
+    public class WaVideo : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaVideo() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Autoplay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoplayMuted { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoplayOnVisible { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVideoControls? Controls { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ControlsAfterPlayContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ControlsStartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double? CurrentTime { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double? Duration { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ExitFullscreenIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ExitFullscreenIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? FullscreenIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FullscreenIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? IconLibrary { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Loop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MuteIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? MuteIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Muted { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnEnded { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnError { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnLoadedMetadata { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnPause { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnPlay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnTimeUpdate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnVolumeChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? PauseIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? PauseIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? PlayIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? PlayIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Playing { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Poster { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? PosterIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? PosterIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVideoPreload? Preload { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Src { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Thumbnails { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Title { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public double? Volume { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? VolumeIcon { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? VolumeIconName { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ExitFullscreenAsync() { }
+        public System.Threading.Tasks.Task<WebAwesome.Blazor.Models.WaVideoState> GetStateAsync() { }
+        public System.Threading.Tasks.Task PauseAsync() { }
+        public System.Threading.Tasks.Task PlayAsync() { }
+        public System.Threading.Tasks.Task RequestFullscreenAsync() { }
+        public System.Threading.Tasks.Task SeekAsync(double time) { }
+        public System.Threading.Tasks.Task SetPlaybackRateAsync(double rate) { }
+        public System.Threading.Tasks.Task SetVolumeAsync(double volume) { }
+        public System.Threading.Tasks.Task ToggleMuteAsync() { }
+        public System.Threading.Tasks.Task TogglePlayAsync() { }
+    }
+    public class WaVideoChangeEventArgs : System.EventArgs
+    {
+        public WaVideoChangeEventArgs() { }
+        public int CurrentIndex { get; set; }
+        public int PreviousIndex { get; set; }
+        public string? VideoTitle { get; set; }
+    }
+    public enum WaVideoControls
+    {
+        Standard = 0,
+        None = 1,
+        Full = 2,
+    }
+    public class WaVideoPlaylist : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaVideoPlaylist() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVideoControls? Controls { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? IconLibrary { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaVideoChangeEventArgs> OnVideoChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task GoToAsync(int index) { }
+        public System.Threading.Tasks.Task NextAsync() { }
+        public System.Threading.Tasks.Task PreviousAsync() { }
+    }
+    public enum WaVideoPreload
+    {
+        Metadata = 0,
+        Auto = 1,
+        None = 2,
+    }
     public class WaZoomableFrame : Microsoft.AspNetCore.Components.ComponentBase
     {
         public WaZoomableFrame() { }
@@ -3197,6 +3356,16 @@ namespace WebAwesome.Blazor.Models
     {
         Cdn = 0,
         SelfHosted = 1,
+    }
+    public class WaVideoState : System.IEquatable<WebAwesome.Blazor.Models.WaVideoState>
+    {
+        public WaVideoState(bool Playing, double CurrentTime, double Duration, double Volume, bool Muted, double PlaybackRate) { }
+        public double CurrentTime { get; init; }
+        public double Duration { get; init; }
+        public bool Muted { get; init; }
+        public double PlaybackRate { get; init; }
+        public bool Playing { get; init; }
+        public double Volume { get; init; }
     }
     public class WebAwesomeOptions
     {

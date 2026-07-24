@@ -48,6 +48,7 @@ const eventNames = [
   'wa-tab-close',
   'wa-tab-hide',
   'wa-tab-show',
+  'wa-video-change',
   'wa-zoom-change',
 ];
 
@@ -127,6 +128,18 @@ const specialArgs = {
       textContent: (item.textContent || '').trim(),
     })),
   }),
+
+  // detail is { previousIndex, currentIndex, video } - video is a live wa-video element;
+  // project its title and drop the node (WaVideoChangeEventArgs)
+  'wa-video-change': event => {
+    const detail = event.detail || {};
+    const video = detail.video;
+    return {
+      previousIndex: typeof detail.previousIndex === 'number' ? detail.previousIndex : 0,
+      currentIndex: typeof detail.currentIndex === 'number' ? detail.currentIndex : 0,
+      videoTitle: video && typeof video.title === 'string' ? video.title : null,
+    };
+  },
 
   // wa-reposition carries no detail; WaSplitPanelRepositionEventArgs reads the position
   // from the element itself

@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.6.0 release zip (dist/skills/webawesome/references/components/pie-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/pie-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.7.0 release zip (dist/skills/webawesome/references/components/pie-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/pie-chart -->
 
 # Pie Chart [Pro]
 
@@ -9,7 +9,7 @@
 
 Pie charts show the proportional composition of a whole as slices of a circle. They work best with a small number of categories where the relative proportions matter more than exact values.
 
- **[Get Pie Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=pie-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
+**[Get Pie Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=pie-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
 -   Responsive [Layout Tools](https://webawesome.com/docs/utilities)
@@ -201,7 +201,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.6.0/components/pie-chart/pie-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.7.0/components/pie-chart/pie-chart.js';
 ```
 
 \*\*npm\*\*
