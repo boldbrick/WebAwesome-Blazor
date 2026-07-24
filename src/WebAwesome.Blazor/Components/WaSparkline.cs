@@ -11,6 +11,9 @@ namespace WebAwesome.Blazor.Components;
 /// A component that renders a small, simplified chart to visualize a trend in a data series.
 /// Corresponds to the wa-sparkline Web Awesome component.
 /// </summary>
+/// <remarks>
+/// This is a Pro component.
+/// </remarks>
 public class WaSparkline : ComponentBase
 {
     #region ------ Public Properties ------

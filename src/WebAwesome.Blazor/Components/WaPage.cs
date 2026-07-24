@@ -12,9 +12,6 @@ namespace WebAwesome.Blazor.Components;
 /// A page component that provides the overall layout structure of a page, including header, navigation,
 /// main content, and footer regions. Corresponds to the wa-page Web Awesome component.
 /// </summary>
-/// <remarks>
-/// This is a Pro component.
-/// </remarks>
 public class WaPage : ComponentBase
 {
     #region ------ Dependency Injection ------

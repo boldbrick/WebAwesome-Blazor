@@ -292,7 +292,7 @@
       "className": "WaBarChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -490,7 +490,7 @@
       "className": "WaBubbleChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -1934,7 +1934,7 @@
       "className": "WaDoughnutChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -2303,7 +2303,7 @@
       "className": "WaFileInput",
       "since": "3.2",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "accept": {
           "type": "string",
@@ -2659,7 +2659,7 @@
       "className": "WaChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -3400,7 +3400,7 @@
       "className": "WaLineChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -3889,7 +3889,7 @@
       "className": "WaPage",
       "since": "3.0",
       "status": "stable",
-      "pro": true,
+      "pro": false,
       "attributes": {
         "did-ssr": {
           "type": null,
@@ -3994,7 +3994,7 @@
       "className": "WaPieChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -4098,7 +4098,7 @@
       "className": "WaPolarAreaChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -4608,7 +4608,7 @@
       "className": "WaRadarChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -5129,7 +5129,7 @@
       "className": "WaScatterChart",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "description": {
           "type": "string | null",
@@ -5752,7 +5752,7 @@
       "className": "WaSparkline",
       "since": "3.2",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "appearance": {
           "type": "'gradient' | 'line' | 'solid'",
@@ -6498,7 +6498,7 @@
       "className": "WaToast",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "did-ssr": {
           "type": null,
@@ -6539,7 +6539,7 @@
       "className": "WaToastItem",
       "since": "3.3",
       "status": "experimental",
-      "pro": false,
+      "pro": true,
       "attributes": {
         "did-ssr": {
           "type": null,

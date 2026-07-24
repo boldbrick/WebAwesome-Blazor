@@ -14,6 +14,7 @@ namespace WebAwesome.Blazor.Components;
 /// Corresponds to the wa-file-input Web Awesome component.
 /// </summary>
 /// <remarks>
+/// This is a Pro component.
 /// Selected files are runtime <c>File</c> objects and are not exposed as a bindable scalar value;
 /// use the underlying element's change/input events together with JavaScript interop or a custom
 /// upload handler to read the selected files.

@@ -127,7 +127,7 @@ foreach ($tag in $surface.components.PSObject.Properties.Name) {
 
 <PageTitle>$human</PageTitle>
 
-<h1>$human</h1>
+<h1>$human <ComponentBadges Tag="$tag" /></h1>
 $subtitle
 
 <ExampleSection Title="Default" Code="@DefaultExample">
