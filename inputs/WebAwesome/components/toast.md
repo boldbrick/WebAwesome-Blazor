@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.8.0 release zip (dist/skills/webawesome/references/components/toast.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast -->
+<!-- Source: reference doc bundled in the Web Awesome 3.9.0 release zip (dist/skills/webawesome/references/components/toast.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast -->
 
 # Toast [Pro]
 
@@ -464,113 +464,43 @@ Rarely will toasts offer the best usability for all of your users, so consider i
 -   Choose a consistent placement for toasts in your application and stick with it. Otherwise, users need to guess where transient notifications will appear and risk missing them entirely.
 -   If a transient toast item contains an action, ensure that action is available elsewhere on the page. This ensures that users can still execute the action even if they miss the toast.
 
-## Importing
-
-Link to This Section
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.8.0/components/toast/toast.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/toast/toast.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/toast/toast.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaToast from '@awesome.me/webawesome/dist/react/toast/index.js';
-```
-
 ## Slots
 
-Link to This Section
+Valid slot names for this component (use exactly these — any other `slot` value
+is silently ignored and the element falls back to the default slot):
 
-Learn more about [using slots](https://webawesome.com/docs/usage/#slots).
-
-| Name | Description |
-| --- | --- |
-| (default) | \`\` Place elements here to show them as notifications. |
+- `(default)` — Place `<wa-toast-item>` elements here to show them as notifications.
 
 ## Attributes & Properties
 
-Link to This Section
-
-Learn more about [attributes and properties](https://webawesome.com/docs/usage/#attributes-and-properties).
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`placement\` placement | \`'top-start' \\| 'top-center' \\| 'top-end' \\| 'bottom-start' \\| 'bottom-center' \\| 'bottom-end'\` The placement of the toast stack on the screen. Type Default 'top-end' | | |
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `placement` |  | `\| 'top-start' \| 'top-center' \| 'top-end' \| 'bottom-start' \| 'bottom-center' \| 'bottom-end'` | `'top-end'` | The placement of the toast stack on the screen. |
+| `dir` |  | `string` |  |  |
+| `lang` |  | `string` |  |  |
+| `did-ssr` | `didSSR` |  |  |  |
 
 ## Methods
 
-Link to This Section
-
-Learn more about [methods](https://webawesome.com/docs/usage/#methods).
-
-| Name | Description | Arguments |
+| Method | Description | Arguments |
 | --- | --- | --- |
-| \`create()\` | Creates a toast notification programmatically and adds it to the stack. Returns a reference to the created toast item element. | \`message: string, options: ToastCreateOptions\` |
-
-## CSS custom properties
-
-Link to This Section
-
-Learn more about [CSS custom properties](https://webawesome.com/docs/usage/#custom-properties).
-
-| Name | Description |
-| --- | --- |
-| \`--gap\` | \`var(--wa-space-s)\` The gap between stacked toast items. Default |
-| \`--width\` | \`28rem\` The width of the toast stack. Default |
+| `create` | Creates a toast notification programmatically and adds it to the stack. Returns a reference to the created toast item element. | `message: string, options: ToastCreateOptions` |
 
 ## Custom States
 
-Link to This Section
+| State | Description |
+| --- | --- |
+| `visible` | Applied when the toast stack has one or more visible toast items. |
 
-Learn more about [custom states](https://webawesome.com/docs/usage/#custom-states).
+## CSS Parts
 
-| Name | Description | CSS selector |
+| Part | Description |
+| --- | --- |
+| `stack` | The container that holds the toast items. |
+
+## CSS Custom Properties
+
+| Property | Default | Description |
 | --- | --- | --- |
-| \`visible\` | Applied when the toast stack has one or more visible toast items. | \`:state(visible)\` |
-
-## CSS parts
-
-Link to This Section
-
-Learn more about [CSS parts](https://webawesome.com/docs/usage/#css-parts).
-
-| Name | Description | CSS selector |
-| --- | --- | --- |
-| \`stack\` | The container that holds the toast items. | \`::part(stack)\` |
-
-## Dependencies
-
-Link to This Section
-
-This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
-
--   [`<wa-icon>`](https://webawesome.com/docs/components/icon)
--   [`<wa-progress-ring>`](https://webawesome.com/docs/components/progress-ring)
--   [`<wa-toast-item>`](https://webawesome.com/docs/components/toast-item)
-
-**Need a hand?** Report a bug Ask for help
+| `--gap` | `var(--wa-space-s)` | The gap between stacked toast items. |
+| `--width` | `28rem` | The width of the toast stack. |

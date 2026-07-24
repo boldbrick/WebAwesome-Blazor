@@ -1,12 +1,16 @@
 ---
 title: Accordion Item
 layout: component
-category: Organization
+category: Layout
+parent: accordion
 synonyms:
   - collapsible section
   - expandable section
   - disclosure item
+  - panel
+  - expandable panel
 use-cases:
+  - FAQ entry
   - FAQ item
   - settings section
   - collapsible content
