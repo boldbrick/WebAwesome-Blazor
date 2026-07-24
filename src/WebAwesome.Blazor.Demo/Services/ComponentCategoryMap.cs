@@ -14,6 +14,9 @@ namespace WebAwesome.Blazor.Demo.Services;
 /// components are added — the upstream source is the category shown on
 /// https://webawesome.com/docs/components (the "Experimental" chip there is a status, not a category;
 /// experimental components are mapped by function here and the demo marks their status with the flask icon).
+/// Every entry was verified against the category breadcrumb of the component's own docs page
+/// (https://webawesome.com/docs/components/&lt;name&gt;) — verify there, not against the index summary,
+/// when adding new components.
 /// </remarks>
 public static class ComponentCategoryMap
 {
@@ -83,8 +86,6 @@ public static class ComponentCategoryMap
 
         ["wa-badge"] = "Feedback",
         ["wa-callout"] = "Feedback",
-        ["wa-popover"] = "Feedback",
-        ["wa-popup"] = "Feedback",
         ["wa-progress-bar"] = "Feedback",
         ["wa-progress-ring"] = "Feedback",
         ["wa-skeleton"] = "Feedback",
@@ -100,6 +101,8 @@ public static class ComponentCategoryMap
         ["wa-carousel-item"] = "Media",
         ["wa-comparison"] = "Media",
         ["wa-icon"] = "Media",
+        ["wa-markdown"] = "Media",
+        ["wa-qr-code"] = "Media",
         ["wa-zoomable-frame"] = "Media",
 
         ["wa-bar-chart"] = "Data Viz",
@@ -113,16 +116,15 @@ public static class ComponentCategoryMap
         ["wa-scatter-chart"] = "Data Viz",
         ["wa-sparkline"] = "Data Viz",
 
-        // animation is listed under the "Experimental" status chip upstream; by function it is a helper
         ["wa-animation"] = "Helpers",
         ["wa-format-bytes"] = "Helpers",
         ["wa-format-date"] = "Helpers",
         ["wa-format-number"] = "Helpers",
         ["wa-include"] = "Helpers",
         ["wa-intersection-observer"] = "Helpers",
-        ["wa-markdown"] = "Helpers",
         ["wa-mutation-observer"] = "Helpers",
-        ["wa-qr-code"] = "Helpers",
+        ["wa-popover"] = "Helpers",
+        ["wa-popup"] = "Helpers",
         ["wa-relative-time"] = "Helpers",
         ["wa-resize-observer"] = "Helpers",
     };
