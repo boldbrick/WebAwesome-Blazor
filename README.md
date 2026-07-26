@@ -7,7 +7,7 @@
 Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. No additional application logic and no additional / extension components.
 
 > **Status**
-> - Active train: **WA 3.7**
+> - Active train: **WA 3.10**
 > - Current alignment: **WA 3.10.0** (tagged releases use `wa-blazor-<version>`)
 
 **[Live demo](https://boldbrick.github.io/WebAwesome-Blazor/)** — every component, rendered from this library; published to GitHub Pages as a Blazor WebAssembly app. It can also be built and run locally in server mode: `dotnet run --project src/WebAwesome.Blazor.Demo.Server`.
