@@ -112,6 +112,23 @@ public class WaChartIntegrationTests : BunitContext
     }
 
     [Fact]
+    public void XLabel_And_YLabel_DoNotRenderTheOldCamelCaseAttributeNames()
+    {
+        // Web Awesome 3.11.0 normalized the chart axis-label attribute names from xLabel/yLabel to
+        // x-label/y-label (attribute-name-only change; XLabel/YLabel parameters are unaffected).
+        // Regression guard against re-introducing the pre-3.11.0 spelling.
+        var cut = Render<WaBarChart>(parameters => parameters
+            .Add(p => p.XLabel, "Quarter")
+            .Add(p => p.YLabel, "USD"));
+
+        var element = cut.Find("wa-bar-chart");
+        Assert.False(element.HasAttribute("xLabel"));
+        Assert.False(element.HasAttribute("yLabel"));
+        Assert.Equal("Quarter", element.GetAttribute("x-label"));
+        Assert.Equal("USD", element.GetAttribute("y-label"));
+    }
+
+    [Fact]
     public void Class_And_Style_AreApplied()
     {
         var cut = Render<WaPieChart>(parameters => parameters

@@ -2,6 +2,53 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.11.0] — 2026-07-30
+
+Alignment with the Web Awesome 3.11.0 release, opening the **WA-3.11 train**. The largest additive upgrade of the 3.x line so far: three new components, including `WaDataGrid` — by far the biggest wrapper in the library. **No wrapper APIs were removed or renamed**, so no migration guide is needed.
+
+### Breaking changes
+- None to the wrapper API. All 18 entries flagged breaking in the upstream change report are a single upstream attribute-name normalization repeated across the nine chart components (see below).
+
+### New components
+- `WaDataGrid` (`wa-data-grid`, **Pro**/experimental) — tabular data with sorting, filtering, global search, selection, column pinning/reordering/resizing, tree data, grouping, row detail panels, pagination, CSV export, keyboard navigation, and virtualization. Derives from `ComponentBase`. Like the chart components it is **driven by JavaScript properties**: `Data` (`IReadOnlyList<object>`) and `Columns` (`IReadOnlyList<WaDataGridColumn>`) are pushed to the element via `WebAwesomeJSInterop.SetPropertyAsync` on first render and on every parameter change, since upstream exposes them as JS properties with no declarative markup form. Exposes 25 authorable attributes (`Appearance`, `Selectable`, `Size`, `Striped`, `Loading`, `Label`, `RowKey`, `GroupBy`, `ChildRows`, `Page`, `PageSize`, `Paginate`, `Total`, `Server`, `Pinnable`, `Reorderable`, `Resizable`, `FilterDebounce`, `FilterFromLeafRows`, `MaxMultiSort`, `SortDescFirst`, `WithColumnMenu`, `WithColumnsMenu`, `WithSearch`, `WithoutSortRemoval`), 14 typed event callbacks, the `empty`/`loading`/`no-results` slots, and 22 interop methods. Supporting models: `WaDataGridColumn`, `WaDataGridState`, `WaDataGridColumnPinning`, `WaDataGridSortDescriptor`, `WaDataGridFilterDescriptor`, `WaDataGridRequestSnapshot`, `WaDataGridCsvOptions`, `WaDataGridCsvExportOptions`, `WaDataGridCopyOptions`.
+- `WaOtpInput` (`wa-otp-input`, free/experimental) — segmented one-time-code entry; a `WaInputBase<string?>` form control. Exposes `Length` (default 6), `Type` (`WaOtpInputType` — `Numeric`/`Alpha`/`Alphanumeric`), `Case` (`WaOtpInputCase` — `Preserve`/`Upper`/`Lower`), `Appearance` (`WaOtpInputAppearance`), `Format` (separator pattern, overriding `Length`), `AutoSubmit`, `AutoFocus`, and the two independent masking flags `Mask` (obscures entered characters) and `WithMask` (shows the mask character as a hint in empty segments). Adds the `OnClear`, `OnComplete`, and `OnInvalid` callbacks on top of the inherited form-control events; `ClearAsync`/`SelectAsync`/`FocusAsync`/`BlurAsync` methods.
+- `WaPagination` (`wa-pagination`, free/experimental) — page controls for multi-page content. Exposes `Page`, `PageSize`, `Total`, `Appearance` (`WaPaginationAppearance` — `Outlined`/`Filled`/`Plain`), `Format` (`WaPaginationFormat` — `Standard`/`Compact`), `BoundaryCount`, `SiblingCount`, `Disabled`, `HideSinglePage`, `Label`, `WithEdges`, `WithSummary`, `WithoutNav`, and `HrefTemplate` for rendering page items as links (SSR/SEO/no-JS). The `OnBeforePageChange`/`OnPageChange` callbacks both carry `WaPaginationPageChangeEventArgs` (page, page size); the four icon slots each accept a render fragment or an icon name.
+
+### Changed
+- `WaCarousel` gained `AddSlideAsync(ElementReference slide)` and `RemoveSlideAsync(int index)`, mirroring the new upstream `addSlide()`/`removeSlide()`. The declarative `ChildContent` route remains the normal way to compose slides in Blazor.
+- The nine chart wrappers (`WaChart`, `WaBarChart`, `WaBubbleChart`, `WaDoughnutChart`, `WaLineChart`, `WaPieChart`, `WaPolarAreaChart`, `WaRadarChart`, `WaScatterChart`) now render the axis-label attributes as `x-label`/`y-label` instead of `xLabel`/`yLabel`, following the upstream CEM rename. **The `XLabel`/`YLabel` parameters are unchanged**, so consumer code is unaffected; this was a wrapper-internal correctness fix in `WaChartBase`.
+- `wa-page` replaced its `skip-link`/`skip-links` CSS `::part`s with `skip-to-content`. `WaPage` already rendered the `skip-to-content` slot and never exposed the old part names, so there is no wrapper API change — noted for completeness.
+
+### Non-breaking upstream "breaking" changes (no wrapper action)
+- All nine chart components: the CEM previously declared the axis-label attributes as `xLabel`/`yLabel` and now declares them as `x-label`/`y-label`. Both spellings map to the same PascalCase parameter name, so the wrapper's public surface is identical before and after; only the rendered attribute string changed.
+- 41 of the 45 modified components changed **only** in `cssParts` (mostly newly documenting each component's root part). CSS parts are not part of the wrapper parameter surface, so no wrapper needed any change.
+
+### Library
+- Versioned reference docs refreshed for 3.11.0: all **87** component docs taken from the release zip's bundled references (21 filled, 66 overridden), 0 needed manual capture. Web Awesome 3.11.0 is published to npm/jsdelivr but **has no `v3.11.0` tag in the public GitHub repository**, so `Sync-WaDocs.ps1` gained `-DocsTagVersion` (take the non-component documentation from an older tag that does exist — `v3.10.0` here) and `-PreferBundledRefs` (let the release zip's version-exact component references win over the older tree's component docs, implied by `-DocsTagVersion`). The non-component docs will refresh normally once the tag is published.
+- New train WA-3.11: subtrunk `/main/WA-3.11` branched off `/main` (released 3.10.0, cs:226); developed on `/main/WA-3.11/WAB-44`.
+- Event delivery: 16 new events registered in the JS initializer — `wa-before-page-change`, `wa-page-change`, `wa-complete`, and the 13 data-grid events. Four need `specialArgs` projections because their details are not JSON-safe: `wa-cell-contextmenu` (drops the live `originalEvent`), `wa-data-request` (drops the `AbortSignal`), `wa-data-error` (projects the `Error` to its `message`), and `wa-column-pin` (normalizes `side: false` to null). The remaining data-grid details are handled by the existing recursive `sanitizeDetail` copier.
+
+### Public API
+- Baseline promoted: purely additive — **457 additions, zero removals**. The new `WaDataGrid`/`WaOtpInput`/`WaPagination` classes, seven enums, 15 event-args classes, nine data-grid model types, and the two `WaCarousel` methods. Every diff explained by the WA 3.11.0 change report.
+
+### Known capability gaps (documented, not defects)
+- `WaDataGrid` does not support upstream's **custom cell renderers**: a column's `formatter` is a JS function or Lit `html` template, which cannot cross the Blazor interop boundary. The same applies to the column members `value`, `filterFn`, `comparator`, `aggregatedFormatter`, and the function forms of `footer`, `aggregation`, and `cellClass`.
+- `WaDataGrid` does not wrap `dataSource` (a request→Promise function). The Blazor-idiomatic server-mode path is `Server="true"` plus the `OnDataRequest` callback, reassigning `Data` and setting `Total`/`Loading` — documented in the component's XML remarks.
+- `WaPagination.HrefTemplate` binds only the string-template form of `href-template`; upstream also accepts a `(page) => string` function.
+- `ChildRows` binds only the string field-name form of `child-rows`.
+- The upstream events `wa-before-page-change`, `wa-complete`, and `wa-cell-contextmenu` are cancelable via `preventDefault()`. Blazor dispatches registered custom events to .NET asynchronously, after the DOM event has already run its course, so a .NET handler cannot synchronously cancel them; all three are delivered as informational notifications and the limitation is documented on each callback.
+- All three new components are upstream `status: experimental`, so their APIs may shift in a later release.
+
+### Deviations recorded (parity-config.json)
+- `wa-data-grid`: `wa-cell-contextmenu` → `OnCellContextMenu` via `eventOverrides` (natural PascalCase; the mechanical conversion would yield `OnCellContextmenu`). Ignored: the `request` event — a CEM extraction artifact carrying the same `WaDataRequestEvent` type as `wa-data-request`, declared neither in `dist\events\events.d.ts` nor in the component's own `@event` list, and never dispatched by the compiled source; `getColumnFacets`, which returns a JS `Map` that serializes to an empty object over JSON interop; and the three internal reactive-property watchers `handleColumnsChange`/`handlePageChange`/`handleSearchTermChange`.
+- `wa-otp-input`: `autofocus` → `AutoFocus` and `autosubmit` → `AutoSubmit` via `attributeOverrides`; `name`, `custom-error`, the `change` event, and `formStateRestoreCallback` ignored, exactly as for the other 17 form controls (custom validity is managed imperatively through `SetCustomValidityAsync`/`ResetValidityAsync`).
+- `wa-pagination`: `hrefTemplate` documented as a string-only binding of a string-or-function attribute; no structural override needed.
+- `wa-carousel`: no config change — `addSlide`/`removeSlide` map mechanically to `AddSlideAsync`/`RemoveSlideAsync`.
+
+### Next-release check outcomes
+- Observer `stopObserver()`/`startObserver()` and `wa-relative-time` `update()`: re-verified against the 3.11.0 sources (`startObserver`/`stopObserver` still private in `mutation-observer.d.ts`/`resize-observer.d.ts`; `update()` still the inherited Lit `ReactiveElement` lifecycle, with `WebAwesomeElement extends LitElement` reconfirmed in `internal\webawesome-element.d.ts`) — the `extraElementMethods` allowlist stands, verification stamps updated.
+- `WaDataGrid` exposes eight JS accessor-only properties that are neither CEM attributes nor CEM methods and were therefore out of scope this cycle: `sort`, `filters`, `selectedKeys`, `selectedRows`, `expandedKeys`, `columnOrder`, `pageSizeOptions`, `searchTerm`. Worth a follow-up decision on exposing them as JS-property parameters.
+
 ## [3.10.0] — 2026-07-24
 
 Alignment with the Web Awesome 3.10.0 release, opening the **WA-3.10 train**. A small additive upgrade: one new content-rotation component (`WaRandomContent`) and one additive attribute on `WaIcon`. **No wrapper APIs were removed or renamed**, so no migration guide is needed.

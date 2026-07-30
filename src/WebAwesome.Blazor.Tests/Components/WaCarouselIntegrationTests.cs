@@ -110,6 +110,56 @@ public class WaCarouselIntegrationTests : IDisposable
         Assert.True(true);
     }
 
+    [Fact]
+    public async Task AddSlideAsync_WithNullElement_ThrowsInvalidOperationException()
+    {
+        // Arrange - component not rendered yet, Element is null
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            carouselComponent.AddSlideAsync(new ElementReference("new-slide")));
+
+        Assert.Contains("Cannot add slide: component has not been rendered yet", exception.Message);
+    }
+
+    [Fact]
+    public async Task AddSlideAsync_WithValidElement_CallsJSInterop()
+    {
+        // Arrange
+        SetupElementReference();
+
+        // Act - This should not throw because we have a test JSRuntime
+        await carouselComponent.AddSlideAsync(new ElementReference("new-slide"));
+
+        // Assert - Test passed if no exception was thrown
+        Assert.True(true);
+    }
+
+    [Fact]
+    public async Task RemoveSlideAsync_WithNullElement_ThrowsInvalidOperationException()
+    {
+        // Arrange - component not rendered yet, Element is null
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            carouselComponent.RemoveSlideAsync(1));
+
+        Assert.Contains("Cannot remove slide: component has not been rendered yet", exception.Message);
+    }
+
+    [Fact]
+    public async Task RemoveSlideAsync_WithValidElement_CallsJSInterop()
+    {
+        // Arrange
+        SetupElementReference();
+
+        // Act - This should not throw because we have a test JSRuntime
+        await carouselComponent.RemoveSlideAsync(1);
+
+        // Assert - Test passed if no exception was thrown
+        Assert.True(true);
+    }
+
     private void SetupElementReference()
     {
         // Simulate element being rendered by setting Element property
