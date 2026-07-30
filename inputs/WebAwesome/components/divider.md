@@ -1,22 +1,68 @@
----
-title: Divider
-layout: component
-category: Layout
-synonyms:
-  - separator
-  - rule
-  - line
-  - hr
-  - horizontal rule
-use-cases:
-  - section divider
-  - content separator
-  - visual break
----
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/divider.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/divider -->
 
-```html {.example}
+# Divider
+
+`<wa-divider>`
+
+Stable [Layout](https://webawesome.com/docs/components/?category=layout) [Since 2.0](https://webawesome.com/docs/resources/changelog#wa_200)
+
+Dividers visually separate or group adjacent elements with a horizontal or vertical line. Use them to establish rhythm and hierarchy within menus, toolbars, and layouts.
+
+```html
 <wa-divider></wa-divider>
 ```
+
+## API
+
+### Importing
+
+If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
+
+\*\*CDN\*\*
+
+Import this component directly from the CDN:
+
+```js
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/divider/divider.js';
+```
+
+\*\*npm\*\*
+
+After installing Web Awesome via npm, import this component:
+
+```js
+import '@awesome.me/webawesome/dist/components/divider/divider.js';
+```
+
+\*\*Self-Hosted\*\*
+
+If you're self-hosting Web Awesome, import this component from your server:
+
+```js
+import './webawesome/dist/components/divider/divider.js';
+```
+
+\*\*React\*\*
+
+To import this component for React 18 or below, use the following code:
+
+```js
+import WaDivider from '@awesome.me/webawesome/dist/react/divider/index.js';
+```
+
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`orientation\` orientation | \`'horizontal' \\| 'vertical'\` Sets the divider's orientation. Type Default 'horizontal' | |
+
+### CSS Custom Properties
+
+| Name | Description |
+| --- | --- |
+| \`--color\` | The color of the divider. |
+| \`--spacing\` | The spacing of the divider. |
+| \`--width\` | The width of the divider. |
 
 ## Examples
 
@@ -24,7 +70,7 @@ use-cases:
 
 Use the `--width` custom property to change the width of the divider.
 
-```html {.example}
+```html
 <wa-divider style="--width: 4px;"></wa-divider>
 ```
 
@@ -32,15 +78,15 @@ Use the `--width` custom property to change the width of the divider.
 
 Use the `--color` custom property to change the color of the divider.
 
-```html {.example}
-<wa-divider style="--color: tomato;"></wa-divider>
+```html
+<wa-divider style="--color: var(--wa-color-brand-fill-loud);"></wa-divider>
 ```
 
 ### Spacing
 
-Use the `--spacing` custom property to change the amount of space between the divider and it's neighboring elements.
+Use the `--spacing` custom property to change the amount of space between the divider and its neighboring elements.
 
-```html {.example}
+```html
 <div class="wa-text-center">
   Above
   <wa-divider style="--spacing: 2rem;"></wa-divider>
@@ -50,9 +96,9 @@ Use the `--spacing` custom property to change the amount of space between the di
 
 ### Orientation
 
-The default orientation for dividers is `horizontal`. Set `orientation` attribute to `vertical` to draw a vertical divider. The divider will span the full height of its [Flexbox](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox) or [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/grid) container.
+The default orientation for dividers is `horizontal`. Set the `orientation` attribute to `vertical` to draw a vertical divider. The divider will span the full height of its [Flexbox](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox) or [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/grid) container.
 
-```html {.example}
+```html
 <div style="display: flex; align-items: center;">
   First
   <wa-divider orientation="vertical"></wa-divider>
@@ -62,15 +108,13 @@ The default orientation for dividers is `horizontal`. Set `orientation` attribut
 </div>
 ```
 
-:::info
 If your container isn't Flexbox or CSS Grid, you may need to set an explicit height for the divider.
-:::
 
 ### Dropdown Dividers
 
-Use dividers in [dropdowns](/docs/components/dropdown) to visually group dropdown items.
+Use dividers in [dropdowns](https://webawesome.com/docs/components/dropdown) to visually group dropdown items.
 
-```html {.example}
+```html
 <wa-dropdown style="max-width: 200px;">
   <wa-button appearance="filled" slot="trigger" with-caret>Menu</wa-button>
   <wa-dropdown-item value="1">Option 1</wa-dropdown-item>

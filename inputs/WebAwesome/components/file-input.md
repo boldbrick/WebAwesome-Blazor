@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/file-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/file-input -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/file-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/file-input -->
 
 # File Input [Pro]
 
@@ -32,9 +32,15 @@ File inputs allow users to select one or more files from their device using a dr
 <wa-file-input label="Select a file"></wa-file-input>
 ```
 
+```html
+<wa-file-input label="Profile photo" hint="PNG or JPG, up to 5 MB."></wa-file-input>
+```
+
 This component works with standard `<form>` elements. Please refer to the section on [form controls](https://webawesome.com/docs/form-controls) to learn more about form submission and client-side validation.
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -43,7 +49,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/file-input/file-input.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/file-input/file-input.js';
 ```
 
 \*\*npm\*\*
@@ -70,69 +76,69 @@ To import this component for React 18 or below, use the following code:
 import WaFileInput from '@awesome.me/webawesome/dist/react/file-input/index.js';
 ```
 
-## Slots
-
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
-
-- `label` — The file input's label. Alternatively, you can use the `label` attribute.
-- `hint` — Text that describes how to use the file input. Alternatively, you can use the `hint` attribute.
-- `dropzone` — Custom content to show in the dropzone.
-
-## Attributes & Properties
-
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `validators` | — | Validators are static because they have `observedAttributes`, essentially attributes to "watch" for changes. Whenever these attributes change, we want to be notified and update the validator. | `Validator[]` | `[]` |
-| `files` | — | The selected files. | `File[]` | `[]` |
-| `dragging` | — | Whether files are being dragged over the dropzone. | `boolean` | `false` |
-| `size` | `size` | The file input's size. | `'xs' \| 's' \| 'm' \| 'l' \| 'xl' \| 'small' \| 'medium' \| 'large'` | `'m'` |
-| `label` | `label` | The file input's label. If you need to display HTML, use the `label` slot instead. | `string` | `''` |
-| `hint` | `hint` | The file input's hint. If you need to display HTML, use the `hint` slot instead. | `string` | `''` |
-| `multiple` | `multiple` | Allows more than one file to be selected. | `boolean` | `false` |
-| `accept` | `accept` | A comma-separated list of acceptable file types. Must be a list of [unique file type specifiers](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers). | `string` | `''` |
-| `required` | `required` | Makes the file input a required field. | `boolean` | `false` |
-| `capture` | `capture` | On mobile devices, specifies which camera or microphone to use for capturing media. Use `user` for the front-facing camera/microphone or `environment` for the rear-facing one. This attribute is only used when `accept` includes an image, video, or audio type and may be ignored on devices that lack the corresponding hardware. | `'user' \| 'environment'` | — |
-| `withLabel` | `with-label` | Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup includes the label before the component hydrates on the client. | `boolean` | `false` |
-| `withHint` | `with-hint` | Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup includes the hint before the component hydrates on the client. | `boolean` | `false` |
-| `fileCount` | — | The number of selected files. Used for validation. | `number` | — |
-| `name` | `name` | The name of the input, submitted as a name/value pair with form data. | `string \| null` | `null` |
-| `disabled` | `disabled` | Disables the form control. | `boolean` | `false` |
-| `form` | — | By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you to place the form control outside of a form and associate it with the form that has this `id`. The form must be in the same document or shadow root for this to work. | `HTMLFormElement \| null` | — |
-| `validationTarget` | — | Override this to change where constraint validation popups are anchored. | `undefined \| HTMLElement` | — |
-
-## Methods
-
-| Name | Description | Arguments |
-| --- | --- | --- |
-| `focus()` | Sets focus on the file input. | `options: FocusOptions` |
-| `blur()` | Removes focus from the file input. | — |
-| `setCustomValidity()` | Do not use this when creating a "Validator". This is intended for end users of components. We track manually defined custom errors so we don't clear them on accident in our validators. | `message: string` |
-| `formStateRestoreCallback()` | Called when the browser is trying to restore element’s state to state in which case reason is "restore", or when the browser is trying to fulfill autofill on behalf of user in which case reason is "autocomplete". In the case of "restore", state is a string, File, or FormData object previously set as the second argument to setFormValue. | `state: string \\| File \\| FormData \\| null, reason: 'autocomplete' \\| 'restore'` |
-| `resetValidity()` | Reset validity is a way of removing manual custom errors and native validation. | — |
-
-## Events
+### Slots
 
 | Name | Description |
 | --- | --- |
-| `input` | Emitted when file selection changes. |
-| `change` | Emitted when files are added or removed. |
-| `focus` | Emitted when the dropzone gains focus. |
-| `blur` | Emitted when the dropzone loses focus. |
-| `wa-invalid` | Emitted when the form control has been checked for validity and its constraints aren't satisfied. |
+| \`dropzone\` | Custom content to show in the dropzone. |
+| \`hint\` | \`hint\` Text that describes how to use the file input. Alternatively, you can use the attribute. |
+| \`label\` | \`label\` The file input's . Alternatively, you can use the label attribute. |
 
-## Custom States
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`accept\` accept | \`string\` A comma-separated list of acceptable file types. Must be a list of unique file type specifiers. Type Default '' | |
+| \`capture\` capture | \`user\` On mobile devices, specifies which camera or microphone to use for capturing media. Use for the front-facing camera/microphone or environment for the rear-facing one. This attribute is only used when accept includes an image, video, or audio type and may be ignored on devices that lack the corresponding hardware. Type 'user' \\| 'environment' | |
+| \`disabled\` disabled | \`boolean\` Disables the form control. Type Default false | |
+| \`dragging\` | \`boolean\` Whether files are being dragged over the dropzone. Type Default false | |
+| \`fileCount\` | \`number\` The of selected files. Used for validation. Type number | |
+| \`files\` | \`File\[\]\` The selected files. Type Default \[\] | |
+| \`form\` | \`
+
+\` By default, form controls are associated with the nearest containing element. This attribute allows you to place the form control outside of a form and associate it with the form that has this id. The form must be in the same document or shadow root for this to work. Type HTMLFormElement \\| null | |
+| \`hint\` hint | \`hint\` The file input's . If you need to display HTML, use the hint slot instead. Type string Default '' | |
+| \`label\` label | \`label\` The file input's . If you need to display HTML, use the label slot instead. Type string Default '' | |
+| \`multiple\` multiple | \`boolean\` Allows more than one file to be selected. Type Default false | |
+| \`name\` name | \`string \\| null\` The name of the input, submitted as a name/value pair with form data. Type Default null | |
+| \`required\` required | \`boolean\` Makes the file input a required field. Type Default false | |
+| \`size\` size | \`'xs' \\| 's' \\| 'm' \\| 'l' \\| 'xl' \\| 'small' \\| 'medium' \\| 'large'\` The file input's size. Type Default 'm' | |
+| \`validationTarget\` | \`undefined \\| HTMLElement\` Override this to change where constraint validation popups are anchored. Type | |
+| \`validators\` | \`observedAttributes\` Validators are static because they have , essentially attributes to "watch" for changes. Whenever these attributes change, we want to be notified and update the validator. Type Validator\[\] Default \[\] | |
+| \`withHint\` with-hint | \`true\` Only required for SSR. Set to if you're slotting in a hint element so the server-rendered markup includes the hint before the component hydrates on the client. Type boolean Default false | |
+| \`withLabel\` with-label | \`true\` Only required for SSR. Set to if you're slotting in a label element so the server-rendered markup includes the label before the component hydrates on the client. Type boolean Default false | |
+
+### Methods
+
+| Name | Description | Arguments |
+| --- | --- | --- |
+| \`blur()\` | Removes focus from the file input. | |
+| \`focus()\` | Sets focus on the file input. | \`options: FocusOptions\` |
+| \`formStateRestoreCallback()\` | Called when the browser is trying to restore element’s state to state in which case reason is "restore", or when the browser is trying to fulfill autofill on behalf of user in which case reason is "autocomplete". In the case of "restore", state is a string, File, or FormData object previously set as the second argument to setFormValue. | \`state: string \\| File \\| FormData \\| null, reason: 'autocomplete' \\| 'restore'\` |
+| \`resetValidity()\` | Reset validity is a way of removing manual custom errors and native validation. | |
+| \`setCustomValidity()\` | Do not use this when creating a "Validator". This is intended for end users of components. We track manually defined custom errors so we don't clear them on accident in our validators. | \`message: string\` |
+
+### Events
+
+| Name | Description |
+| --- | --- |
+| \`blur\` | Emitted when the dropzone loses focus. |
+| \`change\` | Emitted when files are added or removed. |
+| \`focus\` | Emitted when the dropzone gains focus. |
+| \`input\` | Emitted when file selection changes. |
+| \`wa-invalid\` | Emitted when the form control has been checked for validity and its constraints aren't satisfied. |
+
+### Custom States
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| `blank` | No files selected. | `:state(blank)` |
-| `dragging` | Files being dragged over dropzone. | `:state(dragging)` |
+| \`blank\` | No files selected. | \`:state(blank)\` |
+| \`dragging\` | Files being dragged over dropzone. | \`:state(dragging)\` |
 
-## CSS Parts
+### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`base\` | The main component wrapper. | \`::part(base)\` |
 | \`dropzone\` | The drag-and-drop area. | \`::part(dropzone)\` |
 | \`dropzone-icon\` | The upload icon in the dropzone. | \`::part(dropzone-icon)\` |
 | \`dropzone-text\` | The instruction text in the dropzone. | \`::part(dropzone-text)\` |
@@ -140,15 +146,18 @@ silently ignored and the element falls back to the default slot):
 | \`file-details\` | Container for file name and size. | \`::part(file-details)\` |
 | \`file-icon\` | The icon for non-image files. | \`::part(file-icon)\` |
 | \`file-image\` | The image element for image thumbnails. | \`::part(file-image)\` |
+| \`file-input\` | The component's outer wrapper. | \`::part(file-input)\` |
 | \`file-list\` | The container for selected files. | \`::part(file-list)\` |
 | \`file-name\` | The file name text. | \`::part(file-name)\` |
 | \`file-size\` | The file size text. | \`::part(file-size)\` |
 | \`file-thumbnail\` | The thumbnail/icon container for a file. | \`::part(file-thumbnail)\` |
+| \`form-control-label\` | The label. | \`::part(form-control-label)\` |
 | \`hint\` | The hint element. | \`::part(hint)\` |
-| \`label\` | The label element. | \`::part(label)\` |
 | \`remove-button\` | The remove button for each file. | \`::part(remove-button)\` |
+| \`base\` | \`file-input\` Deprecated. Use the part instead. | \`::part(base)\` |
+| \`label\` | \`form-control-label\` Deprecated. Use the part instead. | \`::part(label)\` |
 
-## Dependencies
+### Dependencies
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 
@@ -159,7 +168,7 @@ This component automatically imports the following elements. Sub-dependencies, i
 
 ## Examples
 
-### Labels
+### Label
 
 Use the `label` attribute to give the file input an accessible label. For labels that contain HTML, use the `label` slot instead.
 
@@ -167,15 +176,15 @@ Use the `label` attribute to give the file input an accessible label. For labels
 <wa-file-input label="Upload your resume"></wa-file-input>
 ```
 
-### Hints
+### Hint
 
-Add descriptive help text with the `hint` attribute. For hints that contain HTML, use the `hint` slot instead.
+Add a descriptive hint with the `hint` attribute. For hints that contain HTML, use the `hint` slot instead.
 
 ```html
 <wa-file-input label="Profile photo" hint="Upload a photo to personalize your account."></wa-file-input>
 ```
 
-### Multiple Files
+### Multiple
 
 Add the `multiple` attribute to allow the file input to accept more than one file. If the user drops a folder, all files within it will be added to the file input.
 
@@ -224,7 +233,7 @@ Use the `disabled` attribute to disable the file input.
 <wa-file-input label="Upload disabled" disabled></wa-file-input>
 ```
 
-### Sizes
+### Size
 
 Use the `size` attribute to change the file input's size.
 
@@ -320,7 +329,7 @@ When uploading files from a form, add `method="post"` and `enctype="multipart/fo
 </script>
 ```
 
-### Required Validation
+### Validation
 
 Add the `required` attribute to make file selection mandatory. Form submission will be blocked until a file is selected.
 
@@ -333,7 +342,7 @@ Add the `required` attribute to make file selection mandatory. Form submission w
 </form>
 ```
 
-### Custom Validation
+### Custom Validity
 
 Use the `setCustomValidity()` method to set a custom error message. This will override standard validation and prevent form submission. Clear the error by passing an empty string.
 

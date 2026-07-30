@@ -1,20 +1,14 @@
----
-title: Breadcrumb
-layout: component
-category: Navigation
-synonyms:
-  - breadcrumbs
-  - navigation trail
-  - path
-use-cases:
-  - wayfinding
-  - site navigation
-  - hierarchy navigation
----
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/breadcrumb.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/breadcrumb -->
 
-Breadcrumbs are usually placed before a page's main content with the current page shown last to indicate the user's position in the navigation.
+# Breadcrumb
 
-```html {.example}
+`<wa-breadcrumb>`
+
+Stable [Navigation](https://webawesome.com/docs/components/?category=navigation) [Since 2.0](https://webawesome.com/docs/resources/changelog#wa_200)
+
+Breadcrumbs display a trail of links that show users where they are in a site's hierarchy. They help users understand the current location and navigate back to parent pages.
+
+```html
 <wa-breadcrumb>
   <wa-breadcrumb-item>Catalog</wa-breadcrumb-item>
   <wa-breadcrumb-item>Clothing</wa-breadcrumb-item>
@@ -23,9 +17,75 @@ Breadcrumbs are usually placed before a page's main content with the current pag
 </wa-breadcrumb>
 ```
 
+Breadcrumbs are usually placed before a page's main content with the current page shown last to indicate the user's position in the navigation.
+
+## API
+
+### Importing
+
+If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
+
+\*\*CDN\*\*
+
+Import this component directly from the CDN:
+
+```js
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/breadcrumb/breadcrumb.js';
+```
+
+\*\*npm\*\*
+
+After installing Web Awesome via npm, import this component:
+
+```js
+import '@awesome.me/webawesome/dist/components/breadcrumb/breadcrumb.js';
+```
+
+\*\*Self-Hosted\*\*
+
+If you're self-hosting Web Awesome, import this component from your server:
+
+```js
+import './webawesome/dist/components/breadcrumb/breadcrumb.js';
+```
+
+\*\*React\*\*
+
+To import this component for React 18 or below, use the following code:
+
+```js
+import WaBreadcrumb from '@awesome.me/webawesome/dist/react/breadcrumb/index.js';
+```
+
+### Slots
+
+| Name | Description |
+| --- | --- |
+| (default) | One or more breadcrumb items to display. |
+| \`separator\` | \`
+
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`label\` label | \`string\` The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by screen readers and other assistive devices to provide more context for users. Type Default '' | |
+
+### CSS Parts
+
+| Name | Description | CSS selector |
+| --- | --- | --- |
+| \`breadcrumb\` | The component's outer wrapper. | \`::part(breadcrumb)\` |
+| \`base\` | \`breadcrumb\` Deprecated. Use the part instead. | \`::part(base)\` |
+
+### Dependencies
+
+This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
+
+-   [`<wa-icon>`](https://webawesome.com/docs/components/icon)
+
 ## Examples
 
-### Breadcrumb Links
+### Links
 
 By default, breadcrumb items are rendered as buttons so you can use them to navigate single-page applications. In this case, you'll need to add event listeners to handle clicks.
 
@@ -33,7 +93,7 @@ For websites, you'll probably want to use links instead. You can make any breadc
 
 The last item represents the current page. Use `href=""` so it points at itself — `<wa-breadcrumb>` will mark it with `aria-current="page"` and style it as non-interactive for you.
 
-```html {.example}
+```html
 <wa-breadcrumb>
   <wa-breadcrumb-item href="https://example.com/home">Homepage</wa-breadcrumb-item>
 
@@ -47,9 +107,9 @@ The last item represents the current page. Use `href=""` so it points at itself 
 
 ### Start & End Decorations
 
-Use the `start` and `end` slots to add presentational elements like `<wa-icon>` next to any breadcrumb item.
+Use the `start` and `end` slots to add presentational elements like [`<wa-icon>`](https://webawesome.com/docs/components/icon) next to any breadcrumb item.
 
-```html {.example}
+```html
 <wa-breadcrumb>
   <wa-breadcrumb-item>
     <wa-icon slot="start" name="house"></wa-icon>
@@ -63,11 +123,11 @@ Use the `start` and `end` slots to add presentational elements like `<wa-icon>` 
 </wa-breadcrumb>
 ```
 
-### Custom Separators
+### Separator
 
 Use the `separator` slot to change the separator that goes between breadcrumb items. Icons work well, but you can also use text or an image.
 
-```html {.example}
+```html
 <wa-breadcrumb>
   <wa-icon slot="separator" name="angles-right" variant="solid"></wa-icon>
   <wa-breadcrumb-item>First</wa-breadcrumb-item>
@@ -94,20 +154,20 @@ Use the `separator` slot to change the separator that goes between breadcrumb it
 </wa-breadcrumb>
 ```
 
-### Custom Colors
+### Colors
 
-Breadcrumb labels match the color set on `<wa-breadcrumb-item>`. Content in the `start`, `end`, and `separator` slots can be styled using CSS parts.
+Breadcrumb labels match the color set on [`<wa-breadcrumb-item>`](https://webawesome.com/docs/components/breadcrumb-item). Content in the `start`, `end`, and `separator` slots can be styled using CSS parts.
 
-```html {.example}
+```html
 <style>
   .redcrumbs wa-breadcrumb-item {
-    color: firebrick;
+    color: var(--wa-color-red-40);
   }
   .redcrumbs wa-breadcrumb-item:last-of-type {
-    color: crimson;
+    color: var(--wa-color-red-60);
   }
   .redcrumbs wa-breadcrumb-item::part(separator) {
-    color: pink;
+    color: var(--wa-color-red-80);
   }
   .redcrumbs wa-breadcrumb-item::part(start),
   .redcrumbs wa-breadcrumb-item::part(end) {
@@ -124,11 +184,11 @@ Breadcrumb labels match the color set on `<wa-breadcrumb-item>`. Content in the 
 </wa-breadcrumb>
 ```
 
-### With Dropdowns
+### Dropdowns
 
 Dropdown menus can be placed in the default slot to provide additional options.
 
-```html {.example}
+```html
 <wa-breadcrumb>
   <wa-breadcrumb-item>Homepage</wa-breadcrumb-item>
   <wa-breadcrumb-item>
@@ -143,26 +203,5 @@ Dropdown menus can be placed in the default slot to provide additional options.
   </wa-breadcrumb-item>
   <wa-breadcrumb-item>Our Services</wa-breadcrumb-item>
   <wa-breadcrumb-item>Digital Media</wa-breadcrumb-item>
-</wa-breadcrumb>
-```
-
-Alternatively, you can place dropdown menus in a `start` or `end` slot.
-
-```html {.example}
-<wa-breadcrumb>
-  <wa-breadcrumb-item>Homepage</wa-breadcrumb-item>
-  <wa-breadcrumb-item>Our Services</wa-breadcrumb-item>
-  <wa-breadcrumb-item>Digital Media</wa-breadcrumb-item>
-  <wa-breadcrumb-item>
-    Web Design
-    <wa-dropdown slot="end">
-      <wa-button slot="trigger" size="s" appearance="filled" pill>
-        <wa-icon label="More options" name="ellipsis" variant="solid"></wa-icon>
-      </wa-button>
-      <wa-dropdown-item type="checkbox" checked>Web Design</wa-dropdown-item>
-      <wa-dropdown-item type="checkbox">Web Development</wa-dropdown-item>
-      <wa-dropdown-item type="checkbox">Marketing</wa-dropdown-item>
-    </wa-dropdown>
-  </wa-breadcrumb-item>
 </wa-breadcrumb>
 ```

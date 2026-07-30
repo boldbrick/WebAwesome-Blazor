@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/bubble-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bubble-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/bubble-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bubble-chart -->
 
 # Bubble Chart [Pro]
 
@@ -26,46 +26,51 @@ Bubble charts add a third dimension to scatter plots by varying the size of each
 
 Get Web Awesome Pro + Bubble Chart!
 
-Bubble chart data uses `{x, y, r}` objects. The `r` value controls the bubble radius in pixels and is not tied to chart scales.
-
 ```html
 <wa-bubble-chart
-  id="bubble-hero"
   label="City Comparison"
   description="A bubble chart comparing cities by cost of living, quality of life, and population"
 >
+  <script type="application/json">
+    {
+      "data": {
+        "datasets": [
+          {
+            "label": "North America",
+            "data": [
+              { "x": 65, "y": 7.8, "r": 18 },
+              { "x": 50, "y": 7.0, "r": 12 },
+              { "x": 55, "y": 7.5, "r": 14 }
+            ]
+          },
+          {
+            "label": "Europe",
+            "data": [
+              { "x": 40, "y": 8.2, "r": 16 },
+              { "x": 30, "y": 7.6, "r": 10 },
+              { "x": 45, "y": 8.0, "r": 13 }
+            ]
+          }
+        ]
+      }
+    }
+  </script>
 </wa-bubble-chart>
-<script type="module">
-  const chart = document.querySelector('#bubble-hero');
-
-  chart.config = {
-    data: {
-      datasets: [
-        {
-          label: 'North America',
-          data: [
-            { x: 65, y: 7.8, r: 18 },
-            { x: 50, y: 7.0, r: 12 },
-            { x: 55, y: 7.5, r: 14 },
-          ],
-        },
-        {
-          label: 'Europe',
-          data: [
-            { x: 40, y: 8.2, r: 16 },
-            { x: 30, y: 7.6, r: 10 },
-            { x: 45, y: 8.0, r: 13 },
-          ],
-        },
-      ],
-    },
-  };
-</script>
 ```
 
-For advanced configuration such as mixed chart types, custom plugins, and direct Chart.js access, see [`<wa-chart>`](https://webawesome.com/docs/components/chart).
+Unlike bar or line charts, bubble data is an array of `{x, y, r}` point objects:
 
-## Importing
+| Property | Description |
+| --- | --- |
+| \`x\` | Position along the x-axis |
+| \`y\` | Position along the y-axis |
+| \`r\` | Bubble radius in pixels, fixed and not scaled to the axes |
+
+See [`<wa-chart>`](https://webawesome.com/docs/components/chart) for advanced configuration, custom plugins, and direct Chart.js access.
+
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -74,7 +79,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/bubble-chart/bubble-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/bubble-chart/bubble-chart.js';
 ```
 
 \*\*npm\*\*
@@ -101,35 +106,34 @@ To import this component for React 18 or below, use the following code:
 import WaBubbleChart from '@awesome.me/webawesome/dist/react/bubble-chart/index.js';
 ```
 
-## Slots
+### Slots
 
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
+| Name | Description |
+| --- | --- |
+| (default) | \`
 
-- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
+### Attributes & Properties
 
-## Attributes & Properties
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | |
+| \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | |
+| \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | |
+| \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | |
+| \`label\` label | \`string \\| null\` A label for the chart, used for accessibility. Type Default null | |
+| \`legendPosition\` legend-position | \`LayoutPosition \\| 'start' \\| 'end'\` The position of the legend relative to the chart. Type Default 'top' | |
+| \`max\` max | \`number \\| null\` The maximum value for the value axis. Type Default null | |
+| \`min\` min | \`number \\| null\` The minimum value for the value axis. Type Default null | |
+| \`plugins\` plugins | \`array\` Additional Chart.js plugins to register for this chart instance. Type Default \[\] | |
+| \`stacked\` stacked | \`boolean\` Stacks datasets on top of each other along the value axis. Type Default false | |
+| \`type\` type | \`bar\` The type of chart to render. Valid types include , line, pie, doughnut, polarArea, radar, scatter, and bubble. Type ChartType Default 'bubble' | |
+| \`withoutAnimation\` without-animation | \`boolean\` Disables chart animations Type Default false | |
+| \`withoutLegend\` without-legend | \`boolean\` Hides the legend Type Default false | |
+| \`withoutTooltip\` without-tooltip | \`boolean\` Hides tooltips over data points Type Default false | |
+| \`xLabel\` x-label | \`string \\| null\` A label for the x-axis. Type Default null | |
+| \`yLabel\` y-label | \`string \\| null\` A label for the y-axis. Type Default null | |
 
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `type` | `type` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. | `ChartType` | `'bubble'` |
-| `label` | `label` | A label for the chart, used for accessibility. | `string \| null` | `null` |
-| `description` | `description` | A description of the chart, used for accessibility. | `string \| null` | `null` |
-| `xLabel` | `xLabel` | A label for the x-axis. | `string \| null` | `null` |
-| `yLabel` | `yLabel` | A label for the y-axis. | `string \| null` | `null` |
-| `legendPosition` | `legend-position` | The position of the legend relative to the chart. | `LayoutPosition \| 'start' \| 'end'` | `'top'` |
-| `stacked` | `stacked` | Stacks datasets on top of each other along the value axis. | `boolean` | `false` |
-| `indexAxis` | `index-axis` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. | `'x' \| 'y'` | `'x'` |
-| `grid` | `grid` | Which axes to show grid lines on. | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` |
-| `min` | `min` | The minimum value for the value axis. | `number \| null` | `null` |
-| `max` | `max` | The maximum value for the value axis. | `number \| null` | `null` |
-| `withoutAnimation` | `without-animation` | Disables chart animations | `boolean` | `false` |
-| `withoutLegend` | `without-legend` | Hides the legend | `boolean` | `false` |
-| `withoutTooltip` | `without-tooltip` | Hides tooltips over data points | `boolean` | `false` |
-| `config` | — | The Chart.js configuration object. Setting this property will automatically re-render the chart. | `ChartJS['config']` | — |
-| `plugins` | `plugins` | Additional Chart.js plugins to register for this chart instance. | `array` | `[]` |
-
-## CSS Custom Properties
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
@@ -154,9 +158,39 @@ silently ignored and the element falls back to the default slot):
 
 ## Examples
 
+### Providing Data with JSON
+
+Place a `<script type="application/json">` tag inside the component. Each data point is an object with `x`, `y`, and `r` properties. The JSON follows the [Chart.js configuration format](https://www.chartjs.org/docs/latest/configuration/).
+
+```html
+<wa-bubble-chart
+  label="Product Analysis"
+  description="A bubble chart showing products by price, rating, and sales volume"
+>
+  <script type="application/json">
+    {
+      "data": {
+        "datasets": [
+          {
+            "label": "Products",
+            "data": [
+              { "x": 30, "y": 4.2, "r": 18 },
+              { "x": 50, "y": 4.5, "r": 14 },
+              { "x": 25, "y": 3.9, "r": 22 },
+              { "x": 55, "y": 4.7, "r": 10 },
+              { "x": 40, "y": 4.0, "r": 16 }
+            ]
+          }
+        ]
+      }
+    }
+  </script>
+</wa-bubble-chart>
+```
+
 ### Providing Data with JavaScript
 
-For dynamic data, set the `config` property directly. The chart will re-render automatically.
+Set the `config` property from JavaScript when your data comes from code rather than static markup. The chart re-renders automatically each time you assign it. For data that updates at runtime, try the live controls in [Accessing the Chart.js Instance](https://webawesome.com/docs/components/chart#accessing-the-chartjs-instance).
 
 ```html
 <wa-bubble-chart
@@ -187,36 +221,53 @@ For dynamic data, set the `config` property directly. The chart will re-render a
 </script>
 ```
 
-Note that `config` is shallowly reactive. If you mutate the existing object in place, you must reassign it to trigger a re-render!
+**`config` is shallowly reactive.**  
+If you mutate the object in place, reassign it to trigger a re-render.
 
-### Providing Data with JSON
+### Custom Tooltips
 
-Place a `<script type="application/json">` tag inside the component. Each data point is an object with `x`, `y`, and `r` properties.
+Bubble tooltips show raw `x, y, r` values by default. Attach a property to each data point and read it in a [tooltip callback](https://webawesome.com/docs/components/chart#custom-tooltips) to name points and spell out what the bubble size means.
 
 ```html
 <wa-bubble-chart
-  label="Product Analysis"
-  description="A bubble chart showing products by price, rating, and sales volume"
+  id="bubble-tooltips"
+  x-label="Price"
+  y-label="Rating"
+  label="Menu Performance"
+  description="A bubble chart whose tooltips name each drink and its sales instead of showing raw coordinates"
 >
-  <script type="application/json">
-    {
-      "data": {
-        "datasets": [
-          {
-            "label": "Products",
-            "data": [
-              { "x": 30, "y": 4.2, "r": 18 },
-              { "x": 50, "y": 4.5, "r": 14 },
-              { "x": 25, "y": 3.9, "r": 22 },
-              { "x": 55, "y": 4.7, "r": 10 },
-              { "x": 40, "y": 4.0, "r": 16 }
-            ]
-          }
-        ]
-      }
-    }
-  </script>
 </wa-bubble-chart>
+<script type="module">
+  const chart = document.querySelector('#bubble-tooltips');
+
+  chart.config = {
+    data: {
+      datasets: [
+        {
+          label: 'Menu Items',
+          data: [
+            { x: 3.25, y: 4.3, r: 12, name: 'Drip Coffee' },
+            { x: 4.25, y: 4.5, r: 18, name: 'Espresso' },
+            { x: 4.75, y: 4.6, r: 22, name: 'Latte' },
+            { x: 5.0, y: 4.7, r: 10, name: 'Cold Brew' },
+          ],
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: context => {
+              const { name, x, y, r } = context.raw;
+              return `${name}: $${x}, ${y}★, ${r} sold`;
+            },
+          },
+        },
+      },
+    },
+  };
+</script>
 ```
 
 ### Bubble Sizes
@@ -291,7 +342,7 @@ Use multiple datasets to compare groups of bubbles. Each group gets its own colo
 </script>
 ```
 
-### Custom Colors
+### Colors
 
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
 
@@ -313,12 +364,12 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
     data: {
       datasets: [
         {
-          label: 'Data Points',
+          label: 'Menu Items',
           data: [
-            { x: 25, y: 35, r: 16 },
-            { x: 45, y: 50, r: 12 },
-            { x: 55, y: 40, r: 18 },
-            { x: 35, y: 55, r: 14 },
+            { x: 3.25, y: 4.3, r: 16 },
+            { x: 4.75, y: 4.6, r: 22 },
+            { x: 4.25, y: 4.5, r: 18 },
+            { x: 5.0, y: 4.7, r: 14 },
           ],
         },
       ],
@@ -346,17 +397,17 @@ Use the `legend-position` attribute to control where the legend appears. Add `wi
     data: {
       datasets: [
         {
-          label: 'Group A',
+          label: 'Paperbacks',
           data: [
-            { x: 20, y: 30, r: 14 },
-            { x: 40, y: 45, r: 18 },
+            { x: 320, y: 4.2, r: 16 },
+            { x: 280, y: 4.0, r: 14 },
           ],
         },
         {
-          label: 'Group B',
+          label: 'Hardcovers',
           data: [
-            { x: 30, y: 50, r: 14 },
-            { x: 50, y: 35, r: 12 },
+            { x: 400, y: 4.4, r: 12 },
+            { x: 448, y: 4.5, r: 18 },
           ],
         },
       ],
@@ -379,12 +430,12 @@ Use the `grid` attribute to control which axes show grid lines. Options are `bot
     data: {
       datasets: [
         {
-          label: 'Observations',
+          label: 'Planets',
           data: [
-            { x: 20, y: 30, r: 12 },
-            { x: 40, y: 50, r: 16 },
-            { x: 50, y: 38, r: 14 },
-            { x: 60, y: 52, r: 18 },
+            { x: 0.4, y: 167, r: 9 },
+            { x: 0.7, y: 464, r: 21 },
+            { x: 1.0, y: 15, r: 22 },
+            { x: 1.5, y: -65, r: 12 },
           ],
         },
       ],
@@ -427,62 +478,31 @@ Use the `x-label` and `y-label` attributes to add descriptive labels to each axi
 </script>
 ```
 
-### Disabling Tooltips
+### Disabling Features
 
-Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over bubbles.
+Use `without-tooltip` to hide hover tooltips and `without-animation` to disable transitions.
 
 ```html
 <wa-bubble-chart
-  id="bubble-tooltip"
+  id="bubble-disabled"
   without-tooltip
-  label="No Tooltips"
-  description="A bubble chart with tooltips disabled"
->
-</wa-bubble-chart>
-<script type="module">
-  const chart = document.querySelector('#bubble-tooltip');
-
-  chart.config = {
-    data: {
-      datasets: [
-        {
-          label: 'Data',
-          data: [
-            { x: 25, y: 30, r: 12 },
-            { x: 40, y: 42, r: 16 },
-            { x: 50, y: 35, r: 14 },
-          ],
-        },
-      ],
-    },
-  };
-</script>
-```
-
-### Disabling Animations
-
-Use the `without-animation` attribute to disable chart transitions.
-
-```html
-<wa-bubble-chart
-  id="bubble-anim"
   without-animation
-  label="No Animation"
-  description="A bubble chart with animation disabled"
+  label="Minimal"
+  description="A bubble chart with tooltips and animations disabled"
 >
 </wa-bubble-chart>
 <script type="module">
-  const chart = document.querySelector('#bubble-anim');
+  const chart = document.querySelector('#bubble-disabled');
 
   chart.config = {
     data: {
       datasets: [
         {
-          label: 'Data',
+          label: 'Trails',
           data: [
-            { x: 25, y: 30, r: 12 },
-            { x: 40, y: 42, r: 16 },
-            { x: 50, y: 35, r: 14 },
+            { x: 3, y: 6, r: 10 },
+            { x: 8, y: 20, r: 18 },
+            { x: 5, y: 12, r: 14 },
           ],
         },
       ],

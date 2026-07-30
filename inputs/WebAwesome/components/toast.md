@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/toast.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/toast.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast -->
 
 # Toast [Pro]
 
@@ -26,10 +26,6 @@ Toasts display brief, non-blocking notifications that appear temporarily above t
 
 Get Web Awesome Pro + Toast!
 
-Adding a single `<wa-toast>` element to the page gives you the ability to dispatch notifications at any time. Toast notifications appear in a stack that renders in the [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer), showing above everything else on the page.
-
-You can put the `<wa-toast>` element anywhere in the DOM, as long as it's somewhere inside the `<body>`. In most apps, a single toast element is optimal.
-
 ```html
 <div id="toast-basic">
   <wa-button appearance="filled">Show notification</wa-button>
@@ -47,9 +43,15 @@ You can put the `<wa-toast>` element anywhere in the DOM, as long as it's somewh
 </script>
 ```
 
-Toasts have unique accessibility challenges, but these can be mitigated with thoughtful implementation. Read our [Accessibility Considerations](#accessibility-considerations) before using toasts.
+Adding a single `<wa-toast>` element to the page gives you the ability to dispatch notifications at any time. Toast notifications appear in a stack that renders in the [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer), showing above everything else on the page.
 
-This documentation page features numerous toast elements for demonstrative purposes. As a result, it's possible to trigger overlapping toast items. This isn't a bug! Most apps should only have a single `<wa-toast>` element on the page. We're just showing off the many features of this component.
+You can put the `<wa-toast>` element anywhere in the DOM, as long as it's somewhere inside the `<body>`. In most apps, a single toast element is optimal.
+
+**Toasts carry unique accessibility challenges.**  
+[Read the accessibility considerations](#accessibility-considerations) before using them — thoughtful implementation can mitigate the issues.
+
+**Overlapping toasts on this page are intentional, not a bug.**  
+This page has many `<wa-toast>` elements to show off the component — most apps need only one.
 
 ## Accessibility Considerations
 
@@ -63,11 +65,13 @@ Rarely will toasts offer the best usability for all of your users, so consider i
 
 -   Keep toasts short and sweet.
 -   Set the `duration` to `5000` ms (5 seconds) or longer to give users enough time to locate and understand the toast item.
--   Consider allowing users to adjust the timing. While the duration of a toast item resets on hover (see [Hover Behavior](#hover-behavior)), a setting in your application can allow users to control the timing of toasts to best suit their needs and abilities.
+-   Consider allowing users to adjust the timing. While the duration of a toast item resets on hover (see [Hover & Focus Behavior](#hover-and-focus-behavior)), a setting in your application can allow users to control the timing of toasts to best suit their needs and abilities.
 -   Choose a consistent placement for toasts in your application and stick with it. Otherwise, users need to guess where transient notifications will appear and risk missing them entirely.
 -   If a transient toast item contains an action, ensure that action is available elsewhere on the page. This ensures that users can still execute the action even if they miss the toast.
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -76,7 +80,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/toast/toast.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/toast/toast.js';
 ```
 
 \*\*npm\*\*
@@ -103,45 +107,44 @@ To import this component for React 18 or below, use the following code:
 import WaToast from '@awesome.me/webawesome/dist/react/toast/index.js';
 ```
 
-## Slots
+### Slots
 
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
+| Name | Description |
+| --- | --- |
+| (default) | \`\` Place elements here to show them as notifications. |
 
-- `(default)` — Place `<wa-toast-item>` elements here to show them as notifications.
+### Attributes & Properties
 
-## Attributes & Properties
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`placement\` placement | \`'top-start' \\| 'top-center' \\| 'top-end' \\| 'bottom-start' \\| 'bottom-center' \\| 'bottom-end'\` The placement of the toast stack on the screen. Type Default 'top-end' | |
 
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `placement` | `placement` | The placement of the toast stack on the screen. | `\| 'top-start' \| 'top-center' \| 'top-end' \| 'bottom-start' \| 'bottom-center' \| 'bottom-end'` | `'top-end'` |
-
-## Methods
+### Methods
 
 | Name | Description | Arguments |
 | --- | --- | --- |
-| `create()` | Creates a toast notification programmatically and adds it to the stack. Returns a reference to the created toast item element. | `message: string, options: ToastCreateOptions` |
+| \`create()\` | Creates a toast notification programmatically and adds it to the stack. Returns a reference to the created toast item element. | \`message: string, options: ToastCreateOptions\` |
 
-## CSS Custom Properties
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
 | \`--gap\` | \`var(--wa-space-s)\` The gap between stacked toast items. Default |
 | \`--width\` | \`28rem\` The width of the toast stack. Default |
 
-## Custom States
+### Custom States
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| `visible` | Applied when the toast stack has one or more visible toast items. | `:state(visible)` |
+| \`visible\` | Applied when the toast stack has one or more visible toast items. | \`:state(visible)\` |
 
-## CSS Parts
+### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
 | \`stack\` | The container that holds the toast items. | \`::part(stack)\` |
 
-## Dependencies
+### Dependencies
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 
@@ -151,7 +154,7 @@ This component automatically imports the following elements. Sub-dependencies, i
 
 ## Examples
 
-### Variants
+### Variant
 
 Set the `variant` option to `brand`, `success`, `warning`, `danger`, or `neutral` to change the type of notification.
 
@@ -186,7 +189,7 @@ Set the `variant` option to `brand`, `success`, `warning`, `danger`, or `neutral
 </script>
 ```
 
-### Sizes
+### Size
 
 Set the `size` option to `xs`, `s`, `m`, `l`, or `xl` to change the size of the toast item.
 
@@ -221,7 +224,7 @@ Set the `size` option to `xs`, `s`, `m`, `l`, or `xl` to change the size of the 
 </script>
 ```
 
-### With Icons
+### Icons
 
 Pass an `icon` option to display an icon at the start of the toast item. You can pass a simple string for the icon name, or an object with additional options like `library`, `family`, and `variant`.
 
