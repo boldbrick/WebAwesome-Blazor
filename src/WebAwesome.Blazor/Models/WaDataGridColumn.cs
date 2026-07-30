@@ -54,6 +54,21 @@ public class WaDataGridColumn
     public bool? SortDescFirst { get; set; }
 
     /// <summary>
+    /// The built-in comparison strategy used when sorting this column: <c>alphanumeric</c> (default),
+    /// <c>alphanumericCaseSensitive</c>, <c>text</c> (faster, strings only), <c>textCaseSensitive</c>,
+    /// <c>datetime</c> (for date objects or date strings), or <c>basic</c> (fastest, plain
+    /// greater-than/less-than). Ignored when a custom comparator is provided, which the wrapper does not
+    /// support.
+    /// </summary>
+    public string? SortFn { get; set; }
+
+    /// <summary>
+    /// Where null and undefined values sort: <c>first</c> or <c>last</c>. Omit to leave them in place,
+    /// which is the element's default.
+    /// </summary>
+    public string? SortUndefined { get; set; }
+
+    /// <summary>
     /// Whether the global search box matches this column. Defaults to true for columns with a
     /// <see cref="Field"/>.
     /// </summary>

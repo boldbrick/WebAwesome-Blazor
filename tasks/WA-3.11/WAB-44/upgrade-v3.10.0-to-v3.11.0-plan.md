@@ -201,6 +201,55 @@ Delegated to **wa-test-engineer**.
   showcases (OTP input + pagination → form showcase; data grid → dashboard showcase).
 - Promote `PublicApiSnapshotTests` baseline once every diff is explained by the change report.
 
+## Wrapper API gaps found during demo curation
+
+Curating the demo pages against the full upstream example set surfaced these gaps. Recorded here per
+the demo-curation rule ("record genuine wrapper API gaps in the plan document rather than working
+around them").
+
+**Fixed in this upgrade:**
+
+- `WaDataGridColumn` was missing `sortFn` and `sortUndefined`. Both are plain string/number unions in
+  `data-grid.d.ts` — fully JSON-expressible, so their omission was an oversight, not a marshaling
+  limit. Added as `SortFn` and `SortUndefined` (the latter as the readable `first`/`last` form; the
+  numeric `-1`/`1` aliases are equivalent and `false`, the default, is expressed by omission).
+
+**Deferred, with reasons:**
+
+- `WaDataGridColumn` serializes every unset member as an explicit `null`, because Blazor's interop
+  serializer is used as-is. Harmless to the element but wasteful on wide grids. A
+  `JsonIgnoreCondition.WhenWritingNull` pass (or pre-serializing the column list in `WaDataGrid`)
+  would trim it. Deferred: a payload optimization, not a defect, and out of this upgrade's scope.
+- `pageSizeOptions` is a grid-level plain number array and would be straightforward to expose, but it
+  is one of the eight JS accessor-only properties that are neither CEM attributes nor CEM methods
+  (with `sort`, `filters`, `selectedKeys`, `selectedRows`, `expandedKeys`, `columnOrder`,
+  `searchTerm`) and so fell outside this upgrade's parity-driven surface. The demo demonstrates a
+  page-size picker with `WaPagination` + `WaSelect` instead. Worth a follow-up decision as a group.
+- Upstream's Computed Columns, Custom Comparators, and Row Detail Panels examples have no Blazor
+  equivalent, because they are all function-valued (`value`, `comparator`, `filterFn`, `searchFn`,
+  `selectableRows`, `rowDetail`, `dataSource`). Left out of the demo rather than faked.
+- Programmatic sort/filter/search/selection state is reachable only through
+  `GetStateAsync`/`SetStateAsync`, not as declarative parameters — so no "set the sort declaratively"
+  example is possible.
+
+## Demo navigation taxonomy
+
+New components must also be registered in
+`src\WebAwesome.Blazor.Demo\Services\ComponentCategoryMap.cs`, which the skeleton generator does not
+do. Omitting them created an unmapped "Other" sidebar group, caught by the Playwright
+`component-badges` taxonomy check (not by the build or bUnit). Added: `wa-otp-input` → Forms,
+`wa-pagination` → Navigation, `wa-data-grid` → Data Viz. Worth teaching `New-WaDemoPages.ps1` to
+flag unmapped tags in a future pass.
+
+## Runtime note: wa-data-grid cannot render on the free CDN
+
+`wa-data-grid` is a Pro component and 404s on the free jsdelivr path
+(`dist-cdn/components/data-grid/data-grid.js`), so the element never upgrades in the demo as hosted.
+This is the same condition the existing `pro-assets.spec.js` self-skips on; a Pro kit override is
+needed for a visual check. The Playwright sweep still passes the data-grid page (no console errors,
+correct light-DOM markup), and a targeted probe confirmed the `data`/`columns` JS properties arrive
+correctly shaped (camelCase, 5 rows / 5 columns).
+
 ## Validation checklist
 
 - [ ] `dotnet build src/WebAwesome.slnx -p:Configuration=Debug` — 0 warnings, 0 errors

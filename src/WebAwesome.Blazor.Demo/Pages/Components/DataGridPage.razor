@@ -1,0 +1,866 @@
+@page "/components/data-grid"
+@using WebAwesome.Blazor.Models
+
+<PageTitle>Data Grid</PageTitle>
+
+<h1>Data Grid <ComponentBadges Tag="wa-data-grid" /></h1>
+<p>
+    Data grids display tabular data with sorting, selection, filtering, pinning, grouping, tree data,
+    column footers, pagination, CSV export and full keyboard navigation.
+    <code>&lt;wa-data-grid&gt;</code> wrapped by <code>WaDataGrid</code>. Rows and columns are JavaScript
+    properties rather than attributes, so <code>Data</code> and <code>Columns</code> are supplied as typed
+    C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Upstream's
+    per-cell <code>formatter</code> is a JavaScript function or Lit template and cannot cross the interop
+    boundary, so cells render their raw values; format the value in your row data when you need control
+    over how it reads.
+</p>
+
+<ExampleSection Title="Columns" Code="@ColumnsExample">
+    <WaDataGrid Label="Inventory" RowKey="sku" Data="inventory" Columns="inventoryColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Striped Rows &amp; Size" Code="@StripedExample">
+    <WaDataGrid Label="Periodic table" RowKey="number" Striped="true" Size="WaSize.Small"
+                Data="elements" Columns="elementColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Sorting" Code="@SortingExample">
+    <WaDataGrid Label="Standings" RowKey="id" MaxMultiSort="3" Data="standings" Columns="standingColumns"
+                OnSortChange="HandleSortChange" />
+    <WaDivider />
+    <p>Active sort: <strong>@sortSummary</strong> — Shift-click a second header to sort by more than one column.</p>
+</ExampleSection>
+
+<ExampleSection Title="Selection" Code="@SelectionExample">
+    <WaDataGrid Label="Subscribers" RowKey="id" Selectable="WaDataGridSelectable.Multiple"
+                Data="subscribers" Columns="subscriberColumns" OnRowSelect="HandleRowSelect" />
+    <WaDivider />
+    <p>Selected: <strong>@selectedCount</strong> of @subscribers.Length subscribers.</p>
+</ExampleSection>
+
+<ExampleSection Title="Single Selection" Code="@SingleSelectionExample">
+    <WaDataGrid Label="Pick a plan" RowKey="id" Selectable="WaDataGridSelectable.Single"
+                Data="plans" Columns="planColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Pagination" Code="@PaginationExample">
+    <WaDataGrid Label="Transactions" RowKey="id" Paginate="true" PageSize="10"
+                Data="transactions" Columns="transactionColumns" OnPageChange="HandlePageChange" />
+    <WaDivider />
+    <p>Page <strong>@(transactionPage + 1)</strong> — the grid's <code>Page</code> is 0-based.</p>
+</ExampleSection>
+
+<ExampleSection Title="Global Search &amp; Column Filters" Code="@SearchExample">
+    <WaDataGrid Label="Countries" RowKey="code" WithSearch="true" Data="countries" Columns="countryColumns"
+                OnFilterChange="HandleFilterChange" />
+    <WaDivider />
+    <p>Search term: <strong>@(string.IsNullOrEmpty(searchTerm) ? "(none)" : searchTerm)</strong>, active column filters: <strong>@filterCount</strong>.</p>
+</ExampleSection>
+
+<ExampleSection Title="Column Management" Code="@ColumnManagementExample">
+    <WaCluster Gap="GapSize.Gap_S" Style="margin-block-end: var(--wa-space-m);">
+        <WaButton Size="WaSize.Small" OnClick="@(() => managedGrid!.AutoSizeColumnsAsync())">Auto-size columns</WaButton>
+        <WaButton Size="WaSize.Small" OnClick="@(() => managedGrid!.SizeColumnsToFitAsync())">Size to fit</WaButton>
+        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => managedGrid!.ResetColumnsAsync())">Reset columns</WaButton>
+    </WaCluster>
+    <WaDataGrid @ref="managedGrid" Label="Employees" RowKey="id" WithColumnMenu="true" WithColumnsMenu="true"
+                Resizable="true" Reorderable="true" Pinnable="true" Data="compensation" Columns="managedColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Column Footers" Code="@FootersExample">
+    <WaDataGrid Label="Invoice" RowKey="id" Data="invoiceItems" Columns="invoiceColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Grouping Rows" Code="@GroupingExample">
+    <WaCluster Gap="GapSize.Gap_S" Style="margin-block-end: var(--wa-space-m);">
+        <WaButton Size="WaSize.Small" OnClick="@(() => groupedGrid!.ExpandAllRowsAsync())">Expand all groups</WaButton>
+        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => groupedGrid!.CollapseAllRowsAsync())">Collapse all</WaButton>
+    </WaCluster>
+    <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="department"
+                Data="compensation" Columns="groupedColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Tree Data" Code="@TreeExample">
+    <WaCluster Gap="GapSize.Gap_S" Style="margin-block-end: var(--wa-space-m);">
+        <WaButton Size="WaSize.Small" OnClick="@(() => treeGrid!.ExpandAllRowsAsync())">Expand all folders</WaButton>
+        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => treeGrid!.CollapseAllRowsAsync())">Collapse all</WaButton>
+    </WaCluster>
+    <WaDataGrid @ref="treeGrid" Label="Project files" RowKey="id" ChildRows="children" FilterFromLeafRows="true"
+                WithSearch="true" Selectable="WaDataGridSelectable.Multiple" Data="projectFiles" Columns="fileColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Empty &amp; No-Results States" Code="@EmptyExample">
+    <WaDataGrid Label="Invoices" RowKey="id" WithSearch="true" Data="noInvoices" Columns="emptyColumns">
+        <EmptyContent>
+            <WaStack Gap="GapSize.Gap_S" AlignItems="AlignItems.Center" Style="padding: var(--wa-space-2xl) 0; text-align: center;">
+                <WaIcon Name="file-invoice" Style="font-size: 2.5rem; color: var(--wa-color-text-quiet);" />
+                <div>
+                    <strong>No invoices yet</strong>
+                    <p style="margin: 0.25em 0 0; color: var(--wa-color-text-quiet);">Create your first invoice to see it here.</p>
+                </div>
+                <WaButton Variant="WaVariant.Brand" StartIconName="plus">New invoice</WaButton>
+            </WaStack>
+        </EmptyContent>
+        <NoResultsContent>
+            <WaStack Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center" Style="padding: var(--wa-space-xl) 0;">
+                <WaIcon Name="magnifying-glass" Style="font-size: 2rem; color: var(--wa-color-text-quiet);" />
+                <small>No invoice matches that search.</small>
+            </WaStack>
+        </NoResultsContent>
+    </WaDataGrid>
+</ExampleSection>
+
+<ExampleSection Title="Loading Data from a Server" Code="@ServerExample">
+    <WaDataGrid Label="Orders" RowKey="id" Server="true" Paginate="true" PageSize="8" WithSearch="true"
+                FilterDebounce="300" Total="serverTotal" Loading="serverLoading"
+                Data="serverRows" Columns="orderColumns" OnDataRequest="HandleDataRequestAsync">
+        <LoadingContent>
+            <WaStack Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center">
+                <WaSpinner Style="font-size: 2rem;" />
+                <small>Loading orders…</small>
+            </WaStack>
+        </LoadingContent>
+    </WaDataGrid>
+    <WaDivider />
+    <p>Served <strong>@serverRows.Length</strong> of <strong>@serverTotal</strong> matching orders in @serverRequestCount request(s).</p>
+</ExampleSection>
+
+<ExampleSection Title="Responding to Cell Clicks" Code="@CellClickExample">
+    <WaDataGrid Label="Countries" RowKey="code" Data="countries" Columns="cellClickColumns" OnCellClick="HandleCellClick" />
+    <WaDivider />
+    <p>@(cellClickMessage ?? "Click any cell to see what the event reports.")</p>
+</ExampleSection>
+
+<ExampleSection Title="CSV Export &amp; Clipboard" Code="@ExportExample">
+    <WaCluster Gap="GapSize.Gap_S" Style="margin-block-end: var(--wa-space-m);">
+        <WaButton Size="WaSize.Small" StartIconName="download" OnClick="DownloadCsvAsync">Download CSV</WaButton>
+        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="PreviewCsvAsync">Preview CSV</WaButton>
+        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" StartIconName="copy" OnClick="CopyRowsAsync">Copy selected rows</WaButton>
+    </WaCluster>
+    <WaDataGrid @ref="exportGrid" Label="Expenses" RowKey="id" Selectable="WaDataGridSelectable.Multiple"
+                Data="expenses" Columns="expenseColumns" />
+    @if (copiedRows > 0)
+    {
+        <p>Copied <strong>@copiedRows</strong> row(s) to the clipboard.</p>
+    }
+    @if (csvPreview is not null)
+    {
+        <pre style="overflow-x: auto;"><code>@csvPreview</code></pre>
+    }
+</ExampleSection>
+
+<ApiTable Tag="wa-data-grid" />
+
+@code {
+    private WaDataGrid? managedGrid;
+    private WaDataGrid? groupedGrid;
+    private WaDataGrid? treeGrid;
+    private WaDataGrid? exportGrid;
+
+    private string sortSummary = "none";
+    private int selectedCount;
+    private int transactionPage;
+    private string? searchTerm;
+    private int filterCount;
+    private string? cellClickMessage;
+    private string? csvPreview;
+    private int copiedRows;
+
+    private object[] serverRows = [];
+    private int serverTotal;
+    private bool serverLoading;
+    private int serverRequestCount;
+
+    #region ------ Event handlers ------
+
+    private void HandleSortChange(WaDataGridSortChangeEventArgs e)
+    {
+        sortSummary = e.Sort is null || e.Sort.Count == 0
+            ? "none"
+            : string.Join(", ", e.Sort.Select(s => $"{s.Id} {(s.Desc ? "descending" : "ascending")}"));
+    }
+
+    private void HandleRowSelect(WaDataGridRowSelectEventArgs e) => selectedCount = e.SelectedKeys?.Count ?? 0;
+
+    private void HandlePageChange(WaDataGridPageChangeEventArgs e) => transactionPage = e.Page;
+
+    private void HandleFilterChange(WaDataGridFilterChangeEventArgs e)
+    {
+        searchTerm = e.Search;
+        filterCount = e.Filters?.Count ?? 0;
+    }
+
+    private void HandleCellClick(WaDataGridCellClickEventArgs e)
+    {
+        cellClickMessage = $"Clicked the \"{e.Column}\" cell of row {e.RowIndex}; its value is {e.Value}.";
+    }
+
+    // server mode: the grid asks for the rows it needs, we fetch them and hand back Data, Total and Loading
+    private async Task HandleDataRequestAsync(WaDataGridDataRequestEventArgs e)
+    {
+        serverLoading = true;
+        serverRequestCount++;
+        StateHasChanged();
+
+        // stand in for a network round trip
+        await Task.Delay(500);
+
+        var query = allOrders.AsEnumerable();
+
+        var term = e.Search;
+        if (!string.IsNullOrWhiteSpace(term))
+            query = query.Where(o => o.Customer.Contains(term, StringComparison.OrdinalIgnoreCase));
+
+        var sort = e.Sort is { Count: > 0 } ? e.Sort[0] : null;
+        if (sort is not null)
+        {
+            query = sort.Id switch
+            {
+                "customer" => sort.Desc ? query.OrderByDescending(o => o.Customer) : query.OrderBy(o => o.Customer),
+                "amount" => sort.Desc ? query.OrderByDescending(o => o.Amount) : query.OrderBy(o => o.Amount),
+                "status" => sort.Desc ? query.OrderByDescending(o => o.Status) : query.OrderBy(o => o.Status),
+                _ => query
+            };
+        }
+
+        var matches = query.ToList();
+        serverTotal = matches.Count;
+        serverRows = matches.Skip(e.Page * e.PageSize).Take(e.PageSize).Cast<object>().ToArray();
+        serverLoading = false;
+    }
+
+    private async Task DownloadCsvAsync()
+    {
+        if (exportGrid is not null)
+            await exportGrid.ExportDataAsCsvAsync(new WaDataGridCsvExportOptions { FileName = "expenses" });
+    }
+
+    private async Task PreviewCsvAsync()
+    {
+        if (exportGrid is not null)
+            csvPreview = await exportGrid.GetDataAsCsvAsync();
+    }
+
+    private async Task CopyRowsAsync()
+    {
+        if (exportGrid is not null)
+            copiedRows = await exportGrid.CopySelectedRowsAsync(new WaDataGridCopyOptions { Format = "csv" });
+    }
+
+    #endregion
+
+    #region ------ Sample data ------
+
+    private sealed record InventoryRow(string Sku, string Product, string Category, int Price, int Stock);
+
+    private readonly object[] inventory =
+    [
+        new InventoryRow("CHA-014", "Aeron Office Chair", "Furniture", 1395, 18),
+        new InventoryRow("DSK-220", "Standing Desk, 60\"", "Furniture", 749, 7),
+        new InventoryRow("MON-340", "27\" 4K Monitor", "Electronics", 529, 42),
+        new InventoryRow("KEY-101", "Mechanical Keyboard", "Electronics", 159, 0),
+        new InventoryRow("LMP-076", "LED Desk Lamp", "Lighting", 64, 130)
+    ];
+
+    private readonly WaDataGridColumn[] inventoryColumns =
+    [
+        new() { Field = "sku", Label = "SKU", Width = 110 },
+        new() { Field = "product", Label = "Product", Flex = 2, MinWidth = 180 },
+        new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 130 },
+        new() { Field = "price", Label = "Price (EUR)", Align = "end", Width = 130 },
+        new() { Field = "stock", Label = "In Stock", Align = "end", Width = 110 }
+    ];
+
+    private sealed record ElementRow(int Number, string Symbol, string Name, double Mass, string Category);
+
+    private readonly object[] elements =
+    [
+        new ElementRow(1, "H", "Hydrogen", 1.008, "Nonmetal"),
+        new ElementRow(2, "He", "Helium", 4.0026, "Noble gas"),
+        new ElementRow(3, "Li", "Lithium", 6.94, "Alkali metal"),
+        new ElementRow(6, "C", "Carbon", 12.011, "Nonmetal"),
+        new ElementRow(8, "O", "Oxygen", 15.999, "Nonmetal"),
+        new ElementRow(11, "Na", "Sodium", 22.99, "Alkali metal"),
+        new ElementRow(26, "Fe", "Iron", 55.845, "Transition metal"),
+        new ElementRow(79, "Au", "Gold", 196.97, "Transition metal")
+    ];
+
+    private readonly WaDataGridColumn[] elementColumns =
+    [
+        new() { Field = "number", Label = "#", Align = "end", Width = 64 },
+        new() { Field = "symbol", Label = "Symbol", Width = 110 },
+        new() { Field = "name", Label = "Name", Flex = 1, MinWidth = 130 },
+        new() { Field = "mass", Label = "Atomic Mass", Align = "end", Width = 150 },
+        new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 150 }
+    ];
+
+    private sealed record StandingRow(int Id, string Team, int Played, int Won, int Drawn, int Lost, int Points);
+
+    private readonly object[] standings =
+    [
+        new StandingRow(1, "Arsenal", 28, 19, 5, 4, 62),
+        new StandingRow(2, "Manchester City", 28, 19, 4, 5, 61),
+        new StandingRow(3, "Liverpool", 28, 18, 6, 4, 60),
+        new StandingRow(4, "Aston Villa", 28, 17, 4, 7, 55),
+        new StandingRow(5, "Tottenham", 28, 16, 5, 7, 53),
+        new StandingRow(6, "Brighton", 28, 11, 9, 8, 42)
+    ];
+
+    private readonly WaDataGridColumn[] standingColumns =
+    [
+        new() { Field = "team", Label = "Team", Flex = 1, MinWidth = 160 },
+        new() { Field = "played", Label = "P", Align = "end", Width = 70 },
+        new() { Field = "won", Label = "W", Align = "end", Width = 70 },
+        new() { Field = "drawn", Label = "D", Align = "end", Width = 70 },
+        new() { Field = "lost", Label = "L", Align = "end", Width = 70 },
+        new() { Field = "points", Label = "Pts", Align = "end", Width = 80, SortDescFirst = true }
+    ];
+
+    private sealed record SubscriberRow(int Id, string Name, string Email, string Plan);
+
+    private readonly object[] subscribers =
+    [
+        new SubscriberRow(1, "Ava Mitchell", "ava.mitchell@example.com", "Pro"),
+        new SubscriberRow(2, "Liam Chen", "liam.chen@example.com", "Team"),
+        new SubscriberRow(3, "Sofia Rossi", "sofia.rossi@example.com", "Pro"),
+        new SubscriberRow(4, "Noah Patel", "noah.patel@example.com", "Enterprise"),
+        new SubscriberRow(5, "Emma Johansson", "emma.johansson@example.com", "Team")
+    ];
+
+    private readonly WaDataGridColumn[] subscriberColumns =
+    [
+        new() { Field = "name", Label = "Name", Flex = 1, MinWidth = 140 },
+        new() { Field = "email", Label = "Email", Flex = 2, MinWidth = 200 },
+        new() { Field = "plan", Label = "Plan", Width = 130 }
+    ];
+
+    private sealed record PlanRow(string Id, string Name, string Seats, string Price);
+
+    private readonly object[] plans =
+    [
+        new PlanRow("starter", "Starter", "Up to 3", "Free"),
+        new PlanRow("pro", "Pro", "Up to 10", "$12"),
+        new PlanRow("team", "Team", "Up to 50", "$24"),
+        new PlanRow("enterprise", "Enterprise", "Unlimited", "$96")
+    ];
+
+    private readonly WaDataGridColumn[] planColumns =
+    [
+        new() { Field = "name", Label = "Plan", Flex = 1, MinWidth = 130 },
+        new() { Field = "seats", Label = "Seats", Flex = 1, MinWidth = 130 },
+        new() { Field = "price", Label = "Price/mo", Align = "end", Width = 120 }
+    ];
+
+    private sealed record TransactionRow(int Id, string Merchant, string Method, decimal Amount, string Status);
+
+    private static readonly string[] merchants = ["Amazon", "Spotify", "Uber", "Whole Foods", "Delta Air Lines", "Apple", "Shell", "Netflix"];
+    private static readonly string[] methods = ["Visa ••4291", "Amex ••1008", "Mastercard ••7733"];
+    private static readonly string[] transactionStatuses = ["completed", "pending", "refunded"];
+
+    private readonly object[] transactions = Enumerable.Range(0, 96)
+        .Select(i => (object)new TransactionRow(
+            1000 + i,
+            merchants[i % merchants.Length],
+            methods[i % methods.Length],
+            Math.Round(12m + ((i * 37.5m) % 480m), 2),
+            transactionStatuses[i % transactionStatuses.Length]))
+        .ToArray();
+
+    private readonly WaDataGridColumn[] transactionColumns =
+    [
+        new() { Field = "id", Label = "Txn", Width = 90 },
+        new() { Field = "merchant", Label = "Merchant", Flex = 2, MinWidth = 140 },
+        new() { Field = "method", Label = "Payment Method", Flex = 1, MinWidth = 185 },
+        new() { Field = "amount", Label = "Amount", Align = "end", Width = 120 },
+        new() { Field = "status", Label = "Status", Width = 120 }
+    ];
+
+    private sealed record CountryRow(string Code, string Country, string Capital, string Region, int Population);
+
+    private readonly object[] countries =
+    [
+        new CountryRow("US", "United States", "Washington, D.C.", "Americas", 331893745),
+        new CountryRow("JP", "Japan", "Tokyo", "Asia", 125681593),
+        new CountryRow("BR", "Brazil", "Brasília", "Americas", 214326223),
+        new CountryRow("DE", "Germany", "Berlin", "Europe", 83294633),
+        new CountryRow("KE", "Kenya", "Nairobi", "Africa", 54027487),
+        new CountryRow("IN", "India", "New Delhi", "Asia", 1417173173),
+        new CountryRow("FR", "France", "Paris", "Europe", 64626628),
+        new CountryRow("AU", "Australia", "Canberra", "Oceania", 26177413)
+    ];
+
+    private readonly WaDataGridColumn[] countryColumns =
+    [
+        new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150, Filterable = true },
+        new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
+        new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = "set" },
+        new() { Field = "population", Label = "Population", Align = "end", Width = 160, Filterable = true, FilterType = "number-range" }
+    ];
+
+    private readonly WaDataGridColumn[] cellClickColumns =
+    [
+        new() { Field = "code", Label = "Code", Width = 90 },
+        new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150 },
+        new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
+        new() { Field = "region", Label = "Region", Width = 140 }
+    ];
+
+    private sealed record CompensationRow(int Id, string Name, string Department, string Title, int Salary);
+
+    private readonly object[] compensation =
+    [
+        new CompensationRow(1, "Ada Lovelace", "Engineering", "Principal Engineer", 186000),
+        new CompensationRow(2, "Grace Hopper", "Engineering", "Staff Engineer", 172000),
+        new CompensationRow(3, "Margaret Hamilton", "Engineering", "Engineering Lead", 195000),
+        new CompensationRow(4, "Katherine Johnson", "Research", "Research Scientist", 158000),
+        new CompensationRow(5, "Alan Turing", "Research", "Research Fellow", 164000),
+        new CompensationRow(6, "Annie Easley", "Support", "Support Lead", 118000)
+    ];
+
+    private readonly WaDataGridColumn[] managedColumns =
+    [
+        new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160, Pinned = "left" },
+        new() { Field = "department", Label = "Department", Flex = 1, MinWidth = 150 },
+        new() { Field = "title", Label = "Title", Flex = 2, MinWidth = 150 },
+        new() { Field = "salary", Label = "Salary", Align = "end", Width = 130, Hidden = true }
+    ];
+
+    private readonly WaDataGridColumn[] groupedColumns =
+    [
+        new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160 },
+        new() { Field = "department", Label = "Department", Flex = 1, MinWidth = 150 },
+        new() { Field = "title", Label = "Title", Flex = 2, MinWidth = 150 },
+        new() { Field = "salary", Label = "Salary", Align = "end", Width = 130, Aggregation = "sum" }
+    ];
+
+    private sealed record InvoiceRow(int Id, string Item, int Hours, int Rate);
+
+    private readonly object[] invoiceItems =
+    [
+        new InvoiceRow(1, "Design sprint", 24, 150),
+        new InvoiceRow(2, "Component library", 80, 165),
+        new InvoiceRow(3, "Accessibility audit", 16, 140),
+        new InvoiceRow(4, "Documentation", 12, 120)
+    ];
+
+    private readonly WaDataGridColumn[] invoiceColumns =
+    [
+        new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
+        new() { Field = "hours", Label = "Hours", Align = "end", Width = 110, Footer = "132" },
+        new() { Field = "rate", Label = "Rate", Align = "end", Width = 120 }
+    ];
+
+    private sealed record FileRow(int Id, string Name, string Kind, string Size, object[]? Children = null);
+
+    private readonly object[] projectFiles =
+    [
+        new FileRow(1, "src", "Folder", "—",
+        [
+            new FileRow(11, "index.ts", "TypeScript", "2.1 KB"),
+            new FileRow(12, "components", "Folder", "—",
+            [
+                new FileRow(121, "button.ts", "TypeScript", "6.4 KB"),
+                new FileRow(122, "card.ts", "TypeScript", "3.9 KB")
+            ])
+        ]),
+        new FileRow(2, "docs", "Folder", "—",
+        [
+            new FileRow(21, "getting-started.md", "Markdown", "8.8 KB")
+        ]),
+        new FileRow(3, "package.json", "JSON", "1.2 KB")
+    ];
+
+    private readonly WaDataGridColumn[] fileColumns =
+    [
+        new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 200 },
+        new() { Field = "kind", Label = "Kind", Flex = 1, MinWidth = 130 },
+        new() { Field = "size", Label = "Size", Align = "end", Width = 110 }
+    ];
+
+    private readonly object[] noInvoices = [];
+
+    private readonly WaDataGridColumn[] emptyColumns =
+    [
+        new() { Field = "number", Label = "Invoice #", Width = 130 },
+        new() { Field = "client", Label = "Client", Flex = 1, MinWidth = 160 },
+        new() { Field = "amount", Label = "Amount", Align = "end", Width = 120 }
+    ];
+
+    private sealed record OrderRow(int Id, string Customer, string Status, decimal Amount);
+
+    private static readonly string[] orderCustomers =
+    [
+        "Meridian Labs", "Northwind Traders", "Contoso", "Fabrikam", "Litware", "Tailspin Toys",
+        "Adventure Works", "Wide World Importers", "Proseware", "Lucerne Publishing"
+    ];
+
+    private static readonly string[] orderStatuses = ["fulfilled", "processing", "backordered"];
+
+    private readonly OrderRow[] allOrders = Enumerable.Range(0, 60)
+        .Select(i => new OrderRow(
+            5000 + i,
+            orderCustomers[i % orderCustomers.Length],
+            orderStatuses[i % orderStatuses.Length],
+            Math.Round(180m + ((i * 91.5m) % 2400m), 2)))
+        .ToArray();
+
+    private readonly WaDataGridColumn[] orderColumns =
+    [
+        new() { Field = "id", Label = "Order", Width = 100 },
+        new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 180 },
+        new() { Field = "status", Label = "Status", Width = 140 },
+        new() { Field = "amount", Label = "Amount", Align = "end", Width = 120 }
+    ];
+
+    private sealed record ExpenseRow(int Id, string Description, string Category, decimal Amount);
+
+    private readonly object[] expenses =
+    [
+        new ExpenseRow(1, "Team offsite venue", "Events", 2400m),
+        new ExpenseRow(2, "Design software licenses", "Software", 890m),
+        new ExpenseRow(3, "Conference tickets", "Training", 1250m),
+        new ExpenseRow(4, "Office coffee subscription", "Facilities", 180m),
+        new ExpenseRow(5, "Usability study incentives", "Research", 640m)
+    ];
+
+    private readonly WaDataGridColumn[] expenseColumns =
+    [
+        new() { Field = "description", Label = "Description", Flex = 2, MinWidth = 200 },
+        new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 140 },
+        new() { Field = "amount", Label = "Amount", Align = "end", Width = 120 }
+    ];
+
+    #endregion
+
+    #region ------ Example sources ------
+
+    private const string ColumnsExample = """
+        <WaDataGrid Label="Inventory" RowKey="sku" Data="inventory" Columns="inventoryColumns" />
+
+        @code {
+            private sealed record InventoryRow(string Sku, string Product, string Category, int Price, int Stock);
+
+            private readonly object[] inventory =
+            [
+                new InventoryRow("CHA-014", "Aeron Office Chair", "Furniture", 1395, 18),
+                new InventoryRow("DSK-220", "Standing Desk, 60\"", "Furniture", 749, 7),
+                new InventoryRow("MON-340", "27\" 4K Monitor", "Electronics", 529, 42),
+                new InventoryRow("KEY-101", "Mechanical Keyboard", "Electronics", 159, 0),
+                new InventoryRow("LMP-076", "LED Desk Lamp", "Lighting", 64, 130)
+            ];
+
+            private readonly WaDataGridColumn[] inventoryColumns =
+            [
+                new() { Field = "sku", Label = "SKU", Width = 110 },
+                new() { Field = "product", Label = "Product", Flex = 2, MinWidth = 180 },
+                new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 130 },
+                new() { Field = "price", Label = "Price (EUR)", Align = "end", Width = 130 },
+                new() { Field = "stock", Label = "In Stock", Align = "end", Width = 110 }
+            ];
+        }
+        """;
+
+    private const string StripedExample = """
+        <WaDataGrid Label="Periodic table" RowKey="number" Striped="true" Size="WaSize.Small"
+                    Data="elements" Columns="elementColumns" />
+        """;
+
+    private const string SortingExample = """
+        <WaDataGrid Label="Standings" RowKey="id" MaxMultiSort="3" Data="standings" Columns="standingColumns"
+                    OnSortChange="HandleSortChange" />
+        <WaDivider />
+        <p>Active sort: <strong>@sortSummary</strong> — Shift-click a second header to sort by more than one column.</p>
+
+        @code {
+            private string sortSummary = "none";
+
+            private void HandleSortChange(WaDataGridSortChangeEventArgs e)
+            {
+                sortSummary = e.Sort is null || e.Sort.Count == 0
+                    ? "none"
+                    : string.Join(", ", e.Sort.Select(s => $"{s.Id} {(s.Desc ? "descending" : "ascending")}"));
+            }
+        }
+        """;
+
+    private const string SelectionExample = """
+        <WaDataGrid Label="Subscribers" RowKey="id" Selectable="WaDataGridSelectable.Multiple"
+                    Data="subscribers" Columns="subscriberColumns" OnRowSelect="HandleRowSelect" />
+        <WaDivider />
+        <p>Selected: <strong>@selectedCount</strong> of @subscribers.Length subscribers.</p>
+
+        @code {
+            private int selectedCount;
+
+            private void HandleRowSelect(WaDataGridRowSelectEventArgs e) => selectedCount = e.SelectedKeys?.Count ?? 0;
+        }
+        """;
+
+    private const string SingleSelectionExample = """
+        <WaDataGrid Label="Pick a plan" RowKey="id" Selectable="WaDataGridSelectable.Single"
+                    Data="plans" Columns="planColumns" />
+        """;
+
+    private const string PaginationExample = """
+        <WaDataGrid Label="Transactions" RowKey="id" Paginate="true" PageSize="10"
+                    Data="transactions" Columns="transactionColumns" OnPageChange="HandlePageChange" />
+        <WaDivider />
+        <p>Page <strong>@(transactionPage + 1)</strong> — the grid's <code>Page</code> is 0-based.</p>
+
+        @code {
+            private int transactionPage;
+
+            private void HandlePageChange(WaDataGridPageChangeEventArgs e) => transactionPage = e.Page;
+        }
+        """;
+
+    private const string SearchExample = """
+        <WaDataGrid Label="Countries" RowKey="code" WithSearch="true" Data="countries" Columns="countryColumns"
+                    OnFilterChange="HandleFilterChange" />
+        <WaDivider />
+        <p>Search term: <strong>@(string.IsNullOrEmpty(searchTerm) ? "(none)" : searchTerm)</strong>, active column filters: <strong>@filterCount</strong>.</p>
+
+        @code {
+            private string? searchTerm;
+            private int filterCount;
+
+            private void HandleFilterChange(WaDataGridFilterChangeEventArgs e)
+            {
+                searchTerm = e.Search;
+                filterCount = e.Filters?.Count ?? 0;
+            }
+
+            private readonly WaDataGridColumn[] countryColumns =
+            [
+                new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150, Filterable = true },
+                new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
+                new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = "set" },
+                new() { Field = "population", Label = "Population", Align = "end", Width = 160, Filterable = true, FilterType = "number-range" }
+            ];
+        }
+        """;
+
+    private const string ColumnManagementExample = """
+        <WaCluster Gap="GapSize.Gap_S" Style="margin-block-end: var(--wa-space-m);">
+            <WaButton Size="WaSize.Small" OnClick="@(() => managedGrid!.AutoSizeColumnsAsync())">Auto-size columns</WaButton>
+            <WaButton Size="WaSize.Small" OnClick="@(() => managedGrid!.SizeColumnsToFitAsync())">Size to fit</WaButton>
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => managedGrid!.ResetColumnsAsync())">Reset columns</WaButton>
+        </WaCluster>
+        <WaDataGrid @ref="managedGrid" Label="Employees" RowKey="id" WithColumnMenu="true" WithColumnsMenu="true"
+                    Resizable="true" Reorderable="true" Pinnable="true" Data="compensation" Columns="managedColumns" />
+
+        @code {
+            private WaDataGrid? managedGrid;
+
+            private readonly WaDataGridColumn[] managedColumns =
+            [
+                new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160, Pinned = "left" },
+                new() { Field = "department", Label = "Department", Flex = 1, MinWidth = 150 },
+                new() { Field = "title", Label = "Title", Flex = 2, MinWidth = 150 },
+                new() { Field = "salary", Label = "Salary", Align = "end", Width = 130, Hidden = true }
+            ];
+        }
+        """;
+
+    private const string FootersExample = """
+        <WaDataGrid Label="Invoice" RowKey="id" Data="invoiceItems" Columns="invoiceColumns" />
+
+        @code {
+            @* footers take static text; upstream's row-aggregating footer function cannot be marshaled *@
+            private readonly WaDataGridColumn[] invoiceColumns =
+            [
+                new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
+                new() { Field = "hours", Label = "Hours", Align = "end", Width = 110, Footer = "132" },
+                new() { Field = "rate", Label = "Rate", Align = "end", Width = 120 }
+            ];
+        }
+        """;
+
+    private const string GroupingExample = """
+        <WaCluster Gap="GapSize.Gap_S" Style="margin-block-end: var(--wa-space-m);">
+            <WaButton Size="WaSize.Small" OnClick="@(() => groupedGrid!.ExpandAllRowsAsync())">Expand all groups</WaButton>
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => groupedGrid!.CollapseAllRowsAsync())">Collapse all</WaButton>
+        </WaCluster>
+        <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="department"
+                    Data="compensation" Columns="groupedColumns" />
+
+        @code {
+            private WaDataGrid? groupedGrid;
+
+            private readonly WaDataGridColumn[] groupedColumns =
+            [
+                new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160 },
+                new() { Field = "department", Label = "Department", Flex = 1, MinWidth = 150 },
+                new() { Field = "title", Label = "Title", Flex = 2, MinWidth = 150 },
+                new() { Field = "salary", Label = "Salary", Align = "end", Width = 130, Aggregation = "sum" }
+            ];
+        }
+        """;
+
+    private const string TreeExample = """
+        <WaCluster Gap="GapSize.Gap_S" Style="margin-block-end: var(--wa-space-m);">
+            <WaButton Size="WaSize.Small" OnClick="@(() => treeGrid!.ExpandAllRowsAsync())">Expand all folders</WaButton>
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => treeGrid!.CollapseAllRowsAsync())">Collapse all</WaButton>
+        </WaCluster>
+        <WaDataGrid @ref="treeGrid" Label="Project files" RowKey="id" ChildRows="children" FilterFromLeafRows="true"
+                    WithSearch="true" Selectable="WaDataGridSelectable.Multiple" Data="projectFiles" Columns="fileColumns" />
+
+        @code {
+            private sealed record FileRow(int Id, string Name, string Kind, string Size, object[]? Children = null);
+
+            private readonly object[] projectFiles =
+            [
+                new FileRow(1, "src", "Folder", "—",
+                [
+                    new FileRow(11, "index.ts", "TypeScript", "2.1 KB"),
+                    new FileRow(12, "components", "Folder", "—",
+                    [
+                        new FileRow(121, "button.ts", "TypeScript", "6.4 KB"),
+                        new FileRow(122, "card.ts", "TypeScript", "3.9 KB")
+                    ])
+                ]),
+                new FileRow(2, "docs", "Folder", "—",
+                [
+                    new FileRow(21, "getting-started.md", "Markdown", "8.8 KB")
+                ]),
+                new FileRow(3, "package.json", "JSON", "1.2 KB")
+            ];
+        }
+        """;
+
+    private const string EmptyExample = """
+        <WaDataGrid Label="Invoices" RowKey="id" WithSearch="true" Data="noInvoices" Columns="emptyColumns">
+            <EmptyContent>
+                <WaStack Gap="GapSize.Gap_S" AlignItems="AlignItems.Center" Style="padding: var(--wa-space-2xl) 0; text-align: center;">
+                    <WaIcon Name="file-invoice" Style="font-size: 2.5rem; color: var(--wa-color-text-quiet);" />
+                    <div>
+                        <strong>No invoices yet</strong>
+                        <p style="margin: 0.25em 0 0; color: var(--wa-color-text-quiet);">Create your first invoice to see it here.</p>
+                    </div>
+                    <WaButton Variant="WaVariant.Brand" StartIconName="plus">New invoice</WaButton>
+                </WaStack>
+            </EmptyContent>
+            <NoResultsContent>
+                <WaStack Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center" Style="padding: var(--wa-space-xl) 0;">
+                    <WaIcon Name="magnifying-glass" Style="font-size: 2rem; color: var(--wa-color-text-quiet);" />
+                    <small>No invoice matches that search.</small>
+                </WaStack>
+            </NoResultsContent>
+        </WaDataGrid>
+        """;
+
+    private const string ServerExample = """
+        @* upstream's dataSource callback cannot cross the interop boundary; server mode is the Blazor path *@
+        <WaDataGrid Label="Orders" RowKey="id" Server="true" Paginate="true" PageSize="8" WithSearch="true"
+                    FilterDebounce="300" Total="serverTotal" Loading="serverLoading"
+                    Data="serverRows" Columns="orderColumns" OnDataRequest="HandleDataRequestAsync">
+            <LoadingContent>
+                <WaStack Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center">
+                    <WaSpinner Style="font-size: 2rem;" />
+                    <small>Loading orders…</small>
+                </WaStack>
+            </LoadingContent>
+        </WaDataGrid>
+        <WaDivider />
+        <p>Served <strong>@serverRows.Length</strong> of <strong>@serverTotal</strong> matching orders in @serverRequestCount request(s).</p>
+
+        @code {
+            private object[] serverRows = [];
+            private int serverTotal;
+            private bool serverLoading;
+            private int serverRequestCount;
+
+            private async Task HandleDataRequestAsync(WaDataGridDataRequestEventArgs e)
+            {
+                serverLoading = true;
+                serverRequestCount++;
+                StateHasChanged();
+
+                // stand in for a network round trip
+                await Task.Delay(500);
+
+                var query = allOrders.AsEnumerable();
+
+                var term = e.Search;
+                if (!string.IsNullOrWhiteSpace(term))
+                    query = query.Where(o => o.Customer.Contains(term, StringComparison.OrdinalIgnoreCase));
+
+                var sort = e.Sort is { Count: > 0 } ? e.Sort[0] : null;
+                if (sort is not null)
+                {
+                    query = sort.Id switch
+                    {
+                        "customer" => sort.Desc ? query.OrderByDescending(o => o.Customer) : query.OrderBy(o => o.Customer),
+                        "amount" => sort.Desc ? query.OrderByDescending(o => o.Amount) : query.OrderBy(o => o.Amount),
+                        "status" => sort.Desc ? query.OrderByDescending(o => o.Status) : query.OrderBy(o => o.Status),
+                        _ => query
+                    };
+                }
+
+                var matches = query.ToList();
+                serverTotal = matches.Count;
+                serverRows = matches.Skip(e.Page * e.PageSize).Take(e.PageSize).Cast<object>().ToArray();
+                serverLoading = false;
+            }
+        }
+        """;
+
+    private const string CellClickExample = """
+        <WaDataGrid Label="Countries" RowKey="code" Data="countries" Columns="cellClickColumns" OnCellClick="HandleCellClick" />
+        <WaDivider />
+        <p>@(cellClickMessage ?? "Click any cell to see what the event reports.")</p>
+
+        @code {
+            private string? cellClickMessage;
+
+            private void HandleCellClick(WaDataGridCellClickEventArgs e)
+            {
+                cellClickMessage = $"Clicked the \"{e.Column}\" cell of row {e.RowIndex}; its value is {e.Value}.";
+            }
+        }
+        """;
+
+    private const string ExportExample = """
+        <WaCluster Gap="GapSize.Gap_S" Style="margin-block-end: var(--wa-space-m);">
+            <WaButton Size="WaSize.Small" StartIconName="download" OnClick="DownloadCsvAsync">Download CSV</WaButton>
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="PreviewCsvAsync">Preview CSV</WaButton>
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" StartIconName="copy" OnClick="CopyRowsAsync">Copy selected rows</WaButton>
+        </WaCluster>
+        <WaDataGrid @ref="exportGrid" Label="Expenses" RowKey="id" Selectable="WaDataGridSelectable.Multiple"
+                    Data="expenses" Columns="expenseColumns" />
+        @if (copiedRows > 0)
+        {
+            <p>Copied <strong>@copiedRows</strong> row(s) to the clipboard.</p>
+        }
+        @if (csvPreview is not null)
+        {
+            <pre style="overflow-x: auto;"><code>@csvPreview</code></pre>
+        }
+
+        @code {
+            private WaDataGrid? exportGrid;
+            private string? csvPreview;
+            private int copiedRows;
+
+            private async Task DownloadCsvAsync()
+            {
+                if (exportGrid is not null)
+                    await exportGrid.ExportDataAsCsvAsync(new WaDataGridCsvExportOptions { FileName = "expenses" });
+            }
+
+            private async Task PreviewCsvAsync()
+            {
+                if (exportGrid is not null)
+                    csvPreview = await exportGrid.GetDataAsCsvAsync();
+            }
+
+            private async Task CopyRowsAsync()
+            {
+                if (exportGrid is not null)
+                    copiedRows = await exportGrid.CopySelectedRowsAsync(new WaDataGridCopyOptions { Format = "csv" });
+            }
+        }
+        """;
+
+    #endregion
+}

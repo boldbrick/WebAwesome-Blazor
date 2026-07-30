@@ -63,6 +63,7 @@ public static class ComponentCategoryMap
         ["wa-known-date"] = "Forms",
         ["wa-number-input"] = "Forms",
         ["wa-option"] = "Forms",
+        ["wa-otp-input"] = "Forms",
         ["wa-radio"] = "Forms",
         ["wa-radio-group"] = "Forms",
         ["wa-rating"] = "Forms",
@@ -85,6 +86,7 @@ public static class ComponentCategoryMap
 
         ["wa-breadcrumb"] = "Navigation",
         ["wa-breadcrumb-item"] = "Navigation",
+        ["wa-pagination"] = "Navigation",
         ["wa-tab"] = "Navigation",
         ["wa-tab-group"] = "Navigation",
         ["wa-tab-panel"] = "Navigation",
@@ -117,6 +119,7 @@ public static class ComponentCategoryMap
         ["wa-bar-chart"] = "Data Viz",
         ["wa-bubble-chart"] = "Data Viz",
         ["wa-chart"] = "Data Viz",
+        ["wa-data-grid"] = "Data Viz",
         ["wa-doughnut-chart"] = "Data Viz",
         ["wa-line-chart"] = "Data Viz",
         ["wa-pie-chart"] = "Data Viz",

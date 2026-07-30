@@ -17,6 +17,7 @@ Alignment with the Web Awesome 3.11.0 release, opening the **WA-3.11 train**. Th
 ### Changed
 - `WaCarousel` gained `AddSlideAsync(ElementReference slide)` and `RemoveSlideAsync(int index)`, mirroring the new upstream `addSlide()`/`removeSlide()`. The declarative `ChildContent` route remains the normal way to compose slides in Blazor.
 - The nine chart wrappers (`WaChart`, `WaBarChart`, `WaBubbleChart`, `WaDoughnutChart`, `WaLineChart`, `WaPieChart`, `WaPolarAreaChart`, `WaRadarChart`, `WaScatterChart`) now render the axis-label attributes as `x-label`/`y-label` instead of `xLabel`/`yLabel`, following the upstream CEM rename. **The `XLabel`/`YLabel` parameters are unchanged**, so consumer code is unaffected; this was a wrapper-internal correctness fix in `WaChartBase`.
+- `WaDataGridColumn` covers `SortFn` (the built-in comparison strategy — `alphanumeric`, `text`, `datetime`, `basic`, …) and `SortUndefined` (`first`/`last`), both added after demo curation showed they were JSON-expressible and had been missed.
 - `wa-page` replaced its `skip-link`/`skip-links` CSS `::part`s with `skip-to-content`. `WaPage` already rendered the `skip-to-content` slot and never exposed the old part names, so there is no wrapper API change — noted for completeness.
 
 ### Non-breaking upstream "breaking" changes (no wrapper action)
@@ -26,10 +27,11 @@ Alignment with the Web Awesome 3.11.0 release, opening the **WA-3.11 train**. Th
 ### Library
 - Versioned reference docs refreshed for 3.11.0: all **87** component docs taken from the release zip's bundled references (21 filled, 66 overridden), 0 needed manual capture. Web Awesome 3.11.0 is published to npm/jsdelivr but **has no `v3.11.0` tag in the public GitHub repository**, so `Sync-WaDocs.ps1` gained `-DocsTagVersion` (take the non-component documentation from an older tag that does exist — `v3.10.0` here) and `-PreferBundledRefs` (let the release zip's version-exact component references win over the older tree's component docs, implied by `-DocsTagVersion`). The non-component docs will refresh normally once the tag is published.
 - New train WA-3.11: subtrunk `/main/WA-3.11` branched off `/main` (released 3.10.0, cs:226); developed on `/main/WA-3.11/WAB-44`.
+- Demo navigation: the three new components were added to `ComponentCategoryMap` — `wa-otp-input` under Forms, `wa-pagination` under Navigation, `wa-data-grid` under Data Viz. Without this they fell into an unmapped "Other" group, which the Playwright taxonomy check caught.
 - Event delivery: 16 new events registered in the JS initializer — `wa-before-page-change`, `wa-page-change`, `wa-complete`, and the 13 data-grid events. Four need `specialArgs` projections because their details are not JSON-safe: `wa-cell-contextmenu` (drops the live `originalEvent`), `wa-data-request` (drops the `AbortSignal`), `wa-data-error` (projects the `Error` to its `message`), and `wa-column-pin` (normalizes `side: false` to null). The remaining data-grid details are handled by the existing recursive `sanitizeDetail` copier.
 
 ### Public API
-- Baseline promoted: purely additive — **457 additions, zero removals**. The new `WaDataGrid`/`WaOtpInput`/`WaPagination` classes, seven enums, 15 event-args classes, nine data-grid model types, and the two `WaCarousel` methods. Every diff explained by the WA 3.11.0 change report.
+- Baseline promoted: purely additive — **459 additions, zero removals**. The new `WaDataGrid`/`WaOtpInput`/`WaPagination` classes, seven enums, 15 event-args classes, nine data-grid model types, and the two `WaCarousel` methods. Every diff explained by the WA 3.11.0 change report.
 
 ### Known capability gaps (documented, not defects)
 - `WaDataGrid` does not support upstream's **custom cell renderers**: a column's `formatter` is a JS function or Lit `html` template, which cannot cross the Blazor interop boundary. The same applies to the column members `value`, `filterFn`, `comparator`, `aggregatedFormatter`, and the function forms of `footer`, `aggregation`, and `cellClass`.

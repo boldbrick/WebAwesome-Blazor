@@ -18,6 +18,7 @@
         Your @model.TicketType ticket for the @model.Track track is reserved. A confirmation was sent
         to @model.Email.
         @(model.BadgePhotoSelected ? "Your badge will be printed with the photo you uploaded." : "Your badge will use the default Nova Summit artwork.")
+        Your phone number is verified, so on-site check-in is a single scan.
         See you at Nova Summit 2026!
     </WaCallout>
     <div style="margin-top: var(--wa-space-m);">
@@ -100,6 +101,9 @@ else
 
                     <WaFileInput Label="Badge photo" Hint="Optional — a square PNG or JPG up to 5 MB, printed on your badge"
                                  Accept="image/png,image/jpeg" OnChange="@(() => model.BadgePhotoSelected = true)" />
+
+                    <WaOtpInput Label="Phone verification code" Hint="Enter the six-digit code we texted you — it confirms the number we'll use for on-site check-in"
+                                Format="### ###" Required="true" @bind-Value="model.VerificationCode" />
 
                     <WaDivider />
 
@@ -198,6 +202,10 @@ else
         public string? ArrivalDate { get; set; }
 
         public string? SessionTime { get; set; }
+
+        [Required(ErrorMessage = "Please enter the verification code we texted you.")]
+        [StringLength(6, MinimumLength = 6, ErrorMessage = "The verification code is six digits long.")]
+        public string? VerificationCode { get; set; }
 
         [Required(ErrorMessage = "Please provide your date of birth.")]
         public string? DateOfBirth { get; set; }

@@ -4230,6 +4230,8 @@ namespace WebAwesome.Blazor.Models
         public bool? Resizable { get; set; }
         public bool? Searchable { get; set; }
         public bool? SortDescFirst { get; set; }
+        public string? SortFn { get; set; }
+        public string? SortUndefined { get; set; }
         public bool? Sortable { get; set; }
         public int? Width { get; set; }
     }

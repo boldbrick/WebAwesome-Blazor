@@ -1,4 +1,5 @@
 @page "/showcases/dashboard"
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Showcase: Dashboard</PageTitle>
 
@@ -7,7 +8,8 @@
         <h1>Nova Studio — Release Dashboard</h1>
         <p>
             Sprint 42 status for the Nova Studio 3.2 release, showing cards, badges, progress indicators,
-            formatted values, avatars, tags, charts, sparklines and skeleton placeholders on a responsive grid.
+            formatted values, avatars, tags, charts, sparklines, a data grid and skeleton placeholders on a
+            responsive grid.
         </p>
     </div>
     <WaButton Variant="WaVariant.Brand" StartIconName="rotate" OnClick="RefreshAsync" Loading="refreshing">Refresh</WaButton>
@@ -192,8 +194,49 @@
     </WaCard>
 </WaGrid>
 
+<WaCard WithHeader="true" WithFooter="true" Style="margin-block-start: var(--wa-space-l);">
+    <HeaderContent>
+        <WaSplit Direction="SplitDirection.Row" AlignItems="AlignItems.Center">
+            <WaText Variant="TextVariant.Heading" Element="h2">Open issues</WaText>
+            <WaText Variant="TextVariant.Caption">@issues.Length remaining for the 3.2 release</WaText>
+        </WaSplit>
+    </HeaderContent>
+    <ChildContent>
+        @if (refreshing)
+        {
+            @* skeleton placeholders shown while the issue queue reloads *@
+            <WaStack Gap="GapSize.Gap_S">
+                <WaSkeleton Effect="WaEffect.Sheen" Style="width: 100%; height: 1.25rem;" />
+                <WaSkeleton Effect="WaEffect.Sheen" Style="width: 92%; height: 1.25rem;" />
+                <WaSkeleton Effect="WaEffect.Sheen" Style="width: 96%; height: 1.25rem;" />
+                <WaSkeleton Effect="WaEffect.Sheen" Style="width: 88%; height: 1.25rem;" />
+            </WaStack>
+        }
+        else
+        {
+            <WaDataGrid Label="Open issues for the Nova Studio 3.2 release" RowKey="key" Size="WaSize.Small"
+                        Striped="true" WithSearch="true" WithColumnsMenu="true"
+                        Data="CurrentIssuePage" Columns="issueColumns" />
+        }
+    </ChildContent>
+    <FooterContent>
+        @* the grid shows one page at a time; the pagination control drives which slice it receives *@
+        <WaSplit Direction="SplitDirection.Row" AlignItems="AlignItems.Center">
+            <WaText Variant="TextVariant.Caption">
+                Page @issuePage of @((issues.Length + IssuePageSize - 1) / IssuePageSize)
+            </WaText>
+            <WaPagination Total="issues.Length" PageSize="IssuePageSize" Page="issuePage"
+                          Appearance="WaPaginationAppearance.Plain" Label="Open issues"
+                          WithSummary="true" OnPageChange="HandleIssuePageChange" />
+        </WaSplit>
+    </FooterContent>
+</WaCard>
+
 @code {
+    private const int IssuePageSize = 6;
+
     private bool refreshing;
+    private int issuePage = 1;
     private decimal satisfaction = 4.5m;
     private readonly DateTime featureFreeze = DateTime.Now.AddDays(9);
     private readonly DateTime rcDate = DateTime.Now.AddDays(23);
@@ -208,6 +251,51 @@
         new("Accessibility pass", "on track", WaVariant.Success, "Priya Anand", "PA", 14, 16),
         new("Billing integration", "blocked", WaVariant.Danger, "Tomás Ruiz", "TR", 5, 12)
     ];
+
+    private sealed record Issue(string Key, string Title, string Workstream, string Priority, string Assignee);
+
+    private readonly Issue[] issues =
+    [
+        new("NOVA-812", "Presence cursors drift after reconnect", "Realtime editor", "high", "Mara Lindqvist"),
+        new("NOVA-818", "Undo history lost on document rename", "Realtime editor", "high", "Mara Lindqvist"),
+        new("NOVA-823", "Comment threads collapse out of order", "Realtime editor", "medium", "Mara Lindqvist"),
+        new("NOVA-826", "Selection lag above 200 collaborators", "Realtime editor", "low", "Mara Lindqvist"),
+        new("NOVA-741", "PDF export drops embedded fonts", "Export pipeline", "high", "Jonas Petrov"),
+        new("NOVA-744", "SVG export ignores clip paths", "Export pipeline", "high", "Jonas Petrov"),
+        new("NOVA-749", "Export queue retries indefinitely", "Export pipeline", "high", "Jonas Petrov"),
+        new("NOVA-752", "Batch export progress stalls at 99%", "Export pipeline", "medium", "Jonas Petrov"),
+        new("NOVA-758", "Thumbnail cache misses after re-export", "Export pipeline", "medium", "Jonas Petrov"),
+        new("NOVA-761", "Export presets not shared across teams", "Export pipeline", "low", "Jonas Petrov"),
+        new("NOVA-763", "Export dialog loses focus trap", "Export pipeline", "low", "Jonas Petrov"),
+        new("NOVA-767", "CSV export omits archived layers", "Export pipeline", "low", "Jonas Petrov"),
+        new("NOVA-690", "Canvas toolbar unreachable by keyboard", "Accessibility pass", "high", "Priya Anand"),
+        new("NOVA-694", "Contrast below AA on quiet badges", "Accessibility pass", "medium", "Priya Anand"),
+        new("NOVA-602", "Proration wrong on mid-cycle downgrade", "Billing integration", "high", "Tomás Ruiz"),
+        new("NOVA-607", "Invoice PDF misses VAT identifier", "Billing integration", "high", "Tomás Ruiz"),
+        new("NOVA-611", "Failed payment retry sends no e-mail", "Billing integration", "medium", "Tomás Ruiz"),
+        new("NOVA-615", "Seat count off by one after transfer", "Billing integration", "medium", "Tomás Ruiz"),
+        new("NOVA-619", "Currency switch resets the plan picker", "Billing integration", "low", "Tomás Ruiz"),
+        new("NOVA-624", "Dunning banner shows for trial accounts", "Billing integration", "low", "Tomás Ruiz"),
+        new("NOVA-631", "Tax region cached across sessions", "Billing integration", "low", "Tomás Ruiz")
+    ];
+
+    private readonly WaDataGridColumn[] issueColumns =
+    [
+        new() { Field = "key", Label = "Issue", Width = 110 },
+        new() { Field = "title", Label = "Title", Flex = 3, MinWidth = 220 },
+        new() { Field = "workstream", Label = "Workstream", Flex = 1, MinWidth = 150 },
+        new() { Field = "priority", Label = "Priority", Width = 110 },
+        new() { Field = "assignee", Label = "Assignee", Flex = 1, MinWidth = 150 }
+    ];
+
+    // rows for the page the pagination control currently points at (its Page is 1-based)
+    private object[] CurrentIssuePage => issues
+        .Skip((issuePage - 1) * IssuePageSize)
+        .Take(IssuePageSize)
+        .Cast<object>()
+        .ToArray();
+
+    private void HandleIssuePageChange(WaPaginationPageChangeEventArgs e) => issuePage = e.Page;
 
     private async Task RefreshAsync()
     {
