@@ -22,8 +22,23 @@ the first available source:
 
 The downloaded GitHub zip is cached in temp\wa-docs\ and reused; pass -Force to re-download.
 
+A Pro release is sometimes published ahead of the public GitHub repository, so no v<Version> tag
+exists yet (Web Awesome 3.11.0 shipped this way). Pass -DocsTagVersion with the newest tag that
+does exist to take the non-component documentation (tokens, utilities, frameworks, resources) from
+that older tree; the component docs then come from the release zip's own bundled references, which
+are version-exact for the target release. Supplying -DocsTagVersion therefore implies
+-PreferBundledRefs, so a stale component doc from the older tree never wins over the bundled one.
+
 .PARAMETER Version
 Web Awesome version whose docs to ingest, e.g. 3.6.0.
+
+.PARAMETER DocsTagVersion
+GitHub tag version to fetch the docs tree from, when it differs from the release Version (the
+public repository lags the Pro release). Defaults to Version. Implies -PreferBundledRefs.
+
+.PARAMETER PreferBundledRefs
+Use the release zip's bundled component references in preference to the component docs in the
+fetched GitHub tree, rather than only to fill gaps.
 
 .PARAMETER Destination
 Folder whose contents are replaced with the fetched docs tree. Defaults to inputs\WebAwesome
@@ -51,6 +66,11 @@ param(
     [ValidatePattern('^\d+\.\d+\.\d+(-[0-9A-Za-z\.\-]+)?$')]
     [string]$Version,
 
+    [ValidatePattern('^\d+\.\d+\.\d+(-[0-9A-Za-z\.\-]+)?$')]
+    [string]$DocsTagVersion,
+
+    [switch]$PreferBundledRefs,
+
     [string]$Destination,
 
     [string]$CarryFromPath,
@@ -68,10 +88,17 @@ elseif (-not [System.IO.Path]::IsPathRooted($Destination)) { $Destination = Join
 if (-not $CarryFromPath) { $CarryFromPath = Join-Path $RepoRoot 'inputs\WebAwesome' }
 elseif (-not [System.IO.Path]::IsPathRooted($CarryFromPath)) { $CarryFromPath = Join-Path $RepoRoot $CarryFromPath }
 
+# the public GitHub tree may lag the Pro release - the docs tag can be pinned to an older version
+if (-not $DocsTagVersion) { $DocsTagVersion = $Version }
+elseif ($DocsTagVersion -ne $Version) {
+    $PreferBundledRefs = $true
+    Write-Output "Docs tree pinned to GitHub tag v$DocsTagVersion (release is $Version); bundled component references take precedence."
+}
+
 $docsRepoPath = 'packages/webawesome/docs/docs/'
-$zipUrl = "https://codeload.github.com/shoelace-style/webawesome/zip/refs/tags/v$Version"
+$zipUrl = "https://codeload.github.com/shoelace-style/webawesome/zip/refs/tags/v$DocsTagVersion"
 $cacheDir = Join-Path $RepoRoot 'temp\wa-docs'
-$zipPath = Join-Path $cacheDir "github_v$Version.zip"
+$zipPath = Join-Path $cacheDir "github_v$DocsTagVersion.zip"
 $releaseZipPath = Join-Path $RepoRoot "temp\download\webawesome_$Version.zip"
 
 # ------ download the GitHub repository zip at the tag (cached) ------
@@ -88,7 +115,7 @@ else {
     }
     catch {
         if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
-        throw "Download failed for tag v$Version ($zipUrl): $($_.Exception.Message)"
+        throw "Download failed for tag v$DocsTagVersion ($zipUrl): $($_.Exception.Message)"
     }
 }
 
@@ -124,8 +151,8 @@ finally {
     $zip.Dispose()
 }
 
-if ($extracted -eq 0) { throw "No files found under $docsRepoPath in the v$Version GitHub zip - tag layout changed?" }
-Write-Output "Extracted $extracted doc files from GitHub tag v$Version."
+if ($extracted -eq 0) { throw "No files found under $docsRepoPath in the v$DocsTagVersion GitHub zip - tag layout changed?" }
+Write-Output "Extracted $extracted doc files from GitHub tag v$DocsTagVersion."
 
 # ------ determine the component list from the release CEM ------
 
@@ -178,16 +205,21 @@ $today = Get-Date -Format 'yyyy-MM-dd'
 $filledFromZip = @()
 $carriedForward = @()
 $needsCapture = @()
+$overriddenFromZip = @()
 
 foreach ($name in $componentNames) {
     $stagingDoc = Join-Path $staging "components\$name.md"
-    if (Test-Path $stagingDoc) { continue }
+    $hasTreeDoc = Test-Path $stagingDoc
+
+    # the fetched tree wins unless the caller prefers the version-exact bundled reference
+    if ($hasTreeDoc -and -not ($PreferBundledRefs -and $bundledRefs.ContainsKey($name))) { continue }
+    if ($hasTreeDoc) { $overriddenFromZip += $name }
 
     $content = $null
     if ($bundledRefs.ContainsKey($name)) {
         $header = "<!-- Source: reference doc bundled in the Web Awesome $Version release zip (dist/skills/webawesome/references/components/$name.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/$name -->"
         $content = "$header`r`n`r`n$($bundledRefs[$name])"
-        $filledFromZip += $name
+        if (-not $hasTreeDoc) { $filledFromZip += $name }
     }
     else {
         $existingDoc = Join-Path $CarryFromPath "components\$name.md"
@@ -215,6 +247,7 @@ foreach ($name in $componentNames) {
 }
 
 if ($filledFromZip) { Write-Output "Filled from the release zip's bundled references: $($filledFromZip -join ', ')" }
+if ($overriddenFromZip) { Write-Output "Overridden by the release zip's bundled references ($($overriddenFromZip.Count) components present in the fetched tree but version-exact in the zip)." }
 if ($carriedForward) { Write-Output "Carried forward (re-stamped for $Version): $($carriedForward -join ', ')" }
 if ($needsCapture) {
     Write-Warning "NEEDS CAPTURE - no doc in GitHub tree or carry-from folder; fetch from https://webawesome.com/docs/components/<name> and convert to markdown:"
@@ -234,6 +267,7 @@ return [pscustomobject]@{
     Destination    = $Destination
     FileCount      = $total
     FilledFromZip  = $filledFromZip
+    OverriddenFromZip = $overriddenFromZip
     CarriedForward = $carriedForward
     NeedsCapture   = $needsCapture
 }
