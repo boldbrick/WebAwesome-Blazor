@@ -1,21 +1,16 @@
----
-title: Random Content
-layout: component
-category: Helpers
-synonyms:
-  - rotate
-  - shuffle
-  - variety
-  - rotator
-use-cases:
-  - rotating testimonials
-  - tip of the day
-  - featured content
----
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/random-content.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/random-content -->
+
+# Random Content
+
+`<wa-random-content>`
+
+Experimental [Helpers](https://webawesome.com/docs/components/?category=helpers) [Since 3.9](https://webawesome.com/docs/resources/changelog#wa_390)
+
+Selects one or more child elements at random and displays them, hiding the rest.
 
 Randomly picks and displays one or more of its slotted children, hiding the rest. Use it to rotate testimonials, surface featured content, show a tip of the day, or add variety to an otherwise static page.
 
-```html {.example}
+```html
 <div>
   <wa-random-content id="rc-overview">
     <wa-callout variant="brand">
@@ -46,13 +41,87 @@ Randomly picks and displays one or more of its slotted children, hiding the rest
 </div>
 ```
 
+## API
+
+### Importing
+
+If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
+
+\*\*CDN\*\*
+
+Import this component directly from the CDN:
+
+```js
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/random-content/random-content.js';
+```
+
+\*\*npm\*\*
+
+After installing Web Awesome via npm, import this component:
+
+```js
+import '@awesome.me/webawesome/dist/components/random-content/random-content.js';
+```
+
+\*\*Self-Hosted\*\*
+
+If you're self-hosting Web Awesome, import this component from your server:
+
+```js
+import './webawesome/dist/components/random-content/random-content.js';
+```
+
+\*\*React\*\*
+
+To import this component for React 18 or below, use the following code:
+
+```js
+import WaRandomContent from '@awesome.me/webawesome/dist/react/random-content/index.js';
+```
+
+### Slots
+
+| Name | Description |
+| --- | --- |
+| (default) | \`hidden\` The pool of children to choose from. Only direct element children are eligible; unselected children are with the hidden attribute. |
+
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`animation\` animation | \`'none' \\| 'fade' \\| 'fade-up' \\| 'fade-down' \\| 'fade-left' \\| 'fade-right'\` Entrance animation for newly shown children. Type Default 'none' | |
+| \`autoplay\` autoplay | \`autoplay-interval\` Rotate the content automatically. Set the cadence with . Type boolean Default false | |
+| \`autoplayInterval\` autoplay-interval | \`number\` Autoplay cadence in milliseconds. Type Default 3000 | |
+| \`items\` items | \`number\` Number of children to show simultaneously. Clamped to \[1, childCount\]. Type Default 1 | |
+| \`mode\` mode | \`unique\` Selection strategy: (default), random, or sequence. Type 'random' \\| 'unique' \\| 'sequence' Default 'unique' | |
+
+### Methods
+
+| Name | Description | Arguments |
+| --- | --- | --- |
+| \`randomize()\` | Selects a new set of children using the current mode. Returns the elements now shown. | |
+
+### Events
+
+| Name | Description |
+| --- | --- |
+| \`wa-content-change\` | \`randomize()\` Emitted whenever the displayed selection changes, including on first render, on , and on each autoplay tick. |
+
+### CSS Custom Properties
+
+| Name | Description |
+| --- | --- |
+| \`--animation-duration\` | \`300ms\` Duration of the entrance animation. Default is . |
+| \`--animation-easing\` | \`ease\` Easing function for the entrance animation. Default is . |
+| \`--animation-translate\` | \`fade-up\` Translation distance for directional animations (, fade-down, fade-left, fade-right). Default is 0.5em. |
+
 ## Examples
 
 ### Providing Content
 
 Slot virtually any HTML — text, badges, cards, images, or other components — as long as each item is a **direct child**. Nested elements and bare text nodes are ignored. The host renders [`display: contents`](https://developer.mozilla.org/en-US/docs/Web/CSS/display#contents), so it stays invisible to layout.
 
-```html {.example}
+```html
 <div>
   <div class="wa-cluster wa-align-items-center" style="min-height: 5rem">
     <wa-random-content id="rc-providing">
@@ -68,11 +137,11 @@ Slot virtually any HTML — text, badges, cards, images, or other components —
 </div>
 ```
 
-### Setting the Number of Items
+### Number of Items
 
 Set `items` to show more than one child at a time. The value is clamped to the number of available children.
 
-```html {.example}
+```html
 <div class="rc-items-demo">
   <wa-random-content id="rc-items" items="2">
     <wa-badge variant="brand">New</wa-badge>
@@ -106,13 +175,13 @@ Set `items` to show more than one child at a time. The value is clamped to the n
 
 The `mode` attribute controls how the next selection is chosen. Switch modes and shuffle a few times to feel the difference — the recent picks are listed underneath.
 
-| Mode                                                                                                                                                                                     | Behavior                                                                        | Best for                           |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------- |
-| <span class="wa-cluster wa-flex-nowrap wa-gap-3xs">`unique` <wa-badge appearance="outlined" variant="neutral" pill style="font-size: var(--wa-font-size-2xs);">default</wa-badge></span> | Never repeats the previous selection.                                           | Tip rotators and timed loops.      |
-| `random`                                                                                                                                                                                 | Picks at complete random, so the same item can appear twice in a row.           | A one-time shuffle on load.        |
-| `sequence`                                                                                                                                                                               | Steps through children in DOM order, wrapping at the end (advances by `items`). | Stepping through content in order. |
+| Mode | Behavior | Best for |
+| --- | --- | --- |
+| \`unique\` default | Never repeats the previous selection. | Tip rotators and timed loops. |
+| \`random\` | Picks at complete random, so the same item can appear twice in a row. | A one-time shuffle on load. |
+| \`sequence\` | \`items\` Steps through children in DOM order, wrapping at the end (advances by ). | Stepping through content in order. |
 
-```html {.example}
+```html
 <div class="rc-modes-demo">
   <wa-random-content id="rc-modes" mode="unique">
     <wa-tag variant="brand">A</wa-tag>
@@ -157,7 +226,7 @@ The `mode` attribute controls how the next selection is chosen. Switch modes and
 
 Use the `animation` attribute to play an entrance transition when new content is shown.
 
-```html {.example}
+```html
 <div class="rc-animation-demo">
   <wa-random-content id="rc-animation" animation="fade-up">
     <p>Good morning!</p>
@@ -193,9 +262,9 @@ Tune the duration, easing, and travel distance with the `--animation-duration`, 
 
 ### Autoplay
 
-Add the `autoplay` attribute to rotate content on a timer, and set the cadence with `autoplay-interval` (milliseconds). It pauses while the pointer is over the component or focus is inside it, and resumes when the user moves away. It respects reduced motion, too: content still rotates, but the entrance animation is skipped. Each new item is announced to screen readers using its text, so give icon-only content an accessible label (for example `<wa-icon label="…">`).
+Add the `autoplay` attribute to rotate content on a timer, and set the cadence with `autoplay-interval` (milliseconds). It pauses while the pointer is over the component or focus is inside it, and resumes when the user moves away. It respects reduced motion, too: content still rotates, but the entrance animation is skipped. Each new item is announced to screen readers using its text, so give icon-only content an accessible label (for example [`<wa-icon label="…">`](https://webawesome.com/docs/components/icon)).
 
-```html {.example}
+```html
 <div class="rc-autoplay-demo">
   <dl>
     <dt>Did you know?</dt>
@@ -241,16 +310,14 @@ Add the `autoplay` attribute to rotate content on a timer, and set the cadence w
 </script>
 ```
 
-:::warning
-<strong>If you turn on `autoplay`, give people a way to pause it.</strong><br />
+**If you turn on `autoplay`, give people a way to pause it.**  
 The built-in hover and focus pausing doesn't help someone using a keyboard when the rotating content isn't focusable, so add a visible pause button like the one above.
-:::
 
 ### Styling the Container
 
 The host is `display: contents` by default, so it adds no box of its own. To lay several shown items out as a row or grid, give the host its own `display` — that overrides the transparent default. Here it shows three of six people at random in a flex row.
 
-```html {.example}
+```html
 <div>
   <wa-random-content id="rc-layout" items="3" style="display: flex; gap: var(--wa-space-m); flex-wrap: wrap">
     <wa-avatar label="Jordan Hayes" initials="JH"></wa-avatar>
@@ -269,7 +336,7 @@ The host is `display: contents` by default, so it adds no box of its own. To lay
 
 Because the host is transparent, the component also works inline within a sentence.
 
-```html {.example}
+```html
 <div>
   <p>
     Have a
@@ -310,7 +377,7 @@ rc.addEventListener('wa-content-change', event => {
 
 ### Server-Side Rendering
 
-Until the component upgrades on the client, every child is visible, which can flash on first paint. Add the [`wa-cloak`](/docs/utilities/fouce) class to hide content until Web Awesome is ready. Because the first selection is random, server- and client-rendered output can also differ; for a stable first paint, use `mode="sequence"`, which always starts at the first child.
+Until the component upgrades on the client, every child is visible, which can flash on first paint. Add the [`wa-cloak`](https://webawesome.com/docs/utilities/fouce) class to hide content until Web Awesome is ready. Because the first selection is random, server- and client-rendered output can also differ; for a stable first paint, use `mode="sequence"`, which always starts at the first child.
 
 ### Using a Framework
 

@@ -1,92 +1,119 @@
----
-title: Dropdown
-layout: component
-category: Actions
-synonyms:
-  - menu
-  - context menu
-  - action menu
-  - popout
-use-cases:
-  - dropdown menu
-  - action list
-  - command menu
-  - right-click menu
----
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/dropdown.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/dropdown -->
 
-Dropdowns consist of a trigger and a panel. By default, activating the trigger will expose the panel and interacting outside of the panel will close it.
+# Dropdown
 
-Dropdowns are designed to work well with [dropdown items](/docs/components/dropdown-item) to provide a list of options the user can select from. However, dropdowns can also be used in lower-level applications. The API gives you complete control over showing, hiding, and positioning the panel.
+`<wa-dropdown>`
 
-```html {.example}
+Stable [Actions](https://webawesome.com/docs/components/?category=actions) [Since 2.0](https://webawesome.com/docs/resources/changelog#wa_200)
+
+Dropdowns display a list of options triggered by a button or other element. They support keyboard navigation, submenus, and checkable items for building menus and context actions.
+
+```html
 <wa-dropdown>
-  <wa-button appearance="filled" slot="trigger" with-caret>Dropdown</wa-button>
+  <wa-button appearance="filled" slot="trigger" with-caret>Options</wa-button>
 
-  <wa-dropdown-item>
-    <wa-icon slot="icon" name="scissors"></wa-icon>
-    Cut
-  </wa-dropdown-item>
-  <wa-dropdown-item>
-    <wa-icon slot="icon" name="copy"></wa-icon>
-    Copy
-  </wa-dropdown-item>
-  <wa-dropdown-item>
-    <wa-icon slot="icon" name="paste"></wa-icon>
-    Paste
-  </wa-dropdown-item>
-  <wa-divider></wa-divider>
-  <wa-dropdown-item>
-    Show images
-    <wa-dropdown-item slot="submenu" value="show-all-images">Show All Images</wa-dropdown-item>
-    <wa-dropdown-item slot="submenu" value="show-thumbnails">Show Thumbnails</wa-dropdown-item>
-  </wa-dropdown-item>
-  <wa-divider></wa-divider>
-  <wa-dropdown-item type="checkbox" checked>Emoji Shortcuts</wa-dropdown-item>
-  <wa-dropdown-item type="checkbox" checked>Word Wrap</wa-dropdown-item>
-  <wa-divider></wa-divider>
-  <wa-dropdown-item variant="danger">
-    <wa-icon slot="icon" name="trash"></wa-icon>
-    Delete
-  </wa-dropdown-item>
+  <wa-dropdown-item value="edit">Edit</wa-dropdown-item>
+  <wa-dropdown-item value="duplicate">Duplicate</wa-dropdown-item>
+  <wa-dropdown-item value="delete">Delete</wa-dropdown-item>
 </wa-dropdown>
 ```
 
-## Examples
+A dropdown pairs a trigger with a panel: activating the trigger opens the panel, and interacting outside it closes the panel. Most dropdowns hold [dropdown items](https://webawesome.com/docs/components/dropdown-item), but the API also gives you direct control over showing, hiding, and positioning the panel for lower-level uses.
 
-### Getting the Selected Item
+## API
 
-When an item is selected, the `wa-select` event will be emitted by the dropdown. You can inspect `event.detail.item` to get a reference to the selected item. If you've provided a value for each [dropdown item](/docs/components/dropdown-item), it will be available in `event.detail.item.value`.
+### Importing
 
-```html {.example}
-<div class="dropdown-selection">
-  <wa-dropdown>
-    <wa-button appearance="filled" slot="trigger" with-caret>View</wa-button>
-    <wa-dropdown-item value="full-screen">Enter full screen</wa-dropdown-item>
-    <wa-dropdown-item value="actual">Actual size</wa-dropdown-item>
-    <wa-dropdown-item value="zoom-in">Zoom in</wa-dropdown-item>
-    <wa-dropdown-item value="zoom-out">Zoom out</wa-dropdown-item>
-  </wa-dropdown>
-</div>
+If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
-<script>
-  const container = document.querySelector('.dropdown-selection');
-  const dropdown = container.querySelector('wa-dropdown');
+\*\*CDN\*\*
 
-  dropdown.addEventListener('wa-select', event => {
-    console.log(event.detail.item.value);
-  });
-</script>
+Import this component directly from the CDN:
+
+```js
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/dropdown/dropdown.js';
 ```
 
-:::info
-To keep the dropdown open after selection, call `event.preventDefault()` in the `wa-select` event's callback.
-:::
+\*\*npm\*\*
+
+After installing Web Awesome via npm, import this component:
+
+```js
+import '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
+```
+
+\*\*Self-Hosted\*\*
+
+If you're self-hosting Web Awesome, import this component from your server:
+
+```js
+import './webawesome/dist/components/dropdown/dropdown.js';
+```
+
+\*\*React\*\*
+
+To import this component for React 18 or below, use the following code:
+
+```js
+import WaDropdown from '@awesome.me/webawesome/dist/react/dropdown/index.js';
+```
+
+### Slots
+
+| Name | Description |
+| --- | --- |
+| (default) | \`\` The dropdown's items, typically elements. |
+| \`trigger\` | \`\` The element that triggers the dropdown, such as a or . |
+
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`distance\` distance | \`number\` The distance of the dropdown menu from its trigger. Type Default 0 | |
+| \`open\` open | \`boolean\` Opens or closes the dropdown. Type Default false | |
+| \`placement\` placement | \`'top' \\| 'top-start' \\| 'top-end' \\| 'bottom' \\| 'bottom-start' \\| 'bottom-end' \\| 'right' \\| 'right-start' \\| 'right-end' \\| 'left' \\| 'left-start' \\| 'left-end'\` The placement of the dropdown menu in reference to the trigger. The menu will shift to a more optimal location if the preferred placement doesn't have enough room. Type Default 'bottom-start' | |
+| \`size\` size | \`'xs' \\| 's' \\| 'm' \\| 'l' \\| 'xl' \\| 'small' \\| 'medium' \\| 'large'\` The dropdown's size. Type Default 'm' | |
+| \`skidding\` skidding | \`number\` The offset of the dropdown menu along its trigger. Type Default 0 | |
+
+### Events
+
+| Name | Description |
+| --- | --- |
+| \`wa-after-hide\` | Emitted after the dropdown has been hidden. |
+| \`wa-after-show\` | Emitted after the dropdown has been shown. |
+| \`wa-hide\` | Emitted when the dropdown is about to hide. |
+| \`wa-select\` | Emitted when an item in the dropdown is selected. |
+| \`wa-show\` | Emitted when the dropdown is about to show. |
+
+### CSS Custom Properties
+
+| Name | Description |
+| --- | --- |
+| \`--hide-duration\` | The duration of the hide animation. |
+| \`--show-duration\` | The duration of the show animation. |
+
+### CSS Parts
+
+| Name | Description | CSS selector |
+| --- | --- | --- |
+| \`menu\` | The dropdown menu container. | \`::part(menu)\` |
+| \`base\` | Deprecated. Style the host element instead. | \`::part(base)\` |
+
+### Dependencies
+
+This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
+
+-   [`<wa-dropdown-item>`](https://webawesome.com/docs/components/dropdown-item)
+-   [`<wa-icon>`](https://webawesome.com/docs/components/icon)
+-   [`<wa-popup>`](https://webawesome.com/docs/components/popup)
+
+## Examples
 
 ### Showing Icons
 
-Use the `icon` slot to add icons to [dropdown items](/docs/components/dropdown-item). This works best with [icon](/docs/components/icon) elements.
+Use the `icon` slot to add an icon before a [dropdown item's](https://webawesome.com/docs/components/dropdown-item) label. This works best with [icon](https://webawesome.com/docs/components/icon) elements.
 
-```html {.example}
+```html
 <wa-dropdown>
   <wa-button appearance="filled" slot="trigger" with-caret>Edit</wa-button>
 
@@ -114,9 +141,9 @@ Use the `icon` slot to add icons to [dropdown items](/docs/components/dropdown-i
 
 ### Showing Labels & Dividers
 
-Use any heading, e.g. `<h1>`–`<h6>` to add labels and the [`<wa-divider>`](/docs/components/divider) element for separators.
+Use any heading (`<h1>`–`<h6>`) to label a group of items, and the [`<wa-divider>`](https://webawesome.com/docs/components/divider) element to separate them.
 
-```html {.example}
+```html
 <wa-dropdown>
   <wa-button appearance="filled" slot="trigger" with-caret>Device</wa-button>
 
@@ -133,9 +160,9 @@ Use any heading, e.g. `<h1>`–`<h6>` to add labels and the [`<wa-divider>`](/do
 
 ### Showing Details
 
-Use the `details` slot to display details, such as keyboard shortcuts, inside [dropdown items](/docs/components/dropdown-item).
+Use the `details` slot to show secondary content after the label, such as a keyboard shortcut.
 
-```html {.example}
+```html
 <wa-dropdown>
   <wa-button appearance="filled" slot="trigger" with-caret>Message</wa-button>
 
@@ -170,9 +197,9 @@ Use the `details` slot to display details, such as keyboard shortcuts, inside [d
 
 ### Checkable Items
 
-You can turn a [dropdown item](/docs/components/dropdown-item) into a checkable option by setting `type="checkbox"`. Add the `checked` attribute to make it checked initially. When clicked, the item's checked state will toggle and the dropdown will close. You can cancel the `wa-select` event if you want to keep it open instead.
+Set `type="checkbox"` to turn a [dropdown item](https://webawesome.com/docs/components/dropdown-item) into a toggle, and add `checked` to start it on. Selecting a checkable item flips its `checked` state and closes the dropdown; cancel the `wa-select` event to keep it open instead.
 
-```html {.example}
+```html
 <div class="dropdown-checkboxes">
   <wa-dropdown>
     <wa-button appearance="filled" slot="trigger" with-caret>View</wa-button>
@@ -193,25 +220,21 @@ You can turn a [dropdown item](/docs/components/dropdown-item) into a checkable 
 
   dropdown.addEventListener('wa-select', event => {
     if (event.detail.item.type === 'checkbox') {
-      // Checkbox
       console.log(event.detail.item.value, event.detail.item.checked ? 'checked' : 'unchecked');
     } else {
-      // Not a checkbox
       console.log(event.detail.item.value);
     }
   });
 </script>
 ```
 
-:::info
-When a checkable option exists anywhere in the dropdown, all items will receive additional padding so they align properly.
-:::
+When any item is checkable, every item in the dropdown gains matching padding so labels stay aligned.
 
 ### Destructive Items
 
-Add `variant="danger"` to any [dropdown item](/docs/components/dropdown-item) to highlight that it's a dangerous action.
+Set `variant="danger"` on a [dropdown item](https://webawesome.com/docs/components/dropdown-item) to flag a destructive action like deleting.
 
-```html {.example}
+```html
 <wa-dropdown>
   <wa-button appearance="filled" slot="trigger" with-caret>Project</wa-button>
 
@@ -241,99 +264,27 @@ Add `variant="danger"` to any [dropdown item](/docs/components/dropdown-item) to
 </wa-dropdown>
 ```
 
-### Placement
-
-The preferred placement of the dropdown can be set with the `placement` attribute. Note that the actual position may vary to ensure the panel remains in the viewport.
-
-```html {.example}
-<wa-dropdown placement="right-start">
-  <wa-button appearance="filled" slot="trigger">
-    File formats
-    <wa-icon slot="end" name="chevron-right"></wa-icon>
-  </wa-button>
-
-  <wa-dropdown-item value="pdf">PDF Document</wa-dropdown-item>
-  <wa-dropdown-item value="docx">Word Document</wa-dropdown-item>
-  <wa-dropdown-item value="xlsx">Excel Spreadsheet</wa-dropdown-item>
-  <wa-dropdown-item value="pptx">PowerPoint Presentation</wa-dropdown-item>
-  <wa-dropdown-item value="txt">Plain Text</wa-dropdown-item>
-  <wa-dropdown-item value="json">JSON File</wa-dropdown-item>
-</wa-dropdown>
-```
-
-### Distance
-
-The distance from the panel to the trigger can be customized using the `distance` attribute. This value is specified in pixels.
-
-```html {.example}
-<wa-dropdown distance="30">
-  <wa-button appearance="filled" slot="trigger" with-caret>Edit</wa-button>
-
-  <wa-dropdown-item>Cut</wa-dropdown-item>
-  <wa-dropdown-item>Copy</wa-dropdown-item>
-  <wa-dropdown-item>Paste</wa-dropdown-item>
-
-  <wa-divider></wa-divider>
-
-  <wa-dropdown-item>Find</wa-dropdown-item>
-  <wa-dropdown-item>Replace</wa-dropdown-item>
-</wa-dropdown>
-```
-
-### Offset
-
-The offset of the panel along the trigger can be customized using the `skidding` attribute. This value is specified in pixels.
-
-```html {.example}
-<wa-dropdown skidding="30">
-  <wa-button appearance="filled" slot="trigger" with-caret>Edit</wa-button>
-
-  <wa-dropdown-item>Cut</wa-dropdown-item>
-  <wa-dropdown-item>Copy</wa-dropdown-item>
-  <wa-dropdown-item>Paste</wa-dropdown-item>
-
-  <wa-divider></wa-divider>
-
-  <wa-dropdown-item>Find</wa-dropdown-item>
-  <wa-dropdown-item>Replace</wa-dropdown-item>
-</wa-dropdown>
-```
-
 ### Submenus
 
-To create submenus, nest [dropdown items](/docs/components/dropdown-item) inside of a dropdown item and assign `slot="submenu"` to each one. You can also add [dividers](/docs/components/divider) as needed.
+To nest a menu, place [dropdown items](https://webawesome.com/docs/components/dropdown-item) inside another item with `slot="submenu"`. Add [dividers](https://webawesome.com/docs/components/divider) between groups as needed.
 
-```html {.example}
+```html
 <div class="dropdown-submenus">
   <wa-dropdown>
-    <wa-button appearance="filled" slot="trigger" with-caret>Export</wa-button>
+    <wa-button appearance="filled" slot="trigger" with-caret>File</wa-button>
 
-    <wa-dropdown-item>
-      Documents
-      <wa-dropdown-item slot="submenu" value="pdf">PDF</wa-dropdown-item>
-      <wa-dropdown-item slot="submenu" value="docx">Word Document</wa-dropdown-item>
-    </wa-dropdown-item>
-
-    <wa-dropdown-item>
-      Spreadsheets
-      <wa-dropdown-item slot="submenu">
-        Excel Formats
-        <wa-dropdown-item slot="submenu" value="xlsx">Excel (.xlsx)</wa-dropdown-item>
-        <wa-dropdown-item slot="submenu" value="xls">Excel 97-2003 (.xls)</wa-dropdown-item>
-        <wa-dropdown-item slot="submenu" value="csv">CSV (.csv)</wa-dropdown-item>
-      </wa-dropdown-item>
-
-      <wa-dropdown-item slot="submenu">
-        Other Formats
-        <wa-dropdown-item slot="submenu" value="ods">OpenDocument (.ods)</wa-dropdown-item>
-        <wa-dropdown-item slot="submenu" value="tsv">Tab-separated (.tsv)</wa-dropdown-item>
-        <wa-dropdown-item slot="submenu" value="json">JSON (.json)</wa-dropdown-item>
-      </wa-dropdown-item>
-
-      <wa-dropdown-item slot="submenu" value="numbers">Apple Numbers</wa-dropdown-item>
-    </wa-dropdown-item>
+    <wa-dropdown-item value="new">New</wa-dropdown-item>
+    <wa-dropdown-item value="open">Open</wa-dropdown-item>
 
     <wa-divider></wa-divider>
+
+    <wa-dropdown-item>
+      Export
+      <wa-dropdown-item slot="submenu" value="pdf">PDF</wa-dropdown-item>
+      <wa-dropdown-item slot="submenu" value="docx">Word document</wa-dropdown-item>
+      <wa-dropdown-item slot="submenu" value="xlsx">Excel spreadsheet</wa-dropdown-item>
+      <wa-dropdown-item slot="submenu" value="csv">CSV</wa-dropdown-item>
+    </wa-dropdown-item>
 
     <wa-dropdown-item>
       Options
@@ -354,19 +305,16 @@ To create submenus, nest [dropdown items](/docs/components/dropdown-item) inside
 </script>
 ```
 
-:::info
-Dropdown items that have a submenu will not dispatch the `wa-select` event. However, items inside the submenu will, unless they also have a submenu.
-:::
+An item that opens a submenu won't emit `wa-select` itself. Items inside the submenu do, unless they open a submenu of their own.
 
-:::warning
-As a UX best practice, avoid using more than one level of submenu when possible.
-:::
+**Avoid nesting more than one level of submenu.**  
+Deeply nested menus are hard to navigate, especially with a pointer. Flatten the structure or move secondary choices into a separate view when you can.
 
-### Disabling Items
+### Disabled
 
-Add the `disabled` attribute to any [dropdown item](/docs/components/dropdown-item) to disable it.
+Add `disabled` to any [dropdown item](https://webawesome.com/docs/components/dropdown-item) to make it unselectable.
 
-```html {.example}
+```html
 <wa-dropdown>
   <wa-button appearance="filled" slot="trigger" with-caret>Payment method</wa-button>
 
@@ -376,3 +324,143 @@ Add the `disabled` attribute to any [dropdown item](/docs/components/dropdown-it
   <wa-dropdown-item value="gift-card">Gift card</wa-dropdown-item>
 </wa-dropdown>
 ```
+
+### Placement
+
+Set the `placement` attribute to control where the panel opens relative to the trigger. The panel shifts to a more optimal spot when the preferred placement doesn't have room.
+
+| Placement | Opens |
+| --- | --- |
+| \`bottom-start\` default | Below the trigger, aligned to its start edge |
+| \`bottom\` , bottom-end | Below the trigger, centered or aligned to the end edge |
+| \`top\` , top-start, top-end | Above the trigger |
+| \`right\` , right-start, right-end | To the right of the trigger |
+| \`left\` , left-start, left-end | To the left of the trigger |
+
+```html
+<wa-dropdown placement="right-start">
+  <wa-button appearance="filled" slot="trigger">
+    File formats
+    <wa-icon slot="end" name="chevron-right"></wa-icon>
+  </wa-button>
+
+  <wa-dropdown-item value="pdf">PDF document</wa-dropdown-item>
+  <wa-dropdown-item value="docx">Word document</wa-dropdown-item>
+  <wa-dropdown-item value="xlsx">Excel spreadsheet</wa-dropdown-item>
+  <wa-dropdown-item value="pptx">PowerPoint presentation</wa-dropdown-item>
+  <wa-dropdown-item value="txt">Plain text</wa-dropdown-item>
+  <wa-dropdown-item value="json">JSON file</wa-dropdown-item>
+</wa-dropdown>
+```
+
+### Distance
+
+Set the `distance` attribute to change the gap between the panel and the trigger, in pixels.
+
+```html
+<wa-dropdown distance="30">
+  <wa-button appearance="filled" slot="trigger" with-caret>Edit</wa-button>
+
+  <wa-dropdown-item>Cut</wa-dropdown-item>
+  <wa-dropdown-item>Copy</wa-dropdown-item>
+  <wa-dropdown-item>Paste</wa-dropdown-item>
+
+  <wa-divider></wa-divider>
+
+  <wa-dropdown-item>Find</wa-dropdown-item>
+  <wa-dropdown-item>Replace</wa-dropdown-item>
+</wa-dropdown>
+```
+
+### Offset
+
+Set the `skidding` attribute to slide the panel along the trigger, in pixels.
+
+```html
+<wa-dropdown skidding="30">
+  <wa-button appearance="filled" slot="trigger" with-caret>Edit</wa-button>
+
+  <wa-dropdown-item>Cut</wa-dropdown-item>
+  <wa-dropdown-item>Copy</wa-dropdown-item>
+  <wa-dropdown-item>Paste</wa-dropdown-item>
+
+  <wa-divider></wa-divider>
+
+  <wa-dropdown-item>Find</wa-dropdown-item>
+  <wa-dropdown-item>Replace</wa-dropdown-item>
+</wa-dropdown>
+```
+
+### Reacting to Selections
+
+When an item is selected, the dropdown emits the `wa-select` event. Inspect `event.detail.item` for the selected [dropdown item](https://webawesome.com/docs/components/dropdown-item); if you set a `value` on each item, read it from `event.detail.item.value`.
+
+```html
+<div class="dropdown-zoom-demo">
+  <div class="dropdown-zoom-stage">
+    <div class="dropdown-zoom-content">
+      <wa-icon name="image"></wa-icon>
+      <span class="dropdown-zoom-level">100%</span>
+    </div>
+  </div>
+
+  <wa-dropdown>
+    <wa-button appearance="filled" slot="trigger" with-caret>View</wa-button>
+    <wa-dropdown-item value="zoom-in">Zoom in</wa-dropdown-item>
+    <wa-dropdown-item value="zoom-out">Zoom out</wa-dropdown-item>
+    <wa-divider></wa-divider>
+    <wa-dropdown-item value="actual">Actual size</wa-dropdown-item>
+  </wa-dropdown>
+</div>
+
+<script>
+  const demo = document.querySelector('.dropdown-zoom-demo');
+  const content = demo.querySelector('.dropdown-zoom-content');
+  const level = demo.querySelector('.dropdown-zoom-level');
+  const dropdown = demo.querySelector('wa-dropdown');
+  let zoom = 1;
+
+  dropdown.addEventListener('wa-select', event => {
+    const action = event.detail.item.value;
+
+    if (action === 'zoom-in') zoom = Math.min(zoom + 0.25, 2);
+    if (action === 'zoom-out') zoom = Math.max(zoom - 0.25, 0.5);
+    if (action === 'actual') zoom = 1;
+
+    content.style.transform = `scale(${zoom})`;
+    level.textContent = `${Math.round(zoom * 100)}%`;
+  });
+</script>
+
+<style>
+  .dropdown-zoom-demo .dropdown-zoom-stage {
+    display: grid;
+    place-items: center;
+    height: 12rem;
+    margin-block-end: 1rem;
+    overflow: hidden;
+    border-radius: var(--wa-border-radius-l);
+    background-color: color-mix(in srgb, var(--wa-color-brand-fill-loud) 8%, transparent);
+  }
+
+  .dropdown-zoom-demo .dropdown-zoom-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wa-space-2xs);
+    transition: transform 150ms ease;
+  }
+
+  .dropdown-zoom-demo .dropdown-zoom-content wa-icon {
+    font-size: 3rem;
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .dropdown-zoom-demo .dropdown-zoom-level {
+    font-size: var(--wa-font-size-s);
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+```
+
+To keep the dropdown open after a selection, call `event.preventDefault()` in the `wa-select` handler.

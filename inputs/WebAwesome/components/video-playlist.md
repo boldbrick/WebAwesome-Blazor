@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
 
 # Video Playlist [Pro]
 
@@ -38,7 +38,7 @@ Get Web Awesome Pro + Video Playlist!
     />
   </wa-video>
 
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/fa-part-2.jpg">
+  <wa-video title="Using Kits in Your Project" poster="/assets/images/fa-part-2.jpg">
     <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
     <track
       src="https://uploads.webawesome.com/02-using-kits-in-your-project.vtt"
@@ -47,13 +47,13 @@ Get Web Awesome Pro + Video Playlist!
       label="English"
     />
   </wa-video>
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
+  <wa-video title="Downloading Kits" poster="/assets/images/kits.jpg">
     <source
       src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
       type="video/mp4"
     />
   </wa-video>
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
+  <wa-video title="Using Teams" poster="/assets/images/teams.jpg">
     <source
       src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
       type="video/mp4"
@@ -62,7 +62,9 @@ Get Web Awesome Pro + Video Playlist!
 </wa-video-playlist>
 ```
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -71,7 +73,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/video-playlist/video-playlist.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/video-playlist/video-playlist.js';
 ```
 
 \*\*npm\*\*
@@ -98,46 +100,46 @@ To import this component for React 18 or below, use the following code:
 import WaVideoPlaylist from '@awesome.me/webawesome/dist/react/video-playlist/index.js';
 ```
 
-## Slots
-
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
-
-- `(default)` — The default slot. Place `<wa-video>` elements to create a playlist.
-
-## Attributes & Properties
-
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `controls` | `controls` | The controls preset forwarded to each child `<wa-video>`. | `'none' \| 'standard' \| 'full'` | `'full'` |
-| `iconLibrary` | `icon-library` | Icon library used for placeholder icons. | `string` | `'system'` |
-
-## Methods
-
-| Name | Description | Arguments |
-| --- | --- | --- |
-| `next()` | Plays the next video in the playlist. | — |
-| `previous()` | Plays the previous video in the playlist. | — |
-| `goTo()` | Jumps to the video at the given index. | `index: number` |
-
-## Events
+### Slots
 
 | Name | Description |
 | --- | --- |
-| `wa-video-change` | Emitted when the active video changes. |
+| (default) | \`\` The default slot. Place elements to create a playlist. |
 
-## CSS Parts
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`controls\` controls | \`\` The controls preset forwarded to each child . Type 'none' \\| 'standard' \\| 'full' Default 'full' | |
+| \`iconLibrary\` icon-library | \`string\` Icon library used for placeholder icons. Type Default 'system' | |
+
+### Methods
+
+| Name | Description | Arguments |
+| --- | --- | --- |
+| \`goTo()\` | Jumps to the video at the given index. | \`index: number\` |
+| \`next()\` | Plays the next video in the playlist. | |
+| \`previous()\` | Plays the previous video in the playlist. | |
+
+### Events
+
+| Name | Description |
+| --- | --- |
+| \`wa-video-change\` | Emitted when the active video changes. |
+
+### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`base\` | The component's base wrapper. | \`::part(base)\` |
 | \`playlist\` | The playlist sidebar container. | \`::part(playlist)\` |
 | \`playlist-duration\` | The duration text within a playlist item. | \`::part(playlist-duration)\` |
 | \`playlist-item\` | An individual playlist item button. | \`::part(playlist-item)\` |
 | \`playlist-thumbnail\` | The thumbnail image within a playlist item. | \`::part(playlist-thumbnail)\` |
 | \`playlist-title\` | The title text within a playlist item. | \`::part(playlist-title)\` |
+| \`video-playlist\` | The component's outer wrapper. | \`::part(video-playlist)\` |
+| \`base\` | \`video-playlist\` Deprecated. Use the part instead. | \`::part(base)\` |
 
-## Dependencies
+### Dependencies
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 
@@ -170,25 +172,13 @@ Use the `controls` attribute to set the controls preset for all videos in the pl
     />
   </wa-video>
 
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/fa-part-2.jpg">
+  <wa-video title="Using Kits in Your Project" poster="/assets/images/fa-part-2.jpg">
     <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
     <track
       src="https://uploads.webawesome.com/02-using-kits-in-your-project.vtt"
       kind="subtitles"
       srclang="en"
       label="English"
-    />
-  </wa-video>
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
-    <source
-      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
-      type="video/mp4"
-    />
-  </wa-video>
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
-    <source
-      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
-      type="video/mp4"
     />
   </wa-video>
 </wa-video-playlist>
@@ -211,7 +201,7 @@ Use the `next()`, `previous()`, and `goTo(index)` methods to navigate between vi
       />
     </wa-video>
 
-    <wa-video title="Using Kits in Your Projects" poster="/assets/images/fa-part-2.jpg">
+    <wa-video title="Using Kits in Your Project" poster="/assets/images/fa-part-2.jpg">
       <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
       <track
         src="https://uploads.webawesome.com/02-using-kits-in-your-project.vtt"
@@ -220,13 +210,13 @@ Use the `next()`, `previous()`, and `goTo(index)` methods to navigate between vi
         label="English"
       />
     </wa-video>
-    <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
+    <wa-video title="Downloading Kits" poster="/assets/images/kits.jpg">
       <source
         src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
         type="video/mp4"
       />
     </wa-video>
-    <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
+    <wa-video title="Using Teams" poster="/assets/images/teams.jpg">
       <source
         src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
         type="video/mp4"
@@ -237,8 +227,8 @@ Use the `next()`, `previous()`, and `goTo(index)` methods to navigate between vi
   <wa-divider></wa-divider>
 
   <div class="wa-cluster">
-    <wa-button appearance="filled" onclick="document.getElementById('demo-playlist').previous()">Previous</wa-button>
     <wa-button appearance="filled" onclick="document.getElementById('demo-playlist').goTo(0)">First</wa-button>
+    <wa-button appearance="filled" onclick="document.getElementById('demo-playlist').previous()">Previous</wa-button>
     <wa-button appearance="filled" onclick="document.getElementById('demo-playlist').next()">Next</wa-button>
   </div>
 </div>
@@ -260,7 +250,7 @@ The `wa-video-change` event fires when the active video changes, providing the p
     />
   </wa-video>
 
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/fa-part-2.jpg">
+  <wa-video title="Using Kits in Your Project" poster="/assets/images/fa-part-2.jpg">
     <source src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4" type="video/mp4" />
     <track
       src="https://uploads.webawesome.com/02-using-kits-in-your-project.vtt"
@@ -269,21 +259,12 @@ The `wa-video-change` event fires when the active video changes, providing the p
       label="English"
     />
   </wa-video>
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/kits.jpg">
-    <source
-      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%203%20'Downloading%20Kits'.mp4"
-      type="video/mp4"
-    />
-  </wa-video>
-  <wa-video title="Using Kits in Your Projects" poster="/assets/images/teams.jpg">
-    <source
-      src="https://uploads.webawesome.com/Doing%20More%20with%20FA%20Ep.%202%20'Using%20Teams'.mp4"
-      type="video/mp4"
-    />
-  </wa-video>
 </wa-video-playlist>
 
-<div id="event-log" style="margin-top: 1rem; font-size: 0.875rem; color: var(--wa-color-text-quiet);">
+<div
+  id="event-log"
+  style="margin-block-start: var(--wa-space-m); font-size: var(--wa-font-size-s); color: var(--wa-color-text-quiet);"
+>
   No change yet.
 </div>
 

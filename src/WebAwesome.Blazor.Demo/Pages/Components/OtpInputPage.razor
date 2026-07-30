@@ -1,0 +1,297 @@
+@page "/components/otp-input"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>OTP Input</PageTitle>
+
+<h1>OTP Input <ComponentBadges Tag="wa-otp-input" /></h1>
+<p>OTP inputs collect one-time passcodes, PINs, and other fixed-length codes, one character per segment. <code>&lt;wa-otp-input&gt;</code> wrapped by <code>WaOtpInput</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaOtpInput Label="Verification code" @bind-Value="defaultValue" />
+</ExampleSection>
+
+<ExampleSection Title="Hint" Code="@HintExample">
+    <WaOtpInput Label="Sign-in code" Hint="Check your email for a 6-digit code." @bind-Value="hintValue" />
+</ExampleSection>
+
+<ExampleSection Title="Length" Code="@LengthExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaOtpInput Label="Card PIN" Length="4" @bind-Value="pinValue" />
+        <WaOtpInput Label="Backup code" Length="8" @bind-Value="backupValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Type" Code="@TypeExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaOtpInput Label="Numeric" Type="WaOtpInputType.Numeric" @bind-Value="numericValue" />
+        <WaOtpInput Label="Alpha" Type="WaOtpInputType.Alpha" @bind-Value="alphaValue" />
+        <WaOtpInput Label="Alphanumeric" Type="WaOtpInputType.Alphanumeric" @bind-Value="alphanumericValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Format" Code="@FormatExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaOtpInput Label="Invite code" Type="WaOtpInputType.Alphanumeric" Format="### ###" @bind-Value="inviteValue" />
+        <WaOtpInput Label="License key" Type="WaOtpInputType.Alphanumeric" Format="####-####-####" @bind-Value="licenseValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Case" Code="@CaseExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaOtpInput Label="Upper" Type="WaOtpInputType.Alpha" Case="WaOtpInputCase.Upper" @bind-Value="upperValue" />
+        <WaOtpInput Label="Lower" Type="WaOtpInputType.Alpha" Case="WaOtpInputCase.Lower" @bind-Value="lowerValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Mask" Code="@MaskExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaOtpInput Label="PIN, entered characters masked" Length="4" Mask="true" @bind-Value="maskedValue" />
+        <WaOtpInput Label="PIN, empty segments masked too" Length="4" Mask="true" WithMask="true" @bind-Value="fullyMaskedValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaOtpInput Label="Outlined" Appearance="WaOtpInputAppearance.Outlined" @bind-Value="outlinedValue" />
+        <WaOtpInput Label="Filled" Appearance="WaOtpInputAppearance.Filled" @bind-Value="filledValue" />
+        <WaOtpInput Label="Filled outlined" Appearance="WaOtpInputAppearance.FilledOutlined" @bind-Value="filledOutlinedValue" />
+        <WaOtpInput Label="Contained" Appearance="WaOtpInputAppearance.Contained" @bind-Value="containedValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Size" Code="@SizeExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaOtpInput Label="Small" Size="WaSize.Small" Length="4" @bind-Value="smallValue" />
+        <WaOtpInput Label="Medium" Size="WaSize.Medium" Length="4" @bind-Value="mediumValue" />
+        <WaOtpInput Label="Large" Size="WaSize.Large" Length="4" @bind-Value="largeValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Initial Value, Disabled &amp; Readonly" Code="@StatesExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaOtpInput Label="Magic link code" @bind-Value="magicLinkValue" />
+        <WaOtpInput Label="Verification code" Disabled="true" @bind-Value="disabledValue" />
+        <WaOtpInput Label="Confirmation code" Readonly="true" @bind-Value="readonlyValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Completion Events" Code="@CompletionExample">
+    <WaOtpInput @ref="completionInput" Label="Two-factor code" Hint="Enter all six digits to complete the code."
+                @bind-Value="completionValue" OnComplete="HandleComplete" OnClear="HandleClear" />
+    <WaDivider />
+    <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+        <WaButton Appearance="WaAppearance.Outlined" OnClick="ClearCompletionAsync">Clear</WaButton>
+        <span>Completed <strong>@completeCount</strong> time(s), cleared <strong>@clearCount</strong> time(s).</span>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Validation" Code="@ValidationExample">
+    <EditForm Model="verification" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="Two-factor code" Hint="A partially filled code is always invalid." Required="true"
+                        @bind-Value="verification.Code" />
+            <ValidationSummary />
+            <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+                <WaButton Variant="WaVariant.Brand" Type="WaButtonType.Submit">Continue</WaButton>
+                @if (verified)
+                {
+                    <WaBadge Variant="WaVariant.Success">Code accepted</WaBadge>
+                }
+            </WaCluster>
+        </WaStack>
+    </EditForm>
+</ExampleSection>
+
+<ApiTable Tag="wa-otp-input" />
+
+@code {
+    private string? defaultValue;
+    private string? hintValue;
+    private string? pinValue;
+    private string? backupValue;
+    private string? numericValue;
+    private string? alphaValue;
+    private string? alphanumericValue;
+    private string? inviteValue;
+    private string? licenseValue;
+    private string? upperValue;
+    private string? lowerValue;
+    private string? maskedValue;
+    private string? fullyMaskedValue;
+    private string? outlinedValue;
+    private string? filledValue;
+    private string? filledOutlinedValue;
+    private string? containedValue;
+    private string? smallValue;
+    private string? mediumValue;
+    private string? largeValue;
+    private string? magicLinkValue = "271828";
+    private string? disabledValue = "391824";
+    private string? readonlyValue = "483920";
+    private string? completionValue;
+    private WaOtpInput? completionInput;
+    private int completeCount;
+    private int clearCount;
+    private VerificationModel verification = new();
+    private bool verified;
+
+    private void HandleComplete() => completeCount++;
+
+    private void HandleClear() => clearCount++;
+
+    private async Task ClearCompletionAsync()
+    {
+        if (completionInput is not null)
+            await completionInput.ClearAsync();
+    }
+
+    private void HandleValidSubmit() => verified = true;
+
+    private sealed class VerificationModel
+    {
+        [Required(ErrorMessage = "Please enter the code we sent to your device.")]
+        [StringLength(6, MinimumLength = 6, ErrorMessage = "The code is six characters long.")]
+        public string? Code { get; set; }
+    }
+
+    private const string DefaultExample = """
+        <WaOtpInput Label="Verification code" @bind-Value="defaultValue" />
+
+        @code {
+            private string? defaultValue;
+        }
+        """;
+
+    private const string HintExample = """
+        <WaOtpInput Label="Sign-in code" Hint="Check your email for a 6-digit code." @bind-Value="hintValue" />
+        """;
+
+    private const string LengthExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="Card PIN" Length="4" @bind-Value="pinValue" />
+            <WaOtpInput Label="Backup code" Length="8" @bind-Value="backupValue" />
+        </WaStack>
+        """;
+
+    private const string TypeExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="Numeric" Type="WaOtpInputType.Numeric" @bind-Value="numericValue" />
+            <WaOtpInput Label="Alpha" Type="WaOtpInputType.Alpha" @bind-Value="alphaValue" />
+            <WaOtpInput Label="Alphanumeric" Type="WaOtpInputType.Alphanumeric" @bind-Value="alphanumericValue" />
+        </WaStack>
+        """;
+
+    private const string FormatExample = """
+        @* # marks a segment; any other character becomes a literal separator and overrides Length *@
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="Invite code" Type="WaOtpInputType.Alphanumeric" Format="### ###" @bind-Value="inviteValue" />
+            <WaOtpInput Label="License key" Type="WaOtpInputType.Alphanumeric" Format="####-####-####" @bind-Value="licenseValue" />
+        </WaStack>
+        """;
+
+    private const string CaseExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="Upper" Type="WaOtpInputType.Alpha" Case="WaOtpInputCase.Upper" @bind-Value="upperValue" />
+            <WaOtpInput Label="Lower" Type="WaOtpInputType.Alpha" Case="WaOtpInputCase.Lower" @bind-Value="lowerValue" />
+        </WaStack>
+        """;
+
+    private const string MaskExample = """
+        @* Mask hides entered characters; WithMask also shows the mask character in empty segments *@
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="PIN, entered characters masked" Length="4" Mask="true" @bind-Value="maskedValue" />
+            <WaOtpInput Label="PIN, empty segments masked too" Length="4" Mask="true" WithMask="true" @bind-Value="fullyMaskedValue" />
+        </WaStack>
+        """;
+
+    private const string AppearanceExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="Outlined" Appearance="WaOtpInputAppearance.Outlined" @bind-Value="outlinedValue" />
+            <WaOtpInput Label="Filled" Appearance="WaOtpInputAppearance.Filled" @bind-Value="filledValue" />
+            <WaOtpInput Label="Filled outlined" Appearance="WaOtpInputAppearance.FilledOutlined" @bind-Value="filledOutlinedValue" />
+            <WaOtpInput Label="Contained" Appearance="WaOtpInputAppearance.Contained" @bind-Value="containedValue" />
+        </WaStack>
+        """;
+
+    private const string SizeExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="Small" Size="WaSize.Small" Length="4" @bind-Value="smallValue" />
+            <WaOtpInput Label="Medium" Size="WaSize.Medium" Length="4" @bind-Value="mediumValue" />
+            <WaOtpInput Label="Large" Size="WaSize.Large" Length="4" @bind-Value="largeValue" />
+        </WaStack>
+        """;
+
+    private const string StatesExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaOtpInput Label="Magic link code" @bind-Value="magicLinkValue" />
+            <WaOtpInput Label="Verification code" Disabled="true" @bind-Value="disabledValue" />
+            <WaOtpInput Label="Confirmation code" Readonly="true" @bind-Value="readonlyValue" />
+        </WaStack>
+
+        @code {
+            private string? magicLinkValue = "271828";
+            private string? disabledValue = "391824";
+            private string? readonlyValue = "483920";
+        }
+        """;
+
+    private const string CompletionExample = """
+        <WaOtpInput @ref="completionInput" Label="Two-factor code" Hint="Enter all six digits to complete the code."
+                    @bind-Value="completionValue" OnComplete="HandleComplete" OnClear="HandleClear" />
+        <WaDivider />
+        <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+            <WaButton Appearance="WaAppearance.Outlined" OnClick="ClearCompletionAsync">Clear</WaButton>
+            <span>Completed <strong>@completeCount</strong> time(s), cleared <strong>@clearCount</strong> time(s).</span>
+        </WaCluster>
+
+        @code {
+            private string? completionValue;
+            private WaOtpInput? completionInput;
+            private int completeCount;
+            private int clearCount;
+
+            private void HandleComplete() => completeCount++;
+
+            private void HandleClear() => clearCount++;
+
+            private async Task ClearCompletionAsync()
+            {
+                if (completionInput is not null)
+                    await completionInput.ClearAsync();
+            }
+        }
+        """;
+
+    private const string ValidationExample = """
+        <EditForm Model="verification" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <WaStack Gap="GapSize.Gap_M">
+                <WaOtpInput Label="Two-factor code" Hint="A partially filled code is always invalid." Required="true"
+                            @bind-Value="verification.Code" />
+                <ValidationSummary />
+                <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+                    <WaButton Variant="WaVariant.Brand" Type="WaButtonType.Submit">Continue</WaButton>
+                    @if (verified)
+                    {
+                        <WaBadge Variant="WaVariant.Success">Code accepted</WaBadge>
+                    }
+                </WaCluster>
+            </WaStack>
+        </EditForm>
+
+        @code {
+            private VerificationModel verification = new();
+            private bool verified;
+
+            private void HandleValidSubmit() => verified = true;
+
+            private sealed class VerificationModel
+            {
+                [Required(ErrorMessage = "Please enter the code we sent to your device.")]
+                [StringLength(6, MinimumLength = 6, ErrorMessage = "The code is six characters long.")]
+                public string? Code { get; set; }
+            }
+        }
+        """;
+}

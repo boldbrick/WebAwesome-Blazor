@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/date-picker.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/date-picker -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/date-picker.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/date-picker -->
 
 # Date Picker [Pro]
 
@@ -34,32 +34,9 @@ Date pickers display an inline calendar that lets users choose a single date or 
 
 `<wa-date-picker>` is the inline calendar grid. It is _not_ form-associated and does not submit with forms. For an input that opens a calendar in a popover and participates in forms, use [`<wa-date-input>`](https://webawesome.com/docs/components/date-input).
 
-## Listening for Changes
+## API
 
-The `change` event fires when the user commits a new value. In range mode, `input` also fires after the first click of a new range, before commit.
-
-```html
-<wa-date-picker style="max-width: 600px;" mode="range" months="2" class="change-listener"></wa-date-picker>
-<output class="change-output"></output>
-
-<script type="module">
-  import { allDefined } from '/dist/webawesome.js';
-  await allDefined();
-
-  const picker = document.querySelector('.change-listener');
-  const output = document.querySelector('.change-output');
-
-  picker.addEventListener('change', () => {
-    output.textContent = `Value: ${picker.value}`;
-  });
-
-  picker.addEventListener('wa-focus-day', event => {
-    console.log('focused', event.detail.date);
-  });
-</script>
-```
-
-## Importing
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -68,7 +45,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/date-picker/date-picker.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/date-picker/date-picker.js';
 ```
 
 \*\*npm\*\*
@@ -95,79 +72,78 @@ To import this component for React 18 or below, use the following code:
 import WaDatePicker from '@awesome.me/webawesome/dist/react/date-picker/index.js';
 ```
 
-## Slots
-
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
-
-- `previous-icon` — Icon shown inside the previous-page button. Defaults to a left chevron.
-- `next-icon` — Icon shown inside the next-page button. Defaults to a right chevron.
-- `header` — Replaces the entire header row including title and navigation buttons. Advanced use only.
-- `footer` — Optional content rendered below the calendar grid. Empty by default.
-
-## Attributes & Properties
-
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `mode` | `mode` | The selection mode. | `WaDatePickerMode` | `'single'` |
-| `value` | `value` | The selected date(s). For `mode="single"`, an ISO date string (`YYYY-MM-DD`) or empty. For `mode="range"`, two ISO dates separated by `/` (`YYYY-MM-DD/YYYY-MM-DD`). The property setter also accepts `Date` objects and `{ from, to }` objects for ranges. | `string` | — |
-| `min` | `min` | The earliest selectable date as `YYYY-MM-DD`. | `string` | `''` |
-| `max` | `max` | The latest selectable date as `YYYY-MM-DD`. | `string` | `''` |
-| `today` | `today` | Overrides the date considered "today". | `string` | `''` |
-| `focusedDate` | `focused-date` | The currently focused date as `YYYY-MM-DD`. Drives roving tabindex and the visible month. | `string` | `''` |
-| `view` | `view` | The current view. | `WaDatePickerView` | `'days'` |
-| `months` | `months` | Number of months rendered side-by-side. Either `1` or `2`. Set to `2` to see both ends of a range at once. | `1 \| 2` | `1` |
-| `pageBy` | `page-by` | Whether prev/next advances by the visible range (`months`) or one month at a time (`single`). | `WaDatePickerPageBy` | `'months'` |
-| `firstDayOfWeek` | `first-day-of-week` | The first day of the week. The default `auto` uses the current locale's week info. To set a specific day, pass a three-letter weekday name: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, or `sat`. | `WaDatePickerFirstDayOfWeek` | `'auto'` |
-| `withOutsideDays` | `with-outside-days` | Shows leading and trailing days from adjacent months. | `boolean` | `false` |
-| `withWeekNumbers` | `with-week-numbers` | Shows an ISO week-number column. | `boolean` | `false` |
-| `weekdayFormat` | `weekday-format` | The weekday header format. | `WaDatePickerWeekdayFormat` | `'short'` |
-| `disabled` | `disabled` | Disables the entire picker. | `boolean` | `false` |
-| `readonly` | `readonly` | Displays the current value without allowing changes. Cells remain focusable. | `boolean` | `false` |
-| `disabledDates` | `disabled-dates` | A list of whitespace-separated ISO dates that should be disabled. The property accepts an array. | `string \| string[] \| Date[]` | — |
-| `disabledDaysOfWeek` | `disabled-days-of-week` | Weekdays to disable. Accepts a space-separated list of three-letter weekday names: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat` | `string` | `''` |
-| `disablePast` | `disable-past` | Disable all dates strictly before `today`. | `boolean` | `false` |
-| `disableFuture` | `disable-future` | Disable all dates strictly after `today`. | `boolean` | `false` |
-| `minRange` | `min-range` | Minimum range length in days (`mode="range"` only). `0` disables the check. | `number` | `0` |
-| `maxRange` | `max-range` | Maximum range length in days (`mode="range"` only). `0` disables the check. | `number` | `0` |
-| `size` | `size` | Visual size. | `WaDatePickerSize \| 'small' \| 'medium' \| 'large'` | `'m'` |
-| `locale` | `locale` | BCP-47 locale override. When empty, the inherited `lang` attribute is used. | `string` | `''` |
-| `isDateDisabled` | — | Author-supplied predicate that returns `true` when a date should be disabled. Runs in addition to declarative `min` / `max` / `disabled-*` rules. JavaScript-only — set via property, not attribute. | `(date: Date) => boolean \| undefined` | — |
-| `dayContent` | — | Author-supplied function that returns custom content for a day cell. Receives a `Date` and returns a string of HTML, a Lit `TemplateResult`, or `null` to use the default day number. Runs for every rendered day cell (including outside days). A `day-YYYY-MM-DD` slot, when provided for the same date, wins over this function. Property only. | `WaDatePickerDayContent \| undefined` | — |
-| `valueAsDate` | — | Read-only convenience getter: returns the selected date in `mode="single"`. | `Date \| null` | — |
-| `valueAsRange` | — | Read-only convenience getter: returns the selected range in `mode="range"`. | `WaDatePickerRange` | — |
-
-## Methods
-
-| Name | Description | Arguments |
-| --- | --- | --- |
-| `focus()` | Focuses the calendar at the currently focused day. | `options: FocusOptions` |
-| `goToDate()` | Scrolls the view to show the given date and sets the focused day. | `date: string \\| Date` |
-| `goToToday()` | Equivalent to `goToDate(today)`. | — |
-| `clear()` | Clears the current selection and emits `input` then `change`. | — |
-
-## Events
+### Slots
 
 | Name | Description |
 | --- | --- |
-| `input` | Emitted when the value changes during interaction. In range mode, this fires after the first click of a new range. |
-| `change` | Emitted when the user commits a new value. Read the current value from `event.target.value`. |
-| `wa-focus-day` | Emitted when the focused day changes via keyboard navigation, paging, or pointer hover. `event.detail` is `{ date: Date }`. |
-| `wa-view-change` | Emitted when the date picker switches between day, month, and year views. `event.detail` is `{ view, date }`. |
+| \`footer\` | Optional content rendered below the calendar grid. Empty by default. |
+| \`header\` | Replaces the entire header row including title and navigation buttons. Advanced use only. |
+| \`next-icon\` | Icon shown inside the next-page button. Defaults to a right chevron. |
+| \`previous-icon\` | Icon shown inside the previous-page button. Defaults to a left chevron. |
 
-## Custom States
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`dayContent\` | \`Date\` Author-supplied function that returns custom content for a day cell. Receives a and returns a string of HTML, a Lit TemplateResult, or null to use the default day number. Runs for every rendered day cell (including outside days). A day-YYYY-MM-DD slot, when provided for the same date, wins over this function. Property only. Type WaDatePickerDayContent \\| undefined | |
+| \`disabled\` disabled | \`boolean\` Disables the entire picker. Type Default false | |
+| \`disabledDates\` disabled-dates | \`string \\| string\[\] \\| Date\[\]\` A list of whitespace-separated ISO dates that should be disabled. The property accepts an array. Type | |
+| \`disabledDaysOfWeek\` disabled-days-of-week | \`sun\` Weekdays to disable. Accepts a space-separated list of three-letter weekday names: , mon, tue, wed, thu, fri, sat Type string Default '' | |
+| \`disableFuture\` disable-future | \`today\` Disable all dates strictly after . Type boolean Default false | |
+| \`disablePast\` disable-past | \`today\` Disable all dates strictly before . Type boolean Default false | |
+| \`firstDayOfWeek\` first-day-of-week | \`auto\` The first day of the week. The default uses the current locale's week info. To set a specific day, pass a three-letter weekday name: sun, mon, tue, wed, thu, fri, or sat. Type WaDatePickerFirstDayOfWeek Default 'auto' | |
+| \`focusedDate\` focused-date | \`YYYY-MM-DD\` The currently focused date as . Drives roving tabindex and the visible month. Type string Default '' | |
+| \`isDateDisabled\` | \`true\` Author-supplied predicate that returns when a date should be disabled. Runs in addition to declarative min / max / disabled-\* rules. JavaScript-only — set via property, not attribute. Type (date: Date) => boolean \\| undefined | |
+| \`locale\` locale | \`lang\` BCP-47 locale override. When empty, the inherited attribute is used. Type string Default '' | |
+| \`max\` max | \`YYYY-MM-DD\` The latest selectable date as . Type string Default '' | |
+| \`maxRange\` max-range | \`mode="range"\` Maximum range length in days ( only). 0 disables the check. Type number Default 0 | |
+| \`min\` min | \`YYYY-MM-DD\` The earliest selectable date as . Type string Default '' | |
+| \`minRange\` min-range | \`mode="range"\` Minimum range length in days ( only). 0 disables the check. Type number Default 0 | |
+| \`mode\` mode | \`WaDatePickerMode\` The selection mode. Type Default 'single' | |
+| \`months\` months | \`1\` Number of months rendered side-by-side. Either or 2. Set to 2 to see both ends of a range at once. Type 1 \\| 2 Default 1 | |
+| \`pageBy\` page-by | \`months\` Whether prev/next advances by the visible range () or one month at a time (single). Type WaDatePickerPageBy Default 'months' | |
+| \`readonly\` readonly | \`boolean\` Displays the current value without allowing changes. Cells remain focusable. Type Default false | |
+| \`size\` size | \`WaDatePickerSize \\| 'small' \\| 'medium' \\| 'large'\` Visual size. Type Default 'm' | |
+| \`today\` today | \`string\` Overrides the date considered "today". Type Default '' | |
+| \`value\` value | \`mode="single"\` The selected date(s). For , an ISO date string (YYYY-MM-DD) or empty. For mode="range", two ISO dates separated by / (YYYY-MM-DD/YYYY-MM-DD). The property setter also accepts Date objects and { from, to } objects for ranges. Type string | |
+| \`valueAsDate\` | \`mode="single"\` Read-only convenience getter: returns the selected date in . Type Date \\| null | |
+| \`valueAsRange\` | \`mode="range"\` Read-only convenience getter: returns the selected range in . Type WaDatePickerRange | |
+| \`view\` view | \`WaDatePickerView\` The current view. Type Default 'days' | |
+| \`weekdayFormat\` weekday-format | \`WaDatePickerWeekdayFormat\` The weekday header format. Type Default 'short' | |
+| \`withOutsideDays\` with-outside-days | \`boolean\` Shows leading and trailing days from adjacent months. Type Default false | |
+| \`withWeekNumbers\` with-week-numbers | \`boolean\` Shows an ISO week-number column. Type Default false | |
+
+### Methods
+
+| Name | Description | Arguments |
+| --- | --- | --- |
+| \`clear()\` | \`input\` Clears the current selection and emits then change. | |
+| \`focus()\` | Focuses the calendar at the currently focused day. | \`options: FocusOptions\` |
+| \`goToDate()\` | Scrolls the view to show the given date and sets the focused day. | \`date: string \\| Date\` |
+| \`goToToday()\` | \`goToDate(today)\` Equivalent to . | |
+
+### Events
+
+| Name | Description |
+| --- | --- |
+| \`change\` | \`event.target.value\` Emitted when the user commits a new value. Read the current value from . |
+| \`input\` | Emitted when the value changes during interaction. In range mode, this fires after the first click of a new range. |
+| \`wa-focus-day\` | \`event.detail\` Emitted when the focused day changes via keyboard navigation, paging, or pointer hover. is { date: Date }. |
+| \`wa-view-change\` | \`event.detail\` Emitted when the date picker switches between day, month, and year views. is { view, date }. |
+
+### Custom States
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| `disabled` | The date picker is disabled. | `:state(disabled)` |
-| `readonly` | The date picker is readonly. | `:state(readonly)` |
-| `range` | The date picker is in range mode. | `:state(range)` |
+| \`disabled\` | The date picker is disabled. | \`:state(disabled)\` |
+| \`range\` | The date picker is in range mode. | \`:state(range)\` |
+| \`readonly\` | The date picker is readonly. | \`:state(readonly)\` |
 
-## CSS Parts
+### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`base\` | The component's outer wrapper. | \`::part(base)\` |
+| \`date-picker\` | The component's outer wrapper. | \`::part(date-picker)\` |
 | \`day\` | \`day\` A cell button. State-specific parts are added in addition to day so you can target them with ::part(day-...). | \`::part(day)\` |
 | \`day-disabled\` | Added when the day is disabled. | \`::part(day-disabled)\` |
 | \`day-label\` | The label text inside a day button. | \`::part(day-label)\` |
@@ -201,8 +177,9 @@ silently ignored and the element falls back to the default slot):
 | \`weekdays\` | The row of weekday labels above each month grid. | \`::part(weekdays)\` |
 | \`weeknumber\` | A single week-number cell. | \`::part(weeknumber)\` |
 | \`weeknumbers\` | The week-number column header cell. | \`::part(weeknumbers)\` |
+| \`base\` | \`date-picker\` Deprecated. Use the part instead. | \`::part(base)\` |
 
-## Dependencies
+### Dependencies
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 
@@ -259,7 +236,7 @@ Use `min` and `max` to bound the selectable range. Days outside the bounds are d
 <wa-date-picker style="max-width: 300px;" min="2026-05-08" max="2026-05-22" value="2026-05-15"></wa-date-picker>
 ```
 
-### Disable Past & Future
+### Disabling Past & Future
 
 Use `disable-past` or `disable-future` to disable all dates before or after today. These are convenience shortcuts that don't require knowing today's date in advance.
 
@@ -295,7 +272,7 @@ By default, the previous/next buttons advance the visible range by two months. S
 <wa-date-picker style="max-width: 600px;" months="2" page-by="single"></wa-date-picker>
 ```
 
-### Sizes
+### Size
 
 Use the `size` attribute to set the calendar's size.
 
@@ -319,7 +296,7 @@ Use the `disabled` attribute to disable the entire calendar.
 <wa-date-picker style="max-width: 300px;" disabled value="2026-05-11"></wa-date-picker>
 ```
 
-### Read Only
+### Readonly
 
 Use the `readonly` attribute to display the current value without allowing changes. Cells remain focusable so users can still navigate the grid with the keyboard.
 
@@ -393,7 +370,7 @@ Use `weekday-format` to control how weekday headers are rendered.
 ```
 
 ```html
-<wa-date-picker weekday-format="long"></wa-date-picker>
+<wa-date-picker style="max-width: 300px;" weekday-format="long"></wa-date-picker>
 ```
 
 ### Week Numbers
@@ -412,7 +389,7 @@ Use `with-outside-days` to render the trailing days of the previous month and th
 <wa-date-picker style="max-width: 300px;" with-outside-days></wa-date-picker>
 ```
 
-### View Stepper
+### Initial View
 
 Use the `view` attribute to set the initial view. Accepted values are `days` (default), `months`, and `years`.
 
@@ -477,13 +454,13 @@ If both a `day-YYYY-MM-DD` slot and `dayContent` apply to the same date, the slo
   picker.dayContent = date => {
     const day = date.getDate();
     const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-    let i = 1;
-    if (day === 15 || day === lastDay)
-      return `
-      <wa-tooltip for="brian-${i}">I thought you'd never ask</wa-tooltip>
-      <span id="brian-${i}">💰</span>
-    `;
-    i++;
+
+    // Mark paydays: the 15th and the last day of each month
+    if (day === 15 || day === lastDay) {
+      const id = `payday-${date.toISOString().slice(0, 10)}`;
+      return `<wa-tooltip for="${id}">Payday</wa-tooltip><span id="${id}">💰</span>`;
+    }
+
     return null;
   };
 </script>
@@ -520,7 +497,32 @@ Replace the default chevrons by slotting your own icons into `previous-icon` and
 
 ```html
 <wa-date-picker style="max-width: 300px;">
-  <wa-icon slot="previous-icon" name="caret-left" variant="solid"></wa-icon>
-  <wa-icon slot="next-icon" name="caret-right" variant="solid"></wa-icon>
+  <wa-icon slot="previous-icon" name="caret-left"></wa-icon>
+  <wa-icon slot="next-icon" name="caret-right"></wa-icon>
 </wa-date-picker>
+```
+
+### Listening for Changes
+
+The `change` event fires when the user commits a new value. In range mode, `input` also fires after the first click of a new range, before commit.
+
+```html
+<wa-date-picker style="max-width: 600px;" mode="range" months="2" class="change-listener"></wa-date-picker>
+<output class="change-output"></output>
+
+<script type="module">
+  import { allDefined } from '/dist/webawesome.js';
+  await allDefined();
+
+  const picker = document.querySelector('.change-listener');
+  const output = document.querySelector('.change-output');
+
+  picker.addEventListener('change', () => {
+    output.textContent = `Value: ${picker.value}`;
+  });
+
+  picker.addEventListener('wa-focus-day', event => {
+    console.log('focused', event.detail.date);
+  });
+</script>
 ```

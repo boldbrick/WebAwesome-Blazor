@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/pie-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/pie-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/pie-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/pie-chart -->
 
 # Pie Chart [Pro]
 
@@ -26,29 +26,27 @@ Pie charts show the proportional composition of a whole as slices of a circle. T
 
 Get Web Awesome Pro + Pie Chart!
 
-For a variation with a hollow center, see [Doughnut Chart](https://webawesome.com/docs/components/doughnut-chart).
-
 ```html
-<wa-pie-chart id="pie-hero" label="Browser Market Share" description="A pie chart showing browser market share with Chrome leading at 65%">
-</wa-pie-chart>
-<script type="module">
-  const chart = document.querySelector('#pie-hero');
-
-  chart.config = {
-    data: {
-      labels: ['Chrome', 'Safari', 'Firefox', 'Edge', 'Other'],
-      datasets: [{
-        label: 'Market Share',
-        data: [65, 18, 8, 5, 4]
-      }]
+<wa-pie-chart
+  label="Browser Market Share"
+  description="A pie chart showing browser market share with Chrome leading at 65%"
+>
+  <script type="application/json">
+    {
+      "data": {
+        "labels": ["Chrome", "Safari", "Firefox", "Edge", "Other"],
+        "datasets": [{ "label": "Market Share", "data": [65, 18, 8, 5, 4] }]
+      }
     }
-  };
-</script>
+  </script>
+</wa-pie-chart>
 ```
 
-For advanced configuration such as custom plugins and direct Chart.js access, see [`<wa-chart>`](https://webawesome.com/docs/components/chart).
+See [`<wa-chart>`](https://webawesome.com/docs/components/chart) for advanced configuration, custom plugins, and direct Chart.js access.
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -57,7 +55,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/pie-chart/pie-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/pie-chart/pie-chart.js';
 ```
 
 \*\*npm\*\*
@@ -84,35 +82,34 @@ To import this component for React 18 or below, use the following code:
 import WaPieChart from '@awesome.me/webawesome/dist/react/pie-chart/index.js';
 ```
 
-## Slots
+### Slots
 
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
+| Name | Description |
+| --- | --- |
+| (default) | \`
 
-- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
+### Attributes & Properties
 
-## Attributes & Properties
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | |
+| \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | |
+| \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | |
+| \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | |
+| \`label\` label | \`string \\| null\` A label for the chart, used for accessibility. Type Default null | |
+| \`legendPosition\` legend-position | \`LayoutPosition \\| 'start' \\| 'end'\` The position of the legend relative to the chart. Type Default 'top' | |
+| \`max\` max | \`number \\| null\` The maximum value for the value axis. Type Default null | |
+| \`min\` min | \`number \\| null\` The minimum value for the value axis. Type Default null | |
+| \`plugins\` plugins | \`array\` Additional Chart.js plugins to register for this chart instance. Type Default \[\] | |
+| \`stacked\` stacked | \`boolean\` Stacks datasets on top of each other along the value axis. Type Default false | |
+| \`type\` type | \`bar\` The type of chart to render. Valid types include , line, pie, doughnut, polarArea, radar, scatter, and bubble. Type ChartType Default 'pie' | |
+| \`withoutAnimation\` without-animation | \`boolean\` Disables chart animations Type Default false | |
+| \`withoutLegend\` without-legend | \`boolean\` Hides the legend Type Default false | |
+| \`withoutTooltip\` without-tooltip | \`boolean\` Hides tooltips over data points Type Default false | |
+| \`xLabel\` x-label | \`string \\| null\` A label for the x-axis. Type Default null | |
+| \`yLabel\` y-label | \`string \\| null\` A label for the y-axis. Type Default null | |
 
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `type` | `type` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. | `ChartType` | `'pie'` |
-| `label` | `label` | A label for the chart, used for accessibility. | `string \| null` | `null` |
-| `description` | `description` | A description of the chart, used for accessibility. | `string \| null` | `null` |
-| `xLabel` | `xLabel` | A label for the x-axis. | `string \| null` | `null` |
-| `yLabel` | `yLabel` | A label for the y-axis. | `string \| null` | `null` |
-| `legendPosition` | `legend-position` | The position of the legend relative to the chart. | `LayoutPosition \| 'start' \| 'end'` | `'top'` |
-| `stacked` | `stacked` | Stacks datasets on top of each other along the value axis. | `boolean` | `false` |
-| `indexAxis` | `index-axis` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. | `'x' \| 'y'` | `'x'` |
-| `grid` | `grid` | Which axes to show grid lines on. | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` |
-| `min` | `min` | The minimum value for the value axis. | `number \| null` | `null` |
-| `max` | `max` | The maximum value for the value axis. | `number \| null` | `null` |
-| `withoutAnimation` | `without-animation` | Disables chart animations | `boolean` | `false` |
-| `withoutLegend` | `without-legend` | Hides the legend | `boolean` | `false` |
-| `withoutTooltip` | `without-tooltip` | Hides tooltips over data points | `boolean` | `false` |
-| `config` | — | The Chart.js configuration object. Setting this property will automatically re-render the chart. | `ChartJS['config']` | — |
-| `plugins` | `plugins` | Additional Chart.js plugins to register for this chart instance. | `array` | `[]` |
-
-## CSS Custom Properties
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
@@ -137,9 +134,31 @@ silently ignored and the element falls back to the default slot):
 
 ## Examples
 
+### Providing Data with JSON
+
+Place a `<script type="application/json">` tag inside the component with your chart data. Each value in the `data` array corresponds to a label. The JSON follows the [Chart.js configuration format](https://www.chartjs.org/docs/latest/configuration/).
+
+```html
+<wa-pie-chart label="Budget Allocation" description="A pie chart showing how a budget is allocated across departments">
+  <script type="application/json">
+    {
+      "data": {
+        "labels": ["Engineering", "Marketing", "Sales", "Operations"],
+        "datasets": [
+          {
+            "label": "Budget",
+            "data": [40, 25, 20, 15]
+          }
+        ]
+      }
+    }
+  </script>
+</wa-pie-chart>
+```
+
 ### Providing Data with JavaScript
 
-For dynamic data, set the `config` property directly. The chart will re-render automatically.
+Set the `config` property from JavaScript when your data comes from code rather than static markup. The chart re-renders automatically each time you assign it. For data that updates at runtime, try the live controls in [Accessing the Chart.js Instance](https://webawesome.com/docs/components/chart#accessing-the-chartjs-instance).
 
 ```html
 <wa-pie-chart id="pie-js-example" label="Budget Allocation" description="A pie chart of budget allocation">
@@ -150,38 +169,21 @@ For dynamic data, set the `config` property directly. The chart will re-render a
   chart.config = {
     data: {
       labels: ['Engineering', 'Marketing', 'Sales', 'Operations'],
-      datasets: [{
-        label: 'Budget',
-        data: [40, 25, 20, 15]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Budget',
+          data: [40, 25, 20, 15],
+        },
+      ],
+    },
   };
 </script>
 ```
 
-Note that `config` is shallowly reactive. If you mutate the existing object in place, you must reassign it to trigger a re-render!
+**`config` is shallowly reactive.**  
+If you mutate the object in place, reassign it to trigger a re-render.
 
-### Providing Data with JSON
-
-Place a `<script type="application/json">` tag inside the component with your chart data. Each value in the `data` array corresponds to a label.
-
-```html
-<wa-pie-chart label="Budget Allocation" description="A pie chart showing how a budget is allocated across departments">
-  <script type="application/json">
-    {
-      "data": {
-        "labels": ["Engineering", "Marketing", "Sales", "Operations"],
-        "datasets": [{
-          "label": "Budget",
-          "data": [40, 25, 20, 15]
-        }]
-      }
-    }
-  </script>
-</wa-pie-chart>
-```
-
-### Custom Slice Colors
+### Colors
 
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties to apply custom colors to each slice.
 
@@ -206,11 +208,13 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
   chart.config = {
     data: {
       labels: ['Desktop', 'Mobile', 'Tablet'],
-      datasets: [{
-        label: 'Traffic',
-        data: [55, 35, 10]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Traffic',
+          data: [55, 35, 10],
+        },
+      ],
+    },
   };
 </script>
 ```
@@ -220,7 +224,12 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
 Use the `legend-position` attribute to control where the legend appears. For pie charts, placing the legend on the side can help prevent overlap. Add `without-legend` to hide it entirely.
 
 ```html
-<wa-pie-chart id="pie-legend" legend-position="right" label="Legend on Right" description="A pie chart with the legend on the right side">
+<wa-pie-chart
+  id="pie-legend"
+  legend-position="right"
+  label="Legend on Right"
+  description="A pie chart with the legend on the right side"
+>
 </wa-pie-chart>
 <script type="module">
   const chart = document.querySelector('#pie-legend');
@@ -228,55 +237,43 @@ Use the `legend-position` attribute to control where the legend appears. For pie
   chart.config = {
     data: {
       labels: ['Rent', 'Food', 'Transport', 'Entertainment', 'Savings'],
-      datasets: [{
-        label: 'Monthly Spending',
-        data: [35, 25, 15, 10, 15]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Monthly Spending',
+          data: [35, 25, 15, 10, 15],
+        },
+      ],
+    },
   };
 </script>
 ```
 
-### Disabling Tooltips
+### Disabling Features
 
-Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over slices.
+Use `without-tooltip` to hide hover tooltips and `without-animation` to disable transitions.
 
 ```html
-<wa-pie-chart id="pie-tooltip" without-tooltip label="No Tooltips" description="A pie chart with tooltips disabled">
+<wa-pie-chart
+  id="pie-disabled"
+  without-tooltip
+  without-animation
+  label="Minimal"
+  description="A pie chart with tooltips and animations disabled"
+>
 </wa-pie-chart>
 <script type="module">
-  const chart = document.querySelector('#pie-tooltip');
+  const chart = document.querySelector('#pie-disabled');
 
   chart.config = {
     data: {
-      labels: ['A', 'B', 'C'],
-      datasets: [{
-        label: 'Values',
-        data: [40, 35, 25]
-      }]
-    }
-  };
-</script>
-```
-
-### Disabling Animations
-
-Use the `without-animation` attribute to disable chart transitions.
-
-```html
-<wa-pie-chart id="pie-anim" without-animation label="No Animation" description="A pie chart with animation disabled">
-</wa-pie-chart>
-<script type="module">
-  const chart = document.querySelector('#pie-anim');
-
-  chart.config = {
-    data: {
-      labels: ['A', 'B', 'C'],
-      datasets: [{
-        label: 'Values',
-        data: [40, 35, 25]
-      }]
-    }
+      labels: ['Latte', 'Cold Brew', 'Espresso'],
+      datasets: [
+        {
+          label: 'Daily Orders',
+          data: [52, 30, 18],
+        },
+      ],
+    },
   };
 </script>
 ```

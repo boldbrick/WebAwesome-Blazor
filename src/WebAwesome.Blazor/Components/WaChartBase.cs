@@ -146,8 +146,8 @@ public abstract class WaChartBase : ComponentBase
         builder.AddAttribute(13, "without-animation", WithoutAnimation);
         builder.AddAttribute(14, "without-legend", WithoutLegend);
         builder.AddAttribute(15, "without-tooltip", WithoutTooltip);
-        builder.AddAttributeIfNotNullOrEmpty(16, "xLabel", XLabel);
-        builder.AddAttributeIfNotNullOrEmpty(17, "yLabel", YLabel);
+        builder.AddAttributeIfNotNullOrEmpty(16, "x-label", XLabel);
+        builder.AddAttributeIfNotNullOrEmpty(17, "y-label", YLabel);
 
         // chart-specific attributes contributed by derived components
         AddExtraAttributes(builder, 18);

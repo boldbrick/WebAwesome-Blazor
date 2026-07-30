@@ -1,20 +1,14 @@
----
-title: Card
-layout: component
-category: Layout
-synonyms:
-  - tile
-  - panel
-  - content box
-  - surface
-use-cases:
-  - product card
-  - info card
-  - media card
-  - feature card
----
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/card.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/card -->
 
-```html {.example}
+# Card
+
+`<wa-card>`
+
+Stable [Layout](https://webawesome.com/docs/components/?category=layout) [Since 2.0](https://webawesome.com/docs/resources/changelog#wa_200)
+
+Cards group related content and actions inside a bordered container. Use them to present products, articles, user profiles, or any self-contained unit of information.
+
+```html
 <wa-card class="card-overview">
   <img
     slot="media"
@@ -37,13 +31,113 @@ use-cases:
 </style>
 ```
 
+```html
+<wa-card>
+  <img
+    slot="media"
+    src="https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
+    alt="A kitten between a terracotta pot and decorative grasses."
+  />
+  <strong slot="header">Mittens</strong>
+  This kitten is as cute as he is playful. Bring him home today!
+  <wa-button slot="footer" variant="brand" pill>More Info</wa-button>
+  <wa-button slot="actions" variant="neutral" appearance="plain">
+    <wa-icon name="ellipsis" label="Actions"></wa-icon>
+  </wa-button>
+</wa-card>
+```
+
+## API
+
+### Importing
+
+If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
+
+\*\*CDN\*\*
+
+Import this component directly from the CDN:
+
+```js
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/card/card.js';
+```
+
+\*\*npm\*\*
+
+After installing Web Awesome via npm, import this component:
+
+```js
+import '@awesome.me/webawesome/dist/components/card/card.js';
+```
+
+\*\*Self-Hosted\*\*
+
+If you're self-hosting Web Awesome, import this component from your server:
+
+```js
+import './webawesome/dist/components/card/card.js';
+```
+
+\*\*React\*\*
+
+To import this component for React 18 or below, use the following code:
+
+```js
+import WaCard from '@awesome.me/webawesome/dist/react/card/index.js';
+```
+
+### Slots
+
+| Name | Description |
+| --- | --- |
+| (default) | The card's main content. |
+| \`actions\` | An optional actions section to render at the end for the horizontal card. |
+| \`footer\` | An optional footer for the card. |
+| \`footer-actions\` | An optional actions section to render in the footer of the vertical card. |
+| \`header\` | An optional header for the card. |
+| \`header-actions\` | An optional actions section to render in the header of the vertical card. |
+| \`media\` | An optional media section to render at the start of the card. |
+
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`appearance\` appearance | \`'accent' \\| 'filled' \\| 'outlined' \\| 'filled-outlined' \\| 'plain'\` The card's visual appearance. Type Default 'outlined' | |
+| \`orientation\` orientation | \`'horizontal' \\| 'vertical'\` Renders the card's orientation \* Type Default 'vertical' | |
+| \`withFooter\` with-footer | \`true\` Only required for SSR. Set to if you're slotting in a footer element so the server-rendered markup includes the footer before the component hydrates on the client. Type boolean Default false | |
+| \`withFooterActions\` with-footer-actions | \`true\` Only required for SSR. Set to if you're slotting in a footer-actions element so the server-rendered markup includes the media before the component hydrates on the client. Type boolean Default false | |
+| \`withHeader\` with-header | \`true\` Only required for SSR. Set to if you're slotting in a header element so the server-rendered markup includes the header before the component hydrates on the client. Type boolean Default false | |
+| \`withHeaderActions\` with-header-actions | \`true\` Only required for SSR. Set to if you're slotting in a header-actions element so the server-rendered markup includes the media before the component hydrates on the client. Type boolean Default false | |
+| \`withMedia\` with-media | \`true\` Only required for SSR. Set to if you're slotting in a media element so the server-rendered markup includes the media before the component hydrates on the client. Type boolean Default false | |
+
+### CSS Custom Properties
+
+| Name | Description |
+| --- | --- |
+| \`--spacing\` | \`var(--wa-space-l)\` The amount of space around and between sections of the card. Expects a single value. Default |
+
+### CSS Parts
+
+| Name | Description | CSS selector |
+| --- | --- | --- |
+| \`actions\` | The container that wraps the card's actions. | \`::part(actions)\` |
+| \`body\` | The container that wraps the card's main content. | \`::part(body)\` |
+| \`footer\` | The container that wraps the card's footer. | \`::part(footer)\` |
+| \`header\` | The container that wraps the card's header. | \`::part(header)\` |
+| \`media\` | The container that wraps the card's media. | \`::part(media)\` |
+
+### SSR
+
+Learn more about [Server-Side Rendering (SSR)](https://webawesome.com/docs/ssr).
+
+If you use the header, media, or footer slots, set the matching `with-header`, `with-media`, or `with-footer` attribute — otherwise only the card's body will render during SSR. This works around the lack of a `:has-slotted` CSS pseudo-class, which would normally let us style borders based on slotted content.
+
 ## Examples
 
 ### Basic Card
 
-Basic cards aren't very exciting, but they can display any content you want them to.
+A card can hold any content. Media, a header, and a footer are all optional.
 
-```html {.example}
+```html
 <wa-card class="card-basic">
   This is just a basic card. No media, no header, and no footer. Just your content.
 </wa-card>
@@ -55,12 +149,11 @@ Basic cards aren't very exciting, but they can display any content you want them
 </style>
 ```
 
-### Card with Header
+### Header
 
-Headers can be used to display titles and more.
-If using SSR, you need to also use the `with-header` attribute to add a header to the card (if not, it is added automatically).
+Headers can be used to display titles and more. If using SSR, you need to also use the `with-header` attribute to add a header to the card (if not, it is added automatically).
 
-```html {.example}
+```html
 <wa-card class="card-header">
   <h3 slot="header">Header Title</h3>
   This card has a header. You can put all sorts of things in it!
@@ -80,12 +173,11 @@ If using SSR, you need to also use the `with-header` attribute to add a header t
 </style>
 ```
 
-### Card with Footer
+### Footer
 
-Footers can be used to display actions, summaries, or other relevant content.
-If using SSR, you need to also use the `with-footer` attribute to add a footer to the card (if not, it is added automatically).
+Footers can be used to display actions, summaries, or other relevant content. If using SSR, you need to also use the `with-footer` attribute to add a footer to the card (if not, it is added automatically).
 
-```html {.example}
+```html
 <wa-card class="card-footer">
   This card has a footer. You can put all sorts of things in it!
 
@@ -103,10 +195,9 @@ If using SSR, you need to also use the `with-footer` attribute to add a footer t
 
 ### Media
 
-Card media is displayed atop the card and will stretch to fit.
-If using SSR, you need to also use the `with-media` attribute to add a media section to the card (if not, it is added automatically).
+Card media is displayed atop the card and will stretch to fit. If using SSR, you need to also use the `with-media` attribute to add a media section to the card (if not, it is added automatically).
 
-```html {.example}
+```html
 <div class="wa-grid">
   <wa-card class="card-media">
     <div slot="media" class="wa-frame:landscape">
@@ -137,7 +228,7 @@ If using SSR, you need to also use the `with-media` attribute to add a media sec
 
 Use the `appearance` attribute to change the card's visual appearance.
 
-```html {.example}
+```html
 <div class="wa-grid">
   <wa-card>
     <img
@@ -147,16 +238,35 @@ Use the `appearance` attribute to change the card's visual appearance.
     />
     Outlined (default)
   </wa-card>
-  {% for appearance in ['filled-outlined', 'plain', 'filled', 'accent'] -%}
-  <wa-card appearance="{{ appearance }}">
+  <wa-card appearance="filled-outlined">
     <img
       slot="media"
       src="https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
       alt="A kitten sits patiently between a terracotta pot and decorative grasses."
     />
-    {{ appearance | capitalize }}
+    Filled-outlined
+  </wa-card><wa-card appearance="plain">
+    <img
+      slot="media"
+      src="https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
+      alt="A kitten sits patiently between a terracotta pot and decorative grasses."
+    />
+    Plain
+  </wa-card><wa-card appearance="filled">
+    <img
+      slot="media"
+      src="https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
+      alt="A kitten sits patiently between a terracotta pot and decorative grasses."
+    />
+    Filled
+  </wa-card><wa-card appearance="accent">
+    <img
+      slot="media"
+      src="https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
+      alt="A kitten sits patiently between a terracotta pot and decorative grasses."
+    />
+    Accent
   </wa-card>
-  {%- endfor %}
 </div>
 ```
 
@@ -164,11 +274,9 @@ Use the `appearance` attribute to change the card's visual appearance.
 
 Set the `orientation` attribute to `horizontal` to create a card with a horizontal, side-by-side layout. Make sure to set a width or maximum width for the media slot. Horizontal cards do not currently contain the header and footer slots.
 
-:::info
-The `actions` slot is only available for the horizontal orientation
-:::
+The `actions` slot is only available for the horizontal orientation.
 
-```html {.example}
+```html
 <div class="wa-grid">
   <wa-card orientation="horizontal" class="horizontal-card">
     <img

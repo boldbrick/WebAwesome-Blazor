@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/radar-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/radar-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/radar-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/radar-chart -->
 
 # Radar Chart [Pro]
 
@@ -27,35 +27,38 @@ Radar charts compare multiple variables at once by plotting data on a radial gri
 Get Web Awesome Pro + Radar Chart!
 
 ```html
-<wa-radar-chart id="radar-hero" label="Employee Skills" description="A radar chart comparing skill levels across six categories">
-</wa-radar-chart>
-<script type="module">
-  const chart = document.querySelector('#radar-hero');
-
-  chart.config = {
-    data: {
-      labels: ['Communication', 'Technical', 'Leadership', 'Creativity', 'Teamwork', 'Problem Solving'],
-      datasets: [{
-        label: 'Alice',
-        data: [85, 92, 70, 88, 95, 78],
-        fill: true,
-        backgroundColor: 'color-mix(in srgb, var(--wa-color-red-60) 20%, transparent)',
-        borderColor: 'var(--wa-color-red-60)'
-      }, {
-        label: 'Bob',
-        data: [72, 78, 90, 65, 80, 88],
-        fill: true,
-        backgroundColor: 'color-mix(in srgb, var(--wa-color-blue-60) 20%, transparent)',
-        borderColor: 'var(--wa-color-blue-60)'
-      }]
+<wa-radar-chart label="Employee Skills" description="A radar chart comparing skill levels across six categories">
+  <script type="application/json">
+    {
+      "data": {
+        "labels": ["Communication", "Technical", "Leadership", "Creativity", "Teamwork", "Problem Solving"],
+        "datasets": [
+          {
+            "label": "Alice",
+            "data": [85, 92, 70, 88, 95, 78],
+            "fill": true,
+            "backgroundColor": "color-mix(in srgb, var(--wa-color-red-60) 20%, transparent)",
+            "borderColor": "var(--wa-color-red-60)"
+          },
+          {
+            "label": "Bob",
+            "data": [72, 78, 90, 65, 80, 88],
+            "fill": true,
+            "backgroundColor": "color-mix(in srgb, var(--wa-color-blue-60) 20%, transparent)",
+            "borderColor": "var(--wa-color-blue-60)"
+          }
+        ]
+      }
     }
-  };
-</script>
+  </script>
+</wa-radar-chart>
 ```
 
-For advanced configuration such as custom plugins and direct Chart.js access, see [`<wa-chart>`](https://webawesome.com/docs/components/chart).
+See [`<wa-chart>`](https://webawesome.com/docs/components/chart) for advanced configuration, custom plugins, and direct Chart.js access.
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -64,7 +67,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/radar-chart/radar-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/radar-chart/radar-chart.js';
 ```
 
 \*\*npm\*\*
@@ -91,35 +94,34 @@ To import this component for React 18 or below, use the following code:
 import WaRadarChart from '@awesome.me/webawesome/dist/react/radar-chart/index.js';
 ```
 
-## Slots
+### Slots
 
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
+| Name | Description |
+| --- | --- |
+| (default) | \`
 
-- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
+### Attributes & Properties
 
-## Attributes & Properties
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | |
+| \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | |
+| \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | |
+| \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | |
+| \`label\` label | \`string \\| null\` A label for the chart, used for accessibility. Type Default null | |
+| \`legendPosition\` legend-position | \`LayoutPosition \\| 'start' \\| 'end'\` The position of the legend relative to the chart. Type Default 'top' | |
+| \`max\` max | \`number \\| null\` The maximum value for the value axis. Type Default null | |
+| \`min\` min | \`number \\| null\` The minimum value for the value axis. Type Default null | |
+| \`plugins\` plugins | \`array\` Additional Chart.js plugins to register for this chart instance. Type Default \[\] | |
+| \`stacked\` stacked | \`boolean\` Stacks datasets on top of each other along the value axis. Type Default false | |
+| \`type\` type | \`bar\` The type of chart to render. Valid types include , line, pie, doughnut, polarArea, radar, scatter, and bubble. Type ChartType Default 'radar' | |
+| \`withoutAnimation\` without-animation | \`boolean\` Disables chart animations Type Default false | |
+| \`withoutLegend\` without-legend | \`boolean\` Hides the legend Type Default false | |
+| \`withoutTooltip\` without-tooltip | \`boolean\` Hides tooltips over data points Type Default false | |
+| \`xLabel\` x-label | \`string \\| null\` A label for the x-axis. Type Default null | |
+| \`yLabel\` y-label | \`string \\| null\` A label for the y-axis. Type Default null | |
 
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `type` | `type` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. | `ChartType` | `'radar'` |
-| `label` | `label` | A label for the chart, used for accessibility. | `string \| null` | `null` |
-| `description` | `description` | A description of the chart, used for accessibility. | `string \| null` | `null` |
-| `xLabel` | `xLabel` | A label for the x-axis. | `string \| null` | `null` |
-| `yLabel` | `yLabel` | A label for the y-axis. | `string \| null` | `null` |
-| `legendPosition` | `legend-position` | The position of the legend relative to the chart. | `LayoutPosition \| 'start' \| 'end'` | `'top'` |
-| `stacked` | `stacked` | Stacks datasets on top of each other along the value axis. | `boolean` | `false` |
-| `indexAxis` | `index-axis` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. | `'x' \| 'y'` | `'x'` |
-| `grid` | `grid` | Which axes to show grid lines on. | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` |
-| `min` | `min` | The minimum value for the value axis. | `number \| null` | `null` |
-| `max` | `max` | The maximum value for the value axis. | `number \| null` | `null` |
-| `withoutAnimation` | `without-animation` | Disables chart animations | `boolean` | `false` |
-| `withoutLegend` | `without-legend` | Hides the legend | `boolean` | `false` |
-| `withoutTooltip` | `without-tooltip` | Hides tooltips over data points | `boolean` | `false` |
-| `config` | — | The Chart.js configuration object. Setting this property will automatically re-render the chart. | `ChartJS['config']` | — |
-| `plugins` | `plugins` | Additional Chart.js plugins to register for this chart instance. | `array` | `[]` |
-
-## CSS Custom Properties
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
@@ -144,9 +146,34 @@ silently ignored and the element falls back to the default slot):
 
 ## Examples
 
+### Providing Data with JSON
+
+Place a `<script type="application/json">` tag inside the component with your chart data. Each value in the `data` array maps to a label on the radial axis. The JSON follows the [Chart.js configuration format](https://www.chartjs.org/docs/latest/configuration/).
+
+```html
+<wa-radar-chart
+  label="Feature Comparison"
+  description="A radar chart comparing features of a product across five dimensions"
+>
+  <script type="application/json">
+    {
+      "data": {
+        "labels": ["Speed", "Reliability", "Ease of Use", "Features", "Support"],
+        "datasets": [
+          {
+            "label": "Product A",
+            "data": [85, 90, 75, 80, 70]
+          }
+        ]
+      }
+    }
+  </script>
+</wa-radar-chart>
+```
+
 ### Providing Data with JavaScript
 
-For dynamic data, set the `config` property directly. The chart will re-render automatically.
+Set the `config` property from JavaScript when your data comes from code rather than static markup. The chart re-renders automatically each time you assign it. For data that updates at runtime, try the live controls in [Accessing the Chart.js Instance](https://webawesome.com/docs/components/chart#accessing-the-chartjs-instance).
 
 ```html
 <wa-radar-chart id="radar-js-example" label="Feature Comparison" description="A radar chart comparing product features">
@@ -157,43 +184,30 @@ For dynamic data, set the `config` property directly. The chart will re-render a
   chart.config = {
     data: {
       labels: ['Speed', 'Reliability', 'Ease of Use', 'Features', 'Support'],
-      datasets: [{
-        label: 'Product A',
-        data: [85, 90, 75, 80, 70]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Product A',
+          data: [85, 90, 75, 80, 70],
+        },
+      ],
+    },
   };
 </script>
 ```
 
-Note that `config` is shallowly reactive. If you mutate the existing object in place, you must reassign it to trigger a re-render!
-
-### Providing Data with JSON
-
-Place a `<script type="application/json">` tag inside the component with your chart data. Each value in the `data` array maps to a label on the radial axis.
-
-```html
-<wa-radar-chart label="Feature Comparison" description="A radar chart comparing features of a product across five dimensions">
-  <script type="application/json">
-    {
-      "data": {
-        "labels": ["Speed", "Reliability", "Ease of Use", "Features", "Support"],
-        "datasets": [{
-          "label": "Product A",
-          "data": [85, 90, 75, 80, 70]
-        }]
-      }
-    }
-  </script>
-</wa-radar-chart>
-```
+**`config` is shallowly reactive.**  
+If you mutate the object in place, reassign it to trigger a re-render.
 
 ### Multiple Datasets
 
 Add multiple datasets to overlay profiles for direct comparison.
 
 ```html
-<wa-radar-chart id="radar-multi" label="Product Comparison" description="A radar chart comparing two products across several dimensions">
+<wa-radar-chart
+  id="radar-multi"
+  label="Product Comparison"
+  description="A radar chart comparing two products across several dimensions"
+>
 </wa-radar-chart>
 <script type="module">
   const chart = document.querySelector('#radar-multi');
@@ -202,15 +216,53 @@ Add multiple datasets to overlay profiles for direct comparison.
     data: {
       labels: ['Speed', 'Reliability', 'Ease of Use', 'Features', 'Support', 'Value'],
       datasets: [
-        { label: 'Product A', data: [85, 90, 75, 80, 70, 88] },
-        { label: 'Product B', data: [70, 80, 90, 85, 92, 75] }
-      ]
-    }
+        { label: 'Nimbus', data: [85, 90, 75, 80, 70, 88] },
+        { label: 'Atlas', data: [70, 80, 90, 85, 92, 75] },
+      ],
+    },
   };
 </script>
 ```
 
-### Custom Colors
+### Fill Area
+
+Set `fill` to `true` on each dataset to fill the area under the radar lines. This makes it easier to see the overall shape and overlap of each profile.
+
+```html
+<wa-radar-chart
+  id="radar-filled"
+  label="Team Assessment"
+  description="A filled radar chart comparing two team members across skill areas"
+>
+</wa-radar-chart>
+<script type="module">
+  const chart = document.querySelector('#radar-filled');
+
+  chart.config = {
+    data: {
+      labels: ['Frontend', 'Backend', 'DevOps', 'Testing', 'Design', 'Communication'],
+      datasets: [
+        {
+          label: 'Alice',
+          data: [90, 75, 60, 80, 85, 92],
+          fill: true,
+          backgroundColor: 'color-mix(in srgb, var(--wa-color-red-60) 20%, transparent)',
+          borderColor: 'var(--wa-color-red-60)',
+        },
+        {
+          label: 'Bob',
+          data: [70, 92, 85, 88, 60, 78],
+          fill: true,
+          backgroundColor: 'color-mix(in srgb, var(--wa-color-blue-60) 20%, transparent)',
+          borderColor: 'var(--wa-color-blue-60)',
+        },
+      ],
+    },
+  };
+</script>
+```
+
+### Colors
 
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
 
@@ -232,12 +284,12 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
 
   chart.config = {
     data: {
-      labels: ['Offense', 'Defense', 'Speed', 'Stamina', 'Technique'],
+      labels: ['Courage', 'Wisdom', 'Stealth', 'Cooking', 'Second Breakfast'],
       datasets: [
-        { label: 'Player A', data: [90, 65, 80, 75, 85] },
-        { label: 'Player B', data: [70, 88, 92, 80, 72] }
-      ]
-    }
+        { label: 'Frodo', data: [82, 78, 85, 45, 70] },
+        { label: 'Samwise', data: [92, 65, 55, 95, 90] },
+      ],
+    },
   };
 </script>
 ```
@@ -247,19 +299,26 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
 Use the `--line-border-width` CSS custom property to control the thickness of the radar lines.
 
 ```html
-<wa-radar-chart id="radar-border" style="--line-border-width: 4px" label="Thick Lines" description="A radar chart with thicker lines">
+<wa-radar-chart
+  id="radar-border"
+  style="--line-border-width: 4px"
+  label="Thick Lines"
+  description="A radar chart with thicker lines"
+>
 </wa-radar-chart>
 <script type="module">
   const chart = document.querySelector('#radar-border');
 
   chart.config = {
     data: {
-      labels: ['A', 'B', 'C', 'D', 'E'],
-      datasets: [{
-        label: 'Values',
-        data: [80, 60, 90, 70, 85]
-      }]
-    }
+      labels: ['Aroma', 'Body', 'Acidity', 'Sweetness', 'Aftertaste'],
+      datasets: [
+        {
+          label: 'Morning Roast',
+          data: [85, 70, 60, 78, 82],
+        },
+      ],
+    },
   };
 </script>
 ```
@@ -269,53 +328,26 @@ Use the `--line-border-width` CSS custom property to control the thickness of th
 Use the `--point-radius` CSS custom property to control the size of the dots drawn at each vertex. Set it to `0` to hide them entirely.
 
 ```html
-<wa-radar-chart id="radar-points" style="--point-radius: 6px" label="Large Points" description="A radar chart with larger vertex dots">
+<wa-radar-chart
+  id="radar-points"
+  style="--point-radius: 6px"
+  label="Large Points"
+  description="A radar chart with larger vertex dots"
+>
 </wa-radar-chart>
 <script type="module">
   const chart = document.querySelector('#radar-points');
 
   chart.config = {
     data: {
-      labels: ['A', 'B', 'C', 'D', 'E'],
-      datasets: [{
-        label: 'Values',
-        data: [80, 60, 90, 70, 85]
-      }]
-    }
-  };
-</script>
-```
-
-### Filled Areas
-
-Set `fill` to `true` on each dataset to fill the area under the radar lines. This makes it easier to see the overall shape and overlap of each profile.
-
-```html
-<wa-radar-chart id="radar-filled" label="Team Assessment" description="A filled radar chart comparing two team members across skill areas">
-</wa-radar-chart>
-<script type="module">
-  const chart = document.querySelector('#radar-filled');
-
-  chart.config = {
-    data: {
-      labels: ['Frontend', 'Backend', 'DevOps', 'Testing', 'Design', 'Communication'],
+      labels: ['Protein', 'Fiber', 'Vitamin C', 'Calcium', 'Iron'],
       datasets: [
         {
-          label: 'Alice',
-          data: [90, 75, 60, 80, 85, 92],
-          fill: true,
-          backgroundColor: 'color-mix(in srgb, var(--wa-color-red-60) 20%, transparent)',
-          borderColor: 'var(--wa-color-red-60)'
+          label: 'Berry Smoothie',
+          data: [55, 80, 95, 60, 70],
         },
-        {
-          label: 'Bob',
-          data: [70, 92, 85, 88, 60, 78],
-          fill: true,
-          backgroundColor: 'color-mix(in srgb, var(--wa-color-blue-60) 20%, transparent)',
-          borderColor: 'var(--wa-color-blue-60)'
-        }
-      ]
-    }
+      ],
+    },
   };
 </script>
 ```
@@ -325,7 +357,12 @@ Set `fill` to `true` on each dataset to fill the area under the radar lines. Thi
 Use the `legend-position` attribute to control where the legend appears. Add `without-legend` to hide it entirely.
 
 ```html
-<wa-radar-chart id="radar-legend" legend-position="bottom" label="Legend at Bottom" description="A radar chart with the legend at the bottom">
+<wa-radar-chart
+  id="radar-legend"
+  legend-position="bottom"
+  label="Legend at Bottom"
+  description="A radar chart with the legend at the bottom"
+>
 </wa-radar-chart>
 <script type="module">
   const chart = document.querySelector('#radar-legend');
@@ -335,53 +372,39 @@ Use the `legend-position` attribute to control where the legend appears. Add `wi
       labels: ['Strength', 'Agility', 'Intelligence', 'Wisdom', 'Charisma'],
       datasets: [
         { label: 'Warrior', data: [95, 70, 50, 60, 65] },
-        { label: 'Mage', data: [40, 55, 95, 90, 70] }
-      ]
-    }
+        { label: 'Mage', data: [40, 55, 95, 90, 70] },
+      ],
+    },
   };
 </script>
 ```
 
-### Disabling Tooltips
+### Disabling Features
 
-Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over data points.
+Use `without-tooltip` to hide hover tooltips and `without-animation` to disable transitions.
 
 ```html
-<wa-radar-chart id="radar-tooltip" without-tooltip label="No Tooltips" description="A radar chart with tooltips disabled">
+<wa-radar-chart
+  id="radar-disabled"
+  without-tooltip
+  without-animation
+  label="Minimal"
+  description="A radar chart with tooltips and animations disabled"
+>
 </wa-radar-chart>
 <script type="module">
-  const chart = document.querySelector('#radar-tooltip');
+  const chart = document.querySelector('#radar-disabled');
 
   chart.config = {
     data: {
-      labels: ['A', 'B', 'C', 'D', 'E'],
-      datasets: [{
-        label: 'Values',
-        data: [80, 60, 90, 70, 85]
-      }]
-    }
-  };
-</script>
-```
-
-### Disabling Animations
-
-Use the `without-animation` attribute to disable chart transitions.
-
-```html
-<wa-radar-chart id="radar-anim" without-animation label="No Animation" description="A radar chart with animation disabled">
-</wa-radar-chart>
-<script type="module">
-  const chart = document.querySelector('#radar-anim');
-
-  chart.config = {
-    data: {
-      labels: ['A', 'B', 'C', 'D', 'E'],
-      datasets: [{
-        label: 'Values',
-        data: [80, 60, 90, 70, 85]
-      }]
-    }
+      labels: ['Performance', 'Battery', 'Display', 'Portability', 'Value'],
+      datasets: [
+        {
+          label: 'Ultrabook 14',
+          data: [80, 90, 75, 95, 70],
+        },
+      ],
+    },
   };
 </script>
 ```

@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/toast-item.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast-item -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/toast-item.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/toast-item -->
 
 # Toast Item [Pro]
 
@@ -26,8 +26,6 @@ Toast items are individual notifications displayed within a toast container.
 
 Get Web Awesome Pro + Toast Item!
 
-Toast items are the individual notifications that appear within a [`<wa-toast>`](https://webawesome.com/docs/components/toast) container. This page documents the toast item's anatomy and styling options.
-
 ```html
 <wa-toast-item variant="brand" duration="0">
   <wa-icon slot="icon" name="bell"></wa-icon>
@@ -35,9 +33,12 @@ Toast items are the individual notifications that appear within a [`<wa-toast>`]
 </wa-toast-item>
 ```
 
-Toast items are designed to be used within a [`<wa-toast>`](https://webawesome.com/docs/components/toast) container, which manages their lifecycle and positioning. For usage examples showing how to display notifications, see the [Toast documentation](https://webawesome.com/docs/components/toast).
+**Toast items are meant to live inside a [`<wa-toast>`](https://webawesome.com/docs/components/toast) container.**  
+The container manages their lifecycle and positioning. For usage examples showing how to display notifications, see the [Toast documentation](https://webawesome.com/docs/components/toast).
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -46,7 +47,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/toast-item/toast-item.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/toast-item/toast-item.js';
 ```
 
 \*\*npm\*\*
@@ -73,47 +74,47 @@ To import this component for React 18 or below, use the following code:
 import WaToastItem from '@awesome.me/webawesome/dist/react/toast-item/index.js';
 ```
 
-## Slots
-
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
-
-- `(default)` — The toast item's message content.
-- `icon` — An optional icon to show at the start of the toast item.
-
-## Attributes & Properties
-
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `variant` | `variant` | The toast item's variant. | `'brand' \| 'success' \| 'warning' \| 'danger' \| 'neutral'` | `'neutral'` |
-| `size` | `size` | The toast item's size. | `'xs' \| 's' \| 'm' \| 'l' \| 'xl' \| 'small' \| 'medium' \| 'large'` | `'m'` |
-| `duration` | `duration` | The length of time in milliseconds before the toast item is automatically dismissed. Set to 0 to keep the toast item open until the user dismisses it. | `number` | `5000` |
-| `withIcon` | `with-icon` | Only required for SSR. Set to `true` if you're slotting in an `icon` element so the server-rendered markup includes the icon before the component hydrates on the client. | `boolean` | `false` |
-
-## Methods
-
-| Name | Description | Arguments |
-| --- | --- | --- |
-| `hide()` | Hides the toast item with animation and removes it from the DOM. | — |
-
-## Events
+### Slots
 
 | Name | Description |
 | --- | --- |
-| `wa-show` | Emitted when the toast item begins to show. |
-| `wa-after-show` | Emitted after the toast item has finished showing. |
-| `wa-hide` | Emitted when the toast item begins to hide. |
-| `wa-after-hide` | Emitted after the toast item has finished hiding. |
+| (default) | The toast item's message content. |
+| \`icon\` | An optional icon to show at the start of the toast item. |
 
-## CSS Custom Properties
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`duration\` duration | \`number\` The length of time in milliseconds before the toast item is automatically dismissed. Set to 0 to keep the toast item open until the user dismisses it. Type Default 5000 | |
+| \`size\` size | \`'xs' \\| 's' \\| 'm' \\| 'l' \\| 'xl' \\| 'small' \\| 'medium' \\| 'large'\` The toast item's size. Type Default 'm' | |
+| \`variant\` variant | \`'brand' \\| 'success' \\| 'warning' \\| 'danger' \\| 'neutral'\` The toast item's variant. Type Default 'neutral' | |
+| \`withIcon\` with-icon | \`true\` Only required for SSR. Set to if you're slotting in an icon element so the server-rendered markup includes the icon before the component hydrates on the client. Type boolean Default false | |
+
+### Methods
+
+| Name | Description | Arguments |
+| --- | --- | --- |
+| \`hide()\` | Hides the toast item with animation and removes it from the DOM. | |
+
+### Events
+
+| Name | Description |
+| --- | --- |
+| \`wa-after-hide\` | Emitted after the toast item has finished hiding. |
+| \`wa-after-show\` | Emitted after the toast item has finished showing. |
+| \`wa-hide\` | Emitted when the toast item begins to hide. |
+| \`wa-show\` | Emitted when the toast item begins to show. |
+
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
 | \`--accent-width\` | The width of the accent line. Defaults to 4px. |
 | \`--hide-duration\` | \`var(--wa-transition-normal)\` The animation duration when hiding. Default |
+| \`--padding\` | \`size\` The internal spacing of the toast item. Scales with the attribute. |
 | \`--show-duration\` | \`var(--wa-transition-normal)\` The animation duration when showing. Default |
 
-## CSS Parts
+### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
@@ -130,7 +131,7 @@ silently ignored and the element falls back to the default slot):
 | \`progress-ring\_\_track\` | The progress ring's exported track part. | \`::part(progress-ring\_\_track)\` |
 | \`toast-item\` | The toast item's main container. | \`::part(toast-item)\` |
 
-## Dependencies
+### Dependencies
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 
@@ -139,7 +140,7 @@ This component automatically imports the following elements. Sub-dependencies, i
 
 ## Examples
 
-### Variants
+### Variant
 
 Use the `variant` attribute to change the toast item's visual style. The variant determines the accent color on the left side and the icon color. Available variants are `neutral` (default), `brand`, `success`, `warning`, and `danger`.
 
@@ -172,7 +173,7 @@ Use the `variant` attribute to change the toast item's visual style. The variant
 </div>
 ```
 
-### Sizes
+### Size
 
 Use the `size` attribute to change the toast item's size.
 
@@ -234,7 +235,7 @@ Toast items work fine without icons too.
 <wa-toast-item variant="neutral" duration="0"> A simple notification without an icon. </wa-toast-item>
 ```
 
-### Rich Content
+### Providing Content
 
 The default slot accepts any HTML content, allowing you to create rich notifications with formatted text, links, and interactive elements.
 
@@ -275,9 +276,9 @@ When a duration is set, a progress ring appears around the close button showing 
 <wa-toast-item variant="brand" duration="0">...</wa-toast-item>
 ```
 
-### Hover Behavior
+### Hover & Focus Behavior
 
-Toast items automatically pause their countdown timer when the user hovers over them, giving more time to read the content. When the mouse leaves, the timer resets and begins counting down again.
+Toast items automatically pause their countdown timer when the user hovers over them or when the close button receives focus, giving more time to read the content. When the mouse leaves or focus moves away, the timer resets and begins counting down again.
 
 ### The Close Button
 

@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/chart -->
 
 # Chart [Pro]
 
@@ -26,8 +26,6 @@ Charts provide a flexible wrapper around Chart.js for building themed data visua
 
 Get Web Awesome Pro + Chart!
 
-Web Awesome charts are built on [Chart.js](https://www.chartjs.org/), an open source JavaScript charting library. They wrap Chart.js with opinionated defaults, automatic theming through CSS custom properties, and a simplified API that makes data visualization accessible with minimal configuration. Charts automatically adapt to light and dark modes with no extra code.
-
 ```html
 <wa-chart label="Monthly Performance" description="A chart comparing monthly revenue and expenses over six months">
   <script type="application/json">
@@ -51,9 +49,32 @@ Web Awesome charts are built on [Chart.js](https://www.chartjs.org/), an open so
 </wa-chart>
 ```
 
-For quick, type-specific examples see the individual component pages: [Bar Chart](https://webawesome.com/docs/components/bar-chart), [Line Chart](https://webawesome.com/docs/components/line-chart), [Pie Chart](https://webawesome.com/docs/components/pie-chart), [Doughnut Chart](https://webawesome.com/docs/components/doughnut-chart), [Scatter Chart](https://webawesome.com/docs/components/scatter-chart), [Bubble Chart](https://webawesome.com/docs/components/bubble-chart), [Radar Chart](https://webawesome.com/docs/components/radar-chart), [Polar Area Chart](https://webawesome.com/docs/components/polar-area-chart).
+Web Awesome charts are built on [Chart.js](https://www.chartjs.org/), an open source JavaScript charting library. They wrap Chart.js with opinionated defaults, automatic theming through CSS custom properties, and a simplified API that makes data visualization accessible with minimal configuration. Charts automatically adapt to light and dark modes with no extra code.
 
-## Importing
+Web Awesome provides a dedicated element for each chart type:
+
+| Chart | Best for |
+| --- | --- |
+| Bar Chart | Comparing quantities across categories |
+| Line Chart | Trends over time |
+| Pie Chart | Proportions of a whole |
+| Doughnut Chart | Proportions with a hollow center |
+| Radar Chart | Comparing several attributes at once |
+| Polar Area Chart | Magnitudes across cyclical categories |
+| Scatter Chart | Correlation between two variables |
+| Bubble Chart | Correlation with a third variable as size |
+
+## Accessibility Considerations
+
+Charts are rendered on a `<canvas>` element, which is not accessible to screen readers by default. Web Awesome addresses this with two built-in attributes.
+
+Use `label` to give the chart a short, descriptive name. This maps to `aria-label` on the canvas with `role="img"`, which is the pattern [recommended by Chart.js](https://www.chartjs.org/docs/latest/general/accessibility.html) and ARIA authoring guidelines. Use `description` for a longer explanation of what the chart shows, ideally including the key insight or takeaway, not just a restatement of the chart type. A description like _"Sales grew 40% quarter over quarter, with Q4 reaching a record $710K"_ is more useful than _"A bar chart with four bars."_
+
+For complex charts where the underlying numbers matter, consider including a visually-hidden or expandable data table alongside the chart. The canvas element cannot expose tabular data to screen readers, so a table is the most reliable way to make precise values available when necessary.
+
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -62,7 +83,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/chart/chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/chart/chart.js';
 ```
 
 \*\*npm\*\*
@@ -89,35 +110,34 @@ To import this component for React 18 or below, use the following code:
 import WaChart from '@awesome.me/webawesome/dist/react/chart/index.js';
 ```
 
-## Slots
+### Slots
 
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
+| Name | Description |
+| --- | --- |
+| (default) | \`
 
-- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
+### Attributes & Properties
 
-## Attributes & Properties
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | |
+| \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | |
+| \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | |
+| \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | |
+| \`label\` label | \`string \\| null\` A label for the chart, used for accessibility. Type Default null | |
+| \`legendPosition\` legend-position | \`LayoutPosition \\| 'start' \\| 'end'\` The position of the legend relative to the chart. Type Default 'top' | |
+| \`max\` max | \`number \\| null\` The maximum value for the value axis. Type Default null | |
+| \`min\` min | \`number \\| null\` The minimum value for the value axis. Type Default null | |
+| \`plugins\` plugins | \`array\` Additional Chart.js plugins to register for this chart instance. Type Default \[\] | |
+| \`stacked\` stacked | \`boolean\` Stacks datasets on top of each other along the value axis. Type Default false | |
+| \`type\` type | \`bar\` The type of chart to render. Valid types include , line, pie, doughnut, polarArea, radar, scatter, and bubble. Type ChartType Default 'bar' | |
+| \`withoutAnimation\` without-animation | \`boolean\` Disables chart animations Type Default false | |
+| \`withoutLegend\` without-legend | \`boolean\` Hides the legend Type Default false | |
+| \`withoutTooltip\` without-tooltip | \`boolean\` Hides tooltips over data points Type Default false | |
+| \`xLabel\` x-label | \`string \\| null\` A label for the x-axis. Type Default null | |
+| \`yLabel\` y-label | \`string \\| null\` A label for the y-axis. Type Default null | |
 
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `label` | `label` | A label for the chart, used for accessibility. | `string \| null` | `null` |
-| `description` | `description` | A description of the chart, used for accessibility. | `string \| null` | `null` |
-| `type` | `type` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. | `ChartType` | `'bar'` |
-| `xLabel` | `xLabel` | A label for the x-axis. | `string \| null` | `null` |
-| `yLabel` | `yLabel` | A label for the y-axis. | `string \| null` | `null` |
-| `legendPosition` | `legend-position` | The position of the legend relative to the chart. | `LayoutPosition \| 'start' \| 'end'` | `'top'` |
-| `stacked` | `stacked` | Stacks datasets on top of each other along the value axis. | `boolean` | `false` |
-| `indexAxis` | `index-axis` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. | `'x' \| 'y'` | `'x'` |
-| `grid` | `grid` | Which axes to show grid lines on. | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` |
-| `min` | `min` | The minimum value for the value axis. | `number \| null` | `null` |
-| `max` | `max` | The maximum value for the value axis. | `number \| null` | `null` |
-| `withoutAnimation` | `without-animation` | Disables chart animations | `boolean` | `false` |
-| `withoutLegend` | `without-legend` | Hides the legend | `boolean` | `false` |
-| `withoutTooltip` | `without-tooltip` | Hides tooltips over data points | `boolean` | `false` |
-| `config` | — | The Chart.js configuration object. Setting this property will automatically re-render the chart. | `ChartJS['config']` | — |
-| `plugins` | `plugins` | Additional Chart.js plugins to register for this chart instance. | `array` | `[]` |
-
-## CSS Custom Properties
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
@@ -140,7 +160,7 @@ silently ignored and the element falls back to the default slot):
 | \`--line-border-width\` | \`var(--wa-border-width-m)\` Border width for line and radar charts. Default |
 | \`--point-radius\` | \`var(--wa-border-width-m)\` Radius of data point dots. Default |
 
-## SSR
+### SSR
 
 Learn more about [Server-Side Rendering (SSR)](https://webawesome.com/docs/ssr).
 
@@ -160,10 +180,12 @@ The `wa-chart` element supports all Chart.js types by setting `type` in the conf
         "type": "line",
         "data": {
           "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-          "datasets": [{
-            "label": "Visitors",
-            "data": [4200, 4800, 5100, 4900, 5500, 6200]
-          }]
+          "datasets": [
+            {
+              "label": "Visitors",
+              "data": [4200, 4800, 5100, 4900, 5500, 6200]
+            }
+          ]
         }
       }
     </script>
@@ -175,10 +197,12 @@ The `wa-chart` element supports all Chart.js types by setting `type` in the conf
         "type": "doughnut",
         "data": {
           "labels": ["Development", "Design", "Testing", "Meetings"],
-          "datasets": [{
-            "label": "Hours",
-            "data": [35, 20, 15, 18]
-          }]
+          "datasets": [
+            {
+              "label": "Hours",
+              "data": [35, 20, 15, 18]
+            }
+          ]
         }
       }
     </script>
@@ -190,13 +214,16 @@ The `wa-chart` element supports all Chart.js types by setting `type` in the conf
         "type": "radar",
         "data": {
           "labels": ["Speed", "Reliability", "Ease of Use", "Features", "Support"],
-          "datasets": [{
-            "label": "Product A",
-            "data": [85, 90, 75, 80, 70]
-          }, {
-            "label": "Product B",
-            "data": [70, 78, 92, 85, 88]
-          }]
+          "datasets": [
+            {
+              "label": "Product A",
+              "data": [85, 90, 75, 80, 70]
+            },
+            {
+              "label": "Product B",
+              "data": [70, 78, 92, 85, 88]
+            }
+          ]
         }
       }
     </script>
@@ -208,10 +235,12 @@ The `wa-chart` element supports all Chart.js types by setting `type` in the conf
         "type": "polarArea",
         "data": {
           "labels": ["Solar", "Wind", "Hydro", "Nuclear"],
-          "datasets": [{
-            "label": "Output (GW)",
-            "data": [85, 72, 110, 95]
-          }]
+          "datasets": [
+            {
+              "label": "Output (GW)",
+              "data": [85, 72, 110, 95]
+            }
+          ]
         }
       }
     </script>
@@ -230,10 +259,12 @@ The simplest way to provide chart data is with a `<script type="application/json
       "type": "bar",
       "data": {
         "labels": ["Q1", "Q2", "Q3", "Q4"],
-        "datasets": [{
-          "label": "Sales",
-          "data": [420, 580, 630, 710]
-        }]
+        "datasets": [
+          {
+            "label": "Sales",
+            "data": [420, 580, 630, 710]
+          }
+        ]
       }
     }
   </script>
@@ -242,30 +273,30 @@ The simplest way to provide chart data is with a `<script type="application/json
 
 ### Providing Data with JavaScript
 
-For dynamic data, set the `config` property and call `renderChart()`. This approach works well when data comes from an API or needs to be computed at runtime.
+Set the `config` property from JavaScript when your data comes from code rather than static markup. The chart re-renders automatically each time you assign it. For data that updates at runtime, try the live controls in [Accessing the Chart.js Instance](#accessing-the-chartjs-instance).
 
 ```html
-<wa-chart id="chart-js-data" label="Quarterly Results" description="A bar chart showing quarterly results">
-</wa-chart>
+<wa-chart id="chart-js-data" label="Quarterly Results" description="A bar chart showing quarterly results"> </wa-chart>
 <script type="module">
   const chart = document.querySelector('#chart-js-data');
-  await customElements.whenDefined('wa-chart');
-  await chart.updateComplete;
 
   chart.config = {
     type: 'bar',
     data: {
       labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-      datasets: [{
-        label: 'Sales',
-        data: [420, 580, 630, 710]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Sales',
+          data: [420, 580, 630, 710],
+        },
+      ],
+    },
   };
-
-  chart.renderChart();
 </script>
 ```
+
+**`config` is shallowly reactive.**  
+If you mutate the object in place, reassign it to trigger a re-render.
 
 ### Theming
 
@@ -305,9 +336,70 @@ Override them to apply a custom color palette.
 </wa-chart>
 ```
 
+The palette updates live. The chart re-renders whenever its resolved colors change, so swapping the palette below recolors it with no extra code.
+
+```html
+<div>
+  <div
+    style="padding: var(--wa-space-l); border-radius: var(--wa-border-radius-m); background-color: var(--wa-color-surface-default);"
+  >
+    <wa-chart
+      id="theming-chart"
+      label="Weekly Signups"
+      description="A bar chart of weekly signups that re-colors when the palette changes"
+    >
+      <script type="application/json">
+        {
+          "type": "bar",
+          "data": {
+            "labels": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            "datasets": [
+              { "label": "Signups", "data": [120, 190, 80, 160, 220] },
+              { "label": "Trials", "data": [60, 90, 40, 100, 130] }
+            ]
+          }
+        }
+      </script>
+    </wa-chart>
+  </div>
+
+  <wa-divider></wa-divider>
+
+  <wa-select id="theming-palette" label="Palette" value="default" style="min-inline-size: 14ch;">
+    <wa-option value="default">Default</wa-option>
+    <wa-option value="ocean">Ocean</wa-option>
+    <wa-option value="sunset">Sunset</wa-option>
+  </wa-select>
+</div>
+
+<script type="module">
+  const chart = document.querySelector('#theming-chart');
+
+  const palettes = {
+    default: [],
+    ocean: ['--wa-color-blue-60', '--wa-color-cyan-60'],
+    sunset: ['--wa-color-red-60', '--wa-color-orange-60'],
+  };
+
+  document.querySelector('#theming-palette').addEventListener('change', event => {
+    const tokens = palettes[event.target.value];
+
+    for (let i = 1; i <= 6; i++) {
+      chart.style.removeProperty(`--fill-color-${i}`);
+      chart.style.removeProperty(`--border-color-${i}`);
+    }
+
+    tokens.forEach((token, i) => {
+      chart.style.setProperty(`--fill-color-${i + 1}`, `color-mix(in srgb, var(${token}) 40%, transparent)`);
+      chart.style.setProperty(`--border-color-${i + 1}`, `var(${token})`);
+    });
+  });
+</script>
+```
+
 ### Dark Mode
 
-Charts automatically respond to theme changes. Because chart colors are derived from CSS custom properties, switching between light and dark mode triggers a re-render with updated colors. No additional code is required.
+Charts respond to theme changes automatically. Because their colors resolve from CSS custom properties, switching between light and dark mode re-renders the chart with updated colors. No extra code is required. Use the theme toggle in any example's toolbar to preview a chart in dark mode.
 
 ### Using CSS Variables in Data
 
@@ -320,84 +412,30 @@ You can use CSS variables such as `var(--wa-color-*)` and `color-mix()` directly
       "type": "doughnut",
       "data": {
         "labels": ["Desktop", "Mobile", "Tablet"],
-        "datasets": [{
-          "label": "Traffic",
-          "data": [55, 35, 10],
-          "backgroundColor": [
-            "var(--wa-color-purple-60)",
-            "var(--wa-color-cyan-60)",
-            "var(--wa-color-orange-60)"
-          ],
-          "borderColor": [
-            "var(--wa-color-purple-60)",
-            "var(--wa-color-cyan-60)",
-            "var(--wa-color-orange-60)"
-          ]
-        }]
+        "datasets": [
+          {
+            "label": "Traffic",
+            "data": [55, 35, 10],
+            "backgroundColor": ["var(--wa-color-purple-60)", "var(--wa-color-cyan-60)", "var(--wa-color-orange-60)"],
+            "borderColor": ["var(--wa-color-purple-60)", "var(--wa-color-cyan-60)", "var(--wa-color-orange-60)"]
+          }
+        ]
       }
     }
   </script>
 </wa-chart>
 ```
 
-### Mixed Charts
-
-Use the `wa-chart` element directly to combine different chart types in a single visualization. Set the `type` on each dataset to control how it renders.
-
-```html
-<wa-chart id="chart-mixed" label="Revenue and Growth" description="A mixed chart with revenue as bars and growth rate as a line">
-</wa-chart>
-<script type="module">
-  const chart = document.querySelector('#chart-mixed');
-  await customElements.whenDefined('wa-chart');
-  await chart.updateComplete;
-
-  chart.config = {
-    type: 'bar',
-    data: {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Revenue',
-          data: [48, 56, 62, 58, 71, 68]
-        },
-        {
-          type: 'line',
-          label: 'Profit',
-          data: [32, 38, 45, 40, 52, 48],
-          backgroundColor: 'var(--wa-color-purple-60)',
-          borderColor: 'var(--wa-color-purple-60)'
-        },
-        {
-          type: 'line',
-          label: 'Expenses',
-          data: [16, 18, 17, 18, 19, 20],
-          backgroundColor: 'var(--wa-color-red-60)',
-          borderColor: 'var(--wa-color-red-60)'
-        },
-        {
-          type: 'line',
-          label: 'Forecast',
-          data: [50, 58, 65, 62, 74, 72],
-          backgroundColor: 'var(--wa-color-green-60)',
-          borderColor: 'var(--wa-color-green-60)',
-          borderDash: [6, 3]
-        }
-      ]
-    }
-  };
-
-  chart.renderChart();
-</script>
-```
-
 ### Legend Position
 
-Use the `legend-position` attribute to control where the legend appears. Supported values include `top`, `bottom`, `left`, and `right`. The `start` and `end` values are direction-aware and will flip in RTL layouts.
+Use the `legend-position` attribute to control where the legend appears. Supported values include `top` (default), `bottom`, `left`, `right`, `start`, and `end`. The `start` and `end` values are direction-aware and will flip in RTL layouts.
 
 ```html
-<wa-chart legend-position="bottom" label="Legend at Bottom" description="A bar chart with the legend positioned at the bottom">
+<wa-chart
+  legend-position="bottom"
+  label="Legend at Bottom"
+  description="A bar chart with the legend positioned at the bottom"
+>
   <script type="application/json">
     {
       "type": "bar",
@@ -424,7 +462,12 @@ Use the `legend-position` attribute to control where the legend appears. Support
 Use the `x-label` and `y-label` attributes to add labels to the chart axes.
 
 ```html
-<wa-chart x-label="Month" y-label="Revenue (USD)" label="Monthly Revenue" description="A line chart with axis labels showing monthly revenue">
+<wa-chart
+  x-label="Month"
+  y-label="Revenue (USD)"
+  label="Monthly Revenue"
+  description="A line chart with axis labels showing monthly revenue"
+>
   <script type="application/json">
     {
       "type": "line",
@@ -442,89 +485,6 @@ Use the `x-label` and `y-label` attributes to add labels to the chart axes.
           {
             "label": "Profit",
             "data": [4000, 5800, 4700, 6500, 6200, 8000]
-          }
-        ]
-      }
-    }
-  </script>
-</wa-chart>
-```
-
-### Grid Lines
-
-Use the `grid` attribute to control which axes show grid lines. Options are `both` (default), `x`, `y`, and `none`.
-
-```html
-<wa-chart grid="none" label="No Grid Lines" description="A line chart with grid lines hidden">
-  <script type="application/json">
-    {
-      "type": "line",
-      "data": {
-        "labels": ["Mon", "Tue", "Wed", "Thu", "Fri"],
-        "datasets": [
-          {
-            "label": "Response Time (ms)",
-            "data": [45, 52, 48, 55, 50]
-          },
-          {
-            "label": "Error Rate (%)",
-            "data": [2, 4, 3, 6, 3]
-          },
-          {
-            "label": "Throughput (req/s)",
-            "data": [320, 295, 310, 280, 305]
-          }
-        ]
-      }
-    }
-  </script>
-</wa-chart>
-```
-
-### Disabling Features
-
-Use `without-animation` to disable transitions, `without-legend` to hide the legend, and `without-tooltip` to remove hover tooltips.
-
-```html
-<wa-chart without-animation without-legend label="Minimal Chart" description="A pie chart with animation and legend disabled">
-  <script type="application/json">
-    {
-      "type": "pie",
-      "data": {
-        "labels": ["Rent", "Food", "Transport", "Savings"],
-        "datasets": [{
-          "label": "Budget",
-          "data": [35, 25, 15, 25]
-        }]
-      }
-    }
-  </script>
-</wa-chart>
-```
-
-### Stacked Data
-
-Use the `stacked` attribute to stack datasets on top of each other instead of placing them side by side.
-
-```html
-<wa-chart stacked label="Stacked Revenue" description="A stacked bar chart showing revenue by source">
-  <script type="application/json">
-    {
-      "type": "bar",
-      "data": {
-        "labels": ["Q1", "Q2", "Q3", "Q4"],
-        "datasets": [
-          {
-            "label": "Online",
-            "data": [42, 58, 63, 71]
-          },
-          {
-            "label": "In-Store",
-            "data": [65, 53, 48, 52]
-          },
-          {
-            "label": "Wholesale",
-            "data": [28, 32, 35, 40]
           }
         ]
       }
@@ -564,9 +524,203 @@ Use the `min` and `max` attributes to constrain the value axis.
 </wa-chart>
 ```
 
+### Grid Lines
+
+Use the `grid` attribute to control which axes show grid lines. Options are `both` (default), `x`, `y`, and `none`.
+
+```html
+<wa-chart grid="none" label="No Grid Lines" description="A line chart with grid lines hidden">
+  <script type="application/json">
+    {
+      "type": "line",
+      "data": {
+        "labels": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+        "datasets": [
+          {
+            "label": "Response Time (ms)",
+            "data": [45, 52, 48, 55, 50]
+          },
+          {
+            "label": "Error Rate (%)",
+            "data": [2, 4, 3, 6, 3]
+          },
+          {
+            "label": "Throughput (req/s)",
+            "data": [320, 295, 310, 280, 305]
+          }
+        ]
+      }
+    }
+  </script>
+</wa-chart>
+```
+
+### Stacked Data
+
+Use the `stacked` attribute to stack datasets on top of each other instead of placing them side by side.
+
+```html
+<wa-chart stacked label="Stacked Revenue" description="A stacked bar chart showing revenue by source">
+  <script type="application/json">
+    {
+      "type": "bar",
+      "data": {
+        "labels": ["Q1", "Q2", "Q3", "Q4"],
+        "datasets": [
+          {
+            "label": "Online",
+            "data": [42, 58, 63, 71]
+          },
+          {
+            "label": "In-Store",
+            "data": [65, 53, 48, 52]
+          },
+          {
+            "label": "Wholesale",
+            "data": [28, 32, 35, 40]
+          }
+        ]
+      }
+    }
+  </script>
+</wa-chart>
+```
+
+### Disabling Features
+
+Use `without-animation` to disable transitions, `without-legend` to hide the legend, and `without-tooltip` to remove hover tooltips.
+
+```html
+<wa-chart
+  without-animation
+  without-legend
+  label="Minimal Chart"
+  description="A pie chart with animation and legend disabled"
+>
+  <script type="application/json">
+    {
+      "type": "pie",
+      "data": {
+        "labels": ["Rent", "Food", "Transport", "Savings"],
+        "datasets": [
+          {
+            "label": "Budget",
+            "data": [35, 25, 15, 25]
+          }
+        ]
+      }
+    }
+  </script>
+</wa-chart>
+```
+
+### Custom Tooltips
+
+By default, tooltips use the standard Chart.js text. That reads well for labeled charts, but scatter and bubble charts fall back to raw `x, y` coordinates. Format the text yourself with [tooltip callbacks](https://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-callbacks): return a string from `callbacks.label` to control each row, or from `callbacks.title` for the header.
+
+```html
+<wa-chart
+  id="chart-tooltips"
+  x-label="Cost per click"
+  y-label="Conversion rate (%)"
+  label="Marketing Channels"
+  description="A bubble chart whose tooltips name each channel and format its cost, conversion rate, and volume instead of showing raw coordinates"
+>
+</wa-chart>
+<script type="module">
+  const chart = document.querySelector('#chart-tooltips');
+
+  chart.config = {
+    type: 'bubble',
+    data: {
+      datasets: [
+        {
+          label: 'Channels',
+          data: [
+            { x: 0.4, y: 8.5, r: 10, name: 'Email' },
+            { x: 1.8, y: 6.9, r: 13, name: 'Referral' },
+            { x: 2.8, y: 5.2, r: 20, name: 'Search' },
+            { x: 1.2, y: 2.8, r: 25, name: 'Social' },
+            { x: 0.9, y: 1.6, r: 22, name: 'Display' },
+          ],
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: context => {
+              const { name, x, y, r } = context.raw;
+              return `${name}: $${x.toFixed(2)}/click, ${y}% conversion, ${r}k clicks`;
+            },
+          },
+        },
+      },
+    },
+  };
+</script>
+```
+
+### Mixed Charts
+
+Use the `wa-chart` element directly to combine different chart types in a single visualization. Set the `type` on each dataset to control how it renders.
+
+```html
+<wa-chart
+  id="chart-mixed"
+  label="Revenue and Growth"
+  description="A mixed chart with revenue as bars and growth rate as a line"
+>
+</wa-chart>
+<script type="module">
+  const chart = document.querySelector('#chart-mixed');
+  await customElements.whenDefined('wa-chart');
+  await chart.updateComplete;
+
+  chart.config = {
+    type: 'bar',
+    data: {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Revenue',
+          data: [48, 56, 62, 58, 71, 68],
+        },
+        {
+          type: 'line',
+          label: 'Profit',
+          data: [32, 38, 45, 40, 52, 48],
+          backgroundColor: 'var(--wa-color-purple-60)',
+          borderColor: 'var(--wa-color-purple-60)',
+        },
+        {
+          type: 'line',
+          label: 'Expenses',
+          data: [16, 18, 17, 18, 19, 20],
+          backgroundColor: 'var(--wa-color-red-60)',
+          borderColor: 'var(--wa-color-red-60)',
+        },
+        {
+          type: 'line',
+          label: 'Forecast',
+          data: [50, 58, 65, 62, 74, 72],
+          backgroundColor: 'var(--wa-color-green-60)',
+          borderColor: 'var(--wa-color-green-60)',
+          borderDash: [6, 3],
+        },
+      ],
+    },
+  };
+
+  chart.renderChart();
+</script>
+```
+
 ### Accessing the Chart.js Instance
 
-After calling `renderChart()`, the underlying Chart.js instance is available on the `chart` property. Use it for programmatic updates, exporting images, or any [Chart.js API method](https://www.chartjs.org/docs/latest/api/classes/Chart.html).
+After the chart renders, the underlying Chart.js instance is available on the `chart` property, whether you supplied data as JSON or through the `config` property. Use it for programmatic updates, exporting images, or any [Chart.js API method](https://www.chartjs.org/docs/latest/api/classes/Chart.html). The controls below mutate `chart.data` and call `chart.update()` to add, remove, and randomize points live.
 
 ```html
 <div>
@@ -575,7 +729,11 @@ After calling `renderChart()`, the underlying Chart.js instance is available on 
 
   <wa-divider></wa-divider>
 
-  <wa-button appearance="filled" id="chart-instance-btn">Randomize Data</wa-button>
+  <div style="display: flex; gap: var(--wa-space-s); flex-wrap: wrap;">
+    <wa-button appearance="filled" id="chart-add">Add point</wa-button>
+    <wa-button appearance="filled" id="chart-remove">Remove point</wa-button>
+    <wa-button appearance="filled" id="chart-randomize">Randomize</wa-button>
+  </div>
 </div>
 
 <script type="module">
@@ -586,18 +744,36 @@ After calling `renderChart()`, the underlying Chart.js instance is available on 
   el.config = {
     type: 'bar',
     data: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      datasets: [{
-        label: 'Tasks',
-        data: [12, 19, 8, 15, 22]
-      }]
-    }
+      labels: ['1', '2', '3', '4', '5'],
+      datasets: [
+        {
+          label: 'Tasks',
+          data: [12, 19, 8, 15, 22],
+        },
+      ],
+    },
   };
 
   el.renderChart();
 
-  document.querySelector('#chart-instance-btn').addEventListener('click', () => {
-    el.chart.data.datasets[0].data = Array.from({ length: 5 }, () => Math.floor(Math.random() * 30));
+  document.querySelector('#chart-add').addEventListener('click', () => {
+    const { data } = el.chart;
+    data.labels.push(String(data.labels.length + 1));
+    data.datasets[0].data.push(Math.floor(Math.random() * 30));
+    el.chart.update();
+  });
+
+  document.querySelector('#chart-remove').addEventListener('click', () => {
+    const { data } = el.chart;
+    if (data.labels.length <= 1) return;
+    data.labels.pop();
+    data.datasets[0].data.pop();
+    el.chart.update();
+  });
+
+  document.querySelector('#chart-randomize').addEventListener('click', () => {
+    const { data } = el.chart;
+    data.datasets[0].data = data.datasets[0].data.map(() => Math.floor(Math.random() * 30));
     el.chart.update();
   });
 </script>
@@ -608,7 +784,11 @@ After calling `renderChart()`, the underlying Chart.js instance is available on 
 Pass [Chart.js plugins](https://www.chartjs.org/docs/latest/developers/plugins.html) through the `plugins` property. A plugin is an object with an `id` and one or more hook methods. This example draws a dashed target line across the chart by hooking into `afterDraw`.
 
 ```html
-<wa-chart id="chart-plugin" label="Sales with Target" description="A bar chart with a dashed line showing the sales target">
+<wa-chart
+  id="chart-plugin"
+  label="Sales with Target"
+  description="A bar chart with a dashed line showing the sales target"
+>
 </wa-chart>
 <script type="module">
   const chart = document.querySelector('#chart-plugin');
@@ -623,6 +803,8 @@ Pass [Chart.js plugins](https://www.chartjs.org/docs/latest/developers/plugins.h
       if (target == null) return;
 
       const { ctx } = chart;
+      // The canvas can't read CSS custom properties, so resolve the token to a value
+      const targetColor = getComputedStyle(chart.canvas).getPropertyValue('--wa-color-green-60').trim();
       const yScale = chart.scales.y;
       const y = yScale.getPixelForValue(target);
 
@@ -630,7 +812,7 @@ Pass [Chart.js plugins](https://www.chartjs.org/docs/latest/developers/plugins.h
       ctx.beginPath();
       ctx.setLineDash([6, 4]);
       ctx.lineWidth = 1;
-      ctx.strokeStyle = '#228822';
+      ctx.strokeStyle = targetColor;
       ctx.moveTo(chart.chartArea.left, y);
       ctx.lineTo(chart.chartArea.right, y);
       ctx.stroke();
@@ -640,7 +822,7 @@ Pass [Chart.js plugins](https://www.chartjs.org/docs/latest/developers/plugins.h
       ctx.textAlign = 'left';
       ctx.fillText(`Target: ${target}`, chart.chartArea.left + 6, y - 8);
       ctx.restore();
-    }
+    },
   };
 
   chart.plugins = [targetLinePlugin];
@@ -648,26 +830,20 @@ Pass [Chart.js plugins](https://www.chartjs.org/docs/latest/developers/plugins.h
     type: 'bar',
     data: {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      datasets: [{
-        label: 'Sales',
-        data: [42, 58, 35, 71, 63, 80]
-      }]
+      datasets: [
+        {
+          label: 'Sales',
+          data: [42, 58, 35, 71, 63, 80],
+        },
+      ],
     },
     options: {
       plugins: {
-        targetLine: { value: 60 }
-      }
-    }
+        targetLine: { value: 60 },
+      },
+    },
   };
 
   chart.renderChart();
 </script>
 ```
-
-### Accessibility
-
-Charts are rendered on a `<canvas>` element, which is not accessible to screen readers by default. Web Awesome addresses this with two built-in attributes.
-
-Use `label` to give the chart a short, descriptive name. This maps to `aria-label` on the canvas with `role="img"`, which is the pattern [recommended by Chart.js](https://www.chartjs.org/docs/latest/general/accessibility.html) and ARIA authoring guidelines. Use `description` for a longer explanation of what the chart shows, ideally including the key insight or takeaway, not just a restatement of the chart type. A description like _"Sales grew 40% quarter over quarter, with Q4 reaching a record $710K"_ is more useful than _"A bar chart with four bars."_
-
-For complex charts where the underlying numbers matter, consider including a visually-hidden or expandable data table alongside the chart. The canvas element cannot expose tabular data to screen readers, so a table is the most robust way to make precise values available when necessary.

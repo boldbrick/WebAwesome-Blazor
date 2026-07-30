@@ -25,8 +25,8 @@ public class WaChartIntegrationTests : BunitContext
         Assert.False(element.HasAttribute("legend-position"));
         Assert.False(element.HasAttribute("min"));
         Assert.False(element.HasAttribute("max"));
-        Assert.False(element.HasAttribute("xLabel"));
-        Assert.False(element.HasAttribute("yLabel"));
+        Assert.False(element.HasAttribute("x-label"));
+        Assert.False(element.HasAttribute("y-label"));
         // boolean attributes are omitted when false
         Assert.False(element.HasAttribute("stacked"));
         Assert.False(element.HasAttribute("without-animation"));
@@ -77,8 +77,8 @@ public class WaChartIntegrationTests : BunitContext
         Assert.Equal("100", element.GetAttribute("max"));
         Assert.True(element.HasAttribute("stacked"));
         Assert.True(element.HasAttribute("without-legend"));
-        Assert.Equal("Quarter", element.GetAttribute("xLabel"));
-        Assert.Equal("USD", element.GetAttribute("yLabel"));
+        Assert.Equal("Quarter", element.GetAttribute("x-label"));
+        Assert.Equal("USD", element.GetAttribute("y-label"));
         Assert.Equal("horizontal", element.GetAttribute("orientation"));
     }
 
@@ -109,6 +109,23 @@ public class WaChartIntegrationTests : BunitContext
             .AddChildContent("<script type=\"application/json\">{\"type\":\"bar\"}</script>"));
 
         Assert.Contains("application/json", cut.Markup);
+    }
+
+    [Fact]
+    public void XLabel_And_YLabel_DoNotRenderTheOldCamelCaseAttributeNames()
+    {
+        // Web Awesome 3.11.0 normalized the chart axis-label attribute names from xLabel/yLabel to
+        // x-label/y-label (attribute-name-only change; XLabel/YLabel parameters are unaffected).
+        // Regression guard against re-introducing the pre-3.11.0 spelling.
+        var cut = Render<WaBarChart>(parameters => parameters
+            .Add(p => p.XLabel, "Quarter")
+            .Add(p => p.YLabel, "USD"));
+
+        var element = cut.Find("wa-bar-chart");
+        Assert.False(element.HasAttribute("xLabel"));
+        Assert.False(element.HasAttribute("yLabel"));
+        Assert.Equal("Quarter", element.GetAttribute("x-label"));
+        Assert.Equal("USD", element.GetAttribute("y-label"));
     }
 
     [Fact]

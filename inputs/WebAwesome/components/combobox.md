@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/combobox.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/combobox -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/combobox.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/combobox -->
 
 # Combobox [Pro]
 
@@ -39,9 +39,19 @@ This component follows the [ARIA APG Combobox pattern](https://www.w3.org/WAI/AR
 </wa-combobox>
 ```
 
+```html
+<wa-combobox label="Coffee order" hint="Start typing to filter." value="latte">
+  <wa-option value="espresso">Espresso</wa-option>
+  <wa-option value="latte">Latte</wa-option>
+  <wa-option value="cappuccino">Cappuccino</wa-option>
+</wa-combobox>
+```
+
 This component works with standard `<form>` elements. Please refer to the section on [form controls](https://webawesome.com/docs/form-controls) to learn more about form submission and client-side validation.
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -50,7 +60,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/combobox/combobox.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/combobox/combobox.js';
 ```
 
 \*\*npm\*\*
@@ -77,83 +87,78 @@ To import this component for React 18 or below, use the following code:
 import WaCombobox from '@awesome.me/webawesome/dist/react/combobox/index.js';
 ```
 
-## Slots
-
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
-
-- `(default)` — The listbox options. Must be `<wa-option>` elements. You can use `<wa-divider>` to group items visually.
-- `label` — The input's label. Alternatively, you can use the `label` attribute.
-- `start` — An element, such as `<wa-icon>`, placed at the start of the combobox.
-- `end` — An element, such as `<wa-icon>`, placed at the end of the combobox.
-- `clear-icon` — An icon to use in lieu of the default clear icon.
-- `expand-icon` — The icon to show when the control is expanded and collapsed. Rotates on open and close.
-- `hint` — Text that describes how to use the input. Alternatively, you can use the `hint` attribute.
-
-## Attributes & Properties
-
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `validators` | — | Validators are static because they have `observedAttributes`, essentially attributes to "watch" for changes. Whenever these attributes change, we want to be notified and update the validator. | `Validator[]` | `[]` |
-| `validationTarget` | — | Where to anchor native constraint validation | `undefined \| HTMLElement` | — |
-| `inputValue` | — | The current text value in the input field. | `string` | `''` |
-| `name` | `name` | The name of the combobox, submitted as a name/value pair with form data. | `string \| null` | `''` |
-| `value` | `value` | The combobox's value. This will be a string for single select or an array for multi-select. | — | — |
-| `size` | `size` | The combobox's size. | `'xs' \| 's' \| 'm' \| 'l' \| 'xl' \| 'small' \| 'medium' \| 'large'` | `'m'` |
-| `placeholder` | `placeholder` | Placeholder text to show as a hint when the combobox is empty. | `string` | `''` |
-| `multiple` | `multiple` | Allows more than one option to be selected. | `boolean` | `false` |
-| `maxOptionsVisible` | `max-options-visible` | The maximum number of selected options to show when `multiple` is true. After the maximum, "+n" will be shown to indicate the number of additional items that are selected. Set to 0 to remove the limit. | `number` | `3` |
-| `disabled` | `disabled` | Disables the combobox control. | `boolean` | `false` |
-| `withClear` | `with-clear` | Adds a clear button when the combobox is not empty. | `boolean` | `false` |
-| `open` | `open` | Indicates whether or not the combobox is open. You can toggle this attribute to show and hide the menu, or you can use the `show()` and `hide()` methods and this attribute will reflect the combobox's open state. | `boolean` | `false` |
-| `appearance` | `appearance` | The combobox's visual appearance. | `'filled' \| 'outlined' \| 'filled-outlined'` | `'outlined'` |
-| `pill` | `pill` | Draws a pill-style combobox with rounded edges. | `boolean` | `false` |
-| `label` | `label` | The combobox's label. If you need to display HTML, use the `label` slot instead. | `string` | `''` |
-| `placement` | `placement` | The preferred placement of the combobox's menu. Note that the actual placement may vary as needed to keep the listbox inside of the viewport. | `'top' \| 'bottom'` | `'bottom'` |
-| `hint` | `hint` | The combobox's hint. If you need to display HTML, use the `hint` slot instead. | `string` | `''` |
-| `withLabel` | `with-label` | Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup includes the label before the component hydrates on the client. | `boolean` | `false` |
-| `withHint` | `with-hint` | Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup includes the hint before the component hydrates on the client. | `boolean` | `false` |
-| `required` | `required` | The combobox's required attribute. | `boolean` | `false` |
-| `allowCustomValue` | `allow-custom-value` | When true, allows the user to enter a value that doesn't match any of the options. Only applies to single-select comboboxes. When false, the combobox will only accept values that match an option. | `boolean` | `false` |
-| `allowCreate` | `allow-create` | When true, if the user types text that doesn't match any existing option, a "Create [value]" option appears in the listbox. Selecting it creates a new `<wa-option>` in the DOM and selects it. A cancelable `wa-create` event fires before creation. | `boolean` | `false` |
-| `filter` | — | A function that customizes how options are filtered based on the input value. The function receives the option and the current input query string. Return `true` to include the option in the filtered list, `false` to exclude. By default, options are filtered by checking if the option's label contains the query (case-insensitive). | `((option: WaOption, query: string) => boolean) \| null` | `null` |
-| `autocapitalize` | `autocapitalize` | Controls whether and how text input is automatically capitalized as it is entered/edited by the user. | `'off' \| 'none' \| 'on' \| 'sentences' \| 'words' \| 'characters'` | — |
-| `autocorrect` | `autocorrect` | Indicates whether the browser's autocorrect feature is on or off. When set as an attribute, use `"off"` or `"on"`. When set as a property, use `true` or `false`. | `boolean` | — |
-| `inputmode` | `inputmode` | Tells the browser what type of data will be entered by the user, allowing it to display the appropriate virtual keyboard on supportive devices. | `'none' \| 'text' \| 'decimal' \| 'numeric' \| 'tel' \| 'search' \| 'email' \| 'url'` | — |
-| `enterkeyhint` | `enterkeyhint` | Used to customize the label or icon of the Enter key on virtual keyboards. | `'enter' \| 'done' \| 'go' \| 'next' \| 'previous' \| 'search' \| 'send'` | — |
-| `spellcheck` | `spellcheck` | Enables spell checking on the combobox. | `boolean` | `false` |
-| `getTag` | — | A function that customizes the tags to be rendered when multiple=true. The first argument is the option, the second is the current tag's index. The function should return either a Lit TemplateResult or a string containing trusted HTML of the symbol to render at the specified value. | `(option: WaOption, index: number) => TemplateResult \| string \| HTMLElement` | — |
-| `form` | — | By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you to place the form control outside of a form and associate it with the form that has this `id`. The form must be in the same document or shadow root for this to work. | `HTMLFormElement \| null` | — |
-
-## Methods
-
-| Name | Description | Arguments |
-| --- | --- | --- |
-| `show()` | Shows the listbox. | — |
-| `hide()` | Hides the listbox. | — |
-| `focus()` | Sets focus on the control. | `options: FocusOptions` |
-| `blur()` | Removes focus from the control. | — |
-| `setCustomValidity()` | Do not use this when creating a "Validator". This is intended for end users of components. We track manually defined custom errors so we don't clear them on accident in our validators. | `message: string` |
-| `formStateRestoreCallback()` | Called when the browser is trying to restore element’s state to state in which case reason is "restore", or when the browser is trying to fulfill autofill on behalf of user in which case reason is "autocomplete". In the case of "restore", state is a string, File, or FormData object previously set as the second argument to setFormValue. | `state: string \\| File \\| FormData \\| null, reason: 'autocomplete' \\| 'restore'` |
-| `resetValidity()` | Reset validity is a way of removing manual custom errors and native validation. | — |
-
-## Events
+### Slots
 
 | Name | Description |
 | --- | --- |
-| `input` | Emitted when the control receives input. |
-| `change` | Emitted when the control's value changes. |
-| `focus` | Emitted when the control gains focus. |
-| `blur` | Emitted when the control loses focus. |
-| `wa-clear` | Emitted when the control's value is cleared. |
-| `wa-show` | Emitted when the combobox's menu opens. |
-| `wa-after-show` | Emitted after the combobox's menu opens and all animations are complete. |
-| `wa-hide` | Emitted when the combobox's menu closes. |
-| `wa-after-hide` | Emitted after the combobox's menu closes and all animations are complete. |
-| `wa-create` | Emitted when the user selects the "create" option. Call `event.preventDefault()` to handle creation yourself. The event `detail` contains `{ inputValue: string }`. |
-| `wa-invalid` | Emitted when the form control has been checked for validity and its constraints aren't satisfied. |
+| (default) | \`\` The listbox options. Must be elements. You can use to group items visually. |
+| \`clear-icon\` | An icon to use in lieu of the default clear icon. |
+| \`end\` | \`\` An element, such as , placed at the start of the combobox. |
 
-## CSS Custom Properties
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`allowCreate\` allow-create | \`\` When true, if the user types text that doesn't match any existing option, a "Create \[value\]" option appears in the listbox. Selecting it creates a new in the DOM and selects it. A cancelable wa-create event fires before creation. Type boolean Default false | |
+| \`allowCustomValue\` allow-custom-value | \`boolean\` When true, allows the user to enter a value that doesn't match any of the options. Only applies to single-select comboboxes. When false, the combobox will only accept values that match an option. Type Default false | |
+| \`appearance\` appearance | \`'filled' \\| 'outlined' \\| 'filled-outlined'\` The combobox's visual appearance. Type Default 'outlined' | |
+| \`autocapitalize\` autocapitalize | \`'off' \\| 'none' \\| 'on' \\| 'sentences' \\| 'words' \\| 'characters'\` Controls whether and how text input is automatically capitalized as it is entered/edited by the user. Type | |
+| \`autocorrect\` autocorrect | \`"off"\` Indicates whether the browser's autocorrect feature is on or off. When set as an attribute, use or "on". When set as a property, use true or false. Type boolean | |
+| \`disabled\` disabled | \`boolean\` Disables the combobox control. Type Default false | |
+| \`enterkeyhint\` enterkeyhint | \`'enter' \\| 'done' \\| 'go' \\| 'next' \\| 'previous' \\| 'search' \\| 'send'\` Used to customize the label or icon of the Enter key on virtual keyboards. Type | |
+| \`filter\` | \`true\` A function that customizes how options are filtered based on the input value. The function receives the option and the current input query string. Return to include the option in the filtered list, false to exclude. By default, options are filtered by checking if the option's label contains the query (case-insensitive). Type ((option: WaOption, query: string) => boolean) \\| null Default null | |
+| \`form\` | \`\` By default, form controls are associated with the nearest containing element. This attribute allows you to place the form control outside of a form and associate it with the form that has this id. The form must be in the same document or shadow root for this to work. Type HTMLFormElement \\| null | |
+| \`getTag\` | \`(option: WaOption, index: number) => TemplateResult \\| string \\| HTMLElement\` A function that customizes the tags to be rendered when multiple=true. The first argument is the option, the second is the current tag's index. The function should return either a Lit TemplateResult or a string containing trusted HTML of the symbol to render at the specified value. Type | |
+| \`hint\` hint | \`hint\` The combobox's . If you need to display HTML, use the hint slot instead. Type string Default '' | |
+| \`inputmode\` inputmode | \`'none' \\| 'text' \\| 'decimal' \\| 'numeric' \\| 'tel' \\| 'search' \\| 'email' \\| 'url'\` Tells the browser what type of data will be entered by the user, allowing it to display the appropriate virtual keyboard on supportive devices. Type | |
+| \`inputValue\` | \`string\` The current text value in the input field. Type Default '' | |
+| \`label\` label | \`label\` The combobox's . If you need to display HTML, use the label slot instead. Type string Default '' | |
+| \`maxOptionsVisible\` max-options-visible | \`multiple\` The maximum number of selected options to show when is true. After the maximum, "+n" will be shown to indicate the number of additional items that are selected. Set to 0 to remove the limit. Type number Default 3 | |
+| \`multiple\` multiple | \`boolean\` Allows more than one option to be selected. Type Default false | |
+| \`name\` name | \`string \\| null\` The name of the combobox, submitted as a name/value pair with form data. Type Default '' | |
+| \`open\` open | \`show()\` Indicates whether or not the combobox is open. You can toggle this attribute to show and hide the menu, or you can use the and hide() methods and this attribute will reflect the combobox's open state. Type boolean Default false | |
+| \`pill\` pill | \`boolean\` Draws a pill-style combobox with rounded edges. Type Default false | |
+| \`placeholder\` placeholder | \`string\` Placeholder text to show as a hint when the combobox is empty. Type Default '' | |
+| \`placement\` placement | \`'top' \\| 'bottom'\` The preferred placement of the combobox's menu. Note that the actual placement may vary as needed to keep the listbox inside of the viewport. Type Default 'bottom' | |
+| \`required\` required | \`boolean\` The combobox's required attribute. Type Default false | |
+| \`size\` size | \`'xs' \\| 's' \\| 'm' \\| 'l' \\| 'xl' \\| 'small' \\| 'medium' \\| 'large'\` The combobox's size. Type Default 'm' | |
+| \`spellcheck\` spellcheck | \`boolean\` Enables spell checking on the combobox. Type Default false | |
+| \`validationTarget\` | \`undefined \\| HTMLElement\` Where to anchor native constraint validation Type | |
+| \`validators\` | \`observedAttributes\` Validators are static because they have , essentially attributes to "watch" for changes. Whenever these attributes change, we want to be notified and update the validator. Type Validator\[\] Default \[\] | |
+| \`value\` value | The combobox's value. This will be a string for single select or an array for multi-select. | |
+| \`withClear\` with-clear | \`boolean\` Adds a clear button when the combobox is not empty. Type Default false | |
+| \`withHint\` with-hint | \`true\` Only required for SSR. Set to if you're slotting in a hint element so the server-rendered markup includes the hint before the component hydrates on the client. Type boolean Default false | |
+| \`withLabel\` with-label | \`true\` Only required for SSR. Set to if you're slotting in a label element so the server-rendered markup includes the label before the component hydrates on the client. Type boolean Default false | |
+
+### Methods
+
+| Name | Description | Arguments |
+| --- | --- | --- |
+| \`blur()\` | Removes focus from the control. | |
+| \`focus()\` | Sets focus on the control. | \`options: FocusOptions\` |
+| \`formStateRestoreCallback()\` | Called when the browser is trying to restore element’s state to state in which case reason is "restore", or when the browser is trying to fulfill autofill on behalf of user in which case reason is "autocomplete". In the case of "restore", state is a string, File, or FormData object previously set as the second argument to setFormValue. | \`state: string \\| File \\| FormData \\| null, reason: 'autocomplete' \\| 'restore'\` |
+| \`hide()\` | Hides the listbox. | |
+| \`resetValidity()\` | Reset validity is a way of removing manual custom errors and native validation. | |
+| \`setCustomValidity()\` | Do not use this when creating a "Validator". This is intended for end users of components. We track manually defined custom errors so we don't clear them on accident in our validators. | \`message: string\` |
+| \`show()\` | Shows the listbox. | |
+
+### Events
+
+| Name | Description |
+| --- | --- |
+| \`blur\` | Emitted when the control loses focus. |
+| \`change\` | Emitted when the control's value changes. |
+| \`focus\` | Emitted when the control gains focus. |
+| \`input\` | Emitted when the control receives input. |
+| \`wa-after-hide\` | Emitted after the combobox's menu closes and all animations are complete. |
+| \`wa-after-show\` | Emitted after the combobox's menu opens and all animations are complete. |
+| \`wa-clear\` | Emitted when the control's value is cleared. |
+| \`wa-create\` | \`event.preventDefault()\` Emitted when the user selects the "create" option. Call to handle creation yourself. The event detail contains { inputValue: string }. |
+| \`wa-hide\` | Emitted when the combobox's menu closes. |
+| \`wa-invalid\` | Emitted when the form control has been checked for validity and its constraints aren't satisfied. |
+| \`wa-show\` | Emitted when the combobox's menu opens. |
+
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
@@ -161,14 +166,14 @@ silently ignored and the element falls back to the default slot):
 | \`--show-duration\` | \`var(--wa-transition-fast)\` The duration of the show animation. Default |
 | \`--tag-max-size\` | \`multiple\` When using , the max size of tags before their content is truncated. Default 10ch |
 
-## Custom States
+### Custom States
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| `blank` | The combobox is empty. | `:state(blank)` |
-| `disabled` | The combobox is disabled. | `:state(disabled)` |
+| \`blank\` | The combobox is empty. | \`:state(blank)\` |
+| \`disabled\` | The combobox is disabled. | \`:state(disabled)\` |
 
-## CSS Parts
+### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
@@ -179,7 +184,7 @@ silently ignored and the element falls back to the default slot):
 | \`expand-icon\` | The container that wraps the expand icon. | \`::part(expand-icon)\` |
 | \`form-control\` | The form control that wraps the label, input, and hint. | \`::part(form-control)\` |
 | \`form-control-input\` | The combobox's wrapper. | \`::part(form-control-input)\` |
-| \`form-control-label\` | The label's wrapper. | \`::part(form-control-label)\` |
+| \`form-control-label\` | The label. | \`::part(form-control-label)\` |
 | \`hint\` | The hint's wrapper. | \`::part(hint)\` |
 | \`listbox\` | The listbox container where options are slotted. | \`::part(listbox)\` |
 | \`start\` | \`start\` The container that wraps the slot. | \`::part(start)\` |
@@ -188,8 +193,9 @@ silently ignored and the element falls back to the default slot):
 | \`tag\_\_remove-button\` | The tag's remove button. | \`::part(tag\_\_remove-button)\` |
 | \`tag\_\_remove-button\_\_base\` | The tag's remove button base part. | \`::part(tag\_\_remove-button\_\_base)\` |
 | \`tags\` | \`multiselect\` The container that houses option tags when is used. | \`::part(tags)\` |
+| \`label\` | \`form-control-label\` Deprecated. Use the part instead. | \`::part(label)\` |
 
-## Dependencies
+### Dependencies
 
 This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
 
@@ -202,7 +208,7 @@ This component automatically imports the following elements. Sub-dependencies, i
 
 ## Examples
 
-### Labels
+### Label
 
 Use the `label` attribute to give the combobox an accessible label. For labels that contain HTML, use the `label` slot instead.
 
@@ -228,7 +234,7 @@ Add descriptive hint to a combobox with the `hint` attribute. For hints that con
 </wa-combobox>
 ```
 
-### Placeholders
+### Placeholder
 
 Use the `placeholder` attribute to add a placeholder.
 
@@ -252,7 +258,50 @@ Use the `with-clear` attribute to make the control clearable. The clear button o
 </wa-combobox>
 ```
 
-### Allow Custom Values
+### Multiple
+
+To allow multiple options to be selected, use the `multiple` attribute. Selected options appear as tags and the input filters the list. Pair it with `with-clear` to reset the selection, and use `max-options-visible` to cap how many tags show before the rest collapse into a count.
+
+```html
+<wa-combobox label="Languages" multiple with-clear max-options-visible="2" placeholder="Type to filter...">
+  <wa-option value="ts" selected>TypeScript</wa-option>
+  <wa-option value="go" selected>Go</wa-option>
+  <wa-option value="rust" selected>Rust</wa-option>
+  <wa-option value="python">Python</wa-option>
+  <wa-option value="ruby">Ruby</wa-option>
+  <wa-option value="swift">Swift</wa-option>
+</wa-combobox>
+```
+
+In multiple mode, the text input is used for filtering options only. After selecting an option, the input is cleared so you can continue filtering and selecting more options.
+
+### Initial Value
+
+Use the `selected` attribute on individual options to set the initial selection, similar to native HTML.
+
+```html
+<wa-combobox label="Pre-selected option">
+  <wa-option value="option-1" selected>Option 1</wa-option>
+  <wa-option value="option-2">Option 2</wa-option>
+  <wa-option value="option-3">Option 3</wa-option>
+  <wa-option value="option-4">Option 4</wa-option>
+</wa-combobox>
+```
+
+For multiple selections, apply it to all selected options.
+
+```html
+<wa-combobox multiple with-clear>
+  <wa-option value="option-1" selected>Option 1</wa-option>
+  <wa-option value="option-2" selected>Option 2</wa-option>
+  <wa-option value="option-3">Option 3</wa-option>
+  <wa-option value="option-4">Option 4</wa-option>
+</wa-combobox>
+```
+
+Framework users can bind directly to the `value` property for reactive data binding and form state management.
+
+### Allowing Custom Values
 
 By default, the combobox only accepts values that match an option. Use `allow-custom-value` to let users enter arbitrary values.
 
@@ -264,79 +313,22 @@ By default, the combobox only accepts values that match an option. Use `allow-cu
 </wa-combobox>
 ```
 
-### Creating New Items
+### Grouping Options
 
-Use the `allow-create` attribute to let users create new options on the fly. When the user types text that doesn't match any existing option, a "Create \[value\]" option appears at the bottom of the listbox. Selecting it adds a new [`<wa-option>`](https://webawesome.com/docs/components/option) to the DOM and selects it.
-
-```html
-<wa-combobox allow-create label="Select or create a tag" placeholder="Type to search or create...">
-  <wa-option value="bug">Bug</wa-option>
-  <wa-option value="feature">Feature</wa-option>
-  <wa-option value="docs">Docs</wa-option>
-</wa-combobox>
-```
-
-This also works with `multiple` mode.
+Use [`<wa-divider>`](https://webawesome.com/docs/components/divider) to group listbox items visually. You can also use `<small>` to provide labels, but they won't be announced by most assistive devices.
 
 ```html
-<wa-combobox allow-create multiple with-clear label="Select or create tags" placeholder="Type to search or create...">
-  <wa-option value="bug" selected>Bug</wa-option>
-  <wa-option value="feature">Feature</wa-option>
-  <wa-option value="docs">Docs</wa-option>
-</wa-combobox>
-```
-
-For advanced use cases, listen for the `wa-create` event and call `preventDefault()` to handle creation yourself. This is useful when you need to normalize values, validate input, or call an API before creating the option.
-
-```html
-<wa-combobox allow-create label="Add a tag" placeholder="Type to create..." class="custom-create-combobox">
-  <wa-option value="bug">Bug</wa-option>
-  <wa-option value="feature">Feature</wa-option>
-</wa-combobox>
-
-<script type="module">
-  await customElements.whenDefined('wa-combobox');
-  const combobox = document.querySelector('.custom-create-combobox');
-
-  combobox.addEventListener('wa-create', event => {
-    event.preventDefault();
-
-    const { inputValue } = event.detail;
-
-    // Normalize the value (e.g. lowercase, slugify)
-    const option = document.createElement('wa-option');
-    option.value = inputValue.toLowerCase().replace(/\s+/g, '-');
-    option.textContent = inputValue;
-    combobox.appendChild(option);
-    combobox.value = option.value;
-  });
-</script>
-```
-
-### Custom Filter Function
-
-You can provide a custom filter function to control how options are matched. The function receives the option element and the current query string, and should return `true` to show the option or `false` to hide it.
-
-By default, the combobox filters options that contain the query anywhere in the label, but you can customize this to implement fuzzy matching, prefix-only matching, or apply any other filtering logic.
-
-```html
-<wa-combobox label="Search (includes match)" placeholder="Search anywhere in text..." class="custom-filter">
+<wa-combobox label="Grouped Options">
+  <small>Fruits</small>
   <wa-option value="apple">Apple</wa-option>
-  <wa-option value="pineapple">Pineapple</wa-option>
   <wa-option value="banana">Banana</wa-option>
-  <wa-option value="grape">Grape</wa-option>
-  <wa-option value="grapefruit">Grapefruit</wa-option>
+  <wa-option value="orange">Orange</wa-option>
+  <wa-divider></wa-divider>
+  <small>Vegetables</small>
+  <wa-option value="carrot">Carrot</wa-option>
+  <wa-option value="broccoli">Broccoli</wa-option>
+  <wa-option value="spinach">Spinach</wa-option>
 </wa-combobox>
-
-<script type="module">
-  await customElements.whenDefined('wa-combobox');
-  const combobox = document.querySelector('.custom-filter');
-
-  // Custom filter that matches anywhere in the label (not just the start)
-  combobox.filter = (option, query) => {
-    return option.label.toLowerCase().includes(query.toLowerCase());
-  };
-</script>
 ```
 
 ### Appearance
@@ -375,80 +367,7 @@ Use the `pill` attribute to give comboboxes rounded edges.
 </wa-combobox>
 ```
 
-### Disabled
-
-Use the `disabled` attribute to disable a combobox.
-
-```html
-<wa-combobox placeholder="Disabled" disabled>
-  <wa-option value="option-1">Option 1</wa-option>
-  <wa-option value="option-2">Option 2</wa-option>
-  <wa-option value="option-3">Option 3</wa-option>
-</wa-combobox>
-```
-
-### Multiple
-
-To allow multiple options to be selected, use the `multiple` attribute. In multiple mode, selected options appear as tags and the input is used for filtering. It's a good practice to use `with-clear` when this option is enabled.
-
-```html
-<wa-combobox label="Select Multiple" multiple with-clear placeholder="Type to filter...">
-  <wa-option value="option-1" selected>Option 1</wa-option>
-  <wa-option value="option-2" selected>Option 2</wa-option>
-  <wa-option value="option-3">Option 3</wa-option>
-  <wa-option value="option-4">Option 4</wa-option>
-  <wa-option value="option-5">Option 5</wa-option>
-  <wa-option value="option-6">Option 6</wa-option>
-</wa-combobox>
-```
-
-In multiple mode, the text input is used for filtering options only. After selecting an option, the input is cleared so you can continue filtering and selecting more options.
-
-### Setting Initial Values
-
-Use the `selected` attribute on individual options to set the initial selection, similar to native HTML.
-
-```html
-<wa-combobox label="Pre-selected option">
-  <wa-option value="option-1" selected>Option 1</wa-option>
-  <wa-option value="option-2">Option 2</wa-option>
-  <wa-option value="option-3">Option 3</wa-option>
-  <wa-option value="option-4">Option 4</wa-option>
-</wa-combobox>
-```
-
-For multiple selections, apply it to all selected options.
-
-```html
-<wa-combobox multiple with-clear>
-  <wa-option value="option-1" selected>Option 1</wa-option>
-  <wa-option value="option-2" selected>Option 2</wa-option>
-  <wa-option value="option-3">Option 3</wa-option>
-  <wa-option value="option-4">Option 4</wa-option>
-</wa-combobox>
-```
-
-Framework users can bind directly to the `value` property for reactive data binding and form state management.
-
-### Grouping Options
-
-Use [`<wa-divider>`](https://webawesome.com/docs/components/divider) to group listbox items visually. You can also use `<small>` to provide labels, but they won't be announced by most assistive devices.
-
-```html
-<wa-combobox label="Grouped Options">
-  <small>Fruits</small>
-  <wa-option value="apple">Apple</wa-option>
-  <wa-option value="banana">Banana</wa-option>
-  <wa-option value="orange">Orange</wa-option>
-  <wa-divider></wa-divider>
-  <small>Vegetables</small>
-  <wa-option value="carrot">Carrot</wa-option>
-  <wa-option value="broccoli">Broccoli</wa-option>
-  <wa-option value="spinach">Spinach</wa-option>
-</wa-combobox>
-```
-
-### Sizes
+### Size
 
 Use the `size` attribute to change a combobox's size.
 
@@ -532,6 +451,93 @@ Use the `start` and `end` slots to add presentational elements like [`<wa-icon>`
   <wa-option value="los-angeles">Los Angeles</wa-option>
   <wa-option value="chicago">Chicago</wa-option>
 </wa-combobox>
+```
+
+### Disabled
+
+Use the `disabled` attribute to disable a combobox.
+
+```html
+<wa-combobox placeholder="Disabled" disabled>
+  <wa-option value="option-1">Option 1</wa-option>
+  <wa-option value="option-2">Option 2</wa-option>
+  <wa-option value="option-3">Option 3</wa-option>
+</wa-combobox>
+```
+
+### Creating New Items
+
+Use the `allow-create` attribute to let users create new options on the fly. When the user types text that doesn't match any existing option, a "Create \[value\]" option appears at the bottom of the listbox. Selecting it adds a new [`<wa-option>`](https://webawesome.com/docs/components/option) to the DOM and selects it.
+
+```html
+<wa-combobox allow-create label="Select or create a tag" placeholder="Type to search or create...">
+  <wa-option value="bug">Bug</wa-option>
+  <wa-option value="feature">Feature</wa-option>
+  <wa-option value="docs">Docs</wa-option>
+</wa-combobox>
+```
+
+This also works with `multiple` mode.
+
+```html
+<wa-combobox allow-create multiple with-clear label="Select or create tags" placeholder="Type to search or create...">
+  <wa-option value="bug" selected>Bug</wa-option>
+  <wa-option value="feature">Feature</wa-option>
+  <wa-option value="docs">Docs</wa-option>
+</wa-combobox>
+```
+
+For advanced use cases, listen for the `wa-create` event and call `preventDefault()` to handle creation yourself. This is useful when you need to normalize values, validate input, or call an API before creating the option.
+
+```html
+<wa-combobox allow-create label="Add a tag" placeholder="Type to create..." class="custom-create-combobox">
+  <wa-option value="bug">Bug</wa-option>
+  <wa-option value="feature">Feature</wa-option>
+</wa-combobox>
+
+<script type="module">
+  await customElements.whenDefined('wa-combobox');
+  const combobox = document.querySelector('.custom-create-combobox');
+
+  combobox.addEventListener('wa-create', event => {
+    event.preventDefault();
+
+    const { inputValue } = event.detail;
+
+    // Normalize the value (e.g. lowercase, slugify)
+    const option = document.createElement('wa-option');
+    option.value = inputValue.toLowerCase().replace(/\s+/g, '-');
+    option.textContent = inputValue;
+    combobox.appendChild(option);
+    combobox.value = option.value;
+  });
+</script>
+```
+
+### Custom Filter Function
+
+You can provide a custom filter function to control how options are matched. The function receives the option element and the current query string, and should return `true` to show the option or `false` to hide it.
+
+By default, the combobox filters options that contain the query anywhere in the label, but you can customize this to implement fuzzy matching, prefix-only matching, or apply any other filtering logic.
+
+```html
+<wa-combobox label="Search (includes match)" placeholder="Search anywhere in text..." class="custom-filter">
+  <wa-option value="apple">Apple</wa-option>
+  <wa-option value="pineapple">Pineapple</wa-option>
+  <wa-option value="banana">Banana</wa-option>
+  <wa-option value="grape">Grape</wa-option>
+  <wa-option value="grapefruit">Grapefruit</wa-option>
+</wa-combobox>
+
+<script type="module">
+  await customElements.whenDefined('wa-combobox');
+  const combobox = document.querySelector('.custom-filter');
+
+  // Custom filter that matches anywhere in the label (not just the start)
+  combobox.filter = (option, query) => {
+    return option.label.toLowerCase().includes(query.toLowerCase());
+  };
+</script>
 ```
 
 ### Custom Tags

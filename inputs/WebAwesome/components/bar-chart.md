@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/bar-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bar-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/bar-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bar-chart -->
 
 # Bar Chart [Pro]
 
@@ -28,29 +28,28 @@ Get Web Awesome Pro + Bar Chart!
 
 ```html
 <wa-bar-chart
-  id="bar-hero"
   label="Quarterly Revenue"
   description="A bar chart comparing online and in-store revenue across four quarters"
 >
+  <script type="application/json">
+    {
+      "data": {
+        "labels": ["Q1", "Q2", "Q3", "Q4"],
+        "datasets": [
+          { "label": "Online", "data": [42, 58, 63, 71] },
+          { "label": "In-Store", "data": [65, 53, 48, 52] }
+        ]
+      }
+    }
+  </script>
 </wa-bar-chart>
-<script type="module">
-  const chart = document.querySelector('#bar-hero');
-
-  chart.config = {
-    data: {
-      labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-      datasets: [
-        { label: 'Online', data: [42, 58, 63, 71] },
-        { label: 'In-Store', data: [65, 53, 48, 52] },
-      ],
-    },
-  };
-</script>
 ```
 
-For advanced configuration such as mixed chart types, custom plugins, and direct Chart.js access, see [`<wa-chart>`](https://webawesome.com/docs/components/chart).
+See [`<wa-chart>`](https://webawesome.com/docs/components/chart) for advanced configuration, custom plugins, and direct Chart.js access.
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -59,7 +58,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/bar-chart/bar-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/bar-chart/bar-chart.js';
 ```
 
 \*\*npm\*\*
@@ -86,35 +85,34 @@ To import this component for React 18 or below, use the following code:
 import WaBarChart from '@awesome.me/webawesome/dist/react/bar-chart/index.js';
 ```
 
-## Slots
+### Slots
 
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
+| Name | Description |
+| --- | --- |
+| (default) | \`
 
-- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
+### Attributes & Properties
 
-## Attributes & Properties
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | |
+| \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | |
+| \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | |
+| \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | |
+| \`label\` label | \`string \\| null\` A label for the chart, used for accessibility. Type Default null | |
+| \`legendPosition\` legend-position | \`LayoutPosition \\| 'start' \\| 'end'\` The position of the legend relative to the chart. Type Default 'top' | |
+| \`max\` max | \`number \\| null\` The maximum value for the value axis. Type Default null | |
+| \`min\` min | \`number \\| null\` The minimum value for the value axis. Type Default null | |
+| \`plugins\` plugins | \`array\` Additional Chart.js plugins to register for this chart instance. Type Default \[\] | |
+| \`stacked\` stacked | \`boolean\` Stacks datasets on top of each other along the value axis. Type Default false | |
+| \`type\` type | \`bar\` The type of chart to render. Valid types include , line, pie, doughnut, polarArea, radar, scatter, and bubble. Type ChartType Default 'bar' | |
+| \`withoutAnimation\` without-animation | \`boolean\` Disables chart animations Type Default false | |
+| \`withoutLegend\` without-legend | \`boolean\` Hides the legend Type Default false | |
+| \`withoutTooltip\` without-tooltip | \`boolean\` Hides tooltips over data points Type Default false | |
+| \`xLabel\` x-label | \`string \\| null\` A label for the x-axis. Type Default null | |
+| \`yLabel\` y-label | \`string \\| null\` A label for the y-axis. Type Default null | |
 
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `type` | `type` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. | `ChartType` | `'bar'` |
-| `label` | `label` | A label for the chart, used for accessibility. | `string \| null` | `null` |
-| `description` | `description` | A description of the chart, used for accessibility. | `string \| null` | `null` |
-| `xLabel` | `xLabel` | A label for the x-axis. | `string \| null` | `null` |
-| `yLabel` | `yLabel` | A label for the y-axis. | `string \| null` | `null` |
-| `legendPosition` | `legend-position` | The position of the legend relative to the chart. | `LayoutPosition \| 'start' \| 'end'` | `'top'` |
-| `stacked` | `stacked` | Stacks datasets on top of each other along the value axis. | `boolean` | `false` |
-| `indexAxis` | `index-axis` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. | `'x' \| 'y'` | `'x'` |
-| `grid` | `grid` | Which axes to show grid lines on. | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` |
-| `min` | `min` | The minimum value for the value axis. | `number \| null` | `null` |
-| `max` | `max` | The maximum value for the value axis. | `number \| null` | `null` |
-| `withoutAnimation` | `without-animation` | Disables chart animations | `boolean` | `false` |
-| `withoutLegend` | `without-legend` | Hides the legend | `boolean` | `false` |
-| `withoutTooltip` | `without-tooltip` | Hides tooltips over data points | `boolean` | `false` |
-| `config` | — | The Chart.js configuration object. Setting this property will automatically re-render the chart. | `ChartJS['config']` | — |
-| `plugins` | `plugins` | Additional Chart.js plugins to register for this chart instance. | `array` | `[]` |
-
-## CSS Custom Properties
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
@@ -139,9 +137,31 @@ silently ignored and the element falls back to the default slot):
 
 ## Examples
 
+### Providing Data with JSON
+
+Place a `<script type="application/json">` tag inside the component with your chart data. The `type` field can be omitted since `wa-bar-chart` already knows its chart type. The JSON follows the [Chart.js configuration format](https://www.chartjs.org/docs/latest/configuration/).
+
+```html
+<wa-bar-chart label="Survey Results" description="A bar chart of survey results by category">
+  <script type="application/json">
+    {
+      "data": {
+        "labels": ["Excellent", "Good", "Average", "Poor"],
+        "datasets": [
+          {
+            "label": "Responses",
+            "data": [45, 30, 18, 7]
+          }
+        ]
+      }
+    }
+  </script>
+</wa-bar-chart>
+```
+
 ### Providing Data with JavaScript
 
-For dynamic data, set the `config` property directly. The chart will re-render automatically.
+Set the `config` property from JavaScript when your data comes from code rather than static markup. The chart re-renders automatically each time you assign it. For data that updates at runtime, try the live controls in [Accessing the Chart.js Instance](https://webawesome.com/docs/components/chart#accessing-the-chartjs-instance).
 
 ```html
 <wa-bar-chart id="bar-js-example" label="Survey Results" description="A bar chart of survey results by category">
@@ -163,29 +183,8 @@ For dynamic data, set the `config` property directly. The chart will re-render a
 </script>
 ```
 
-Note that `config` is shallowly reactive. If you mutate the existing object in place, you must reassign it to trigger a re-render!
-
-### Providing Data with JSON
-
-Place a `<script type="application/json">` tag inside the component with your chart data. The `type` field can be omitted since `wa-bar-chart` already knows its chart type.
-
-```html
-<wa-bar-chart label="Survey Results" description="A bar chart of survey results by category">
-  <script type="application/json">
-    {
-      "data": {
-        "labels": ["Excellent", "Good", "Average", "Poor"],
-        "datasets": [
-          {
-            "label": "Responses",
-            "data": [45, 30, 18, 7]
-          }
-        ]
-      }
-    }
-  </script>
-</wa-bar-chart>
-```
+**`config` is shallowly reactive.**  
+If you mutate the object in place, reassign it to trigger a re-render.
 
 ### Multiple Datasets
 
@@ -208,38 +207,6 @@ Add multiple objects to the `datasets` array to compare groups side by side.
         { label: 'Online', data: [42, 58, 63, 71] },
         { label: 'In-Store', data: [65, 53, 48, 52] },
         { label: 'Wholesale', data: [28, 32, 35, 40] },
-      ],
-    },
-  };
-</script>
-```
-
-### Custom Colors
-
-Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
-
-```html
-<wa-bar-chart
-  id="bar-colors"
-  label="Custom Colors"
-  description="A bar chart with custom purple and cyan colors"
-  style="
-    --fill-color-1: color-mix(in srgb, var(--wa-color-purple-60) 50%, transparent);
-    --border-color-1: var(--wa-color-purple-60);
-    --fill-color-2: color-mix(in srgb, var(--wa-color-cyan-60) 50%, transparent);
-    --border-color-2: var(--wa-color-cyan-60);
-  "
->
-</wa-bar-chart>
-<script type="module">
-  const chart = document.querySelector('#bar-colors');
-
-  chart.config = {
-    data: {
-      labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-      datasets: [
-        { label: 'Product A', data: [42, 58, 63, 71] },
-        { label: 'Product B', data: [65, 53, 48, 52] },
       ],
     },
   };
@@ -303,6 +270,38 @@ Use the `stacked` attribute to stack datasets on top of each other. This is help
 </script>
 ```
 
+### Colors
+
+Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
+
+```html
+<wa-bar-chart
+  id="bar-colors"
+  label="Custom Colors"
+  description="A bar chart with custom purple and cyan colors"
+  style="
+    --fill-color-1: color-mix(in srgb, var(--wa-color-purple-60) 50%, transparent);
+    --border-color-1: var(--wa-color-purple-60);
+    --fill-color-2: color-mix(in srgb, var(--wa-color-cyan-60) 50%, transparent);
+    --border-color-2: var(--wa-color-cyan-60);
+  "
+>
+</wa-bar-chart>
+<script type="module">
+  const chart = document.querySelector('#bar-colors');
+
+  chart.config = {
+    data: {
+      labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+      datasets: [
+        { label: 'Hot Brew', data: [72, 54, 48, 68] },
+        { label: 'Cold Brew', data: [38, 61, 74, 45] },
+      ],
+    },
+  };
+</script>
+```
+
 ### Border Width
 
 Use the `--border-width` CSS custom property to control the thickness of bar borders.
@@ -320,11 +319,11 @@ Use the `--border-width` CSS custom property to control the thickness of bar bor
 
   chart.config = {
     data: {
-      labels: ['A', 'B', 'C', 'D'],
+      labels: ['Oak Grove', 'Pine Ridge', 'Maple Hill', 'Willow Creek'],
       datasets: [
         {
-          label: 'Values',
-          data: [30, 50, 20, 40],
+          label: 'Trees Planted',
+          data: [180, 240, 320, 150],
         },
       ],
     },
@@ -448,47 +447,29 @@ Use the `min` and `max` attributes to constrain the value axis.
 </script>
 ```
 
-### Disabling Tooltips
+### Disabling Features
 
-Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over data points.
+Use `without-tooltip` to hide hover tooltips and `without-animation` to disable transitions.
 
 ```html
-<wa-bar-chart id="bar-tooltip" without-tooltip label="No Tooltips" description="A bar chart with tooltips disabled">
+<wa-bar-chart
+  id="bar-disabled"
+  without-tooltip
+  without-animation
+  label="Minimal"
+  description="A bar chart with tooltips and animations disabled"
+>
 </wa-bar-chart>
 <script type="module">
-  const chart = document.querySelector('#bar-tooltip');
+  const chart = document.querySelector('#bar-disabled');
 
   chart.config = {
     data: {
-      labels: ['A', 'B', 'C', 'D'],
+      labels: ['Fiction', 'Mystery', 'Sci-Fi', 'Biography'],
       datasets: [
         {
-          label: 'Values',
-          data: [30, 50, 20, 40],
-        },
-      ],
-    },
-  };
-</script>
-```
-
-### Disabling Animations
-
-Use the `without-animation` attribute to disable chart transitions.
-
-```html
-<wa-bar-chart id="bar-anim" without-animation label="No Animation" description="A bar chart with animation disabled">
-</wa-bar-chart>
-<script type="module">
-  const chart = document.querySelector('#bar-anim');
-
-  chart.config = {
-    data: {
-      labels: ['A', 'B', 'C', 'D'],
-      datasets: [
-        {
-          label: 'Values',
-          data: [30, 50, 20, 40],
+          label: 'Checkouts',
+          data: [420, 310, 260, 180],
         },
       ],
     },
