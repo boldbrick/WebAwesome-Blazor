@@ -1,7 +1,7 @@
 {
   "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, ElementMethodInvocationTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
   "enabled": true,
-  "targetWaVersion": "3.10.0",
+  "targetWaVersion": "3.11.0",
   "globalIgnoredAttributes": [
     "title",
     "did-ssr",
@@ -161,6 +161,22 @@
     "wa-markdown": {
       "ignoredMethods": [ "getMarked", "updateAll" ]
     },
+    "wa-data-grid": {
+      "eventOverrides": {
+        "wa-cell-contextmenu": "OnCellContextMenu"
+      },
+      "ignoredEvents": [ "request" ],
+      "ignoredMethods": [ "getColumnFacets", "handleColumnsChange", "handlePageChange", "handleSearchTermChange" ]
+    },
+    "wa-otp-input": {
+      "attributeOverrides": {
+        "autofocus": "AutoFocus",
+        "autosubmit": "AutoSubmit"
+      },
+      "ignoredAttributes": [ "name", "custom-error" ],
+      "ignoredEvents": [ "change" ],
+      "ignoredMethods": [ "formStateRestoreCallback" ]
+    },
     "wa-carousel": {
       "ignoredAttributes": [ "currentSlide", "slides" ]
     },
@@ -221,10 +237,18 @@
     "getSymbol": "function-valued property (custom symbol renderer callback), not an authorable HTML attribute",
     "getMarked": "static class method (WaMarkdown.getMarked() in markdown.d.ts) returning the shared Marked parser instance - a non-marshalable JS object, not a per-element instance method",
     "updateAll": "static class method (WaMarkdown.updateAll() in markdown.d.ts) that re-renders all connected wa-markdown instances after the shared Marked config changes - class-level, not a per-element instance method addressable via ElementReference interop",
+    "request": "CEM extraction artifact of wa-data-grid, not a real event: it carries the same WaDataRequestEvent type as wa-data-request, and neither dist\\events\\events.d.ts (the canonical event-class export list) nor the component's own @event JSDoc block declares a bare 'request' - the compiled source only ever dispatches wa-data-request, which is bound as OnDataRequest",
+    "wa-cell-contextmenu": "wa-data-grid cell context-menu event; exposed as the natural-PascalCase EventCallback OnCellContextMenu (mechanical conversion would yield 'OnCellContextmenu'), mapped via eventOverrides",
+    "getColumnFacets": "wa-data-grid method returning { uniqueValues: Map<...>, minMax }; a JS Map serializes to an empty object over JSON interop, silently losing every value, so no faithful wrapper method can be offered",
+    "handleColumnsChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
+    "handlePageChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
+    "handleSearchTermChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
+    "autosubmit": "exposed as AutoSubmit on WaOtpInput (natural PascalCase, matching the existing autofocus -> AutoFocus convention); mapped via attributeOverrides",
+    "hrefTemplate": "wa-pagination's href-template also accepts a JS function (page: number) => string; only the string-template form is exposed as WaPagination.HrefTemplate, because a JS function cannot cross the Blazor interop boundary - the attribute name itself needs no override",
     "currentSlide": "read-only JS state property of wa-carousel, not an authorable HTML attribute",
     "slides": "read-only JS collection property of wa-carousel, not an authorable HTML attribute",
     "submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute",
-    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24) and WA 3.10.0 (2026-07-24), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
-    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19) and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24) and WA 3.10.0 (2026-07-24, the Lit ReactiveElement lifecycle update() inherited via WebAwesomeElement, hence absent from the component .d.ts - only updateTimeout and willUpdate appear in relative-time.d.ts), not CEM-documented"
+    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24) and WA 3.11.0 (2026-07-30), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19) and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24) and WA 3.11.0 (2026-07-30, the Lit ReactiveElement lifecycle update() inherited via WebAwesomeElement - 'WebAwesomeElement extends LitElement' reconfirmed in internal\\webawesome-element.d.ts, hence absent from the component .d.ts: only updateTimeout and willUpdate appear in relative-time.d.ts), not CEM-documented"
   }
 }

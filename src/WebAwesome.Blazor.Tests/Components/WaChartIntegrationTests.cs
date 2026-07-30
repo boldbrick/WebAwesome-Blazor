@@ -25,8 +25,8 @@ public class WaChartIntegrationTests : BunitContext
         Assert.False(element.HasAttribute("legend-position"));
         Assert.False(element.HasAttribute("min"));
         Assert.False(element.HasAttribute("max"));
-        Assert.False(element.HasAttribute("xLabel"));
-        Assert.False(element.HasAttribute("yLabel"));
+        Assert.False(element.HasAttribute("x-label"));
+        Assert.False(element.HasAttribute("y-label"));
         // boolean attributes are omitted when false
         Assert.False(element.HasAttribute("stacked"));
         Assert.False(element.HasAttribute("without-animation"));
@@ -77,8 +77,8 @@ public class WaChartIntegrationTests : BunitContext
         Assert.Equal("100", element.GetAttribute("max"));
         Assert.True(element.HasAttribute("stacked"));
         Assert.True(element.HasAttribute("without-legend"));
-        Assert.Equal("Quarter", element.GetAttribute("xLabel"));
-        Assert.Equal("USD", element.GetAttribute("yLabel"));
+        Assert.Equal("Quarter", element.GetAttribute("x-label"));
+        Assert.Equal("USD", element.GetAttribute("y-label"));
         Assert.Equal("horizontal", element.GetAttribute("orientation"));
     }
 

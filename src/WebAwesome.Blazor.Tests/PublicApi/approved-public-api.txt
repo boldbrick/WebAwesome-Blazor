@@ -650,10 +650,12 @@ namespace WebAwesome.Blazor.Components
         public int SlidesPerPage { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
+        public System.Threading.Tasks.Task AddSlideAsync(Microsoft.AspNetCore.Components.ElementReference slide) { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task GoToSlideAsync(int index) { }
         public System.Threading.Tasks.Task NextAsync() { }
         public System.Threading.Tasks.Task PreviousAsync() { }
+        public System.Threading.Tasks.Task RemoveSlideAsync(int index) { }
     }
     public class WaCarouselItem : Microsoft.AspNetCore.Components.ComponentBase
     {
@@ -1028,6 +1030,229 @@ namespace WebAwesome.Blazor.Components
         Symbol = 0,
         Code = 1,
         Name = 2,
+    }
+    public class WaDataGrid : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaDataGrid() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDataGridAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ChildRows { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridColumn>? Columns { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.Collections.Generic.IReadOnlyList<object>? Data { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EmptyContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? FilterDebounce { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool FilterFromLeafRows { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? GroupBy { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Loading { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? LoadingContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxMultiSort { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NoResultsContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridCellClickEventArgs> OnCellClick { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridCellContextMenuEventArgs> OnCellContextMenu { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridColumnMoveEventArgs> OnColumnMove { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridColumnPinEventArgs> OnColumnPin { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridColumnResizeEventArgs> OnColumnResize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridColumnVisibilityChangeEventArgs> OnColumnVisibilityChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridDataErrorEventArgs> OnDataError { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridDataRequestEventArgs> OnDataRequest { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridFilterChangeEventArgs> OnFilterChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridPageChangeEventArgs> OnPageChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridRowEventArgs> OnRowCollapse { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridRowEventArgs> OnRowExpand { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridRowSelectEventArgs> OnRowSelect { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDataGridSortChangeEventArgs> OnSortChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Page { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? PageSize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Paginate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pinnable { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Reorderable { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Resizable { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? RowKey { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDataGridSelectable? Selectable { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Server { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool SortDescFirst { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Striped { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Total { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithColumnMenu { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithColumnsMenu { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithSearch { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutSortRemoval { get; set; }
+        public System.Threading.Tasks.Task AutoSizeColumnAsync(string columnId) { }
+        public System.Threading.Tasks.Task AutoSizeColumnsAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task CollapseAllRowsAsync() { }
+        public System.Threading.Tasks.Task CollapseRowAsync(object key) { }
+        public System.Threading.Tasks.Task<int> CopySelectedRowsAsync(WebAwesome.Blazor.Models.WaDataGridCopyOptions? options = null) { }
+        public System.Threading.Tasks.Task ExpandAllRowsAsync() { }
+        public System.Threading.Tasks.Task ExpandRowAsync(object key) { }
+        public System.Threading.Tasks.Task ExportDataAsCsvAsync(WebAwesome.Blazor.Models.WaDataGridCsvExportOptions? options = null) { }
+        public System.Threading.Tasks.Task FocusAsync(bool preventScroll = false) { }
+        public System.Threading.Tasks.Task<string?> GetColumnPinAsync(string columnId) { }
+        public System.Threading.Tasks.Task<string> GetDataAsCsvAsync(WebAwesome.Blazor.Models.WaDataGridCsvOptions? options = null) { }
+        public System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyDictionary<string, object>>> GetProcessedRowsAsync() { }
+        public System.Threading.Tasks.Task<WebAwesome.Blazor.Models.WaDataGridState> GetStateAsync() { }
+        public System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyDictionary<string, object>>> GetVisibleRowsAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        protected override System.Threading.Tasks.Task OnParametersSetAsync() { }
+        public System.Threading.Tasks.Task PinColumnAsync(string columnId, string? side) { }
+        public System.Threading.Tasks.Task ReloadAsync() { }
+        public System.Threading.Tasks.Task ResetColumnsAsync() { }
+        public System.Threading.Tasks.Task ResetStateAsync() { }
+        public System.Threading.Tasks.Task ScrollToIndexAsync(int index, string? align = null) { }
+        public System.Threading.Tasks.Task SetStateAsync(WebAwesome.Blazor.Models.WaDataGridState state) { }
+        public System.Threading.Tasks.Task SizeColumnsToFitAsync() { }
+        public System.Threading.Tasks.Task ToggleColumnAsync(string columnId, bool? visible = default) { }
+    }
+    public enum WaDataGridAppearance
+    {
+        Outlined = 0,
+        Plain = 1,
+    }
+    public class WaDataGridCellClickEventArgs : System.EventArgs
+    {
+        public WaDataGridCellClickEventArgs() { }
+        public string Column { get; set; }
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? Row { get; set; }
+        public int RowIndex { get; set; }
+        public object? Value { get; set; }
+    }
+    public class WaDataGridCellContextMenuEventArgs : System.EventArgs
+    {
+        public WaDataGridCellContextMenuEventArgs() { }
+        public string Column { get; set; }
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? Row { get; set; }
+        public int RowIndex { get; set; }
+        public object? Value { get; set; }
+    }
+    public class WaDataGridColumnMoveEventArgs : System.EventArgs
+    {
+        public WaDataGridColumnMoveEventArgs() { }
+        public string Column { get; set; }
+        public System.Collections.Generic.IReadOnlyList<string>? ColumnOrder { get; set; }
+        public bool Finished { get; set; }
+        public int ToIndex { get; set; }
+    }
+    public class WaDataGridColumnPinEventArgs : System.EventArgs
+    {
+        public WaDataGridColumnPinEventArgs() { }
+        public string Column { get; set; }
+        public string? Side { get; set; }
+    }
+    public class WaDataGridColumnResizeEventArgs : System.EventArgs
+    {
+        public WaDataGridColumnResizeEventArgs() { }
+        public string Column { get; set; }
+        public bool Finished { get; set; }
+        public int Width { get; set; }
+    }
+    public class WaDataGridColumnVisibilityChangeEventArgs : System.EventArgs
+    {
+        public WaDataGridColumnVisibilityChangeEventArgs() { }
+        public string Column { get; set; }
+        public bool Visible { get; set; }
+    }
+    public class WaDataGridDataErrorEventArgs : System.EventArgs
+    {
+        public WaDataGridDataErrorEventArgs() { }
+        public string? Error { get; set; }
+        public WebAwesome.Blazor.Models.WaDataGridRequestSnapshot? Request { get; set; }
+    }
+    public class WaDataGridDataRequestEventArgs : System.EventArgs
+    {
+        public WaDataGridDataRequestEventArgs() { }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridFilterDescriptor>? Filters { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public string? Search { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
+    }
+    public class WaDataGridFilterChangeEventArgs : System.EventArgs
+    {
+        public WaDataGridFilterChangeEventArgs() { }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridFilterDescriptor>? Filters { get; set; }
+        public string? Search { get; set; }
+    }
+    public class WaDataGridPageChangeEventArgs : System.EventArgs
+    {
+        public WaDataGridPageChangeEventArgs() { }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+    }
+    public class WaDataGridRowEventArgs : System.EventArgs
+    {
+        public WaDataGridRowEventArgs() { }
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? Row { get; set; }
+    }
+    public class WaDataGridRowSelectEventArgs : System.EventArgs
+    {
+        public WaDataGridRowSelectEventArgs() { }
+        public System.Collections.Generic.IReadOnlyList<object>? SelectedKeys { get; set; }
+        public System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyDictionary<string, object>>? SelectedRows { get; set; }
+    }
+    public enum WaDataGridSelectable
+    {
+        None = 0,
+        Single = 1,
+        Multiple = 2,
+    }
+    public class WaDataGridSortChangeEventArgs : System.EventArgs
+    {
+        public WaDataGridSortChangeEventArgs() { }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
     }
     public class WaDateInput : WebAwesome.Blazor.Base.WaInputBase<string?>
     {
@@ -1524,6 +1749,8 @@ namespace WebAwesome.Blazor.Components
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaCompactDisplay display) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaCopyButtonTooltip tooltip) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaCurrencyDisplay display) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDataGridAppearance appearance) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDataGridSelectable selectable) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDatePageBy pageBy) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDatePickerView view) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDateSelectionMode mode) { }
@@ -1548,8 +1775,13 @@ namespace WebAwesome.Blazor.Components
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaMode mode) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaNotation notation) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaOrientation orientation) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaOtpInputAppearance appearance) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaOtpInputCase caseValue) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaOtpInputType type) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPageNavigationPlacement placement) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPageView view) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPaginationAppearance appearance) { }
+        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPaginationFormat format) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPlacement placement) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaPrimary primary) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaRadioAppearance appearance) { }
@@ -2183,6 +2415,59 @@ namespace WebAwesome.Blazor.Components
         Horizontal = 0,
         Vertical = 1,
     }
+    public class WaOtpInput : WebAwesome.Blazor.Base.WaInputBase<string?>
+    {
+        public WaOtpInput() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOtpInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoSubmit { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOtpInputCase? Case { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Format { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Length { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Mask { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnComplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOtpInputType? Type { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithMask { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ClearAsync() { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task SelectAsync() { }
+        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public enum WaOtpInputAppearance
+    {
+        Outlined = 0,
+        Filled = 1,
+        FilledOutlined = 2,
+        Contained = 3,
+    }
+    public enum WaOtpInputCase
+    {
+        Preserve = 0,
+        Upper = 1,
+        Lower = 2,
+    }
+    public enum WaOtpInputType
+    {
+        Numeric = 0,
+        Alpha = 1,
+        Alphanumeric = 2,
+    }
     public class WaPage : Microsoft.AspNetCore.Components.ComponentBase
     {
         public WaPage() { }
@@ -2249,6 +2534,83 @@ namespace WebAwesome.Blazor.Components
     {
         Mobile = 0,
         Desktop = 1,
+    }
+    public class WaPagination : Microsoft.AspNetCore.Components.ComponentBase
+    {
+        public WaPagination() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPaginationAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? BoundaryCount { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? FirstIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FirstIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPaginationFormat? Format { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool HideSinglePage { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? HrefTemplate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? LastIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? LastIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NextIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? NextIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaPaginationPageChangeEventArgs> OnBeforePageChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaPaginationPageChangeEventArgs> OnPageChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Page { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? PageSize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? PreviousIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? PreviousIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? SiblingCount { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Total { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithEdges { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithSummary { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithoutNav { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+    }
+    public enum WaPaginationAppearance
+    {
+        Outlined = 0,
+        Filled = 1,
+        Plain = 2,
+    }
+    public enum WaPaginationFormat
+    {
+        Standard = 0,
+        Compact = 1,
+    }
+    public class WaPaginationPageChangeEventArgs : System.EventArgs
+    {
+        public WaPaginationPageChangeEventArgs() { }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
     }
     public class WaPieChart : WebAwesome.Blazor.Components.WaChartBase
     {
@@ -3843,6 +4205,101 @@ namespace WebAwesome.Blazor.Models
     {
         Cdn = 0,
         SelfHosted = 1,
+    }
+    public class WaDataGridColumn
+    {
+        public WaDataGridColumn() { }
+        public string? Aggregation { get; set; }
+        public string? Align { get; set; }
+        public string? CellClass { get; set; }
+        public string? Field { get; set; }
+        public string? FilterType { get; set; }
+        public bool? Filterable { get; set; }
+        public double? Flex { get; set; }
+        public string? Footer { get; set; }
+        public string? HeaderAlign { get; set; }
+        public bool? Hidden { get; set; }
+        public bool? Hideable { get; set; }
+        public string? Id { get; set; }
+        public string? Label { get; set; }
+        public int? MaxWidth { get; set; }
+        public int? MinWidth { get; set; }
+        public bool? Movable { get; set; }
+        public bool? Pinnable { get; set; }
+        public string? Pinned { get; set; }
+        public bool? Resizable { get; set; }
+        public bool? Searchable { get; set; }
+        public bool? SortDescFirst { get; set; }
+        public bool? Sortable { get; set; }
+        public int? Width { get; set; }
+    }
+    public class WaDataGridColumnPinning
+    {
+        public WaDataGridColumnPinning() { }
+        public System.Collections.Generic.IReadOnlyList<string>? Left { get; set; }
+        public System.Collections.Generic.IReadOnlyList<string>? Right { get; set; }
+    }
+    public class WaDataGridCopyOptions
+    {
+        public WaDataGridCopyOptions() { }
+        public System.Collections.Generic.IReadOnlyList<string>? ColumnIds { get; set; }
+        public bool? EscapeFormulas { get; set; }
+        public string? Format { get; set; }
+        public bool? IncludeHeaders { get; set; }
+    }
+    public class WaDataGridCsvExportOptions
+    {
+        public WaDataGridCsvExportOptions() { }
+        public System.Collections.Generic.IReadOnlyList<string>? ColumnIds { get; set; }
+        public string? Delimiter { get; set; }
+        public bool? EscapeFormulas { get; set; }
+        public string? FileName { get; set; }
+        public bool? IncludeHeaders { get; set; }
+    }
+    public class WaDataGridCsvOptions
+    {
+        public WaDataGridCsvOptions() { }
+        public System.Collections.Generic.IReadOnlyList<string>? ColumnIds { get; set; }
+        public string? Delimiter { get; set; }
+        public bool? EscapeFormulas { get; set; }
+        public bool? IncludeHeaders { get; set; }
+    }
+    public class WaDataGridFilterDescriptor
+    {
+        public WaDataGridFilterDescriptor() { }
+        public string Id { get; set; }
+        public object? Value { get; set; }
+    }
+    public class WaDataGridRequestSnapshot
+    {
+        public WaDataGridRequestSnapshot() { }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridFilterDescriptor>? Filters { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public string? Search { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
+    }
+    public class WaDataGridSortDescriptor
+    {
+        public WaDataGridSortDescriptor() { }
+        public bool Desc { get; set; }
+        public string Id { get; set; }
+    }
+    public class WaDataGridState
+    {
+        public WaDataGridState() { }
+        public System.Collections.Generic.IReadOnlyList<string>? ColumnOrder { get; set; }
+        public WebAwesome.Blazor.Models.WaDataGridColumnPinning? ColumnPinning { get; set; }
+        public System.Collections.Generic.IReadOnlyDictionary<string, bool>? ColumnVisibility { get; set; }
+        public System.Collections.Generic.IReadOnlyDictionary<string, int>? ColumnWidths { get; set; }
+        public System.Collections.Generic.IReadOnlyList<object>? ExpandedKeys { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridFilterDescriptor>? Filters { get; set; }
+        public int? Page { get; set; }
+        public int? PageSize { get; set; }
+        public string? Search { get; set; }
+        public System.Collections.Generic.IReadOnlyList<object>? SelectedKeys { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
+        public int Version { get; set; }
     }
     public class WaVideoState : System.IEquatable<WebAwesome.Blazor.Models.WaVideoState>
     {

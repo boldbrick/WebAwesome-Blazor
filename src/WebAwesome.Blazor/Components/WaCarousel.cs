@@ -204,6 +204,39 @@ public class WaCarousel : ComponentBase
         await JSInterop.InvokeMethodAsync(Element.Value, "next");
     }
 
+    /// <summary>
+    /// Adds a carousel item as the last real slide.
+    /// </summary>
+    /// <param name="slide">The element reference of the <see cref="WaCarouselItem"/> to add, e.g. its
+    /// <see cref="WaCarouselItem.Element"/>.</param>
+    /// <remarks>
+    /// In Blazor the normal way to add slides is declaratively, by including additional
+    /// <see cref="WaCarouselItem"/> components in <see cref="ChildContent"/>. This method is provided for
+    /// parity with the Web Awesome element API and imperative scenarios where a slide is created outside the
+    /// carousel's own render tree.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task AddSlideAsync(ElementReference slide)
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot add slide: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "addSlide", slide);
+    }
+
+    /// <summary>
+    /// Removes the real slide at the specified index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the slide to remove</param>
+    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
+    public async Task RemoveSlideAsync(int index)
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot remove slide: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "removeSlide", index);
+    }
+
     #endregion
 
     #region ------ Private Methods ------

@@ -1,5 +1,5 @@
 {
-  "version": "3.10.0",
+  "version": "3.11.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-accordion": {
@@ -143,6 +143,7 @@
         }
       },
       "cssParts": [
+        "accordion-item",
         "base",
         "button",
         "content",
@@ -433,6 +434,7 @@
       },
       "methods": {},
       "cssParts": [
+        "badge",
         "base",
         "end",
         "start"
@@ -529,12 +531,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -581,7 +583,8 @@
       },
       "methods": {},
       "cssParts": [
-        "base"
+        "base",
+        "breadcrumb"
       ]
     },
     "wa-breadcrumb-item": {
@@ -722,12 +725,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -927,6 +930,7 @@
       },
       "cssParts": [
         "base",
+        "button",
         "caret",
         "end",
         "label",
@@ -1092,6 +1096,7 @@
       },
       "methods": {},
       "cssParts": [
+        "actions",
         "body",
         "footer",
         "header",
@@ -1188,6 +1193,10 @@
         "previous-icon": "Optional previous icon to use instead of the default. Works best with `<wa-icon>`."
       },
       "methods": {
+        "addSlide": {
+          "signature": "addSlide(slide: WaCarouselItem) => void",
+          "description": "Adds a carousel item as the last real slide."
+        },
         "goToSlide": {
           "signature": "goToSlide(index: number, behavior: ScrollBehavior = 'smooth') => void",
           "description": "Scrolls the carousel to the slide specified by `index`."
@@ -1199,10 +1208,15 @@
         "previous": {
           "signature": "previous(behavior: ScrollBehavior = 'smooth') => void",
           "description": "Move the carousel backward by `slides-per-move` slides."
+        },
+        "removeSlide": {
+          "signature": "removeSlide(index: number) => void",
+          "description": "Removes the real slide at the specified index."
         }
       },
       "cssParts": [
         "base",
+        "carousel",
         "navigation",
         "navigation-button",
         "navigation-button-next",
@@ -1444,12 +1458,14 @@
       },
       "cssParts": [
         "base",
+        "color-picker",
         "eyedropper-button",
         "eyedropper-button__base",
         "eyedropper-button__caret",
         "eyedropper-button__end",
         "eyedropper-button__label",
         "eyedropper-button__start",
+        "form-control-label",
         "format-button",
         "format-button__base",
         "format-button__caret",
@@ -1468,7 +1484,8 @@
         "slider-handle",
         "swatch",
         "swatches",
-        "trigger"
+        "trigger",
+        "trigger-container"
       ]
     },
     "wa-combobox": {
@@ -1724,6 +1741,7 @@
         "form-control-input",
         "form-control-label",
         "hint",
+        "label",
         "listbox",
         "start",
         "tag",
@@ -1777,6 +1795,7 @@
         "after",
         "base",
         "before",
+        "comparison",
         "divider",
         "handle"
       ]
@@ -1873,6 +1892,386 @@
         "error-icon",
         "feedback",
         "success-icon"
+      ]
+    },
+    "wa-data-grid": {
+      "className": "WaDataGrid",
+      "since": "3.11",
+      "status": "experimental",
+      "pro": true,
+      "attributes": {
+        "appearance": {
+          "type": "'outlined' | 'plain'",
+          "default": "'outlined'",
+          "description": "The grid's visual appearance."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "filter-debounce": {
+          "type": "number",
+          "default": "250",
+          "description": "How long (in milliseconds) to wait after a search or filter keystroke before requesting data in server mode.\nClient-side filtering is always immediate. Sort and page changes are never debounced."
+        },
+        "filter-from-leaf-rows": {
+          "type": "boolean",
+          "default": "false",
+          "description": "When filtering tree data, keeps a parent visible when any descendant matches (the filter runs leaf-up). By default\na non-matching parent is removed with its entire subtree."
+        },
+        "group-by": {
+          "type": "string | string[] | null",
+          "default": "null",
+          "description": "Groups rows by column id — a single id, a space/comma-separated list (or array) for multi-level grouping. Each\ngroup is an expandable row showing its value, member count, and any column aggregates. Ignored for tree data and\nin server mode."
+        },
+        "child-rows": {
+          "type": "string | ((row: Row) => Row[] | undefined) | null",
+          "default": "null",
+          "description": "Provides each row's child rows for tree data — a field name (dot paths allowed) or a function returning children.\nRows with children get an expand toggle; expanded children render indented and join sorting/filtering/selection."
+        },
+        "label": {
+          "type": "string | null",
+          "default": "null",
+          "description": "An accessible label for the grid."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "loading": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether a `dataSource` request is in flight."
+        },
+        "max-multi-sort": {
+          "type": "number",
+          "default": "0",
+          "description": "The maximum number of columns that can participate in a multi-column sort. `0` (default) means no limit."
+        },
+        "page": {
+          "type": "number",
+          "default": "0",
+          "description": "The current page index (0-based)."
+        },
+        "page-size": {
+          "type": "number",
+          "default": "20",
+          "description": "The number of rows per page."
+        },
+        "paginate": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables client-side pagination and the pager footer."
+        },
+        "pinnable": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables column pinning (and the pin actions in the column menu). Can be overridden per column with `pinnable`."
+        },
+        "reorderable": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables drag-to-reorder for columns (can be overridden per column with `movable`)."
+        },
+        "resizable": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables drag-to-resize for columns (can be overridden per column)."
+        },
+        "row-key": {
+          "type": "string | null",
+          "default": "null",
+          "description": "The field used as a stable row id for selection. Required in practice when `selectable` is set."
+        },
+        "selectable": {
+          "type": "'' | 'single' | 'multiple' | 'none'",
+          "default": "'none'",
+          "description": "Enables row selection. A bare attribute means `multiple`."
+        },
+        "server": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Switches the grid to server mode without a `dataSource` callback: client-side sorting, filtering, and pagination\nare disabled and the grid emits `wa-data-request` whenever it needs data. Listen for it, fetch, then set `data`,\n`total`, and `loading` yourself. Implied when `dataSource` is set."
+        },
+        "size": {
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
+          "description": "The grid's size. Controls the font scale of grid text and form controls, plus row height and cell padding."
+        },
+        "sort-desc-first": {
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, a column's first sort click sorts descending instead of ascending (table-core `sortDescFirst`)."
+        },
+        "striped": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Renders alternating row background colors."
+        },
+        "total": {
+          "type": "number",
+          "default": "-1",
+          "description": "The total row count in server mode. Drives the pager. Set automatically when `dataSource` resolves."
+        },
+        "with-column-menu": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows a per-column header menu (kebab button) with pin, sort, hide, and autosize actions."
+        },
+        "with-columns-menu": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows a toolbar menu for toggling column visibility."
+        },
+        "with-search": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows a global search box that filters across all columns."
+        },
+        "without-sort-removal": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Keeps a sorted column always sorted, alternating between ascending and descending. By default, a sorted column's\nthird click clears its sort (the asc → desc → unsorted cycle)."
+        }
+      },
+      "events": {
+        "request": {
+          "type": "WaDataRequestEvent",
+          "eventName": "RequestEvent",
+          "description": null
+        },
+        "wa-cell-click": {
+          "type": null,
+          "eventName": "WaCellClickEvent",
+          "description": "Emitted when a data cell is clicked, or [[Enter]] is pressed on the active data cell."
+        },
+        "wa-cell-contextmenu": {
+          "type": null,
+          "eventName": "WaCellContextmenuEvent",
+          "description": "Emitted when a data cell is right-clicked (or Shift+F10 / the menu key is pressed on the active cell). Cancel it to suppress the native context menu."
+        },
+        "wa-column-move": {
+          "type": null,
+          "eventName": "WaColumnMoveEvent",
+          "description": "Emitted when a column is reordered (live during drag; check `detail.finished`)."
+        },
+        "wa-column-pin": {
+          "type": null,
+          "eventName": "WaColumnPinEvent",
+          "description": "Emitted when the user pins or unpins a column through the built-in controls. Programmatic `pinColumn()` calls don't emit."
+        },
+        "wa-column-resize": {
+          "type": null,
+          "eventName": "WaColumnResizeEvent",
+          "description": "Emitted when a column is resized (live during drag; check `detail.finished`)."
+        },
+        "wa-column-visibility-change": {
+          "type": null,
+          "eventName": "WaColumnVisibilityChangeEvent",
+          "description": "Emitted when the user shows or hides a column through the built-in menus. Programmatic `toggleColumn()` calls don't emit."
+        },
+        "wa-data-error": {
+          "type": null,
+          "eventName": "WaDataErrorEvent",
+          "description": "Emitted in server mode when a `dataSource` request rejects."
+        },
+        "wa-data-request": {
+          "type": null,
+          "eventName": "WaDataRequestEvent",
+          "description": "Emitted in server mode when the grid needs data for the current sort, filters, and page."
+        },
+        "wa-filter-change": {
+          "type": null,
+          "eventName": "WaFilterChangeEvent",
+          "description": "Emitted when the global search or a column filter changes."
+        },
+        "wa-page-change": {
+          "type": null,
+          "eventName": "WaPageChangeEvent",
+          "description": "Emitted when the current page or page size changes."
+        },
+        "wa-row-collapse": {
+          "type": null,
+          "eventName": "WaRowCollapseEvent",
+          "description": "Emitted when a row collapses (a detail panel or a tree row's children)."
+        },
+        "wa-row-expand": {
+          "type": null,
+          "eventName": "WaRowExpandEvent",
+          "description": "Emitted when a row expands (a detail panel or a tree row's children)."
+        },
+        "wa-row-select": {
+          "type": null,
+          "eventName": "WaRowSelectEvent",
+          "description": "Emitted when the row selection changes."
+        },
+        "wa-sort-change": {
+          "type": null,
+          "eventName": "WaSortChangeEvent",
+          "description": "Emitted when the sort order changes."
+        }
+      },
+      "slots": {
+        "empty": "Content shown when there are no rows to display.",
+        "loading": "Content shown in the loading overlay (server mode).",
+        "no-results": "Content shown when an active search or filter matches no rows (falls back to a localized message)."
+      },
+      "methods": {
+        "autoSizeColumn": {
+          "signature": "autoSizeColumn(columnId: string) => void",
+          "description": "Resizes one column to fit its widest rendered cell content (the double-click-handle behavior)."
+        },
+        "autoSizeColumns": {
+          "signature": "autoSizeColumns() => void",
+          "description": "Resizes every resizable column to fit its content."
+        },
+        "collapseAllRows": {
+          "signature": "collapseAllRows() => void",
+          "description": "Collapses every row."
+        },
+        "collapseRow": {
+          "signature": "collapseRow(key: string | number) => void",
+          "description": "Collapses the row with the given key (its `rowKey` value)."
+        },
+        "copySelectedRows": {
+          "signature": "copySelectedRows(options?: {\n    columnIds?: string[];\n    includeHeaders?: boolean;\n    format?: 'tsv' | 'csv';\n    escapeFormulas?: boolean;\n  }) => Promise<number>",
+          "description": "Copies the selected rows (or every processed row when nothing is selected) to the clipboard, honoring the active\nsort, filters, and column visibility/order. The default tab-separated format pastes into spreadsheet cells;\n`format: 'csv'` copies comma-separated text instead. Also wired to [[Ctrl]]+[[C]] when the grid has focus.\nReturns the number of rows copied."
+        },
+        "expandAllRows": {
+          "signature": "expandAllRows() => void",
+          "description": "Expands every row (all detail panels, or every branch of a tree)."
+        },
+        "expandRow": {
+          "signature": "expandRow(key: string | number) => void",
+          "description": "Expands the row with the given key (its `rowKey` value)."
+        },
+        "exportDataAsCsv": {
+          "signature": "exportDataAsCsv(options?: {\n    fileName?: string;\n    columnIds?: string[];\n    includeHeaders?: boolean;\n    delimiter?: string;\n    escapeFormulas?: boolean;\n  }) => void",
+          "description": "Exports the current rows as a CSV file (browser download). Respects the active sort, filters, search, and column\nvisibility/order, and runs each column's `formatter`. In server mode, only the currently loaded page is exported."
+        },
+        "focus": {
+          "signature": "focus(options?: FocusOptions) => void",
+          "description": "Focuses the grid by focusing the active (roving-tabindex) cell."
+        },
+        "getColumnFacets": {
+          "signature": "getColumnFacets(columnId: string) => { uniqueValues: Map<unknown, number>; minMax: [number, number] | undefined }",
+          "description": "Faceted data for a column — distinct cell values (with counts) and the numeric min/max, computed before this\ncolumn's own filter applies. Use it to build filter UIs. Client mode only; returns empty facets in server mode."
+        },
+        "getColumnPin": {
+          "signature": "getColumnPin(columnId: string) => 'left' | 'right' | false",
+          "description": "Returns which edge a column is pinned to, or `false` if it isn't pinned."
+        },
+        "getDataAsCsv": {
+          "signature": "getDataAsCsv(options?: {\n    columnIds?: string[];\n    includeHeaders?: boolean;\n    delimiter?: string;\n    escapeFormulas?: boolean;\n  }) => string",
+          "description": "Returns the current rows as a CSV string, honoring the active sort, filters, search, and column visibility/order.\nEach column's `formatter` runs for string output only (`TemplateResult`/`Node` cells fall back to the raw value).\nEvery page and tree depth is included; server mode exports only the loaded page. Set `escapeFormulas: true` when\nthe file may open in a spreadsheet and the data isn't trusted — cells starting with `=`, `+`, `-`, or `@` are\nprefixed with an apostrophe so they can't execute as formulas (plain numbers are left alone)."
+        },
+        "getProcessedRows": {
+          "signature": "getProcessedRows() => Row[]",
+          "description": "Every data row in the current result set, in display order — after sorting, filtering, and search, across all\npages and tree depths (parents before their children). Group header rows are excluded. In server mode this is\nthe currently loaded page."
+        },
+        "getState": {
+          "signature": "getState() => DataGridState",
+          "description": "Returns a serializable snapshot of column order, widths, visibility, sort, filters, search, selection, paging."
+        },
+        "getVisibleRows": {
+          "signature": "getVisibleRows() => Row[]",
+          "description": "The data rows currently displayed, in display order — after sorting, filtering, expansion, and pagination.\nGroup header rows are excluded."
+        },
+        "handleColumnsChange": {
+          "signature": "handleColumnsChange() => void",
+          "description": "When the columns change, prune any persisted order/sizing/visibility for column ids that no longer exist, and\nappend newly-added column ids to the end of the order so they remain visible."
+        },
+        "handlePageChange": {
+          "signature": "handlePageChange() => void",
+          "description": "Reacts to `page` changes from ANY source — pager clicks and programmatic sets alike — so `grid.page = 3` clamps,\nkeeps the roving tab stop in range, and refetches in server mode. UI paths that already requested data are\ndeduped by the fetch scheduler."
+        },
+        "handleSearchTermChange": {
+          "signature": "handleSearchTermChange() => void",
+          "description": "Reacts to `searchTerm` changes from any source: returns to the first page, keeps the tab stop in range, and\nrefetches (debounced) in server mode. The UI input handler only sets the property and emits — the behavior\nlives here so programmatic sets act exactly like typing."
+        },
+        "pinColumn": {
+          "signature": "pinColumn(columnId: string, side: 'left' | 'right' | false) => void",
+          "description": "Pins a column to the `'left'` or `'right'` edge, or unpins it with `false`."
+        },
+        "reload": {
+          "signature": "reload() => void",
+          "description": "Re-runs the current server request (server mode only), even if its parameters haven't changed."
+        },
+        "resetColumns": {
+          "signature": "resetColumns() => void",
+          "description": "Resets column order, widths, visibility, and pinning to the column definitions' defaults, leaving sort,\nfilters, search, selection, and paging untouched (the columns menu's \"Reset columns\" action)."
+        },
+        "resetState": {
+          "signature": "resetState() => void",
+          "description": "Resets all user-adjusted view state (order, widths, visibility, pinning, sort, filters, search, expansion) to the\ncolumn defaults. Selection and paging are left alone — clearing a user's selection is destructive."
+        },
+        "scrollToIndex": {
+          "signature": "scrollToIndex(index: number, options?: { align?: 'start' | 'center' | 'end' }) => void",
+          "description": "Scrolls the row at the given display index into view (pairs with virtualization)."
+        },
+        "setState": {
+          "signature": "setState(state: DataGridState) => void",
+          "description": "Restores a previously captured state. Unknown column ids are ignored; omitted keys are left unchanged."
+        },
+        "sizeColumnsToFit": {
+          "signature": "sizeColumnsToFit() => void",
+          "description": "Distributes column widths to fill the available horizontal space, honoring each column's min/max."
+        },
+        "toggleColumn": {
+          "signature": "toggleColumn(columnId: string, visible?: boolean) => void",
+          "description": "Shows or hides a column by its id (the column's `id`, or `field` when no id is set)."
+        }
+      },
+      "cssParts": [
+        "body",
+        "cell",
+        "column-menu",
+        "column-menu-button",
+        "columns-menu",
+        "data-grid",
+        "drag-ghost",
+        "ellipsis",
+        "empty",
+        "expand-button",
+        "filter-button",
+        "filter-panel",
+        "first-button",
+        "footer",
+        "footer-cell",
+        "footer-row",
+        "group-count",
+        "group-row",
+        "group-value",
+        "header",
+        "header-cell",
+        "last-button",
+        "live-region",
+        "loading-overlay",
+        "next-button",
+        "no-results",
+        "page",
+        "page-current",
+        "page-size",
+        "pager",
+        "pager-button",
+        "pin-indicator",
+        "previous-button",
+        "resize-handle",
+        "row",
+        "row-detail",
+        "search",
+        "select-all-checkbox",
+        "sort-indicator",
+        "sort-number",
+        "table",
+        "toolbar"
       ]
     },
     "wa-date-input": {
@@ -2168,6 +2567,7 @@
       "cssParts": [
         "base",
         "clear-button",
+        "date-input",
         "date-picker",
         "end",
         "expand-button",
@@ -2178,6 +2578,7 @@
         "hint",
         "input",
         "input-wrapper",
+        "label",
         "popup",
         "range-separator",
         "segment",
@@ -2370,6 +2771,7 @@
       },
       "cssParts": [
         "base",
+        "date-picker",
         "day",
         "day-disabled",
         "day-label",
@@ -2498,6 +2900,7 @@
       "cssParts": [
         "base",
         "content",
+        "details",
         "header",
         "icon",
         "summary"
@@ -2708,12 +3111,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -3136,10 +3539,12 @@
         "file-details",
         "file-icon",
         "file-image",
+        "file-input",
         "file-list",
         "file-name",
         "file-size",
         "file-thumbnail",
+        "form-control-label",
         "hint",
         "label",
         "remove-button"
@@ -3437,12 +3842,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -3588,6 +3993,7 @@
         "base",
         "control",
         "hint",
+        "checkbox",
         "checked-icon",
         "indeterminate-icon",
         "label"
@@ -3799,7 +4205,7 @@
         "src": {
           "type": "string",
           "default": null,
-          "description": "The location of the HTML file to include. Be sure you trust the content you are including as it will be executed as\ncode and can result in XSS attacks."
+          "description": "The location of the content to include. This can be a URL to an HTML file, a same-page reference to an element's id\n(e.g. `#my-id`), or a URL with a fragment that targets an element's id within the fetched file\n(e.g. `/partials.html#my-id`). When targeting an element by id, its content is cloned. If the target is a\n`<template>`, its child nodes are cloned. Be sure you trust the content you are including as it will be executed as\ncode and can result in XSS attacks."
         }
       },
       "events": {
@@ -4096,8 +4502,10 @@
         "base",
         "clear-button",
         "end",
+        "form-control-label",
         "hint",
         "input",
+        "input-wrapper",
         "label",
         "password-toggle-button",
         "start"
@@ -4342,6 +4750,7 @@
         "form-control-input",
         "form-control-label",
         "hint",
+        "known-date",
         "label",
         "legend"
       ]
@@ -4432,12 +4841,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -4778,6 +5187,7 @@
         "hint",
         "input",
         "label",
+        "number-input",
         "start",
         "stepper",
         "stepper-decrement",
@@ -4838,6 +5248,202 @@
         "checked-icon",
         "label",
         "start"
+      ]
+    },
+    "wa-otp-input": {
+      "className": "WaOtpInput",
+      "since": "3.11",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "appearance": {
+          "type": "'outlined' | 'filled' | 'filled-outlined' | 'contained'",
+          "default": "'outlined'",
+          "description": "Visual appearance of the segments."
+        },
+        "autocomplete": {
+          "type": "string",
+          "default": "'one-time-code'",
+          "description": "The `autocomplete` attribute forwarded to the underlying input."
+        },
+        "autofocus": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Automatically focuses the field when the page loads."
+        },
+        "autosubmit": {
+          "type": "boolean",
+          "default": "false",
+          "description": "When true, the form is submitted automatically once all segments are filled."
+        },
+        "case": {
+          "type": "'preserve' | 'upper' | 'lower'",
+          "default": "'preserve'",
+          "description": "Case transformation applied to entered characters."
+        },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the form control."
+        },
+        "format": {
+          "type": "string",
+          "default": "''",
+          "description": "Segment format string using `#` as a segment placeholder and any other character as a literal separator.\nSetting `format` overrides `length` (the segment count is derived from the number of `#` characters)."
+        },
+        "hint": {
+          "type": "string",
+          "default": "''",
+          "description": "Hint text shown below the segments. Use the `hint` slot for HTML content."
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "A label shown above the segments. Use the `label` slot for HTML content."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "length": {
+          "type": "number",
+          "default": "6",
+          "description": "Number of character segments to display. Overridden by `format` when set."
+        },
+        "mask": {
+          "type": "boolean",
+          "default": "false",
+          "description": "When true, entered characters are displayed as `--mask-char` instead of their real value."
+        },
+        "name": {
+          "type": "string | null",
+          "default": "null",
+          "description": "The name of the input, submitted as a name/value pair with form data."
+        },
+        "readonly": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the field readonly — the value displays but cannot be edited by the user."
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the field required. A partially-filled field is always invalid regardless of this attribute."
+        },
+        "size": {
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
+          "description": "The size of each segment."
+        },
+        "type": {
+          "type": "'numeric' | 'alpha' | 'alphanumeric'",
+          "default": "'numeric'",
+          "description": "Allowed character class."
+        },
+        "value": {
+          "type": "string | null",
+          "default": null,
+          "description": "The default value. Used to restore the field on form reset. Reflects the `value` HTML attribute."
+        },
+        "with-mask": {
+          "type": "boolean",
+          "default": "false",
+          "description": "When true, empty segments show `--mask-char` as a hint instead of appearing blank, similar to\nhow a password field communicates its expected length before anything is typed."
+        }
+      },
+      "events": {
+        "blur": {
+          "type": null,
+          "eventName": "BlurEvent",
+          "description": "Emitted when the control loses focus."
+        },
+        "focus": {
+          "type": null,
+          "eventName": "FocusEvent",
+          "description": "Emitted when the control gains focus."
+        },
+        "change": {
+          "type": "Event",
+          "eventName": "ChangeEvent",
+          "description": "Emitted when the value changes and the field loses focus."
+        },
+        "input": {
+          "type": "InputEvent",
+          "eventName": "InputEvent",
+          "description": "Emitted when a character is entered or removed."
+        },
+        "wa-clear": {
+          "type": null,
+          "eventName": "WaClearEvent",
+          "description": "Emitted when the control's value is cleared."
+        },
+        "wa-complete": {
+          "type": null,
+          "eventName": "WaCompleteEvent",
+          "description": "Emitted once when all segments are filled. Cancelable — call `preventDefault()` to stop `autosubmit` from submitting the form for this completion."
+        },
+        "wa-invalid": {
+          "type": null,
+          "eventName": "WaInvalidEvent",
+          "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
+        }
+      },
+      "slots": {
+        "hint": "Optional hint text. Use this for hints that contain HTML. When `hint` attribute is set it takes priority.",
+        "label": "An optional label. Use this for labels that contain HTML. When `label` attribute is set it takes priority."
+      },
+      "methods": {
+        "blur": {
+          "signature": "blur() => void",
+          "description": "Removes focus from the field."
+        },
+        "clear": {
+          "signature": "clear() => void",
+          "description": "Clears the current value and returns focus to the field."
+        },
+        "focus": {
+          "signature": "focus(options?: FocusOptions) => void",
+          "description": "Focuses the field."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "select": {
+          "signature": "select() => void",
+          "description": "Selects all entered characters in the hidden input."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
+        }
+      },
+      "cssParts": [
+        "hint",
+        "label",
+        "segment",
+        "segment-literal",
+        "segments"
       ]
     },
     "wa-page": {
@@ -4929,20 +5535,150 @@
         "base",
         "body",
         "dialog-wrapper",
+        "drawer",
         "footer",
         "header",
+        "main",
         "main-content",
         "main-footer",
         "main-header",
         "menu",
         "navigation",
+        "navigation-desktop",
         "navigation-footer",
         "navigation-header",
         "navigation-toggle",
         "navigation-toggle-icon",
-        "skip-link",
-        "skip-links",
+        "page",
+        "skip-to-content",
         "subheader"
+      ]
+    },
+    "wa-pagination": {
+      "className": "WaPagination",
+      "since": "3.11",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "appearance": {
+          "type": "'outlined' | 'filled' | 'plain'",
+          "default": "'outlined'",
+          "description": "The pagination's visual appearance."
+        },
+        "boundary-count": {
+          "type": "number",
+          "default": "1",
+          "description": "The number of pages to always show at the start and end."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the pagination."
+        },
+        "format": {
+          "type": "'standard' | 'compact'",
+          "default": "'standard'",
+          "description": "The pagination's layout. The default `standard` format shows the full page list with ellipses; `compact` collapses\nit into a short \"1 of 5\" label flanked by the previous and next buttons, useful in tight spaces like toolbars and\ncards."
+        },
+        "hide-single-page": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Renders nothing when there's only one page."
+        },
+        "href-template": {
+          "type": "string | ((page: number) => string)",
+          "default": "''",
+          "description": "A URL template used to render page items as links instead of buttons. When set, items render as `<a>` elements for\nSSR, SEO, and no-JS support. Provide a string with `{page}` as a placeholder for the page number, e.g.\n`/products?page={page}`. In JavaScript, you can also assign a function that receives the page number and returns\nthe URL, e.g. `el.hrefTemplate = page => \\`/products?page=${page}\\``."
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "A label that describes the pagination to assistive devices. This won't be shown on the screen, but it will be\nannounced by screen readers. Especially useful when more than one pagination control exists on the same page."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "page": {
+          "type": "number",
+          "default": "1",
+          "description": "The current page, starting at 1."
+        },
+        "page-size": {
+          "type": "number",
+          "default": "10",
+          "description": "The number of items shown per page."
+        },
+        "sibling-count": {
+          "type": "number",
+          "default": "2",
+          "description": "The number of pages to show on each side of the current page."
+        },
+        "total": {
+          "type": "number",
+          "default": "0",
+          "description": "The total number of items to paginate."
+        },
+        "with-edges": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows buttons that jump to the first and last pages."
+        },
+        "with-summary": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows a summary of the items on the current page, e.g. \"1–10 of 237\"."
+        },
+        "without-nav": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Hides the previous and next buttons."
+        }
+      },
+      "events": {
+        "wa-before-page-change": {
+          "type": null,
+          "eventName": "WaBeforePageChangeEvent",
+          "description": "Emitted when the page is about to change but before it does. Canceling this event with `event.preventDefault()` prevents the page from changing."
+        },
+        "wa-page-change": {
+          "type": null,
+          "eventName": "WaPageChangeEvent",
+          "description": "Emitted after the page changes."
+        }
+      },
+      "slots": {
+        "first-icon": "An icon to use in lieu of the default first icon.",
+        "last-icon": "An icon to use in lieu of the default last icon.",
+        "next-icon": "An icon to use in lieu of the default next icon.",
+        "previous-icon": "An icon to use in lieu of the default previous icon."
+      },
+      "methods": {},
+      "cssParts": [
+        "base",
+        "button",
+        "ellipsis",
+        "first-button",
+        "label",
+        "last-button",
+        "next-button",
+        "page",
+        "page-current",
+        "pages",
+        "pagination",
+        "previous-button",
+        "summary"
       ]
     },
     "wa-pie-chart": {
@@ -5031,12 +5767,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -5135,12 +5871,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -5448,7 +6184,8 @@
       "cssParts": [
         "base",
         "indicator",
-        "label"
+        "label",
+        "progress-bar"
       ]
     },
     "wa-progress-ring": {
@@ -5492,6 +6229,7 @@
         "base",
         "indicator",
         "label",
+        "progress-ring",
         "track"
       ]
     },
@@ -5576,7 +6314,8 @@
       "slots": {},
       "methods": {},
       "cssParts": [
-        "base"
+        "base",
+        "qr-code"
       ]
     },
     "wa-radar-chart": {
@@ -5665,12 +6404,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -6080,7 +6819,8 @@
         }
       },
       "cssParts": [
-        "base"
+        "base",
+        "rating"
       ]
     },
     "wa-relative-time": {
@@ -6256,12 +6996,12 @@
           "default": "false",
           "description": "Hides tooltips over data points"
         },
-        "xLabel": {
+        "x-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the x-axis."
         },
-        "yLabel": {
+        "y-label": {
           "type": "string | null",
           "default": "null",
           "description": "A label for the y-axis."
@@ -6317,7 +7057,9 @@
       },
       "methods": {},
       "cssParts": [
-        "content"
+        "content",
+        "end-shadow",
+        "start-shadow"
       ]
     },
     "wa-select": {
@@ -6533,6 +7275,7 @@
         "form-control-input",
         "form-control-label",
         "hint",
+        "label",
         "listbox",
         "start",
         "tag",
@@ -6846,7 +7589,8 @@
       "cssParts": [
         "base",
         "fill",
-        "line"
+        "line",
+        "sparkline"
       ]
     },
     "wa-spinner": {
@@ -6875,7 +7619,8 @@
       "slots": {},
       "methods": {},
       "cssParts": [
-        "base"
+        "base",
+        "spinner"
       ]
     },
     "wa-split-panel": {
@@ -7089,6 +7834,7 @@
         "control",
         "hint",
         "label",
+        "switch",
         "thumb"
       ]
     },
@@ -7135,7 +7881,8 @@
       },
       "methods": {},
       "cssParts": [
-        "base"
+        "base",
+        "tab"
       ]
     },
     "wa-tab-group": {
@@ -7205,6 +7952,7 @@
         "scroll-button__base",
         "scroll-button-end",
         "scroll-button-start",
+        "tab-group",
         "tabs"
       ]
     },
@@ -7544,9 +8292,12 @@
         "base",
         "count",
         "form-control-input",
+        "form-control-label",
         "hint",
         "label",
-        "textarea"
+        "textarea",
+        "textarea-adjuster",
+        "textarea-wrapper"
       ]
     },
     "wa-time-input": {
@@ -7793,11 +8544,13 @@
         "hint",
         "input",
         "input-wrapper",
+        "label",
         "now-button",
         "popup",
         "segment",
         "segment-literal",
-        "start"
+        "start",
+        "time-input"
       ]
     },
     "wa-toast": {
@@ -8041,7 +8794,8 @@
         "base",
         "base__arrow",
         "base__popup",
-        "body"
+        "body",
+        "tooltip"
       ]
     },
     "wa-tree": {
@@ -8095,7 +8849,8 @@
       },
       "methods": {},
       "cssParts": [
-        "base"
+        "base",
+        "tree"
       ]
     },
     "wa-tree-item": {
@@ -8207,7 +8962,8 @@
         "item",
         "label",
         "spinner",
-        "spinner__base"
+        "spinner__base",
+        "tree-item"
       ]
     },
     "wa-video": {
@@ -8422,7 +9178,8 @@
         "timeline-thumb",
         "timeline-track",
         "video",
-        "video-title-overlay"
+        "video-title-overlay",
+        "video-wrapper"
       ]
     },
     "wa-video-playlist": {
@@ -8487,7 +9244,8 @@
         "playlist-duration",
         "playlist-item",
         "playlist-thumbnail",
-        "playlist-title"
+        "playlist-title",
+        "video-playlist"
       ]
     },
     "wa-zoomable-frame": {
