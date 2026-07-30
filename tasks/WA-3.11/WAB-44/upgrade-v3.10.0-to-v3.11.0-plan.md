@@ -238,8 +238,16 @@ New components must also be registered in
 `src\WebAwesome.Blazor.Demo\Services\ComponentCategoryMap.cs`, which the skeleton generator does not
 do. Omitting them created an unmapped "Other" sidebar group, caught by the Playwright
 `component-badges` taxonomy check (not by the build or bUnit). Added: `wa-otp-input` → Forms,
-`wa-pagination` → Navigation, `wa-data-grid` → Data Viz. Worth teaching `New-WaDemoPages.ps1` to
+`wa-data-grid` → Forms, `wa-pagination` → Navigation. Worth teaching `New-WaDemoPages.ps1` to
 flag unmapped tags in a future pass.
+
+`wa-data-grid` was initially placed under Data Viz (it sits with the charts in the release zip's
+reference docs, and it is a data-presentation component rather than a form control — no `name`/`value`,
+not form-associated, derives from `ComponentBase`). The owner verified against the webawesome.com
+components index that upstream categorizes it under **Forms**, so the map follows upstream, per this
+file's stated contract of mirroring that index. Note for future upgrades: automated extraction of that
+page's category grouping proved unreliable (repeated fetches disagreed with each other), so this
+placement should be confirmed visually rather than scripted.
 
 ## Runtime note: wa-data-grid cannot render on the free CDN
 
