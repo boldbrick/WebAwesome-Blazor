@@ -1,26 +1,16 @@
----
-title: Markdown
-layout: component
-category: Media
-synonyms:
-  - md
-  - markdown renderer
-  - rich text
-  - gfm
-  - marked.js
-  - rendered markdown
-use-cases:
-  - markdown display
-  - markdown preview
-  - content rendering
-  - documentation pages
-  - blog post rendering
-  - readme display
----
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/markdown.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/markdown -->
+
+# Markdown
+
+`<wa-markdown>`
+
+Experimental [Media](https://webawesome.com/docs/components/?category=media) [Since 3.4](https://webawesome.com/docs/resources/changelog#wa_340)
+
+Markdown elements render markdown content as HTML directly in the browser, making it easy to display user-generated content or documentation without a server-side build step.
 
 The markdown component turns raw markdown into rendered HTML using the [Marked](https://marked.js.org/) library. Indentation is handled automatically. You can nest your markdown at any depth to match the surrounding HTML structure and the common leading whitespace will be stripped before parsing.
 
-```html {.example}
+```html
 <wa-markdown>
   <script type="text/markdown">
     ## Getting Started
@@ -34,13 +24,68 @@ The markdown component turns raw markdown into rendered HTML using the [Marked](
 </wa-markdown>
 ```
 
-:::info
-Since content is rendered client-side, it won't be visible to search engine crawlers or available before JavaScript loads. This makes it a poor fit for SEO-critical content like landing pages and blog posts. It's best suited for prototyping, dashboards, admin panels, and other contexts where search indexing isn't a concern.
-:::
+**This component isn't suited for SEO-critical content.** Content renders client-side, so crawlers won't see it and it won't appear before JavaScript loads. It's best for prototypes, dashboards, and admin panels — not landing pages or blog posts.
 
-:::warning
 **Do not use this component with unsanitized user input.** Markdown is parsed as-is without sanitization, so rendering untrusted content can lead to XSS vulnerabilities.
-:::
+
+## API
+
+### Importing
+
+If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
+
+\*\*CDN\*\*
+
+Import this component directly from the CDN:
+
+```js
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/markdown/markdown.js';
+```
+
+\*\*npm\*\*
+
+After installing Web Awesome via npm, import this component:
+
+```js
+import '@awesome.me/webawesome/dist/components/markdown/markdown.js';
+```
+
+\*\*Self-Hosted\*\*
+
+If you're self-hosting Web Awesome, import this component from your server:
+
+```js
+import './webawesome/dist/components/markdown/markdown.js';
+```
+
+\*\*React\*\*
+
+To import this component for React 18 or below, use the following code:
+
+```js
+import WaMarkdown from '@awesome.me/webawesome/dist/react/markdown/index.js';
+```
+
+### Attributes & Properties
+
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`marked\` | \`WaMarkdown.getMarked()\` A reference to the shared Marked instance for convenience. Equivalent to . Type Marked | |
+| \`tabSize\` tab-size | \`number\` The tab stop width used when converting leading tabs to spaces during whitespace normalization. Type Default 4 | |
+
+### Methods
+
+| Name | Description | Arguments |
+| --- | --- | --- |
+| \`getMarked()\` | \`\` Returns the shared Marked instance used by all components. | |
+| \`renderMarkdown()\` | Reads the script content, normalizes whitespace, parses markdown, and injects the result. | |
+| \`updateAll()\` | \`\` Re-renders all connected instances. Call this after changing the Marked configuration. | |
+
+### SSR
+
+Learn more about [Server-Side Rendering (SSR)](https://webawesome.com/docs/ssr).
+
+`<wa-markdown>` parses the content of its children at runtime, which requires a DOM. It can't render during SSR — use it on the client only.
 
 ## Examples
 
@@ -62,14 +107,14 @@ The [Marked](https://marked.js.org/) library is used under the hood to render ma
 
 Indentation inside the script is automatically normalized before the markdown parser sees it. This lets you indent your content to match the surrounding HTML without it being treated as a code block. The normalization process:
 
-1. Converts leading tabs to spaces based on the configured tab stop width (default: 4)
-2. Trims blank lines from the start and end
-3. Determines the smallest indentation shared by all non-empty lines
-4. Removes that common prefix from every line
+1.  Converts leading tabs to spaces based on the configured tab stop width (default: 4)
+2.  Trims blank lines from the start and end
+3.  Determines the smallest indentation shared by all non-empty lines
+4.  Removes that common prefix from every line
 
 This means you can write markdown at any indentation level and it will render correctly. Even if the content is indented by 8 spaces to match the HTML structure, the output renders as though it had no extra indentation at all.
 
-```html {.example .no-edit}
+```html
 <wa-markdown>
   <script type="text/markdown">
     ## Deeply Indented
@@ -97,7 +142,7 @@ For tab-indented source files, adjust the tab stop width with the `tab-size` att
 
 All standard markdown formatting supported by Marked is available, including headings, lists, blockquotes, code blocks, links, and images.
 
-```html {.example .no-edit}
+```html
 <wa-markdown>
   <script type="text/markdown">
     ## Feature Overview
@@ -121,7 +166,7 @@ All standard markdown formatting supported by Marked is available, including hea
 
 All `<wa-markdown>` instances share a single [Marked](https://marked.js.org/using_advanced) instance. You can access it through any `<wa-markdown>` element's `marked` property. After making changes, call `WaMarkdown.updateAll()` to re-render every connected instance.
 
-```html {.example .no-edit}
+```html
 <wa-markdown id="markdown__config">
   <script type="text/markdown">
     Visit https://developer.mozilla.org for documentation.
@@ -147,15 +192,13 @@ All `<wa-markdown>` instances share a single [Marked](https://marked.js.org/usin
 </script>
 ```
 
-:::info
-The Marked instance is shared across all `<wa-markdown>` elements. If you want every instance on the page to pick up the new configuration, call `WaMarkdown.updateAll()` instead of `renderMarkdown()` on a single element.
-:::
+**The Marked configuration is shared across every instance.** To make all `<wa-markdown>` elements pick up a change, call `WaMarkdown.updateAll()` instead of `renderMarkdown()` on a single element.
 
 ### Writing a Custom Marked Plugin
 
 Custom [Marked extensions](https://marked.js.org/using_advanced#extensions) can be applied through any element's `marked` property. The example below adds support for `==highlight==` syntax, wrapping matched text in `<mark>` tags.
 
-```html {.example .no-edit}
+```html
 <wa-markdown id="markdown__plugin">
   <script type="text/markdown">
     This text has a ==highlighted phrase== in the middle.
@@ -200,7 +243,7 @@ Custom [Marked extensions](https://marked.js.org/using_advanced#extensions) can 
 
 The component parses and renders automatically when the script element is first slotted in. It does not watch for subsequent changes to the script's content. To re-render after modifying the source, update the script's `textContent` and call `renderMarkdown()`.
 
-```html {.example .no-edit}
+```html
 <div id="markdown__dynamic">
   <wa-markdown id="markdown__dynamic-md">
     <script type="text/markdown">
@@ -223,13 +266,3 @@ The component parses and renders automatically when the script element is first 
   });
 </script>
 ```
-
-<!-- Demo styles -->
-<style>
-  wa-markdown {
-    h1,
-    h2 {
-      margin-block-start: 0;
-    }
-  }
-</style>

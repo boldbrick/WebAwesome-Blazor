@@ -1062,6 +1062,98 @@ public enum WaRandomContentMode
     Sequence
 }
 
+/// <summary>
+/// Visual appearance for the pagination component.
+/// </summary>
+public enum WaPaginationAppearance
+{
+    /// <summary>Draws each page control with an outline and no fill.</summary>
+    Outlined,
+    /// <summary>Draws each page control with a filled background.</summary>
+    Filled,
+    /// <summary>Draws each page control as plain text with no border or fill.</summary>
+    Plain
+}
+
+/// <summary>
+/// Layout format for the pagination component.
+/// </summary>
+public enum WaPaginationFormat
+{
+    /// <summary>Shows the full page list with ellipses.</summary>
+    Standard,
+    /// <summary>Collapses the control into a short "1 of 5" label flanked by the previous and next buttons.</summary>
+    Compact
+}
+
+/// <summary>
+/// Visual appearance for the OTP input component's segments.
+/// </summary>
+public enum WaOtpInputAppearance
+{
+    /// <summary>Draws each segment with an outline and no fill.</summary>
+    Outlined,
+    /// <summary>Draws each segment with a filled background.</summary>
+    Filled,
+    /// <summary>Draws each segment with both an outline and a filled background.</summary>
+    FilledOutlined,
+    /// <summary>Draws the segments as a single contained group with no gaps between them.</summary>
+    Contained
+}
+
+/// <summary>
+/// Allowed character class for the OTP input component.
+/// </summary>
+public enum WaOtpInputType
+{
+    /// <summary>Only digits are accepted.</summary>
+    Numeric,
+    /// <summary>Only letters are accepted.</summary>
+    Alpha,
+    /// <summary>Letters and digits are accepted.</summary>
+    Alphanumeric
+}
+
+/// <summary>
+/// Case transformation applied to characters entered into the OTP input component.
+/// </summary>
+public enum WaOtpInputCase
+{
+    /// <summary>Keeps the entered character's case as typed.</summary>
+    Preserve,
+    /// <summary>Converts entered characters to upper case.</summary>
+    Upper,
+    /// <summary>Converts entered characters to lower case.</summary>
+    Lower
+}
+
+/// <summary>
+/// Visual appearance for the data grid component.
+/// </summary>
+public enum WaDataGridAppearance
+{
+    /// <summary>Draws the grid with an outline and no fill.</summary>
+    Outlined,
+    /// <summary>Draws the grid with minimal, unstyled chrome.</summary>
+    Plain
+}
+
+/// <summary>
+/// Row-selection mode for the data grid component.
+/// </summary>
+public enum WaDataGridSelectable
+{
+    /// <summary>Row selection is disabled.</summary>
+    None,
+    /// <summary>Only one row can be selected at a time.</summary>
+    Single,
+    /// <summary>
+    /// Multiple rows can be selected. Upstream also treats a bare <c>selectable</c> attribute (an empty
+    /// string value) as this mode; the wrapper always emits the explicit <c>multiple</c> token.
+    /// </summary>
+    Multiple
+}
+
 #endregion
 
 #region ------ Extension Methods ------
@@ -2257,6 +2349,124 @@ public static class WaEnumExtensions
             WaCaptureMode.User => "user",
             WaCaptureMode.Environment => "environment",
             _ => throw new ArgumentOutOfRangeException(nameof(capture), capture, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="appearance">The pagination appearance value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "outlined"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="appearance"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaPaginationAppearance appearance)
+    {
+        return appearance switch
+        {
+            WaPaginationAppearance.Outlined => "outlined",
+            WaPaginationAppearance.Filled => "filled",
+            WaPaginationAppearance.Plain => "plain",
+            _ => throw new ArgumentOutOfRangeException(nameof(appearance), appearance, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="format">The pagination format value to convert</param>
+    /// <returns>The lowercase attribute string, "standard" or "compact"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="format"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaPaginationFormat format)
+    {
+        return format switch
+        {
+            WaPaginationFormat.Standard => "standard",
+            WaPaginationFormat.Compact => "compact",
+            _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="appearance">The OTP input appearance value to convert</param>
+    /// <returns>The attribute string, e.g. "filled-outlined" or "contained"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="appearance"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaOtpInputAppearance appearance)
+    {
+        return appearance switch
+        {
+            WaOtpInputAppearance.Outlined => "outlined",
+            WaOtpInputAppearance.Filled => "filled",
+            WaOtpInputAppearance.FilledOutlined => "filled-outlined",
+            WaOtpInputAppearance.Contained => "contained",
+            _ => throw new ArgumentOutOfRangeException(nameof(appearance), appearance, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="type">The OTP input character class to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "alphanumeric"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaOtpInputType type)
+    {
+        return type switch
+        {
+            WaOtpInputType.Numeric => "numeric",
+            WaOtpInputType.Alpha => "alpha",
+            WaOtpInputType.Alphanumeric => "alphanumeric",
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="caseValue">The OTP input case transformation to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "preserve"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="caseValue"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaOtpInputCase caseValue)
+    {
+        return caseValue switch
+        {
+            WaOtpInputCase.Preserve => "preserve",
+            WaOtpInputCase.Upper => "upper",
+            WaOtpInputCase.Lower => "lower",
+            _ => throw new ArgumentOutOfRangeException(nameof(caseValue), caseValue, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="appearance">The data grid appearance value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "outlined"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="appearance"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaDataGridAppearance appearance)
+    {
+        return appearance switch
+        {
+            WaDataGridAppearance.Outlined => "outlined",
+            WaDataGridAppearance.Plain => "plain",
+            _ => throw new ArgumentOutOfRangeException(nameof(appearance), appearance, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="selectable">The data grid row-selection mode to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "multiple"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="selectable"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaDataGridSelectable selectable)
+    {
+        return selectable switch
+        {
+            WaDataGridSelectable.None => "none",
+            WaDataGridSelectable.Single => "single",
+            WaDataGridSelectable.Multiple => "multiple",
+            _ => throw new ArgumentOutOfRangeException(nameof(selectable), selectable, null)
         };
     }
 }

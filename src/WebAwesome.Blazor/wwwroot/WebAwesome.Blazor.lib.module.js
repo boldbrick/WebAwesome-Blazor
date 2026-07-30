@@ -14,15 +14,26 @@ const eventNames = [
   'wa-after-expand',
   'wa-after-hide',
   'wa-after-show',
+  'wa-before-page-change',
   'wa-cancel',
+  'wa-cell-click',
+  'wa-cell-contextmenu',
   'wa-change',
   'wa-clear',
   'wa-collapse',
+  'wa-column-move',
+  'wa-column-pin',
+  'wa-column-resize',
+  'wa-column-visibility-change',
+  'wa-complete',
   'wa-content-change',
   'wa-copy',
   'wa-create',
+  'wa-data-error',
+  'wa-data-request',
   'wa-error',
   'wa-expand',
+  'wa-filter-change',
   'wa-finish',
   'wa-focus-day',
   'wa-hide',
@@ -35,15 +46,20 @@ const eventNames = [
   'wa-lazy-load',
   'wa-load',
   'wa-mutation',
+  'wa-page-change',
   'wa-password-toggle',
   'wa-password-visibility-change',
   'wa-remove',
   'wa-reposition',
   'wa-resize',
+  'wa-row-collapse',
+  'wa-row-expand',
+  'wa-row-select',
   'wa-select',
   'wa-selection-change',
   'wa-show',
   'wa-slide-change',
+  'wa-sort-change',
   'wa-start',
   'wa-success',
   'wa-tab-change',
@@ -187,6 +203,50 @@ const specialArgs = {
     return {
       position: target && typeof target.position === 'number' ? target.position : 0,
       positionInPixels: target && typeof target.positionInPixels === 'number' ? Math.round(target.positionInPixels) : 0,
+    };
+  },
+
+  // detail also carries originalEvent (a PointerEvent/KeyboardEvent) - not marshalable
+  // (WaDataGridCellContextMenuEventArgs)
+  'wa-cell-contextmenu': event => {
+    const detail = event.detail || {};
+    return {
+      column: typeof detail.column === 'string' ? detail.column : null,
+      value: detail.value,
+      row: detail.row || null,
+      rowIndex: typeof detail.rowIndex === 'number' ? detail.rowIndex : 0,
+    };
+  },
+
+  // detail.side is 'left' | 'right' | false - normalize false to null (WaDataGridColumnPinEventArgs.Side)
+  'wa-column-pin': event => {
+    const detail = event.detail || {};
+    return {
+      column: typeof detail.column === 'string' ? detail.column : null,
+      side: typeof detail.side === 'string' ? detail.side : null,
+    };
+  },
+
+  // detail.error is an Error instance (own enumerable props are empty) - project its message
+  // (WaDataGridDataErrorEventArgs)
+  'wa-data-error': event => {
+    const detail = event.detail || {};
+    const error = detail.error;
+    return {
+      error: error && typeof error.message === 'string' ? error.message : (error != null ? String(error) : null),
+      request: detail.request || null,
+    };
+  },
+
+  // detail.signal is an AbortSignal - not marshalable (WaDataGridDataRequestEventArgs)
+  'wa-data-request': event => {
+    const detail = event.detail || {};
+    return {
+      sort: detail.sort || [],
+      filters: detail.filters || [],
+      search: typeof detail.search === 'string' ? detail.search : '',
+      page: typeof detail.page === 'number' ? detail.page : 0,
+      pageSize: typeof detail.pageSize === 'number' ? detail.pageSize : 0,
     };
   },
 };

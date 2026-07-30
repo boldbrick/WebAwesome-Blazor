@@ -1,0 +1,187 @@
+@page "/components/pagination"
+
+<PageTitle>Pagination</PageTitle>
+
+<h1>Pagination <ComponentBadges Tag="wa-pagination" /></h1>
+<p>Pagination renders page controls for navigating multi-page content, sized from a total item count and a page size. <code>&lt;wa-pagination&gt;</code> wrapped by <code>WaPagination</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaPagination Total="237" PageSize="10" Page="3" Label="Search results" />
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaPagination Total="237" PageSize="10" Page="3" Appearance="WaPaginationAppearance.Outlined" />
+        <WaPagination Total="237" PageSize="10" Page="3" Appearance="WaPaginationAppearance.Filled" />
+        <WaPagination Total="237" PageSize="10" Page="3" Appearance="WaPaginationAppearance.Plain" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Number of Buttons" Code="@ButtonCountExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaPagination Total="1000" PageSize="10" Page="50" SiblingCount="1" BoundaryCount="1" />
+        <WaPagination Total="1000" PageSize="10" Page="50" SiblingCount="3" BoundaryCount="2" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Edges, Nav &amp; Summary" Code="@EdgesExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaPagination Total="237" PageSize="10" Page="10" WithEdges="true" />
+        <WaPagination Total="237" PageSize="10" Page="3" WithoutNav="true" />
+        <WaPagination Total="237" PageSize="10" Page="1" WithSummary="true" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Compact Format" Code="@CompactExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaPagination Total="237" PageSize="10" Page="1" Format="WaPaginationFormat.Compact" />
+        <WaPagination Total="237" PageSize="10" Page="1" Format="WaPaginationFormat.Compact" WithSummary="true" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Custom Icons" Code="@CustomIconsExample">
+    <WaPagination Total="237" PageSize="10" Page="5" WithEdges="true"
+                  PreviousIconName="backward-step" NextIconName="forward-step"
+                  FirstIconName="backward-fast" LastIconName="forward-fast" />
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaPagination Total="237" PageSize="10" Page="3" Disabled="true" />
+</ExampleSection>
+
+<ExampleSection Title="Responding to Page Changes" Code="@PageChangeExample">
+    <WaPagination Total="237" PageSize="10" Page="currentPage" OnPageChange="HandlePageChange" />
+    <WaDivider />
+    <p>Showing page <strong>@currentPage</strong> of 24 — items @(((currentPage - 1) * 10) + 1)–@(Math.Min(currentPage * 10, 237)).</p>
+</ExampleSection>
+
+<ExampleSection Title="Page Size Selector" Code="@PageSizeExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.End">
+        <WaPagination Total="237" PageSize="selectedPageSize" Page="sizedPage" OnPageChange="@(e => sizedPage = e.Page)" />
+        <WaSelect Label="Items per page" Size="WaSize.Small" Style="inline-size: 8rem;" @bind-Value="PageSizeSelection">
+            <WaOption Value="10">10</WaOption>
+            <WaOption Value="20">20</WaOption>
+            <WaOption Value="50">50</WaOption>
+            <WaOption Value="100">100</WaOption>
+        </WaSelect>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Rendering Links Instead of Buttons" Code="@HrefTemplateExample">
+    <WaPagination Total="237" PageSize="10" Page="3" HrefTemplate="?page={page}" />
+</ExampleSection>
+
+<ApiTable Tag="wa-pagination" />
+
+@code {
+    private int currentPage = 1;
+    private int sizedPage = 1;
+    private int selectedPageSize = 10;
+
+    private void HandlePageChange(WaPaginationPageChangeEventArgs e) => currentPage = e.Page;
+
+    // the selected page size, kept as the select's string value; a new size invalidates the
+    // current page, so the pagination jumps back to the first one
+    private string? PageSizeSelection
+    {
+        get => selectedPageSize.ToString();
+        set
+        {
+            if (int.TryParse(value, out var size))
+            {
+                selectedPageSize = size;
+                sizedPage = 1;
+            }
+        }
+    }
+
+    private const string DefaultExample = """
+        <WaPagination Total="237" PageSize="10" Page="3" Label="Search results" />
+        """;
+
+    private const string AppearanceExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaPagination Total="237" PageSize="10" Page="3" Appearance="WaPaginationAppearance.Outlined" />
+            <WaPagination Total="237" PageSize="10" Page="3" Appearance="WaPaginationAppearance.Filled" />
+            <WaPagination Total="237" PageSize="10" Page="3" Appearance="WaPaginationAppearance.Plain" />
+        </WaStack>
+        """;
+
+    private const string ButtonCountExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaPagination Total="1000" PageSize="10" Page="50" SiblingCount="1" BoundaryCount="1" />
+            <WaPagination Total="1000" PageSize="10" Page="50" SiblingCount="3" BoundaryCount="2" />
+        </WaStack>
+        """;
+
+    private const string EdgesExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaPagination Total="237" PageSize="10" Page="10" WithEdges="true" />
+            <WaPagination Total="237" PageSize="10" Page="3" WithoutNav="true" />
+            <WaPagination Total="237" PageSize="10" Page="1" WithSummary="true" />
+        </WaStack>
+        """;
+
+    private const string CompactExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaPagination Total="237" PageSize="10" Page="1" Format="WaPaginationFormat.Compact" />
+            <WaPagination Total="237" PageSize="10" Page="1" Format="WaPaginationFormat.Compact" WithSummary="true" />
+        </WaStack>
+        """;
+
+    private const string CustomIconsExample = """
+        <WaPagination Total="237" PageSize="10" Page="5" WithEdges="true"
+                      PreviousIconName="backward-step" NextIconName="forward-step"
+                      FirstIconName="backward-fast" LastIconName="forward-fast" />
+        """;
+
+    private const string DisabledExample = """
+        <WaPagination Total="237" PageSize="10" Page="3" Disabled="true" />
+        """;
+
+    private const string PageChangeExample = """
+        <WaPagination Total="237" PageSize="10" Page="currentPage" OnPageChange="HandlePageChange" />
+        <WaDivider />
+        <p>Showing page <strong>@currentPage</strong> of 24 — items @(((currentPage - 1) * 10) + 1)–@(Math.Min(currentPage * 10, 237)).</p>
+
+        @code {
+            private int currentPage = 1;
+
+            private void HandlePageChange(WaPaginationPageChangeEventArgs e) => currentPage = e.Page;
+        }
+        """;
+
+    private const string PageSizeExample = """
+        <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.End">
+            <WaPagination Total="237" PageSize="selectedPageSize" Page="sizedPage" OnPageChange="@(e => sizedPage = e.Page)" />
+            <WaSelect Label="Items per page" Size="WaSize.Small" Style="inline-size: 8rem;" @bind-Value="PageSizeSelection">
+                <WaOption Value="10">10</WaOption>
+                <WaOption Value="20">20</WaOption>
+                <WaOption Value="50">50</WaOption>
+                <WaOption Value="100">100</WaOption>
+            </WaSelect>
+        </WaCluster>
+
+        @code {
+            private int sizedPage = 1;
+            private int selectedPageSize = 10;
+
+            private string? PageSizeSelection
+            {
+                get => selectedPageSize.ToString();
+                set
+                {
+                    if (int.TryParse(value, out var size))
+                    {
+                        selectedPageSize = size;
+                        sizedPage = 1;
+                    }
+                }
+            }
+        }
+        """;
+
+    private const string HrefTemplateExample = """
+        <WaPagination Total="237" PageSize="10" Page="3" HrefTemplate="?page={page}" />
+        """;
+}

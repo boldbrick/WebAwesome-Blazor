@@ -56,6 +56,7 @@ public static class ComponentCategoryMap
         ["wa-checkbox-group"] = "Forms",
         ["wa-color-picker"] = "Forms",
         ["wa-combobox"] = "Forms",
+        ["wa-data-grid"] = "Forms",
         ["wa-date-input"] = "Forms",
         ["wa-date-picker"] = "Forms",
         ["wa-file-input"] = "Forms",
@@ -63,6 +64,7 @@ public static class ComponentCategoryMap
         ["wa-known-date"] = "Forms",
         ["wa-number-input"] = "Forms",
         ["wa-option"] = "Forms",
+        ["wa-otp-input"] = "Forms",
         ["wa-radio"] = "Forms",
         ["wa-radio-group"] = "Forms",
         ["wa-rating"] = "Forms",
@@ -85,6 +87,7 @@ public static class ComponentCategoryMap
 
         ["wa-breadcrumb"] = "Navigation",
         ["wa-breadcrumb-item"] = "Navigation",
+        ["wa-pagination"] = "Navigation",
         ["wa-tab"] = "Navigation",
         ["wa-tab-group"] = "Navigation",
         ["wa-tab-panel"] = "Navigation",

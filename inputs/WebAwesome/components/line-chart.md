@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.10.0 release zip (dist/skills/webawesome/references/components/line-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/line-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/line-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/line-chart -->
 
 # Line Chart [Pro]
 
@@ -27,26 +27,23 @@ Line charts show trends over time by connecting data points with line segments. 
 Get Web Awesome Pro + Line Chart!
 
 ```html
-<wa-line-chart id="line-hero" label="Monthly Visitors" description="A line chart showing website visitors over seven months">
-</wa-line-chart>
-<script type="module">
-  const chart = document.querySelector('#line-hero');
-
-  chart.config = {
-    data: {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [{
-        label: 'Visitors',
-        data: [4200, 4800, 5100, 4900, 5500, 6200, 5800]
-      }]
+<wa-line-chart label="Monthly Visitors" description="A line chart showing website visitors over seven months">
+  <script type="application/json">
+    {
+      "data": {
+        "labels": ["January", "February", "March", "April", "May", "June", "July"],
+        "datasets": [{ "label": "Visitors", "data": [4200, 4800, 5100, 4900, 5500, 6200, 5800] }]
+      }
     }
-  };
-</script>
+  </script>
+</wa-line-chart>
 ```
 
-For advanced configuration such as mixed chart types, custom plugins, and direct Chart.js access, see [`<wa-chart>`](https://webawesome.com/docs/components/chart).
+See [`<wa-chart>`](https://webawesome.com/docs/components/chart) for advanced configuration, custom plugins, and direct Chart.js access.
 
-## Importing
+## API
+
+### Importing
 
 If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
 
@@ -55,7 +52,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.10.0/components/line-chart/line-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/line-chart/line-chart.js';
 ```
 
 \*\*npm\*\*
@@ -82,35 +79,34 @@ To import this component for React 18 or below, use the following code:
 import WaLineChart from '@awesome.me/webawesome/dist/react/line-chart/index.js';
 ```
 
-## Slots
+### Slots
 
-Valid slot names for this component (use exactly these — any other `slot` value is
-silently ignored and the element falls back to the default slot):
+| Name | Description |
+| --- | --- |
+| (default) | \`
 
-- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
+### Attributes & Properties
 
-## Attributes & Properties
+| Name | Description | Reflects |
+| --- | --- | --- |
+| \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | |
+| \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | |
+| \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | |
+| \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | |
+| \`label\` label | \`string \\| null\` A label for the chart, used for accessibility. Type Default null | |
+| \`legendPosition\` legend-position | \`LayoutPosition \\| 'start' \\| 'end'\` The position of the legend relative to the chart. Type Default 'top' | |
+| \`max\` max | \`number \\| null\` The maximum value for the value axis. Type Default null | |
+| \`min\` min | \`number \\| null\` The minimum value for the value axis. Type Default null | |
+| \`plugins\` plugins | \`array\` Additional Chart.js plugins to register for this chart instance. Type Default \[\] | |
+| \`stacked\` stacked | \`boolean\` Stacks datasets on top of each other along the value axis. Type Default false | |
+| \`type\` type | \`bar\` The type of chart to render. Valid types include , line, pie, doughnut, polarArea, radar, scatter, and bubble. Type ChartType Default 'line' | |
+| \`withoutAnimation\` without-animation | \`boolean\` Disables chart animations Type Default false | |
+| \`withoutLegend\` without-legend | \`boolean\` Hides the legend Type Default false | |
+| \`withoutTooltip\` without-tooltip | \`boolean\` Hides tooltips over data points Type Default false | |
+| \`xLabel\` x-label | \`string \\| null\` A label for the x-axis. Type Default null | |
+| \`yLabel\` y-label | \`string \\| null\` A label for the y-axis. Type Default null | |
 
-| Property | Attribute | Description | Type | Default |
-| --- | --- | --- | --- | --- |
-| `type` | `type` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. | `ChartType` | `'line'` |
-| `label` | `label` | A label for the chart, used for accessibility. | `string \| null` | `null` |
-| `description` | `description` | A description of the chart, used for accessibility. | `string \| null` | `null` |
-| `xLabel` | `xLabel` | A label for the x-axis. | `string \| null` | `null` |
-| `yLabel` | `yLabel` | A label for the y-axis. | `string \| null` | `null` |
-| `legendPosition` | `legend-position` | The position of the legend relative to the chart. | `LayoutPosition \| 'start' \| 'end'` | `'top'` |
-| `stacked` | `stacked` | Stacks datasets on top of each other along the value axis. | `boolean` | `false` |
-| `indexAxis` | `index-axis` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. | `'x' \| 'y'` | `'x'` |
-| `grid` | `grid` | Which axes to show grid lines on. | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` |
-| `min` | `min` | The minimum value for the value axis. | `number \| null` | `null` |
-| `max` | `max` | The maximum value for the value axis. | `number \| null` | `null` |
-| `withoutAnimation` | `without-animation` | Disables chart animations | `boolean` | `false` |
-| `withoutLegend` | `without-legend` | Hides the legend | `boolean` | `false` |
-| `withoutTooltip` | `without-tooltip` | Hides tooltips over data points | `boolean` | `false` |
-| `config` | — | The Chart.js configuration object. Setting this property will automatically re-render the chart. | `ChartJS['config']` | — |
-| `plugins` | `plugins` | Additional Chart.js plugins to register for this chart instance. | `array` | `[]` |
-
-## CSS Custom Properties
+### CSS Custom Properties
 
 | Name | Description |
 | --- | --- |
@@ -135,33 +131,9 @@ silently ignored and the element falls back to the default slot):
 
 ## Examples
 
-### Providing Data with JavaScript
-
-For dynamic data, set the `config` property directly. The chart will re-render automatically.
-
-```html
-<wa-line-chart id="line-js-example" label="Weekly Signups" description="A line chart showing new user signups over one week">
-</wa-line-chart>
-<script type="module">
-  const chart = document.querySelector('#line-js-example');
-
-  chart.config = {
-    data: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
-        label: 'Signups',
-        data: [120, 95, 140, 160, 130, 80, 65]
-      }]
-    }
-  };
-</script>
-```
-
-Note that `config` is shallowly reactive. If you mutate the existing object in place, you must reassign it to trigger a re-render!
-
 ### Providing Data with JSON
 
-Place a `<script type="application/json">` tag inside the component with your chart data. The `type` field can be omitted since `wa-line-chart` already knows its chart type.
+Place a `<script type="application/json">` tag inside the component with your chart data. The `type` field can be omitted since `wa-line-chart` already knows its chart type. The JSON follows the [Chart.js configuration format](https://www.chartjs.org/docs/latest/configuration/).
 
 ```html
 <wa-line-chart label="Weekly Signups" description="A line chart showing new user signups over one week">
@@ -169,22 +141,59 @@ Place a `<script type="application/json">` tag inside the component with your ch
     {
       "data": {
         "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        "datasets": [{
-          "label": "Signups",
-          "data": [120, 95, 140, 160, 130, 80, 65]
-        }]
+        "datasets": [
+          {
+            "label": "Signups",
+            "data": [120, 95, 140, 160, 130, 80, 65]
+          }
+        ]
       }
     }
   </script>
 </wa-line-chart>
 ```
 
+### Providing Data with JavaScript
+
+Set the `config` property from JavaScript when your data comes from code rather than static markup. The chart re-renders automatically each time you assign it. For data that updates at runtime, try the live controls in [Accessing the Chart.js Instance](https://webawesome.com/docs/components/chart#accessing-the-chartjs-instance).
+
+```html
+<wa-line-chart
+  id="line-js-example"
+  label="Weekly Signups"
+  description="A line chart showing new user signups over one week"
+>
+</wa-line-chart>
+<script type="module">
+  const chart = document.querySelector('#line-js-example');
+
+  chart.config = {
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [
+        {
+          label: 'Signups',
+          data: [120, 95, 140, 160, 130, 80, 65],
+        },
+      ],
+    },
+  };
+</script>
+```
+
+**`config` is shallowly reactive.**  
+If you mutate the object in place, reassign it to trigger a re-render.
+
 ### Multiple Lines
 
 Add multiple datasets to compare trends across different series.
 
 ```html
-<wa-line-chart id="line-multi" label="Traffic by Source" description="A line chart comparing website traffic from three different sources">
+<wa-line-chart
+  id="line-multi"
+  label="Traffic by Source"
+  description="A line chart comparing website traffic from three different sources"
+>
 </wa-line-chart>
 <script type="module">
   const chart = document.querySelector('#line-multi');
@@ -195,14 +204,83 @@ Add multiple datasets to compare trends across different series.
       datasets: [
         { label: 'Organic', data: [2200, 2800, 3100, 2900, 3500, 4200] },
         { label: 'Paid', data: [1800, 2100, 1900, 2400, 2200, 2600] },
-        { label: 'Social', data: [800, 950, 1100, 1300, 1200, 1500] }
-      ]
-    }
+        { label: 'Social', data: [800, 950, 1100, 1300, 1200, 1500] },
+      ],
+    },
   };
 </script>
 ```
 
-### Custom Colors
+### Fill Area
+
+Set `fill` to `true` on a dataset to fill the area beneath the line. This works well for emphasizing volume or magnitude.
+
+```html
+<wa-line-chart
+  id="line-fill-example"
+  label="Cumulative Signups"
+  description="A line chart with a filled area showing cumulative signups"
+>
+</wa-line-chart>
+<script type="module">
+  const chart = document.querySelector('#line-fill-example');
+
+  chart.config = {
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [
+        {
+          label: 'Cumulative Signups',
+          data: [500, 1200, 2100, 3400, 4800, 6500],
+          fill: true,
+        },
+      ],
+    },
+  };
+</script>
+```
+
+### Stacked Area
+
+Combine the `stacked` attribute with `fill: true` on each dataset to create a stacked area chart.
+
+```html
+<wa-line-chart
+  id="line-stacked-example"
+  stacked
+  label="Traffic by Source"
+  description="A stacked area chart showing traffic by source over time"
+>
+</wa-line-chart>
+<script type="module">
+  const chart = document.querySelector('#line-stacked-example');
+
+  chart.config = {
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [
+        {
+          label: 'Organic',
+          data: [2200, 2800, 3100, 2900, 3500, 4200],
+          fill: true,
+        },
+        {
+          label: 'Paid',
+          data: [1800, 2100, 1900, 2400, 2200, 2600],
+          fill: true,
+        },
+        {
+          label: 'Social',
+          data: [800, 950, 1100, 1300, 1200, 1500],
+          fill: true,
+        },
+      ],
+    },
+  };
+</script>
+```
+
+### Colors
 
 Override the default color palette using the `--fill-color-*` and `--border-color-*` CSS custom properties on the component.
 
@@ -227,67 +305,9 @@ Override the default color palette using the `--fill-color-*` and `--border-colo
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
       datasets: [
         { label: 'Revenue', data: [12, 19, 15, 25, 22, 30] },
-        { label: 'Expenses', data: [8, 12, 10, 15, 14, 18] }
-      ]
-    }
-  };
-</script>
-```
-
-### Fill Area
-
-Set `fill` to `true` on a dataset to fill the area beneath the line. This works well for emphasizing volume or magnitude.
-
-```html
-<wa-line-chart id="line-fill-example" label="Cumulative Signups" description="A line chart with a filled area showing cumulative signups">
-</wa-line-chart>
-<script type="module">
-  const chart = document.querySelector('#line-fill-example');
-
-  chart.config = {
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      datasets: [{
-        label: 'Cumulative Signups',
-        data: [500, 1200, 2100, 3400, 4800, 6500],
-        fill: true
-      }]
-    }
-  };
-</script>
-```
-
-### Stacked Area
-
-Combine the `stacked` attribute with `fill: true` on each dataset to create a stacked area chart.
-
-```html
-<wa-line-chart id="line-stacked-example" stacked label="Traffic by Source" description="A stacked area chart showing traffic by source over time">
-</wa-line-chart>
-<script type="module">
-  const chart = document.querySelector('#line-stacked-example');
-
-  chart.config = {
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      datasets: [
-        {
-          label: 'Organic',
-          data: [2200, 2800, 3100, 2900, 3500, 4200],
-          fill: true
-        },
-        {
-          label: 'Paid',
-          data: [1800, 2100, 1900, 2400, 2200, 2600],
-          fill: true
-        },
-        {
-          label: 'Social',
-          data: [800, 950, 1100, 1300, 1200, 1500],
-          fill: true
-        }
-      ]
-    }
+        { label: 'Expenses', data: [8, 12, 10, 15, 14, 18] },
+      ],
+    },
   };
 </script>
 ```
@@ -297,7 +317,12 @@ Combine the `stacked` attribute with `fill: true` on each dataset to create a st
 Use the `--line-border-width` CSS custom property to control the thickness of the lines.
 
 ```html
-<wa-line-chart id="line-border" style="--line-border-width: 5px" label="Thick Lines" description="A line chart with thicker lines">
+<wa-line-chart
+  id="line-border"
+  style="--line-border-width: 5px"
+  label="Thick Lines"
+  description="A line chart with thicker lines"
+>
 </wa-line-chart>
 <script type="module">
   const chart = document.querySelector('#line-border');
@@ -305,11 +330,13 @@ Use the `--line-border-width` CSS custom property to control the thickness of th
   chart.config = {
     data: {
       labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      datasets: [{
-        label: 'Response Time (ms)',
-        data: [45, 52, 48, 55, 50]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Response Time (ms)',
+          data: [45, 52, 48, 55, 50],
+        },
+      ],
+    },
   };
 </script>
 ```
@@ -319,7 +346,12 @@ Use the `--line-border-width` CSS custom property to control the thickness of th
 Use the `--point-radius` CSS custom property to control the size of the dots drawn at each data point. Set it to `0` to hide points entirely.
 
 ```html
-<wa-line-chart id="line-points" style="--point-radius: 6px" label="Large Points" description="A line chart with larger data point dots">
+<wa-line-chart
+  id="line-points"
+  style="--point-radius: 6px"
+  label="Large Points"
+  description="A line chart with larger data point dots"
+>
 </wa-line-chart>
 <script type="module">
   const chart = document.querySelector('#line-points');
@@ -327,11 +359,13 @@ Use the `--point-radius` CSS custom property to control the size of the dots dra
   chart.config = {
     data: {
       labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      datasets: [{
-        label: 'Response Time (ms)',
-        data: [45, 52, 48, 55, 50]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Response Time (ms)',
+          data: [45, 52, 48, 55, 50],
+        },
+      ],
+    },
   };
 </script>
 ```
@@ -341,7 +375,12 @@ Use the `--point-radius` CSS custom property to control the size of the dots dra
 Use the `legend-position` attribute to control where the legend appears. Add `without-legend` to hide it entirely.
 
 ```html
-<wa-line-chart id="line-legend" legend-position="bottom" label="Legend at Bottom" description="A line chart with the legend positioned at the bottom">
+<wa-line-chart
+  id="line-legend"
+  legend-position="bottom"
+  label="Legend at Bottom"
+  description="A line chart with the legend positioned at the bottom"
+>
 </wa-line-chart>
 <script type="module">
   const chart = document.querySelector('#line-legend');
@@ -351,9 +390,9 @@ Use the `legend-position` attribute to control where the legend appears. Add `wi
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
       datasets: [
         { label: 'Page Views', data: [1200, 1350, 1280, 1420, 1580, 1650] },
-        { label: 'Unique Visitors', data: [800, 920, 870, 980, 1050, 1120] }
-      ]
-    }
+        { label: 'Unique Visitors', data: [800, 920, 870, 980, 1050, 1120] },
+      ],
+    },
   };
 </script>
 ```
@@ -363,7 +402,12 @@ Use the `legend-position` attribute to control where the legend appears. Add `wi
 Use the `grid` attribute to control which axes show grid lines. Options are `both` (default), `x`, `y`, and `none`.
 
 ```html
-<wa-line-chart id="line-grid" grid="x" label="X-Axis Grid Only" description="A line chart showing only vertical grid lines">
+<wa-line-chart
+  id="line-grid"
+  grid="x"
+  label="X-Axis Grid Only"
+  description="A line chart showing only vertical grid lines"
+>
 </wa-line-chart>
 <script type="module">
   const chart = document.querySelector('#line-grid');
@@ -371,11 +415,13 @@ Use the `grid` attribute to control which axes show grid lines. Options are `bot
   chart.config = {
     data: {
       labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      datasets: [{
-        label: 'Orders',
-        data: [42, 58, 35, 61, 48]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Orders',
+          data: [42, 58, 35, 61, 48],
+        },
+      ],
+    },
   };
 </script>
 ```
@@ -385,7 +431,13 @@ Use the `grid` attribute to control which axes show grid lines. Options are `bot
 Use the `x-label` and `y-label` attributes to add descriptive labels to each axis.
 
 ```html
-<wa-line-chart id="line-axis" x-label="Month" y-label="Visitors" label="Monthly Traffic" description="A line chart with labeled axes showing monthly visitors">
+<wa-line-chart
+  id="line-axis"
+  x-label="Month"
+  y-label="Visitors"
+  label="Monthly Traffic"
+  description="A line chart with labeled axes showing monthly visitors"
+>
 </wa-line-chart>
 <script type="module">
   const chart = document.querySelector('#line-axis');
@@ -393,11 +445,13 @@ Use the `x-label` and `y-label` attributes to add descriptive labels to each axi
   chart.config = {
     data: {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      datasets: [{
-        label: 'Visitors',
-        data: [4200, 4800, 5100, 4900, 5500, 6200]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Visitors',
+          data: [4200, 4800, 5100, 4900, 5500, 6200],
+        },
+      ],
+    },
   };
 </script>
 ```
@@ -407,7 +461,13 @@ Use the `x-label` and `y-label` attributes to add descriptive labels to each axi
 Use the `min` and `max` attributes to constrain the value axis.
 
 ```html
-<wa-line-chart id="line-range" min="0" max="100" label="Completion Rate" description="A line chart with a constrained y-axis from 0 to 100">
+<wa-line-chart
+  id="line-range"
+  min="0"
+  max="100"
+  label="Completion Rate"
+  description="A line chart with a constrained y-axis from 0 to 100"
+>
 </wa-line-chart>
 <script type="module">
   const chart = document.querySelector('#line-range');
@@ -415,55 +475,43 @@ Use the `min` and `max` attributes to constrain the value axis.
   chart.config = {
     data: {
       labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
-      datasets: [{
-        label: 'Completion Rate (%)',
-        data: [62, 71, 68, 85, 78]
-      }]
-    }
+      datasets: [
+        {
+          label: 'Completion Rate (%)',
+          data: [62, 71, 68, 85, 78],
+        },
+      ],
+    },
   };
 </script>
 ```
 
-### Disabling Tooltips
+### Disabling Features
 
-Use the `without-tooltip` attribute to hide the tooltips that appear when hovering over data points.
+Use `without-tooltip` to hide hover tooltips and `without-animation` to disable transitions.
 
 ```html
-<wa-line-chart id="line-tooltip" without-tooltip label="No Tooltips" description="A line chart with tooltips disabled">
+<wa-line-chart
+  id="line-disabled"
+  without-tooltip
+  without-animation
+  label="Minimal"
+  description="A line chart with tooltips and animations disabled"
+>
 </wa-line-chart>
 <script type="module">
-  const chart = document.querySelector('#line-tooltip');
+  const chart = document.querySelector('#line-disabled');
 
   chart.config = {
     data: {
-      labels: ['A', 'B', 'C', 'D', 'E'],
-      datasets: [{
-        label: 'Values',
-        data: [10, 40, 20, 50, 30]
-      }]
-    }
-  };
-</script>
-```
-
-### Disabling Animations
-
-Use the `without-animation` attribute to disable chart transitions.
-
-```html
-<wa-line-chart id="line-anim" without-animation label="No Animation" description="A line chart with animation disabled">
-</wa-line-chart>
-<script type="module">
-  const chart = document.querySelector('#line-anim');
-
-  chart.config = {
-    data: {
-      labels: ['A', 'B', 'C', 'D', 'E'],
-      datasets: [{
-        label: 'Values',
-        data: [10, 40, 20, 50, 30]
-      }]
-    }
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      datasets: [
+        {
+          label: 'New Subscribers',
+          data: [28, 35, 42, 47, 53],
+        },
+      ],
+    },
   };
 </script>
 ```
