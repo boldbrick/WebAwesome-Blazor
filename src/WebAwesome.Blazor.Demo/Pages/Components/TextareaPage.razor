@@ -1,4 +1,4 @@
-﻿@page "/components/textarea"
+@page "/components/textarea"
 
 <PageTitle>Textarea</PageTitle>
 
@@ -9,18 +9,91 @@
     <WaTextArea @bind-Value="value" />
 </ExampleSection>
 
+<ExampleSection Title="Programmatic Value / Reset" Code="@ProgrammaticExample">
+    <WaTextArea Label="Notes" data-testid="textarea-sync" @bind-Value="notes" />
+    <p>Model: <code data-testid="textarea-sync-model">@notes</code></p>
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaButton Size="WaSize.Small" data-testid="textarea-sync-set" OnClick="SetNotes">Set to "Set from C#"</WaButton>
+        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="textarea-sync-reset" OnClick="ResetNotes">Reset</WaButton>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Replace Text Programmatically" Code="@RangeTextExample">
+    <WaTextArea @ref="draftArea" Label="Draft" data-testid="textarea-range" @bind-Value="draft" />
+    <p>Model: <code data-testid="textarea-range-model">@draft</code></p>
+    <WaButton Size="WaSize.Small" data-testid="textarea-range-apply" OnClick="ReplaceWorldAsync">Replace "world" with "Blazor"</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Immediate Binding" Code="@ImmediateExample">
+    <WaTextArea Label="Message" Immediate="true" data-testid="textarea-immediate" @bind-Value="liveMessage" />
+    <p>Model: <code data-testid="textarea-immediate-model">@liveMessage</code></p>
+</ExampleSection>
+
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\textarea.md) *@
 
 <ApiTable Tag="wa-textarea" />
 
 @code {
     private string? value;
+    private const string InitialNotes = "Hello world";
+    private string? notes = InitialNotes;
+    private WaTextArea? draftArea;
+    private string? draft = "Hello world";
+    private string? liveMessage;
+
+    private void SetNotes() => notes = "Set from C#";
+
+    private void ResetNotes() => notes = InitialNotes;
+
+    // replaces "world" (characters 6 to 11) in the rendered textarea
+    private async Task ReplaceWorldAsync() => await draftArea!.SetRangeTextAsync("Blazor", 6, 11);
 
     private const string DefaultExample = """
         <WaTextArea @bind-Value="value" />
 
         @code {
             private string? value;
+        }
+        """;
+
+    private const string ProgrammaticExample = """
+        <WaTextArea Label="Notes" data-testid="textarea-sync" @bind-Value="notes" />
+        <p>Model: <code data-testid="textarea-sync-model">@notes</code></p>
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaButton Size="WaSize.Small" data-testid="textarea-sync-set" OnClick="SetNotes">Set to "Set from C#"</WaButton>
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="textarea-sync-reset" OnClick="ResetNotes">Reset</WaButton>
+        </WaCluster>
+
+        @code {
+            private const string InitialNotes = "Hello world";
+            private string? notes = InitialNotes;
+
+            private void SetNotes() => notes = "Set from C#";
+
+            private void ResetNotes() => notes = InitialNotes;
+        }
+        """;
+
+    private const string RangeTextExample = """
+        <WaTextArea @ref="draftArea" Label="Draft" data-testid="textarea-range" @bind-Value="draft" />
+        <p>Model: <code data-testid="textarea-range-model">@draft</code></p>
+        <WaButton Size="WaSize.Small" data-testid="textarea-range-apply" OnClick="ReplaceWorldAsync">Replace "world" with "Blazor"</WaButton>
+
+        @code {
+            private WaTextArea? draftArea;
+            private string? draft = "Hello world";
+
+            // replaces "world" (characters 6 to 11) in the rendered textarea
+            private async Task ReplaceWorldAsync() => await draftArea!.SetRangeTextAsync("Blazor", 6, 11);
+        }
+        """;
+
+    private const string ImmediateExample = """
+        <WaTextArea Label="Message" Immediate="true" data-testid="textarea-immediate" @bind-Value="liveMessage" />
+        <p>Model: <code data-testid="textarea-immediate-model">@liveMessage</code></p>
+
+        @code {
+            private string? liveMessage;
         }
         """;
 }
