@@ -161,11 +161,11 @@ public class WaComboboxIntegrationTests
         var component = new WaCombobox();
 
         // Act
-        component.Placement = WaPlacement.BottomStart;
+        component.Placement = WaListboxPlacement.Top;
 
         // Assert
-        Assert.Equal(WaPlacement.BottomStart, component.Placement);
-        Assert.Equal("bottom-start", component.Placement?.ToHtmlValue());
+        Assert.Equal(WaListboxPlacement.Top, component.Placement);
+        Assert.Equal("top", component.Placement?.ToHtmlValue());
     }
 
     #endregion

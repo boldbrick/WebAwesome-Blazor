@@ -107,13 +107,13 @@ public class WaCardEnhancementTests
         var component = new WaCard();
 
         // Act
-        component.Appearance = WaAppearance.Text;
+        component.Appearance = WaAppearance.Plain;
         component.WithHeader = true;
         component.WithFooter = true;
         component.WithMedia = true;
 
         // Assert
-        Assert.Equal(WaAppearance.Text, component.Appearance);
+        Assert.Equal(WaAppearance.Plain, component.Appearance);
         Assert.True(component.WithHeader);
         Assert.True(component.WithFooter);
         Assert.True(component.WithMedia);

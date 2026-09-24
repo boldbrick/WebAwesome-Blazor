@@ -95,10 +95,10 @@ public class WaCheckboxGroupIntegrationTests
 
         // Act & Assert - the group size is applied to all grouped items
         component.Size = WaSize.Small;
-        Assert.Equal("small", component.Size?.ToHtmlValue());
+        Assert.Equal("s", component.Size?.ToHtmlValue());
 
         component.Size = WaSize.Large;
-        Assert.Equal("large", component.Size?.ToHtmlValue());
+        Assert.Equal("l", component.Size?.ToHtmlValue());
     }
 
     #endregion

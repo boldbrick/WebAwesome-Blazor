@@ -52,7 +52,8 @@ public class WaFormatDate : ComponentBase
     [Parameter] public string? Lang { get; set; }
 
     /// <summary>
-    /// Whether to use 12-hour or 24-hour time when displaying the hour.
+    /// Whether to use 12-hour or 24-hour time when displaying the hour; <see cref="WaHourFormat.Auto"/> follows the
+    /// locale. When unset, the attribute is omitted and Web Awesome's default ("auto") applies.
     /// </summary>
     [Parameter] public WaHourFormat? HourFormat { get; set; }
 
@@ -66,17 +67,17 @@ public class WaFormatDate : ComponentBase
     /// <summary>
     /// The format for displaying the weekday.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Weekday { get; set; }
+    [Parameter] public WaDateTimeTextStyle? Weekday { get; set; }
 
     /// <summary>
     /// The format for displaying the era.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Era { get; set; }
+    [Parameter] public WaDateTimeTextStyle? Era { get; set; }
 
     /// <summary>
     /// The format for displaying the year.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Year { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Year { get; set; }
 
     /// <summary>
     /// The format for displaying the month.
@@ -86,27 +87,27 @@ public class WaFormatDate : ComponentBase
     /// <summary>
     /// The format for displaying the day.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Day { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Day { get; set; }
 
     /// <summary>
     /// The format for displaying the hour.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Hour { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Hour { get; set; }
 
     /// <summary>
     /// The format for displaying the minute.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Minute { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Minute { get; set; }
 
     /// <summary>
     /// The format for displaying the second.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Second { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Second { get; set; }
 
     /// <summary>
     /// The format for displaying the time zone name.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? TimeZoneName { get; set; }
+    [Parameter] public WaTimeZoneNameStyle? TimeZoneName { get; set; }
 
     #endregion
 

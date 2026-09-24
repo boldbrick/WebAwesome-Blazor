@@ -20,7 +20,7 @@ public class WaAccordionIntegrationTests
         var component = new WaAccordion();
 
         Assert.Null(component.Element);
-        Assert.Equal(WaAppearance.Outlined, component.Appearance);
+        Assert.Equal(WaDetailsAppearance.Outlined, component.Appearance);
         Assert.Null(component.HeadingLevel);
         Assert.Equal(WaIconPlacement.End, component.IconPlacement);
         Assert.Equal(WaAccordionMode.Multiple, component.Mode);
@@ -53,7 +53,7 @@ public class WaAccordionIntegrationTests
     [Fact]
     public void Appearance_MapsToHtmlValue()
     {
-        var component = new WaAccordion { Appearance = WaAppearance.Plain };
+        var component = new WaAccordion { Appearance = WaDetailsAppearance.Plain };
         Assert.Equal("plain", component.Appearance.ToHtmlValue());
     }
 

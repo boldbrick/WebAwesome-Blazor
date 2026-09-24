@@ -47,7 +47,7 @@ public class WaBadge : ComponentBase
     /// <summary>
     /// The badge's visual appearance.
     /// </summary>
-    [Parameter] public WaAppearance? Appearance { get; set; }
+    [Parameter] public WaBadgeAppearance? Appearance { get; set; }
 
     /// <summary>
     /// Draws a pill-style badge with rounded edges.

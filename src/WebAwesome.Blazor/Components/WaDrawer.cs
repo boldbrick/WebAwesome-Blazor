@@ -116,11 +116,6 @@ public class WaDrawer : ComponentBase
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
 
     /// <summary>
-    /// Invoked when the drawer sets initial focus after opening.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnInitialFocus { get; set; }
-
-    /// <summary>
     /// Invoked after the drawer opens and all animations are complete.
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
@@ -157,8 +152,6 @@ public class WaDrawer : ComponentBase
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);
 
         builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
-
-        builder.AddAttributeIfHasDelegate(22, "onwa-initial-focus", OnInitialFocus);
 
         builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 

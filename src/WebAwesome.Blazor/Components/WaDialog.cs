@@ -111,11 +111,6 @@ public class WaDialog : ComponentBase
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
 
     /// <summary>
-    /// Invoked when the dialog sets initial focus after opening.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnInitialFocus { get; set; }
-
-    /// <summary>
     /// Invoked after the dialog opens and all animations are complete.
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
@@ -150,8 +145,6 @@ public class WaDialog : ComponentBase
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);
 
         builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
-
-        builder.AddAttributeIfHasDelegate(22, "onwa-initial-focus", OnInitialFocus);
 
         builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 

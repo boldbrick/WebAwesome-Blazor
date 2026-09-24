@@ -40,7 +40,7 @@ public class WaToastItemIntegrationTests : BunitContext
 
         var element = cut.Find("wa-toast-item");
         Assert.Equal("0", element.GetAttribute("duration"));
-        Assert.Equal("large", element.GetAttribute("size"));
+        Assert.Equal("l", element.GetAttribute("size"));
         Assert.Equal("success", element.GetAttribute("variant"));
     }
 

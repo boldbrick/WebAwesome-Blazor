@@ -92,21 +92,6 @@ public class WaFormatNumber : ComponentBase
     [Parameter] public int? MaximumSignificantDigits { get; set; }
 
     /// <summary>
-    /// The formatting notation to use, such as scientific, engineering, or compact notation.
-    /// </summary>
-    [Parameter] public WaNotation? Notation { get; set; }
-
-    /// <summary>
-    /// The display style to use for compact notation when <see cref="Notation"/> is compact.
-    /// </summary>
-    [Parameter] public WaCompactDisplay? CompactDisplay { get; set; }
-
-    /// <summary>
-    /// Whether to use grouping separators, such as thousands separators.
-    /// </summary>
-    [Parameter] public bool? UseGrouping { get; set; }
-
-    /// <summary>
     /// Turns off grouping separators, such as thousands separators, regardless of locale.
     /// </summary>
     [Parameter] public bool WithoutGrouping { get; set; }
@@ -136,9 +121,6 @@ public class WaFormatNumber : ComponentBase
         builder.AddAttributeIfNotNull(12, "maximum-fraction-digits", MaximumFractionDigits);
         builder.AddAttributeIfNotNull(13, "minimum-significant-digits", MinimumSignificantDigits);
         builder.AddAttributeIfNotNull(14, "maximum-significant-digits", MaximumSignificantDigits);
-        builder.AddAttributeIfNotNull(15, "notation", Notation?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(16, "compact-display", CompactDisplay?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(17, "use-grouping", UseGrouping);
         if (WithoutGrouping)
             builder.AddAttribute(18, "without-grouping", WithoutGrouping);
 

@@ -1,18 +1,75 @@
-﻿@page "/components/relative-time"
+@page "/components/relative-time"
 
 <PageTitle>Relative Time</PageTitle>
 
 <h1>Relative Time</h1>
-<p><code>&lt;wa-relative-time&gt;</code> wrapped by <code>WaRelativeTime</code>.</p>
+<p>Outputs a localized time phrase relative to the current date and time, using the browser's <code>Intl.RelativeTimeFormat</code> API (no language packs required). Set <code>Date</code> from C#, or pass an ISO 8601 string through <code>DateString</code>. <code>&lt;wa-relative-time&gt;</code> wrapped by <code>WaRelativeTime</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaRelativeTime />
+    <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\relative-time.md) *@
+<ExampleSection Title="Format" Code="@FormatExample">
+    <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Format="WaRelativeTimeFormat.Narrow" /><br />
+    <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Format="WaRelativeTimeFormat.Short" /><br />
+    <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Format="WaRelativeTimeFormat.Long" />
+</ExampleSection>
+
+<ExampleSection Title="Numeric" Code="@NumericExample">
+    Auto (default): <WaRelativeTime Date="yesterday" /><br />
+    Always: <WaRelativeTime Date="yesterday" Numeric="WaRelativeTimeNumeric.Always" />
+</ExampleSection>
+
+<ExampleSection Title="Sync" Code="@SyncExample">
+    <WaRelativeTime Date="oneMinuteAgo" Sync="true" />
+</ExampleSection>
+
+<ExampleSection Title="Localization" Code="@LocalizationExample">
+    English: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="en-US" /><br />
+    Chinese: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="zh-CN" /><br />
+    German: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="de" /><br />
+    Greek: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="el" /><br />
+    Russian: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="ru" />
+</ExampleSection>
 
 <ApiTable Tag="wa-relative-time" />
 
 @code {
-    private const string DefaultExample = "<WaRelativeTime />";
+    private readonly DateTime yesterday = DateTime.Now.AddDays(-1);
+    private readonly DateTime oneMinuteAgo = DateTime.Now.AddMinutes(-1);
+
+    private const string DefaultExample = """
+        <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" />
+        """;
+
+    private const string FormatExample = """
+        <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Format="WaRelativeTimeFormat.Narrow" /><br />
+        <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Format="WaRelativeTimeFormat.Short" /><br />
+        <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Format="WaRelativeTimeFormat.Long" />
+        """;
+
+    private const string NumericExample = """
+        Auto (default): <WaRelativeTime Date="yesterday" /><br />
+        Always: <WaRelativeTime Date="yesterday" Numeric="WaRelativeTimeNumeric.Always" />
+
+        @code {
+            private readonly DateTime yesterday = DateTime.Now.AddDays(-1);
+        }
+        """;
+
+    private const string SyncExample = """
+        <WaRelativeTime Date="oneMinuteAgo" Sync="true" />
+
+        @code {
+            private readonly DateTime oneMinuteAgo = DateTime.Now.AddMinutes(-1);
+        }
+        """;
+
+    private const string LocalizationExample = """
+        English: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="en-US" /><br />
+        Chinese: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="zh-CN" /><br />
+        German: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="de" /><br />
+        Greek: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="el" /><br />
+        Russian: <WaRelativeTime DateString="2025-12-02T00:00:00-05:00" Lang="ru" />
+        """;
 }

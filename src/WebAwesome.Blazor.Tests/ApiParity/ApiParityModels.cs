@@ -98,6 +98,12 @@ public class ParityConfig
 
     [JsonPropertyName("components")]
     public Dictionary<string, ComponentParityConfig> Components { get; set; } = new();
+
+    /// <summary>
+    /// Rationale of each documented omission or deviation, keyed by the ignored name.
+    /// </summary>
+    [JsonPropertyName("ignoreReasons")]
+    public Dictionary<string, string> IgnoreReasons { get; set; } = new();
 }
 
 /// <summary>
@@ -125,6 +131,15 @@ public class ComponentParityConfig
 
     [JsonPropertyName("extraElementMethods")]
     public List<string> ExtraElementMethods { get; set; } = new();
+
+    /// <summary>
+    /// Enum members whose ToHtmlValue() output deliberately falls outside the attribute's
+    /// CEM string-literal union, keyed by CEM attribute name; the member "*" exempts the whole
+    /// attribute (e.g. an enum without a ToHtmlValue mapping). Every attribute entry needs an
+    /// ignoreReasons entry keyed "ignoredEnumValues:&lt;tag&gt;:&lt;attribute&gt;" covering its members.
+    /// </summary>
+    [JsonPropertyName("ignoredEnumValues")]
+    public Dictionary<string, List<string>> IgnoredEnumValues { get; set; } = new();
 }
 
 #nullable restore

@@ -259,11 +259,11 @@ public class WaBreakingChangesValidationTests
     [Fact]
     public void WaSize_ToHtmlValue_ReturnsCorrectStringsForAllValues()
     {
-        // Assert - WaSize gained ExtraSmall/ExtraLarge in Web Awesome 3.6.0; existing
-        // Small/Medium/Large mappings must remain unchanged
-        Assert.Equal("small", WaSize.Small.ToHtmlValue());
-        Assert.Equal("medium", WaSize.Medium.ToHtmlValue());
-        Assert.Equal("large", WaSize.Large.ToHtmlValue());
+        // Assert - WaSize gained ExtraSmall/ExtraLarge in Web Awesome 3.6.0; Small/Medium/Large emit the
+        // short forms since Web Awesome 3.12.0 deprecated "small", "medium" and "large"
+        Assert.Equal("s", WaSize.Small.ToHtmlValue());
+        Assert.Equal("m", WaSize.Medium.ToHtmlValue());
+        Assert.Equal("l", WaSize.Large.ToHtmlValue());
         Assert.Equal("xs", WaSize.ExtraSmall.ToHtmlValue());
         Assert.Equal("xl", WaSize.ExtraLarge.ToHtmlValue());
     }

@@ -73,9 +73,32 @@ public class WaDropdownItem : ComponentBase
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
-    /// The type of menu item to render.
+    /// The dropdown item's theme variant; use <see cref="WaDropdownItemVariant.Danger"/> for destructive actions.
+    /// When unset, the attribute is omitted and Web Awesome's default styling applies.
     /// </summary>
-    [Parameter] public WaVariant? Variant { get; set; }
+    [Parameter] public WaDropdownItemVariant? Variant { get; set; }
+
+    /// <summary>
+    /// When set, selecting the item will navigate to this URL. The item remains a menu item for assistive devices,
+    /// so make sure the label describes where the link goes. Ignored when the item has a submenu.
+    /// </summary>
+    [Parameter] public string? Href { get; set; }
+
+    /// <summary>
+    /// Tells the browser where to open the link, e.g. "_blank", "_parent", "_self" or "_top".
+    /// Only used when <see cref="Href"/> is present.
+    /// </summary>
+    [Parameter] public string? Target { get; set; }
+
+    /// <summary>
+    /// When using <see cref="Href"/>, this maps to the underlying link's <c>rel</c> attribute.
+    /// </summary>
+    [Parameter] public string? Rel { get; set; }
+
+    /// <summary>
+    /// Tells the browser to download the linked file as this filename. Only used when <see cref="Href"/> is present.
+    /// </summary>
+    [Parameter] public string? Download { get; set; }
 
     #endregion
 
@@ -134,6 +157,12 @@ public class WaDropdownItem : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
+        // Add link attributes
+        builder.AddAttributeIfNotNullOrEmpty(5, "href", Href);
+        builder.AddAttributeIfNotNullOrEmpty(6, "target", Target);
+        builder.AddAttributeIfNotNullOrEmpty(7, "rel", Rel);
+        builder.AddAttributeIfNotNullOrEmpty(8, "download", Download);
+
         // Add dropdown item-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "value", Value);
         if (Type != WaDropdownItemType.Normal)
@@ -143,8 +172,8 @@ public class WaDropdownItem : ComponentBase
         builder.AddAttributeIfNotNull(14, "variant", Variant?.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(16, "blur", OnBlur);
-        builder.AddAttributeIfHasDelegate(17, "focus", OnFocus);
+        builder.AddAttributeIfHasDelegate(16, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(17, "onfocus", OnFocus);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(15, __dropdownItemReference => Element = __dropdownItemReference);

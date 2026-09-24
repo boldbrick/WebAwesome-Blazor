@@ -98,7 +98,7 @@ public class WaDataGridIntegrationTests : BunitContext
         var element = cut.Find("wa-data-grid");
         Assert.Equal("Orders", element.GetAttribute("label"));
         Assert.Equal("outlined", element.GetAttribute("appearance"));
-        Assert.Equal("small", element.GetAttribute("size"));
+        Assert.Equal("s", element.GetAttribute("size"));
         Assert.True(element.HasAttribute("striped"));
         Assert.True(element.HasAttribute("with-search"));
         Assert.True(element.HasAttribute("with-column-menu"));

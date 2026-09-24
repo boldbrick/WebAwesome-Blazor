@@ -9,18 +9,37 @@
     <WaSlider @bind-Value="value" />
 </ExampleSection>
 
+<ExampleSection Title="Change Event" Code="@ChangeEventExample">
+    <WaSlider Label="Volume" @bind-Value="volume" OnValueChange="@(newValue => volumeChanges++)" />
+    <p>Volume: <strong>@volume</strong></p>
+    <p>OnValueChange calls: <strong>@volumeChanges</strong></p>
+</ExampleSection>
+
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\slider.md) *@
 
 <ApiTable Tag="wa-slider" />
 
 @code {
     private decimal? value = 50;
+    private decimal? volume = 50;
+    private int volumeChanges;
 
     private const string DefaultExample = """
         <WaSlider @bind-Value="value" />
 
         @code {
             private decimal? value = 50;
+        }
+        """;
+
+    private const string ChangeEventExample = """
+        <WaSlider Label="Volume" @bind-Value="volume" OnValueChange="@(newValue => volumeChanges++)" />
+        <p>Volume: @volume</p>
+        <p>OnValueChange calls: @volumeChanges</p>
+
+        @code {
+            private decimal? volume = 50;
+            private int volumeChanges;
         }
         """;
 }

@@ -6,7 +6,8 @@
 <p><code>&lt;wa-zoomable-frame&gt;</code> wrapped by <code>WaZoomableFrame</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 300px;" />
+    <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 300px;" OnLoad="@(() => loadCount++)" />
+    <p>Frame loaded @loadCount time(s)</p>
 </ExampleSection>
 
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\zoomable-frame.md) *@
@@ -21,11 +22,16 @@
         """;
 
     private const string DefaultExample = """
-        <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 300px;" />
+        <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 300px;" OnLoad="@(() => loadCount++)" />
+        <p>Frame loaded @loadCount time(s)</p>
 
         @code {
             // FrameContent: inline HTML document rendered inside the frame
             private const string FrameContent = "...";
+
+            private int loadCount;
         }
         """;
+
+    private int loadCount;
 }

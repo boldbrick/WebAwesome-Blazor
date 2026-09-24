@@ -68,7 +68,7 @@ public class WaDetails : ComponentBase
     /// <summary>
     /// The element's visual appearance.
     /// </summary>
-    [Parameter] public WaAppearance? Appearance { get; set; }
+    [Parameter] public WaDetailsAppearance? Appearance { get; set; }
 
     /// <summary>
     /// The location of the expand/collapse icon.

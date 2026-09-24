@@ -84,6 +84,35 @@ export function setProperty(element, propertyName, value) {
 }
 
 /**
+ * Synchronizes a live property of a Web Awesome element with a value from .NET, assigning it only
+ * when it differs from the current one. Used to push model changes into form controls whose value
+ * attribute only maps to the default value (an unconditional assignment could move the caret or
+ * trigger a needless update while the user is typing).
+ * @param {HTMLElement} element - The Web Awesome element
+ * @param {string} propertyName - The name of the live property to synchronize
+ * @param {any} value - The value to assign
+ */
+export function syncProperty(element, propertyName, value) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    if (!propertyName) {
+        throw new Error('Property name cannot be null or empty');
+    }
+
+    const tagName = element.tagName?.toLowerCase() || 'unknown';
+
+    try {
+        if (element[propertyName] !== value) {
+            element[propertyName] = value;
+        }
+    } catch (error) {
+        throw new Error(`Failed to sync property '${propertyName}' on ${tagName}: ${error.message}`);
+    }
+}
+
+/**
  * Gets a property value from a Web Awesome element
  * @param {HTMLElement} element - The Web Awesome element
  * @param {string} propertyName - The name of the property to get

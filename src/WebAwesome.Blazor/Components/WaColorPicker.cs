@@ -119,7 +119,7 @@ public class WaColorPicker : WaInputBase<string>
         builder.AddAttributeIfNotNull(29, "placement", Placement?.ToHtmlValue());
 
         // Add value binding
-        builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
         // Add common event handlers
@@ -148,6 +148,9 @@ public class WaColorPicker : WaInputBase<string>
         validationErrorMessage = null;
         return true;
     }
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 

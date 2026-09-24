@@ -92,9 +92,10 @@ public class WaCopyButton : ComponentBase
     [Parameter] public int FeedbackDuration { get; set; } = 1000;
 
     /// <summary>
-    /// The placement of the tooltip shown for the copy, success, and error labels.
+    /// The side of the button on which the tooltip for the copy, success, and error labels is shown. When null, the attribute
+    /// is omitted and Web Awesome's default (top) applies.
     /// </summary>
-    [Parameter] public WaPlacement? TooltipPlacement { get; set; }
+    [Parameter] public WaTooltipSide? TooltipPlacement { get; set; }
 
     /// <summary>
     /// Controls the built-in tooltip. <see cref="WaCopyButtonTooltip.Full"/> (default) shows the tooltip on hover
@@ -108,14 +109,10 @@ public class WaCopyButton : ComponentBase
     #region ------ Events ------
 
     /// <summary>
-    /// Invoked when the data has been copied.
+    /// Invoked when the data has been copied successfully (<c>wa-copy</c>). This is the copy button's success
+    /// notification: it fires at the moment the success feedback state is shown.
     /// </summary>
     [Parameter] public EventCallback OnCopy { get; set; }
-
-    /// <summary>
-    /// Invoked when the success feedback state is shown.
-    /// </summary>
-    [Parameter] public EventCallback OnSuccess { get; set; }
 
     /// <summary>
     /// Invoked when the data could not be copied.
@@ -187,8 +184,6 @@ public class WaCopyButton : ComponentBase
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-copy", OnCopy);
-
-        builder.AddAttributeIfHasDelegate(21, "onwa-success", OnSuccess);
 
         builder.AddAttributeIfHasDelegate(22, "onwa-error", OnError);
 

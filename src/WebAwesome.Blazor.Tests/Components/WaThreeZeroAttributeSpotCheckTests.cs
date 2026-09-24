@@ -458,10 +458,10 @@ public class WaThreeZeroAttributeSpotCheckTests
         var component = new WaCopyButton();
 
         // Act
-        component.TooltipPlacement = WaPlacement.Bottom;
+        component.TooltipPlacement = WaTooltipSide.Bottom;
 
         // Assert
-        Assert.Equal(WaPlacement.Bottom, component.TooltipPlacement);
+        Assert.Equal(WaTooltipSide.Bottom, component.TooltipPlacement);
     }
 
     [Fact]

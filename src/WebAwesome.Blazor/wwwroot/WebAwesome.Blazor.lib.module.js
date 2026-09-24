@@ -18,7 +18,6 @@ const eventNames = [
   'wa-cancel',
   'wa-cell-click',
   'wa-cell-contextmenu',
-  'wa-change',
   'wa-clear',
   'wa-collapse',
   'wa-column-move',
@@ -39,7 +38,6 @@ const eventNames = [
   'wa-hide',
   'wa-hover',
   'wa-include-error',
-  'wa-initial-focus',
   'wa-intersect',
   'wa-invalid',
   'wa-lazy-change',
@@ -47,8 +45,6 @@ const eventNames = [
   'wa-load',
   'wa-mutation',
   'wa-page-change',
-  'wa-password-toggle',
-  'wa-password-visibility-change',
   'wa-remove',
   'wa-reposition',
   'wa-resize',
@@ -61,14 +57,10 @@ const eventNames = [
   'wa-slide-change',
   'wa-sort-change',
   'wa-start',
-  'wa-success',
-  'wa-tab-change',
-  'wa-tab-close',
   'wa-tab-hide',
   'wa-tab-show',
   'wa-video-change',
   'wa-view-change',
-  'wa-zoom-change',
 ];
 
 // native-named events that Web Awesome re-dispatches as custom events (not Blazor built-ins,
@@ -251,6 +243,27 @@ const specialArgs = {
   },
 };
 
+// wa-slider and wa-rating keep their live value as a JS number and dispatch plain change/input
+// events. Blazor's built-in change/input reader forwards target.value as is, and the server
+// rejects a number ("Unsupported ChangeEventArgs value") before any handler runs, so a binder on
+// "onchange"/"oninput" never fires for these elements. These aliases listen to the same browser
+// events under non-wa names (the wrappers bind "onnumericchange"/"onnumericinput") and hand .NET
+// the value as a string: "<minValue>,<maxValue>" for a range-mode wa-slider (its value is an
+// unused default there), otherwise String(value), empty for null/undefined.
+function numericValueArgs(event) {
+  const target = event.target;
+  if (!target) return { value: '' };
+  if (target.range) return { value: `${target.minValue},${target.maxValue}` };
+  const value = target.value;
+  return { value: value === null || value === undefined ? '' : String(value) };
+}
+
+// Blazor event name -> aliased browser event name
+const numericValueEventAliases = {
+  'numericchange': 'change',
+  'numericinput': 'input',
+};
+
 let eventTypesRegistered = false;
 
 function registerEventTypes(blazor) {
@@ -266,6 +279,13 @@ function registerEventTypes(blazor) {
   for (const name of nativeCustomEventNames) {
     blazor.registerCustomEventType(name, {
       createEventArgs: specialArgs[name] || detailArgs,
+    });
+  }
+
+  for (const [name, browserEventName] of Object.entries(numericValueEventAliases)) {
+    blazor.registerCustomEventType(name, {
+      browserEventName,
+      createEventArgs: numericValueArgs,
     });
   }
 }

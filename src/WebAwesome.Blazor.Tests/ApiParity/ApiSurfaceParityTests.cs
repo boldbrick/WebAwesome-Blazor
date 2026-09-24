@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
 using Microsoft.AspNetCore.Components;
-using WebAwesome.Blazor.Components;
 using Xunit;
+using static WebAwesome.Blazor.Tests.ApiParity.ApiParityData;
 
 namespace WebAwesome.Blazor.Tests.ApiParity;
 
@@ -57,14 +55,11 @@ public class ApiSurfaceParityTests
 
             foreach (var attributeName in component.Attributes.Keys)
             {
-                if (Config.GlobalIgnoredAttributes.Contains(attributeName)) continue;
-                if (componentConfig.IgnoredAttributes.Contains(attributeName)) continue;
+                if (IsIgnoredAttribute(componentConfig, attributeName)) continue;
 
-                var expected = componentConfig.AttributeOverrides.TryGetValue(attributeName, out var over)
-                    ? over
-                    : ToPascalCase(attributeName);
+                var expected = ExpectedParameterName(componentConfig, attributeName);
 
-                if (!HasParameter(wrapper, expected))
+                if (FindParameter(wrapper, expected) == null)
                     misses.Add($"{tag}: attribute '{attributeName}' has no [Parameter] property '{expected}' on {wrapper.Name}");
             }
         }
@@ -156,64 +151,6 @@ public class ApiSurfaceParityTests
 
     private const string AsyncSuffix = "Async";
     private const string EventPrefix = "wa-";
-    private const string DataDirectory = "ApiParity";
-    private const string SurfaceFileName = "expected-api-surface.json";
-    private const string ConfigFileName = "parity-config.json";
-
-    private static readonly ApiSurface Surface = LoadDataFile<ApiSurface>(SurfaceFileName);
-    private static readonly ParityConfig Config = LoadDataFile<ParityConfig>(ConfigFileName);
-    private static readonly Assembly WrapperAssembly = typeof(WaButton).Assembly;
-
-    private static T LoadDataFile<T>(string fileName)
-    {
-        var path = Path.Combine(AppContext.BaseDirectory, DataDirectory, fileName);
-        using var stream = File.OpenRead(path);
-        return JsonSerializer.Deserialize<T>(stream)
-            ?? throw new InvalidOperationException($"Failed to deserialize {path}");
-    }
-
-    private static IEnumerable<(string Tag, ComponentSurface Component)> RelevantComponents()
-    {
-        foreach (var (tag, component) in Surface.Components)
-        {
-            if (Config.IgnoredComponents.Contains(tag)) continue;
-            yield return (tag, component);
-        }
-    }
-
-    private static ComponentParityConfig GetComponentConfig(string tag)
-    {
-        return Config.Components.TryGetValue(tag, out var config) ? config : EmptyComponentConfig;
-    }
-
-    private static readonly ComponentParityConfig EmptyComponentConfig = new();
-
-    private static string ExpectedWrapperName(string tag, ComponentSurface component)
-    {
-        if (Config.ComponentClassOverrides.TryGetValue(tag, out var over)) return over;
-        return string.IsNullOrEmpty(component.ClassName) ? ToPascalCase(tag) : component.ClassName;
-    }
-
-    private static Type? FindWrapperType(string tag, ComponentSurface component)
-    {
-        var expectedName = ExpectedWrapperName(tag, component);
-
-        // match on simple name with generic arity stripped, in any namespace of the wrapper assembly
-        return WrapperAssembly.GetTypes()
-            .FirstOrDefault(t => t.IsClass && !t.IsAbstract && StripGenericArity(t.Name) == expectedName);
-    }
-
-    private static string StripGenericArity(string typeName)
-    {
-        var index = typeName.IndexOf('`');
-        return index < 0 ? typeName : typeName[..index];
-    }
-
-    private static string ToPascalCase(string kebabName)
-    {
-        var parts = kebabName.Split('-', StringSplitOptions.RemoveEmptyEntries);
-        return string.Concat(parts.Select(p => char.ToUpperInvariant(p[0]) + p[1..]));
-    }
 
     private static string ExpectedEventCallbackName(string eventName)
     {
@@ -224,16 +161,10 @@ public class ApiSurfaceParityTests
         return "On" + ToPascalCase(baseName);
     }
 
-    private static bool HasParameter(Type wrapper, string propertyName)
-    {
-        var property = wrapper.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-        return property != null && property.IsDefined(typeof(ParameterAttribute), inherit: true);
-    }
-
     private static bool HasEventCallback(Type wrapper, string propertyName)
     {
-        var property = wrapper.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-        if (property == null || !property.IsDefined(typeof(ParameterAttribute), inherit: true)) return false;
+        var property = FindParameter(wrapper, propertyName);
+        if (property == null) return false;
 
         var type = property.PropertyType;
         return type == typeof(EventCallback)
@@ -244,13 +175,6 @@ public class ApiSurfaceParityTests
     {
         return wrapper.GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Any(m => m.Name == methodName);
-    }
-
-    private static void AssertNoMisses(List<string> misses, string title)
-    {
-        Assert.True(misses.Count == 0,
-            $"{title} ({misses.Count} gaps against Web Awesome {Surface.Version}):{Environment.NewLine}" +
-            string.Join(Environment.NewLine, misses));
     }
 
     #endregion

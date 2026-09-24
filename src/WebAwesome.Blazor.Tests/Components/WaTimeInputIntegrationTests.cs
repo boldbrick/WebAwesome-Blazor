@@ -79,7 +79,7 @@ public class WaTimeInputIntegrationTests
     [Fact]
     public void Placement_MapsToHtmlValue()
     {
-        var component = new WaTimeInput { Placement = WaPlacement.TopEnd };
+        var component = new WaTimeInput { Placement = WaPickerPlacement.TopEnd };
         Assert.Equal("top-end", component.Placement?.ToHtmlValue());
     }
 

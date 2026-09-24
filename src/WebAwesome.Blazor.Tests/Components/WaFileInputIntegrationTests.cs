@@ -61,7 +61,7 @@ public class WaFileInputIntegrationTests : BunitContext
         Assert.Equal("Attachment", element.GetAttribute("label"));
         Assert.True(element.HasAttribute("multiple"));
         Assert.True(element.HasAttribute("required"));
-        Assert.Equal("large", element.GetAttribute("size"));
+        Assert.Equal("l", element.GetAttribute("size"));
         Assert.True(element.HasAttribute("with-hint"));
         Assert.True(element.HasAttribute("with-label"));
     }
