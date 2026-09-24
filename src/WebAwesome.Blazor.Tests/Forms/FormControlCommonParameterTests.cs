@@ -8,9 +8,9 @@ namespace WebAwesome.Blazor.Tests.Forms;
 
 /// <summary>
 /// Verifies that the common WaInputBase parameters (Label, Hint, Required, Disabled, Size) render
-/// the expected attributes, across representative controls covering both the shared
-/// WaInputBase.AddCommonAttributes code path (WaInput, WaSelect, WaRange) and WaTextArea's
-/// independent, hand-rolled attribute rendering.
+/// the expected attributes through the shared WaInputBase.AddCommonAttributes code path, across
+/// representative controls (WaInput, WaSelect, WaRange and WaTextArea, which moved onto WaInputBase
+/// in the 3.12.0 bindings).
 /// </summary>
 public class FormControlCommonParameterTests : FormControlTestBase
 {
@@ -95,9 +95,9 @@ public class FormControlCommonParameterTests : FormControlTestBase
     [Fact]
     public void WaTextArea_CommonParameters_RenderExpectedAttributes()
     {
-        // WaTextArea implements InputBase<string?> directly (not WaInputBase) and renders its
-        // attributes independently, so its Label/Hint/Required/Disabled/Size wiring is verified
-        // separately rather than assumed from the WaInputBase-derived controls above
+        // WaTextArea derives from WaInputBase<string?> since the 3.12.0 bindings (it used to implement
+        // InputBase<string?> directly with hand-rolled attributes); kept as a guard that the rebase renders
+        // the common attributes, including the short size form, exactly like the other controls
         var model = new TextModel { Name = "Ada" };
         var cut = RenderControlForm<WaTextArea, string?>(
             model,

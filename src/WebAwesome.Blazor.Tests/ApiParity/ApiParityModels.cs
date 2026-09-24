@@ -100,6 +100,14 @@ public class ParityConfig
     public Dictionary<string, ComponentParityConfig> Components { get; set; } = new();
 
     /// <summary>
+    /// Literals of CEM string-literal unions that deliberately no member of the named enum emits, keyed by enum
+    /// type name (e.g. the long size spellings Web Awesome deprecates), applied to every attribute bound to that
+    /// enum. Every entry needs an ignoreReasons entry keyed "unreachableEnumUnionValues:&lt;enum&gt;".
+    /// </summary>
+    [JsonPropertyName("unreachableEnumUnionValues")]
+    public Dictionary<string, List<string>> UnreachableEnumUnionValues { get; set; } = new();
+
+    /// <summary>
     /// Rationale of each documented omission or deviation, keyed by the ignored name.
     /// </summary>
     [JsonPropertyName("ignoreReasons")]
@@ -140,6 +148,28 @@ public class ComponentParityConfig
     /// </summary>
     [JsonPropertyName("ignoredEnumValues")]
     public Dictionary<string, List<string>> IgnoredEnumValues { get; set; } = new();
+
+    /// <summary>
+    /// Literals of a CEM string-literal union attribute that deliberately no member of the mapped enum parameter
+    /// emits (e.g. the default, reached by leaving a nullable parameter unset), keyed by CEM attribute name. Every
+    /// attribute entry needs an ignoreReasons entry keyed "unreachableUnionValues:&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("unreachableUnionValues")]
+    public Dictionary<string, List<string>> UnreachableUnionValues { get; set; } = new();
+
+    /// <summary>
+    /// CEM attributes typed as a string-literal union that are deliberately exposed as a bool/bool? parameter.
+    /// Every entry needs an ignoreReasons entry keyed "ignoredBoolUnionAttributes:&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("ignoredBoolUnionAttributes")]
+    public List<string> IgnoredBoolUnionAttributes { get; set; } = new();
+
+    /// <summary>
+    /// wa-* events the wrapper deliberately binds although the element's CEM entry does not declare them. Every
+    /// entry needs an ignoreReasons entry keyed "undeclaredBoundEvents:&lt;tag&gt;:&lt;event&gt;".
+    /// </summary>
+    [JsonPropertyName("undeclaredBoundEvents")]
+    public List<string> UndeclaredBoundEvents { get; set; } = new();
 }
 
 #nullable restore

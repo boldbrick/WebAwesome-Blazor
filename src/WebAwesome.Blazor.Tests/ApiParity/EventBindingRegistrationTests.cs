@@ -82,7 +82,11 @@ public class EventBindingRegistrationTests
     private static readonly Regex RegisteredNameRegex = new(
         "^\\s*'(wa-[a-z-]+)',\\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
 
-    private static IEnumerable<string> WrapperSourceFiles()
+    /// <summary>
+    /// Enumerates the wrapper component source files (src\WebAwesome.Blazor\Components\*.cs).
+    /// </summary>
+    /// <returns>Absolute paths of the wrapper source files</returns>
+    internal static IEnumerable<string> WrapperSourceFiles()
     {
         var componentsDir = Path.Combine(WrapperProjectDirectory(), "Components");
         Assert.True(Directory.Exists(componentsDir), $"Wrapper source directory not found: {componentsDir}");

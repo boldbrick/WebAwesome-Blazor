@@ -1,5 +1,5 @@
 {
-  "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, EnumValueParityTests, ElementMethodInvocationTests). Per-component 'ignoredEnumValues' maps a CEM attribute to the enum members whose ToHtmlValue() output deliberately falls outside the attribute's string-literal union (typically library-wide shared enums, or a 'None' member for which the attribute is omitted); each attribute entry needs an 'ignoreReasons' entry keyed 'ignoredEnumValues:<tag>:<attribute>', and stale entries fail EnumValueParityTests. 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
+  "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, EnumValueParityTests, ElementMethodInvocationTests). Per-component 'ignoredEnumValues' maps a CEM attribute to the enum members whose ToHtmlValue() output deliberately falls outside the attribute's string-literal union (typically library-wide shared enums, or a 'None' member for which the attribute is omitted); each attribute entry needs an 'ignoreReasons' entry keyed 'ignoredEnumValues:<tag>:<attribute>', and stale entries fail EnumValueParityTests. The reverse direction (every union literal emitted by some enum member) is allowlisted per component in 'unreachableUnionValues' (attribute -> literals, reason key 'unreachableUnionValues:<tag>:<attribute>') and per enum type in the top-level 'unreachableEnumUnionValues' (enum name -> literals, reason key 'unreachableEnumUnionValues:<enum>'); bool parameters deliberately bound to a string-literal union go into per-component 'ignoredBoolUnionAttributes' (reason key 'ignoredBoolUnionAttributes:<tag>:<attribute>'); 'onwa-*' bindings the element's CEM entry does not declare go into per-component 'undeclaredBoundEvents' (reason key 'undeclaredBoundEvents:<tag>:<event>', checked by BoundEventCemParityTests). Stale entries in every list fail. 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
   "enabled": true,
   "targetWaVersion": "3.12.0",
   "globalIgnoredAttributes": [
@@ -15,7 +15,15 @@
     "wa-textarea": "WaTextArea"
   },
   "nativeElementMethods": [ "focus", "blur", "click" ],
+  "unreachableEnumUnionValues": {
+    "WaSize": [ "small", "medium", "large" ]
+  },
   "components": {
+    "wa-badge": {
+      "unreachableUnionValues": {
+        "attention": [ "none" ]
+      }
+    },
     "wa-details": {
       "eventOverrides": {
         "wa-show": "OnToggle",
@@ -166,7 +174,10 @@
         "wa-cell-contextmenu": "OnCellContextMenu"
       },
       "ignoredEvents": [ "request" ],
-      "ignoredMethods": [ "getColumnFacets", "handleColumnsChange", "handlePageChange", "handleSearchTermChange" ]
+      "ignoredMethods": [ "getColumnFacets", "handleColumnsChange", "handlePageChange", "handleSearchTermChange" ],
+      "unreachableUnionValues": {
+        "selectable": [ "" ]
+      }
     },
     "wa-otp-input": {
       "attributeOverrides": {
@@ -257,6 +268,9 @@
     "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24), WA 3.11.0 (2026-07-30) and WA 3.12.0 (2026-09-24), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
     "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19) and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24), WA 3.11.0 (2026-07-30) and WA 3.12.0 (2026-09-24, the Lit ReactiveElement lifecycle update() inherited via WebAwesomeElement - 'WebAwesomeElement extends LitElement' reconfirmed in internal\\webawesome-element.d.ts, hence absent from the component .d.ts: relative-time.d.ts declares only disconnectedCallback, willUpdate and render), not CEM-documented",
     "ignoredEnumValues:wa-popup:auto-size": "WaAutoSize.None ('') is the non-nullable parameter's 'off' state; WaPopup omits the auto-size attribute entirely when AutoSize == None, so the empty string is never emitted",
-    "ignoredEnumValues:wa-popup:sync": "WaSync.None ('') is the non-nullable parameter's 'off' state; WaPopup omits the sync attribute entirely when Sync == None, so the empty string is never emitted"
+    "ignoredEnumValues:wa-popup:sync": "WaSync.None ('') is the non-nullable parameter's 'off' state; WaPopup omits the sync attribute entirely when Sync == None, so the empty string is never emitted",
+    "unreachableEnumUnionValues:WaSize": "the long size spellings 'small'/'medium'/'large' are deprecated in WA 3.12.0 ('will be removed in the next major version'); WaSize.Small/Medium/Large emit the equivalent short forms 's'/'m'/'l' since 3.12.0, so the deprecated literals are intentionally unreachable",
+    "unreachableUnionValues:wa-badge:attention": "'none' is the WA default (no animation); it is reached by leaving the nullable WaBadge.Attention unset, which omits the attribute, so WaAttention has no None member",
+    "unreachableUnionValues:wa-data-grid:selectable": "'' is the bare-attribute form of selectable, which WA documents as meaning 'multiple'; WaDataGridSelectable.Multiple emits 'multiple' explicitly, so the empty literal adds no reachable behavior"
   }
 }
