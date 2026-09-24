@@ -1,14 +1,18 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/resize-observer.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/resize-observer -->
+---
+title: Resize Observer
+layout: component
+category: Helpers
+synonyms:
+  - size watcher
+  - resize listener
+  - dimension observer
+use-cases:
+  - responsive component
+  - size tracking
+  - container query
+---
 
-# Resize Observer
-
-`<wa-resize-observer>`
-
-Stable [Helpers](https://webawesome.com/docs/components/?category=helpers) [Since 2.0](https://webawesome.com/docs/resources/changelog#wa_200)
-
-Resize observers watch their slotted elements for size changes and emit an event when they occur. Provides a thin, declarative interface to the browser's ResizeObserver API.
-
-```html
+```html {.example}
 <div class="resize-observer-overview">
   <wa-resize-observer>
     <div class="box"><span class="dimensions">0 × 0</span></div>
@@ -52,59 +56,3 @@ Resize observers watch their slotted elements for size changes and emit an event
 ```
 
 The resize observer will report changes to the dimensions of the elements it wraps through the `wa-resize` event. When emitted, `event.detail.entries` holds a collection of [`ResizeObserverEntry`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry) objects describing the observed elements and their new dimensions.
-
-## API
-
-### Importing
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/resize-observer/resize-observer.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/resize-observer/resize-observer.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/resize-observer/resize-observer.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaResizeObserver from '@awesome.me/webawesome/dist/react/resize-observer/index.js';
-```
-
-### Slots
-
-| Name | Description |
-| --- | --- |
-| (default) | One or more elements to watch for resizing. |
-
-### Attributes & Properties
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`disabled\` disabled | \`boolean\` Disables the observer. Type Default false | |
-
-### Events
-
-| Name | Description |
-| --- | --- |
-| \`wa-resize\` | Emitted when the element is resized. |

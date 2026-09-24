@@ -1,79 +1,26 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/callout.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/callout -->
+---
+title: Callout
+layout: component
+category: Feedback
+synonyms:
+  - alert
+  - admonition
+  - notice
+  - banner
+  - infobox
+use-cases:
+  - warning message
+  - info message
+  - tip
+  - important note
+---
 
-# Callout
-
-`<wa-callout>`
-
-Stable [Feedback](https://webawesome.com/docs/components/?category=feedback) [Since 3.0](https://webawesome.com/docs/resources/changelog#wa_300)
-
-Callouts display important messages inline with surrounding content. Use them to highlight tips, warnings, errors, or other information users should not miss.
-
-```html
+```html {.example .anatomy}
 <wa-callout>
   <wa-icon slot="icon" name="circle-info"></wa-icon>
   This is a standard callout. You can customize its content and even the icon.
 </wa-callout>
 ```
-
-## API
-
-### Importing
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/callout/callout.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/callout/callout.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/callout/callout.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaCallout from '@awesome.me/webawesome/dist/react/callout/index.js';
-```
-
-### Slots
-
-| Name | Description |
-| --- | --- |
-| (default) | The callout's main content. |
-| \`icon\` | \`
-
-### Attributes & Properties
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`appearance\` appearance | \`'accent' \\| 'filled' \\| 'outlined' \\| 'plain' \\| 'filled-outlined'\` The callout's visual appearance. Type | |
-| \`size\` size | \`'xs' \\| 's' \\| 'm' \\| 'l' \\| 'xl' \\| 'small' \\| 'medium' \\| 'large'\` The callout's size. Type Default 'm' | |
-| \`variant\` variant | \`brand\` The callout's theme variant. Defaults to if not within another element with a variant. Type 'brand' \\| 'neutral' \\| 'success' \\| 'warning' \\| 'danger' Default 'brand' | |
-
-### CSS Parts
-
-| Name | Description | CSS selector |
-| --- | --- | --- |
-| \`icon\` | The container that wraps the optional icon. | \`::part(icon)\` |
-| \`message\` | The container that wraps the callout's main content. | \`::part(message)\` |
 
 ## Examples
 
@@ -81,7 +28,7 @@ import WaCallout from '@awesome.me/webawesome/dist/react/callout/index.js';
 
 Set the `variant` attribute to match the callout to its message.
 
-```html
+```html {.example}
 <div class="wa-stack">
   <wa-callout variant="brand">
     <wa-icon slot="icon" name="circle-info"></wa-icon>
@@ -119,7 +66,7 @@ Set the `variant` attribute to match the callout to its message.
 
 Use the `appearance` attribute to change the callout's visual style. With no `appearance` set, a callout renders with a quiet fill and border, matching `filled-outlined`.
 
-```html
+```html {.example}
 <div class="wa-stack">
   <wa-callout variant="brand" appearance="accent">
     <wa-icon slot="icon" name="square-check"></wa-icon>
@@ -152,7 +99,7 @@ Use the `appearance` attribute to change the callout's visual style. With no `ap
 
 Use the `size` attribute to change a callout's size.
 
-```html
+```html {.example}
 <div class="wa-stack">
   <wa-callout size="xs">
     <wa-icon slot="icon" name="circle-info"></wa-icon>
@@ -185,7 +132,7 @@ Use the `size` attribute to change a callout's size.
 
 Icons are optional. Omit the `icon` slot for a text-only callout.
 
-```html
+```html {.example}
 <wa-callout variant="brand">All times are shown in your local timezone.</wa-callout>
 ```
 
@@ -193,7 +140,7 @@ Icons are optional. Omit the `icon` slot for a text-only callout.
 
 Style a callout with regular CSS — `background`, `border`, `border-radius`, `color`, `padding`, and `margin` all work as expected.
 
-```html
+```html {.example}
 <wa-callout
   variant="brand"
   style="

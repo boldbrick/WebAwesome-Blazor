@@ -1,14 +1,18 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/include.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/include -->
+---
+title: Include
+layout: component
+category: Helpers
+synonyms:
+  - html include
+  - embed
+  - html import
+use-cases:
+  - external content
+  - partial
+  - server-side include
+---
 
-# Include
-
-`<wa-include>`
-
-Stable [Helpers](https://webawesome.com/docs/components/?category=helpers) [Since 2.0](https://webawesome.com/docs/resources/changelog#wa_200)
-
-Fetches an external HTML file and embeds its contents inline on the page. Useful for reusing shared markup like headers, footers, and partials across multiple pages.
-
-```html
+```html {.example}
 <wa-include src="/assets/examples/include.html"></wa-include>
 ```
 
@@ -16,66 +20,9 @@ Included files are asynchronously requested using `window.fetch()`. Requests are
 
 The included content will be inserted into the `<wa-include>` element's default slot so it can be easily accessed and styled through the light DOM.
 
+:::warning
 Included markup is inserted into the page as-is, and scripts run when `allow-scripts` is set. Including untrusted content can lead to XSS attacks.
-
-## API
-
-### Importing
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/include/include.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/include/include.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/include/include.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaInclude from '@awesome.me/webawesome/dist/react/include/index.js';
-```
-
-### Attributes & Properties
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`allowScripts\` allow-scripts | \`boolean\` Allows included scripts to be executed. Be sure you trust the content you are including as it will be executed as code and can result in XSS attacks. Type Default false | |
-| \`mode\` mode | \`'cors' \\| 'no-cors' \\| 'same-origin'\` The fetch mode to use. Type Default 'cors' | |
-| \`src\` src | \`#my-id\` The location of the content to include. This can be a URL to an HTML file, a same-page reference to an element's id (e.g. ), or a URL with a fragment that targets an element's id within the fetched file (e.g. /partials.html#my-id). When targeting an element by id, its content is cloned. If the target is a
-
-### Events
-
-| Name | Description |
-| --- | --- |
-| \`wa-include-error\` | Emitted when the included file fails to load due to an error. |
-| \`wa-load\` | Emitted when the included file is loaded. |
-
-### SSR
-
-Learn more about [Server-Side Rendering (SSR)](https://webawesome.com/docs/ssr).
-
-`<wa-include>` fetches its content asynchronously (like [`<wa-icon>`](https://webawesome.com/docs/components/icon)), so the rendered output isn't available during SSR.
+:::
 
 ## Examples
 
@@ -85,7 +32,7 @@ To include just one section of a file instead of the whole thing, add the target
 
 If the file loads but the `id` isn't found, the `wa-include-error` event is emitted.
 
-```html
+```html {.example}
 <wa-include src="/assets/examples/include.html#callout-fragment"></wa-include>
 ```
 
@@ -95,7 +42,7 @@ The same `#id` syntax also works against the current page, which is handy for re
 
 You get what's _inside_ the target, not the target element itself, either the children of a regular element, or the contents of a `<template>`. The original stays in place, so you can include it any number of times.
 
-```html
+```html {.example}
 <template id="greeting">
   <wa-callout variant="brand">
     <wa-icon slot="icon" name="hand-wave"></wa-icon>

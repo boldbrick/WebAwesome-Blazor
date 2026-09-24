@@ -1,14 +1,19 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/scroller.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/scroller -->
+---
+title: Scroller
+layout: component
+category: Layout
+hasAnatomy: false
+synonyms:
+  - scrollable
+  - scroll container
+  - overflow
+use-cases:
+  - horizontal scroll
+  - scroll area
+  - scrollable list
+---
 
-# Scroller
-
-`<wa-scroller>`
-
-Stable [Layout](https://webawesome.com/docs/components/?category=layout) [Since 3.0](https://webawesome.com/docs/resources/changelog#wa_300)
-
-Scrollers wrap overflowing content in an accessible container with visual cues that help users recognize and navigate scrollable regions.
-
-```html
+```html {.example}
 <wa-scroller id="scroller__overview">
   <table>
     <tr>
@@ -76,80 +81,13 @@ Scrollers wrap overflowing content in an accessible container with visual cues t
 </style>
 ```
 
-## API
-
-### Importing
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/scroller/scroller.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/scroller/scroller.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/scroller/scroller.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaScroller from '@awesome.me/webawesome/dist/react/scroller/index.js';
-```
-
-### Slots
-
-| Name | Description |
-| --- | --- |
-| (default) | The content to show inside the scroller. |
-
-### Attributes & Properties
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`orientation\` orientation | \`'horizontal' \\| 'vertical'\` The scroller's orientation. Type Default 'horizontal' | |
-| \`withoutScrollbar\` without-scrollbar | \`boolean\` Removes the visible scrollbar. Type Default false | |
-| \`withoutShadow\` without-shadow | \`boolean\` Removes the shadows. Type Default false | |
-
-### CSS Custom Properties
-
-| Name | Description |
-| --- | --- |
-| \`--shadow-color\` | \`var(--wa-color-surface-default)\` The base color of the shadow. Default |
-| \`--shadow-size\` | \`2rem\` The size of the shadow. Default |
-
-### CSS Parts
-
-| Name | Description | CSS selector |
-| --- | --- | --- |
-| \`content\` | The container that wraps the slotted content. | \`::part(content)\` |
-| \`end-shadow\` | \`without-shadow\` The scroll shadow shown at the end edge when more content is available, unless is set. | \`::part(end-shadow)\` |
-| \`start-shadow\` | \`without-shadow\` The scroll shadow shown at the start edge when more content is available, unless is set. | \`::part(start-shadow)\` |
-
 ## Examples
 
 ### Adding Content
 
 The scroller component automatically provides a scrollable container for any content that exceeds the available space. Add your content as children of the `<wa-scroller>` element, and it handles the rest.
 
-```html
+```html {.example}
 <wa-scroller>
   <div style="width: 1200px; padding: 1rem;">
     <h3>Superhero Team Roles Guide</h3>
@@ -194,7 +132,7 @@ The scroller component automatically provides a scrollable container for any con
 
 Set the `orientation` attribute to `vertical` and provide a height to create a vertical scroller.
 
-```html
+```html {.example}
 <wa-scroller orientation="vertical" style="max-height: 300px;">
   <p>
     Superhero movies are the ultimate popcorn-fueled thrill rides, turning comic book pages into cinematic
@@ -225,7 +163,7 @@ Set the `orientation` attribute to `vertical` and provide a height to create a v
 
 Use the `without-shadow` attribute to remove the fading shadow effect at the edges of the scroller, which typically indicates more content is available.
 
-```html
+```html {.example}
 <wa-scroller without-shadow>
   <div style="width: 1500px;">
     <p>
@@ -259,7 +197,7 @@ Use the `without-shadow` attribute to remove the fading shadow effect at the edg
 
 Use the `without-scrollbar` attribute to hide the scrollbar while maintaining scroll functionality. This creates a cleaner visual appearance but may reduce usability on content that needs a clear scrolling indicator.
 
-```html
+```html {.example}
 <wa-scroller without-scrollbar>
   <div style="width: 1500px;">
     <p>
@@ -288,5 +226,7 @@ Use the `without-scrollbar` attribute to hide the scrollbar while maintaining sc
 </wa-scroller>
 ```
 
-**Hiding the scrollbar can hurt accessibility.**  
+:::warning
+<strong>Hiding the scrollbar can hurt accessibility.</strong><br />
 People who rely on a visible scrollbar may not realize the content scrolls, or may struggle to control their position. Weigh that before turning it off.
+:::
