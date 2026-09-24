@@ -116,8 +116,9 @@
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
 
-  <!-- Include license file in packages -->
+  <!-- Include license file in packages; anchored to this file rather than to SolutionDir, which a consuming
+       solution overrides when the repository is used as a submodule -->
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <None Include="$(SolutionDir)..\LICENSE.md" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)..\LICENSE.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>
