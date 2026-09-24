@@ -1,7 +1,7 @@
 {
   "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, ElementMethodInvocationTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
   "enabled": true,
-  "targetWaVersion": "3.11.0",
+  "targetWaVersion": "3.12.0",
   "globalIgnoredAttributes": [
     "title",
     "did-ssr",

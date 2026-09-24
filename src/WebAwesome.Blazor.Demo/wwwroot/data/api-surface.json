@@ -1,10 +1,10 @@
 {
-  "version": "3.11.0",
+  "version": "3.12.0",
   "generated": "Export-WaApiSurface.ps1",
   "components": {
     "wa-accordion": {
       "className": "WaAccordion",
-      "since": "3.7",
+      "since": "3.8",
       "status": "experimental",
       "pro": false,
       "attributes": {
@@ -83,7 +83,7 @@
     },
     "wa-accordion-item": {
       "className": "WaAccordionItem",
-      "since": "1.0",
+      "since": "3.8",
       "status": "experimental",
       "pro": false,
       "attributes": {
@@ -1465,6 +1465,8 @@
         "eyedropper-button__end",
         "eyedropper-button__label",
         "eyedropper-button__start",
+        "form-control",
+        "form-control-input",
         "form-control-label",
         "format-button",
         "format-button__base",
@@ -1474,6 +1476,7 @@
         "format-button__start",
         "grid",
         "grid-handle",
+        "hint",
         "hue-slider",
         "hue-slider-handle",
         "input",
@@ -3326,6 +3329,16 @@
           "default": "false",
           "description": "Disables the dropdown item."
         },
+        "download": {
+          "type": "string",
+          "default": null,
+          "description": "Tells the browser to download the linked file as this filename. Only used when `href` is present."
+        },
+        "href": {
+          "type": "string",
+          "default": null,
+          "description": "When set, selecting the item will navigate to this URL. The item remains a menu item for assistive devices, so\nmake sure the label describes where the link goes. Ignored when the item has a submenu."
+        },
         "checked": {
           "type": "boolean",
           "default": "false",
@@ -3336,10 +3349,20 @@
           "default": null,
           "description": null
         },
+        "rel": {
+          "type": "string",
+          "default": null,
+          "description": "When using `href`, this attribute will map to the underlying link's `rel` attribute."
+        },
         "submenuOpen": {
           "type": "boolean",
           "default": "false",
           "description": "Whether the submenu is currently open."
+        },
+        "target": {
+          "type": "'_blank' | '_parent' | '_self' | '_top'",
+          "default": null,
+          "description": "Tells the browser where to open the link. Only used when `href` is present."
         },
         "type": {
           "type": "'normal' | 'checkbox'",
@@ -5534,7 +5557,6 @@
         "banner",
         "base",
         "body",
-        "dialog-wrapper",
         "drawer",
         "footer",
         "header",
@@ -6630,13 +6652,12 @@
         "form-control",
         "form-control-input",
         "form-control-label",
-        "hint",
-        "radios"
+        "hint"
       ]
     },
     "wa-random-content": {
       "className": "WaRandomContent",
-      "since": "3.9",
+      "since": "3.10",
       "status": "experimental",
       "pro": false,
       "attributes": {
@@ -7531,7 +7552,7 @@
         "thumb-min",
         "tooltip",
         "tooltip__arrow",
-        "tooltip__content",
+        "tooltip__body",
         "tooltip__tooltip",
         "track"
       ]
@@ -8291,7 +8312,6 @@
       "cssParts": [
         "base",
         "count",
-        "form-control-input",
         "form-control-label",
         "hint",
         "label",
@@ -8557,7 +8577,7 @@
       "className": "WaToast",
       "since": "3.3",
       "status": "stable",
-      "pro": true,
+      "pro": false,
       "attributes": {
         "did-ssr": {
           "type": null,
@@ -8598,7 +8618,7 @@
       "className": "WaToastItem",
       "since": "3.3",
       "status": "stable",
-      "pro": true,
+      "pro": false,
       "attributes": {
         "did-ssr": {
           "type": null,
@@ -9171,7 +9191,6 @@
         "controls-overlay",
         "poster-overlay",
         "poster-play-button",
-        "progress",
         "thumbnail",
         "timeline",
         "timeline-indicator",
