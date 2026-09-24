@@ -153,6 +153,41 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
+    /// Synchronizes a live property of a Web Awesome element with the given value; the property is assigned only
+    /// when its current value differs, so an unchanged value never disturbs the element (e.g. the caret position
+    /// while the user is typing)
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="propertyName">Name of the live property to synchronize</param>
+    /// <param name="value">Value to assign, typed as the element expects it (string, number, boolean or null)</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="ArgumentNullException">Thrown when propertyName is null</exception>
+    /// <exception cref="InvalidOperationException">Thrown when setting the property fails</exception>
+    public async Task SyncPropertyAsync(ElementReference elementReference, string propertyName, object? value)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        if (string.IsNullOrEmpty(propertyName))
+            throw new ArgumentNullException(nameof(propertyName));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("syncProperty", elementReference, propertyName, value);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to sync property '{propertyName}': {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
     /// Gets a property value from a Web Awesome element
     /// </summary>
     /// <typeparam name="T">The expected type of the property value</typeparam>

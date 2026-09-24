@@ -61,9 +61,12 @@ public class WaTooltip : ComponentBase
     [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
 
     /// <summary>
-    /// Controls how the tooltip is activated.
+    /// Controls how the tooltip is activated. Flags can be combined, e.g. <c>WaTrigger.Hover | WaTrigger.Click</c>,
+    /// and are emitted as a space-separated trigger attribute. When null, the attribute is omitted and the
+    /// Web Awesome default applies, which is hover and focus (<c>WaTrigger.Hover | WaTrigger.Focus</c>).
+    /// Use <see cref="WaTrigger.Manual"/> to control the tooltip only through <see cref="Open"/>.
     /// </summary>
-    [Parameter] public WaTrigger Trigger { get; set; } = WaTrigger.Hover;
+    [Parameter] public WaTrigger? Trigger { get; set; }
 
     /// <summary>
     /// Indicates whether the tooltip is open. Can be used in lieu of <see cref="ShowAsync"/>/<see cref="HideAsync"/>.
@@ -151,8 +154,7 @@ public class WaTooltip : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(10, "for", For);
         if (Placement != WaPlacement.Top)
             builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
-        if (Trigger != WaTrigger.Hover)
-            builder.AddAttribute(12, "trigger", Trigger.ToHtmlValue());
+        builder.AddAttributeIfNotNull(12, "trigger", Trigger?.ToHtmlValue());
         builder.AddAttribute(13, "open", Open);
         builder.AddAttribute(14, "without-arrow", WithoutArrow);
         builder.AddAttribute(15, "disabled", Disabled);

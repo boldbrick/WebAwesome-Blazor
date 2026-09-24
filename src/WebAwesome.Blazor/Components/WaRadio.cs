@@ -80,11 +80,6 @@ public class WaRadio : ComponentBase, IFormValidation
     #region ------ Events ------
 
     /// <summary>
-    /// Invoked when the checked state changes.
-    /// </summary>
-    [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
-
-    /// <summary>
     /// Invoked when the control gains focus.
     /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
@@ -122,9 +117,8 @@ public class WaRadio : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNull(7, "size", Size?.ToHtmlValue());
         builder.AddAttributeIfNotNull(8, "appearance", Appearance?.ToHtmlValue());
 
-        // Add event handlers
-        builder.AddAttributeIfHasDelegate(10, "onwa-change", OnCheckedChange);
-
+        // Add event handlers; wa-radio dispatches no change event of its own (selection changes are
+        // reported by the parent radio group)
         builder.AddAttributeIfHasDelegate(11, "onfocus", OnFocus);
 
         builder.AddAttributeIfHasDelegate(12, "onblur", OnBlur);

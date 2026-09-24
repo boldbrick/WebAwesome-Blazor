@@ -66,15 +66,6 @@ public class WaOption : ComponentBase
 
     #endregion
 
-    #region ------ Events ------
-
-    /// <summary>
-    /// Invoked when the selected state changes.
-    /// </summary>
-    [Parameter] public EventCallback<bool> OnSelectedChange { get; set; }
-
-    #endregion
-
     #region ------ Content ------
 
     /// <summary>
@@ -119,9 +110,6 @@ public class WaOption : ComponentBase
         builder.AddAttribute(5, "selected", Selected);
         builder.AddAttribute(6, "disabled", Disabled);
         builder.AddAttributeIfNotNullOrEmpty(7, "label", Label);
-
-        // Add event handlers
-        builder.AddAttributeIfHasDelegate(10, "onwa-change", OnSelectedChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __optionReference => Element = __optionReference);

@@ -77,6 +77,14 @@ public class WaNumberInput : WaInputBase<decimal?>
     /// </summary>
     [Parameter] public bool WithLabel { get; set; }
 
+    /// <summary>
+    /// Binds the value on every keystroke (the "input" event) instead of only when the change is committed (the
+    /// "change" event, e.g. on blur), so the model is current while the user is typing - for example when a key
+    /// handler reads it. Named after the equivalent MudBlazor and Fluent UI Blazor parameter. <see cref="WaInputBase{TValue}.OnInput"/>
+    /// is still invoked, after the value has been updated.
+    /// </summary>
+    [Parameter] public bool Immediate { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -153,11 +161,13 @@ public class WaNumberInput : WaInputBase<decimal?>
 
         // Add value binding
         builder.AddAttribute(31, "value", CurrentValueAsString);
-        builder.AddAttribute(32, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(32, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
-        // Add common event handlers
-        AddCommonEventHandlers(builder, 40);
+        // Add common event handlers; with immediate binding, the value binder and OnInput share one oninput handler
+        AddCommonEventHandlers(builder, 40, includeInputHandler: !Immediate);
+        if (Immediate)
+            builder.AddAttribute(47, "oninput", CreateImmediateInputHandler());
 
         // Add number-input-specific event handlers
         builder.AddAttributeIfHasDelegate(49, "onwa-invalid", OnInvalid);
@@ -237,6 +247,9 @@ public class WaNumberInput : WaInputBase<decimal?>
         validationErrorMessage = $"The {DisplayName} field must be a number.";
         return false;
     }
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 

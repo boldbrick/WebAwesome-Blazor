@@ -160,22 +160,6 @@ public class IncludeErrorEventArgs : EventArgs
     public string? Message { get; set; }
 }
 
-/// <summary>
-/// Event arguments for zoom change events
-/// </summary>
-public class ZoomChangeEventArgs : EventArgs
-{
-    /// <summary>
-    /// The new zoom level (1.0 = 100%)
-    /// </summary>
-    public double ZoomLevel { get; set; }
-
-    /// <summary>
-    /// The previous zoom level
-    /// </summary>
-    public double PreviousZoomLevel { get; set; }
-}
-
 #endregion
 
 #region ------ Tree Events ------

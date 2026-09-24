@@ -42,9 +42,10 @@ public class WaTimeInput : WaInputBase<string?>
     [Parameter] public string? Step { get; set; }
 
     /// <summary>
-    /// The preferred popup placement.
+    /// The preferred placement of the time picker popup, above or below the field. When null, the attribute is omitted and
+    /// Web Awesome's default (bottom-start) applies.
     /// </summary>
-    [Parameter] public WaPlacement? Placement { get; set; }
+    [Parameter] public WaPickerPlacement? Placement { get; set; }
 
     /// <summary>
     /// Distance in pixels between the popup and the input.
@@ -173,7 +174,7 @@ public class WaTimeInput : WaInputBase<string?>
 
         // Add value binding
         builder.AddAttribute(35, "value", CurrentValueAsString);
-        builder.AddAttribute(36, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(36, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
         // Add common event handlers
@@ -248,6 +249,9 @@ public class WaTimeInput : WaInputBase<string?>
         validationErrorMessage = null;
         return true;
     }
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 

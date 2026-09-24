@@ -101,6 +101,10 @@ public class WaInput : WaInputBase<string?>
     /// <summary>
     /// Determines whether or not the password is currently visible. Only applies to password input types.
     /// </summary>
+    /// <remarks>
+    /// One-way: when the user activates the <see cref="PasswordToggle"/> button, the element flips its own
+    /// visibility without dispatching an event or reflecting the attribute, so this parameter is not updated.
+    /// </remarks>
     [Parameter] public bool PasswordVisible { get; set; }
 
     /// <summary>
@@ -118,6 +122,14 @@ public class WaInput : WaInputBase<string?>
     /// </summary>
     [Parameter] public bool WithoutSpinButtons { get; set; }
 
+    /// <summary>
+    /// Binds the value on every keystroke (the "input" event) instead of only when the change is committed (the
+    /// "change" event, e.g. on blur), so the model is current while the user is typing - for example when a key
+    /// handler reads it. Named after the equivalent MudBlazor and Fluent UI Blazor parameter. <see cref="WaInputBase{TValue}.OnInput"/>
+    /// is still invoked, after the value has been updated.
+    /// </summary>
+    [Parameter] public bool Immediate { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -126,16 +138,6 @@ public class WaInput : WaInputBase<string?>
     /// Invoked when the clear button is activated.
     /// </summary>
     [Parameter] public EventCallback OnClear { get; set; }
-
-    /// <summary>
-    /// Invoked when the password visibility toggle button is activated.
-    /// </summary>
-    [Parameter] public EventCallback OnPasswordToggle { get; set; }
-
-    /// <summary>
-    /// Invoked when the password's visibility changes.
-    /// </summary>
-    [Parameter] public EventCallback<bool> OnPasswordVisibilityChange { get; set; }
 
     /// <summary>
     /// Invoked when the form control has been checked for validity and its constraints aren't satisfied.
@@ -202,19 +204,16 @@ public class WaInput : WaInputBase<string?>
 
         // Add value binding
         builder.AddAttribute(31, "value", CurrentValueAsString);
-        builder.AddAttribute(32, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(32, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
-        // Add common event handlers
-        AddCommonEventHandlers(builder, 40);
+        // Add common event handlers; with immediate binding, the value binder and OnInput share one oninput handler
+        AddCommonEventHandlers(builder, 40, includeInputHandler: !Immediate);
+        if (Immediate)
+            builder.AddAttribute(47, "oninput", CreateImmediateInputHandler());
 
         // Add input-specific event handlers
         builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
-
-        builder.AddAttributeIfHasDelegate(51, "onwa-password-toggle", OnPasswordToggle);
-
-        builder.AddAttributeIfHasDelegate(52, "onwa-password-visibility-change", OnPasswordVisibilityChange);
-
         builder.AddAttributeIfHasDelegate(49, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
@@ -259,6 +258,9 @@ public class WaInput : WaInputBase<string?>
         validationErrorMessage = null;
         return true;
     }
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 
@@ -312,6 +314,10 @@ public class WaInput : WaInputBase<string?>
     /// <param name="selectMode">How the selection should be set after the text is replaced. One of
     /// <c>select</c>, <c>start</c>, <c>end</c>, or <c>preserve</c> (default)</param>
     /// <returns>A task that represents the asynchronous operation</returns>
+    /// <remarks>
+    /// The element dispatches no input or change event for this change, so the resulting value is read back and
+    /// assigned to the bound value (which also notifies the edit context).
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task SetRangeTextAsync(string replacement, int? start = null, int? end = null, string selectMode = "preserve")
     {
@@ -323,6 +329,8 @@ public class WaInput : WaInputBase<string?>
             await JSInterop.InvokeMethodAsync(Element.Value, "setRangeText", replacement, start.Value, end.Value, selectMode);
         else
             await JSInterop.InvokeMethodAsync(Element.Value, "setRangeText", replacement);
+
+        SetCurrentValueAsStringFromElement(await JSInterop.GetPropertyAsync<string?>(Element.Value, "value"));
     }
 
     /// <summary>

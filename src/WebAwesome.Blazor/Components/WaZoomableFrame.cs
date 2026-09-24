@@ -131,17 +131,14 @@ public class WaZoomableFrame : ComponentBase
     #region ------ Events ------
 
     /// <summary>
-    /// Emitted when the zoom level changes
-    /// </summary>
-    [Parameter] public EventCallback<ZoomChangeEventArgs> OnZoomChange { get; set; }
-
-    /// <summary>
-    /// Emitted when the frame content loads
+    /// Invoked when the internal iframe finishes loading (native <c>load</c> event re-dispatched on the host
+    /// element).
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnLoad { get; set; }
 
     /// <summary>
-    /// Emitted when the frame content fails to load
+    /// Invoked when the internal iframe fails to load (native <c>error</c> event re-dispatched on the host
+    /// element).
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnError { get; set; }
 
@@ -185,10 +182,11 @@ public class WaZoomableFrame : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(34, "referrerpolicy", ReferrerPolicy);
         builder.AddAttributeIfNotNullOrEmpty(35, "sandbox", Sandbox);
 
-        // Add event handlers
-        builder.AddAttributeIfHasDelegate(40, "onwa-zoom-change", OnZoomChange);
-        builder.AddAttributeIfHasDelegate(41, "onwa-load", OnLoad);
-        builder.AddAttributeIfHasDelegate(42, "onwa-error", OnError);
+        // native load/error events re-dispatched by wa-zoomable-frame on the host element (non-bubbling,
+        // composed); delivered through Blazor's built-in non-bubbling event registration (no
+        // registerCustomEventType needed)
+        builder.AddAttributeIfHasDelegate(41, "onload", OnLoad);
+        builder.AddAttributeIfHasDelegate(42, "onerror", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(50, __frameReference => Element = __frameReference);

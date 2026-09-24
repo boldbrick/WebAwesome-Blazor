@@ -96,9 +96,10 @@ public class WaDateInput : WaInputBase<string?>
     [Parameter] public string? Today { get; set; }
 
     /// <summary>
-    /// The preferred popup placement.
+    /// The preferred placement of the date picker popup, above or below the field. When null, the attribute is omitted and
+    /// Web Awesome's default (bottom-start) applies.
     /// </summary>
-    [Parameter] public WaPlacement? Placement { get; set; }
+    [Parameter] public WaPickerPlacement? Placement { get; set; }
 
     /// <summary>
     /// Distance in pixels between the popup and the input.
@@ -254,7 +255,7 @@ public class WaDateInput : WaInputBase<string?>
 
         // Add value binding
         builder.AddAttribute(45, "value", CurrentValueAsString);
-        builder.AddAttribute(46, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(46, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
         // Add common event handlers
@@ -347,6 +348,9 @@ public class WaDateInput : WaInputBase<string?>
         validationErrorMessage = null;
         return true;
     }
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 

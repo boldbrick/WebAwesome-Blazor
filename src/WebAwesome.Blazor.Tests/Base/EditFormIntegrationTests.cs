@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Tests.Forms;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Base;
@@ -161,7 +162,7 @@ public class EditFormIntegrationTests : BunitContext
         var model = new TestModel { Name = "Ada", Score = 3 };
         var cut = RenderRatingForm(model);
 
-        cut.Find("wa-rating").Change("4");
+        cut.Find("wa-rating").NumericChange("4");
 
         Assert.Equal(4m, model.Score);
     }

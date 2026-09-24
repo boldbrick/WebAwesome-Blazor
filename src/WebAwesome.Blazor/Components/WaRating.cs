@@ -64,16 +64,19 @@ public class WaRating : WaInputBase<decimal>
         builder.AddAttribute(23, "value", BindConverter.FormatValue(CurrentValue));
         builder.AddAttribute(24, "default-value", DefaultValue);
 
-        // Add value binding
-        builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<decimal>(this, __value => CurrentValue = __value, CurrentValue));
+        // Add value binding; the element's live value is a JS number, which Blazor's built-in change reader cannot
+        // carry, so the handler listens to the "numericchange" alias of the change event that delivers it as an
+        // invariant-culture string. No live-property sync is needed: the value attribute maps to the live property.
+        builder.AddAttribute(30, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChange));
         builder.SetUpdatesAttributeName("value");
 
         // Add rating-specific event handlers
         builder.AddAttributeIfHasDelegate(40, "onwa-hover", OnHover);
         builder.AddAttributeIfHasDelegate(41, "onwa-invalid", OnInvalid);
 
-        // Add common event handlers
-        AddCommonEventHandlers(builder, 50);
+        // Add common event handlers; an input event would carry the same JS number, so OnInput is bound to its alias
+        AddCommonEventHandlers(builder, 50, includeInputHandler: false);
+        AddNumericInputHandler(builder, 56);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(60, __ratingReference => Element = __ratingReference);
@@ -144,6 +147,18 @@ public class WaRating : WaInputBase<decimal>
             throw new ArgumentNullException(nameof(jsFunction));
 
         await JSInterop.SetPropertyAsync(Element.Value, "getSymbol", jsFunction);
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // handles the change event, whose value the numericchange alias delivers as a JS-formatted number; leaves the
+    // model unchanged when the value cannot be parsed
+    private void HandleValueChange(ChangeEventArgs args)
+    {
+        if (ChangeEventArgsExtensions.TryParseJsNumber(args.GetStringValue(), out var value))
+            CurrentValue = value;
     }
 
     #endregion

@@ -37,7 +37,7 @@ public class FormControlCommonParameterTests : FormControlTestBase
         Assert.Equal("As it appears on your ID", element.GetAttribute("hint"));
         Assert.True(element.HasAttribute("required"));
         Assert.True(element.HasAttribute("disabled"));
-        Assert.Equal("large", element.GetAttribute("size"));
+        Assert.Equal("l", element.GetAttribute("size"));
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class FormControlCommonParameterTests : FormControlTestBase
         Assert.Equal("Pick one", element.GetAttribute("hint"));
         Assert.True(element.HasAttribute("required"));
         Assert.True(element.HasAttribute("disabled"));
-        Assert.Equal("small", element.GetAttribute("size"));
+        Assert.Equal("s", element.GetAttribute("size"));
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class FormControlCommonParameterTests : FormControlTestBase
         Assert.Equal("0 to 100", element.GetAttribute("hint"));
         Assert.True(element.HasAttribute("required"));
         Assert.True(element.HasAttribute("disabled"));
-        Assert.Equal("medium", element.GetAttribute("size"));
+        Assert.Equal("m", element.GetAttribute("size"));
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class FormControlCommonParameterTests : FormControlTestBase
         Assert.Equal("Tell us about yourself", element.GetAttribute("hint"));
         Assert.True(element.HasAttribute("required"));
         Assert.True(element.HasAttribute("disabled"));
-        Assert.Equal("small", element.GetAttribute("size"));
+        Assert.Equal("s", element.GetAttribute("size"));
     }
 
     #region ------ Internals ------

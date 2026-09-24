@@ -48,9 +48,10 @@ public class WaSelect : WaInputBase<string?>
     [Parameter] public int? MaxOptionsVisible { get; set; }
 
     /// <summary>
-    /// The preferred placement of the select's menu. The actual placement may vary as needed to keep the listbox inside the viewport.
+    /// The preferred placement of the select's menu, above or below the field. The actual placement may vary as needed to keep
+    /// the listbox inside the viewport. When null, the attribute is omitted and Web Awesome's default (bottom) applies.
     /// </summary>
-    [Parameter] public WaPlacement? Placement { get; set; }
+    [Parameter] public WaListboxPlacement? Placement { get; set; }
 
     /// <summary>
     /// Indicates whether the select's dropdown is open.

@@ -35,7 +35,8 @@ public class WaSwitch : WaInputBase<bool>
     #region ------ Events ------
 
     /// <summary>
-    /// Invoked when the switch's checked state changes.
+    /// Invoked with the new checked state when the user changes it (the element's change event), after the bound
+    /// value has been updated.
     /// </summary>
     [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
 
@@ -82,8 +83,7 @@ public class WaSwitch : WaInputBase<bool>
         // Add common event handlers
         AddCommonEventHandlers(builder, 30);
 
-        // Add switch-specific event handlers
-        builder.AddAttributeIfHasDelegate(40, "onwa-change", OnCheckedChange);
+        // Add switch-specific event handlers; OnCheckedChange is invoked by the change handler above
         builder.AddAttributeIfHasDelegate(42, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
@@ -104,6 +104,12 @@ public class WaSwitch : WaInputBase<bool>
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out bool result, [NotNullWhen(false)] out string? validationErrorMessage)
         => throw new NotSupportedException($"This component does not parse string inputs. Bind to the '{nameof(CurrentValue)}' property, not '{nameof(CurrentValueAsString)}'.");
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "checked";
+
+    /// <inheritdoc />
+    protected override object? GetLiveValue() => CurrentValue;
 
     #endregion
 
@@ -153,12 +159,17 @@ public class WaSwitch : WaInputBase<bool>
     #region ------ Internals ------
 
     // reads the switch's real checked state via JS interop, since the "change" event's own value
-    // (Blazor reads .value for non-<input> elements) is a static placeholder, not the actual state
+    // (Blazor reads .value for non-<input> elements) is a static placeholder, not the actual state;
+    // then reports the new state through OnCheckedChange
     private async Task HandleCheckedChangedAsync(ChangeEventArgs args)
     {
         if (Element is null) return;
 
-        CurrentValue = await JSInterop.GetPropertyAsync<bool>(Element.Value, "checked");
+        var isChecked = await JSInterop.GetPropertyAsync<bool>(Element.Value, "checked");
+        MarkLiveValueSynced(isChecked);
+        CurrentValue = isChecked;
+
+        await OnCheckedChange.InvokeAsync(isChecked);
     }
 
     #endregion

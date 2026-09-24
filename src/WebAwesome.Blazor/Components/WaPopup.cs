@@ -149,7 +149,9 @@ public class WaPopup : ComponentBase
 
     // Auto-size behavior
     /// <summary>
-    /// When set, causes the popup to automatically resize itself to prevent it from overflowing.
+    /// When set, causes the popup to automatically resize itself to prevent it from overflowing:
+    /// <see cref="WaAutoSize.Horizontal"/> resizes the width, <see cref="WaAutoSize.Vertical"/> the height and
+    /// <see cref="WaAutoSize.Both"/> both. <see cref="WaAutoSize.None"/> (the default) omits the auto-size attribute.
     /// </summary>
     [Parameter] public WaAutoSize AutoSize { get; set; } = WaAutoSize.None;
 

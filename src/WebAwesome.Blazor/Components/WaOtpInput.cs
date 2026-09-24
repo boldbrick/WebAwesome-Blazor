@@ -116,7 +116,7 @@ public class WaOtpInput : WaInputBase<string?>
 
         // Add value binding
         builder.AddAttribute(31, "value", CurrentValueAsString);
-        builder.AddAttribute(32, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(32, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
         // Add common event handlers
@@ -143,6 +143,9 @@ public class WaOtpInput : WaInputBase<string?>
         validationErrorMessage = null;
         return true;
     }
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 

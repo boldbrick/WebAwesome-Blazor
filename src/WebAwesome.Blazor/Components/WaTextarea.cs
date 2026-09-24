@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.AspNetCore.Components.Web;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -14,49 +9,21 @@ namespace WebAwesome.Blazor.Components;
 
 /// <summary>
 /// A multiline input component for editing <see cref="string"/> values.
+/// Corresponds to the wa-textarea Web Awesome component.
 /// </summary>
-public class WaTextArea : InputBase<string?>, IFormValidation
+public class WaTextArea : WaInputBase<string?>
 {
-    #region ------ Dependency Injection ------
+    #region ------ Visual & Behavior Properties ------
 
-    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
-
-    #endregion
-
-    /// <summary>
-    /// The associated <see cref="ElementReference"/>.
-    /// <para>
-    /// May be null if accessed before the component is rendered.
-    /// </para>
-    /// </summary>
-    [DisallowNull] public ElementReference? Element { get; protected set; }
-
-    // ----- Common parameters -----
-    /// <summary>
-    /// Additional CSS class names applied to the rendered element.
-    /// </summary>
-    [Parameter] public string? Class { get; set; }
-
-    /// <summary>
-    /// Inline CSS style applied to the rendered element.
-    /// </summary>
-    [Parameter] public string? Style { get; set; }
-
-    // --- Visual & behavior props ---
     /// <summary>
     /// Placeholder text to show as a hint when the input is empty.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
 
     /// <summary>
-    /// The number of rows to display by default.
+    /// The number of rows to display by default. When not set, the Web Awesome default applies.
     /// </summary>
-    [Parameter] public int Rows { get; set; }
-
-    /// <summary>
-    /// The textarea's size.
-    /// </summary>
-    [Parameter] public WaSize? Size { get; set; }
+    [Parameter] public int? Rows { get; set; }
 
     /// <summary>
     /// The textarea's visual appearance.
@@ -67,38 +34,6 @@ public class WaTextArea : InputBase<string?>, IFormValidation
     /// Controls how the textarea can be resized.
     /// </summary>
     [Parameter] public WaResize? Resize { get; set; }
-
-    /// <summary>
-    /// Disables the textarea.
-    /// </summary>
-    [Parameter] public bool Disabled { get; set; }
-
-    /// <summary>
-    /// Makes the textarea readonly.
-    /// </summary>
-    [Parameter] public bool Readonly { get; set; }
-
-    /// <summary>
-    /// Makes the textarea a required field.
-    /// </summary>
-    [Parameter] public bool Required { get; set; }
-
-    // Validation
-    /// <summary>
-    /// The minimum length of input that will be considered valid.
-    /// </summary>
-    [Parameter] public int? MinLength { get; set; }
-
-    /// <summary>
-    /// The maximum length of input that will be considered valid.
-    /// </summary>
-    [Parameter] public int? MaxLength { get; set; }
-
-    // Browser behavior
-    /// <summary>
-    /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
-    /// </summary>
-    [Parameter] public string? Autocomplete { get; set; }
 
     /// <summary>
     /// Enables spell checking on the textarea.
@@ -132,60 +67,34 @@ public class WaTextArea : InputBase<string?>, IFormValidation
     [Parameter] public string? InputMode { get; set; }
 
     /// <summary>
-    /// Used for SSR. If you're slotting in a hint element via <see cref="MarkupHint"/>, make sure to set this
-    /// to true.
+    /// Used for SSR. If you're slotting in a hint element via <see cref="WaInputBase{TValue}.MarkupHint"/>, make sure
+    /// to set this to true.
     /// </summary>
     [Parameter] public bool WithHint { get; set; }
 
     /// <summary>
-    /// Used for SSR. If you're slotting in a label element via <see cref="MarkupLabel"/>, make sure to set this
-    /// to true.
+    /// Used for SSR. If you're slotting in a label element via <see cref="WaInputBase{TValue}.MarkupLabel"/>, make
+    /// sure to set this to true.
     /// </summary>
     [Parameter] public bool WithLabel { get; set; }
 
     /// <summary>
-    /// Shows a character count below the textarea. When <see cref="MaxLength"/> is set, shows the remaining
-    /// characters instead.
+    /// Shows a character count below the textarea. When <see cref="WaInputBase{TValue}.MaxLength"/> is set, shows
+    /// the remaining characters instead.
     /// </summary>
     [Parameter] public bool WithCount { get; set; }
 
-    // Labels & hint (string or RenderFragment via MarkupX)
     /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute.
+    /// Binds the value on every keystroke (the "input" event) instead of only when the change is committed (the
+    /// "change" event, e.g. on blur), so the model is current while the user is typing - for example when a key
+    /// handler such as Ctrl+Enter reads it. Named after the equivalent MudBlazor and Fluent UI Blazor parameter.
+    /// <see cref="WaInputBase{TValue}.OnInput"/> is still invoked, after the value has been updated.
     /// </summary>
-    [Parameter] public string? Label { get; set; }
+    [Parameter] public bool Immediate { get; set; }
 
-    /// <summary>
-    /// Rich markup label rendered into the "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
+    #endregion
 
     #region ------ Events ------
-
-    /// <summary>
-    /// Emitted when the control loses focus.
-    /// </summary>
-    [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
-
-    /// <summary>
-    /// Emitted when the control gains focus.
-    /// </summary>
-    [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
-
-    /// <summary>
-    /// Emitted when the control receives input.
-    /// </summary>
-    [Parameter] public EventCallback<ChangeEventArgs> OnInput { get; set; }
 
     /// <summary>
     /// Emitted when the form control has been checked for validity and its constraints aren't satisfied.
@@ -194,33 +103,22 @@ public class WaTextArea : InputBase<string?>, IFormValidation
 
     #endregion
 
+    #region ------ Overrides ------
+
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
         builder.OpenElement(0, "wa-textarea");
-        builder.AddMultipleAttributes(1, AdditionalAttributes);
-        builder.AddAttributeIfNotNullOrEmpty(2, "name", NameAttributeValue);
-        builder.AddAttributeIfNotNullOrEmpty(3, "class", String.Join(' ', Class, CssClass));
-        builder.AddAttributeIfNotNullOrEmpty(4, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(5, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNull(6, "rows", Rows);
-        builder.AddAttributeIfNotNull(7, "size", Size?.ToString().ToLowerInvariant());
-        builder.AddAttributeIfNotNull(8, "appearance", Appearance?.ToString().ToLowerInvariant());
-        builder.AddAttributeIfNotNull(9, "resize", Resize?.ToString().ToLowerInvariant());
-        builder.AddAttribute(10, "disabled", Disabled);
-        builder.AddAttribute(11, "readonly", Readonly);
-        builder.AddAttribute(12, "required", Required);
-        builder.AddAttributeIfNotNull(13, "minlength", MinLength);
-        builder.AddAttributeIfNotNull(14, "maxlength", MaxLength);
-        builder.AddAttributeIfNotNullOrEmpty(15, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNull(16, "spellcheck", Spellcheck);
-        builder.AddAttributeIfNotNullOrEmpty(17, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(18, "hint", Hint);
-        builder.AddAttribute(19, "value", CurrentValueAsString);
-        builder.AddAttribute(20, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
-        builder.SetUpdatesAttributeName("value");
 
-        // Additional attributes
+        // Add common attributes
+        AddCommonAttributes(builder, 1);
+
+        // Add textarea-specific attributes
+        builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
+        builder.AddAttributeIfNotNull(21, "rows", Rows);
+        builder.AddAttributeIfNotNull(22, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(23, "resize", Resize?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(24, "spellcheck", Spellcheck);
         builder.AddAttributeIfNotNullOrEmpty(30, "autocapitalize", AutoCapitalize);
         builder.AddAttributeIfNotNullOrEmpty(31, "autocorrect", AutoCorrect);
         builder.AddAttribute(32, "autofocus", AutoFocus);
@@ -230,27 +128,25 @@ public class WaTextArea : InputBase<string?>, IFormValidation
         builder.AddAttribute(36, "with-label", WithLabel);
         builder.AddAttribute(37, "with-count", WithCount);
 
-        // Event handlers
-        builder.AddAttributeIfHasDelegate(40, "onblur", OnBlur);
-        builder.AddAttributeIfHasDelegate(41, "onfocus", OnFocus);
-        builder.AddAttributeIfHasDelegate(42, "oninput", OnInput);
-        builder.AddAttributeIfHasDelegate(43, "onwa-invalid", OnInvalid);
+        // Add value binding
+        builder.AddAttribute(25, "value", CurrentValueAsString);
+        builder.AddAttribute(26, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
+        builder.SetUpdatesAttributeName("value");
 
-        builder.AddElementReferenceCapture(50, __inputReference => Element = __inputReference);
-        if (MarkupLabel is not null)
-        {
-            builder.OpenElement(51, "span");
-            builder.AddAttribute(52, "slot", "label");
-            builder.AddContent(53, MarkupLabel);
-            builder.CloseElement();
-        }
-        if (MarkupHint is not null)
-        {
-            builder.OpenElement(54, "span");
-            builder.AddAttribute(55, "slot", "hint");
-            builder.AddContent(56, MarkupHint);
-            builder.CloseElement();
-        }
+        // Add common event handlers; with immediate binding, the value binder and OnInput share one oninput handler
+        AddCommonEventHandlers(builder, 40, includeInputHandler: !Immediate);
+        if (Immediate)
+            builder.AddAttribute(46, "oninput", CreateImmediateInputHandler());
+
+        // Add textarea-specific event handlers
+        builder.AddAttributeIfHasDelegate(47, "onwa-invalid", OnInvalid);
+
+        // Add element reference capture
+        builder.AddElementReferenceCapture(50, __textAreaReference => Element = __textAreaReference);
+
+        // Add label and hint slots
+        AddLabelAndHintSlots(builder, 60);
+
         builder.CloseElement();
     }
 
@@ -262,25 +158,8 @@ public class WaTextArea : InputBase<string?>, IFormValidation
         return true;
     }
 
-    #region ------ Implementation of IFormValidation ------
-
     /// <inheritdoc />
-    public async Task SetCustomValidityAsync(string message)
-    {
-        if (Element is null)
-            throw new InvalidOperationException("Cannot set custom validity before the component is rendered. Element reference is null.");
-
-        await JSInterop.SetCustomValidityAsync(Element.Value, message);
-    }
-
-    /// <inheritdoc />
-    public async Task ResetValidityAsync()
-    {
-        if (Element is null)
-            throw new InvalidOperationException("Cannot reset validity before the component is rendered. Element reference is null.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "resetValidity");
-    }
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 
@@ -350,6 +229,10 @@ public class WaTextArea : InputBase<string?>, IFormValidation
     /// <param name="start">The zero-based index of the start of the range to replace</param>
     /// <param name="end">The zero-based index of the end of the range to replace</param>
     /// <param name="selectMode">How the selection should be set after the replacement</param>
+    /// <remarks>
+    /// The element dispatches no input or change event for this change, so the resulting value is read back and
+    /// assigned to the bound value (which also notifies the edit context).
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task SetRangeTextAsync(string replacement, int? start = null, int? end = null, WaTextAreaSelectMode selectMode = WaTextAreaSelectMode.Preserve)
     {
@@ -361,6 +244,8 @@ public class WaTextArea : InputBase<string?>, IFormValidation
             await JSInterop.InvokeMethodAsync(Element.Value, "setRangeText", replacement, start.Value, end.Value, selectMode.ToHtmlValue());
         else
             await JSInterop.InvokeMethodAsync(Element.Value, "setRangeText", replacement);
+
+        SetCurrentValueAsStringFromElement(await JSInterop.GetPropertyAsync<string?>(Element.Value, "value"));
     }
 
     /// <summary>

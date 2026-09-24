@@ -70,20 +70,22 @@ public class WaRelativeTime : ComponentBase
     [Parameter] public bool Sync { get; set; }
 
     /// <summary>
-    /// The formatting style to use.
+    /// The formatting style to use, e.g. "3 hours ago" (long), "3 hr. ago" (short) or "3h ago" (narrow).
+    /// When null, no attribute is emitted and Web Awesome uses its default, long.
     /// </summary>
-    [Parameter] public WaFormat Format { get; set; } = WaFormat.Auto;
+    [Parameter] public WaRelativeTimeFormat? Format { get; set; }
 
     /// <summary>
     /// The locale used to format the relative time phrase, e.g. "en-US".
     /// </summary>
     [Parameter] public string? Lang { get; set; }
 
-    // Numeric style for format
     /// <summary>
-    /// When true, values such as "yesterday" and "tomorrow" are shown when possible; when false, values such as "1 day ago" are always used.
+    /// Controls whether idiomatic phrases such as "yesterday" and "tomorrow" are used (auto) or numeric
+    /// phrases such as "1 day ago" are always used (always).
+    /// When null, no attribute is emitted and Web Awesome uses its default, auto.
     /// </summary>
-    [Parameter] public bool Numeric { get; set; } = true;
+    [Parameter] public WaRelativeTimeNumeric? Numeric { get; set; }
 
     #endregion
 
@@ -111,11 +113,9 @@ public class WaRelativeTime : ComponentBase
         }
 
         builder.AddAttribute(11, "sync", Sync);
-        if (Format != WaFormat.Auto)
-            builder.AddAttribute(12, "format", Format.ToHtmlValue());
+        builder.AddAttributeIfNotNull(12, "format", Format?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(13, "lang", Lang);
-        if (!Numeric)
-            builder.AddAttribute(14, "numeric", Numeric);
+        builder.AddAttributeIfNotNull(14, "numeric", Numeric?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __relativeTimeReference => Element = __relativeTimeReference);
@@ -152,7 +152,7 @@ public class WaRelativeTime : ComponentBase
 
     #endregion
 
-    #region ------ Private Methods ------
+    #region ------ Internals ------
 
     /// <summary>
     /// Gets the CSS class string combining user classes
@@ -165,16 +165,6 @@ public class WaRelativeTime : ComponentBase
             classes.Add(Class);
 
         return string.Join(' ', classes);
-    }
-
-    /// <summary>
-    /// Gets the date as a string for JavaScript interop
-    /// </summary>
-    private string? GetDateString()
-    {
-        if (Date.HasValue)
-            return Date.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-        return DateString;
     }
 
     #endregion

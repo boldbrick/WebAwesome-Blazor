@@ -36,7 +36,7 @@ public class WaRatingEditFormTests : FormControlTestBase
         var model = new RatingModel { Stars = 3m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-rating").Change("4");
+        cut.Find("wa-rating").NumericChange("4");
 
         Assert.Equal(4m, model.Stars);
     }
@@ -48,7 +48,7 @@ public class WaRatingEditFormTests : FormControlTestBase
         var cut = RenderForm(model);
 
         // Range(1, 5) violated by zero
-        cut.Find("wa-rating").Change("0");
+        cut.Find("wa-rating").NumericChange("0");
 
         var cssClass = cut.Find("wa-rating").GetAttribute("class");
         Assert.Contains("modified", cssClass);
@@ -61,8 +61,8 @@ public class WaRatingEditFormTests : FormControlTestBase
         var model = new RatingModel { Stars = 3m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-rating").Change("0");
-        cut.Find("wa-rating").Change("4");
+        cut.Find("wa-rating").NumericChange("0");
+        cut.Find("wa-rating").NumericChange("4");
 
         var cssClass = cut.Find("wa-rating").GetAttribute("class");
         Assert.Contains("modified", cssClass);

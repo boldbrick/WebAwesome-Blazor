@@ -52,7 +52,7 @@ public class WaAccordion : ComponentBase
     /// <summary>
     /// The accordion's visual appearance.
     /// </summary>
-    [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.Outlined;
+    [Parameter] public WaDetailsAppearance Appearance { get; set; } = WaDetailsAppearance.Outlined;
 
     /// <summary>
     /// The heading level for child item triggers (1–6), or "none" to omit the heading wrapper. Defaults to "3".
@@ -117,7 +117,7 @@ public class WaAccordion : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add accordion-specific attributes
-        if (Appearance != WaAppearance.Outlined)
+        if (Appearance != WaDetailsAppearance.Outlined)
             builder.AddAttribute(10, "appearance", Appearance.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(11, "heading-level", HeadingLevel);
         if (IconPlacement != WaIconPlacement.End)

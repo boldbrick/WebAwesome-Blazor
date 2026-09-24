@@ -82,7 +82,7 @@ public class WaKnownDate : WaInputBase<string?>
 
         // Add value binding
         builder.AddAttribute(30, "value", CurrentValueAsString);
-        builder.AddAttribute(31, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(31, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
         // Add common event handlers
@@ -107,6 +107,9 @@ public class WaKnownDate : WaInputBase<string?>
         validationErrorMessage = null;
         return true;
     }
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 

@@ -187,32 +187,68 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// Adds common event handlers to the render tree builder
     /// </summary>
     /// <param name="builder">The render tree builder</param>
-    /// <param name="sequence">The starting sequence number</param>
+    /// <param name="sequence">The constant base sequence number; uses sequence + 0..5</param>
     /// <returns>The next available sequence number</returns>
     protected int AddCommonEventHandlers(RenderTreeBuilder builder, int sequence)
+        => AddCommonEventHandlers(builder, sequence, includeInputHandler: true);
+
+    /// <summary>
+    /// Adds common event handlers to the render tree builder, optionally leaving out the <see cref="OnInput"/>
+    /// handler for a derived class that emits its own "oninput" handler (e.g. merged with the value binder, see
+    /// <see cref="CreateImmediateInputHandler"/>) or binds <see cref="OnInput"/> to a different event
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number; uses sequence + 0..5</param>
+    /// <param name="includeInputHandler">Whether to emit <see cref="OnInput"/> as the "oninput" handler</param>
+    /// <returns>The next available sequence number</returns>
+    protected int AddCommonEventHandlers(RenderTreeBuilder builder, int sequence, bool includeInputHandler)
     {
-        var currentSequence = sequence;
+        builder.AddAttributeIfHasDelegate(sequence + 0, "onfocus", OnFocus);
+        builder.AddAttributeIfHasDelegate(sequence + 1, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(sequence + 2, "onkeydown", OnKeyDown);
+        builder.AddAttributeIfHasDelegate(sequence + 3, "onkeyup", OnKeyUp);
+        builder.AddAttributeIfHasDelegate(sequence + 4, "onkeypress", OnKeyPress);
 
-        if (OnFocus.HasDelegate)
-            builder.AddAttribute(currentSequence++, "onfocus", OnFocus);
+        if (includeInputHandler)
+            builder.AddAttributeIfHasDelegate(sequence + 5, "oninput", OnInput);
 
-        if (OnBlur.HasDelegate)
-            builder.AddAttribute(currentSequence++, "onblur", OnBlur);
-
-        if (OnKeyDown.HasDelegate)
-            builder.AddAttribute(currentSequence++, "onkeydown", OnKeyDown);
-
-        if (OnKeyUp.HasDelegate)
-            builder.AddAttribute(currentSequence++, "onkeyup", OnKeyUp);
-
-        if (OnKeyPress.HasDelegate)
-            builder.AddAttribute(currentSequence++, "onkeypress", OnKeyPress);
-
-        if (OnInput.HasDelegate)
-            builder.AddAttribute(currentSequence++, "oninput", OnInput);
-
-        return currentSequence;
+        return sequence + 6;
     }
+
+    /// <summary>
+    /// Records the value the element's live property currently holds (in the JS type returned by
+    /// <see cref="GetLiveValue"/>), so the next render does not push it back to the element. Call it with the
+    /// element's own value whenever a value arrives from the element (change/input binders, read-backs), before
+    /// the model is assigned; a later C#-side change then differs from the recorded value and is pushed.
+    /// </summary>
+    /// <param name="value">The element's live value</param>
+    protected void MarkLiveValueSynced(object? value)
+    {
+        lastSyncedLiveValue = value;
+        hasSyncedLiveValue = true;
+    }
+
+    /// <summary>
+    /// Assigns a string value received from the element to <see cref="InputBase{TValue}.CurrentValueAsString"/>
+    /// (which parses it and notifies the edit context), recording it as the element's live value first; the
+    /// setter for value binders created with <c>EventCallback.Factory.CreateBinder&lt;string?&gt;</c>
+    /// </summary>
+    /// <param name="value">The element's value</param>
+    protected void SetCurrentValueAsStringFromElement(string? value)
+    {
+        MarkLiveValueSynced(value);
+        CurrentValueAsString = value;
+    }
+
+    /// <summary>
+    /// Creates the single "oninput" handler of an opt-in immediate binding: it updates the value from the input
+    /// event (like the "onchange" binder does on commit) and then invokes <see cref="OnInput"/>. Emit it instead
+    /// of the common "oninput" handler (see <see cref="AddCommonEventHandlers(RenderTreeBuilder, int, bool)"/>),
+    /// because two attributes with the same name would clash.
+    /// </summary>
+    /// <returns>The merged input handler</returns>
+    protected EventCallback<ChangeEventArgs> CreateImmediateInputHandler()
+        => EventCallback.Factory.Create<ChangeEventArgs>(this, HandleImmediateInputAsync);
 
     /// <summary>
     /// Adds label and hint slots to the render tree if MarkupLabel or MarkupHint are provided
@@ -264,6 +300,107 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
 
         await JSInterop.InvokeMethodAsync(Element.Value, "resetValidity");
     }
+
+    #endregion
+
+    #region ------ Overrides ------
+
+    /// <summary>
+    /// Pushes a C#-side value change into the element's live property (see <see cref="LiveValuePropertyName"/>).
+    /// Derived classes overriding this method must call the base implementation.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first time the component has rendered</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        await SyncLiveValueAsync(firstRender);
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // pushes the model into the live property when it changed since the value last known to the element; the
+    // first render only records it, because the attribute already delivered the initial value
+    private async Task SyncLiveValueAsync(bool firstRender)
+    {
+        var propertyName = LiveValuePropertyName;
+        if (propertyName is null)
+        {
+            // re-baseline once syncing applies again (e.g. a slider switched out of range mode)
+            hasSyncedLiveValue = false;
+            return;
+        }
+
+        var liveValue = GetLiveValue();
+        if (firstRender || !hasSyncedLiveValue)
+        {
+            MarkLiveValueSynced(liveValue);
+            return;
+        }
+
+        if (Element is null || Equals(liveValue, lastSyncedLiveValue)) return;
+
+        // recorded before the call, so a render completing meanwhile does not push the same value again
+        MarkLiveValueSynced(liveValue);
+        await JSInterop.SyncPropertyAsync(Element.Value, propertyName, liveValue);
+    }
+
+    // the merged immediate-binding input handler, see CreateImmediateInputHandler
+    private async Task HandleImmediateInputAsync(ChangeEventArgs args)
+    {
+        SetCurrentValueAsStringFromElement(args.Value as string);
+
+        // while typing, the wrapper's own formatting of an in-progress value (e.g. "1." parsed and formatted as
+        // "1") must not be pushed back into the element; the change binder records the raw value on commit, so
+        // such a normalization is pushed then, and a model change made by the parent differs and is pushed anyway
+        MarkLiveValueSynced(GetLiveValue());
+
+        await OnInput.InvokeAsync(args);
+    }
+
+    /// <summary>
+    /// Binds <see cref="OnInput"/> to the numericinput alias of the input event, for number-valued elements whose
+    /// input event Blazor's built-in reader cannot carry (see <see cref="Constants.NumericInputEventAttribute"/>);
+    /// use together with <see cref="AddCommonEventHandlers(RenderTreeBuilder, int, bool)"/> leaving out the input
+    /// handler. <see cref="OnInput"/> receives the value as a string, like with the built-in input event.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The sequence number for the handler attribute</param>
+    internal void AddNumericInputHandler(RenderTreeBuilder builder, int sequence)
+    {
+        if (OnInput.HasDelegate)
+            builder.AddAttribute(sequence, Constants.NumericInputEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleNumericInputAsync));
+    }
+
+    // hands OnInput the same string-valued ChangeEventArgs the built-in input event would
+    private Task HandleNumericInputAsync(ChangeEventArgs args)
+        => OnInput.InvokeAsync(new ChangeEventArgs { Value = args.GetStringValue() });
+
+    // the live value last pushed to or received from the element; only meaningful when hasSyncedLiveValue is set
+    private object? lastSyncedLiveValue;
+    private bool hasSyncedLiveValue;
+
+    #endregion
+
+    #region ------ Interface for descendants ------
+
+    /// <summary>
+    /// Name of the element's live property that holds the current value, for elements whose value attribute only
+    /// sets the default (Web Awesome maps value/checked to defaultValue/defaultChecked, and the element ignores the
+    /// attribute once the user has interacted). When set, a C#-side value change is pushed into this property
+    /// after rendering. Null (the default) means the attribute reaches the live property and no sync is needed.
+    /// </summary>
+    protected virtual string? LiveValuePropertyName => null;
+
+    /// <summary>
+    /// The current value typed as the element's live property expects it (string, number or boolean). Values
+    /// passed to <see cref="MarkLiveValueSynced"/> must use the same type. Defaults to
+    /// <see cref="InputBase{TValue}.CurrentValueAsString"/>.
+    /// </summary>
+    /// <returns>The value to assign to the live property</returns>
+    protected virtual object? GetLiveValue() => CurrentValueAsString;
 
     #endregion
 }

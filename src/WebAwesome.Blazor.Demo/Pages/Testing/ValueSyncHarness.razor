@@ -142,8 +142,7 @@
             </tr>
             <tr>
                 <td><code>WaSlider</code> (range mode)</td>
-                @* @bind-Value is unused in range mode; it is only there because InputBase throws without a ValueExpression *@
-                <td><WaSlider Label="Price range" Range="true" data-testid="slider-range" @bind-Value="sliderRangeUnusedValue" @bind-MinValue="sliderRangeMin" @bind-MaxValue="sliderRangeMax" /></td>
+                <td><WaSlider Label="Price range" Range="true" data-testid="slider-range" @bind-MinValue="sliderRangeMin" @bind-MaxValue="sliderRangeMax" /></td>
                 <td><code data-testid="slider-range-model">@($"{sliderRangeMin}-{sliderRangeMax}")</code></td>
                 <td>
                     <WaCluster Gap="GapSize.Gap_S">
@@ -156,9 +155,9 @@
     </table>
 </ExampleSection>
 
-@* pre-fix markup: once WaRelativeTime takes the new enums, only these three rows change, to
-   Numeric="WaRelativeTimeNumeric.Always", Format="WaRelativeTimeFormat.Short" and
-   Format="WaRelativeTimeFormat.Narrow" respectively; the spec stays as it is *@
+@* migrated markup: these three rows were migrated from the pre-fix Numeric="false", Format="WaFormat.Relative"
+   and Format="WaFormat.Numeric" to Numeric="WaRelativeTimeNumeric.Always", Format="WaRelativeTimeFormat.Short" and
+   Format="WaRelativeTimeFormat.Narrow" respectively when WaRelativeTime took the new enums; the spec stayed as it was *@
 <ExampleSection Title="Relative time">
     <table>
         <thead><tr><th>Row</th><th>Requested style</th><th>Rendered</th></tr></thead>
@@ -166,17 +165,17 @@
             <tr data-testid="rt-always">
                 <td><code>rt-always</code></td>
                 <td>numeric always, 1 day ago</td>
-                <td><WaRelativeTime Lang="en-US" Date="oneDayAgo" Numeric="false" /></td>
+                <td><WaRelativeTime Lang="en-US" Date="oneDayAgo" Numeric="WaRelativeTimeNumeric.Always" /></td>
             </tr>
             <tr data-testid="rt-short">
                 <td><code>rt-short</code></td>
                 <td>short format, 3 hours ago</td>
-                <td><WaRelativeTime Lang="en-US" Date="threeHoursAgo" Format="WaFormat.Relative" /></td>
+                <td><WaRelativeTime Lang="en-US" Date="threeHoursAgo" Format="WaRelativeTimeFormat.Short" /></td>
             </tr>
             <tr data-testid="rt-narrow">
                 <td><code>rt-narrow</code></td>
                 <td>narrow format, 3 hours ago</td>
-                <td><WaRelativeTime Lang="en-US" Date="threeHoursAgo" Format="WaFormat.Numeric" /></td>
+                <td><WaRelativeTime Lang="en-US" Date="threeHoursAgo" Format="WaRelativeTimeFormat.Narrow" /></td>
             </tr>
         </tbody>
     </table>
@@ -223,7 +222,6 @@
     private decimal ratingValue = InitialRating;
     private decimal? sliderRangeMin = InitialSliderRangeMin;
     private decimal? sliderRangeMax = InitialSliderRangeMax;
-    private decimal? sliderRangeUnusedValue;
     private DateTime threeHoursAgo;
     private DateTime oneDayAgo;
 

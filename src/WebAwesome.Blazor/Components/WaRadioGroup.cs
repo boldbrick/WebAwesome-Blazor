@@ -40,7 +40,8 @@ public class WaRadioGroup : WaInputBase<string?>
     #region ------ Events ------
 
     /// <summary>
-    /// Invoked when the radio group's selected value changes.
+    /// Invoked with the new selected value when the user changes the selection (the element's change event), after
+    /// the bound value has been updated.
     /// </summary>
     [Parameter] public EventCallback<string?> OnValueChange { get; set; }
 
@@ -76,16 +77,16 @@ public class WaRadioGroup : WaInputBase<string?>
         builder.AddAttribute(22, "with-hint", WithHint);
         builder.AddAttribute(23, "with-label", WithLabel);
 
-        // Add value binding
+        // Add value binding; an explicit handler rather than a binder, so it can invoke OnValueChange after the
+        // value has been updated
         builder.AddAttribute(30, "value", CurrentValueAsString);
-        builder.AddAttribute(31, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(31, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChangeAsync));
         builder.SetUpdatesAttributeName("value");
 
         // Add common event handlers
         AddCommonEventHandlers(builder, 40);
 
-        // Add radio group specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "onwa-change", OnValueChange);
+        // Add radio group specific event handlers; OnValueChange is invoked by the change handler above
         builder.AddAttributeIfHasDelegate(52, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
@@ -111,6 +112,9 @@ public class WaRadioGroup : WaInputBase<string?>
         return true;
     }
 
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
+
     #endregion
 
     #region ------ Public Methods ------
@@ -126,6 +130,18 @@ public class WaRadioGroup : WaInputBase<string?>
             throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // handles the element's change event: assigns the selected value (recording it as the live value), then
+    // reports the updated value through OnValueChange
+    private async Task HandleValueChangeAsync(ChangeEventArgs args)
+    {
+        SetCurrentValueAsStringFromElement(args.GetStringValue());
+        await OnValueChange.InvokeAsync(CurrentValue);
     }
 
     #endregion

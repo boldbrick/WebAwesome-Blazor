@@ -49,7 +49,7 @@ public class WaRange : WaInputBase<decimal>
     /// <summary>
     /// The placement of the tooltip in reference to the slider's thumb.
     /// </summary>
-    [Parameter] public string? TooltipPlacement { get; set; }
+    [Parameter] public WaTooltipSide? TooltipPlacement { get; set; }
 
     /// <summary>
     /// The starting value from which to draw the slider's fill, which is based on its current value.
@@ -114,7 +114,7 @@ public class WaRange : WaInputBase<decimal>
         builder.AddAttributeIfNotNull(23, "orientation", Orientation?.ToHtmlValue());
         builder.AddAttribute(24, "with-tooltip", WithTooltip);
         builder.AddAttribute(25, "with-markers", WithMarkers);
-        builder.AddAttributeIfNotNullOrEmpty(26, "tooltip-placement", TooltipPlacement);
+        builder.AddAttributeIfNotNull(26, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
         builder.AddAttributeIfNotNull(27, "indicator-offset", IndicatorOffset);
 
         // Range selection attributes
@@ -129,10 +129,12 @@ public class WaRange : WaInputBase<decimal>
             builder.AddAttribute(33, "value", BindConverter.FormatValue(CurrentValue));
         }
 
-        // Add value binding for single value mode
+        // Add value binding for single value mode; the element's live value is a JS number, which Blazor's built-in
+        // change reader cannot carry, so the handler listens to the "numericchange" alias of the change event that
+        // delivers it as an invariant-culture string
         if (!Range)
         {
-            builder.AddAttribute(40, "onchange", EventCallback.Factory.CreateBinder<decimal>(this, __value => CurrentValue = __value, CurrentValue));
+            builder.AddAttribute(40, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChange));
             builder.SetUpdatesAttributeName("value");
         }
         else
@@ -141,8 +143,9 @@ public class WaRange : WaInputBase<decimal>
             // This requires JavaScript interop to properly handle dual-thumb events
         }
 
-        // Add common event handlers
-        AddCommonEventHandlers(builder, 50);
+        // Add common event handlers; the input event carries the same JS number, so OnInput is bound to its alias
+        AddCommonEventHandlers(builder, 50, includeInputHandler: false);
+        AddNumericInputHandler(builder, 56);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(60, __sliderReference => Element = __sliderReference);
@@ -176,6 +179,15 @@ public class WaRange : WaInputBase<decimal>
         return false;
     }
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// Range mode needs no sync: min-value and max-value map to the live minValue/maxValue properties.
+    /// </remarks>
+    protected override string? LiveValuePropertyName => Range ? null : "value";
+
+    /// <inheritdoc />
+    protected override object? GetLiveValue() => (double)CurrentValue;
+
     #endregion
 
     #region ------ Public Methods ------
@@ -196,6 +208,21 @@ public class WaRange : WaInputBase<decimal>
             throw new ArgumentNullException(nameof(jsFunction));
 
         await JSInterop.SetPropertyAsync(Element.Value, "valueFormatter", jsFunction);
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // handles the change event, whose value the numericchange alias delivers as a JS-formatted number; records the
+    // element's live value (a JS number) before assigning the model, and leaves the model unchanged when the value
+    // cannot be parsed
+    private void HandleValueChange(ChangeEventArgs args)
+    {
+        if (!ChangeEventArgsExtensions.TryParseJsNumber(args.GetStringValue(), out var value)) return;
+
+        MarkLiveValueSynced((double)value);
+        CurrentValue = value;
     }
 
     #endregion

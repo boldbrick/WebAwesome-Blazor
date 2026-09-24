@@ -39,7 +39,7 @@ public class WaRangeEditFormTests : FormControlTestBase
         var model = new RangeModel { Volume = 50m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-slider").Change("75");
+        cut.Find("wa-slider").NumericChange("75");
 
         Assert.Equal(75m, model.Volume);
     }
@@ -51,7 +51,7 @@ public class WaRangeEditFormTests : FormControlTestBase
         var cut = RenderForm(model);
 
         // Range(0, 100) violated by a value outside the range
-        cut.Find("wa-slider").Change("150");
+        cut.Find("wa-slider").NumericChange("150");
 
         var cssClass = cut.Find("wa-slider").GetAttribute("class");
         Assert.Contains("modified", cssClass);
@@ -64,8 +64,8 @@ public class WaRangeEditFormTests : FormControlTestBase
         var model = new RangeModel { Volume = 50m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-slider").Change("150");
-        cut.Find("wa-slider").Change("60");
+        cut.Find("wa-slider").NumericChange("150");
+        cut.Find("wa-slider").NumericChange("60");
 
         var cssClass = cut.Find("wa-slider").GetAttribute("class");
         Assert.Contains("modified", cssClass);
