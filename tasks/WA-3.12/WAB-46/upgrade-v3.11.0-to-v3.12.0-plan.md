@@ -184,6 +184,22 @@ the value and then invokes `OnInput`, because two attributes with the same name 
 `AddCommonEventHandlers` must not emit its own `oninput` when the wrapper merges it. The binder
 keeps running on `onchange` too, so the committed value is still exact when `Immediate` is set.
 
+### 3d-bis. Number-valued change events (found by the red e2e run, fixed in scope)
+
+The red run (cs:243) exposed a separate, previously unknown defect. `wa-slider` (wrapped by both
+`WaSlider` and `WaRange`) and `wa-rating` dispatch `change` while their live `value` is a JS
+**number**. Blazor's built-in change reader copies `element.value` into `ChangeEventArgs` and
+rejects anything that isn't a string, boolean, array or null, so it throws server-side:
+`System.ArgumentException: Unsupported ChangeEventArgs value {"value":51}`. The .NET handler never
+runs, so `@bind-Value` on these three wrappers has never delivered user edits. Range-mode `WaSlider`
+also reads `el.value` (an unused default, 0) instead of `minValue`/`maxValue`. A read-back inside the
+handler can't help, because the handler is never invoked.
+
+Fix: the JS initializer registers a custom event type that aliases the browser `change` event
+(`browserEventName`) under a non-`wa-` name. It produces a string payload: `String(value)`, or
+`"<minValue>,<maxValue>"` in range mode. The three wrappers bind to that event, and their existing
+binders stay in place. The e2e spec `number-value-binding.spec.js` (red at cs:243) is the acceptance.
+
 ### 3e. License path (issue item 1, build)
 
 `src\Directory.Build.props` packs `$(SolutionDir)..\LICENSE.md`. When the repo is a submodule, the
@@ -257,17 +273,101 @@ Docs:
   the demo CSS for `tooltip__content`. No showcase changes (no added or removed components).
 - Promote the public API baseline only when every diff is explained by this plan.
 
+## Phase 3f — Wrapper correctness sweep (owner-approved breaking scope, 2026-09-24)
+
+The new enum-value parity test (issue item 6) and a reverse check of event bindings found
+long-standing defects outside issue #1. The owner approved fixing all of them, breaking changes
+included ("it is more important to have functioning, correct code that matches WA API's
+capabilities than avoid breaking changes"). The rule applied: **every enum parameter's value set
+equals the attribute's 3.12.0 union**, and **every bound event is one the element actually
+dispatches**. Allowlisted exceptions remain only where an enum member means "omit the attribute"
+(`WaAutoSize.None`, `WaSync.None`) or a union value is reached by leaving a nullable parameter unset.
+
+Enum-value defects (red: `temp\wa312-enum-parity-red.txt`, 100 misses per TFM):
+
+| Defect | Fix |
+|---|---|
+| `WaAppearance.Text` emits `text`, which no component accepts | member removed |
+| `WaAppearance` shared by unions that differ (`accent` invalid on accordion/details, `plain` invalid on badge/tag) | per-component appearance enums where the union differs |
+| `WaPlacement.Start`/`End` emit `start`/`end`, which no consumer accepts | members removed |
+| `wa-select`/`wa-combobox` placement is only `top`/`bottom`; slider/copy-button tooltip placement is only the four sides; `wa-date-input`/`wa-time-input` placement is the six top/bottom values (`.d.ts` type aliases, not in the CEM) | dedicated enums per union |
+| `WaRadioAppearance.Normal` emits `normal`, but the union is `default`/`button` | renamed to `Default` → `default` |
+| `WaAutoSize.Width`/`Height` emit `width`/`height`, but the union is `horizontal`/`vertical`/`both` | renamed to `Horizontal`/`Vertical` |
+| `WaDropdownItemType.Radio`: `radio` was never valid | member removed |
+| `WaVariant` on `wa-dropdown-item` (union `danger`/`default`) | dedicated enum |
+| `WaDateTimeStyle` shared by nine `Intl.DateTimeFormat` options; an out-of-union value throws a RangeError at runtime (the `WaRelativeTime` failure class) | per-option enums |
+| `WaSize.Small`/`Medium`/`Large` emit the long forms, which WA 3.12.0 deprecates ("will be removed in the next major version"); every `size` union accepts `s`/`m`/`l` | mapping changed to `s`/`m`/`l` (C# API unchanged) |
+
+Event bindings the element never dispatches: no `"<name>"` literal appears anywhere in the compiled
+3.0.0 or 3.12.0 `dist`. Positive controls matched as expected (`wa-show`: 14 files, `wa-copy`: 2).
+
+| Binding | Fix |
+|---|---|
+| `WaCheckbox`/`WaSwitch` `OnCheckedChange`, `WaRadioGroup`/`WaSlider` `OnValueChange` (`onwa-change`) | rewired to fire from the real `change` handling (API kept, now functional) |
+| `WaRadio.OnCheckedChange`, `WaOption.OnSelectedChange` (`onwa-change`; wa-radio/wa-option dispatch no change event) | removed |
+| `WaCopyButton.OnSuccess` (`wa-success`; the real event is `wa-copy` = `OnCopy`) | removed |
+| `WaDialog`/`WaDrawer` `OnInitialFocus` (`wa-initial-focus`) | removed |
+| `WaInput` `OnPasswordToggle`/`OnPasswordVisibilityChange` | removed |
+| `WaZoomableFrame.OnZoomChange` (`wa-zoom-change`) | removed |
+| `WaZoomableFrame` `OnLoad`/`OnError` bound to `onwa-load`/`onwa-error`; the element dispatches native `load`/`error` (`@event load`/`@event error`) | rebound to `onload`/`onerror` |
+
+Also: range-mode `WaSlider` no longer requires `@bind-Value`. A new reverse parity test
+(wrapper → CEM) fails any `onwa-*` binding that isn't a CEM event of the rendered element, and
+the enum test gains a bool-vs-literal-union check (the `Numeric=false` class of bug).
+
+Final-wave results:
+- New `WaListboxPlacement` (select/combobox), `WaTooltipSide` (slider/copy-button/range tooltip) and
+  `WaPickerPlacement` (date-input/time-input; the `placement` property is `reflect: true` in the
+  compiled chunks, but typed by an alias in the CEM, so the guard test skips it).
+- A reverse check (every union value reachable from the enum) added missing members to five enums:
+  `WaIconAnimation` (+9), `WaAnimationFill.Auto`, `WaInputType` (+2), `WaCurrencyDisplay.NarrowSymbol`,
+  `WaDisplay.Narrow`.
+- `WaTrigger` became a `[Flags]` token set with `Focus`. `WaFormatNumber` phantom parameters
+  (`Notation`, `CompactDisplay`, `UseGrouping`) were removed; the attributes don't exist in any
+  3.x version.
+
+Left as they are, with reasons: `wa-chart` `legend-position` (the current six values are all valid;
+`chartArea` is unverified locally); `wa-animation` `easing` (an open string, so the enum is a
+convenience subset); `WaAppearance.OutlinedFilled` versus `FilledOutlined` in the newer enums (a naming
+inconsistency, not a correctness defect); `WaCopyButton.OnCopy` doesn't carry the copied `detail.value`
+(a capability gap, not a defect).
+
+## Analysis findings and their outcome
+
+These were found during this run. Items marked "fixed" were resolved under the owner-approved scope in Phase 3f.
+
+- **`onwa-*` bindings the CEM doesn't declare for their element (fixed).** Cross-checking every
+  `onwa-` binding against the 3.12.0 CEM events of its element flagged 14. All were verified against
+  the compiled 3.0.0 and 3.12.0 sources and resolved as listed in Phase 3f: 12 were never dispatched
+  (removed or rewired to the real `change`), and 2 were rebound to native `load`/`error`.
+- **Deprecated size spellings (fixed).** `WaSize` now emits `s`/`m`/`l`. WA already warned about
+  the long forms in 3.11.0 (same chunk), and removes them in its next major version.
+- **Range-mode `WaSlider` required `@bind-Value` (fixed).** `WaSlider.SetParametersAsync` now supplies
+  a placeholder `ValueExpression` in range mode. The harness placeholder binding was removed.
+- **Attribute ignored after first render, even without a user edit (covered).** `wa-otp-input` reads
+  `defaultValue` only before its first update. `wa-known-date`, `wa-time-input` and `wa-date-input`
+  copy it into an internal value in `firstUpdated`. The live-property sync (3b) covers these too, so
+  the defect was broader than "after user interaction".
+- **Docs-source description was out of date (fixed).** `inputs\README.md` and
+  `docs\UPGRADE-PROCESS.md` said Pro component docs come from `webawesome.com/docs/components/<name>`
+  pages. Since the 3.3.0+ zips bundle reference docs, `Sync-WaDocs.ps1` fills Pro gaps from the zip,
+  and only then carries the old doc forward or flags NEEDS CAPTURE. Both files now describe that
+  order (GitHub tag first, zip fills gaps; `-PreferBundledRefs` reverses it). Because 3.11.0 took
+  every component doc from the zip and 3.12.0 went back to GitHub-first, most of cs:240's diff is only
+  a provenance change.
+
 ## Validation checklist
 
-- [ ] `dotnet build src/WebAwesome.slnx -p:Configuration=Debug`: 0 warnings, 0 errors
-- [ ] `dotnet build src/WebAwesome.slnx -p:Configuration=Release`: 0 warnings, 0 errors
-- [ ] Submodule-style build (`-p:SolutionDir=<other>\`) succeeds, and the nupkg contains `LICENSE.md`
-- [ ] `dotnet test src/WebAwesome.slnx` green on net9.0 and net10.0 (baseline 627 per TFM)
-- [ ] `ApiSurfaceParityTests` green (expected gaps at arming: the four `wa-dropdown-item` attributes)
-- [ ] Enum-value parity test green (shown red against the pre-fix `WaFormat`)
-- [ ] `EventBindingRegistrationTests`, `ElementMethodInvocationTests` green
-- [ ] `PublicApiSnapshotTests` baseline promoted, every diff explained
-- [ ] e2e: new value-sync specs red on pre-fix code (captured), green after the fix; full sweep green
+- [x] `dotnet build src/WebAwesome.slnx -p:Configuration=Debug`: 0 warnings, 0 errors
+- [x] `dotnet build src/WebAwesome.slnx -p:Configuration=Release`: 0 warnings, 0 errors
+- [x] Submodule-style build (`-p:SolutionDir=<other>\`) succeeds, and the nupkg contains `LICENSE.md` (pre-fix: NU5019)
+- [x] `dotnet test src/WebAwesome.slnx` green on net9.0 and net10.0: 787 per TFM in Debug and Release (baseline 627)
+- [x] `ApiSurfaceParityTests` green (the gaps at arming were exactly the four `wa-dropdown-item` attributes)
+- [x] Enum-value parity test green (red first: 100 misses per TFM, `temp\wa312-enum-parity-red.txt`)
+- [x] `EventBindingRegistrationTests`, `ElementMethodInvocationTests`, `BoundEventCemParityTests` green
+- [x] `PublicApiSnapshotTests` baseline promoted (+153/-125 lines), every diff explained
+- [x] e2e: new specs red on the pre-fix code (cs:243; `temp\wa312-e2e-red*.txt`), green after the fix; full suite
+      140 passed / 2 skipped (free CDN), WaDateInput red → green against the local Pro dist, override cleared
 
 ## Risks
 
