@@ -61,7 +61,7 @@ public class EventBindingRegistrationTests
     [Fact]
     public void AllJsRegistrations_AreBoundAndDispatchedByTheElement()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var registrations = JsInitializerEventRegistrations.Current;
         var bindings = RenderedBindings();

@@ -19,7 +19,7 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// rejects. It catches a callback bound to the wrong event, a deleted binding, a binding to an event the element
 /// never dispatches, and a CEM event no callback binds. Deliberate deviations are allowlisted in
 /// parity-config.json ("derivedEventCallbacks", "unboundEventCallbacks", "undeclaredBoundEvents",
-/// "nativeDomEvents", "ignoredEvents", "eventOverrides"), each with a reason, and stale entries fail. Inert until parity-config.json sets
+/// "nativeDomEvents", "ignoredEvents", "eventOverrides"), each with a reason, and stale entries fail. Skipped until parity-config.json sets
 /// "enabled": true, like the other parity tests.
 /// </summary>
 public class EventCallbackBindingParityTests
@@ -31,7 +31,7 @@ public class EventCallbackBindingParityTests
     [Fact]
     public void AllEventCallbacks_BindTheirCemEvent()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = RenderedWrapperCatalog.All.SelectMany(w => BindingMisses(w, JsInitializerEventRegistrations.Current)).ToList();
 
@@ -45,7 +45,7 @@ public class EventCallbackBindingParityTests
     [Fact]
     public void AllCemEvents_AreBoundByEveryWrapperOfTheElement()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = RenderedWrapperCatalog.All.SelectMany(w => UnboundCemEvents(w, JsInitializerEventRegistrations.Current)).ToList();
 
@@ -84,7 +84,7 @@ public class EventCallbackBindingParityTests
     [Fact]
     public void EventBindingAllowlists_AreNotStale()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = StaleAllowlistEntries(RenderedWrapperCatalog.All, JsInitializerEventRegistrations.Current).ToList();
 

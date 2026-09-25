@@ -35,6 +35,23 @@ internal static class ApiParityData
     public static readonly Assembly WrapperAssembly = typeof(WaButton).Assembly;
 
     /// <summary>
+    /// Why the surface-dependent parity tests are skipped while parity-config.json sets "enabled": false.
+    /// </summary>
+    public const string ParityDisabledReason =
+        "API parity is disabled (parity-config.json \"enabled\": false), so expected-api-surface.json is not armed for " +
+        "the version being implemented; the wa-upgrade process sets \"enabled\": true in Phase 3, and the release " +
+        "preflight fails while it is false";
+
+    /// <summary>
+    /// Skips the calling test with ParityDisabledReason while parity is disabled, so that a test whose oracle is
+    /// expected-api-surface.json reports Skipped instead of Passed without having checked anything.
+    /// </summary>
+    public static void SkipUnlessParityEnabled()
+    {
+        Assert.SkipUnless(Config.Enabled, ParityDisabledReason);
+    }
+
+    /// <summary>
     /// Determines whether an allowlist entry has a non-blank reason, in ignoreReasons or in knownDefects.
     /// </summary>
     /// <param name="key">Reason key of the entry, e.g. "ignoredEvents:wa-checkbox:change"</param>

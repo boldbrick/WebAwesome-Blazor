@@ -120,7 +120,7 @@ public class AllowlistHygieneTests
     [Fact]
     public void ComponentConfigs_NameCemElements()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = Config.Components.Keys
             .Where(tag => !Surface.Components.ContainsKey(tag))

@@ -28,7 +28,7 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// "ignoredBoolUnionAttributes", "tokenListAttributes" and "unresolvedEnumAttributes", per enum type and
 /// listed attribute in the top-level "unreachableEnumUnionValues" - each with an "ignoreReasons" entry;
 /// stale allowlist entries fail. This class checks the ToHtmlValue() function; RenderedAttributeParityTests
-/// checks what the wrappers actually render. The value checks are inert until parity-config.json sets
+/// checks what the wrappers actually render. The value checks are skipped until parity-config.json sets
 /// "enabled": true, like the other parity tests.
 /// </summary>
 public class EnumValueParityTests
@@ -40,7 +40,7 @@ public class EnumValueParityTests
     [Fact]
     public void AllEnumParameterValues_AreInAttributeUnion()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = new List<string>();
 
@@ -67,7 +67,7 @@ public class EnumValueParityTests
     [Fact]
     public void AllEnumParameters_HaveToHtmlValueMapping()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = new List<string>();
 
@@ -91,7 +91,7 @@ public class EnumValueParityTests
     [Fact]
     public void AllEnumParameters_AreBoundToResolvedUnion()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = UnresolvedEnumParameters()
             .Where(p => !GetComponentConfig(p.Tag).UnresolvedEnumAttributes.Contains(p.Attribute))
@@ -110,7 +110,7 @@ public class EnumValueParityTests
     [Fact]
     public void AllAttributeUnionValues_AreReachableFromEnumParameter()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = new List<string>();
 
@@ -138,7 +138,7 @@ public class EnumValueParityTests
     [Fact]
     public void NoBoolParameter_IsBoundToStringLiteralUnion()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = new List<string>();
 
@@ -186,7 +186,7 @@ public class EnumValueParityTests
     [Fact]
     public void IgnoredEnumValues_AreNotStale()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var bindings = EnumAttributeBindings().ToLookup(b => (b.Tag, b.Attribute));
         var misses = new List<string>();
@@ -268,7 +268,7 @@ public class EnumValueParityTests
     [Fact]
     public void UnreachableUnionValues_AreNotStale()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var bindings = EnumAttributeBindings().Where(b => b.ToHtmlValue != null).ToList();
         var bindingsByAttribute = bindings.ToLookup(b => (b.Tag, b.Attribute));
@@ -337,7 +337,7 @@ public class EnumValueParityTests
     [Fact]
     public void IgnoredBoolUnionAttributes_AreNotStale()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var boolBindings = AllLiteralUnionParameters()
             .Where(p => IsBoolType(p.Property.PropertyType))
@@ -391,7 +391,7 @@ public class EnumValueParityTests
     [Fact]
     public void TokenListAndUnresolvedEnumAttributes_AreNotStale()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var unresolved = UnresolvedEnumParameters().Select(p => (p.Tag, p.Attribute)).ToHashSet();
         var misses = new List<string>();

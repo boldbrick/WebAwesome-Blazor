@@ -82,7 +82,7 @@ If `--dry-run`, stop here — but leave a clean, resumable state: check in the p
 ## Phase 3 — Arm the parity harness and bump the version
 
 1. Copy `temp\wa-api\surface_<target>.json` over `src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json`.
-2. In `src\WebAwesome.Blazor.Tests\ApiParity\parity-config.json`: set `targetWaVersion` to the target and `"enabled": true`.
+2. In `src\WebAwesome.Blazor.Tests\ApiParity\parity-config.json`: set `targetWaVersion` to the target and `"enabled": true`. (While it is `false`, the surface-dependent parity tests report Skipped, and the release preflight fails.)
 3. Bump `src\Version.props` (`Version`, and `AssemblyVersion`/`FileVersion` when the major/minor/patch changes; `InformationalVersion` derives from `Version` automatically) and the version references in `README.md`.
 4. Demo app sync: update the Web Awesome CDN version in `src\WebAwesome.Blazor.Demo\wwwroot\index.html` to `<target>`, and copy the target surface over `src\WebAwesome.Blazor.Demo\wwwroot\data\api-surface.json` (it drives the demo navigation and API tables).
 5. Run `dotnet test` — the failing **ApiSurfaceParityTests** now enumerate every gap. This is the red/green driver: the upgrade is code-complete when they pass.

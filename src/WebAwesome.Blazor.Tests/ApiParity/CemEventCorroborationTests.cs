@@ -17,7 +17,7 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// (keyed "cemOnlyEvents:&lt;tag&gt;:&lt;event&gt;") when the element never dispatches it, so the event-binding
 /// checks do not rely on it, or in "sourceVerifiedEvents" (keyed "sourceVerifiedEvents:&lt;tag&gt;:&lt;event&gt;")
 /// when the compiled source was verified to dispatch it although the JSDoc omits it, which must be re-verified on
-/// every upgrade. Stale entries fail. Inert until parity-config.json sets "enabled": true, like the other parity tests.
+/// every upgrade. Stale entries fail. Skipped until parity-config.json sets "enabled": true, like the other parity tests.
 /// </summary>
 public class CemEventCorroborationTests
 {
@@ -28,7 +28,7 @@ public class CemEventCorroborationTests
     [Fact]
     public void AllCemEvents_AreCorroboratedByTheTypeDeclarations()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         Assert.True(Surface.DeclaredEventTypes is { Count: > 0 },
             "expected-api-surface.json records no declaredEventTypes; regenerate it with tools\\upgrade\\Export-WaApiSurface.ps1");

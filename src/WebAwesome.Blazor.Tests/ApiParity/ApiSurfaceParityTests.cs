@@ -14,7 +14,7 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// deviations and omissions are documented in parity-config.json. Events are checked by
 /// EventCallbackBindingParityTests on the rendered output (each callback must bind its CEM event),
 /// and attributes by RenderedAttributeParityTests (each CEM attribute must have a parameter that
-/// renders it, on every wrapper of the element), not here by name. The tests are inert until
+/// renders it, on every wrapper of the element), not here by name. The tests report Skipped until
 /// parity-config.json sets "enabled": true, which the upgrade process does once the expected
 /// surface matches the version being implemented.
 /// </summary>
@@ -26,7 +26,7 @@ public class ApiSurfaceParityTests
     [Fact]
     public void AllComponents_HaveWrapperClasses()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = new List<string>();
 
@@ -46,7 +46,7 @@ public class ApiSurfaceParityTests
     [Fact]
     public void AllDocumentedMethods_AreExposedAsWrapperMethods()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = new List<string>();
 
@@ -81,7 +81,7 @@ public class ApiSurfaceParityTests
     [Fact]
     public void ComponentAndMethodAllowlists_AreNotStale()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = new List<string>();
 

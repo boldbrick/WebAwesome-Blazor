@@ -24,7 +24,7 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// the attribute, and no value is ever "True"/"False"; (d) every CEM attribute has a parameter that renders it when
 /// set to a non-default value (allowlist "unrenderedAttributes"); (e) numbers and dates render in the invariant
 /// culture. Parameters of other types (collections, objects, fragments, callbacks) are not sampled. Every allowlist
-/// entry needs a reason, and stale entries fail. Inert until parity-config.json sets "enabled": true.
+/// entry needs a reason, and stale entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
 public class RenderedAttributeParityTests
 {
@@ -34,7 +34,7 @@ public class RenderedAttributeParityTests
     [Fact]
     public void AllWrappers_RenderWithEverySampleValue()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = new List<string>();
 
@@ -57,7 +57,7 @@ public class RenderedAttributeParityTests
     [Fact]
     public void AllRenderedAttributes_AreDeclaredByTheElement()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = RenderedElements().SelectMany(UndeclaredAttributes).Distinct(StringComparer.Ordinal).ToList();
 
@@ -71,7 +71,7 @@ public class RenderedAttributeParityTests
     [Fact]
     public void AllRenderedUnionValues_AreInTheAttributeUnion()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = RenderedElements().SelectMany(OutOfUnionRenders).Distinct(StringComparer.Ordinal).ToList();
 
@@ -85,7 +85,7 @@ public class RenderedAttributeParityTests
     [Fact]
     public void BooleanParameters_RenderValidBooleanAttributes()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = RenderedElements().SelectMany(BooleanMisses).Distinct(StringComparer.Ordinal).ToList();
 
@@ -102,7 +102,7 @@ public class RenderedAttributeParityTests
     [Fact]
     public void AllCemAttributes_AreRenderedByTheirParameter()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var elements = RenderedElements().ToList();
         var misses = elements.SelectMany(UnrenderedAttributes).ToList();
@@ -124,7 +124,7 @@ public class RenderedAttributeParityTests
     [Fact]
     public void NumberAndDateAttributes_RenderInTheInvariantCulture()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var misses = RenderedElements().SelectMany(CultureMisses).Distinct(StringComparer.Ordinal).ToList();
 
@@ -169,7 +169,7 @@ public class RenderedAttributeParityTests
     [Fact]
     public void RenderedAttributeAllowlists_AreNotStale()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var elements = RenderedElements().ToList();
         var misses = new List<string>();
@@ -228,7 +228,7 @@ public class RenderedAttributeParityTests
     [Fact]
     public void IgnoredAttributesAndAttributeOverrides_AreNotStale()
     {
-        if (!Config.Enabled) return;
+        SkipUnlessParityEnabled();
 
         var elements = RenderedElements().ToList();
         var misses = new List<string>();
