@@ -1,6 +1,6 @@
 // @ts-check
 const { expect } = require('@playwright/test');
-const { expectFired, expectFiredTimes, payloadOf } = require('./event-log');
+const { expectFired, expectFiredTimes, payloadOf, countOf } = require('./event-log');
 
 // The dispatch cases of event-dispatch.spec.js: each drives a component with real input (mouse, keyboard,
 // pointer) and lists the EventCallbacks it proves. After a case has run, the spec checks that every listed
@@ -36,10 +36,10 @@ const PRO = '/testing/events-pro';
 const KEYBOARD = ['OnKeyDown', 'OnKeyPress', 'OnKeyUp'];
 
 /**
- * Focus callbacks, proven only where the host element itself takes focus. Where focus lands on an element in
- * the shadow root (the text controls, toggles, pickers, WaButton), Blazor never delivers focus/blur: it
- * dispatches a non-bubbling event only to composedPath()[0], the inner element. Those callbacks are exempted
- * in tools\e2e\data\event-coverage-exemptions.json as a known defect.
+ * Focus callbacks. Where the focus lands on an element in the shadow root (the text controls, toggles, pickers,
+ * WaButton, WaFileInput) Blazor never delivers focus/blur, because it dispatches a non-bubbling event only to
+ * composedPath()[0], the inner element; those wrappers bind the bubbling, composed focusin/focusout, which these
+ * cases prove. WaRadio, WaTab and WaDropdownItem take the focus on their host and keep focus/blur.
  */
 const FOCUS = ['OnFocus', 'OnBlur'];
 
@@ -60,6 +60,43 @@ async function focusTypeAndLeave(target, keys) {
   await target.focus();
   for (const key of keys) await target.press(key);
   await target.page().keyboard.press('Tab');
+}
+
+/**
+ * Moves the focus out of every control by clicking the page heading (not focusable, so the focus goes to the
+ * body). Needed where Tab only moves the focus to another part of the same control's shadow root (the segments
+ * of a date or time input, the second thumb of a range slider), which raises no focusout on the host.
+ *
+ * @param {Page} page
+ */
+async function leaveControls(page) {
+  await page.locator('h1').first().click();
+}
+
+/**
+ * Counts, from now on, the events of the given types that reach a plain page listener on the document, the way
+ * any other script on the page sees them; read the counts with pageEventCounts. The JS initializer's relay must
+ * leave these untouched: one wa-show per open, no second copy under the original name.
+ *
+ * @param {Page} page
+ * @param {string[]} types
+ */
+async function countPageEvents(page, types) {
+  await page.evaluate(names => {
+    const counts = /** @type {any} */ (window).__pageEventCounts = {};
+    for (const name of names) {
+      counts[name] = 0;
+      document.addEventListener(name, () => { counts[name]++; }, true);
+    }
+  }, types);
+}
+
+/**
+ * @param {Page} page
+ * @returns {Promise<Record<string, number>>}
+ */
+async function pageEventCounts(page) {
+  return page.evaluate(() => ({ .../** @type {any} */ (window).__pageEventCounts }));
 }
 
 /**
@@ -135,11 +172,16 @@ const EVENT_CASES = [
   {
     name: 'WaInput keyboard, input, clear',
     route: FORMS, tags: ['wa-input'],
-    callbacks: [...ids('WaInput', [...KEYBOARD, 'OnInput', 'OnClear'])],
+    callbacks: [...ids('WaInput', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnClear'])],
     run: async page => {
       const input = page.getByTestId('ev-input');
       await focusTypeAndLeave(input.locator('input'), ['x']);
       await expect(page.getByTestId('ev-input-model')).toHaveText('Hellox');
+      // focusin/focusout carry OnFocus/OnBlur once each, with their own event type
+      await expectFiredTimes(page, 'WaInput.OnFocus', 1);
+      await expectFiredTimes(page, 'WaInput.OnBlur', 1);
+      expect(await payloadOf(page, 'WaInput.OnFocus')).toEqual({ type: 'focusin' });
+      expect(await payloadOf(page, 'WaInput.OnBlur')).toEqual({ type: 'focusout' });
       await input.locator('[part~="clear-button"]').click();
       await expect(page.getByTestId('ev-input-model')).toHaveText('');
     },
@@ -147,7 +189,7 @@ const EVENT_CASES = [
   {
     name: 'WaTextArea keyboard, input',
     route: FORMS, tags: ['wa-textarea'],
-    callbacks: ids('WaTextArea', [...KEYBOARD, 'OnInput']),
+    callbacks: ids('WaTextArea', [...KEYBOARD, ...FOCUS, 'OnInput']),
     run: async page => {
       await focusTypeAndLeave(page.getByTestId('ev-textarea').locator('textarea'), ['x']);
       await expect(page.getByTestId('ev-textarea-model')).toHaveText('Some notesx');
@@ -156,7 +198,7 @@ const EVENT_CASES = [
   {
     name: 'WaNumberInput keyboard, input, stepper beforeinput',
     route: FORMS, tags: ['wa-number-input'],
-    callbacks: ids('WaNumberInput', [...KEYBOARD, 'OnInput', 'OnBeforeInput']),
+    callbacks: ids('WaNumberInput', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnBeforeInput']),
     run: async page => {
       const number = page.getByTestId('ev-number-input');
       await focusTypeAndLeave(number.locator('input'), ['7']);
@@ -168,7 +210,7 @@ const EVENT_CASES = [
   {
     name: 'WaCheckbox keyboard, input, checked change',
     route: FORMS, tags: ['wa-checkbox'],
-    callbacks: ids('WaCheckbox', [...KEYBOARD, 'OnInput', 'OnCheckedChange']),
+    callbacks: ids('WaCheckbox', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnCheckedChange']),
     run: async page => {
       await focusTypeAndLeave(page.getByTestId('ev-checkbox').locator('input'), [' ']);
       await expect(page.getByTestId('ev-checkbox-model')).toHaveText('True');
@@ -179,7 +221,7 @@ const EVENT_CASES = [
   {
     name: 'WaSwitch keyboard, input, checked change',
     route: FORMS, tags: ['wa-switch'],
-    callbacks: ids('WaSwitch', [...KEYBOARD, 'OnInput', 'OnCheckedChange']),
+    callbacks: ids('WaSwitch', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnCheckedChange']),
     run: async page => {
       await focusTypeAndLeave(page.getByTestId('ev-switch').locator('input'), [' ']);
       await expect(page.getByTestId('ev-switch-model')).toHaveText('True');
@@ -188,9 +230,9 @@ const EVENT_CASES = [
     },
   },
   {
-    name: 'WaRadioGroup keyboard, input, value change and WaRadio focus, blur',
+    name: 'WaRadioGroup focus, keyboard, input, value change and WaRadio focus, blur',
     route: FORMS, tags: ['wa-radio-group', 'wa-radio'],
-    callbacks: [...ids('WaRadioGroup', [...KEYBOARD, 'OnInput', 'OnValueChange']), 'WaRadio.OnFocus', 'WaRadio.OnBlur'],
+    callbacks: [...ids('WaRadioGroup', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnValueChange']), 'WaRadio.OnFocus', 'WaRadio.OnBlur'],
     run: async page => {
       // clicking Alpha focuses it (WaRadio.OnFocus) and selects it; ArrowRight moves on to Beta (blur)
       await page.getByTestId('ev-radio-alpha').click();
@@ -228,6 +270,11 @@ const EVENT_CASES = [
       await range.locator('#thumb-max').press('ArrowLeft');
       await expectFired(page, 'WaRange.OnMaxValueChange');
       expect(await payloadOf(page, 'WaRange.OnMaxValueChange')).toBe(79);
+      // moving between the two thumbs stays inside the shadow root: one OnFocus, OnBlur only on leaving
+      expect(await countOf(page, 'WaRange.OnBlur')).toBe(0);
+      await expectFiredTimes(page, 'WaRange.OnFocus', 1);
+      await leaveControls(page);
+      await expectFiredTimes(page, 'WaRange.OnBlur', 1);
     },
   },
   {
@@ -247,12 +294,13 @@ const EVENT_CASES = [
     },
   },
   {
-    name: 'WaColorPicker keyboard, input from its text field',
+    name: 'WaColorPicker focus, keyboard (relayed keydown), input, relayed popup show/hide',
     route: FORMS, tags: ['wa-color-picker'],
-    callbacks: ids('WaColorPicker', [...KEYBOARD, 'OnInput']),
+    callbacks: ids('WaColorPicker', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide']),
     run: async page => {
       const picker = page.getByTestId('ev-color-picker');
       const trigger = picker.locator('[part~="trigger"]');
+      await countPageEvents(page, ['wa-show', 'wa-hide', 'wablazor-show']);
       await trigger.focus();
       await trigger.press('a');
       // Enter opens the popup; typing a colour into its text field and committing it edits the value
@@ -261,14 +309,24 @@ const EVENT_CASES = [
       await field.fill('#ff0000');
       await field.press('Enter');
       await expect(page.getByTestId('ev-color-picker-model')).toHaveText('#ff0000');
+      // the popup events are non-bubbling CustomEvents, which only the relay delivers
+      await expectFiredTimes(page, 'WaColorPicker.OnShow', 1);
+      await expectFiredTimes(page, 'WaColorPicker.OnAfterShow', 1);
+      // the picker stops the propagation of Escape while it is open; the relay still delivers it
       await page.keyboard.press('Escape');
-      await page.keyboard.press('Tab');
+      await expect.poll(async () => (await payloadOf(page, 'WaColorPicker.OnKeyDown')).key, { message: 'relayed Escape keydown' }).toBe('Escape');
+      await expectFiredTimes(page, 'WaColorPicker.OnHide', 1);
+      await expectFiredTimes(page, 'WaColorPicker.OnAfterHide', 1);
+      // the originals reach page listeners once each; the relayed copy carries a private name and stops at
+      // the host's wrapper, but it is a real DOM event, so a capture listener on the document sees it once
+      expect(await pageEventCounts(page)).toEqual({ 'wa-show': 1, 'wa-hide': 1, 'wablazor-show': 1 });
+      await leaveControls(page);
     },
   },
   {
     name: 'WaKnownDate keyboard, input',
     route: FORMS, tags: ['wa-known-date'],
-    callbacks: ids('WaKnownDate', [...KEYBOARD, 'OnInput']),
+    callbacks: ids('WaKnownDate', [...KEYBOARD, ...FOCUS, 'OnInput']),
     run: async page => {
       const day = page.getByTestId('ev-known-date').locator('input[data-field="day"]');
       await day.focus();
@@ -278,27 +336,32 @@ const EVENT_CASES = [
       await day.press('0');
       await page.keyboard.press('Tab');
       await expect(page.getByTestId('ev-known-date-model')).toHaveText('2000-01-20');
+      await leaveControls(page);
     },
   },
   {
     name: 'WaOtpInput keyboard, input, complete, clear',
     route: FORMS, tags: ['wa-otp-input'],
-    callbacks: ids('WaOtpInput', [...KEYBOARD, 'OnInput', 'OnComplete', 'OnClear']),
+    callbacks: ids('WaOtpInput', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnComplete', 'OnClear']),
     run: async page => {
       const otp = page.getByTestId('ev-otp-input');
       await otp.locator('.segment').first().click();
       await page.keyboard.type('4321');
       await expectFired(page, 'WaOtpInput.OnComplete');
+      // typing moves the focus from segment to segment inside the shadow root: no OnBlur, a single OnFocus
+      expect(await countOf(page, 'WaOtpInput.OnBlur')).toBe(0);
+      await expectFiredTimes(page, 'WaOtpInput.OnFocus', 1);
       // the value is committed (change) on blur
       await page.keyboard.press('Tab');
       await expect(page.getByTestId('ev-otp-input-model')).toHaveText('4321');
+      await expectFiredTimes(page, 'WaOtpInput.OnBlur', 1);
       await page.getByTestId('ev-otp-input-clear').click();
     },
   },
   {
     name: 'WaTimeInput keyboard, input, popup show/hide, clear',
     route: FORMS, tags: ['wa-time-input'],
-    callbacks: ids('WaTimeInput', [...KEYBOARD, 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide', 'OnClear']),
+    callbacks: ids('WaTimeInput', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide', 'OnClear']),
     run: async page => {
       const time = page.getByTestId('ev-time-input');
       await focusTypeAndLeave(time.locator('[data-segment="minute"]'), ['a', 'ArrowUp']);
@@ -309,13 +372,14 @@ const EVENT_CASES = [
       await expectFired(page, 'WaTimeInput.OnAfterHide');
       await time.locator('[part~="clear-button"]').click();
       await expect(page.getByTestId('ev-time-input-model')).toHaveText('');
+      await leaveControls(page);
     },
   },
   {
-    name: 'WaSelect keyboard, input, popup show/hide, clear',
+    name: 'WaSelect focus, keyboard (relayed keydown), input, popup show/hide, clear',
     route: FORMS, tags: ['wa-select', 'wa-option'],
     // no OnKeyPress: wa-select cancels every printable keydown for type-to-select, so no keypress follows
-    callbacks: ids('WaSelect', ['OnKeyDown', 'OnKeyUp', 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide', 'OnClear']),
+    callbacks: ids('WaSelect', ['OnKeyDown', 'OnKeyUp', ...FOCUS, 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide', 'OnClear']),
     run: async page => {
       const select = page.getByTestId('ev-select');
       // opening the listbox and picking another option commits a new value and closes it
@@ -324,11 +388,16 @@ const EVENT_CASES = [
       await select.locator('wa-option', { hasText: 'Banana' }).click();
       await expect(page.getByTestId('ev-select-model')).toHaveText('banana');
       await expectFired(page, 'WaSelect.OnAfterHide');
-      // a printable key on the focused select gives the keyboard callbacks
+      // a printable key on the focused select gives the keyboard callbacks; wa-select stops the propagation of
+      // the keydown in its input, so only the relay delivers it
       await select.locator('[part~="display-input"]').press('c');
+      await expect.poll(async () => (await payloadOf(page, 'WaSelect.OnKeyDown').catch(() => ({}))).key, { message: 'relayed keydown of c' }).toBe('c');
+      await expectFiredTimes(page, 'WaSelect.OnKeyDown', 1);
       await page.keyboard.press('Escape');
       await select.locator('[part~="clear-button"]').click();
       await expect(page.getByTestId('ev-select-model')).toHaveText('');
+      await page.keyboard.press('Tab');
+      await expectFired(page, 'WaSelect.OnBlur');
     },
   },
   {
@@ -345,9 +414,9 @@ const EVENT_CASES = [
     },
   },
   {
-    name: 'WaButton click submitting the form',
+    name: 'WaButton click submitting the form, focus, blur',
     route: FORMS, tags: ['wa-button'],
-    callbacks: ['WaButton.OnClick'],
+    callbacks: ids('WaButton', ['OnClick', ...FOCUS]),
     run: async page => {
       await page.getByTestId('ev-submit').click();
       await expectFiredTimes(page, 'form.submit', 1);
@@ -372,10 +441,10 @@ const EVENT_CASES = [
 
   // --- Pro form controls (ProFormEventsHarness), skipped visibly on the free CDN ---
   {
-    // no OnKeyDown: wa-combobox stops the propagation of every keydown in its input, so it never reaches Blazor
-    name: 'WaCombobox keyboard, input, popup show/hide, create, clear',
+    // wa-combobox stops the propagation of every keydown in its input, so OnKeyDown binds the relayed keydown
+    name: 'WaCombobox focus, keyboard (relayed keydown), input, popup show/hide, create, clear',
     route: PRO, tags: ['wa-combobox', 'wa-option'], pro: true,
-    callbacks: ids('WaCombobox', ['OnKeyPress', 'OnKeyUp', 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide', 'OnCreate', 'OnClear']),
+    callbacks: ids('WaCombobox', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide', 'OnCreate', 'OnClear']),
     proven: ['WaCombobox.ValueChanged'],
     run: async page => {
       const combobox = page.getByTestId('pro-combobox');
@@ -386,19 +455,23 @@ const EVENT_CASES = [
       await combobox.locator('[part~="clear-button"]').click();
       await expect(page.getByTestId('pro-combobox-model')).toHaveText('');
       await input.pressSequentially('Mango');
+      await expect.poll(async () => (await payloadOf(page, 'WaCombobox.OnKeyDown')).key, { message: 'relayed keydown of the last letter' }).toBe('o');
+      await expectFiredTimes(page, 'WaCombobox.OnKeyDown', 'Mango'.length);
       // with AllowCreate, Enter on text that matches no option asks the page to create it
       await input.press('Enter');
       await expectFired(page, 'WaCombobox.OnCreate');
       expect((await payloadOf(page, 'WaCombobox.OnCreate')).inputValue).toBe('Mango');
       await page.keyboard.press('Escape');
       await expectFired(page, 'WaCombobox.OnAfterHide');
+      await page.keyboard.press('Tab');
+      await expectFired(page, 'WaCombobox.OnBlur');
     },
   },
   {
     // no OnKeyPress: the date segments cancel their keydown (they edit the segment themselves)
-    name: 'WaDateInput keyboard, input, popup show/hide, clear',
+    name: 'WaDateInput focus, keyboard, input, popup show/hide, clear',
     route: PRO, tags: ['wa-date-input'], pro: true,
-    callbacks: ids('WaDateInput', ['OnKeyDown', 'OnKeyUp', 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide', 'OnClear']),
+    callbacks: ids('WaDateInput', ['OnKeyDown', 'OnKeyUp', ...FOCUS, 'OnInput', 'OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide', 'OnClear']),
     run: async page => {
       const date = page.getByTestId('pro-date-input');
       await date.locator('[data-segment="day"]').press('ArrowUp');
@@ -410,6 +483,7 @@ const EVENT_CASES = [
       await expectFired(page, 'WaDateInput.OnAfterHide');
       await date.locator('[part~="clear-button"]').click();
       await expect(page.getByTestId('pro-date-input-model')).toHaveText('');
+      await leaveControls(page);
     },
   },
   {
@@ -426,12 +500,15 @@ const EVENT_CASES = [
     },
   },
   {
-    name: 'WaFileInput change and input from a chosen file',
+    name: 'WaFileInput change and input from a chosen file, focus, blur',
     route: PRO, tags: ['wa-file-input'], pro: true,
-    callbacks: ids('WaFileInput', ['OnChange', 'OnInput']),
+    callbacks: ids('WaFileInput', ['OnChange', 'OnInput', ...FOCUS]),
     run: async page => {
-      await page.getByTestId('pro-file-input').locator('input[type="file"]')
+      const fileInput = page.getByTestId('pro-file-input');
+      await fileInput.locator('input[type="file"]')
         .setInputFiles({ name: 'notes.txt', mimeType: 'text/plain', buffer: Buffer.from('harness') });
+      await fileInput.locator('button, [role="button"]').first().focus();
+      await page.keyboard.press('Tab');
     },
   },
   {
@@ -685,49 +762,9 @@ const EVENT_CASES = [
 
 // Known defects, run as expected failures (test.fail): each asserts the behaviour a consumer would expect, so it
 // fails today, and passes - failing the suite - once the defect is fixed, at which point the case moves to
-// EVENT_CASES and the exemption is removed. The callbacks involved are exempted from coverage, not covered.
+// EVENT_CASES and the exemption is removed. The callbacks involved are exempted from coverage, not covered. Empty
+// since 3.12.0: the focus, non-bubbling and stopped-keydown defects are fixed (focusin/focusout and the JS
+// initializer's relay) and proven by the regular cases above.
 /** @type {KnownDefectCase[]} */
-const KNOWN_DEFECT_CASES = [
-  {
-    name: 'OnFocus/OnBlur of a control focused inside its shadow root (WaInput) reach .NET',
-    exemption: 'focus-in-shadow-root',
-    route: FORMS, tags: ['wa-input'],
-    run: async page => {
-      const input = page.getByTestId('ev-input').locator('input');
-      await input.focus();
-      await page.keyboard.press('Tab');
-      await expectFired(page, 'WaInput.OnFocus');
-      await expectFired(page, 'WaInput.OnBlur');
-    },
-  },
-  {
-    name: 'WaColorPicker popup OnShow/OnAfterShow reach .NET',
-    exemption: 'color-picker-non-bubbling-popup-events',
-    route: FORMS, tags: ['wa-color-picker'],
-    run: async page => {
-      await page.getByTestId('ev-color-picker').locator('[part~="trigger"]').click();
-      await expectFired(page, 'WaColorPicker.OnShow');
-      await expectFired(page, 'WaColorPicker.OnAfterShow');
-    },
-  },
-  {
-    name: 'WaCombobox.OnKeyDown reaches .NET',
-    exemption: 'combobox-keydown-stopped',
-    route: PRO, tags: ['wa-combobox'], pro: true,
-    run: async page => {
-      await page.getByTestId('pro-combobox').locator('[part~="combobox-input"]').press('ArrowDown');
-      await expectFired(page, 'WaCombobox.OnKeyDown');
-    },
-  },
-  {
-    name: 'WaIntersectionObserver.OnIntersect reaches .NET',
-    exemption: 'intersect-non-bubbling',
-    route: '/testing/event-payloads', tags: ['wa-intersection-observer'],
-    run: async page => {
-      await page.getByTestId('pl-intersection-observer').locator('div').first().scrollIntoViewIfNeeded();
-      await expectFired(page, 'WaIntersectionObserver.OnIntersect');
-    },
-  },
-];
-
-module.exports = { EVENT_CASES, KNOWN_DEFECT_CASES, focusTypeAndLeave, centreOf };
+const KNOWN_DEFECT_CASES = [];
+module.exports = { EVENT_CASES, KNOWN_DEFECT_CASES, focusTypeAndLeave, leaveControls, centreOf };

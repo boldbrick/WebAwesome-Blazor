@@ -87,6 +87,21 @@ const PAYLOAD_CASES = [
     },
   },
   {
+    // wa-intersect does not bubble: only the JS initializer's relay delivers it, with the flattened entry
+    name: 'wa-intersect (intersection observer, relayed) carries the intersection state and ratio',
+    tags: ['wa-intersection-observer'],
+    callbacks: ['WaIntersectionObserver.OnIntersect'],
+    run: async page => {
+      const observed = page.getByTestId('pl-intersection-observer').locator('div').first();
+      await observed.scrollIntoViewIfNeeded();
+      await expect.poll(async () => (await payloadOf(page, 'WaIntersectionObserver.OnIntersect').catch(() => ({}))).isIntersecting,
+        { message: 'isIntersecting after scrolling the observed element into view' }).toBe(true);
+      const payload = await payloadOf(page, 'WaIntersectionObserver.OnIntersect');
+      expect(payload.intersectionRatio).toBeGreaterThan(0);
+      expect(payload.intersectionRatio).toBeLessThanOrEqual(1);
+    },
+  },
+  {
     name: 'wa-focus-day and wa-view-change (date picker) carry ISO dates',
     tags: ['wa-date-picker'], pro: true,
     callbacks: ['WaDatePicker.OnFocusDay', 'WaDatePicker.OnViewChange'],

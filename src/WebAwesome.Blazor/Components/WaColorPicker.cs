@@ -125,15 +125,19 @@ public class WaColorPicker : WaInputBase<string>
         // Add common event handlers
         AddCommonEventHandlers(builder, 50);
 
-        // Add color picker-specific event handlers
-        builder.AddAttributeIfHasDelegate(56, "onwa-show", OnShow);
-        builder.AddAttributeIfHasDelegate(57, "onwa-hide", OnHide);
-        builder.AddAttributeIfHasDelegate(58, "onwa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(59, "onwa-after-hide", OnAfterHide);
-        builder.AddAttributeIfHasDelegate(60, "onwa-invalid", OnInvalid);
+        // Add color picker-specific event handlers; the popup events are relayed, because the element dispatches
+        // them as non-bubbling events, which Blazor never receives
+        builder.AddRelayedEventIfHasDelegate(56, Constants.RelayedShowEventAttribute, OnShow);
+        builder.AddRelayedEventIfHasDelegate(58, Constants.RelayedHideEventAttribute, OnHide);
+        builder.AddRelayedEventIfHasDelegate(60, Constants.RelayedAfterShowEventAttribute, OnAfterShow);
+        builder.AddRelayedEventIfHasDelegate(62, Constants.RelayedAfterHideEventAttribute, OnAfterHide);
+        builder.AddAttributeIfHasDelegate(64, "onwa-invalid", OnInvalid);
+
+        // the keydown is relayed too, because the element stops the propagation of Escape while it is open
+        AddRelayedKeyDownHandler(builder, 65);
 
         // Add element reference capture
-        builder.AddElementReferenceCapture(65, __colorPickerReference => Element = __colorPickerReference);
+        builder.AddElementReferenceCapture(67, __colorPickerReference => Element = __colorPickerReference);
 
         // Add label and hint slots
         AddLabelAndHintSlots(builder, 70);
@@ -151,6 +155,9 @@ public class WaColorPicker : WaInputBase<string>
 
     /// <inheritdoc />
     protected override string? LiveValuePropertyName => "value";
+
+    /// <inheritdoc />
+    internal override bool RelaysKeyDown => true;
 
     #endregion
 

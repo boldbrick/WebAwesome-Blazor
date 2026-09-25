@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace WebAwesome.Blazor.Base;
 
@@ -172,6 +173,27 @@ internal static class RenderTreeBuilderExtensions
         if (callback.HasDelegate)
         {
             builder.AddAttribute(sequence, name, callback);
+        }
+    }
+
+    /// <summary>
+    /// Adds the handler of an event the JS initializer relays (a Constants.Relayed*EventAttribute) together with
+    /// Blazor's stopPropagation for it, only when the callback has a delegate attached: the relayed event bubbles,
+    /// so without the stopPropagation it would also reach a wrapper of the same element further up the tree.
+    /// Uses sequence + 0..1.
+    /// </summary>
+    /// <typeparam name="T">Type of the event arguments</typeparam>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Constant base sequence number</param>
+    /// <param name="name">Relayed event attribute name, e.g. <see cref="Constants.RelayedShowEventAttribute"/></param>
+    /// <param name="callback">Event callback; nothing is emitted when no delegate is attached</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddRelayedEventIfHasDelegate<T>(this RenderTreeBuilder builder, int sequence, string name, EventCallback<T> callback)
+    {
+        if (callback.HasDelegate)
+        {
+            builder.AddAttribute(sequence, name, callback);
+            builder.AddEventStopPropagationAttribute(sequence + 1, name, true);
         }
     }
 

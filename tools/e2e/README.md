@@ -26,6 +26,9 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   harness pages (`/testing/events-forms`, `-overlays`, `-content`, `-pro`, see
   `src\WebAwesome.Blazor.Demo\Pages\Testing`), which renders what reached .NET. Known defects run as
   expected failures (`KNOWN_DEFECT_CASES`, `test.fail`): they start failing once the defect is fixed.
+  The list is empty since 3.12.0: the focus cases prove `OnFocus`/`OnBlur` through `focusin`/`focusout`,
+  and the color picker, select, combobox and intersection observer cases prove the events the JS
+  initializer relays (non-bubbling, or stopped in the shadow root).
 - `tests\event-payload.spec.js` — the payloads the JS initializer builds by hand (`specialArgs`):
   split panel, observers, random content, date picker, video playlist and data grid events, each
   with its non-default field values as .NET received them (`/testing/event-payloads`).

@@ -82,7 +82,7 @@
       "id": "WaButton.OnBlur",
       "tag": "wa-button",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -96,7 +96,7 @@
       "id": "WaButton.OnFocus",
       "tag": "wa-button",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -117,7 +117,7 @@
       "id": "WaCheckbox.OnBlur",
       "tag": "wa-checkbox",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -129,7 +129,7 @@
       "id": "WaCheckbox.OnFocus",
       "tag": "wa-checkbox",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -176,35 +176,35 @@
       "id": "WaColorPicker.OnAfterHide",
       "tag": "wa-color-picker",
       "handlers": [
-        "wa-after-hide"
+        "wablazor-after-hide"
       ]
     },
     {
       "id": "WaColorPicker.OnAfterShow",
       "tag": "wa-color-picker",
       "handlers": [
-        "wa-after-show"
+        "wablazor-after-show"
       ]
     },
     {
       "id": "WaColorPicker.OnBlur",
       "tag": "wa-color-picker",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
       "id": "WaColorPicker.OnFocus",
       "tag": "wa-color-picker",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
       "id": "WaColorPicker.OnHide",
       "tag": "wa-color-picker",
       "handlers": [
-        "wa-hide"
+        "wablazor-hide"
       ]
     },
     {
@@ -225,7 +225,7 @@
       "id": "WaColorPicker.OnKeyDown",
       "tag": "wa-color-picker",
       "handlers": [
-        "keydown"
+        "wablazor-keydown"
       ]
     },
     {
@@ -246,7 +246,7 @@
       "id": "WaColorPicker.OnShow",
       "tag": "wa-color-picker",
       "handlers": [
-        "wa-show"
+        "wablazor-show"
       ]
     },
     {
@@ -272,7 +272,7 @@
       "id": "WaCombobox.OnBlur",
       "tag": "wa-combobox",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -293,7 +293,7 @@
       "id": "WaCombobox.OnFocus",
       "tag": "wa-combobox",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -321,7 +321,7 @@
       "id": "WaCombobox.OnKeyDown",
       "tag": "wa-combobox",
       "handlers": [
-        "keydown"
+        "wablazor-keydown"
       ]
     },
     {
@@ -492,7 +492,7 @@
       "id": "WaDateInput.OnBlur",
       "tag": "wa-date-input",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -506,7 +506,7 @@
       "id": "WaDateInput.OnFocus",
       "tag": "wa-date-input",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -720,7 +720,7 @@
       "id": "WaFileInput.OnBlur",
       "tag": "wa-file-input",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -734,7 +734,7 @@
       "id": "WaFileInput.OnFocus",
       "tag": "wa-file-input",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -783,7 +783,7 @@
       "id": "WaInput.OnBlur",
       "tag": "wa-input",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -797,7 +797,7 @@
       "id": "WaInput.OnFocus",
       "tag": "wa-input",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -844,21 +844,21 @@
       "id": "WaIntersectionObserver.OnIntersect",
       "tag": "wa-intersection-observer",
       "handlers": [
-        "wa-intersect"
+        "wablazor-intersect"
       ]
     },
     {
       "id": "WaKnownDate.OnBlur",
       "tag": "wa-known-date",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
       "id": "WaKnownDate.OnFocus",
       "tag": "wa-known-date",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -919,14 +919,14 @@
       "id": "WaNumberInput.OnBlur",
       "tag": "wa-number-input",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
       "id": "WaNumberInput.OnFocus",
       "tag": "wa-number-input",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -973,7 +973,7 @@
       "id": "WaOtpInput.OnBlur",
       "tag": "wa-otp-input",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -994,7 +994,7 @@
       "id": "WaOtpInput.OnFocus",
       "tag": "wa-otp-input",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -1104,14 +1104,14 @@
       "id": "WaRadioGroup.OnBlur",
       "tag": "wa-radio-group",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
       "id": "WaRadioGroup.OnFocus",
       "tag": "wa-radio-group",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -1170,14 +1170,14 @@
       "id": "WaRange.OnBlur",
       "tag": "wa-slider",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
       "id": "WaRange.OnFocus",
       "tag": "wa-slider",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -1234,14 +1234,14 @@
       "id": "WaRating.OnBlur",
       "tag": "wa-rating",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
       "id": "WaRating.OnFocus",
       "tag": "wa-rating",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -1314,7 +1314,7 @@
       "id": "WaSelect.OnBlur",
       "tag": "wa-select",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -1328,7 +1328,7 @@
       "id": "WaSelect.OnFocus",
       "tag": "wa-select",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -1356,7 +1356,7 @@
       "id": "WaSelect.OnKeyDown",
       "tag": "wa-select",
       "handlers": [
-        "keydown"
+        "wablazor-keydown"
       ]
     },
     {
@@ -1404,14 +1404,14 @@
       "id": "WaSlider.OnBlur",
       "tag": "wa-slider",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
       "id": "WaSlider.OnFocus",
       "tag": "wa-slider",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -1470,7 +1470,7 @@
       "id": "WaSwitch.OnBlur",
       "tag": "wa-switch",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -1482,7 +1482,7 @@
       "id": "WaSwitch.OnFocus",
       "tag": "wa-switch",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -1578,14 +1578,14 @@
       "id": "WaTextArea.OnBlur",
       "tag": "wa-textarea",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
       "id": "WaTextArea.OnFocus",
       "tag": "wa-textarea",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {
@@ -1646,7 +1646,7 @@
       "id": "WaTimeInput.OnBlur",
       "tag": "wa-time-input",
       "handlers": [
-        "blur"
+        "focusout"
       ]
     },
     {
@@ -1660,7 +1660,7 @@
       "id": "WaTimeInput.OnFocus",
       "tag": "wa-time-input",
       "handlers": [
-        "focus"
+        "focusin"
       ]
     },
     {

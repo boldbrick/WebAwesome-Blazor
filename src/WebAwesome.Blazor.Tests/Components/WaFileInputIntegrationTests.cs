@@ -101,8 +101,9 @@ public class WaFileInputIntegrationTests : BunitContext
         var element = cut.Find("wa-file-input");
         element.TriggerEvent("onchange", new EventArgs());
         element.TriggerEvent("oninput", new EventArgs());
-        element.TriggerEvent("onfocus", new Microsoft.AspNetCore.Components.Web.FocusEventArgs());
-        element.TriggerEvent("onblur", new Microsoft.AspNetCore.Components.Web.FocusEventArgs());
+        // focus lands on the button in the shadow root, so the bubbling focusin/focusout carry OnFocus/OnBlur
+        element.TriggerEvent("onfocusin", new Microsoft.AspNetCore.Components.Web.FocusEventArgs());
+        element.TriggerEvent("onfocusout", new Microsoft.AspNetCore.Components.Web.FocusEventArgs());
         element.TriggerEvent("onwa-invalid", new EventArgs());
 
         // Assert

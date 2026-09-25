@@ -181,12 +181,12 @@ public class WaButton : ComponentBase, IFormValidation
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     /// <summary>
-    /// Invoked when the button gains focus.
+    /// Invoked when the focus moves into the button. Bound to the bubbling, composed focusin event (so
     /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     /// <summary>
-    /// Invoked when the button loses focus.
+    /// Invoked when the focus leaves the button. Bound to the bubbling, composed focusout event (so
     /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
@@ -269,9 +269,9 @@ public class WaButton : ComponentBase, IFormValidation
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);
 
-        builder.AddAttributeIfHasDelegate(21, "onfocus", OnFocus);
+        builder.AddAttributeIfHasDelegate(21, "onfocusin", OnFocus);
 
-        builder.AddAttributeIfHasDelegate(22, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(22, "onfocusout", OnBlur);
 
         builder.AddAttributeIfHasDelegate(24, "onwa-invalid", OnInvalid);
 

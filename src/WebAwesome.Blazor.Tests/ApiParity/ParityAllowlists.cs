@@ -57,6 +57,7 @@ internal static class ParityAllowlists
         ("componentClassOverrides", c => c.ComponentClassOverrides.Keys),
         ("nativeElementMethods", c => c.NativeElementMethods),
         ("nativeDomEvents", c => c.NativeDomEvents.Keys),
+        ("bubblingEventAliases", c => c.BubblingEventAliases.Keys),
         ("unreachableEnumUnionValues", c => c.UnreachableEnumUnionValues.Keys),
     };
 

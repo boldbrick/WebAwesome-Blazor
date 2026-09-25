@@ -20,8 +20,9 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// registered; conversely every registration must be bound by some wrapper and dispatched by the element (a
 /// CEM event), or it is a leftover of a removed binding. The wrapper side is the rendered output of
 /// RenderedWrapperCatalog, not a source scan, so bindings made through constants, computed sequence numbers or
-/// base-class helpers are seen. The numericchange/numericinput aliases are checked against the render-tree
-/// attribute constants in Base\Constants.cs both ways.
+/// base-class helpers are seen. The numericchange/numericinput aliases and the relayed events (wablazor-*) are
+/// checked against the render-tree attribute constants in Base\Constants.cs both ways; a relayed event must be
+/// bound only on the elements the initializer relays it for, and always with Blazor's stopPropagation.
 /// </summary>
 public class EventBindingRegistrationTests
 {
@@ -76,10 +77,18 @@ public class EventBindingRegistrationTests
                 continue;
             }
 
-            // an alias is dispatched as its browser event
+            // an alias is dispatched as its browser event, a relay as the element event it relays
             var dispatched = registrations.ResolveAlias(name);
             foreach (var tag in tags.Where(t => !IsDeclaredEvent(t, dispatched)))
                 misses.Add($"'{name}' is registered and bound on '{tag}', whose CEM entry does not declare '{dispatched}'");
+
+            if (!registrations.RelayedEvents.TryGetValue(name, out var relay)) continue;
+
+            // the initializer dispatches a relayed event only on its hosts, so a binding elsewhere never fires
+            foreach (var tag in tags.Where(t => !relay.Hosts.Contains(t)))
+                misses.Add($"'{name}' is bound on '{tag}', but {JsInitializerEventRegistrations.RelayedEventsMap} relays '{relay.Event}' only for {string.Join(", ", relay.Hosts)}");
+            foreach (var host in relay.Hosts.Where(h => !tags.Contains(h)))
+                misses.Add($"{JsInitializerEventRegistrations.RelayedEventsMap} relays '{relay.Event}' as '{name}' for '{host}', but no wrapper of '{host}' binds it");
         }
 
         AssertNoMisses(misses, "JS initializer registrations that no wrapper binds or no element dispatches");
@@ -104,13 +113,16 @@ public class EventBindingRegistrationTests
 
     /// <summary>
     /// Every alias event attribute constant (Constants.*EventAttribute) must name a key of the JS
-    /// numericValueEventAliases map, and every key must have a constant; the alias must listen to a Blazor
-    /// built-in event, whose reader it replaces.
+    /// numericValueEventAliases or relayedEvents map, and every key must have a constant; an alias must listen to
+    /// a Blazor built-in event, whose reader it replaces, and a relayed name must be private: neither a Blazor
+    /// built-in event nor a wa-* name a page listener could mistake for the element's own event.
     /// </summary>
     [Fact]
     public void AliasEventAttributeConstants_MatchJsAliases()
     {
-        var aliases = JsInitializerEventRegistrations.Current.NumericValueEventAliases;
+        var registrations = JsInitializerEventRegistrations.Current;
+        var aliases = registrations.NumericValueEventAliases;
+        var relays = registrations.RelayedEvents;
         var constants = AliasEventAttributeConstants();
         Assert.NotEmpty(constants);
 
@@ -121,8 +133,8 @@ public class EventBindingRegistrationTests
             var eventName = RenderedWrapperCatalog.EventNameOf(attribute);
             if (eventName == null)
                 misses.Add($"Constants.{field} = \"{attribute}\" lacks the \"on\" prefix of an event handler attribute");
-            else if (!aliases.ContainsKey(eventName))
-                misses.Add($"Constants.{field} = \"{attribute}\", but '{eventName}' is not a key of {JsInitializerEventRegistrations.NumericValueEventAliasesMap} in {JsInitializerEventRegistrations.FileName}");
+            else if (!aliases.ContainsKey(eventName) && !relays.ContainsKey(eventName))
+                misses.Add($"Constants.{field} = \"{attribute}\", but '{eventName}' is a key of neither {JsInitializerEventRegistrations.NumericValueEventAliasesMap} nor {JsInitializerEventRegistrations.RelayedEventsMap} in {JsInitializerEventRegistrations.FileName}");
         }
 
         var constantEvents = constants.Select(c => RenderedWrapperCatalog.EventNameOf(c.Attribute)).ToHashSet(StringComparer.Ordinal);
@@ -136,7 +148,40 @@ public class EventBindingRegistrationTests
                 misses.Add($"alias '{alias}' listens to '{browserEventName}', which is not a Blazor built-in event");
         }
 
+        foreach (var (name, relay) in relays)
+        {
+            if (!constantEvents.Contains(name))
+                misses.Add($"{JsInitializerEventRegistrations.RelayedEventsMap} key '{name}' has no Constants.*{AliasConstantSuffix}");
+            if (name.StartsWith(WaEventPrefix, StringComparison.Ordinal) || name == relay.Event)
+                misses.Add($"relayed name '{name}' is not private: page listeners of '{relay.Event}' or other wa-* events could take it for the element's own event");
+            if (relay.Hosts.Count == 0)
+                misses.Add($"relayed name '{name}' relays '{relay.Event}' for no element");
+            if (relay.Source != RelaySourceHost && relay.Source != RelaySourceSubtree)
+                misses.Add($"relayed name '{name}' has source '{relay.Source}', expected '{RelaySourceHost}' or '{RelaySourceSubtree}'");
+        }
+
         AssertNoMisses(misses, "Alias event attribute constants out of step with the JS aliases");
+    }
+
+    /// <summary>
+    /// Every relayed event handler a callback adds must come with Blazor's stopPropagation for it: the relayed
+    /// event bubbles, so without it a wrapper of the same element further up the tree would receive it too (a
+    /// nested WaIntersectionObserver would report its inner neighbour's intersections).
+    /// </summary>
+    [Fact]
+    public void RelayedEventHandlers_StopPropagation()
+    {
+        var registrations = JsInitializerEventRegistrations.Current;
+
+        // guard the harness itself: without a relayed binding the check passes vacuously
+        var relayedCount = RenderedWrapperCatalog.All
+            .SelectMany(w => w.AllHandlers)
+            .Count(h => RenderedWrapperCatalog.EventNameOf(h) is { } e && registrations.RelayedEvents.ContainsKey(e));
+        Assert.True(relayedCount > 0, "No rendered wrapper binds a relayed event");
+
+        var misses = RenderedWrapperCatalog.All.SelectMany(w => RelayStopPropagationMisses(w, registrations)).ToList();
+
+        AssertNoMisses(misses, "Relayed event handlers without stopPropagation");
     }
 
     /// <summary>
@@ -151,6 +196,7 @@ public class EventBindingRegistrationTests
         Assert.Contains($"of {JsInitializerEventRegistrations.EventNamesList})", source);
         Assert.Contains($"of {JsInitializerEventRegistrations.NativeCustomEventNamesList})", source);
         Assert.Contains($"Object.entries({JsInitializerEventRegistrations.NumericValueEventAliasesMap})", source);
+        Assert.Contains($"Object.entries({JsInitializerEventRegistrations.RelayedEventsMap})", source);
     }
 
     /// <summary>
@@ -172,7 +218,31 @@ public class EventBindingRegistrationTests
 
     #region ------ Internals ------
 
+    /// <summary>
+    /// Collects the relayed event handlers of one rendered wrapper that lack Blazor's stopPropagation, or that the
+    /// wrapper binds without any callback set.
+    /// </summary>
+    /// <param name="wrapper">The rendered wrapper</param>
+    /// <param name="registrations">The JS initializer registrations</param>
+    /// <returns>Descriptions of the misses</returns>
+    internal static IEnumerable<string> RelayStopPropagationMisses(RenderedWrapper wrapper, JsInitializerEventRegistrations registrations)
+    {
+        bool IsRelayed(string handler) => RenderedWrapperCatalog.EventNameOf(handler) is { } e && registrations.RelayedEvents.ContainsKey(e);
+
+        foreach (var callback in wrapper.Callbacks)
+        {
+            foreach (var handler in callback.AddedHandlers.Where(IsRelayed).Where(h => !callback.AddedStopPropagations.Contains(h)))
+                yield return $"{wrapper.ComponentType.Name}.{callback.Name} binds the relayed '{handler}' without its stopPropagation (bind it with RenderTreeBuilderExtensions.AddRelayedEventIfHasDelegate)";
+        }
+
+        foreach (var handler in wrapper.BaselineHandlers.Where(IsRelayed))
+            yield return $"{wrapper.ComponentType.Name} always binds the relayed '{handler}'; relayed events belong to an EventCallback, bound only when it has a delegate";
+    }
+
     private const string AliasConstantSuffix = "EventAttribute";
+    private const string WaEventPrefix = "wa-";
+    private const string RelaySourceHost = "host";
+    private const string RelaySourceSubtree = "subtree";
 
     // registrations deliberately not bound by any wrapper, each with the reason
     private static readonly Dictionary<string, string> UnboundRegistrationAllowlist = new(StringComparer.Ordinal);
@@ -194,9 +264,11 @@ public class EventBindingRegistrationTests
     {
         if (!Surface.Components.TryGetValue(tag, out var component)) return false;
 
+        // a native DOM event (a relayed keydown) is admitted like in the binding parity check
         var componentConfig = GetComponentConfig(tag);
         return (component.Events?.ContainsKey(eventName) == true && !componentConfig.CemOnlyEvents.Contains(eventName))
-            || componentConfig.UndeclaredBoundEvents.Contains(eventName);
+            || componentConfig.UndeclaredBoundEvents.Contains(eventName)
+            || Config.NativeDomEvents.ContainsKey(eventName);
     }
 
     /// <summary>

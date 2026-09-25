@@ -274,7 +274,85 @@ public class ParityGuardSelfTests
         Assert.Equal("wa-show", registrations.ResolveAlias("wa-show"));
         Assert.Equal(new[] { "wa-show", "wa-hide" }, registrations.EventNames);
         Assert.Equal(new[] { "beforeinput" }, registrations.NativeCustomEventNames);
-        Assert.Equal(new[] { "wa-show", "wa-hide", "beforeinput", "numericchange" }, registrations.AllRegisteredNames);
+        Assert.Equal(new[] { "wa-show", "wa-hide", "beforeinput", "numericchange", "wablazor-intersect", "wablazor-keydown" }, registrations.AllRegisteredNames);
+    }
+
+    [Fact]
+    public void BindingGuard_ResolvesRelayToItsElementEvent()
+    {
+        // Arrange
+        var registrations = JsInitializerEventRegistrations.Parse(SyntheticJsInitializer);
+
+        // Act & Assert
+        Assert.Equal("wa-intersect", registrations.ResolveAlias("wablazor-intersect"));
+        Assert.Equal("keydown", registrations.ResolveAlias("wablazor-keydown"));
+        Assert.Equal(new[] { "wa-select", "wa-combobox" }, registrations.RelayedEvents["wablazor-keydown"].Hosts);
+        Assert.Equal("host", registrations.RelayedEvents["wablazor-intersect"].Source);
+    }
+
+    [Fact]
+    public void BindingGuard_RejectsMalformedRelayEntry()
+    {
+        // Arrange - a relay entry whose shape the parser does not know would drop out of every check
+        var source = SyntheticJsInitializer.Replace("hosts: ['wa-intersection-observer'], ", string.Empty);
+
+        // Act & Assert
+        Assert.ThrowsAny<Exception>(() => JsInitializerEventRegistrations.Parse(source));
+    }
+
+    [Fact]
+    public void BindingGuard_AcceptsFocusinStandIn()
+    {
+        // Arrange - OnFocus/OnBlur bound to the bubbling focusin/focusout (bubblingEventAliases), like WaInputBase
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(FocusinButton));
+
+        // Act
+        var misses = EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Empty(misses);
+    }
+
+    [Fact]
+    public void BindingGuard_FlagsSwappedFocusinStandIn()
+    {
+        // Arrange - focusin/focusout swapped, the stand-in counts as the event it replaces
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(SwappedFocusinButton));
+
+        // Act
+        var misses = EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Equal(2, misses.Count);
+        Assert.Contains(misses, m => m.Contains("SwappedFocusinButton.OnFocus): binds 'blur', expected 'focus'"));
+        Assert.Contains(misses, m => m.Contains("SwappedFocusinButton.OnBlur): binds 'focus', expected 'blur'"));
+    }
+
+    [Fact]
+    public void RelayGuard_FlagsRelayedHandlerWithoutStopPropagation()
+    {
+        // Arrange - wa-intersection-observer binding the relayed wa-intersect without Blazor's stopPropagation
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(UnstoppedRelayObserver));
+
+        // Act
+        var misses = EventBindingRegistrationTests.RelayStopPropagationMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Contains("UnstoppedRelayObserver.OnIntersect binds the relayed 'onwablazor-intersect' without its stopPropagation", Assert.Single(misses));
+    }
+
+    [Fact]
+    public void RelayGuard_AcceptsRelayedHandlerWithStopPropagation()
+    {
+        // Arrange - the real WaIntersectionObserver
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(WaIntersectionObserver));
+
+        // Act
+        var misses = EventBindingRegistrationTests.RelayStopPropagationMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Empty(misses);
+        Assert.Contains("onwablazor-intersect", Assert.Single(wrapper.Callbacks).AddedStopPropagations);
     }
 
     #endregion
@@ -405,6 +483,10 @@ public class ParityGuardSelfTests
         ];
         const numericValueEventAliases = {
           'numericchange': 'change',
+        };
+        const relayedEvents = {
+          'wablazor-intersect': { event: 'wa-intersect', hosts: ['wa-intersection-observer'], source: 'host' },
+          'wablazor-keydown': { event: 'keydown', hosts: ['wa-select', 'wa-combobox'], source: 'subtree' },
         };
         """;
 
@@ -584,6 +666,56 @@ public class ParityGuardSelfTests
         {
             builder.OpenElement(0, "wa-button");
             AddFocusHandlers(builder, 1);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// wa-button binding OnFocus/OnBlur to the bubbling focusin/focusout, like WaButton.
+    /// </summary>
+    private sealed class FocusinButton : ComponentBase
+    {
+        [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
+        [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-button");
+            AddIfSet(builder, 1, "onfocusin", OnFocus);
+            AddIfSet(builder, 2, "onfocusout", OnBlur);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// wa-button binding OnFocus to focusout and OnBlur to focusin.
+    /// </summary>
+    private sealed class SwappedFocusinButton : ComponentBase
+    {
+        [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
+        [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-button");
+            AddIfSet(builder, 1, "onfocusout", OnFocus);
+            AddIfSet(builder, 2, "onfocusin", OnBlur);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// wa-intersection-observer binding the relayed wa-intersect without the stopPropagation that keeps it from
+    /// reaching an outer observer.
+    /// </summary>
+    private sealed class UnstoppedRelayObserver : ComponentBase
+    {
+        [Parameter] public EventCallback<WaIntersectionEventArgs> OnIntersect { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-intersection-observer");
+            AddIfSet(builder, 1, "onwablazor-intersect", OnIntersect);
             builder.CloseElement();
         }
     }

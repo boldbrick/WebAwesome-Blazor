@@ -109,12 +109,18 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
 
     // Common events
     /// <summary>
-    /// Invoked when the input gains keyboard or pointer focus.
+    /// Invoked when the focus moves into the control, by keyboard or pointer. Bound to the bubbling, composed
+    /// focusin event (so <see cref="FocusEventArgs.Type"/> is "focusin"), because the element that takes the
+    /// focus usually lies in the control's shadow root, where Blazor never sees the non-bubbling focus event.
+    /// Moving the focus between the parts of the control's own shadow root raises nothing; moving it between
+    /// the control and content slotted into it (e.g. from one radio of a radio group to the next, or from a
+    /// select's input into its option list) raises <see cref="OnBlur"/> followed by <see cref="OnFocus"/>.
     /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     /// <summary>
-    /// Invoked when the input loses focus.
+    /// Invoked when the focus leaves the control. Bound to the bubbling, composed focusout event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusout"); see <see cref="OnFocus"/>.
     /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
@@ -203,9 +209,13 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// <returns>The next available sequence number</returns>
     protected int AddCommonEventHandlers(RenderTreeBuilder builder, int sequence, bool includeInputHandler)
     {
-        builder.AddAttributeIfHasDelegate(sequence + 0, "onfocus", OnFocus);
-        builder.AddAttributeIfHasDelegate(sequence + 1, "onblur", OnBlur);
-        builder.AddAttributeIfHasDelegate(sequence + 2, "onkeydown", OnKeyDown);
+        builder.AddAttributeIfHasDelegate(sequence + 0, "onfocusin", OnFocus);
+        builder.AddAttributeIfHasDelegate(sequence + 1, "onfocusout", OnBlur);
+
+        // a wrapper whose element stops the keydown's propagation binds the relayed keydown instead
+        if (!RelaysKeyDown)
+            builder.AddAttributeIfHasDelegate(sequence + 2, "onkeydown", OnKeyDown);
+
         builder.AddAttributeIfHasDelegate(sequence + 3, "onkeyup", OnKeyUp);
         builder.AddAttributeIfHasDelegate(sequence + 4, "onkeypress", OnKeyPress);
 
@@ -377,6 +387,22 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     // hands OnInput the same string-valued ChangeEventArgs the built-in input event would
     private Task HandleNumericInputAsync(ChangeEventArgs args)
         => OnInput.InvokeAsync(new ChangeEventArgs { Value = args.GetStringValue() });
+
+    /// <summary>
+    /// Whether the element stops the propagation of the keydown in its shadow root, so that
+    /// <see cref="AddCommonEventHandlers(RenderTreeBuilder, int, bool)"/> leaves out the "onkeydown" handler and the
+    /// wrapper binds <see cref="OnKeyDown"/> with <see cref="AddRelayedKeyDownHandler"/> instead.
+    /// </summary>
+    internal virtual bool RelaysKeyDown => false;
+
+    /// <summary>
+    /// Binds <see cref="OnKeyDown"/> to the relayed keydown (see <see cref="Constants.RelayedKeyDownEventAttribute"/>),
+    /// for a wrapper overriding <see cref="RelaysKeyDown"/>; uses sequence + 0..1.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number</param>
+    internal void AddRelayedKeyDownHandler(RenderTreeBuilder builder, int sequence)
+        => builder.AddRelayedEventIfHasDelegate(sequence, Constants.RelayedKeyDownEventAttribute, OnKeyDown);
 
     // the live value last pushed to or received from the element; only meaningful when hasSyncedLiveValue is set
     private object? lastSyncedLiveValue;

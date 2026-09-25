@@ -6,7 +6,8 @@
 // Without registerCustomEventType, custom events bound in the render tree never reach the
 // .NET handlers. The createEventArgs result is deserialized case-insensitively into the
 // wrapper's typed event args (extra properties are ignored), so payload shapes here must
-// stay in sync with Components\EventArgs.cs.
+// stay in sync with Components\EventArgs.cs. It also relays the events Blazor cannot receive
+// where Web Awesome dispatches them (relayedEvents below).
 
 // events whose detail (when present) is JSON-safe and maps 1:1 onto the typed args
 const eventNames = [
@@ -38,7 +39,6 @@ const eventNames = [
   'wa-hide',
   'wa-hover',
   'wa-include-error',
-  'wa-intersect',
   'wa-invalid',
   'wa-lazy-change',
   'wa-lazy-load',
@@ -130,7 +130,8 @@ const specialArgs = {
   'wa-show': event => ({ ...detailArgs(event), isOpen: true }),
   'wa-hide': event => ({ ...detailArgs(event), isOpen: false }),
 
-  // detail is { entry: IntersectionObserverEntry } - flatten the two marshalable fields
+  // detail is { entry: IntersectionObserverEntry } - flatten the two marshalable fields; wa-intersect does not
+  // bubble, so it is registered only as its relay (relayedEvents), which uses this payload
   'wa-intersect': event => {
     const entry = event.detail && event.detail.entry;
     return {
@@ -264,11 +265,105 @@ const numericValueEventAliases = {
   'numericinput': 'input',
 };
 
+// Blazor receives an event only where it listens: on the document, in the bubbling phase for a custom event
+// (and for keydown), and for a built-in non-bubbling event only at composedPath()[0]. Some events never get
+// there: wa-color-picker dispatches its popup events as plain non-bubbling CustomEvents, WaIntersectEvent is
+// constructed with bubbles: false, and wa-select, wa-combobox (always) and wa-color-picker (Escape while open)
+// stop the propagation of the keydown in their shadow root. A capture-phase listener on the document still
+// sees each of them first, so it re-dispatches every one, once, as a bubbling, composed event under a private
+// name on the host element; the wrappers bind the private name (Constants.Relayed*EventAttribute) instead of
+// the original, together with a Blazor-side stopPropagation, so the relayed event reaches no other wrapper.
+// The original event is left untouched and page listeners never see a second wa-* event.
+//
+// Blazor event name -> { event: the element event it relays, hosts: the elements it is relayed for,
+// source: 'host' when only the host's own dispatch counts (a nested component's event retargeted to the host
+// is not relayed), 'subtree' when the event may originate anywhere inside the host (native input events) }
+const relayedEvents = {
+  'wablazor-show': { event: 'wa-show', hosts: ['wa-color-picker'], source: 'host' },
+  'wablazor-after-show': { event: 'wa-after-show', hosts: ['wa-color-picker'], source: 'host' },
+  'wablazor-hide': { event: 'wa-hide', hosts: ['wa-color-picker'], source: 'host' },
+  'wablazor-after-hide': { event: 'wa-after-hide', hosts: ['wa-color-picker'], source: 'host' },
+  'wablazor-intersect': { event: 'wa-intersect', hosts: ['wa-intersection-observer'], source: 'host' },
+  'wablazor-keydown': { event: 'keydown', hosts: ['wa-color-picker', 'wa-combobox', 'wa-select'], source: 'subtree' },
+};
+
+// the payload Blazor's built-in keyboard reader builds (KeyboardEventArgs), for relayed keyboard events
+function keyboardArgs(event) {
+  return {
+    key: event.key,
+    code: event.code,
+    location: event.location,
+    repeat: event.repeat,
+    ctrlKey: event.ctrlKey,
+    shiftKey: event.shiftKey,
+    altKey: event.altKey,
+    metaKey: event.metaKey,
+    type: event.type,
+    isComposing: event.isComposing,
+  };
+}
+
+// payload builders of the relayed native events; relayed wa-* events use their own payload (specialArgs or
+// the sanitized detail)
+const relayedNativeArgs = {
+  'keydown': keyboardArgs,
+};
+
+// relayed event -> the original event, read by createEventArgs while the relayed event is being dispatched
+const relayOrigins = new WeakMap();
+
+// the element a relayed event is dispatched on, or null when the event is not relayed there
+function relayHost(event, relay) {
+  const path = event.composedPath();
+  if (relay.source === 'host') {
+    const origin = path[0];
+    return origin instanceof Element && relay.hosts.includes(origin.localName) ? origin : null;
+  }
+
+  // the innermost listed host the event passes through
+  for (const node of path) {
+    if (node instanceof Element && relay.hosts.includes(node.localName)) return node;
+  }
+  return null;
+}
+
+function relayArgs(relay) {
+  const argsOf = relayedNativeArgs[relay.event] || specialArgs[relay.event] || detailArgs;
+  return event => argsOf(relayOrigins.get(event) || event);
+}
+
+// symbol marking the document once the relay listeners are installed, shared by every copy of this module
+const relayInstalledKey = Symbol.for('WebAwesome.Blazor.eventRelay');
+
+function installEventRelay() {
+  if (typeof document === 'undefined' || document[relayInstalledKey]) return;
+  document[relayInstalledKey] = true;
+
+  for (const [name, relay] of Object.entries(relayedEvents)) {
+    document.addEventListener(relay.event, event => {
+      const host = relayHost(event, relay);
+      if (!host) return;
+
+      const relayed = new CustomEvent(name, { bubbles: true, composed: true, detail: event.detail });
+      relayOrigins.set(relayed, event);
+      host.dispatchEvent(relayed);
+    }, true);
+  }
+}
+
 let eventTypesRegistered = false;
 
 function registerEventTypes(blazor) {
   if (eventTypesRegistered || !blazor || typeof blazor.registerCustomEventType !== 'function') return;
   eventTypesRegistered = true;
+
+  for (const [name, relay] of Object.entries(relayedEvents)) {
+    blazor.registerCustomEventType(name, {
+      createEventArgs: relayArgs(relay),
+    });
+  }
+
+  installEventRelay();
 
   for (const name of eventNames) {
     blazor.registerCustomEventType(name, {

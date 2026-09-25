@@ -124,9 +124,9 @@ public class WaIntersectionObserver : ComponentBase
         builder.AddAttribute(14, "disabled", Disabled);
         builder.AddAttribute(15, "once", Once);
 
-        // Add event handlers; the interop module's createEventArgs flattens the
-        // IntersectionObserverEntry from the event detail into the typed args
-        builder.AddAttributeIfHasDelegate(20, "onwa-intersect", OnIntersect);
+        // Add event handlers; wa-intersect does not bubble, so Blazor never receives it where it is dispatched and
+        // the JS initializer relays it, flattening the IntersectionObserverEntry of its detail into the typed args
+        builder.AddRelayedEventIfHasDelegate(20, Constants.RelayedIntersectEventAttribute, OnIntersect);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __intersectionObserverReference => Element = __intersectionObserverReference);

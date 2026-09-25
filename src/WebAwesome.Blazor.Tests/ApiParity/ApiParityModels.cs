@@ -159,6 +159,16 @@ public class ParityConfig
     public Dictionary<string, string> NativeDomEvents { get; set; } = new();
 
     /// <summary>
+    /// Bubbling DOM events a wrapper binds in place of a non-bubbling event of the element, mapped to that event
+    /// (e.g. "focusin" -> "focus"): Blazor delivers a non-bubbling event only to composedPath()[0], an element in
+    /// the shadow root when the focus lands there, so OnFocus/OnBlur bind the bubbling, composed focusin/focusout
+    /// instead. The event-binding checks treat a handler of the key as a handler of the mapped event. Every entry
+    /// needs an ignoreReasons entry keyed "bubblingEventAliases:&lt;event&gt;"; an entry no wrapper binds is stale.
+    /// </summary>
+    [JsonPropertyName("bubblingEventAliases")]
+    public Dictionary<string, string> BubblingEventAliases { get; set; } = new();
+
+    /// <summary>
     /// Per-component allowlists and overrides, keyed by tag; a tag the surface does not list is stale.
     /// </summary>
     [JsonPropertyName("components")]

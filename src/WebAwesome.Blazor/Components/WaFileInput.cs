@@ -121,12 +121,12 @@ public class WaFileInput : ComponentBase, IFormValidation
     [Parameter] public EventCallback<EventArgs> OnInput { get; set; }
 
     /// <summary>
-    /// Invoked when the control gains focus.
+    /// Invoked when the focus moves into the control. Bound to the bubbling, composed focusin event (so
     /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     /// <summary>
-    /// Invoked when the control loses focus.
+    /// Invoked when the focus leaves the control. Bound to the bubbling, composed focusout event (so
     /// </summary>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
@@ -183,8 +183,8 @@ public class WaFileInput : ComponentBase, IFormValidation
         // Add event handlers
         builder.AddAttributeIfHasDelegate(30, "onchange", OnChange);
         builder.AddAttributeIfHasDelegate(31, "oninput", OnInput);
-        builder.AddAttributeIfHasDelegate(32, "onfocus", OnFocus);
-        builder.AddAttributeIfHasDelegate(33, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(32, "onfocusin", OnFocus);
+        builder.AddAttributeIfHasDelegate(33, "onfocusout", OnBlur);
         builder.AddAttributeIfHasDelegate(34, "onwa-invalid", OnInvalid);
 
         // Add element reference capture

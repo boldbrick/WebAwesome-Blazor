@@ -210,8 +210,11 @@ public class WaSelect : WaInputBase<string?>
         builder.AddAttributeIfHasDelegate(55, "onwa-after-hide", OnAfterHide);
         builder.AddAttributeIfHasDelegate(56, "onwa-invalid", OnInvalid);
 
+        // the keydown is relayed, because the element stops its propagation in the shadow root
+        AddRelayedKeyDownHandler(builder, 57);
+
         // Add element reference capture
-        builder.AddElementReferenceCapture(57, __selectReference => Element = __selectReference);
+        builder.AddElementReferenceCapture(59, __selectReference => Element = __selectReference);
 
         // Add start slot content
         if (StartContent is not null)
@@ -263,6 +266,9 @@ public class WaSelect : WaInputBase<string?>
     /// In multiple selection mode, the selection lives in the element's value property as a string array.
     /// </summary>
     protected override string? LiveValuePropertyName => Multiple ? MultipleValueProperty : null;
+
+    /// <inheritdoc />
+    internal override bool RelaysKeyDown => true;
 
     /// <summary>
     /// The selected values as the array the element's value property holds in multiple selection mode.

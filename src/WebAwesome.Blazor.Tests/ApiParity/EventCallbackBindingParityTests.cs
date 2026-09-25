@@ -12,14 +12,15 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// parameter, and the event handlers the renderer registers on the root element are compared with the Custom
 /// Elements Manifest events of the tag the wrapper actually renders. The expected event of a callback follows the
 /// naming convention ("wa-after-hide" -> OnAfterHide, "blur" -> OnBlur) plus the component's "eventOverrides";
-/// native DOM events the CEM does not list are admitted through "nativeDomEvents", and a handler bound to a JS
-/// alias ("onnumericchange") counts as its browser event. Because the check inspects the render tree, it sees
+/// native DOM events the CEM does not list are admitted through "nativeDomEvents", a handler bound to a JS
+/// alias ("onnumericchange") counts as its browser event, a relayed one ("onwablazor-show") as the element event it
+/// relays, and a bubbling stand-in ("onfocusin", "bubblingEventAliases") as the non-bubbling event it replaces. Because the check inspects the render tree, it sees
 /// bindings made through constants, variables or base-class helpers, bindings of secondary wrappers (WaRange
 /// renders wa-slider), and handlers under a name without the "on" prefix, which Blazor's browser renderer
 /// rejects. It catches a callback bound to the wrong event, a deleted binding, a binding to an event the element
 /// never dispatches, and a CEM event no callback binds. Deliberate deviations are allowlisted in
 /// parity-config.json ("derivedEventCallbacks", "unboundEventCallbacks", "undeclaredBoundEvents",
-/// "nativeDomEvents", "ignoredEvents", "eventOverrides"), each with a reason, and stale entries fail. Skipped until parity-config.json sets
+/// "nativeDomEvents", "bubblingEventAliases", "ignoredEvents", "eventOverrides"), each with a reason, and stale entries fail. Skipped until parity-config.json sets
 /// "enabled": true, like the other parity tests.
 /// </summary>
 public class EventCallbackBindingParityTests
@@ -60,6 +61,7 @@ public class EventCallbackBindingParityTests
     {
         var keys = new List<string>();
         keys.AddRange(Config.NativeDomEvents.Keys.Select(e => $"{NativeDomEventsKey}:{e}"));
+        keys.AddRange(Config.BubblingEventAliases.Keys.Select(e => $"{BubblingEventAliasesKey}:{e}"));
 
         foreach (var (tag, componentConfig) in Config.Components)
         {
@@ -94,6 +96,7 @@ public class EventCallbackBindingParityTests
     #region ------ Internals ------
 
     private const string NativeDomEventsKey = "nativeDomEvents";
+    private const string BubblingEventAliasesKey = "bubblingEventAliases";
     private const string DerivedEventCallbacksKey = "derivedEventCallbacks";
     private const string UnboundEventCallbacksKey = "unboundEventCallbacks";
     private const string UndeclaredBoundEventsKey = "undeclaredBoundEvents";
@@ -155,8 +158,8 @@ public class EventCallbackBindingParityTests
             var eventName = RenderedWrapperCatalog.EventNameOf(handler);
             if (eventName == null)
                 yield return $"{tag} ({name}): handler bound under '{handler}', which lacks the \"on\" prefix - Blazor's browser renderer rejects it";
-            else if (!IsAdmittedEvent(registrations.ResolveAlias(eventName), elementEvents))
-                yield return $"{tag} ({name}): always binds '{handler}', but '{registrations.ResolveAlias(eventName)}' is not an event of the element (declared: {Describe(elementEvents)})";
+            else if (!IsAdmittedEvent(Resolve(eventName, registrations), elementEvents))
+                yield return $"{tag} ({name}): always binds '{handler}', but '{Resolve(eventName, registrations)}' is not an event of the element (declared: {Describe(elementEvents)})";
         }
 
         foreach (var callback in wrapper.Callbacks.Where(c => c.Error == null))
@@ -206,6 +209,7 @@ public class EventCallbackBindingParityTests
     internal static IEnumerable<string> StaleAllowlistEntries(IReadOnlyList<RenderedWrapper> wrappers, JsInitializerEventRegistrations registrations)
     {
         var usedNative = new HashSet<string>(StringComparer.Ordinal);
+        var usedBubbling = new HashSet<string>(StringComparer.Ordinal);
         var usedUndeclared = new HashSet<(string Tag, string Event)>();
         var usedCallbacks = new HashSet<(string Tag, string Callback)>();
         var boundByCallback = new HashSet<(string Tag, string Event)>();
@@ -233,10 +237,15 @@ public class EventCallbackBindingParityTests
 
             foreach (var callback in wrapper.Callbacks)
                 usedCallbacks.Add((tag, callback.Name));
+
+            usedBubbling.UnionWith(wrapper.AllHandlers.Select(RenderedWrapperCatalog.EventNameOf).OfType<string>());
         }
 
         foreach (var eventName in Config.NativeDomEvents.Keys.Where(e => !usedNative.Contains(e)))
             yield return $"nativeDomEvents entry '{eventName}' admits no binding (no wrapper binds it on an element whose CEM entry lacks it) and must be removed";
+
+        foreach (var eventName in Config.BubblingEventAliases.Keys.Where(e => !usedBubbling.Contains(e)))
+            yield return $"bubblingEventAliases entry '{eventName}' maps no binding (no wrapper binds it) and must be removed";
 
         foreach (var (tag, componentConfig) in Config.Components)
         {
@@ -400,8 +409,16 @@ public class EventCallbackBindingParityTests
         return handlers
             .Select(RenderedWrapperCatalog.EventNameOf)
             .Where(e => e != null)
-            .Select(e => registrations.ResolveAlias(e!))
+            .Select(e => Resolve(e!, registrations))
             .ToHashSet(StringComparer.Ordinal);
+    }
+
+    // the element event a bound event stands for: an alias's browser event, a relay's element event, or the
+    // non-bubbling event a bubbling stand-in replaces
+    private static string Resolve(string eventName, JsInitializerEventRegistrations registrations)
+    {
+        var resolved = registrations.ResolveAlias(eventName);
+        return Config.BubblingEventAliases.TryGetValue(resolved, out var nonBubbling) ? nonBubbling : resolved;
     }
 
     private static bool TryGetElement(RenderedWrapper wrapper, out string tag, out ComponentSurface component)

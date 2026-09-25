@@ -49,7 +49,8 @@ internal static class RenderedWrapperCatalog
         {
             var withCallback = RenderRoot(context, componentType, property);
             var added = withCallback.Handlers.Except(baseline.Handlers, StringComparer.Ordinal).ToHashSet(StringComparer.Ordinal);
-            callbacks.Add(new RenderedCallback(property.Name, added, withCallback.Error));
+            var addedStops = withCallback.StopPropagations.Except(baseline.StopPropagations, StringComparer.Ordinal).ToHashSet(StringComparer.Ordinal);
+            callbacks.Add(new RenderedCallback(property.Name, added, withCallback.Error) { AddedStopPropagations = addedStops });
         }
 
         return new RenderedWrapper(componentType, baseline.Tag, baseline.Handlers, callbacks, baseline.Error);
@@ -119,6 +120,11 @@ internal static class RenderedWrapperCatalog
     #region ------ Internals ------
 
     private const string EventHandlerPrefix = "on";
+
+    // Blazor renders @onX:stopPropagation / @onX:preventDefault as attributes with these name prefixes (see
+    // WebRenderTreeBuilderExtensions); the browser renderer applies them as directives, never as DOM attributes
+    private const string InternalAttributePrefix = "__internal_";
+    private const string StopPropagationAttributePrefix = "__internal_stopPropagation_";
     private const string CurrentFramesMethodName = "GetCurrentRenderTreeFrames";
     private const string ValueExpressionParameter = "ValueExpression";
 
@@ -183,6 +189,7 @@ internal static class RenderedWrapperCatalog
             {
                 var attribute = frames.Array[j];
                 if (attribute.AttributeEventHandlerId != 0 || IsHandlerValue(attribute.AttributeValue)) continue;
+                if (attribute.AttributeName.StartsWith(InternalAttributePrefix, StringComparison.Ordinal)) continue;
 
                 attributes[attribute.AttributeName] = attribute.AttributeValue switch
                 {
@@ -221,7 +228,11 @@ internal static class RenderedWrapperCatalog
         return context;
     }
 
-    private sealed record RootObservation(string? Tag, IReadOnlySet<string> Handlers, string? Error);
+    private sealed record RootObservation(string? Tag, IReadOnlySet<string> Handlers, string? Error)
+    {
+        // handler attribute names with a Blazor-side stopPropagation directive on the root element
+        public IReadOnlySet<string> StopPropagations { get; init; } = new HashSet<string>(StringComparer.Ordinal);
+    }
 
     private static RootObservation RenderRoot(BunitContext context, Type componentType, PropertyInfo? callbackProperty)
     {
@@ -280,14 +291,17 @@ internal static class RenderedWrapperCatalog
             if (frame.FrameType != RenderTreeFrameType.Element) continue;
 
             var handlers = new HashSet<string>(StringComparer.Ordinal);
+            var stops = new HashSet<string>(StringComparer.Ordinal);
             for (var j = i + 1; j < frames.Count && frames.Array[j].FrameType == RenderTreeFrameType.Attribute; j++)
             {
                 var attribute = frames.Array[j];
                 if (attribute.AttributeEventHandlerId != 0 || IsHandlerValue(attribute.AttributeValue))
                     handlers.Add(attribute.AttributeName);
+                else if (attribute.AttributeName.StartsWith(StopPropagationAttributePrefix, StringComparison.Ordinal) && attribute.AttributeValue is true)
+                    stops.Add(attribute.AttributeName[StopPropagationAttributePrefix.Length..]);
             }
 
-            return new RootObservation(frame.ElementName, handlers, null);
+            return new RootObservation(frame.ElementName, handlers, null) { StopPropagations = stops };
         }
 
         return new RootObservation(null, new HashSet<string>(StringComparer.Ordinal), null);
@@ -406,4 +420,11 @@ internal sealed record RenderedRoot(string? Tag, IReadOnlyDictionary<string, str
 /// <param name="Name">Name of the EventCallback parameter</param>
 /// <param name="AddedHandlers">Handler attribute names present with the callback set but not without it</param>
 /// <param name="Error">The render exception, or null when the component rendered</param>
-internal sealed record RenderedCallback(string Name, IReadOnlySet<string> AddedHandlers, string? Error);
+internal sealed record RenderedCallback(string Name, IReadOnlySet<string> AddedHandlers, string? Error)
+{
+    /// <summary>
+    /// Handler attribute names (e.g. "onwablazor-show") whose Blazor-side stopPropagation directive the callback added
+    /// to the root element.
+    /// </summary>
+    public IReadOnlySet<string> AddedStopPropagations { get; init; } = new HashSet<string>(StringComparer.Ordinal);
+}

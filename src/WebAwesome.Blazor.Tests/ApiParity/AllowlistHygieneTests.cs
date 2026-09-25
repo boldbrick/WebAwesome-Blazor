@@ -137,9 +137,9 @@ public class AllowlistHygieneTests
     private const string KnownDefectMarker = "KNOWN DEFECT";
 
     // the known defects recorded for an owner decision in 3.12.0: 44 inherited WaInputBase parameters thirteen
-    // elements ignore (extraRenderedAttributes) and the four non-bubbling wa-color-picker popup events
-    // (sourceVerifiedEvents); change it only together with parity-config.json knownDefects
-    private const int ExpectedKnownDefectCount = 48;
+    // elements ignore (extraRenderedAttributes); the four non-bubbling wa-color-picker popup events are relayed by
+    // the JS initializer since; change it only together with parity-config.json knownDefects
+    private const int ExpectedKnownDefectCount = 44;
 
     // ParityConfig members that are no allowlist
     private static readonly string[] NonListMembers = { "enabled", "targetWaVersion", "components", IgnoreReasonsName, KnownDefectsName };
