@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bunit;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
@@ -17,10 +16,13 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// WaRelativeTime's Format/Numeric enums emitted only when set, WaTextArea's nullable Rows and its move onto
 /// WaInputBase, the enums realigned with Web Awesome's value sets (new per-component enums, renamed members,
 /// WaSize short forms, the WaTrigger flag set), the removed callbacks, parameters and types that never worked,
-/// WaZoomableFrame's native load/error events, WaDropdownItem's link attributes and focus events, and the form control
+/// WaDropdownItem's link attributes, and the form control
 /// parameters moved out of WaInputBase into the wrappers whose element declares them. Removed
 /// or renamed members are compile-time checks by construction; these tests assert the new shape, the emitted
-/// markup and, for removals, that the members are gone (reflection), so a reintroduction is caught.
+/// markup and, for removals, that the members are gone (reflection), so a reintroduction is caught. The rebound
+/// events (WaZoomableFrame native load/error, WaDropdownItem focus/blur) are covered by EventCallbackBindingParityTests,
+/// which rejects a handler without the "on" prefix or under a wa- name the element never dispatches, and by the e2e
+/// event-dispatch spec.
 /// </summary>
 public class Wa3120UpgradeValidationTests : BunitContext
 {
@@ -349,47 +351,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
 
     #endregion
 
-    #region ------ WaZoomableFrame native load/error ------
-
-    [Fact]
-    public void WaZoomableFrame_OnLoadAndOnError_FireFromNativeEvents()
-    {
-        // Arrange
-        var loadCount = 0;
-        var errorCount = 0;
-        var cut = Render<WaZoomableFrame>(p => p
-            .Add(c => c.Src, "/frame.html")
-            .Add(c => c.OnLoad, _ => loadCount++)
-            .Add(c => c.OnError, _ => errorCount++));
-        var element = cut.Find("wa-zoomable-frame");
-
-        // Act
-        element.TriggerEvent("onload", new EventArgs());
-        element.TriggerEvent("onerror", new EventArgs());
-
-        // Assert
-        Assert.Equal(1, loadCount);
-        Assert.Equal(1, errorCount);
-    }
-
-    [Fact]
-    public void WaZoomableFrame_DoesNotBindWaPrefixedLoadOrError()
-    {
-        // Arrange
-        var cut = Render<WaZoomableFrame>(p => p
-            .Add(c => c.Src, "/frame.html")
-            .Add(c => c.OnLoad, _ => { })
-            .Add(c => c.OnError, _ => { }));
-        var element = cut.Find("wa-zoomable-frame");
-
-        // Act & Assert - the element never dispatches wa-load/wa-error
-        Assert.Throws<MissingEventHandlerException>(() => element.TriggerEvent("onwa-load", new EventArgs()));
-        Assert.Throws<MissingEventHandlerException>(() => element.TriggerEvent("onwa-error", new EventArgs()));
-    }
-
-    #endregion
-
-    #region ------ WaDropdownItem links and focus events ------
+    #region ------ WaDropdownItem links ------
 
     [Fact]
     public void WaDropdownItem_LinkAttributes_Render()
@@ -421,28 +383,6 @@ public class Wa3120UpgradeValidationTests : BunitContext
         Assert.False(element.HasAttribute("target"));
         Assert.False(element.HasAttribute("rel"));
         Assert.False(element.HasAttribute("download"));
-    }
-
-    [Fact]
-    public void WaDropdownItem_OnBlurAndOnFocus_FireFromDomEvents()
-    {
-        // Arrange - previously bound under the attribute names "blur"/"focus", so Blazor never registered them
-        var blurCount = 0;
-        var focusCount = 0;
-        var cut = Render<WaDropdownItem>(p => p
-            .Add(c => c.OnBlur, _ => blurCount++)
-            .Add(c => c.OnFocus, _ => focusCount++));
-        var element = cut.Find("wa-dropdown-item");
-
-        // Act
-        element.TriggerEvent("onfocus", new FocusEventArgs());
-        element.TriggerEvent("onblur", new FocusEventArgs());
-
-        // Assert
-        Assert.Equal(1, focusCount);
-        Assert.Equal(1, blurCount);
-        Assert.False(element.HasAttribute("blur"));
-        Assert.False(element.HasAttribute("focus"));
     }
 
     #endregion

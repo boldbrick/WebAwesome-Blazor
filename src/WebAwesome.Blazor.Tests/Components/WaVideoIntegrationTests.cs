@@ -81,43 +81,6 @@ public class WaVideoIntegrationTests : BunitContext
     }
 
     [Fact]
-    public void NativeMediaEvents_WhenWired_ReceiveDomEvents()
-    {
-        var play = 0;
-        var pause = 0;
-        var ended = 0;
-        var timeUpdate = 0;
-        var volumeChange = 0;
-        var loadedMetadata = 0;
-        var error = 0;
-        var cut = Render<WaVideo>(parameters => parameters
-            .Add(p => p.OnPlay, () => play++)
-            .Add(p => p.OnPause, () => pause++)
-            .Add(p => p.OnEnded, () => ended++)
-            .Add(p => p.OnTimeUpdate, () => timeUpdate++)
-            .Add(p => p.OnVolumeChange, () => volumeChange++)
-            .Add(p => p.OnLoadedMetadata, () => loadedMetadata++)
-            .Add(p => p.OnError, () => error++));
-
-        var element = cut.Find("wa-video");
-        element.TriggerEvent("onplay", new EventArgs());
-        element.TriggerEvent("onpause", new EventArgs());
-        element.TriggerEvent("onended", new EventArgs());
-        element.TriggerEvent("ontimeupdate", new EventArgs());
-        element.TriggerEvent("onvolumechange", new EventArgs());
-        element.TriggerEvent("onloadedmetadata", new EventArgs());
-        element.TriggerEvent("onerror", new EventArgs());
-
-        Assert.Equal(1, play);
-        Assert.Equal(1, pause);
-        Assert.Equal(1, ended);
-        Assert.Equal(1, timeUpdate);
-        Assert.Equal(1, volumeChange);
-        Assert.Equal(1, loadedMetadata);
-        Assert.Equal(1, error);
-    }
-
-    [Fact]
     public async Task PlayAsync_WithNullElement_ThrowsInvalidOperationException()
     {
         var component = new WaVideo();

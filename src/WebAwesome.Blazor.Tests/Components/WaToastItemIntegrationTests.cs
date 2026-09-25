@@ -64,31 +64,6 @@ public class WaToastItemIntegrationTests : BunitContext
     }
 
     [Fact]
-    public void Events_WhenWired_ReceiveDomEvents()
-    {
-        var showCount = 0;
-        var afterShowCount = 0;
-        var hideCount = 0;
-        var afterHideCount = 0;
-        var cut = Render<WaToastItem>(parameters => parameters
-            .Add(p => p.OnShow, () => showCount++)
-            .Add(p => p.OnAfterShow, () => afterShowCount++)
-            .Add(p => p.OnHide, () => hideCount++)
-            .Add(p => p.OnAfterHide, () => afterHideCount++));
-
-        var element = cut.Find("wa-toast-item");
-        element.TriggerEvent("onwa-show", new EventArgs());
-        element.TriggerEvent("onwa-after-show", new EventArgs());
-        element.TriggerEvent("onwa-hide", new EventArgs());
-        element.TriggerEvent("onwa-after-hide", new EventArgs());
-
-        Assert.Equal(1, showCount);
-        Assert.Equal(1, afterShowCount);
-        Assert.Equal(1, hideCount);
-        Assert.Equal(1, afterHideCount);
-    }
-
-    [Fact]
     public async Task HideAsync_WithNullElement_ThrowsInvalidOperationException()
     {
         var component = new WaToastItem();

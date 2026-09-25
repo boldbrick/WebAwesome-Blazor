@@ -15,8 +15,9 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// Integration tests for the new WaDataGrid (Pro) component introduced in Web Awesome 3.11.0.
 /// Covers attribute emission for the 25 declarative attributes, confirms Data/Columns are NOT
 /// rendered as attributes (they are pushed as JS properties via WebAwesomeJSInterop.SetPropertyAsync
-/// during OnAfterRenderAsync/OnParametersSetAsync), event wiring for all 14 events, the three content
-/// slots, and guard clauses for the imperative methods. bUnit cannot host a real wa-data-grid custom
+/// during OnAfterRenderAsync/OnParametersSetAsync), the three content slots, and guard clauses for the imperative
+/// methods. The 14 events are covered by EventCallbackBindingParityTests (binding) and the e2e event-dispatch and
+/// event-payload specs (browser delivery and payload). bUnit cannot host a real wa-data-grid custom
 /// element, so these tests observe the interop boundary (the setProperty/invokeMethod calls the
 /// wrapper makes) rather than any real grid behavior in the browser.
 /// </summary>
@@ -157,72 +158,6 @@ public class WaDataGridIntegrationTests : BunitContext
 
         var dataInvocations = module.Invocations.Where(i => i.Identifier == "setProperty" && Equals(i.Arguments[1], "data")).ToList();
         Assert.True(dataInvocations.Count >= 2);
-    }
-
-    [Fact]
-    public void Events_WhenWired_ReceiveDomEvents()
-    {
-        var cellClick = 0;
-        var cellContextMenu = 0;
-        var columnMove = 0;
-        var columnPin = 0;
-        var columnResize = 0;
-        var columnVisibilityChange = 0;
-        var dataError = 0;
-        var dataRequest = 0;
-        var filterChange = 0;
-        var pageChange = 0;
-        var rowCollapse = 0;
-        var rowExpand = 0;
-        var rowSelect = 0;
-        var sortChange = 0;
-
-        var cut = Render<WaDataGrid>(parameters => parameters
-            .Add(p => p.OnCellClick, _ => cellClick++)
-            .Add(p => p.OnCellContextMenu, _ => cellContextMenu++)
-            .Add(p => p.OnColumnMove, _ => columnMove++)
-            .Add(p => p.OnColumnPin, _ => columnPin++)
-            .Add(p => p.OnColumnResize, _ => columnResize++)
-            .Add(p => p.OnColumnVisibilityChange, _ => columnVisibilityChange++)
-            .Add(p => p.OnDataError, _ => dataError++)
-            .Add(p => p.OnDataRequest, _ => dataRequest++)
-            .Add(p => p.OnFilterChange, _ => filterChange++)
-            .Add(p => p.OnPageChange, _ => pageChange++)
-            .Add(p => p.OnRowCollapse, _ => rowCollapse++)
-            .Add(p => p.OnRowExpand, _ => rowExpand++)
-            .Add(p => p.OnRowSelect, _ => rowSelect++)
-            .Add(p => p.OnSortChange, _ => sortChange++));
-
-        var element = cut.Find("wa-data-grid");
-        element.TriggerEvent("onwa-cell-click", new WaDataGridCellClickEventArgs());
-        element.TriggerEvent("onwa-cell-contextmenu", new WaDataGridCellContextMenuEventArgs());
-        element.TriggerEvent("onwa-column-move", new WaDataGridColumnMoveEventArgs());
-        element.TriggerEvent("onwa-column-pin", new WaDataGridColumnPinEventArgs());
-        element.TriggerEvent("onwa-column-resize", new WaDataGridColumnResizeEventArgs());
-        element.TriggerEvent("onwa-column-visibility-change", new WaDataGridColumnVisibilityChangeEventArgs());
-        element.TriggerEvent("onwa-data-error", new WaDataGridDataErrorEventArgs());
-        element.TriggerEvent("onwa-data-request", new WaDataGridDataRequestEventArgs());
-        element.TriggerEvent("onwa-filter-change", new WaDataGridFilterChangeEventArgs());
-        element.TriggerEvent("onwa-page-change", new WaDataGridPageChangeEventArgs());
-        element.TriggerEvent("onwa-row-collapse", new WaDataGridRowEventArgs());
-        element.TriggerEvent("onwa-row-expand", new WaDataGridRowEventArgs());
-        element.TriggerEvent("onwa-row-select", new WaDataGridRowSelectEventArgs());
-        element.TriggerEvent("onwa-sort-change", new WaDataGridSortChangeEventArgs());
-
-        Assert.Equal(1, cellClick);
-        Assert.Equal(1, cellContextMenu);
-        Assert.Equal(1, columnMove);
-        Assert.Equal(1, columnPin);
-        Assert.Equal(1, columnResize);
-        Assert.Equal(1, columnVisibilityChange);
-        Assert.Equal(1, dataError);
-        Assert.Equal(1, dataRequest);
-        Assert.Equal(1, filterChange);
-        Assert.Equal(1, pageChange);
-        Assert.Equal(1, rowCollapse);
-        Assert.Equal(1, rowExpand);
-        Assert.Equal(1, rowSelect);
-        Assert.Equal(1, sortChange);
     }
 
     [Fact]

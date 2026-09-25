@@ -9,8 +9,9 @@ namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
 /// Integration tests for the new WaOtpInput component introduced in Web Awesome 3.11.0.
-/// Covers attribute emission (including the two independent mask attributes), enum mappings, the
-/// clear/complete/invalid events, and label/hint slots. WaOtpInput derives from
+/// Covers attribute emission (including the two independent mask attributes), enum mappings, and label/hint
+/// slots; the clear/complete/invalid events are covered by EventCallbackBindingParityTests (binding) and the e2e
+/// event-dispatch spec (browser delivery). WaOtpInput derives from
 /// WaInputBase&lt;string?&gt;, so like the other WaInputBase-derived controls it requires a cascading
 /// EditContext to render; tests use <see cref="FormControlTestBase.RenderControlForm{TComponent, TValue}"/>
 /// for that purpose. EditForm binding and validation lifecycle are covered separately in
@@ -100,48 +101,6 @@ public class WaOtpInputIntegrationTests : FormControlTestBase
         var bothElement = both.Find("wa-otp-input");
         Assert.True(bothElement.HasAttribute("mask"));
         Assert.True(bothElement.HasAttribute("with-mask"));
-    }
-
-    [Fact]
-    public void OnClear_WhenWired_ReceivesDomEvent()
-    {
-        var clearCount = 0;
-        var model = new OtpModel();
-        var cut = RenderControlForm<WaOtpInput, string?>(model, model.Code, v => model.Code = v, () => model.Code,
-            builder => builder.AddComponentParameter(10, nameof(WaOtpInput.OnClear),
-                Microsoft.AspNetCore.Components.EventCallback.Factory.Create(this, () => clearCount++)));
-
-        cut.Find("wa-otp-input").TriggerEvent("onwa-clear", new EventArgs());
-
-        Assert.Equal(1, clearCount);
-    }
-
-    [Fact]
-    public void OnComplete_WhenWired_ReceivesDomEvent()
-    {
-        var completeCount = 0;
-        var model = new OtpModel();
-        var cut = RenderControlForm<WaOtpInput, string?>(model, model.Code, v => model.Code = v, () => model.Code,
-            builder => builder.AddComponentParameter(10, nameof(WaOtpInput.OnComplete),
-                Microsoft.AspNetCore.Components.EventCallback.Factory.Create(this, () => completeCount++)));
-
-        cut.Find("wa-otp-input").TriggerEvent("onwa-complete", new EventArgs());
-
-        Assert.Equal(1, completeCount);
-    }
-
-    [Fact]
-    public void OnInvalid_WhenWired_ReceivesDomEvent()
-    {
-        var invalidCount = 0;
-        var model = new OtpModel();
-        var cut = RenderControlForm<WaOtpInput, string?>(model, model.Code, v => model.Code = v, () => model.Code,
-            builder => builder.AddComponentParameter(10, nameof(WaOtpInput.OnInvalid),
-                Microsoft.AspNetCore.Components.EventCallback.Factory.Create<EventArgs>(this, () => invalidCount++)));
-
-        cut.Find("wa-otp-input").TriggerEvent("onwa-invalid", new EventArgs());
-
-        Assert.Equal(1, invalidCount);
     }
 
     [Fact]
