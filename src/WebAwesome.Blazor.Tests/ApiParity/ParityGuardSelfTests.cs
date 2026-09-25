@@ -240,6 +240,41 @@ public class ParityGuardSelfTests
     }
 
     #endregion
+    #region ------ CEM event corroboration ------
+
+    [Fact]
+    public void CorroborationGuard_FlagsInventedDataGridRequestEvent()
+    {
+        // Arrange - the real 3.12.0 surface: the CEM lists 'request', which wa-data-grid never dispatches
+        var dataGrid = Surface.Components["wa-data-grid"];
+
+        // Act
+        var uncorroborated = CemEventCorroborationTests.UncorroboratedEvents("wa-data-grid", dataGrid, Surface.DeclaredEventTypes);
+
+        // Assert
+        Assert.Equal("request", Assert.Single(uncorroborated).EventName);
+    }
+
+    [Fact]
+    public void CorroborationGuard_FlagsWaEventWithoutEventClass()
+    {
+        // Arrange - a JSDoc-declared wa-* event dist\events has no class for
+        var component = new ComponentSurface
+        {
+            Events = new Dictionary<string, EventSurface> { ["wa-show"] = new(), ["wa-invented"] = new(), ["blur"] = new() },
+            JsDocEvents = new List<string> { "wa-show", "wa-invented", "blur" }
+        };
+
+        // Act
+        var uncorroborated = CemEventCorroborationTests.UncorroboratedEvents(SyntheticTag, component, new[] { "wa-show" }).ToList();
+
+        // Assert - native events need no event class
+        Assert.Equal("wa-invented", Assert.Single(uncorroborated).EventName);
+        Assert.Contains("no event class", uncorroborated[0].Reason);
+    }
+
+    #endregion
+
     #region ------ Element method invocations ------
 
     [Fact]

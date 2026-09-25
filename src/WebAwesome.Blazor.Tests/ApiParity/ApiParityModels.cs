@@ -14,6 +14,13 @@ public class ApiSurface
     [JsonPropertyName("version")]
     public string Version { get; set; }
 
+    /// <summary>
+    /// Event names that have an event class in the release's dist\events (the GlobalEventHandlersEventMap
+    /// entries of the files events.d.ts re-exports); null when the export had no dist\events.
+    /// </summary>
+    [JsonPropertyName("declaredEventTypes")]
+    public List<string> DeclaredEventTypes { get; set; }
+
     [JsonPropertyName("components")]
     public Dictionary<string, ComponentSurface> Components { get; set; }
 }
@@ -31,6 +38,13 @@ public class ComponentSurface
 
     [JsonPropertyName("events")]
     public Dictionary<string, EventSurface> Events { get; set; }
+
+    /// <summary>
+    /// Event names the component's own @event JSDoc declares (its dist\components .d.ts); null when the export
+    /// found no .d.ts for the component.
+    /// </summary>
+    [JsonPropertyName("jsDocEvents")]
+    public List<string> JsDocEvents { get; set; }
 
     [JsonPropertyName("slots")]
     public Dictionary<string, string> Slots { get; set; }
@@ -202,6 +216,14 @@ public class ComponentParityConfig
     /// </summary>
     [JsonPropertyName("cemOnlyEvents")]
     public List<string> CemOnlyEvents { get; set; } = new();
+
+    /// <summary>
+    /// CEM events the component's @event JSDoc omits but its compiled source was verified to dispatch; the
+    /// event-binding checks rely on them, and they must be re-verified against the source on every upgrade.
+    /// Every entry needs an ignoreReasons entry keyed "sourceVerifiedEvents:&lt;tag&gt;:&lt;event&gt;".
+    /// </summary>
+    [JsonPropertyName("sourceVerifiedEvents")]
+    public List<string> SourceVerifiedEvents { get; set; } = new();
 }
 
 #nullable restore

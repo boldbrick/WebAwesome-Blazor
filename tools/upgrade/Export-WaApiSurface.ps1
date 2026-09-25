@@ -7,6 +7,11 @@ Reads the Custom Elements Manifest (CEM) of a Web Awesome release - either from 
 extracted source tree, an explicit manifest path, or directly out of the release zip - and
 produces a deterministic, sorted JSON document describing every custom element: attributes
 (with type and default), named events, slots, documented public methods, and CSS parts.
+Because the CEM also lists events the element never dispatches (e.g. the wa-data-grid 'request'
+extraction artifact), each component also records the event names of its own @event JSDoc
+('jsDocEvents', from dist\components\<name>\<name>.d.ts), and the document records every event
+name that has an event class in dist\events ('declaredEventTypes'). The parity tests use both to
+corroborate the CEM events.
 
 The output drives two consumers:
   * Compare-WaApiSurface.ps1 - diffing two versions to plan an upgrade
@@ -129,6 +134,50 @@ function Get-TypeText($typeObj) {
     return $typeObj.text
 }
 
+# reads a text file of the release's dist folder (path relative to dist, '/'-separated) from the
+# extracted source tree, else from the release zip; $null when neither has it
+$distRoot = Join-Path $RepoRoot "temp\wa-src\$Version\dist"
+$distZipPath = Join-Path $RepoRoot "temp\download\webawesome_$Version.zip"
+$distZip = $null
+function Get-DistText([string]$relativePath) {
+    $extractedPath = Join-Path $distRoot ($relativePath -replace '/', '\')
+    if (Test-Path $extractedPath) { return Get-Content $extractedPath -Raw }
+    if (-not (Test-Path $distZipPath)) { return $null }
+    if ($null -eq $script:distZip) {
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $script:distZip = [System.IO.Compression.ZipFile]::OpenRead($distZipPath)
+    }
+    $entry = $script:distZip.GetEntry("webawesome-zip/dist/$relativePath")
+    if ($null -eq $entry) { return $null }
+    $reader = New-Object System.IO.StreamReader($entry.Open())
+    try { return $reader.ReadToEnd() } finally { $reader.Dispose() }
+}
+
+# the event names a component's own @event JSDoc declares (the component .d.ts next to the CEM module),
+# e.g. " * @event {{ item: WaAccordionItem }} wa-expand - ..." -> wa-expand; $null when the .d.ts is missing
+function Get-JsDocEvents([string]$modulePath) {
+    $dtsPath = ($modulePath -replace '^_bundle_/src/', '') -replace '\.js$', '.d.ts'
+    $text = Get-DistText $dtsPath
+    if ($null -eq $text) { return $null }
+    $names = foreach ($match in [regex]::Matches($text, '(?m)^\s*\*\s*@event\s+(?:\{.*\}\s+)?([A-Za-z][\w-]*)')) { $match.Groups[1].Value }
+    # the comma keeps an empty result an (empty) array instead of unrolling it to $null
+    return ,@($names | Sort-Object -Unique)
+}
+
+# the event names that have an event class in dist\events: every file events.d.ts re-exports maps its
+# event name onto the class in GlobalEventHandlersEventMap ("'wa-show': WaShowEvent;")
+function Get-DeclaredEventTypes {
+    $index = Get-DistText 'events/events.d.ts'
+    if ($null -eq $index) { return $null }
+    $names = foreach ($export in [regex]::Matches($index, "from '\./([\w-]+)\.js'")) {
+        $text = Get-DistText "events/$($export.Groups[1].Value).d.ts"
+        if ($null -eq $text) { throw "events/$($export.Groups[1].Value).d.ts is exported by events.d.ts but missing" }
+        foreach ($entry in [regex]::Matches($text, "'([^']+)'\s*:\s*\w+\s*;")) { $entry.Groups[1].Value }
+    }
+    # the comma keeps an empty result an (empty) array instead of unrolling it to $null
+    return ,@($names | Sort-Object -Unique)
+}
+
 # ------ build the surface ------
 
 $components = [ordered]@{}
@@ -188,6 +237,7 @@ foreach ($module in $cem.modules) {
             pro        = ($proTags -contains $decl.tagName)
             attributes = $attributes
             events     = $events
+            jsDocEvents = Get-JsDocEvents $module.path
             slots      = $slots
             methods    = $methods
             cssParts   = $cssParts
@@ -199,10 +249,14 @@ foreach ($module in $cem.modules) {
 $sorted = [ordered]@{}
 foreach ($tag in ($components.Keys | Sort-Object)) { $sorted[$tag] = $components[$tag] }
 
+$declaredEventTypes = Get-DeclaredEventTypes
+if ($null -ne $distZip) { $distZip.Dispose() }
+
 $surface = [ordered]@{
-    version    = $Version
-    generated  = 'Export-WaApiSurface.ps1'
-    components = $sorted
+    version            = $Version
+    generated          = 'Export-WaApiSurface.ps1'
+    declaredEventTypes = $declaredEventTypes
+    components         = $sorted
 }
 
 if (-not $OutputPath) {
