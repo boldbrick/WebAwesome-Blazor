@@ -5,12 +5,26 @@
 # Windows PowerShell 5.1 compatible; ASCII only (5.1 misparses BOM-less non-ASCII scripts).
 #
 # Usage (from anywhere):
-#   powershell -File tools\release\Test-WaReleasePreflight.ps1 [-SkipE2E] [-SkipBuild]
+#   & tools\release\Test-WaReleasePreflight.ps1 [-SkipE2E] [-SkipBuild] [-ProDist <path>] [-E2EPort <port>]
 # Exit code 0 = all executed gates passed; 1 = at least one gate failed.
+#
+# The e2e gate starts the WebAssembly demo on a free loopback port (or -E2EPort, which must be free),
+# checks that the server answering there is the demo process it started, and runs Playwright with
+# CI=1 and --forbid-only. It then reads the JSON report and fails on any failed test, on any skip
+# not listed for the asset mode in tools\e2e\data\expected-skips.json, on a listed skip that ran or
+# no longer exists, and on fewer tests than the mode's minimumTests.
+# -ProDist runs a second, opt-in pass against a self-hosted Pro dist (the extracted Pro package root
+# or its dist-cdn folder, e.g. temp\wa-src\<version> from the release zip): it generates the ignored
+# asset override with tools\demo\Set-WaProAssets.ps1, runs the "pro" mode, and clears the override
+# again. No Pro URL or token is needed or committed; WA_PRO_DIST is used when -ProDist is omitted
+# and -ProE2E is given.
 
 param(
     [switch]$SkipE2E,   # skip the Playwright sweep (demo server lifecycle)
-    [switch]$SkipBuild  # skip builds/tests/nuspec gates (docs-only quick check)
+    [switch]$SkipBuild, # skip builds/tests/nuspec gates (docs-only quick check)
+    [string]$ProDist,   # opt-in: also run the e2e suite against this self-hosted Pro dist
+    [switch]$ProE2E,    # opt-in: like -ProDist, with the path taken from $env:WA_PRO_DIST
+    [int]$E2EPort = 0   # demo port for the e2e passes; 0 picks a free loopback port
 )
 
 $ErrorActionPreference = 'Stop'
@@ -167,37 +181,193 @@ if (-not $SkipBuild) {
 }
 
 # --- gate: browser e2e sweep --------------------------------------------------
-if (-not $SkipE2E) {
-    if (-not (Test-Path tools\e2e\node_modules)) {
-        Add-Gate 'e2e-sweep' $false 'tools\e2e\node_modules missing - run npm install (and npm run install-browsers) first'
-    } else {
-        $demoArgs = 'run --project src\WebAwesome.Blazor.Demo --configuration Debug --no-build --urls http://localhost:5000'
-        $demo = Start-Process -FilePath dotnet -ArgumentList $demoArgs -WorkingDirectory $repoRoot -PassThru -WindowStyle Hidden
+# the demo title identifies the WebAssembly demo's index.html (a foreign server on the port lacks it)
+$demoMarker = '<title>Web Awesome Blazor Bindings</title>'
+$skipPolicyPath = Join-Path $repoRoot 'tools\e2e\data\expected-skips.json'
+
+function Get-FreeLoopbackPort {
+    $listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Loopback, 0)
+    $listener.Start()
+    try { return ([System.Net.IPEndPoint]$listener.LocalEndpoint).Port } finally { $listener.Stop() }
+}
+
+function Get-ListeningProcessIds([int]$port) {
+    return @(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue |
+        Select-Object -ExpandProperty OwningProcess -Unique)
+}
+
+# the process and all its descendants: dotnet run hosts the app in a child process
+function Get-ProcessTreeIds([int]$rootId) {
+    $all = @(Get-CimInstance Win32_Process | Select-Object ProcessId, ParentProcessId)
+    $ids = New-Object 'System.Collections.Generic.List[int]'
+    $ids.Add($rootId)
+    for ($i = 0; $i -lt $ids.Count; $i++) {
+        foreach ($p in $all) {
+            if ($p.ParentProcessId -eq $ids[$i] -and -not $ids.Contains([int]$p.ProcessId)) { $ids.Add([int]$p.ProcessId) }
+        }
+    }
+    return ,$ids
+}
+
+# flattens the Playwright JSON report into one record per test: '<file> > <describe...> > <title>',
+# final status (expected/unexpected/flaky/skipped) and the skip reason when there is one
+function Get-ReportTests($suite, [string[]]$titles) {
+    $path = @($titles)
+    if ($suite.title) { $path = @($titles) + $suite.title }
+    foreach ($spec in @($suite.specs | Where-Object { $_ })) {
+        foreach ($test in @($spec.tests | Where-Object { $_ })) {
+            $reason = @($test.annotations | Where-Object { $_ -and $_.type -eq 'skip' } | ForEach-Object { $_.description }) -join '; '
+            New-Object PSObject -Property @{ Key = ((@($path) + $spec.title) -join ' > '); Status = $test.status; Reason = $reason }
+        }
+    }
+    foreach ($child in @($suite.suites | Where-Object { $_ })) { Get-ReportTests $child $path }
+}
+
+# checks one pass's report against the mode's policy; returns the problems (empty = pass)
+function Test-E2eReport($report, $policy) {
+    $problems = @()
+    $expected = @{}
+    foreach ($entry in @($policy.expectedSkips | Where-Object { $_ })) {
+        if ([string]::IsNullOrWhiteSpace($entry.reason)) { $problems += ("expected skip without a reason: {0}" -f $entry.test) }
+        $expected[$entry.test] = $entry.reason
+    }
+
+    $tests = @()
+    foreach ($suite in @($report.suites | Where-Object { $_ })) { $tests += @(Get-ReportTests $suite @()) }
+    foreach ($runError in @($report.errors | Where-Object { $_ })) { $problems += ("run error: {0}" -f (($runError.message -split "`n")[0])) }
+
+    foreach ($test in $tests) {
+        if ($test.Status -eq 'unexpected') { $problems += ("failed: {0}" -f $test.Key) }
+        elseif ($test.Status -eq 'skipped' -and -not $expected.ContainsKey($test.Key)) {
+            $problems += ("unexpected skip: {0} ({1})" -f $test.Key, $(if ($test.Reason) { $test.Reason } else { 'no reason given' }))
+        }
+        elseif ($test.Status -ne 'skipped' -and $expected.ContainsKey($test.Key)) {
+            $problems += ("listed as an expected skip but ran ({0}): {1}" -f $test.Status, $test.Key)
+        }
+    }
+
+    $keys = @{}
+    foreach ($test in $tests) { $keys[$test.Key] = $true }
+    foreach ($key in $expected.Keys) {
+        if (-not $keys.ContainsKey($key)) { $problems += ("stale expected skip, no such test: {0}" -f $key) }
+    }
+
+    if ($tests.Count -lt [int]$policy.minimumTests) {
+        $problems += ("only {0} tests ran, the minimum is {1}" -f $tests.Count, $policy.minimumTests)
+    }
+    return ,$problems
+}
+
+# one Playwright pass against a freshly started demo on a free port; $mode selects the skip policy
+function Invoke-E2ePass([string]$mode) {
+    $gate = "e2e-$mode"
+    $port = $E2EPort
+    if ($port -le 0) { $port = Get-FreeLoopbackPort }
+    if (@(Get-ListeningProcessIds $port).Count -gt 0) {
+        Add-Gate $gate $false ("port {0} is already in use (pid {1}) - stop that server or pass a free -E2EPort" -f $port, ((Get-ListeningProcessIds $port) -join ', '))
+        return
+    }
+
+    $baseUrl = "http://localhost:$port"
+    $demoArgs = "run --project src\WebAwesome.Blazor.Demo --configuration Debug --no-build --urls $baseUrl"
+    $demo = Start-Process -FilePath dotnet -ArgumentList $demoArgs -WorkingDirectory $repoRoot -PassThru -WindowStyle Hidden
+    $reportPath = Join-Path ([System.IO.Path]::GetTempPath()) ("wa-e2e-{0}-{1}.json" -f $mode, [guid]::NewGuid().ToString('N'))
+    try {
+        $ready = $null
+        $deadline = (Get-Date).AddSeconds(90)
+        while ((Get-Date) -lt $deadline -and -not $ready) {
+            if ($demo.HasExited) { $ready = 'exited'; break }
+            try {
+                $r = Invoke-WebRequest $baseUrl -UseBasicParsing -TimeoutSec 3
+                if ($r.StatusCode -eq 200) { $ready = 'up' }
+            } catch { Start-Sleep -Seconds 2 }
+        }
+        if ($ready -ne 'up') {
+            $why = 'did not answer within 90s'
+            if ($ready -eq 'exited') { $why = ('exited with code {0} (port taken or build missing?)' -f $demo.ExitCode) }
+            Add-Gate $gate $false ("demo on {0} {1}" -f $baseUrl, $why)
+            return
+        }
+
+        # the answer must come from the demo started here: a stale or foreign server would pass a plain probe
+        $tree = Get-ProcessTreeIds $demo.Id
+        $owners = @(Get-ListeningProcessIds $port)
+        $foreign = @($owners | Where-Object { -not $tree.Contains([int]$_) })
+        if ($owners.Count -eq 0 -or $foreign.Count -gt 0 -or -not $r.Content.Contains($demoMarker)) {
+            Add-Gate $gate $false ("{0} is not served by the demo started here (listening pids: {1}; demo tree: {2}; demo marker present: {3})" -f `
+                $baseUrl, ($owners -join ', '), ($tree -join ', '), $r.Content.Contains($demoMarker))
+            return
+        }
+
+        # CI=1 arms forbidOnly and retries in playwright.config.js; --forbid-only makes the former explicit
+        $saved = @{ CI = $env:CI; DEMO_BASE_URL = $env:DEMO_BASE_URL; PLAYWRIGHT_JSON_OUTPUT_FILE = $env:PLAYWRIGHT_JSON_OUTPUT_FILE }
+        $env:CI = '1'
+        $env:DEMO_BASE_URL = $baseUrl
+        $env:PLAYWRIGHT_JSON_OUTPUT_FILE = $reportPath
+        Push-Location tools\e2e
         try {
-            $up = $false
-            $deadline = (Get-Date).AddSeconds(90)
-            while ((Get-Date) -lt $deadline) {
-                try {
-                    $r = Invoke-WebRequest 'http://localhost:5000' -UseBasicParsing -TimeoutSec 3
-                    if ($r.StatusCode -eq 200) { $up = $true; break }
-                } catch { Start-Sleep -Seconds 2 }
-            }
-            if (-not $up) {
-                Add-Gate 'e2e-sweep' $false 'demo server did not answer on http://localhost:5000 within 90s'
-            } else {
-                Push-Location tools\e2e
-                try {
-                    $e2e = cmd /c "npm test 2>&1"
-                    $e2eOk = ($LASTEXITCODE -eq 0)
-                    $summary = ($e2e | Select-String -Pattern '\d+ passed|\d+ failed' | ForEach-Object { $_.Line.Trim() }) -join ' | '
-                    Add-Gate 'e2e-sweep' $e2eOk ("exit {0}: {1}" -f $LASTEXITCODE, $summary)
-                } finally {
-                    Pop-Location
-                }
-            }
+            $output = cmd /c "npx playwright test --forbid-only --reporter=list,json 2>&1"
+            $exitCode = $LASTEXITCODE
         } finally {
-            # dotnet run spawns the app as a child process - kill the whole tree
-            cmd /c ("taskkill /PID {0} /T /F >nul 2>&1" -f $demo.Id) | Out-Null
+            Pop-Location
+            foreach ($name in @($saved.Keys)) {
+                if ($null -eq $saved[$name]) { Remove-Item ("env:{0}" -f $name) -ErrorAction SilentlyContinue }
+                else { Set-Item -Path ("env:{0}" -f $name) -Value $saved[$name] }
+            }
+        }
+
+        if (-not (Test-Path $reportPath)) {
+            $output | Select-Object -Last 20 | ForEach-Object { Write-Host ("    {0}" -f $_) }
+            Add-Gate $gate $false ("exit {0}, no JSON report written" -f $exitCode)
+            return
+        }
+
+        $report = Get-Content $reportPath -Raw | ConvertFrom-Json
+        $policy = (Get-Content $skipPolicyPath -Raw | ConvertFrom-Json).modes.$mode
+        # the function returns its array unrolled-proof (",$problems"), so no @() here
+        $problems = Test-E2eReport $report $policy
+        if ($exitCode -ne 0 -and $problems.Count -eq 0) { $problems += ("playwright exit {0}" -f $exitCode) }
+        foreach ($problem in $problems) { Write-Host ("    {0}" -f $problem) }
+
+        $stats = $report.stats
+        $flaky = @()
+        foreach ($suite in @($report.suites | Where-Object { $_ })) { $flaky += @(Get-ReportTests $suite @() | Where-Object { $_.Status -eq 'flaky' } | ForEach-Object { $_.Key }) }
+        foreach ($name in $flaky) { Write-Host ("    flaky (passed on retry): {0}" -f $name) }
+        $detail = ("{0}: {1} passed, {2} skipped (all expected), {3} flaky, {4} failed" -f $baseUrl, $stats.expected, $stats.skipped, $stats.flaky, $stats.unexpected)
+        if ($problems.Count -gt 0) { $detail = ("{0} problem(s): {1}" -f $problems.Count, ($problems -join ' | ')) }
+        Add-Gate $gate ($problems.Count -eq 0) $detail
+    } finally {
+        # dotnet run spawns the app as a child process - kill the whole tree
+        cmd /c ("taskkill /PID {0} /T /F >nul 2>&1" -f $demo.Id) | Out-Null
+        if (Test-Path $reportPath) { Remove-Item $reportPath -Force }
+    }
+}
+
+if (-not $SkipE2E) {
+    if ($ProE2E -and -not $ProDist) { $ProDist = $env:WA_PRO_DIST }
+    if (-not (Test-Path tools\e2e\node_modules)) {
+        Add-Gate 'e2e-free-cdn' $false 'tools\e2e\node_modules missing - run npm install (and npm run install-browsers) first'
+    } else {
+        Invoke-E2ePass 'free-cdn'
+
+        if ($ProE2E -and -not $ProDist) {
+            Add-Gate 'e2e-pro' $false '-ProE2E given but WA_PRO_DIST is not set'
+        } elseif ($ProDist) {
+            # self-hosted Pro dist through the ignored override files; always restored to the free default
+            $savedProDist = $env:WA_PRO_DIST
+            try {
+                $env:WA_PRO_DIST = $ProDist
+                & (Join-Path $repoRoot 'tools\demo\Set-WaProAssets.ps1') | Out-Null
+                Invoke-E2ePass 'pro'
+            } catch {
+                Add-Gate 'e2e-pro' $false ("Pro asset override failed: {0}" -f $_.Exception.Message)
+            } finally {
+                & (Join-Path $repoRoot 'tools\demo\Set-WaProAssets.ps1') -Clear | Out-Null
+                $env:WA_PRO_DIST = $savedProDist
+                if ($null -eq $savedProDist) { Remove-Item env:WA_PRO_DIST -ErrorAction SilentlyContinue }
+            }
+        } else {
+            Write-Host 'Pro e2e pass not requested (opt-in: -ProDist <Pro dist path> or -ProE2E with WA_PRO_DIST).'
         }
     }
 } else {

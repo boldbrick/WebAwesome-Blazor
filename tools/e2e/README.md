@@ -51,6 +51,18 @@ cd tools\e2e
 $env:DEMO_BASE_URL = 'http://localhost:5100'; npm test
 ```
 
+## Release gate
+
+`tools\release\Test-WaReleasePreflight.ps1` runs this suite itself: it starts the WebAssembly demo on a
+free loopback port, checks that the server answering there is the process it started, and runs
+`npx playwright test --forbid-only --reporter=list,json` with `CI=1` (so `test.only` fails and retries
+are armed; flaky tests are listed). It then checks the JSON report against
+`data\expected-skips.json`: every skipped test must be listed with a reason for the asset mode
+(`free-cdn`, or `pro` for the opt-in `-ProDist <path>` pass against a self-hosted Pro dist), a
+listed test that ran or no longer exists fails, and the pass must run at least `minimumTests`
+tests. So a self-skipping test (a Pro component on the free CDN) must be added to that file, and
+`minimumTests` must be raised when tests are added.
+
 ## Adding tests
 
 - New component demo pages are picked up automatically by `sweep.spec.js` (it reads routes
