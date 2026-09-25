@@ -158,6 +158,40 @@
                 </td>
             </tr>
             <tr>
+                <td><code>WaSelect</code> (multiple)</td>
+                <td>
+                    <WaSelect Label="Toppings" Multiple="true" data-testid="select-multiple" @bind-SelectedValues="selectedToppings" ValueExpression="() => unusedMultipleValue">
+                        <WaOption Value="cheese">Cheese</WaOption>
+                        <WaOption Value="ham">Ham</WaOption>
+                        <WaOption Value="olives">Olives</WaOption>
+                    </WaSelect>
+                </td>
+                <td><code data-testid="select-multiple-model">@string.Join(",", selectedToppings ?? [])</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="select-multiple-set" OnClick="@(() => selectedToppings = [.. SetToppings])">Set @string.Join(",", SetToppings)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="select-multiple-reset" OnClick="@(() => selectedToppings = [.. InitialToppings])">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaCombobox</code> (multiple) <ComponentBadges Tag="wa-combobox" /></td>
+                <td>
+                    <WaCombobox Label="Toppings" Multiple="true" data-testid="combobox-multiple" @bind-SelectedValues="comboboxToppings" ValueExpression="() => unusedMultipleValue">
+                        <WaOption Value="cheese">Cheese</WaOption>
+                        <WaOption Value="ham">Ham</WaOption>
+                        <WaOption Value="olives">Olives</WaOption>
+                    </WaCombobox>
+                </td>
+                <td><code data-testid="combobox-multiple-model">@string.Join(",", comboboxToppings ?? [])</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="combobox-multiple-set" OnClick="@(() => comboboxToppings = [.. SetToppings])">Set @string.Join(",", SetToppings)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="combobox-multiple-reset" OnClick="@(() => comboboxToppings = [.. InitialToppings])">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
                 <td><code>WaCombobox</code> <ComponentBadges Tag="wa-combobox" /></td>
                 <td>
                     <WaCombobox Label="Fruit" data-testid="combobox" @bind-Value="comboboxValue">
@@ -255,6 +289,8 @@
     private const string SetOption = "cherry";
     private const string InitialPickerDate = "2024-03-15";
     private const string SetPickerDate = "2024-03-25";
+    private static readonly string[] InitialToppings = ["cheese"];
+    private static readonly string[] SetToppings = ["ham"];
     private const int RelativeHoursAgo = 3;
     private const int RelativeDaysAgo = 1;
 
@@ -274,6 +310,11 @@
     private string? selectValue = InitialOption;
     private string? comboboxValue = InitialOption;
     private string? datePickerValue = InitialPickerDate;
+    private string[]? selectedToppings = [.. InitialToppings];
+    private string[]? comboboxToppings = [.. InitialToppings];
+
+    // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
+    private string? unusedMultipleValue = null;
     private DateTime threeHoursAgo;
     private DateTime oneDayAgo;
 

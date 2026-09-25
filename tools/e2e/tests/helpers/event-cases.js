@@ -332,6 +332,19 @@ const EVENT_CASES = [
     },
   },
   {
+    name: 'WaSelect (multiple) SelectedValuesChanged follows option clicks',
+    route: FORMS, tags: ['wa-select', 'wa-option'],
+    callbacks: [],
+    proven: ['WaSelect.SelectedValuesChanged'],
+    run: async page => {
+      const select = page.getByTestId('ev-select-multiple');
+      await select.locator('[part~="combobox"]').click();
+      await select.locator('wa-option', { hasText: 'Cheese' }).click();
+      await select.locator('wa-option', { hasText: 'Olives' }).click();
+      await expect(page.getByTestId('ev-select-multiple-model')).toHaveText('cheese,olives');
+    },
+  },
+  {
     name: 'WaButton click submitting the form',
     route: FORMS, tags: ['wa-button'],
     callbacks: ['WaButton.OnClick'],
@@ -397,6 +410,19 @@ const EVENT_CASES = [
       await expectFired(page, 'WaDateInput.OnAfterHide');
       await date.locator('[part~="clear-button"]').click();
       await expect(page.getByTestId('pro-date-input-model')).toHaveText('');
+    },
+  },
+  {
+    name: 'WaCombobox (multiple) SelectedValuesChanged follows option clicks',
+    route: PRO, tags: ['wa-combobox', 'wa-option'], pro: true,
+    callbacks: [],
+    proven: ['WaCombobox.SelectedValuesChanged'],
+    run: async page => {
+      const combobox = page.getByTestId('pro-combobox-multiple');
+      await combobox.locator('[part~="combobox-input"]').click();
+      await combobox.locator('wa-option', { hasText: 'Cheese' }).click();
+      await combobox.locator('wa-option', { hasText: 'Ham' }).click();
+      await expect(page.getByTestId('pro-combobox-multiple-model')).toHaveText('cheese,ham');
     },
   },
   {
@@ -662,30 +688,6 @@ const EVENT_CASES = [
 // EVENT_CASES and the exemption is removed. The callbacks involved are exempted from coverage, not covered.
 /** @type {KnownDefectCase[]} */
 const KNOWN_DEFECT_CASES = [
-  {
-    name: 'WaSelect (multiple) SelectedValuesChanged follows option clicks',
-    exemption: 'multiple-selection-binding',
-    route: FORMS, tags: ['wa-select', 'wa-option'],
-    run: async page => {
-      const select = page.getByTestId('ev-select-multiple');
-      await select.locator('[part~="combobox"]').click();
-      await select.locator('wa-option', { hasText: 'Cheese' }).click();
-      await select.locator('wa-option', { hasText: 'Olives' }).click();
-      await expect(page.getByTestId('ev-select-multiple-model')).toHaveText('cheese,olives');
-    },
-  },
-  {
-    name: 'WaCombobox (multiple) SelectedValuesChanged follows option clicks',
-    exemption: 'multiple-selection-binding',
-    route: PRO, tags: ['wa-combobox', 'wa-option'], pro: true,
-    run: async page => {
-      const combobox = page.getByTestId('pro-combobox-multiple');
-      await combobox.locator('[part~="combobox-input"]').click();
-      await combobox.locator('wa-option', { hasText: 'Cheese' }).click();
-      await combobox.locator('wa-option', { hasText: 'Ham' }).click();
-      await expect(page.getByTestId('pro-combobox-multiple-model')).toHaveText('cheese,ham');
-    },
-  },
   {
     name: 'OnFocus/OnBlur of a control focused inside its shadow root (WaInput) reach .NET',
     exemption: 'focus-in-shadow-root',

@@ -2,7 +2,7 @@
   "description": "Release gate policy for the Playwright suite (tools\\release\\Test-WaReleasePreflight.ps1). Every skipped test must be listed for the asset mode the pass runs in, with a reason; any other skip fails the gate, and so does a listed test that ran or no longer exists. The pass must also run at least minimumTests tests (raise it when tests are added, lower it only on purpose). Test keys are '<spec file> > <describe titles> > <test title>'.",
   "modes": {
     "free-cdn": {
-      "minimumTests": 214,
+      "minimumTests": 216,
       "expectedSkips": [
         {
           "test": "pro-assets.spec.js > Pro components upgrade when a Pro asset override is active",
@@ -37,7 +37,7 @@
           "reason": "wa-combobox, wa-date-input and wa-file-input are Pro and never upgrade from the free CDN; the opt-in Pro pass (-ProDist) runs it"
         },
         {
-          "test": "event-dispatch.spec.js > known defect: WaCombobox (multiple) SelectedValuesChanged follows option clicks",
+          "test": "event-dispatch.spec.js > dispatch: WaCombobox (multiple) SelectedValuesChanged follows option clicks",
           "reason": "wa-combobox is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
         },
         {
@@ -69,13 +69,17 @@
           "reason": "wa-combobox is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
         },
         {
+          "test": "value-sync-binding.spec.js > value sync: WaCombobox (multiple) reflects C# model change after user edit",
+          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+        },
+        {
           "test": "value-sync-binding.spec.js > value sync: WaDatePicker reflects C# model change after user edit",
           "reason": "wa-date-picker is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
         }
       ]
     },
     "pro": {
-      "minimumTests": 214,
+      "minimumTests": 216,
       "expectedSkips": []
     }
   }

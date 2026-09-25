@@ -898,6 +898,7 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
+        protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -943,7 +944,10 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override object? GetLiveValue() { }
         public System.Threading.Tasks.Task HideAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        protected override void OnParametersSet() { }
         public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
@@ -3137,6 +3141,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EndIconName { get; set; }
         public System.Func<WebAwesome.Blazor.Components.WaOption, int, string>? GetTag { get; set; }
+        protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3178,7 +3183,10 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override object? GetLiveValue() { }
         public System.Threading.Tasks.Task HideAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        protected override void OnParametersSet() { }
         public System.Threading.Tasks.Task SetGetTagFunctionAsync(string jsFunction) { }
         public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }

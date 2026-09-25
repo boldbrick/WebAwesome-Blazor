@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -186,9 +186,8 @@ public class WaSelect : WaInputBase<string?>
         // Add value binding - handle both single and multiple selection
         if (Multiple)
         {
-            // For multiple selection, we need special handling
-            var selectedValuesString = SelectedValues != null ? string.Join(",", SelectedValues) : string.Empty;
-            builder.AddAttribute(30, "value", selectedValuesString);
+            // multiple selection: no value attribute, which the element would read as one option value; the
+            // selection is pushed into the live value property as an array instead (see LiveValuePropertyName)
             builder.AddAttribute(31, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, HandleMultipleSelectionChange));
         }
         else
@@ -260,6 +259,42 @@ public class WaSelect : WaInputBase<string?>
         return true;
     }
 
+    /// <summary>
+    /// In multiple selection mode, the selection lives in the element's value property as a string array.
+    /// </summary>
+    protected override string? LiveValuePropertyName => Multiple ? MultipleValueProperty : null;
+
+    /// <summary>
+    /// The selected values as the array the element's value property holds in multiple selection mode.
+    /// </summary>
+    /// <returns>The selected values</returns>
+    protected override object? GetLiveValue() => Multiple ? liveSelectedValues : base.GetLiveValue();
+
+    /// <summary>
+    /// Keeps the array pushed to the element stable while <see cref="SelectedValues"/> keeps its content, so a
+    /// re-render with an equal list does not reassign the element's selection.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        var values = SelectedValues ?? [];
+        if (!values.SequenceEqual(liveSelectedValues)) liveSelectedValues = values.ToArray();
+    }
+
+    /// <summary>
+    /// Pushes the initial multiple selection too, since multiple selection mode renders no value attribute.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first time the component has rendered</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender && Multiple && liveSelectedValues.Length > 0 && Element is not null)
+            await JSInterop.SyncPropertyAsync(Element.Value, MultipleValueProperty, liveSelectedValues);
+    }
+
     #endregion
 
     #region ------ Private Methods ------
@@ -269,24 +304,27 @@ public class WaSelect : WaInputBase<string?>
     /// </summary>
     private async Task HandleMultipleSelectionChange(ChangeEventArgs args)
     {
-        if (args.Value is string stringValue)
+        // the element reports its selection as a string array; recorded as the live value before the model changes,
+        // so the next render does not push it back
+        var values = args.GetStringArrayValue();
+        liveSelectedValues = values;
+        MarkLiveValueSynced(values);
+
+        SelectedValues = values;
+        await SelectedValuesChanged.InvokeAsync(values);
+
+        // Also update the single value for consistency (use first selected or null)
+        var singleValue = values.FirstOrDefault();
+        if (CurrentValueAsString != singleValue)
         {
-            // Parse the comma-separated values
-            var values = string.IsNullOrEmpty(stringValue)
-                ? Array.Empty<string>()
-                : stringValue.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-            SelectedValues = values;
-            await SelectedValuesChanged.InvokeAsync(values);
-
-            // Also update the single value for consistency (use first selected or null)
-            var singleValue = values.FirstOrDefault();
-            if (CurrentValueAsString != singleValue)
-            {
-                CurrentValueAsString = singleValue;
-            }
+            CurrentValueAsString = singleValue;
         }
     }
+
+    private const string MultipleValueProperty = "value";
+
+    // the selection last pushed to or received from the element in multiple selection mode
+    private string[] liveSelectedValues = [];
 
     #endregion
 

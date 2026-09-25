@@ -16,7 +16,7 @@ namespace WebAwesome.Blazor.Tests.Forms;
 /// the live property through the interop module's "syncProperty". Asserted with a mocked interop module: nothing
 /// is pushed on first render, a parent-side change is pushed exactly once with the live property name and the
 /// JS-typed value, a value that came from the element is never pushed back, and the controls whose attribute
-/// already maps to the live property (WaSelect, WaCombobox, WaRating) never sync. Also covers the
+/// already maps to the live property (WaSelect and WaCombobox in single-value mode, WaRating) never sync; multiple selection is MultipleSelectionBindingTests. Also covers the
 /// SetRangeTextAsync read-back on WaInput and WaTextArea, which updates the bound value and the EditContext
 /// because Web Awesome dispatches no event for setRangeText.
 /// </summary>

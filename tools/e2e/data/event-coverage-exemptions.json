@@ -38,11 +38,6 @@
       "callbacks": ["WaCombobox.OnKeyDown"]
     },
     {
-      "key": "multiple-selection-binding",
-      "reason": "KNOWN DEFECT (found 2026-09-25): in Multiple mode wa-select and wa-combobox deliver their value as a string array, but the wrappers' change handler accepts only a comma-joined string, so SelectedValuesChanged never fires; the value attribute is also a comma-joined string, which the elements read as one option value.",
-      "callbacks": ["WaSelect.SelectedValuesChanged", "WaCombobox.SelectedValuesChanged"]
-    },
-    {
       "key": "keydown-cancelled-no-keypress",
       "reason": "Not reachable by design of the element: wa-select (type-to-select) and wa-date-input (segment editing) cancel every printable keydown, so the browser dispatches no keypress. The OnKeyPress binding shared through WaInputBase is proven on the other controls.",
       "callbacks": ["WaSelect.OnKeyPress", "WaDateInput.OnKeyPress"]

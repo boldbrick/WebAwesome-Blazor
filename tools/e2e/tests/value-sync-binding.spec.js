@@ -181,6 +181,30 @@ const VALUE_SYNC_CASES = [
     userModel: 'banana',
     action: 'set', expected: 'cherry', expectedModel: 'cherry',
   },
+  // multiple selection keeps an array in the live value property; the initial selection must reach it too,
+  // since the wrappers render no value attribute in this mode
+  {
+    wrapper: 'WaSelect', variant: 'multiple', route: HARNESS_ROUTE, tag: 'wa-select', id: 'select-multiple', property: 'value',
+    initialModel: 'cheese', initialProperty: ['cheese'],
+    userEdit: async (/** @type {import('@playwright/test').Locator} */ el) => {
+      await el.locator('[part~="combobox"]').click();
+      await el.locator('wa-option', { hasText: 'Olives' }).click();
+      await el.page().keyboard.press('Escape');
+    },
+    userModel: 'cheese,olives',
+    action: 'set', expected: ['ham'], expectedModel: 'ham',
+  },
+  {
+    wrapper: 'WaCombobox', variant: 'multiple', route: HARNESS_ROUTE, tag: 'wa-combobox', id: 'combobox-multiple', property: 'value', pro: true,
+    initialModel: 'cheese', initialProperty: ['cheese'],
+    userEdit: async (/** @type {import('@playwright/test').Locator} */ el) => {
+      await el.locator('[part~="combobox-input"]').click();
+      await el.locator('wa-option', { hasText: 'Olives' }).click();
+      await el.page().keyboard.press('Escape');
+    },
+    userModel: 'cheese,olives',
+    action: 'set', expected: ['ham'], expectedModel: 'ham',
+  },
   {
     wrapper: 'WaDatePicker', route: HARNESS_ROUTE, tag: 'wa-date-picker', id: 'date-picker', property: 'value', pro: true,
     initialModel: '2024-03-15',
@@ -212,6 +236,9 @@ for (const c of VALUE_SYNC_CASES) {
     const model = page.getByTestId(`${c.id}-model`);
     await element.evaluate(el => /** @type {any} */ (el).updateComplete);
     await expect(model).toHaveText(c.initialModel);
+    if (c.initialProperty !== undefined) {
+      await expect(element, `live "${c.property}" property holds the initial model`).toHaveJSProperty(c.property, c.initialProperty);
+    }
 
     // (a) the user edits the control; UI -> model already works before the fix
     await c.userEdit(element);
