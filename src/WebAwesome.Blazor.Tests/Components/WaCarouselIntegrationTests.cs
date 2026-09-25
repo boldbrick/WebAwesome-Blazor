@@ -1,218 +1,119 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using WebAwesome.Blazor.Base;
+using Microsoft.AspNetCore.Components;
 using WebAwesome.Blazor.Components;
-using WebAwesome.Blazor.Extensions;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for WaCarousel component using the new JS interop infrastructure
+/// Interop tests for the WaCarousel navigation methods: before the first render they throw, afterwards each
+/// invokes its element method with its argument through the interop module (recorded, see RecordingJSRuntime).
 /// </summary>
 public class WaCarouselIntegrationTests : IDisposable
 {
-    private readonly ServiceProvider serviceProvider;
-    private readonly WaCarousel carouselComponent;
-
-    public WaCarouselIntegrationTests()
-    {
-        var services = new ServiceCollection();
-        services.AddWebAwesome();
-        services.AddSingleton<IJSRuntime, TestJSRuntime>();
-        serviceProvider = services.BuildServiceProvider();
-
-        carouselComponent = new WaCarousel();
-
-        // Inject dependencies manually for testing
-        var jsInterop = serviceProvider.GetRequiredService<WebAwesomeJSInterop>();
-        var propertyInfo = typeof(WaCarousel).GetProperty("JSInterop",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        propertyInfo?.SetValue(carouselComponent, jsInterop);
-    }
-
     [Fact]
     public async Task GoToSlideAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            carouselComponent.GoToSlideAsync(1));
+            runtime.CreateUnrendered<WaCarousel>().GoToSlideAsync(1));
 
         Assert.Contains("Cannot navigate to slide: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task GoToSlideAsync_WithValidElement_CallsJSInterop()
-    {
-        // Arrange
-        SetupElementReference();
-
-        // Act - This should not throw because we have a test JSRuntime
-        await carouselComponent.GoToSlideAsync(2);
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
-    }
-
-    [Fact]
     public async Task PreviousAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            carouselComponent.PreviousAsync());
+            runtime.CreateUnrendered<WaCarousel>().PreviousAsync());
 
         Assert.Contains("Cannot navigate to previous slide: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task PreviousAsync_WithValidElement_CallsJSInterop()
-    {
-        // Arrange
-        SetupElementReference();
-
-        // Act - This should not throw because we have a test JSRuntime
-        await carouselComponent.PreviousAsync();
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
-    }
-
-    [Fact]
     public async Task NextAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            carouselComponent.NextAsync());
+            runtime.CreateUnrendered<WaCarousel>().NextAsync());
 
         Assert.Contains("Cannot navigate to next slide: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task NextAsync_WithValidElement_CallsJSInterop()
-    {
-        // Arrange
-        SetupElementReference();
-
-        // Act - This should not throw because we have a test JSRuntime
-        await carouselComponent.NextAsync();
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
-    }
-
-    [Fact]
     public async Task AddSlideAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            carouselComponent.AddSlideAsync(new ElementReference("new-slide")));
+            runtime.CreateUnrendered<WaCarousel>().AddSlideAsync(new ElementReference(SlideId)));
 
         Assert.Contains("Cannot add slide: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task AddSlideAsync_WithValidElement_CallsJSInterop()
-    {
-        // Arrange
-        SetupElementReference();
-
-        // Act - This should not throw because we have a test JSRuntime
-        await carouselComponent.AddSlideAsync(new ElementReference("new-slide"));
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
-    }
-
-    [Fact]
     public async Task RemoveSlideAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            carouselComponent.RemoveSlideAsync(1));
+            runtime.CreateUnrendered<WaCarousel>().RemoveSlideAsync(1));
 
         Assert.Contains("Cannot remove slide: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task RemoveSlideAsync_WithValidElement_CallsJSInterop()
+    public async Task GoToSlideAsync_WithValidElement_InvokesGoToSlideWithTheIndex()
     {
-        // Arrange
-        SetupElementReference();
+        await runtime.CreateRendered<WaCarousel>().GoToSlideAsync(SlideIndex);
 
-        // Act - This should not throw because we have a test JSRuntime
-        await carouselComponent.RemoveSlideAsync(1);
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
+        Assert.Equal(new object[] { SlideIndex }, runtime.Module.AssertInvokedMethod("goToSlide"));
     }
 
-    private void SetupElementReference()
+    [Fact]
+    public async Task PreviousAsync_WithValidElement_InvokesPrevious()
     {
-        // Simulate element being rendered by setting Element property
-        var elementRef = new ElementReference("test-carousel-element");
-        var elementProperty = typeof(WaCarousel).GetProperty("Element",
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        elementProperty?.SetValue(carouselComponent, elementRef);
+        await runtime.CreateRendered<WaCarousel>().PreviousAsync();
+
+        Assert.Empty(runtime.Module.AssertInvokedMethod("previous"));
     }
 
-    #region ------ Test JSRuntime ------
-
-    private class TestJSRuntime : IJSRuntime
+    [Fact]
+    public async Task NextAsync_WithValidElement_InvokesNext()
     {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Simulate module import returning a mock module
-            if (identifier == "import")
-            {
-                return ValueTask.FromResult((TValue)(object)new TestJSObjectReference());
-            }
+        await runtime.CreateRendered<WaCarousel>().NextAsync();
 
-            throw new NotImplementedException($"Test runtime does not implement {identifier}");
-        }
-
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
+        Assert.Empty(runtime.Module.AssertInvokedMethod("next"));
     }
 
-    private class TestJSObjectReference : IJSObjectReference
+    [Fact]
+    public async Task AddSlideAsync_WithValidElement_InvokesAddSlideWithTheSlide()
     {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Return default values for testing
-            return ValueTask.FromResult(default(TValue)!);
-        }
+        var slide = new ElementReference(SlideId);
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
+        await runtime.CreateRendered<WaCarousel>().AddSlideAsync(slide);
 
-        public ValueTask DisposeAsync()
-        {
-            return ValueTask.CompletedTask;
-        }
+        Assert.Equal(new object[] { slide }, runtime.Module.AssertInvokedMethod("addSlide"));
+    }
+
+    [Fact]
+    public async Task RemoveSlideAsync_WithValidElement_InvokesRemoveSlideWithTheIndex()
+    {
+        await runtime.CreateRendered<WaCarousel>().RemoveSlideAsync(SlideIndex);
+
+        Assert.Equal(new object[] { SlideIndex }, runtime.Module.AssertInvokedMethod("removeSlide"));
+    }
+
+    #region ------ Implementation of IDisposable ------
+
+    public void Dispose()
+    {
+        runtime.Dispose();
     }
 
     #endregion
 
-    public void Dispose()
-    {
-        serviceProvider?.Dispose();
-    }
+    #region ------ Internals ------
+
+    private const int SlideIndex = 2;
+    private const string SlideId = "new-slide";
+
+    private readonly RecordingJSRuntime runtime = new();
+
+    #endregion
 }

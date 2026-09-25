@@ -1,48 +1,22 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
-using WebAwesome.Blazor.Extensions;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for WaAnimation component using the new JS interop infrastructure
+/// Interop tests for the WaAnimation methods: before the first render they throw, afterwards each invokes its
+/// element method or reads or writes its element property, with its argument, through the interop module
+/// (recorded, see RecordingJSRuntime).
 /// </summary>
 public class WaAnimationIntegrationTests : IDisposable
 {
-    private readonly ServiceProvider serviceProvider;
-    private readonly WaAnimation animationComponent;
-
-    public WaAnimationIntegrationTests()
-    {
-        var services = new ServiceCollection();
-        services.AddWebAwesome();
-        services.AddSingleton<IJSRuntime, TestJSRuntime>();
-        serviceProvider = services.BuildServiceProvider();
-
-        animationComponent = new WaAnimation();
-
-        // Inject dependencies manually for testing
-        var jsInterop = serviceProvider.GetRequiredService<WebAwesomeJSInterop>();
-        var propertyInfo = typeof(WaAnimation).GetProperty("JSInterop",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        propertyInfo?.SetValue(animationComponent, jsInterop);
-    }
-
     [Fact]
     public async Task CancelAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            animationComponent.CancelAsync());
+            runtime.CreateUnrendered<WaAnimation>().CancelAsync());
 
         Assert.Contains("Cannot cancel animation: component has not been rendered yet", exception.Message);
     }
@@ -50,170 +24,98 @@ public class WaAnimationIntegrationTests : IDisposable
     [Fact]
     public async Task GetCurrentTimeAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            animationComponent.GetCurrentTimeAsync());
+            runtime.CreateUnrendered<WaAnimation>().GetCurrentTimeAsync());
 
         Assert.Contains("Cannot get current time: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task CancelAsync_WithValidElement_CallsJSInterop()
-    {
-        // Arrange
-        SetupElementReference();
-
-        // Act - This should not throw because we have a test JSRuntime
-        await animationComponent.CancelAsync();
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
-    }
-
-    [Fact]
-    public async Task GetCurrentTimeAsync_WithValidElement_CallsJSInterop()
-    {
-        // Arrange
-        SetupElementReference();
-
-        // Act - This should return default decimal (0) from test JSRuntime
-        var result = await animationComponent.GetCurrentTimeAsync();
-
-        // Assert
-        Assert.Equal(0m, result);
-    }
-
-    [Fact]
     public async Task SetKeyframesAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            animationComponent.SetKeyframesAsync(new object()));
+            runtime.CreateUnrendered<WaAnimation>().SetKeyframesAsync(new object()));
 
         Assert.Contains("Cannot set keyframes: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task SetKeyframesAsync_WithValidElement_CallsJSInterop()
-    {
-        // Arrange
-        SetupElementReference();
-        var keyframes = new { offset = 0, transform = "rotate(0deg)" };
-
-        // Act - This should not throw because we have a test JSRuntime
-        await animationComponent.SetKeyframesAsync(keyframes);
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
-    }
-
-    [Fact]
     public async Task FinishAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            animationComponent.FinishAsync());
+            runtime.CreateUnrendered<WaAnimation>().FinishAsync());
 
         Assert.Contains("Cannot finish animation: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task FinishAsync_WithValidElement_CallsJSInterop()
-    {
-        // Arrange
-        SetupElementReference();
-
-        // Act - This should not throw because we have a test JSRuntime
-        await animationComponent.FinishAsync();
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
-    }
-
-    [Fact]
     public async Task SetCurrentTimeAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            animationComponent.SetCurrentTimeAsync(1000m));
+            runtime.CreateUnrendered<WaAnimation>().SetCurrentTimeAsync(1000m));
 
         Assert.Contains("Cannot set current time: component has not been rendered yet", exception.Message);
     }
 
     [Fact]
-    public async Task SetCurrentTimeAsync_WithValidElement_CallsJSInterop()
+    public async Task CancelAsync_WithValidElement_InvokesCancel()
     {
-        // Arrange
-        SetupElementReference();
+        await runtime.CreateRendered<WaAnimation>().CancelAsync();
 
-        // Act - This should not throw because we have a test JSRuntime
-        await animationComponent.SetCurrentTimeAsync(1500m);
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
+        Assert.Empty(runtime.Module.AssertInvokedMethod("cancel"));
     }
 
-    private void SetupElementReference()
+    [Fact]
+    public async Task FinishAsync_WithValidElement_InvokesFinish()
     {
-        // Simulate element being rendered by setting Element property
-        var elementRef = new ElementReference("test-animation-element");
-        var elementProperty = typeof(WaAnimation).GetProperty("Element",
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        elementProperty?.SetValue(animationComponent, elementRef);
+        await runtime.CreateRendered<WaAnimation>().FinishAsync();
+
+        Assert.Empty(runtime.Module.AssertInvokedMethod("finish"));
     }
 
-    #region ------ Test JSRuntime ------
-
-    private class TestJSRuntime : IJSRuntime
+    [Fact]
+    public async Task GetCurrentTimeAsync_WithValidElement_ReturnsTheCurrentTimeProperty()
     {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Simulate module import returning a mock module
-            if (identifier == "import")
-            {
-                return ValueTask.FromResult((TValue)(object)new TestJSObjectReference());
-            }
+        runtime.Module.NextResult = CurrentTime;
 
-            throw new NotImplementedException($"Test runtime does not implement {identifier}");
-        }
+        var result = await runtime.CreateRendered<WaAnimation>().GetCurrentTimeAsync();
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
+        runtime.Module.AssertGotProperty("currentTime");
+        Assert.Equal(CurrentTime, result);
     }
 
-    private class TestJSObjectReference : IJSObjectReference
+    [Fact]
+    public async Task SetCurrentTimeAsync_WithValidElement_SetsTheCurrentTimeProperty()
     {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Return default values for testing
-            return ValueTask.FromResult(default(TValue)!);
-        }
+        await runtime.CreateRendered<WaAnimation>().SetCurrentTimeAsync(CurrentTime);
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
+        Assert.Equal(CurrentTime, runtime.Module.AssertSetProperty("currentTime"));
+    }
 
-        public ValueTask DisposeAsync()
-        {
-            return ValueTask.CompletedTask;
-        }
+    [Fact]
+    public async Task SetKeyframesAsync_WithValidElement_SetsTheKeyframesProperty()
+    {
+        var keyframes = new[] { new { offset = 0, transform = "rotate(0deg)" } };
+
+        await runtime.CreateRendered<WaAnimation>().SetKeyframesAsync(keyframes);
+
+        Assert.Same(keyframes, runtime.Module.AssertSetProperty("keyframes"));
+    }
+
+    #region ------ Implementation of IDisposable ------
+
+    public void Dispose()
+    {
+        runtime.Dispose();
     }
 
     #endregion
 
-    public void Dispose()
-    {
-        serviceProvider?.Dispose();
-    }
+    #region ------ Internals ------
+
+    private const decimal CurrentTime = 1500m;
+
+    private readonly RecordingJSRuntime runtime = new();
+
+    #endregion
 }
