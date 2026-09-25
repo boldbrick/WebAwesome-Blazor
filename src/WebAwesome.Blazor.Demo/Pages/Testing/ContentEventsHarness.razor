@@ -1,0 +1,172 @@
+@page "/testing/events-content"
+
+@* e2e harness for tools\e2e\tests\event-dispatch.spec.js - deliberately outside /components/, so it is neither
+   derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js *@
+
+<PageTitle>Testing: Content Events</PageTitle>
+
+<h1>Content Events Harness</h1>
+<p>This page is an end-to-end test harness: navigation, disclosure, media and utility components wire their callbacks into the event log below, so the browser tests can check which callbacks a real interaction reached in .NET.</p>
+
+<ExampleSection Title="Tabs">
+    <WaTabGroup data-testid="ct-tab-group"
+                OnTabShow="e => log.Record(Id(nameof(WaTabGroup), nameof(WaTabGroup.OnTabShow)), e)"
+                OnTabHide="e => log.Record(Id(nameof(WaTabGroup), nameof(WaTabGroup.OnTabHide)), e)">
+        <WaTab Panel="first" data-testid="ct-tab-first"
+               OnClick="e => log.Record(Id(nameof(WaTab), nameof(WaTab.OnClick)), e)"
+               OnFocus="e => log.Record(Id(nameof(WaTab), nameof(WaTab.OnFocus)), e)"
+               OnBlur="e => log.Record(Id(nameof(WaTab), nameof(WaTab.OnBlur)), e)">First</WaTab>
+        <WaTab Panel="second" data-testid="ct-tab-second">Second</WaTab>
+        <WaTabPanel Name="first">First panel</WaTabPanel>
+        <WaTabPanel Name="second">Second panel</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+<ExampleSection Title="Accordion and tree">
+    <WaAccordion data-testid="ct-accordion"
+                 OnExpand="e => log.Record(Id(nameof(WaAccordion), nameof(WaAccordion.OnExpand)), e)"
+                 OnAfterExpand="e => log.Record(Id(nameof(WaAccordion), nameof(WaAccordion.OnAfterExpand)), e)"
+                 OnCollapse="e => log.Record(Id(nameof(WaAccordion), nameof(WaAccordion.OnCollapse)), e)"
+                 OnAfterCollapse="e => log.Record(Id(nameof(WaAccordion), nameof(WaAccordion.OnAfterCollapse)), e)">
+        <WaAccordionItem Label="Section one" data-testid="ct-accordion-item">Accordion content</WaAccordionItem>
+    </WaAccordion>
+
+    <WaTree data-testid="ct-tree" OnSelectionChange="e => log.Record(Id(nameof(WaTree), nameof(WaTree.OnSelectionChange)), e)">
+        <WaTreeItem data-testid="ct-tree-parent"
+                    OnExpand="() => log.Record(Id(nameof(WaTreeItem), nameof(WaTreeItem.OnExpand)))"
+                    OnAfterExpand="() => log.Record(Id(nameof(WaTreeItem), nameof(WaTreeItem.OnAfterExpand)))"
+                    OnCollapse="() => log.Record(Id(nameof(WaTreeItem), nameof(WaTreeItem.OnCollapse)))"
+                    OnAfterCollapse="() => log.Record(Id(nameof(WaTreeItem), nameof(WaTreeItem.OnAfterCollapse)))">
+            Parent
+            <WaTreeItem>Child</WaTreeItem>
+        </WaTreeItem>
+        <WaTreeItem Lazy="lazyPending" data-testid="ct-tree-lazy"
+                    OnLazyLoad="LoadLazyChildren"
+                    OnLazyChange="() => log.Record(Id(nameof(WaTreeItem), nameof(WaTreeItem.OnLazyChange)))">
+            Lazy parent
+            @if (!lazyPending)
+            {
+                <WaTreeItem>Loaded child</WaTreeItem>
+            }
+        </WaTreeItem>
+    </WaTree>
+</ExampleSection>
+
+<ExampleSection Title="Tag, carousel, pagination, breadcrumb">
+    @if (!tagRemoved)
+    {
+        <WaTag WithRemove="true" data-testid="ct-tag" OnRemove="RemoveTag">Removable</WaTag>
+    }
+
+    <WaCarousel Navigation="true" data-testid="ct-carousel" OnSlideChange="e => log.Record(Id(nameof(WaCarousel), nameof(WaCarousel.OnSlideChange)), e)">
+        <WaCarouselItem><div style="background: var(--wa-color-brand-fill-loud); height: 80px;"></div></WaCarouselItem>
+        <WaCarouselItem><div style="background: var(--wa-color-success-fill-loud); height: 80px;"></div></WaCarouselItem>
+    </WaCarousel>
+
+    <WaPagination Total="50" PageSize="10" Page="1" data-testid="ct-pagination"
+                  OnBeforePageChange="e => log.Record(Id(nameof(WaPagination), nameof(WaPagination.OnBeforePageChange)), e)"
+                  OnPageChange="e => log.Record(Id(nameof(WaPagination), nameof(WaPagination.OnPageChange)), e)" />
+
+    <WaBreadcrumb>
+        <WaBreadcrumbItem data-testid="ct-breadcrumb-item" OnClick="e => log.Record(Id(nameof(WaBreadcrumbItem), nameof(WaBreadcrumbItem.OnClick)), e)">Home</WaBreadcrumbItem>
+        <WaBreadcrumbItem>Current</WaBreadcrumbItem>
+    </WaBreadcrumb>
+</ExampleSection>
+
+<ExampleSection Title="Copy button">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaCopyButton Value="copied by the harness" data-testid="ct-copy" OnCopy="() => log.Record(Id(nameof(WaCopyButton), nameof(WaCopyButton.OnCopy)))" />
+        @* From names an element that does not exist, so Web Awesome reports an error *@
+        <WaCopyButton From="ct-no-such-element" data-testid="ct-copy-error" OnError="() => log.Record(Id(nameof(WaCopyButton), nameof(WaCopyButton.OnError)))" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Images, icons and includes">
+    @* the failing sources point at a closed loopback port, so they fail fast and offline *@
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaAnimatedImage Src="@PixelGif" Alt="Pixel" data-testid="ct-animated-image" Style="width: 40px;" OnLoad="() => log.Record(Id(nameof(WaAnimatedImage), nameof(WaAnimatedImage.OnLoad)))" />
+        <WaAnimatedImage Src="@UnreachableImage" Alt="Broken" data-testid="ct-animated-image-error" Style="width: 40px;" OnError="() => log.Record(Id(nameof(WaAnimatedImage), nameof(WaAnimatedImage.OnError)))" />
+        <WaAvatar Image="@UnreachableImage" Label="Broken avatar" data-testid="ct-avatar" OnError="e => log.Record(Id(nameof(WaAvatar), nameof(WaAvatar.OnError)), e)" />
+        <WaIcon Src="@CircleSvg" Label="Circle" data-testid="ct-icon" OnLoad="e => log.Record(Id(nameof(WaIcon), nameof(WaIcon.OnLoad)), e)" />
+        <WaIcon Src="@UnreachableSvg" Label="Broken icon" data-testid="ct-icon-error" OnError="e => log.Record(Id(nameof(WaIcon), nameof(WaIcon.OnError)), e)" />
+    </WaCluster>
+    <WaInclude Src="@IncludeSource" data-testid="ct-include" OnLoad="e => log.Record(Id(nameof(WaInclude), nameof(WaInclude.OnLoad)), e)" />
+    <WaInclude Src="@UnreachableInclude" data-testid="ct-include-error" OnIncludeError="e => log.Record(Id(nameof(WaInclude), nameof(WaInclude.OnIncludeError)), e)" />
+</ExampleSection>
+
+<ExampleSection Title="Comparison, animation, popup, zoomable frame">
+    <WaComparison data-testid="ct-comparison" Style="max-width: 240px;" OnChange="e => log.Record(Id(nameof(WaComparison), nameof(WaComparison.OnChange)), e)">
+        <BeforeContent><div style="background: var(--wa-color-brand-fill-loud); height: 60px;"></div></BeforeContent>
+        <AfterContent><div style="background: var(--wa-color-success-fill-loud); height: 60px;"></div></AfterContent>
+    </WaComparison>
+
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaAnimation @ref="animation" Name="bounce" Duration="60000" Iterations="1" Play="animationPlaying" data-testid="ct-animation"
+                     OnStart="() => log.Record(Id(nameof(WaAnimation), nameof(WaAnimation.OnStart)))"
+                     OnFinish="AnimationEnded(nameof(WaAnimation.OnFinish))"
+                     OnCancel="AnimationEnded(nameof(WaAnimation.OnCancel))">
+            <div style="width: 24px; height: 24px; background: var(--wa-color-brand-fill-loud);"></div>
+        </WaAnimation>
+        <WaButton Size="WaSize.Small" data-testid="ct-animation-play" OnClick="() => animationPlaying = true">Play</WaButton>
+        <WaButton Size="WaSize.Small" data-testid="ct-animation-finish" OnClick="() => animation!.FinishAsync()">Finish</WaButton>
+        <WaButton Size="WaSize.Small" data-testid="ct-animation-cancel" OnClick="() => animation!.CancelAsync()">Cancel</WaButton>
+    </WaCluster>
+
+    <WaButton Size="WaSize.Small" data-testid="ct-popup-activate" OnClick="() => popupActive = true">Activate popup</WaButton>
+    <WaPopup Active="popupActive" Placement="WaPlacement.Right" data-testid="ct-popup" OnReposition="e => log.Record(Id(nameof(WaPopup), nameof(WaPopup.OnReposition)), e)">
+        <AnchorContent><span>Popup anchor</span></AnchorContent>
+        <ChildContent><div style="padding: var(--wa-space-xs); background: var(--wa-color-neutral-fill-loud); color: var(--wa-color-neutral-on-loud);">Popup</div></ChildContent>
+    </WaPopup>
+
+    <WaZoomableFrame SrcDoc="@FrameDocument" data-testid="ct-zoomable-frame" Style="height: 80px;" OnError="() => log.Record(Id(nameof(WaZoomableFrame), nameof(WaZoomableFrame.OnError)))" />
+</ExampleSection>
+
+<ExampleSection Title="Event log">
+    <EventLogView Log="log" />
+</ExampleSection>
+
+@code {
+    private const string PixelGif = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+    private const string CircleSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3C/svg%3E";
+    private const string UnreachableImage = "http://127.0.0.1:1/missing.png";
+    private const string UnreachableSvg = "http://127.0.0.1:1/missing.svg";
+    private const string UnreachableInclude = "http://127.0.0.1:1/missing.html";
+    private const string IncludeSource = "fragments/release-notes.html";
+    private const string FrameDocument = "<body style=\"margin:0;font-family:sans-serif\">Framed</body>";
+
+    private readonly EventLog log = new();
+
+    private WaAnimation? animation;
+    private bool animationPlaying;
+    private bool popupActive;
+    private bool lazyPending = true;
+    private bool tagRemoved;
+
+    private static string Id(string wrapper, string callback) => $"{wrapper}.{callback}";
+
+    // the lazy item asks for its children; supplying them and clearing Lazy makes the element report the change.
+    // The yield matters on WebAssembly, where the handler runs synchronously inside the element's own update
+    // (wa-lazy-load is dispatched from it) and Lit drops a property change made there, so clearing Lazy without
+    // yielding never raises wa-lazy-change; real loading is asynchronous anyway
+    private async Task LoadLazyChildren()
+    {
+        log.Record(Id(nameof(WaTreeItem), nameof(WaTreeItem.OnLazyLoad)));
+        await Task.Yield();
+        lazyPending = false;
+    }
+
+    // wa-tag leaves removing to the page, as Web Awesome documents
+    private void RemoveTag(EventArgs args)
+    {
+        log.Record(Id(nameof(WaTag), nameof(WaTag.OnRemove)), args);
+        tagRemoved = true;
+    }
+
+    // the element resets its play property itself when the animation ends; the model follows
+    private EventCallback AnimationEnded(string callback) => EventCallback.Factory.Create(this, () =>
+    {
+        log.Record(Id(nameof(WaAnimation), callback));
+        animationPlaying = false;
+    });
+}

@@ -1,4 +1,5 @@
 // @ts-check
+const { test } = require('@playwright/test');
 
 /**
  * Waits until the given Web Awesome custom elements are defined and the first instance of each
@@ -19,4 +20,22 @@ async function waitForWaReady(page, tags) {
   }, tags);
 }
 
-module.exports = { waitForWaReady };
+/**
+ * Skips the running test, visibly and with a reason, when one of the given Pro components does not upgrade: the
+ * free CDN has no Pro components, so they only run with a Pro asset override (tools\demo\Set-WaProAssets.ps1, or
+ * the release gate's opt-in -ProDist pass). The release gate lists every such skip in
+ * tools\e2e\data\expected-skips.json and fails on any other.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string[]} tags Pro custom element tag names the test needs
+ */
+async function skipUnlessProUpgrades(page, tags) {
+  for (const tag of tags) {
+    const upgraded = await page
+      .waitForFunction(name => !!customElements.get(name), tag, { timeout: 5_000 })
+      .then(() => true, () => false);
+    test.skip(!upgraded, `${tag} is a Pro component and does not upgrade from the free CDN - run with a Pro asset override (tools\\demo\\Set-WaProAssets.ps1)`);
+  }
+}
+
+module.exports = { waitForWaReady, skipUnlessProUpgrades };

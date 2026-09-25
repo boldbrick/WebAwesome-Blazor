@@ -1,6 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const { waitForWaReady } = require('./helpers/wa-ready');
+const { waitForWaReady, skipUnlessProUpgrades } = require('./helpers/wa-ready');
 
 // Browser acceptance for GitHub issue #1 (Web Awesome 3.12.0 upgrade). In WA 3 the value/checked
 // attribute maps to defaultValue/defaultChecked: once the user has interacted, the element
@@ -15,23 +15,6 @@ const { waitForWaReady } = require('./helpers/wa-ready');
 // model before blur, and WaRelativeTime format/numeric reaching Intl.RelativeTimeFormat.
 
 const HARNESS_ROUTE = '/testing/value-sync';
-
-/**
- * Stands in for a user edit where real interaction is impractical headless: assigns the live
- * property and dispatches the same bubbling, composed input/change pair the element dispatches
- * itself after a user edit, so the Blazor binder sees exactly what a real edit produces.
- *
- * @param {import('@playwright/test').Locator} element
- * @param {string} property
- * @param {unknown} value
- */
-async function editLivePropertyAsUser(element, property, value) {
-  await element.evaluate((el, [name, next]) => {
-    /** @type {any} */ (el)[/** @type {string} */ (name)] = next;
-    el.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true }));
-    el.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
-  }, [property, value]);
-}
 
 /**
  * Types into the shadow-DOM text control (Playwright CSS pierces open shadow roots) and tabs out,
@@ -83,9 +66,14 @@ const VALUE_SYNC_CASES = [
   {
     wrapper: 'WaColorPicker', route: HARNESS_ROUTE, tag: 'wa-color-picker', id: 'color-picker', property: 'value',
     initialModel: '#336699',
-    // a real edit means dragging on the popup's color grid or typing into the popup's text field;
-    // both depend on popup geometry and animation timing, so the edit is replayed at the element level
-    userEdit: (/** @type {import('@playwright/test').Locator} */ el) => editLivePropertyAsUser(el, 'value', '#ff0000'),
+    // opens the popup from its trigger, types a colour into the popup's text field and commits it with Enter
+    userEdit: async (/** @type {import('@playwright/test').Locator} */ el) => {
+      await el.locator('[part~="trigger"]').click();
+      const field = el.locator('[part~="input"] input');
+      await field.fill('#ff0000');
+      await field.press('Enter');
+      await el.page().keyboard.press('Escape');
+    },
     userModel: '#ff0000',
     action: 'set', expected: '#00aa55', expectedModel: '#00aa55',
   },
@@ -148,6 +136,58 @@ const VALUE_SYNC_CASES = [
     userModel: 'True',
     action: 'reset', expected: false, expectedModel: 'False',
   },
+  // the set direction for the toggles: after the user checks and unchecks, C# checks them
+  {
+    wrapper: 'WaCheckbox', variant: 'set after unchecking', route: '/components/checkbox', tag: 'wa-checkbox', id: 'checkbox-sync', property: 'checked',
+    initialModel: 'False',
+    userEdit: async (/** @type {import('@playwright/test').Locator} */ el) => {
+      await el.locator('[part~="control"]').click();
+      await expect(el.page().getByTestId('checkbox-sync-model')).toHaveText('True');
+      await el.locator('[part~="control"]').click();
+    },
+    userModel: 'False',
+    action: 'set', expected: true, expectedModel: 'True',
+  },
+  {
+    wrapper: 'WaSwitch', variant: 'set after unchecking', route: HARNESS_ROUTE, tag: 'wa-switch', id: 'switch', property: 'checked',
+    initialModel: 'False',
+    userEdit: async (/** @type {import('@playwright/test').Locator} */ el) => {
+      await el.locator('[part~="control"]').click();
+      await expect(el.page().getByTestId('switch-model')).toHaveText('True');
+      await el.locator('[part~="control"]').click();
+    },
+    userModel: 'False',
+    action: 'set', expected: true, expectedModel: 'True',
+  },
+  // the upgrade plan judged these unaffected: their value attribute feeds the live value, not a default*
+  // field; the rows check that claim after a real user edit
+  {
+    wrapper: 'WaSelect', route: HARNESS_ROUTE, tag: 'wa-select', id: 'select', property: 'value',
+    initialModel: 'apple',
+    userEdit: async (/** @type {import('@playwright/test').Locator} */ el) => {
+      await el.locator('[part~="combobox"]').click();
+      await el.locator('wa-option', { hasText: 'Banana' }).click();
+    },
+    userModel: 'banana',
+    action: 'set', expected: 'cherry', expectedModel: 'cherry',
+  },
+  {
+    wrapper: 'WaCombobox', route: HARNESS_ROUTE, tag: 'wa-combobox', id: 'combobox', property: 'value', pro: true,
+    initialModel: 'apple',
+    userEdit: async (/** @type {import('@playwright/test').Locator} */ el) => {
+      await el.locator('[part~="combobox-input"]').click();
+      await el.locator('wa-option', { hasText: 'Banana' }).click();
+    },
+    userModel: 'banana',
+    action: 'set', expected: 'cherry', expectedModel: 'cherry',
+  },
+  {
+    wrapper: 'WaDatePicker', route: HARNESS_ROUTE, tag: 'wa-date-picker', id: 'date-picker', property: 'value', pro: true,
+    initialModel: '2024-03-15',
+    userEdit: (/** @type {import('@playwright/test').Locator} */ el) => el.getByRole('button', { name: 'Wednesday, March 20, 2024' }).click(),
+    userModel: '2024-03-20',
+    action: 'set', expected: '2024-03-25', expectedModel: '2024-03-25',
+  },
 ];
 
 /**
@@ -163,24 +203,10 @@ async function open(page, route, tags) {
   await waitForWaReady(page, tags);
 }
 
-/**
- * Pro components cannot upgrade from the free CDN; skips the test instead of failing on a
- * never-defined element.
- *
- * @param {import('@playwright/test').Page} page
- * @param {string} tag
- */
-async function skipUnlessUpgradable(page, tag) {
-  const upgraded = await page
-    .waitForFunction(name => !!customElements.get(name), tag, { timeout: 5_000 })
-    .then(() => true, () => false);
-  test.skip(!upgraded, `${tag} is a Pro component and does not upgrade from the free CDN - run with a Pro asset override (tools\\demo\\Set-WaProAssets.ps1)`);
-}
-
 for (const c of VALUE_SYNC_CASES) {
-  test(`value sync: ${c.wrapper} reflects C# model change after user edit`, async ({ page }) => {
+  test(`value sync: ${c.wrapper}${c.variant ? ` (${c.variant})` : ''} reflects C# model change after user edit`, async ({ page }) => {
     await open(page, c.route, c.pro ? [] : [c.tag]);
-    if (c.pro) await skipUnlessUpgradable(page, c.tag);
+    if (c.pro) await skipUnlessProUpgrades(page, [c.tag]);
 
     const element = page.getByTestId(c.id);
     const model = page.getByTestId(`${c.id}-model`);
@@ -269,12 +295,10 @@ for (const c of RELATIVE_TIME_CASES) {
     expect(expected, 'requested style differs from the default rendering').not.toBe(defaultStyle);
 
     const element = page.getByTestId(c.id).locator('wa-relative-time');
-    try {
-      await expect
-        .poll(() => element.evaluate(el => (el.shadowRoot?.textContent ?? '').trim()), { message: `rendered text of ${c.id}` })
-        .toBe(expected);
-    } finally {
-      if (pageErrors.length) test.info().annotations.push({ type: 'page errors', description: pageErrors.join('\n') });
-    }
+    await expect
+      .poll(() => element.evaluate(el => (el.shadowRoot?.textContent ?? '').trim()), { message: `rendered text of ${c.id}` })
+      .toBe(expected);
+    // an invalid format or numeric value makes Intl.RelativeTimeFormat throw a RangeError on the page
+    expect(pageErrors, 'no page errors').toEqual([]);
   });
 }

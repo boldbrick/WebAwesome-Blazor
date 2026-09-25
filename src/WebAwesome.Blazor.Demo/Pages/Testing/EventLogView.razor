@@ -1,0 +1,27 @@
+@* renders an EventLog of an e2e harness page: one row per callback that ran, with its call count and last
+   payload; the browser tests read the count-<id> and payload-<id> cells *@
+
+<table class="event-log" data-testid="event-log">
+    <thead><tr><th>Callback</th><th>Calls</th><th>Last payload</th></tr></thead>
+    <tbody>
+        @if (Log.Entries.Count == 0)
+        {
+            <tr><td colspan="3"><em>No callback has run yet.</em></td></tr>
+        }
+        @foreach (var entry in Log.Entries)
+        {
+            <tr data-testid="@($"event-{entry.Id}")">
+                <td><code>@entry.Id</code></td>
+                <td data-testid="@($"count-{entry.Id}")">@entry.Count</td>
+                <td><code data-testid="@($"payload-{entry.Id}")">@entry.LastPayload</code></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    /// <summary>
+    /// The log to render.
+    /// </summary>
+    [Parameter, EditorRequired] public EventLog Log { get; set; } = default!;
+}

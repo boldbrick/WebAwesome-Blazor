@@ -20,6 +20,26 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   the typed `e.Name` payload into the Blazor handler.
 - `tests\theme-and-dark-mode.spec.js` — regression test for the dark-mode switch and theme
   selector doing nothing visible.
+- `tests\event-dispatch.spec.js` — real-interaction dispatch proof for the wrappers' EventCallbacks.
+  Each case in `tests\helpers\event-cases.js` drives a component with the mouse or keyboard and lists
+  the callbacks it proves; afterwards every listed callback must appear in the event log of the
+  harness pages (`/testing/events-forms`, `-overlays`, `-content`, `-pro`, see
+  `src\WebAwesome.Blazor.Demo\Pages\Testing`), which renders what reached .NET. Known defects run as
+  expected failures (`KNOWN_DEFECT_CASES`, `test.fail`): they start failing once the defect is fixed.
+- `tests\event-payload.spec.js` — the payloads the JS initializer builds by hand (`specialArgs`):
+  split panel, observers, random content, date picker, video playlist and data grid events, each
+  with its non-default field values as .NET received them (`/testing/event-payloads`).
+- `tests\event-coverage.spec.js` — no browser: checks `data\event-callbacks.json` (every wrapper
+  callback, exported from the rendered bindings by the bUnit test `EventCallbackManifestTests`)
+  against the dispatch and payload cases, `EXTERNAL_COVERAGE` in `tests\helpers\event-coverage.js`
+  and the reasoned exemptions in `data\event-coverage-exemptions.json`. A new callback fails the
+  bUnit test until the manifest is refreshed, then this spec until it is covered or exempted.
+- Pro components (combobox, date input/picker, file input, video, video playlist, data grid) upgrade
+  only with a Pro asset override; their tests skip visibly on the free CDN (`skipUnlessProUpgrades`).
+  To run them locally, point `WA_PRO_DIST` at the release zip's extracted package (e.g.
+  `temp\wa-src\<version>`) and run `tools\demo\Set-WaProAssets.ps1`; clear it with `-Clear`. Build the
+  demo only with the override cleared: a build made while it is active serves a stale
+  `appsettings.Local.json` after clearing, until the next build.
 
 ## Running
 

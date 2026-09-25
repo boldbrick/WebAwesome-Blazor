@@ -141,6 +141,51 @@
                 </td>
             </tr>
             <tr>
+                <td><code>WaSelect</code></td>
+                <td>
+                    <WaSelect Label="Fruit" data-testid="select" @bind-Value="selectValue">
+                        <WaOption Value="apple">Apple</WaOption>
+                        <WaOption Value="banana">Banana</WaOption>
+                        <WaOption Value="cherry">Cherry</WaOption>
+                    </WaSelect>
+                </td>
+                <td><code data-testid="select-model">@selectValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="select-set" OnClick="@(() => selectValue = SetOption)">Set @SetOption</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="select-reset" OnClick="@(() => selectValue = InitialOption)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaCombobox</code> <ComponentBadges Tag="wa-combobox" /></td>
+                <td>
+                    <WaCombobox Label="Fruit" data-testid="combobox" @bind-Value="comboboxValue">
+                        <WaOption Value="apple">Apple</WaOption>
+                        <WaOption Value="banana">Banana</WaOption>
+                        <WaOption Value="cherry">Cherry</WaOption>
+                    </WaCombobox>
+                </td>
+                <td><code data-testid="combobox-model">@comboboxValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="combobox-set" OnClick="@(() => comboboxValue = SetOption)">Set @SetOption</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="combobox-reset" OnClick="@(() => comboboxValue = InitialOption)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDatePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                <td><WaDatePicker data-testid="date-picker" FocusedDate="@InitialPickerDate" @bind-Value="datePickerValue" /></td>
+                <td><code data-testid="date-picker-model">@datePickerValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="date-picker-set" OnClick="@(() => datePickerValue = SetPickerDate)">Set @SetPickerDate</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-picker-reset" OnClick="@(() => datePickerValue = InitialPickerDate)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
                 <td><code>WaSlider</code> (range mode)</td>
                 <td><WaSlider Label="Price range" Range="true" data-testid="slider-range" @bind-MinValue="sliderRangeMin" @bind-MaxValue="sliderRangeMax" /></td>
                 <td><code data-testid="slider-range-model">@($"{sliderRangeMin}-{sliderRangeMax}")</code></td>
@@ -206,6 +251,10 @@
     private const decimal InitialSliderRangeMax = 80;
     private const decimal SetSliderRangeMin = 30;
     private const decimal SetSliderRangeMax = 60;
+    private const string InitialOption = "apple";
+    private const string SetOption = "cherry";
+    private const string InitialPickerDate = "2024-03-15";
+    private const string SetPickerDate = "2024-03-25";
     private const int RelativeHoursAgo = 3;
     private const int RelativeDaysAgo = 1;
 
@@ -222,6 +271,9 @@
     private decimal ratingValue = InitialRating;
     private decimal? sliderRangeMin = InitialSliderRangeMin;
     private decimal? sliderRangeMax = InitialSliderRangeMax;
+    private string? selectValue = InitialOption;
+    private string? comboboxValue = InitialOption;
+    private string? datePickerValue = InitialPickerDate;
     private DateTime threeHoursAgo;
     private DateTime oneDayAgo;
 

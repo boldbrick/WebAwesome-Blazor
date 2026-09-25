@@ -122,3 +122,35 @@ test('number binding: WaSlider range mode user edit (min thumb) reaches the boun
   await expect(element, 'the element took the key press').toHaveJSProperty('minValue', 21);
   await expect(model, 'user edit reaches the bound MinValue/MaxValue').toHaveText('21-80');
 });
+
+test('number binding: WaSlider range mode user edit (max thumb) reaches the bound MaxValue', async ({ page }) => {
+  await openHarness(page, ['wa-slider']);
+  const { element, model } = await row(page, 'slider-range');
+  await expect(model).toHaveText('20-80');
+
+  await element.locator('#thumb-max').press('ArrowLeft');
+
+  await expect(element, 'the element took the key press').toHaveJSProperty('maxValue', 79);
+  await expect(model, 'user edit reaches the bound MinValue/MaxValue').toHaveText('20-79');
+});
+
+// range mode keeps both values in minValue/maxValue; the wrapper renders them as the min-value/max-value
+// attributes, so this checks that a C# change still reaches both thumbs once the user has moved one
+test('value sync: WaSlider range mode reflects C# model change after user edit', async ({ page }) => {
+  await openHarness(page, ['wa-slider']);
+  const { element, model } = await row(page, 'slider-range');
+  await expect(model).toHaveText('20-80');
+
+  // (a) the user edits both thumbs
+  await element.locator('#thumb-min').press('ArrowRight');
+  await element.locator('#thumb-max').press('ArrowLeft');
+  await expect(model, 'user edit reaches the bound MinValue/MaxValue').toHaveText('21-79');
+
+  // (b) C# changes the model
+  await page.getByTestId('slider-range-set').click();
+  await expect(model, 'C# change is rendered in the model display').toHaveText('30-60');
+
+  // (c) the element's live properties follow the model
+  await expect(element, 'live "minValue" property follows the C# model').toHaveJSProperty('minValue', 30);
+  await expect(element, 'live "maxValue" property follows the C# model').toHaveJSProperty('maxValue', 60);
+});

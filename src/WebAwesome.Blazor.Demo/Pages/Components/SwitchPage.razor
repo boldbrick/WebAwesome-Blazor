@@ -1,4 +1,4 @@
-﻿@page "/components/switch"
+@page "/components/switch"
 
 <PageTitle>Switch</PageTitle>
 
@@ -9,12 +9,31 @@
     <WaSwitch @bind-Value="value">Switch</WaSwitch>
 </ExampleSection>
 
+<ExampleSection Title="Two-way Binding" Code="@BindingExample">
+    <WaSwitch @bind-Value="notifications" OnCheckedChange="@(isChecked => checkedChanges++)">Notifications</WaSwitch>
+    <p>Notifications: <strong>@notifications</strong></p>
+    <p>OnCheckedChange calls: <strong>@checkedChanges</strong></p>
+</ExampleSection>
+
 @* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\switch.md) *@
 
 <ApiTable Tag="wa-switch" />
 
 @code {
     private bool value;
+    private bool notifications;
+    private int checkedChanges;
+
+    private const string BindingExample = """
+        <WaSwitch @bind-Value="notifications" OnCheckedChange="@(isChecked => checkedChanges++)">Notifications</WaSwitch>
+        <p>Notifications: @notifications</p>
+        <p>OnCheckedChange calls: @checkedChanges</p>
+
+        @code {
+            private bool notifications;
+            private int checkedChanges;
+        }
+        """;
 
     private const string DefaultExample = """
         <WaSwitch @bind-Value="value">Switch</WaSwitch>

@@ -1,0 +1,61 @@
+{
+  "description": "EventCallbacks of tools\\e2e\\data\\event-callbacks.json that no browser test proves, each with the reason; checked by tools\\e2e\\tests\\event-coverage.spec.js (every callback must be proven or listed here, never both, and every entry must still name an existing callback). Entries marked KNOWN DEFECT also have an expected-failure case in KNOWN_DEFECT_CASES (tests\\helpers\\event-cases.js) that references the key and starts passing, failing the suite, once the defect is fixed.",
+  "exemptions": [
+    {
+      "key": "focus-in-shadow-root",
+      "reason": "KNOWN DEFECT (found 2026-09-25, owner decision pending): Blazor dispatches a non-bubbling event (focus, blur) only to the first element of event.composedPath(). For these controls the focused element is inside the host's shadow root (the native input, textarea, button or segment), or for WaRadioGroup a slotted WaRadio, so the handler on the wrapper's host never runs and OnFocus/OnBlur never fire in the browser. Controls whose host itself takes focus (WaSlider, WaRange, WaRating, WaRadio, WaTab, WaDropdownItem) are proven. A fix would bind focusin/focusout (bubbling, composed) and accept their extra events when focus moves inside one control.",
+      "callbacks": [
+        "WaButton.OnFocus", "WaButton.OnBlur",
+        "WaCheckbox.OnFocus", "WaCheckbox.OnBlur",
+        "WaColorPicker.OnFocus", "WaColorPicker.OnBlur",
+        "WaCombobox.OnFocus", "WaCombobox.OnBlur",
+        "WaDateInput.OnFocus", "WaDateInput.OnBlur",
+        "WaFileInput.OnFocus", "WaFileInput.OnBlur",
+        "WaInput.OnFocus", "WaInput.OnBlur",
+        "WaKnownDate.OnFocus", "WaKnownDate.OnBlur",
+        "WaNumberInput.OnFocus", "WaNumberInput.OnBlur",
+        "WaOtpInput.OnFocus", "WaOtpInput.OnBlur",
+        "WaRadioGroup.OnFocus", "WaRadioGroup.OnBlur",
+        "WaSelect.OnFocus", "WaSelect.OnBlur",
+        "WaSwitch.OnFocus", "WaSwitch.OnBlur",
+        "WaTextArea.OnFocus", "WaTextArea.OnBlur",
+        "WaTimeInput.OnFocus", "WaTimeInput.OnBlur"
+      ]
+    },
+    {
+      "key": "color-picker-non-bubbling-popup-events",
+      "reason": "KNOWN DEFECT awaiting the owner's decision, recorded in parity-config.json as sourceVerifiedEvents:wa-color-picker:wa-show/wa-after-show/wa-hide/wa-after-hide: wa-color-picker dispatches its popup events as plain non-bubbling CustomEvents, and Blazor listens for custom events on the document in the bubbling phase, so they never reach .NET.",
+      "callbacks": ["WaColorPicker.OnShow", "WaColorPicker.OnAfterShow", "WaColorPicker.OnHide", "WaColorPicker.OnAfterHide"]
+    },
+    {
+      "key": "intersect-non-bubbling",
+      "reason": "KNOWN DEFECT (found 2026-09-25, same class as the color picker popup events): WaIntersectEvent is constructed with bubbles: false (dist\\events\\intersect.js), and Blazor listens for custom events on the document in the bubbling phase, so OnIntersect never fires in the browser. The payload projection (isIntersecting, intersectionRatio) is therefore unverified too.",
+      "callbacks": ["WaIntersectionObserver.OnIntersect"]
+    },
+    {
+      "key": "combobox-keydown-stopped",
+      "reason": "KNOWN DEFECT (found 2026-09-25): wa-combobox calls stopPropagation on every keydown in its input (handleComboboxKeyDown), so the event never reaches Blazor's document listener and OnKeyDown never fires; OnKeyUp and OnKeyPress are proven.",
+      "callbacks": ["WaCombobox.OnKeyDown"]
+    },
+    {
+      "key": "multiple-selection-binding",
+      "reason": "KNOWN DEFECT (found 2026-09-25): in Multiple mode wa-select and wa-combobox deliver their value as a string array, but the wrappers' change handler accepts only a comma-joined string, so SelectedValuesChanged never fires; the value attribute is also a comma-joined string, which the elements read as one option value.",
+      "callbacks": ["WaSelect.SelectedValuesChanged", "WaCombobox.SelectedValuesChanged"]
+    },
+    {
+      "key": "keydown-cancelled-no-keypress",
+      "reason": "Not reachable by design of the element: wa-select (type-to-select) and wa-date-input (segment editing) cancel every printable keydown, so the browser dispatches no keypress. The OnKeyPress binding shared through WaInputBase is proven on the other controls.",
+      "callbacks": ["WaSelect.OnKeyPress", "WaDateInput.OnKeyPress"]
+    },
+    {
+      "key": "rating-no-input-event",
+      "reason": "wa-rating dispatches no input event, so the inherited OnInput is deliberately left unbound (parity-config.json unboundEventCallbacks for wa-rating); there is nothing to dispatch.",
+      "callbacks": ["WaRating.OnInput"]
+    },
+    {
+      "key": "video-error-source-child",
+      "reason": "wa-video loads its Src through a <source> child of its inner video; a failed source fires error on that source element, which wa-video does not relay, and only a media decode error of the video element itself reaches OnError, which cannot be produced deterministically. The relay path is the same as for the proven play/pause/ended events.",
+      "callbacks": ["WaVideo.OnError"]
+    }
+  ]
+}

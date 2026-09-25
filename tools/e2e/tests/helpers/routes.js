@@ -34,6 +34,11 @@ const SHOWCASE_ROUTES = [
 // the sweep still visits them
 const HARNESS_ROUTES = [
   '/testing/value-sync',
+  '/testing/events-forms',
+  '/testing/events-overlays',
+  '/testing/events-content',
+  '/testing/events-pro',
+  '/testing/event-payloads',
 ];
 
 function getComponentRoutes() {
