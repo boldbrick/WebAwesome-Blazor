@@ -41,6 +41,12 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   and needs a `KNOWN_DEFECT_CASES` case; the spec prints how many there are.
 - Pro components (combobox, date input/picker, file input, video, video playlist, data grid) upgrade
   only with a Pro asset override; their tests skip visibly on the free CDN (`skipUnlessProUpgrades`).
+  The skip decides on the outcome, not on a grace period: the module next to the page's Web Awesome
+  script answering 404 skips at once, and otherwise the test waits for the upgrade (up to
+  `WA_READY_TIMEOUT_MS`, 45 s), so a slow page under the default 20 workers no longer skips a Pro test.
+- Timing: a test may take 60 s (`playwright.config.js`), because booting the WASM demo and loading the
+  CDN modules under a full worker load can take most of 30 s; `waitForWaReady` fails after 45 s naming
+  the elements that never got ready, and every assertion keeps its own `expect` timeout.
   To run them locally, point `WA_PRO_DIST` at the release zip's extracted package (e.g.
   `temp\wa-src\<version>`) and run `tools\demo\Set-WaProAssets.ps1`; clear it with `-Clear`. Build the
   demo only with the override cleared: a build made while it is active serves a stale
