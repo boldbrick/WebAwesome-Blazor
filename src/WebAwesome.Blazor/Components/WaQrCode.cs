@@ -114,10 +114,10 @@ public class WaQrCode : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
         builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
         builder.AddAttributeIfNotNullOrEmpty(5, "label", Label);
-        builder.AddAttribute(6, "size", Size);
+        builder.AddNumberAttribute(6, "size", Size);
         builder.AddAttributeIfNotNullOrEmpty(7, "fill", Fill);
         builder.AddAttributeIfNotNullOrEmpty(8, "background", Background);
-        builder.AddAttribute(9, "radius", Radius);
+        builder.AddNumberAttribute(9, "radius", Radius);
         builder.AddAttribute(10, "error-correction", ErrorCorrection.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(11, "image", Image);
         builder.AddAttributeIfNotNullOrEmpty(12, "image-background", ImageBackground);

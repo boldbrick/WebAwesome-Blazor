@@ -55,11 +55,6 @@ public class WaRadio : ComponentBase, IFormValidation
     [Parameter] public string? Value { get; set; }
 
     /// <summary>
-    /// Checks the radio.
-    /// </summary>
-    [Parameter] public bool Checked { get; set; }
-
-    /// <summary>
     /// Disables the radio.
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
@@ -112,7 +107,6 @@ public class WaRadio : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
         builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
-        builder.AddAttribute(5, "checked", Checked);
         builder.AddAttribute(6, "disabled", Disabled);
         builder.AddAttributeIfNotNull(7, "size", Size?.ToHtmlValue());
         builder.AddAttributeIfNotNull(8, "appearance", Appearance?.ToHtmlValue());

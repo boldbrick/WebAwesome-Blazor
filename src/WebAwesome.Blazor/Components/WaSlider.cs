@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -189,9 +190,9 @@ public class WaSlider : WaInputBase<decimal?>
         AddCommonAttributes(builder, 1);
 
         // Add slider-specific attributes
-        builder.AddAttribute(20, "min", Min);
-        builder.AddAttribute(21, "max", Max);
-        builder.AddAttribute(22, "step", Step);
+        builder.AddNumberAttribute(20, "min", Min);
+        builder.AddNumberAttribute(21, "max", Max);
+        builder.AddNumberAttribute(22, "step", Step);
         builder.AddAttributeIfNotNull(23, "indicator-offset", IndicatorOffset);
         builder.AddAttribute(24, "range", Range);
         builder.AddAttributeIfNotNull(25, "orientation", Orientation?.ToHtmlValue());
@@ -216,7 +217,7 @@ public class WaSlider : WaInputBase<decimal?>
         else
         {
             // For single value mode, bind the value
-            builder.AddAttribute(30, "value", CurrentValue);
+            builder.AddAttributeIfNotNull(30, "value", CurrentValue);
             builder.AddAttribute(31, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChangeAsync));
         }
 
@@ -245,6 +246,13 @@ public class WaSlider : WaInputBase<decimal?>
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Formats with the invariant culture, the form <see cref="TryParseValueFromString"/> reads back (the base class would
+    /// use the current culture, e.g. "2,5").
+    /// </remarks>
+    protected override string? FormatValueAsString(decimal? value) => value?.ToString(CultureInfo.InvariantCulture);
+
+    /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out decimal? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         if (string.IsNullOrEmpty(value))
@@ -254,7 +262,7 @@ public class WaSlider : WaInputBase<decimal?>
             return true;
         }
 
-        if (decimal.TryParse(value, out var decimalValue))
+        if (ChangeEventArgsExtensions.TryParseJsNumber(value, out var decimalValue))
         {
             result = decimalValue;
             validationErrorMessage = null;

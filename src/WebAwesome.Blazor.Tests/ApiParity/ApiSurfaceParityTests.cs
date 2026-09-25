@@ -13,7 +13,8 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// Custom Elements Manifest by tools\upgrade\Export-WaApiSurface.ps1; intentional naming
 /// deviations and omissions are documented in parity-config.json. Events are checked by
 /// EventCallbackBindingParityTests on the rendered output (each callback must bind its CEM event),
-/// not here by callback name. The tests are inert until
+/// and attributes by RenderedAttributeParityTests (each CEM attribute must have a parameter that
+/// renders it, on every wrapper of the element), not here by name. The tests are inert until
 /// parity-config.json sets "enabled": true, which the upgrade process does once the expected
 /// surface matches the version being implemented.
 /// </summary>
@@ -36,36 +37,6 @@ public class ApiSurfaceParityTests
         }
 
         AssertNoMisses(misses, "Missing wrapper classes");
-    }
-
-    /// <summary>
-    /// Every attribute of every custom element must be exposed as a Blazor parameter.
-    /// </summary>
-    [Fact]
-    public void AllAttributes_AreExposedAsParameters()
-    {
-        if (!Config.Enabled) return;
-
-        var misses = new List<string>();
-
-        foreach (var (tag, component) in RelevantComponents())
-        {
-            var wrapper = FindWrapperType(tag, component);
-            if (wrapper == null) continue;
-            var componentConfig = GetComponentConfig(tag);
-
-            foreach (var attributeName in component.Attributes.Keys)
-            {
-                if (IsIgnoredAttribute(componentConfig, attributeName)) continue;
-
-                var expected = ExpectedParameterName(componentConfig, attributeName);
-
-                if (FindParameter(wrapper, expected) == null)
-                    misses.Add($"{tag}: attribute '{attributeName}' has no [Parameter] property '{expected}' on {wrapper.Name}");
-            }
-        }
-
-        AssertNoMisses(misses, "Attributes not covered by parameters");
     }
 
     /// <summary>

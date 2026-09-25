@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -28,7 +29,9 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds an attribute to the render tree, converted via <see cref="object.ToString"/>, only when the value is not null.
+    /// Adds an attribute to the render tree only when the value is not null, converted to a string with the
+    /// invariant culture (a number renders as "0.5", never as the current culture's "0,5", which Web Awesome
+    /// cannot parse).
     /// </summary>
     /// <typeparam name="T">Type of the value to convert and emit</typeparam>
     /// <param name="builder">Render tree builder</param>
@@ -40,8 +43,39 @@ internal static class RenderTreeBuilderExtensions
     {
         if (value != null)
         {
-            builder.AddAttribute(sequence, name, value.ToString());
+            builder.AddAttribute(sequence, name, FormatInvariant(value));
         }
+    }
+
+    /// <summary>
+    /// Adds a number attribute formatted with the invariant culture. Passing a number straight to
+    /// <see cref="RenderTreeBuilder.AddAttribute(int, string, object?)"/> formats it with the current culture
+    /// (e.g. "0,5" or a U+2212 minus sign), which Web Awesome cannot parse; use this or
+    /// <see cref="AddAttributeIfNotNull{T}"/> for every number.
+    /// </summary>
+    /// <typeparam name="T">Number type</typeparam>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddNumberAttribute<T>(this RenderTreeBuilder builder, int sequence, string name, T value)
+        where T : struct, IFormattable
+    {
+        builder.AddAttribute(sequence, name, value.ToString(null, CultureInfo.InvariantCulture));
+    }
+
+    /// <summary>
+    /// Converts an attribute value to its string form with the invariant culture.
+    /// </summary>
+    /// <typeparam name="T">Type of the value</typeparam>
+    /// <param name="value">The value</param>
+    /// <returns>The invariant-culture string form</returns>
+    public static string? FormatInvariant<T>(T value)
+    {
+        return value is IFormattable formattable
+            ? formattable.ToString(null, CultureInfo.InvariantCulture)
+            : value?.ToString();
     }
 
     /// <summary>

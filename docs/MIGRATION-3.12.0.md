@@ -95,7 +95,25 @@ These callbacks are **kept and now work**:
 - `WaCheckbox.OnCheckedChange`, `WaSwitch.OnCheckedChange`, `WaRadioGroup.OnValueChange` and `WaSlider.OnValueChange` fire on every user change.
 - `WaZoomableFrame.OnLoad`/`OnError` now listen to the element's real `load`/`error` events.
 
+### 5. Parameters for attributes the element doesn't have (BREAKING)
+
+A render-based check now compares every attribute a wrapper renders with the attributes Web Awesome declares. These parameters rendered an attribute the element doesn't have, so they did nothing. They're removed.
+
+| Removed | Why it did nothing | Use instead |
+|---|---|---|
+| `WaRadio.Checked` | `wa-radio`'s checked state is internal and set by its radio group; the element ignores a `checked` attribute | `WaRadioGroup` `@bind-Value` (or `Value`) |
+| `WaTab.Closable` | `wa-tab` has had no `closable` since Web Awesome 3.0 | none |
+| `WaMutationObserver.Subtree` | the element always observes the whole subtree | remove it |
+| `WaMutationObserver.AttributeOldValue`, `CharacterDataOldValue` | rendered `attribute-old-value`/`character-data-old-value`, which don't exist | `AttrOldValue`, `CharDataOldValue` |
+| `WaPopup.FlipBoundary`, `ShiftBoundary`, `AutoSizeBoundary` | Web Awesome takes these as live `Element` objects set from JavaScript; the rendered `flip-boundary`/`shift-boundary`/`auto-size-boundary` attributes don't exist | set the element property from JavaScript |
+
+Two `WaMutationObserver` parameters are **kept and now work**:
+- `Attr="true"` rendered an empty `attr`, which watches no attributes. It now renders `attr="*"` (all attributes).
+- `AttributeFilter` rendered a nonexistent `attribute-filter`. It now sets `attr` to the list, e.g. `AttributeFilter="class id"`, and takes precedence over `Attr`.
+
 ## Behavioral Changes (non-breaking, but visible)
+
+- **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) and `WaRelativeTime.Date` now use the invariant culture.
 
 - **C# value changes reach the element after the user has edited it.** In Web Awesome 3 the `value`/`checked` attribute sets only the default, and the element ignores it once the user has interacted. The form controls now also assign the live property after a C#-side change. This makes reset-after-submit, normalizing setters, and "clear"/"select all" buttons work. Affected: `WaInput`, `WaTextArea`, `WaNumberInput`, `WaColorPicker`, `WaDateInput`, `WaKnownDate`, `WaOtpInput`, `WaRadioGroup`, `WaTimeInput`, `WaSlider`, `WaRange`, `WaCheckbox` and `WaSwitch`.
 - **`WaSlider`, `WaRange` and `WaRating` user edits now reach `@bind-Value`.** These elements report their value as a number, which Blazor's built-in change event can't carry. The server rejected every change event, so the bound model never updated. The wrappers now listen on a string-valued alias of the change event.
@@ -132,6 +150,7 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Update C# code that reads `WaTextArea.Rows` as `int`
 - [ ] Rebuild and fix every compile error against the enum table in section 3. Each one was a value Web Awesome didn't accept, or a type that now matches the component
 - [ ] Remove handlers for the callbacks listed in section 4
+- [ ] Remove the parameters listed in section 5 (`WaRadio.Checked`, `WaTab.Closable`, the `WaMutationObserver` and `WaPopup` boundary parameters)
 - [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), remove the workaround
 - [ ] Update CSS selectors or tests that match `size="small|medium|large"` to `s|m|l`
 - [ ] (Optional) Adopt `Immediate` where the model must be current during typing
@@ -141,5 +160,5 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 
 - **Minimum .NET**: .NET 9.0 (primary target .NET 10.0)
 - **Web Awesome Core**: 3.12.0+
-- **Breaking Changes**: Yes (sections 1–4)
+- **Breaking Changes**: Yes (sections 1–5)
 - **New Dependencies**: None

@@ -543,7 +543,7 @@ public class EnumValueParityTests
             var union = isTokenList ? tokens : ParseStringLiteralUnion(attribute.EffectiveType);
             if (union == null) continue;
 
-            // a missing parameter is reported by ApiSurfaceParityTests.AllAttributes_AreExposedAsParameters
+            // a missing parameter is reported by RenderedAttributeParityTests.AllCemAttributes_AreRenderedByTheirParameter
             var property = FindParameter(wrapper, ExpectedParameterName(componentConfig, attributeName));
             if (property == null) continue;
 

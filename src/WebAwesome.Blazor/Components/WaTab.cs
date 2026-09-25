@@ -64,11 +64,6 @@ public class WaTab : ComponentBase
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
-    /// <summary>
-    /// Shows a close button on the tab, allowing the user to remove it.
-    /// </summary>
-    [Parameter] public bool Closable { get; set; }
-
     #endregion
 
     #region ------ Events ------
@@ -113,7 +108,6 @@ public class WaTab : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(4, "panel", Panel);
         builder.AddAttribute(5, "active", Active);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttribute(7, "closable", Closable);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(10, "onclick", OnClick);

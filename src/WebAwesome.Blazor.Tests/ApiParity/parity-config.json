@@ -48,12 +48,15 @@
       }
     },
     "wa-checkbox": {
+      "unrenderedAttributes": [ "value" ],
+      "extraRenderedAttributes": [ "autocomplete", "label", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "name", "checked", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnCheckedChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-color-picker": {
+      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "sourceVerifiedEvents": [ "wa-after-hide", "wa-after-show", "wa-hide", "wa-show" ],
@@ -74,6 +77,7 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-button": {
+      "extraRenderedAttributes": [ "form" ],
       "attributeOverrides": {
         "formaction": "FormAction",
         "formenctype": "FormEncType",
@@ -92,11 +96,14 @@
       }
     },
     "wa-select": {
+      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-slider": {
+      "attributePrerequisites": { "min-value": { "Range": true }, "max-value": { "Range": true } },
+      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "required" ],
       "attributeOverrides": {
         "autofocus": "AutoFocus"
       },
@@ -106,12 +113,15 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-switch": {
+      "unrenderedAttributes": [ "value" ],
+      "extraRenderedAttributes": [ "autocomplete", "label", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnCheckedChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-radio-group": {
+      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnValueChange": "change" },
@@ -140,6 +150,7 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-number-input": {
+      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "attributeOverrides": {
         "autofocus": "AutoFocus",
         "enterkeyhint": "EnterKeyHint",
@@ -153,6 +164,8 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-combobox": {
+      "trueFalseAttributes": [ "spellcheck" ],
+      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "readonly" ],
       "attributeOverrides": {
         "autocapitalize": "AutoCapitalize",
         "autocorrect": "AutoCorrect",
@@ -164,16 +177,19 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-date-input": {
+      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-time-input": {
+      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-known-date": {
+      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
@@ -182,6 +198,7 @@
       "ignoredEvents": [ "change" ]
     },
     "wa-rating": {
+      "extraRenderedAttributes": [ "autocomplete", "hint", "maxlength", "minlength" ],
       "ignoredAttributes": [ "getSymbol", "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "unboundEventCallbacks": [ "OnInput" ],
@@ -201,6 +218,7 @@
       }
     },
     "wa-otp-input": {
+      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "attributeOverrides": {
         "autofocus": "AutoFocus",
         "autosubmit": "AutoSubmit"
@@ -208,6 +226,9 @@
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
+    },
+    "wa-tab": {
+      "extraRenderedAttributes": [ "active" ]
     },
     "wa-tab-group": {
       "derivedEventCallbacks": { "OnTabChange": "wa-tab-show" }
@@ -219,6 +240,16 @@
       "ignoredAttributes": [ "submenuOpen" ]
     },
     "wa-popup": {
+      "ignoredAttributes": [ "autoSizeBoundary", "flipBoundary", "shiftBoundary" ],
+      "attributePrerequisites": {
+        "arrow-padding": { "Arrow": true },
+        "arrow-placement": { "Arrow": true },
+        "auto-size-padding": { "AutoSize": "Both" },
+        "flip-fallback-placements": { "Flip": true },
+        "flip-fallback-strategy": { "Flip": true },
+        "flip-padding": { "Flip": true },
+        "shift-padding": { "Shift": true }
+      },
       "ignoredEnumValues": {
         "auto-size": [ "None" ],
         "sync": [ "None" ]
@@ -307,6 +338,30 @@
     "ignoredEnumValues:wa-popup:sync": "WaSync.None ('') is the non-nullable parameter's 'off' state; WaPopup omits the sync attribute entirely when Sync == None, so the empty string is never emitted",
     "tokenListAttributes:wa-tooltip:trigger": "wa-tooltip's trigger is typed string, but the element reads it as a space-separated token list: the 3.12.0 tooltip.d.ts JSDoc lists click, hover, focus and manual ('multiple options can be passed by separating them with a space'), and the compiled tooltip chunk tests exactly those four via hasTrigger(\"click\"|\"hover\"|\"focus\"|\"manual\"), which splits the attribute on spaces - re-verify every upgrade",
     "unresolvedEnumAttributes:wa-animation:easing": "wa-animation's easing is typed string because it takes any CSS <easing-function> (the JSDoc cites cubic-bezier(...)); WaAnimationEasing offers the CSS easing keywords linear, ease, ease-in, ease-out and ease-in-out, which the CSS Easing Functions spec defines, so no CEM union exists to check them against",
+    "extraRenderedAttributes:autocomplete": "WaInputBase.Autocomplete: KNOWN DEFECT (owner decision): WaInputBase declares this parameter for every form control and renders the attribute on every element, but this element's CEM does not declare it and the element ignores it, so the inherited parameter has no effect here. The fix is to move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change recorded for an owner decision rather than made in 3.12.0",
+    "extraRenderedAttributes:hint": "WaInputBase.Hint (wa-rating has no hint attribute or slot): KNOWN DEFECT (owner decision): WaInputBase declares this parameter for every form control and renders the attribute on every element, but this element's CEM does not declare it and the element ignores it, so the inherited parameter has no effect here. The fix is to move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change recorded for an owner decision rather than made in 3.12.0",
+    "extraRenderedAttributes:label": "WaInputBase.Label (wa-checkbox and wa-switch take their label as default-slot content, the wrapper's ChildContent): KNOWN DEFECT (owner decision): WaInputBase declares this parameter for every form control and renders the attribute on every element, but this element's CEM does not declare it and the element ignores it, so the inherited parameter has no effect here. The fix is to move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change recorded for an owner decision rather than made in 3.12.0",
+    "extraRenderedAttributes:maxlength": "WaInputBase.MaxLength: KNOWN DEFECT (owner decision): WaInputBase declares this parameter for every form control and renders the attribute on every element, but this element's CEM does not declare it and the element ignores it, so the inherited parameter has no effect here. The fix is to move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change recorded for an owner decision rather than made in 3.12.0",
+    "extraRenderedAttributes:minlength": "WaInputBase.MinLength: KNOWN DEFECT (owner decision): WaInputBase declares this parameter for every form control and renders the attribute on every element, but this element's CEM does not declare it and the element ignores it, so the inherited parameter has no effect here. The fix is to move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change recorded for an owner decision rather than made in 3.12.0",
+    "extraRenderedAttributes:readonly": "WaInputBase.Readonly: KNOWN DEFECT (owner decision): WaInputBase declares this parameter for every form control and renders the attribute on every element, but this element's CEM does not declare it and the element ignores it, so the inherited parameter has no effect here. The fix is to move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change recorded for an owner decision rather than made in 3.12.0",
+    "extraRenderedAttributes:required": "WaInputBase.Required (wa-slider declares no required): KNOWN DEFECT (owner decision): WaInputBase declares this parameter for every form control and renders the attribute on every element, but this element's CEM does not declare it and the element ignores it, so the inherited parameter has no effect here. The fix is to move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change recorded for an owner decision rather than made in 3.12.0",
+    "extraRenderedAttributes:wa-button:form": "wa-button is form-associated (WebAwesomeFormAssociatedElement), and the browser reads the form content attribute natively through ElementInternals; the base class's form setter writes it (setAttribute(\"form\", val), 3.12.0 source), but the CEM analyzer lists no form attribute. Covered by WaButtonFormAssociationTests",
+    "extraRenderedAttributes:wa-tab:active": "wa-tab's active is an @internal Lit property ({ type: Boolean, reflect: true }), so the CEM omits it, but wa-tab-group observes the active attribute of its tabs (3.12.0 tab and tab-group chunks); WaTab.Active renders it",
+    "unrenderedAttributes:wa-checkbox:value": "the CEM value is the form submission value; WaCheckbox.Value is the two-way bound checked state (rendered as checked), and the submission value is rendered as the constant 'True', like Blazor's InputCheckbox, so no parameter maps to it",
+    "unrenderedAttributes:wa-switch:value": "the CEM value is the form submission value; WaSwitch.Value is the two-way bound checked state (rendered as checked), and the submission value is rendered as the constant 'True', like Blazor's InputCheckbox, so no parameter maps to it",
+    "trueFalseAttributes:wa-combobox:spellcheck": "wa-combobox's spellcheck converter is fromAttribute: (value) => !value || value === \"false\" ? false : true (3.12.0 source), so an explicit false must render \"false\"; its default is false, so the CEM-default rule does not cover it",
+    "attributePrerequisites:wa-slider:min-value": "min-value is rendered only in range mode (Range = true); in single-value mode the element ignores it",
+    "attributePrerequisites:wa-slider:max-value": "max-value is rendered only in range mode (Range = true); in single-value mode the element ignores it",
+    "attributePrerequisites:wa-popup:arrow-padding": "rendered only with Arrow = true, since the element ignores it without an arrow",
+    "attributePrerequisites:wa-popup:arrow-placement": "rendered only with Arrow = true, since the element ignores it without an arrow",
+    "attributePrerequisites:wa-popup:auto-size-padding": "rendered only while AutoSize is set, since the element ignores it otherwise",
+    "attributePrerequisites:wa-popup:flip-fallback-placements": "rendered only with Flip = true, since the element ignores it otherwise",
+    "attributePrerequisites:wa-popup:flip-fallback-strategy": "rendered only with Flip = true, since the element ignores it otherwise",
+    "attributePrerequisites:wa-popup:flip-padding": "rendered only with Flip = true, since the element ignores it otherwise",
+    "attributePrerequisites:wa-popup:shift-padding": "rendered only with Shift = true, since the element ignores it otherwise",
+    "autoSizeBoundary": "wa-popup property typed Element | Element[] ({ type: Object }, no attribute option), so it can only be set as a JS property to live elements; not settable from an attribute or from Blazor (the former string AutoSizeBoundary rendered a nonexistent auto-size-boundary attribute and was removed in 3.12.0)",
+    "flipBoundary": "wa-popup property typed Element | Element[] ({ type: Object }, no attribute option), so it can only be set as a JS property to live elements; not settable from an attribute or from Blazor (the former string FlipBoundary rendered a nonexistent flip-boundary attribute and was removed in 3.12.0)",
+    "shiftBoundary": "wa-popup property typed Element | Element[] ({ type: Object }, no attribute option), so it can only be set as a JS property to live elements; not settable from an attribute or from Blazor (the former string ShiftBoundary rendered a nonexistent shift-boundary attribute and was removed in 3.12.0)",
     "unreachableEnumUnionValues:WaChartLegendPosition": "'center' comes from Chart.js' shared LayoutPosition type (a scale position); the Chart.js 4 legend documents only top, left, bottom, right and chartArea, so WaChartLegendPosition deliberately has no Center member",
     "unreachableEnumUnionValues:WaSize":"the long size spellings 'small'/'medium'/'large' are deprecated in WA 3.12.0 ('will be removed in the next major version'); WaSize.Small/Medium/Large emit the equivalent short forms 's'/'m'/'l' since 3.12.0, so the deprecated literals are intentionally unreachable",
     "unreachableUnionValues:wa-badge:attention": "'none' is the WA default (no animation); it is reached by leaving the nullable WaBadge.Attention unset, which omits the attribute, so WaAttention has no None member",

@@ -28,6 +28,11 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - `WaZoomableFrame.OnZoomChange` with `ZoomChangeEventArgs`
 - Removed parameters for attributes `wa-format-number` has never had: `WaFormatNumber.Notation`/`CompactDisplay`/`UseGrouping`, with the `WaNotation`/`WaCompactDisplay` enums. Also removed are the unused `WaDropdownTrigger`/`WaTriggerType` enums.
 - `WaRange.TooltipPlacement` is `WaTooltipSide?` (was `string?`).
+- Removed parameters that rendered an attribute their element doesn't have, so they did nothing (found by the new render-based attribute check):
+  - `WaRadio.Checked`: `wa-radio`'s checked state is internal (set by its group); use `WaRadioGroup` `@bind-Value`.
+  - `WaTab.Closable`: `wa-tab` has no `closable` since Web Awesome 3.0.
+  - `WaMutationObserver.Subtree` (the element always observes the subtree), `AttributeOldValue` and `CharacterDataOldValue` (use `AttrOldValue`/`CharDataOldValue`).
+  - `WaPopup.FlipBoundary`/`ShiftBoundary`/`AutoSizeBoundary`: Web Awesome takes live `Element` objects there, which no attribute can carry.
 
 ### Changed
 - `WaDropdownItem` gained `Href`, `Target`, `Rel` and `Download` (new in WA 3.12.0), for menu items that navigate or download.
@@ -35,6 +40,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - `WaTextArea` now derives from `WaInputBase<string?>` like the other text inputs. It keeps its members, gains `OnKeyDown`/`OnKeyUp`/`OnKeyPress`, and renders `Size`/`Appearance`/`Resize` with the correct values (`xs`/`xl`, `filled-outlined`).
 - `WaSize.Small`/`Medium`/`Large` render `s`/`m`/`l`. Web Awesome 3.12.0 deprecates the long forms for removal in its next major version.
 - Missing union values added: nine `WaIconAnimation` animations, `WaAnimationFill.Auto`, `WaInputType.DateTimeLocal`/`Time`, `WaCurrencyDisplay.NarrowSymbol`, `WaDisplay.Narrow` and `WaHourFormat.Auto`.
+- `WaRange` gained `AutoFocus`, `TooltipDistance`, `WithHint` and `WithLabel`: `wa-slider` attributes `WaSlider` exposed but `WaRange` didn't.
 - `WaChartLegendPosition.ChartArea` (`chartArea`): the Chart.js legend position inside the chart area was unreachable from C#.
 - Range-mode `WaSlider` no longer requires `@bind-Value`.
 - `WaRange` gained `OnInvalid` (`wa-invalid`), which `wa-slider` dispatches and `WaSlider` already exposed.
@@ -59,6 +65,8 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - `RegisterLucideAsync` pointed at the `lucide` package, which has no `icons/` folder (404); it now uses `lucide-static`.
   - `RegisterHeroiconsAsync` put `{variant}` in the path, which is empty unless `WaIcon.Variant` is set (`24//cog.svg`, 400); it now uses the outline set.
   - `RegisterFontAwesomeProAsync` registered an `fa-pro` library at a URL that serves no icons; it now calls Web Awesome's `setKitCode`, so the default library serves Pro icons, like `WebAwesomeOptions.FontAwesomeKitCode`. It never worked before, so no working code changes behaviour. Icons that referenced `Library="fa-pro"` should drop the `Library`.
+- **Numbers were rendered in the current culture.** Blazor formats a non-string attribute value with the current culture, so under cs-CZ `Distance="0.5"` rendered `distance="0,5"`, and negative numbers could get a U+2212 minus. Web Awesome can't parse either. About 40 number attributes were passed straight to `AddAttribute`, and `AddAttributeIfNotNull` used `ToString()`. Both now format with the invariant culture, through the new `AddNumberAttribute` and an invariant `AddAttributeIfNotNull`. Also fixed: `WaAnimation.Iterations`, `WaRelativeTime.Date` (its custom format used the culture's time separator and calendar), `WaNumberInput`'s value (`FormatValueAsString`, also pushed to the live `value` property) and the `value` of `WaRange`/`WaRating` (`BindConverter` with the current culture). `WaSlider`/`WaRange`/`WaRating` parse and format values as invariant JS numbers.
+- `WaMutationObserver.Attr="true"` rendered an empty `attr`, which watches no attributes; it now renders `attr="*"`. `AttributeFilter` rendered a nonexistent `attribute-filter`; it now sets `attr`.
 - `WaPopup.RepositionAsync` threw a `ReferenceError`. It called the global `eval` with `"arguments[0].reposition()"`, which runs in global scope, where `arguments` doesn't exist. It now invokes the element's `reposition()` through the interop module.
 - Packaging (issue #1): the license file in `src\Directory.Build.props` is resolved from the props file (`$(MSBuildThisFileDirectory)`) instead of `$(SolutionDir)`. A submodule build under a consumer's solution failed with NU5019/NU5030.
 
@@ -73,7 +81,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - New `CemEventCorroborationTests`: every CEM event must also be declared by the component's `@event` JSDoc and, for `wa-*` events, have an event class in `dist\events`. `Export-WaApiSurface.ps1` now records both (`jsDocEvents`, `declaredEventTypes`) in `expected-api-surface.json`, which was regenerated (additions only). The invented `wa-data-grid` `request` is allowlisted in `cemOnlyEvents`; the `wa-color-picker` popup events, which the JSDoc omits but the source dispatches, in `sourceVerifiedEvents`.
 - Type aliases are resolved (review H4): `Export-WaApiSurface.ps1` records each alias-typed attribute's union as `resolvedType`, from the release's `.d.ts` files and, for lib.dom/chart.js types (`PlaybackDirection`, `FillMode`, `ChartType`, `LayoutPosition`), the new curated `tools\upgrade\external-type-aliases.json`. `expected-api-surface.json` was regenerated (additions only). `EnumValueParityTests` now checks the 39 enum bindings it used to skip (the Pro date/time controls, `WaIcon.Animation`/`Canvas`, the chart `Type`/`LegendPosition`, `WaAnimation.Direction`/`Fill`) and resolves wrappers by rendered tag, so `WaRange` is covered too. An enum bound to an attribute that still resolves to no union fails unless allowlisted. `WaTooltip.Trigger` is checked token by token for every `WaTrigger` combination. Found: `WaChartLegendPosition` lacked `chartArea`.
 - `ElementMethodInvocationTests` scans all of `src\WebAwesome.Blazor` (it missed `Base\WaInputBase.cs`), reads nested generic calls (it skipped `WaDataGrid.GetVisibleRowsAsync`/`GetProcessedRowsAsync`), follows `WaVideo`/`WaVideoPlaylist`'s forwarding helper (twelve methods were never checked), resolves each file's element from the rendered tags instead of the first `OpenElement(0, "wa-…")`, fails when it cannot, and flags `extraElementMethods` entries nothing invokes.
-- Tests: 833 per TFM on net9.0 and net10.0, in both Debug and Release (was 627). Browser suite: 142 passed, 2 skipped. The skips are `pro-assets.spec.js` without an override, and WaDateInput, which is Pro-only on the free CDN; it was red and then green against the local 3.12.0 Pro dist.
+- Tests: 845 per TFM on net9.0 and net10.0, in both Debug and Release (was 627). Browser suite: 142 passed, 2 skipped. The skips are `pro-assets.spec.js` without an override, and WaDateInput, which is Pro-only on the free CDN; it was red and then green against the local 3.12.0 Pro dist.
 - Browser acceptance: the new `value-sync-binding.spec.js` and `number-value-binding.spec.js` were recorded red against the pre-fix wrappers (18 failed + 1 skipped, and 5 failed) and pass on the fixed build. The driving controls live on the Input/Textarea/Checkbox demo pages and on a harness page at `/testing/value-sync` (outside the component navigation, swept via `HARNESS_ROUTES`).
 - Boolean attribute emission: `AddBooleanAttribute` (present or absent) and `AddTrueFalseAttribute` (`"true"`/`"false"`) replace `ToString()` for `bool?` parameters. `AddAttributeIfNotNull` now rejects `bool`/`bool?` at compile time (`CS0619`), so the `"True"`/`"False"` defect class can't come back. New `BooleanAttributeEmissionTests` render each affected wrapper with `true`, `false` and `null`.
 - New `InteropModuleContractTests` (static):
@@ -81,6 +89,13 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - every export must be invoked, or be allowlisted with a reason (the list is empty)
   - apart from the module `import`, the library may invoke no global JS identifier
 - New browser spec `icon-library.spec.js` drives the new Icon Libraries and Default Icon Family sections of the Icon demo page. It checks that registered Lucide, Heroicons and Tabler icons draw, that the named mutator ran, that unregistering takes effect, and that the default family read from the page's own Web Awesome module follows the value set from .NET. Mutation runs failed it on a renamed export (`registerIconLibrary is not a function`, the original defect) and on an import of a different Web Awesome copy. The demo's `js/demo-icons.js` provides the mutator.
+- New render-based `RenderedAttributeParityTests` (review X3/H3/H6): every wrapper is rendered under a hostile culture (cs-CZ with the U+2212 minus and a '.' time separator), once per sample of each parameter: every enum member and `[Flags]` combination, `true`/`false`, a marker string, a fractional and a negative number, a date. The attributes on the root element are checked against the CEM of the rendered tag, so `WaRange` is covered:
+  - every attribute is declared by the element or is an HTML global attribute
+  - every value of a literal-union attribute (alias-resolved, or a token list) is in the union
+  - `false` renders nothing, or exactly `"false"` where the default is true or the converter reads it, and no value is `"True"`/`"False"`, except on string-typed attributes such as a checkbox's submitted value
+  - every CEM attribute has a parameter that renders it (replacing the name-only `ApiSurfaceParityTests.AllAttributes_AreExposedAsParameters`, which is retired)
+  - numbers and dates parse back with the invariant culture
+  It found the culture defect, the phantom and dead parameters above, and the four missing `WaRange` parameters. New allowlists, each with a reason and a staleness check: `extraRenderedAttributes`, `unrenderedAttributes`, `attributePrerequisites` (e.g. `arrow-padding` renders only with `Arrow`) and `trueFalseAttributes` (`wa-combobox` `spellcheck`). `RenderedWrapperCatalog.RenderRoots` renders the samples.
 - Event registrations for names no wrapper binds anymore were removed from the JS initializer (`wa-change`, `wa-initial-focus`, `wa-password-toggle`, `wa-password-visibility-change`, `wa-success`, `wa-tab-change`, `wa-tab-close`, `wa-zoom-change`).
 
 ### Public API
@@ -94,7 +109,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - the per-component enums and their `ToHtmlValue` overloads
   - the removed members and types, and the renumbered enum members
   - the four `WaDropdownItem` link parameters
-  - `WaChartLegendPosition.ChartArea`
+  - `WaChartLegendPosition.ChartArea`; the `WaRange` `AutoFocus`/`TooltipDistance`/`WithHint`/`WithLabel` parameters; the `FormatValueAsString` overrides of `WaNumberInput`, `WaSlider`, `WaRange` and `WaRating`; and the removed `WaRadio.Checked`, `WaTab.Closable`, `WaMutationObserver.Subtree`/`AttributeOldValue`/`CharacterDataOldValue` and `WaPopup` boundary parameters
   - `WebAwesomeJSInterop(IJSRuntime, WebAwesomeOptions)`, which DI picks when `AddWebAwesome` registered the options, and `WebAwesomeJSInterop.SetKitCodeAsync` (icon library fix)
   - `WaRange.OnInvalid`
 
@@ -106,6 +121,11 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - `wa-badge` `attention` `none` is reached by leaving `Attention` unset.
   - `wa-data-grid` `selectable` `''` is the bare-attribute form of `multiple`, which `WaDataGridSelectable.Multiple` emits.
 - `ignoredBoolUnionAttributes` and `undeclaredBoundEvents` (new lists): empty.
+- Render-check lists (new):
+  - `extraRenderedAttributes`: `wa-button` `form` (form-associated; the CEM omits it) and `wa-tab` `active` (an internal reflected property the tab group observes).
+  - **Known defect, recorded for an owner decision:** `WaInputBase` renders `readonly`, `required`, `minlength`, `maxlength`, `autocomplete`, `label` and `hint` on every form control. Thirteen elements declare some of these and ignore them, e.g. `maxlength` on `wa-checkbox` or `hint` on `wa-rating`, so the inherited parameters do nothing there. The entries are marked KNOWN DEFECT. Fixing it means moving the parameters from `WaInputBase` to the wrappers whose element supports them, which is a breaking change.
+  - `unrenderedAttributes`: `wa-checkbox`/`wa-switch` `value` (the constant submission value; `Value` is the bound checked state).
+  - `attributePrerequisites`: `wa-popup` arrow, flip, shift and auto-size options, and `wa-slider` `min-value`/`max-value` (range mode). The `wa-popup` `flipBoundary`/`shiftBoundary`/`autoSizeBoundary` properties are `ignoredAttributes`.
 - `tokenListAttributes` (new): `wa-tooltip` `trigger` (click, hover, focus, manual). `unresolvedEnumAttributes` (new): `wa-animation` `easing`, which takes any CSS easing function.
 - Event-binding lists (new, each entry with a reason and a staleness check): `nativeDomEvents` (`blur`, `click`, `focus`, `keydown`, `keypress`, `keyup`); `derivedEventCallbacks` for the callbacks raised from the value binding (`OnCheckedChange`, `OnValueChange`, `WaRange.OnMinValueChange`/`OnMaxValueChange`) and `WaTabGroup.OnTabChange` (raised from `wa-tab-show`); `unboundEventCallbacks` for `WaRating.OnInput`.
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -62,11 +63,11 @@ public class WaRating : WaInputBase<decimal>
         AddCommonAttributes(builder, 1);
 
         // Add rating-specific attributes
-        builder.AddAttribute(20, "max", Max);
-        builder.AddAttribute(21, "precision", Precision);
+        builder.AddNumberAttribute(20, "max", Max);
+        builder.AddNumberAttribute(21, "precision", Precision);
         builder.AddAttribute(22, "readonly", Readonly);
-        builder.AddAttribute(23, "value", BindConverter.FormatValue(CurrentValue));
-        builder.AddAttribute(24, "default-value", DefaultValue);
+        builder.AddNumberAttribute(23, "value", CurrentValue);
+        builder.AddNumberAttribute(24, "default-value", DefaultValue);
 
         // Add value binding; the element's live value is a JS number, which Blazor's built-in change reader cannot
         // carry, so the handler listens to the "numericchange" alias of the change event that delivers it as an
@@ -91,9 +92,16 @@ public class WaRating : WaInputBase<decimal>
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Formats with the invariant culture, the form <see cref="TryParseValueFromString"/> reads back (the base class would
+    /// use the current culture, e.g. "2,5").
+    /// </remarks>
+    protected override string? FormatValueAsString(decimal value) => value.ToString(CultureInfo.InvariantCulture);
+
+    /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out decimal result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        if (decimal.TryParse(value, out result))
+        if (ChangeEventArgsExtensions.TryParseJsNumber(value, out result))
         {
             validationErrorMessage = null;
             return true;

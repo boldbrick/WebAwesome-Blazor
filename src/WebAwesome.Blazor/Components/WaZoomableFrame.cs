@@ -168,7 +168,7 @@ public class WaZoomableFrame : ComponentBase
 
         // Add zoom attributes
         if (Zoom != 1.0)
-            builder.AddAttribute(20, "zoom", Zoom);
+            builder.AddNumberAttribute(20, "zoom", Zoom);
         builder.AddAttributeIfNotNullOrEmpty(21, "zoom-levels", ZoomLevels);
 
         // Add control attributes

@@ -159,7 +159,7 @@ public class WaIcon : ComponentBase
         builder.AddAttribute(17, "swap-opacity", SwapOpacity);
         builder.AddAttributeIfNotNull(18, "animation", Animation?.ToHtmlValue());
         builder.AddAttributeIfNotNull(19, "flip", Flip?.ToHtmlValue());
-        builder.AddAttribute(20, "rotate", Rotate);
+        builder.AddNumberAttribute(20, "rotate", Rotate);
         builder.AddAttributeIfNotNull(21, "canvas", Canvas?.ToHtmlValue());
 
         // Add event handlers

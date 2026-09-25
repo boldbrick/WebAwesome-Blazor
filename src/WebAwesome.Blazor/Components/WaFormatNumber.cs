@@ -109,7 +109,7 @@ public class WaFormatNumber : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttribute(4, "value", Value);
+        builder.AddNumberAttribute(4, "value", Value);
         builder.AddAttribute(5, "type", Type.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(6, "lang", Lang);
         builder.AddAttributeIfNotNullOrEmpty(7, "currency", Currency);

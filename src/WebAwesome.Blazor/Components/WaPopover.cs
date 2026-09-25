@@ -134,7 +134,7 @@ public class WaPopover : ComponentBase
             builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
         builder.AddAttribute(12, "open", Open);
         if (Distance != 8)
-            builder.AddAttribute(13, "distance", Distance);
+            builder.AddNumberAttribute(13, "distance", Distance);
         builder.AddAttribute(14, "without-arrow", WithoutArrow);
         builder.AddAttributeIfNotNull(15, "skidding", Skidding);
 

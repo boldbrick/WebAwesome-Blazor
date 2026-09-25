@@ -147,13 +147,13 @@ public class WaAnimation : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
         builder.AddAttributeIfNotNullOrEmpty(4, "name", Name);
         builder.AddAttribute(5, "play", Play);
-        builder.AddAttribute(6, "duration", Duration);
-        builder.AddAttribute(7, "delay", Delay);
+        builder.AddNumberAttribute(6, "duration", Duration);
+        builder.AddNumberAttribute(7, "delay", Delay);
         builder.AddAttribute(8, "direction", Direction.ToHtmlValue());
         builder.AddAttribute(9, "easing", Easing.ToHtmlValue());
-        builder.AddAttribute(10, "iterations", Iterations == decimal.MaxValue ? "Infinity" : Iterations.ToString());
+        builder.AddAttribute(10, "iterations", Iterations == decimal.MaxValue ? "Infinity" : RenderTreeBuilderExtensions.FormatInvariant(Iterations));
         builder.AddAttribute(11, "fill", Fill.ToHtmlValue());
-        builder.AddAttribute(12, "playback-rate", PlaybackRate);
+        builder.AddNumberAttribute(12, "playback-rate", PlaybackRate);
         builder.AddAttributeIfNotNull(13, "end-delay", EndDelay);
         builder.AddAttributeIfNotNull(14, "iteration-start", IterationStart);
 

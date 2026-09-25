@@ -132,7 +132,7 @@ public class WaSplitPanel : ComponentBase
         builder.AddAttributeIfNotNull(7, "primary", Primary?.ToHtmlValue());
         builder.AddAttribute(8, "disabled", Disabled);
         builder.AddAttributeIfNotNullOrEmpty(9, "snap", Snap);
-        builder.AddAttribute(10, "snap-threshold", SnapThreshold);
+        builder.AddNumberAttribute(10, "snap-threshold", SnapThreshold);
 
         // Add event handlers; the interop module's createEventArgs reads position and
         // position-in-pixels from the element, as the wa-reposition event carries no detail

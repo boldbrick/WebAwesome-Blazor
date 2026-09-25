@@ -73,7 +73,7 @@ public class WaFormatBytes : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttribute(4, "value", Value);
+        builder.AddNumberAttribute(4, "value", Value);
         builder.AddAttribute(5, "unit", Unit.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(6, "lang", Lang);
         builder.AddAttributeIfNotNull(7, "display", Display?.ToHtmlValue());

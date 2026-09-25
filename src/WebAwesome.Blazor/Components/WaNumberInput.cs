@@ -249,6 +249,13 @@ public class WaNumberInput : WaInputBase<decimal?>
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Formats with the invariant culture, the form the element's value attribute and live value property parse and
+    /// <see cref="TryParseValueFromString"/> reads back (the base class would use the current culture, e.g. "2,5").
+    /// </remarks>
+    protected override string? FormatValueAsString(decimal? value) => value?.ToString(CultureInfo.InvariantCulture);
+
+    /// <inheritdoc />
     protected override string? LiveValuePropertyName => "value";
 
     #endregion

@@ -81,7 +81,7 @@ public class WaProgressBar : ComponentBase
 
         // Add progress bar-specific attributes
         if (!Indeterminate)
-            builder.AddAttribute(10, "value", Value);
+            builder.AddNumberAttribute(10, "value", Value);
         builder.AddAttributeIfNotNullOrEmpty(11, "label", Label);
         builder.AddAttribute(12, "indeterminate", Indeterminate);
 

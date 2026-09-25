@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
@@ -105,7 +106,7 @@ public class WaRelativeTime : ComponentBase
         if (Date.HasValue)
         {
             // Convert DateTime to ISO 8601 string
-            builder.AddAttribute(10, "date", Date.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffK"));
+            builder.AddAttribute(10, "date", Date.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffK", CultureInfo.InvariantCulture));
         }
         else
         {

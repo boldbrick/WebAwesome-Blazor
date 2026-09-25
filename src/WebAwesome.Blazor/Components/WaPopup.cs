@@ -119,12 +119,6 @@ public class WaPopup : ComponentBase
     [Parameter] public string? FlipFallbackStrategy { get; set; } = "initial";
 
     /// <summary>
-    /// The clipping element(s) that overflow is checked relative to when flipping. By default, the boundary
-    /// includes overflow ancestors that will cause the element to be clipped.
-    /// </summary>
-    [Parameter] public string? FlipBoundary { get; set; }
-
-    /// <summary>
     /// The amount of padding, in pixels, to exceed before the flip behavior occurs.
     /// </summary>
     [Parameter] public double FlipPadding { get; set; } = 0;
@@ -134,12 +128,6 @@ public class WaPopup : ComponentBase
     /// Moves the popup along the axis to keep it in view when clipped.
     /// </summary>
     [Parameter] public bool Shift { get; set; }
-
-    /// <summary>
-    /// The clipping element(s) that overflow is checked relative to when shifting. By default, the boundary
-    /// includes overflow ancestors that will cause the element to be clipped.
-    /// </summary>
-    [Parameter] public string? ShiftBoundary { get; set; }
 
     /// <summary>
     /// The amount of padding, in pixels, to exceed before the shift behavior occurs.
@@ -153,12 +141,6 @@ public class WaPopup : ComponentBase
     /// <see cref="WaAutoSize.Both"/> both. <see cref="WaAutoSize.None"/> (the default) omits the auto-size attribute.
     /// </summary>
     [Parameter] public WaAutoSize AutoSize { get; set; } = WaAutoSize.None;
-
-    /// <summary>
-    /// The clipping element(s) that overflow is checked relative to when auto-sizing. By default, the
-    /// boundary includes overflow ancestors that will cause the element to be clipped.
-    /// </summary>
-    [Parameter] public string? AutoSizeBoundary { get; set; }
 
     /// <summary>
     /// The amount of padding, in pixels, to exceed before the auto-size behavior occurs.
@@ -229,9 +211,9 @@ public class WaPopup : ComponentBase
         builder.AddAttribute(11, "active", Active);
         builder.AddAttributeIfNotNullOrEmpty(12, "anchor", Anchor);
         if (Distance != 0)
-            builder.AddAttribute(13, "distance", Distance);
+            builder.AddNumberAttribute(13, "distance", Distance);
         if (Skidding != 0)
-            builder.AddAttribute(14, "skidding", Skidding);
+            builder.AddNumberAttribute(14, "skidding", Skidding);
 
         // Add arrow attributes
         if (Arrow)
@@ -240,7 +222,7 @@ public class WaPopup : ComponentBase
             if (ArrowPlacement != WaArrowPlacement.Anchor)
                 builder.AddAttribute(21, "arrow-placement", ArrowPlacement.ToHtmlValue());
             if (ArrowPadding != 10)
-                builder.AddAttribute(22, "arrow-padding", ArrowPadding);
+                builder.AddNumberAttribute(22, "arrow-padding", ArrowPadding);
         }
 
         // Add flip attributes
@@ -249,27 +231,24 @@ public class WaPopup : ComponentBase
             builder.AddAttribute(30, "flip", true);
             builder.AddAttributeIfNotNullOrEmpty(31, "flip-fallback-placements", FlipFallbackPlacements);
             builder.AddAttributeIfNotNullOrEmpty(32, "flip-fallback-strategy", FlipFallbackStrategy);
-            builder.AddAttributeIfNotNullOrEmpty(33, "flip-boundary", FlipBoundary);
             if (FlipPadding != 0)
-                builder.AddAttribute(34, "flip-padding", FlipPadding);
+                builder.AddNumberAttribute(34, "flip-padding", FlipPadding);
         }
 
         // Add shift attributes
         if (Shift)
         {
             builder.AddAttribute(40, "shift", true);
-            builder.AddAttributeIfNotNullOrEmpty(41, "shift-boundary", ShiftBoundary);
             if (ShiftPadding != 0)
-                builder.AddAttribute(42, "shift-padding", ShiftPadding);
+                builder.AddNumberAttribute(42, "shift-padding", ShiftPadding);
         }
 
         // Add auto-size attributes
         if (AutoSize != WaAutoSize.None)
         {
             builder.AddAttribute(50, "auto-size", AutoSize.ToHtmlValue());
-            builder.AddAttributeIfNotNullOrEmpty(51, "auto-size-boundary", AutoSizeBoundary);
             if (AutoSizePadding != 0)
-                builder.AddAttribute(52, "auto-size-padding", AutoSizePadding);
+                builder.AddNumberAttribute(52, "auto-size-padding", AutoSizePadding);
         }
 
         // Add sync attributes

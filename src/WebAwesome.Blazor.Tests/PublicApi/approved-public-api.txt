@@ -2338,13 +2338,9 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? AttributeFilter { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public bool AttributeOldValue { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public bool CharData { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool CharDataOldValue { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool CharacterDataOldValue { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2360,8 +2356,6 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.MutationEventArgs> OnMutation { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Subtree { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task DisconnectAsync() { }
         public System.Threading.Tasks.Task ReconnectAsync() { }
@@ -2415,6 +2409,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override string? FormatValueAsString(decimal? value) { }
         public System.Threading.Tasks.Task SelectAsync() { }
         public System.Threading.Tasks.Task StepDownAsync() { }
         public System.Threading.Tasks.Task StepUpAsync() { }
@@ -2745,8 +2740,6 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaAutoSize AutoSize { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? AutoSizeBoundary { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public double AutoSizePadding { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Boundary { get; set; }
@@ -2759,8 +2752,6 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Flip { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? FlipBoundary { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? FlipFallbackPlacements { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2775,8 +2766,6 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaPlacement Placement { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Shift { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? ShiftBoundary { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public double ShiftPadding { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2878,8 +2867,6 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaRadioAppearance? Appearance { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public bool Checked { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
@@ -2973,6 +2960,8 @@ namespace WebAwesome.Blazor.Components
     {
         public WaRange() { }
         [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public decimal? IndicatorOffset { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2998,12 +2987,19 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal Step { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public int? TooltipDistance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaTooltipSide? TooltipPlacement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithMarkers { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithTooltip { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        protected override string? FormatValueAsString(decimal value) { }
         protected override object? GetLiveValue() { }
         public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
         protected override bool TryParseValueFromString(string? value, out decimal result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
@@ -3024,6 +3020,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override string? FormatValueAsString(decimal value) { }
         public System.Threading.Tasks.Task SetSymbolFunctionAsync(string jsFunction) { }
         protected override bool TryParseValueFromString(string? value, out decimal result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
@@ -3261,6 +3258,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override string? FormatValueAsString(decimal? value) { }
         protected override object? GetLiveValue() { }
         public override System.Threading.Tasks.Task SetParametersAsync(Microsoft.AspNetCore.Components.ParameterView parameters) { }
         public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
@@ -3404,8 +3402,6 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Closable { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }

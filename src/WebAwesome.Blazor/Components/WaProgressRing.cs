@@ -73,7 +73,7 @@ public class WaProgressRing : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttribute(4, "value", Value);
+        builder.AddNumberAttribute(4, "value", Value);
         builder.AddAttributeIfNotNullOrEmpty(5, "label", Label);
 
         // Add element reference capture

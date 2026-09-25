@@ -55,7 +55,8 @@ public class WaMutationObserver : ComponentBase
 
     // MutationObserver options
     /// <summary>
-    /// Watches for changes to attributes on the observed element.
+    /// Watches for changes to all attributes (the element's attr="*"). To watch only some attributes, set
+    /// <see cref="AttributeFilter"/> instead, which takes precedence.
     /// </summary>
     [Parameter] public bool Attr { get; set; }
 
@@ -70,23 +71,8 @@ public class WaMutationObserver : ComponentBase
     [Parameter] public bool CharData { get; set; }
 
     /// <summary>
-    /// Extends monitoring to the entire subtree of the observed element, not just its immediate children.
-    /// </summary>
-    [Parameter] public bool Subtree { get; set; }
-
-    /// <summary>
-    /// Indicates whether the attribute's previous value should be recorded when monitoring changes.
-    /// </summary>
-    [Parameter] public bool AttributeOldValue { get; set; }
-
-    /// <summary>
-    /// Indicates whether the previous value of the node's text should be recorded.
-    /// </summary>
-    [Parameter] public bool CharacterDataOldValue { get; set; }
-
-    /// <summary>
-    /// Restricts attribute change notifications to the specified space-separated list of attribute names,
-    /// e.g. <c>class id title</c>. Use <c>*</c> to watch all attributes.
+    /// Watches for changes to the attributes in this space-separated list of names, e.g. <c>class id title</c>
+    /// (the element's attr attribute); <c>*</c> watches all attributes. Takes precedence over <see cref="Attr"/>.
     /// </summary>
     [Parameter] public string? AttributeFilter { get; set; }
 
@@ -138,13 +124,10 @@ public class WaMutationObserver : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add mutation observer attributes
-        builder.AddAttribute(10, "attr", Attr);
+        // attr lists the attributes to watch; the element watches none for an empty value, so it cannot be a bare attribute
+        builder.AddAttributeIfNotNullOrEmpty(10, "attr", string.IsNullOrEmpty(AttributeFilter) ? (Attr ? AllAttributesFilter : null) : AttributeFilter);
         builder.AddAttribute(11, "child-list", ChildList);
         builder.AddAttribute(12, "char-data", CharData);
-        builder.AddAttribute(13, "subtree", Subtree);
-        builder.AddAttribute(14, "attribute-old-value", AttributeOldValue);
-        builder.AddAttribute(15, "character-data-old-value", CharacterDataOldValue);
-        builder.AddAttributeIfNotNullOrEmpty(16, "attribute-filter", AttributeFilter);
         builder.AddAttribute(17, "attr-old-value", AttrOldValue);
         builder.AddAttribute(18, "disabled", Disabled);
         builder.AddAttribute(19, "char-data-old-value", CharDataOldValue);
@@ -201,6 +184,9 @@ public class WaMutationObserver : ComponentBase
     #endregion
 
     #region ------ Private Methods ------
+
+    // the attr value that watches every attribute
+    private const string AllAttributesFilter = "*";
 
     /// <summary>
     /// Gets the CSS class string combining user classes

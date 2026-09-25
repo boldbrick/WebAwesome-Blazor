@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -55,6 +56,41 @@ internal static class RenderedWrapperCatalog
     }
 
     /// <summary>
+    /// The public, concrete wrapper component types of the wrapper assembly, sorted by name.
+    /// </summary>
+    public static IReadOnlyList<Type> WrapperTypes => wrapperTypes.Value;
+
+    /// <summary>
+    /// Renders one component type once per parameter set, under the given culture, and records the tag and the
+    /// non-handler attributes of its root element exactly as the render tree holds them (Blazor converts every
+    /// attribute value to a string with the current culture when the frame is built, so the values are what the
+    /// browser receives).
+    /// </summary>
+    /// <param name="componentType">Concrete component type</param>
+    /// <param name="parameterSets">Parameters to set in each render, in addition to the required ones</param>
+    /// <param name="culture">Current culture and UI culture during the renders</param>
+    /// <returns>One observation per parameter set, in order</returns>
+    public static IReadOnlyList<RenderedRoot> RenderRoots(Type componentType, IReadOnlyList<IReadOnlyList<(string Name, object? Value)>> parameterSets,
+        CultureInfo culture)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        var previousUiCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentCulture = culture;
+        CultureInfo.CurrentUICulture = culture;
+
+        try
+        {
+            using var context = CreateContext();
+            return parameterSets.Select(parameters => RenderAttributes(context, componentType, parameters)).ToList();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+            CultureInfo.CurrentUICulture = previousUiCulture;
+        }
+    }
+
+    /// <summary>
     /// Enumerates the public instance [Parameter] properties of type EventCallback or EventCallback&lt;T&gt;.
     /// </summary>
     /// <param name="componentType">Component type</param>
@@ -86,15 +122,80 @@ internal static class RenderedWrapperCatalog
     private const string CurrentFramesMethodName = "GetCurrentRenderTreeFrames";
     private const string ValueExpressionParameter = "ValueExpression";
 
+    private static readonly Lazy<IReadOnlyList<Type>> wrapperTypes = new(() => ApiParityData.WrapperAssembly.GetTypes()
+        .Where(IsWrapperComponent)
+        .OrderBy(t => t.Name, StringComparer.Ordinal)
+        .ToList());
+
     private static readonly Lazy<IReadOnlyList<RenderedWrapper>> all = new(ObserveAll);
 
     private static IReadOnlyList<RenderedWrapper> ObserveAll()
     {
-        return ApiParityData.WrapperAssembly.GetTypes()
-            .Where(IsWrapperComponent)
-            .OrderBy(t => t.Name, StringComparer.Ordinal)
-            .Select(Observe)
-            .ToList();
+        return WrapperTypes.Select(Observe).ToList();
+    }
+
+    private static RenderedRoot RenderAttributes(BunitContext context, Type componentType, IReadOnlyList<(string Name, object? Value)> parameters)
+    {
+        try
+        {
+            var rendered = context.Render(builder =>
+            {
+                var sequence = 0;
+                builder.OpenComponent(sequence++, componentType);
+
+                foreach (var (name, value) in RequiredParameters(componentType))
+                    builder.AddComponentParameter(sequence++, name, value);
+
+                foreach (var (name, value) in parameters)
+                    builder.AddComponentParameter(sequence++, name, value);
+
+                builder.CloseComponent();
+            });
+
+            var wrapperId = FirstComponentId(CurrentFrames(context.Renderer, rendered.ComponentId));
+            return wrapperId == null
+                ? new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), null)
+                : ReadRootAttributes(context.Renderer, wrapperId.Value);
+        }
+        catch (Exception ex)
+        {
+            return new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), $"{ex.GetType().Name}: {ex.Message}");
+        }
+    }
+
+    // the attributes of the root element (followed into a child component rendered first, like ObserveRootElement);
+    // a bool true attribute renders as present without a value, handlers are left out
+    private static RenderedRoot ReadRootAttributes(BunitRenderer renderer, int componentId)
+    {
+        var frames = CurrentFrames(renderer, componentId);
+
+        for (var i = 0; i < frames.Count; i++)
+        {
+            var frame = frames.Array[i];
+
+            if (frame.FrameType == RenderTreeFrameType.Component)
+                return ReadRootAttributes(renderer, frame.ComponentId);
+
+            if (frame.FrameType != RenderTreeFrameType.Element) continue;
+
+            var attributes = new Dictionary<string, string>(StringComparer.Ordinal);
+            for (var j = i + 1; j < frames.Count && frames.Array[j].FrameType == RenderTreeFrameType.Attribute; j++)
+            {
+                var attribute = frames.Array[j];
+                if (attribute.AttributeEventHandlerId != 0 || IsHandlerValue(attribute.AttributeValue)) continue;
+
+                attributes[attribute.AttributeName] = attribute.AttributeValue switch
+                {
+                    bool => string.Empty,
+                    string text => text,
+                    var other => Convert.ToString(other, CultureInfo.CurrentCulture) ?? string.Empty
+                };
+            }
+
+            return new RenderedRoot(frame.ElementName, attributes, null);
+        }
+
+        return new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), null);
     }
 
     private static bool IsWrapperComponent(Type type)
@@ -290,6 +391,14 @@ internal sealed record RenderedWrapper(
     /// </summary>
     public IEnumerable<string> AllHandlers => BaselineHandlers.Concat(Callbacks.SelectMany(c => c.AddedHandlers)).Distinct(StringComparer.Ordinal);
 }
+
+/// <summary>
+/// The root element of one render of a wrapper and its attributes.
+/// </summary>
+/// <param name="Tag">Local name of the rendered root element, or null when nothing (or no element) was rendered</param>
+/// <param name="Attributes">Non-handler attributes of the root element; a present boolean attribute has an empty value</param>
+/// <param name="Error">The render exception, or null when the component rendered</param>
+internal sealed record RenderedRoot(string? Tag, IReadOnlyDictionary<string, string> Attributes, string? Error);
 
 /// <summary>
 /// The event handlers one EventCallback parameter added to the root element when set to a no-op delegate.

@@ -138,9 +138,9 @@ public class WaDropdown : ComponentBase
         if (Placement != WaPlacement.BottomStart)
             builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
         if (Distance != 8)
-            builder.AddAttribute(12, "distance", Distance);
+            builder.AddNumberAttribute(12, "distance", Distance);
         if (Skidding != 0)
-            builder.AddAttribute(13, "skidding", Skidding);
+            builder.AddNumberAttribute(13, "skidding", Skidding);
         builder.AddAttributeIfNotNull(14, "size", Size?.ToHtmlValue());
 
         // Add event handlers

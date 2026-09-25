@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -52,9 +53,31 @@ public class WaRange : WaInputBase<decimal>
     [Parameter] public WaTooltipSide? TooltipPlacement { get; set; }
 
     /// <summary>
+    /// The distance in pixels from which to offset the tooltip from the slider's thumb.
+    /// </summary>
+    [Parameter] public int? TooltipDistance { get; set; }
+
+    /// <summary>
     /// The starting value from which to draw the slider's fill, which is based on its current value.
     /// </summary>
     [Parameter] public decimal? IndicatorOffset { get; set; }
+
+    /// <summary>
+    /// Automatically focuses the slider when the page loads.
+    /// </summary>
+    [Parameter] public bool AutoFocus { get; set; }
+
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting in a hint element so the server-rendered markup includes
+    /// the hint before the component hydrates on the client.
+    /// </summary>
+    [Parameter] public bool WithHint { get; set; }
+
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting in a label element so the server-rendered markup includes
+    /// the label before the component hydrates on the client.
+    /// </summary>
+    [Parameter] public bool WithLabel { get; set; }
 
     // Range selection (dual thumb)
     /// <summary>
@@ -115,14 +138,16 @@ public class WaRange : WaInputBase<decimal>
         AddCommonAttributes(builder, 1);
 
         // Add slider-specific attributes
-        builder.AddAttribute(20, "min", Min);
-        builder.AddAttribute(21, "max", Max);
-        builder.AddAttribute(22, "step", Step);
+        builder.AddNumberAttribute(20, "min", Min);
+        builder.AddNumberAttribute(21, "max", Max);
+        builder.AddNumberAttribute(22, "step", Step);
         builder.AddAttributeIfNotNull(23, "orientation", Orientation?.ToHtmlValue());
         builder.AddAttribute(24, "with-tooltip", WithTooltip);
         builder.AddAttribute(25, "with-markers", WithMarkers);
         builder.AddAttributeIfNotNull(26, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
         builder.AddAttributeIfNotNull(27, "indicator-offset", IndicatorOffset);
+        builder.AddAttributeIfNotNull(28, "tooltip-distance", TooltipDistance);
+        builder.AddAttribute(29, "autofocus", AutoFocus);
 
         // Range selection attributes
         builder.AddAttribute(30, "range", Range);
@@ -133,8 +158,12 @@ public class WaRange : WaInputBase<decimal>
         }
         else
         {
-            builder.AddAttribute(33, "value", BindConverter.FormatValue(CurrentValue));
+            builder.AddNumberAttribute(33, "value", CurrentValue);
         }
+
+        // SSR hints for slotted label and hint content
+        builder.AddAttribute(36, "with-hint", WithHint);
+        builder.AddAttribute(37, "with-label", WithLabel);
 
         // Add value binding; the element's live value is a JS number, which Blazor's built-in change reader cannot
         // carry, so the handlers listen to the "numericchange" alias of the change event that delivers it as an
@@ -175,9 +204,16 @@ public class WaRange : WaInputBase<decimal>
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Formats with the invariant culture, the form <see cref="TryParseValueFromString"/> reads back (the base class would
+    /// use the current culture, e.g. "2,5").
+    /// </remarks>
+    protected override string? FormatValueAsString(decimal value) => value.ToString(CultureInfo.InvariantCulture);
+
+    /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out decimal result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        if (decimal.TryParse(value, out result))
+        if (ChangeEventArgsExtensions.TryParseJsNumber(value, out result))
         {
             validationErrorMessage = null;
             return true;

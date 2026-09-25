@@ -178,7 +178,7 @@ public class WaCopyButton : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(7, "copy-label", CopyLabel);
         builder.AddAttributeIfNotNullOrEmpty(8, "success-label", SuccessLabel);
         builder.AddAttributeIfNotNullOrEmpty(9, "error-label", ErrorLabel);
-        builder.AddAttribute(10, "feedback-duration", FeedbackDuration);
+        builder.AddNumberAttribute(10, "feedback-duration", FeedbackDuration);
         builder.AddAttributeIfNotNull(11, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
         builder.AddAttribute(12, "tooltip", Tooltip.ToHtmlValue());
 

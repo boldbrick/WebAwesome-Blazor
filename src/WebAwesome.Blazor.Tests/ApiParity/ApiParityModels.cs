@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace WebAwesome.Blazor.Tests.ApiParity;
@@ -236,6 +237,39 @@ public class ComponentParityConfig
     /// </summary>
     [JsonPropertyName("unresolvedEnumAttributes")]
     public List<string> UnresolvedEnumAttributes { get; set; } = new();
+
+    /// <summary>
+    /// Attributes a wrapper deliberately renders on the element although neither the element's CEM entry nor the
+    /// HTML global attributes declare them. Every entry needs an ignoreReasons entry keyed
+    /// "extraRenderedAttributes:&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("extraRenderedAttributes")]
+    public List<string> ExtraRenderedAttributes { get; set; } = new();
+
+    /// <summary>
+    /// CEM attributes the render check cannot see rendered from their parameter (e.g. one emitted only together
+    /// with another parameter, or a parameter type it does not sample). Every entry needs an ignoreReasons entry
+    /// keyed "unrenderedAttributes:&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("unrenderedAttributes")]
+    public List<string> UnrenderedAttributes { get; set; } = new();
+
+    /// <summary>
+    /// CEM attributes the wrapper renders only while other parameters have given values (e.g. arrow-padding only
+    /// with Arrow = true), mapped to those parameters and values; the render check sets them together with the
+    /// attribute's own parameter. Every entry needs an ignoreReasons entry keyed
+    /// "attributePrerequisites:&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("attributePrerequisites")]
+    public Dictionary<string, Dictionary<string, JsonElement>> AttributePrerequisites { get; set; } = new();
+
+    /// <summary>
+    /// Boolean CEM attributes whose Web Awesome converter reads the literal "true"/"false" although the CEM default
+    /// is not true (e.g. wa-combobox spellcheck), so false must render exactly "false". Every entry needs an
+    /// ignoreReasons entry keyed "trueFalseAttributes:&lt;tag&gt;:&lt;attribute&gt;" citing the converter.
+    /// </summary>
+    [JsonPropertyName("trueFalseAttributes")]
+    public List<string> TrueFalseAttributes { get; set; } = new();
 
     /// <summary>
     /// wa-* events the wrapper deliberately binds although the element's CEM entry does not declare them. Every
