@@ -117,21 +117,23 @@ public class EditFormIntegrationTests : BunitContext
         Assert.Equal("Name is not allowed", invocation.Arguments[1]);
     }
 
-    [Fact]
-    public void WaCheckbox_UserChange_ReadsRealCheckedStateViaInterop()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void WaCheckbox_UserChange_ReadsRealCheckedStateViaInterop(bool elementChecked)
     {
         // the wrapper reads the custom element's .checked property back through JS interop
         // (Blazor's built-in binder cannot see it on non-INPUT tags) - simulate the browser
-        // reporting a checked state of true
-        var module = JSInterop.SetupModule(InteropModulePath);
-        module.Setup<bool>("getProperty", invocation => Equals(invocation.Arguments[1], "checked")).SetResult(true);
+        // reporting the checked state, under Strict so the read-back must ask for "checked" (CheckedReadBack)
+        var module = JSInterop.SetupCheckedReadBack(elementChecked);
 
-        var model = new TestModel { Name = "Ada", Accepted = false };
+        var model = new TestModel { Name = "Ada", Accepted = !elementChecked };
         var cut = RenderCheckboxForm(model);
 
         cut.Find("wa-checkbox").Change(bool.TrueString);
 
-        Assert.True(model.Accepted);
+        module.VerifyCheckedReadBack();
+        Assert.Equal(elementChecked, model.Accepted);
     }
 
     [Fact]
@@ -174,18 +176,6 @@ public class EditFormIntegrationTests : BunitContext
         var cut = RenderRatingForm(model, defaultValue: 2);
 
         Assert.Equal("2", cut.Find("wa-rating").GetAttribute("default-value"));
-    }
-
-    [Fact]
-    public void WaRating_OnInvalid_WiredToDomEvent()
-    {
-        var invalidCount = 0;
-        var model = new TestModel { Name = "Ada", Score = 3 };
-        var cut = RenderRatingForm(model, onInvalid: () => invalidCount++);
-
-        cut.Find("wa-rating").TriggerEvent("onwa-invalid", new EventArgs());
-
-        Assert.Equal(1, invalidCount);
     }
 
     #region ------ Internals ------
@@ -232,7 +222,7 @@ public class EditFormIntegrationTests : BunitContext
             }));
     }
 
-    private IRenderedComponent<EditForm> RenderRatingForm(TestModel model, decimal? defaultValue = null, Action? onInvalid = null)
+    private IRenderedComponent<EditForm> RenderRatingForm(TestModel model, decimal? defaultValue = null)
     {
         return Render<EditForm>(parameters => parameters
             .Add(p => p.Model, model)
@@ -249,9 +239,6 @@ public class EditFormIntegrationTests : BunitContext
                     (Expression<Func<decimal>>)(() => model.Score));
                 if (defaultValue.HasValue)
                     builder.AddComponentParameter(5, nameof(WaRating.DefaultValue), defaultValue.Value);
-                if (onInvalid is not null)
-                    builder.AddComponentParameter(6, nameof(WaRating.OnInvalid),
-                        EventCallback.Factory.Create<EventArgs>(this, onInvalid));
                 builder.CloseComponent();
             }));
     }

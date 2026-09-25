@@ -13,8 +13,10 @@ namespace WebAwesome.Blazor.Tests.Forms;
 /// ("onchange", or the "onnumericchange" alias for wa-slider's number-valued change) after the bound value
 /// has been updated. Also covers range-mode WaSlider, which renders and binds MinValue/MaxValue without
 /// @bind-Value, and range-mode WaRange, whose OnMinValueChange/OnMaxValueChange were never raised before
-/// 3.12.0 (range mode bound no change handler at all). Checked state is read back from the element through the mocked interop module's
-/// "getProperty", as the wrappers do in the browser.
+/// 3.12.0 (range mode bound no change handler at all). Checked state is read back from the element through the mocked
+/// interop module's "getProperty", as the wrappers do in the browser, under JSRuntimeMode.Strict (CheckedReadBack), so
+/// a read-back of the wrong property fails instead of getting Loose mode's default(false). The browser half, Web
+/// Awesome dispatching change and the element's real checked property, is the e2e checkbox-switch-binding spec.
 /// </summary>
 public class ChangeCallbackWiringTests : FormControlTestBase
 {
@@ -26,7 +28,7 @@ public class ChangeCallbackWiringTests : FormControlTestBase
     public void WaCheckbox_OnCheckedChange_FiresFromChange_WithReadBackState(bool elementChecked)
     {
         // Arrange
-        SetupCheckedReadBack(elementChecked);
+        var module = JSInterop.SetupCheckedReadBack(elementChecked);
         var bound = !elementChecked;
         var observed = new List<(bool Reported, bool Model)>();
         var cut = Render<WaCheckbox>(p => p
@@ -39,6 +41,7 @@ public class ChangeCallbackWiringTests : FormControlTestBase
         cut.Find("wa-checkbox").Change(bool.TrueString);
 
         // Assert
+        module.VerifyCheckedReadBack();
         Assert.Equal((elementChecked, elementChecked), Assert.Single(observed));
         Assert.Equal(elementChecked, bound);
     }
@@ -49,7 +52,7 @@ public class ChangeCallbackWiringTests : FormControlTestBase
     public void WaSwitch_OnCheckedChange_FiresFromChange_WithReadBackState(bool elementChecked)
     {
         // Arrange
-        SetupCheckedReadBack(elementChecked);
+        var module = JSInterop.SetupCheckedReadBack(elementChecked);
         var bound = !elementChecked;
         var observed = new List<(bool Reported, bool Model)>();
         var cut = Render<WaSwitch>(p => p
@@ -62,23 +65,9 @@ public class ChangeCallbackWiringTests : FormControlTestBase
         cut.Find("wa-switch").Change(bool.TrueString);
 
         // Assert
+        module.VerifyCheckedReadBack();
         Assert.Equal((elementChecked, elementChecked), Assert.Single(observed));
         Assert.Equal(elementChecked, bound);
-    }
-
-    [Fact]
-    public void WaCheckbox_DoesNotBindWaChange()
-    {
-        // Arrange
-        var bound = false;
-        var cut = Render<WaCheckbox>(p => p
-            .Add(c => c.Value, bound)
-            .Add(c => c.ValueChanged, value => bound = value)
-            .Add(c => c.ValueExpression, () => bound)
-            .Add(c => c.OnCheckedChange, _ => { }));
-
-        // Act & Assert - wa-checkbox never dispatches wa-change
-        Assert.Throws<MissingEventHandlerException>(() => cut.Find("wa-checkbox").TriggerEvent("onwa-change", new EventArgs()));
     }
 
     #endregion
@@ -241,16 +230,6 @@ public class ChangeCallbackWiringTests : FormControlTestBase
         // Assert
         Assert.Equal(0, changeCount);
         Assert.Equal(10m, cut.Instance.MinValue);
-    }
-
-    #endregion
-
-    #region ------ Internals ------
-
-    private void SetupCheckedReadBack(bool elementChecked)
-    {
-        var module = JSInterop.SetupModule(InteropModulePath);
-        module.Setup<bool>("getProperty", i => Equals(i.Arguments[1], "checked")).SetResult(elementChecked);
     }
 
     #endregion

@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using AngleSharp.Dom;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -28,6 +29,17 @@ public abstract class FormControlTestBase : BunitContext
     {
         Services.AddScoped<WebAwesomeJSInterop>();
         JSInterop.Mode = JSRuntimeMode.Loose;
+    }
+
+    /// <summary>
+    /// Returns the CSS classes of an element as separate tokens, so a check for "valid" cannot be satisfied by
+    /// "invalid" (a substring check on the class attribute can).
+    /// </summary>
+    /// <param name="element">The element</param>
+    /// <returns>The class tokens, empty when the element has no class attribute</returns>
+    protected static string[] ClassesOf(IElement element)
+    {
+        return (element.GetAttribute("class") ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries);
     }
 
     /// <summary>
