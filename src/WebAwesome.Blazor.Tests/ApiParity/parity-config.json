@@ -183,7 +183,8 @@
     "wa-date-input": {
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
-      "ignoredMethods": [ "formStateRestoreCallback" ]
+      "ignoredMethods": [ "formStateRestoreCallback" ],
+      "unreachableSlots": [ "day-YYYY-MM-DD" ]
     },
     "wa-time-input": {
       "ignoredAttributes": [ "name", "custom-error" ],
@@ -348,6 +349,7 @@
     "ignoredAttributes:wa-color-picker:custom-error": "WaColorPicker sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
     "ignoredEvents:wa-color-picker:change": "WaColorPicker binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
     "ignoredMethods:wa-color-picker:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-color-picker to restore or autofill its state; not consumer API and not callable from Blazor",
+    "unreachableSlots:wa-date-input:day-YYYY-MM-DD": "the CEM entry stands for a family of slots whose names are dates (day-2026-05-25, forwarded to the inner wa-date-picker), which no fixed RenderFragment parameter can name; exposing it needs a date-keyed API of its own (e.g. a map of DateOnly to fragment, also for wa-date-picker, whose CEM omits the same slots) - an owner decision, recorded as a follow-up",
     "sourceVerifiedEvents:wa-color-picker:wa-after-hide": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
     "sourceVerifiedEvents:wa-color-picker:wa-after-show": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
     "sourceVerifiedEvents:wa-color-picker:wa-hide": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",

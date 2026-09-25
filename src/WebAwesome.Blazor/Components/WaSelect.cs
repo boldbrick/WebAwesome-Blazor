@@ -23,16 +23,26 @@ public class WaSelect : WaInputBase<string?>
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
     /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupLabel { get; set; }
+
+    /// <summary>
+    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -166,6 +176,16 @@ public class WaSelect : WaInputBase<string?>
     /// </summary>
     [Parameter] public string? EndIconName { get; set; }
 
+    /// <summary>
+    /// An icon to use in lieu of the default clear icon (see <see cref="WithClear"/>), rendered into the element's "clear-icon" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? ClearIconContent { get; set; }
+
+    /// <summary>
+    /// The icon to show when the control is expanded and collapsed, rendered into the element's "expand-icon" slot; it rotates on open and close.
+    /// </summary>
+    [Parameter] public RenderFragment? ExpandIconContent { get; set; }
+
     #endregion
 
     #region ------ JavaScript Interop Properties ------
@@ -274,8 +294,26 @@ public class WaSelect : WaInputBase<string?>
             builder.AddContent(70, ChildContent);
         }
 
+        // Add clear-icon slot content
+        if (ClearIconContent is not null)
+        {
+            builder.OpenElement(110, "span");
+            builder.AddAttribute(111, "slot", "clear-icon");
+            builder.AddContent(112, ClearIconContent);
+            builder.CloseElement();
+        }
+
+        // Add expand-icon slot content
+        if (ExpandIconContent is not null)
+        {
+            builder.OpenElement(115, "span");
+            builder.AddAttribute(116, "slot", "expand-icon");
+            builder.AddContent(117, ExpandIconContent);
+            builder.CloseElement();
+        }
+
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 80);
+        AddLabelAndHintSlots(builder, 80, MarkupLabel, MarkupHint);
 
         builder.CloseElement();
     }

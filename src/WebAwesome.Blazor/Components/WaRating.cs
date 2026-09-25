@@ -32,8 +32,7 @@ public class WaRating : WaInputBase<decimal>
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
-    /// precedence when set.
+    /// Plain-text label rendered via the element's "label" attribute (wa-rating has no label slot).
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
@@ -108,9 +107,6 @@ public class WaRating : WaInputBase<decimal>
 
         // Add element reference capture
         builder.AddElementReferenceCapture(60, __ratingReference => Element = __ratingReference);
-
-        // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70);
 
         builder.CloseElement();
     }

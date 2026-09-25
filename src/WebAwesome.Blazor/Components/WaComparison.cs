@@ -58,11 +58,6 @@ public class WaComparison : ComponentBase
     #region ------ Content ------
 
     /// <summary>
-    /// The main comparison content (default slot).
-    /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    /// <summary>
     /// The before content, often an <c>&lt;img&gt;</c> or <c>&lt;svg&gt;</c> element.
     /// </summary>
     [Parameter] public RenderFragment? BeforeContent { get; set; }
@@ -125,12 +120,6 @@ public class WaComparison : ComponentBase
             builder.AddAttribute(61, "slot", "handle");
             builder.AddContent(62, HandleContent);
             builder.CloseElement();
-        }
-
-        // Add main content
-        if (ChildContent is not null)
-        {
-            builder.AddContent(70, ChildContent);
         }
 
         builder.CloseElement();

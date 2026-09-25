@@ -115,6 +115,12 @@ public class WaCard : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? MediaContent { get; set; }
 
+    /// <summary>
+    /// An optional actions section rendered at the end of a horizontal card (see <see cref="Orientation"/>), in the
+    /// element's "actions" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? ActionsContent { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -190,6 +196,15 @@ public class WaCard : ComponentBase
             builder.OpenElement(55, "div");
             builder.AddAttribute(56, "slot", "footer-actions");
             builder.AddContent(57, FooterActionsContent);
+            builder.CloseElement();
+        }
+
+        // Add actions slot content (horizontal card)
+        if (ActionsContent is not null)
+        {
+            builder.OpenElement(60, "div");
+            builder.AddAttribute(61, "slot", "actions");
+            builder.AddContent(62, ActionsContent);
             builder.CloseElement();
         }
 

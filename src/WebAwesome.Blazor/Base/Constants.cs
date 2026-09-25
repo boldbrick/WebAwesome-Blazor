@@ -72,4 +72,11 @@ public static class Constants
     /// the comparison is case-sensitive, so "False" would read as true.
     /// </summary>
     internal const string FalseAttributeValue = "false";
+
+    /// <summary>
+    /// Inline style of the element a wrapper puts around a fragment to assign it to a slot whose layout treats every
+    /// slotted element as an item (e.g. wa-slider's "reference" slot, a flex row spreading the labels): the wrapper
+    /// then generates no box, so the fragment's own elements are laid out as the slot's items.
+    /// </summary>
+    internal const string TransparentSlotWrapperStyle = "display: contents";
 }

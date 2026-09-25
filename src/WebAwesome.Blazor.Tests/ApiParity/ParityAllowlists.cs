@@ -85,6 +85,7 @@ internal static class ParityAllowlists
         ("unboundEventCallbacks", c => c.UnboundEventCallbacks),
         ("cemOnlyEvents", c => c.CemOnlyEvents),
         ("sourceVerifiedEvents", c => c.SourceVerifiedEvents),
+        ("unreachableSlots", c => c.UnreachableSlots),
     };
 
     #endregion

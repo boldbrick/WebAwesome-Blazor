@@ -41,16 +41,26 @@ public class WaInput : WaInputBase<string?>
     [Parameter] public string? Autocomplete { get; set; }
 
     /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
     /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupLabel { get; set; }
+
+    /// <summary>
+    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -209,6 +219,21 @@ public class WaInput : WaInputBase<string?>
     /// </summary>
     [Parameter] public string? EndIconName { get; set; }
 
+    /// <summary>
+    /// An icon to use in lieu of the default clear icon (see <see cref="WithClear"/>), rendered into the element's "clear-icon" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? ClearIconContent { get; set; }
+
+    /// <summary>
+    /// An icon to use in lieu of the default show password icon (see <see cref="PasswordToggle"/>), rendered into the element's "show-password-icon" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? ShowPasswordIconContent { get; set; }
+
+    /// <summary>
+    /// An icon to use in lieu of the default hide password icon (see <see cref="PasswordToggle"/>), rendered into the element's "hide-password-icon" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? HidePasswordIconContent { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -295,8 +320,35 @@ public class WaInput : WaInputBase<string?>
             builder.AddIconSlot(105, "end", EndIconName);
         }
 
+        // Add clear-icon slot content
+        if (ClearIconContent is not null)
+        {
+            builder.OpenElement(110, "span");
+            builder.AddAttribute(111, "slot", "clear-icon");
+            builder.AddContent(112, ClearIconContent);
+            builder.CloseElement();
+        }
+
+        // Add show-password-icon slot content
+        if (ShowPasswordIconContent is not null)
+        {
+            builder.OpenElement(115, "span");
+            builder.AddAttribute(116, "slot", "show-password-icon");
+            builder.AddContent(117, ShowPasswordIconContent);
+            builder.CloseElement();
+        }
+
+        // Add hide-password-icon slot content
+        if (HidePasswordIconContent is not null)
+        {
+            builder.OpenElement(120, "span");
+            builder.AddAttribute(121, "slot", "hide-password-icon");
+            builder.AddContent(122, HidePasswordIconContent);
+            builder.CloseElement();
+        }
+
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70);
+        AddLabelAndHintSlots(builder, 70, MarkupLabel, MarkupHint);
 
         builder.CloseElement();
     }

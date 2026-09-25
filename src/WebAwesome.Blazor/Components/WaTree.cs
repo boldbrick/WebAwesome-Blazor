@@ -67,12 +67,22 @@ public class WaTree : ComponentBase
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Icon rendered into the expand-icon slot for every item, replacing the default expand icon.
+    /// The icon to show on every item when it is expanded, rendered into the element's "expand-icon" slot. Works best with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? ExpandIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="ExpandIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? ExpandIconName { get; set; }
 
     /// <summary>
-    /// Icon rendered into the collapse-icon slot for every item, replacing the default collapse icon.
+    /// The icon to show on every item when it is collapsed, rendered into the element's "collapse-icon" slot. Works best with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? CollapseIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="CollapseIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? CollapseIconName { get; set; }
 
@@ -105,9 +115,31 @@ public class WaTree : ComponentBase
             builder.AddContent(20, ChildContent);
         }
 
-        // Add icon slots
-        builder.AddIconSlot(30, "expand-icon", ExpandIconName);
-        builder.AddIconSlot(35, "collapse-icon", CollapseIconName);
+        // Add expand icon slot content
+        if (ExpandIconContent is not null)
+        {
+            builder.OpenElement(30, "span");
+            builder.AddAttribute(31, "slot", "expand-icon");
+            builder.AddContent(32, ExpandIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(33, "expand-icon", ExpandIconName);
+        }
+
+        // Add collapse icon slot content
+        if (CollapseIconContent is not null)
+        {
+            builder.OpenElement(40, "span");
+            builder.AddAttribute(41, "slot", "collapse-icon");
+            builder.AddContent(42, CollapseIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(43, "collapse-icon", CollapseIconName);
+        }
 
         builder.CloseElement();
     }

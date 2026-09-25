@@ -398,6 +398,14 @@ public class ComponentParityConfig
     /// </summary>
     [JsonPropertyName("sourceVerifiedEvents")]
     public List<string> SourceVerifiedEvents { get; set; } = new();
+
+    /// <summary>
+    /// CEM slots ("(default)" for the default slot) that deliberately no RenderFragment parameter of the element's
+    /// wrappers feeds, because exposing them makes no sense in Blazor. Reason key "unreachableSlots:&lt;tag&gt;:&lt;slot&gt;";
+    /// an entry the CEM does not declare, or that every wrapper of the element now reaches, is stale.
+    /// </summary>
+    [JsonPropertyName("unreachableSlots")]
+    public List<string> UnreachableSlots { get; set; } = new();
 }
 
 #nullable restore

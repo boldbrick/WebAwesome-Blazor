@@ -22,16 +22,26 @@ public class WaSlider : WaInputBase<decimal?>
     [Parameter] public bool Readonly { get; set; }
 
     /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
     /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupLabel { get; set; }
+
+    /// <summary>
+    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -165,9 +175,10 @@ public class WaSlider : WaInputBase<decimal?>
     #region ------ Content ------
 
     /// <summary>
-    /// Reference labels to display below the slider
+    /// One or more reference labels shown below the slider (e.g. one <c>&lt;span&gt;</c> per label), rendered into the
+    /// element's "reference" slot; the labels are spread evenly along the track.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ReferenceContent { get; set; }
 
     #endregion
 
@@ -259,14 +270,18 @@ public class WaSlider : WaInputBase<decimal?>
         // Add element reference capture
         builder.AddElementReferenceCapture(53, __sliderReference => Element = __sliderReference);
 
-        // Add child content (reference labels)
-        if (ChildContent is not null)
+        // Add reference labels; the wrapper takes no box of its own, so each label is an item of the slot's flex row
+        if (ReferenceContent is not null)
         {
-            builder.AddContent(60, ChildContent);
+            builder.OpenElement(60, "span");
+            builder.AddAttribute(61, "slot", "reference");
+            builder.AddAttribute(62, "style", Constants.TransparentSlotWrapperStyle);
+            builder.AddContent(63, ReferenceContent);
+            builder.CloseElement();
         }
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70);
+        AddLabelAndHintSlots(builder, 70, MarkupLabel, MarkupHint);
 
         builder.CloseElement();
     }

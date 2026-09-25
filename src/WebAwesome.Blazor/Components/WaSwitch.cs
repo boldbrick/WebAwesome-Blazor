@@ -21,10 +21,15 @@ public class WaSwitch : WaInputBase<bool>
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -114,8 +119,8 @@ public class WaSwitch : WaInputBase<bool>
             builder.AddContent(50, ChildContent);
         }
 
-        // Add label and hint slots
-        AddLabelAndHintSlots(builder, 60);
+        // Add the hint slot; the element has no label slot (the label is the default slot)
+        AddLabelAndHintSlots(builder, 60, markupLabel: null, MarkupHint);
 
         builder.CloseElement();
     }

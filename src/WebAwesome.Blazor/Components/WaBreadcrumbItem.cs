@@ -76,6 +76,12 @@ public class WaBreadcrumbItem : ComponentBase
     [Parameter] public RenderFragment? EndContent { get; set; }
 
     /// <summary>
+    /// The separator to use for this breadcrumb item only, rendered into the element's "separator" slot; to change it
+    /// for all items, use <see cref="WaBreadcrumb.SeparatorContent"/> instead.
+    /// </summary>
+    [Parameter] public RenderFragment? SeparatorContent { get; set; }
+
+    /// <summary>
     /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? StartIconName { get; set; }
@@ -149,6 +155,15 @@ public class WaBreadcrumbItem : ComponentBase
         else
         {
             builder.AddIconSlot(70, "end", EndIconName);
+        }
+
+        // Add separator slot content
+        if (SeparatorContent is not null)
+        {
+            builder.OpenElement(80, "span");
+            builder.AddAttribute(81, "slot", "separator");
+            builder.AddContent(82, SeparatorContent);
+            builder.CloseElement();
         }
 
         builder.CloseElement();

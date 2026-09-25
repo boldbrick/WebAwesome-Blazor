@@ -144,6 +144,22 @@ C# code that sets a removed parameter (for example through `nameof(WaCheckbox.La
 
 Derived components that relied on `WaInputBase.AddCommonAttributes` rendering these attributes must render the ones their element declares themselves, at the sequence numbers + 6..12 the method leaves free.
 
+### 7. Slot content the element doesn't have (BREAKING)
+
+A render-based check now compares every slot a wrapper renders content into with the slots Web Awesome declares. These parameters rendered their content into a slot the element doesn't have, so it was never shown. They're removed.
+
+| Wrapper | Removed | Why it was never shown | Use instead |
+|---|---|---|---|
+| `WaCheckbox` | `MarkupLabel` | `wa-checkbox` has no `label` slot; its label is the default-slot content | `ChildContent`: `<WaCheckbox>Accept <b>terms</b></WaCheckbox>` |
+| `WaSwitch` | `MarkupLabel` | `wa-switch` has no `label` slot; its label is the default-slot content | `ChildContent` |
+| `WaRating` | `MarkupLabel`, `MarkupHint` | `wa-rating` has no slots at all | `Label` (plain text); render a hint next to the rating yourself |
+| `WaComparison` | `ChildContent` | `wa-comparison` has no default slot, only `before`, `after` and `handle` | `BeforeContent`, `AfterContent` |
+| `WaSlider` | `ChildContent` | `wa-slider` has no default slot; the reference labels it was documented for go into the `reference` slot | `ReferenceContent` (new), e.g. `<ReferenceContent><span>Low</span><span>High</span></ReferenceContent>` |
+
+`MarkupLabel` and `MarkupHint` moved from `WaInputBase` into the form controls whose element declares the `label`/`hint` slot, with the same name, type and behaviour: `MarkupHint` stays on `WaCheckbox` and `WaSwitch`, and both stay on every other form control. The protected `WaInputBase.AddLabelAndHintSlots(builder, sequence)` now takes the fragments, `AddLabelAndHintSlots(builder, sequence, markupLabel, markupHint)`; a derived component passes its own parameters (or `null` for a slot its element lacks).
+
+C# that sets a removed parameter no longer compiles, and neither does Razor child content for `WaSlider`, `WaComparison` or `WaRating`, which now accept none. A `<MarkupLabel>` child element inside `<WaCheckbox>`/`<WaSwitch>` still compiles, with Razor warning RZ10012 ("Found markup element with unexpected name"), and ends up as ordinary label content; move its content into the checkbox's own content.
+
 ## Behavioral Changes (non-breaking, but visible)
 
 - **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) and `WaRelativeTime.Date` now use the invariant culture.
@@ -175,6 +191,27 @@ By default the bound value updates when the control commits (`change`, on blur).
 
 The item stays a menu item for assistive technology, so the label should describe where the link goes. `Href` is ignored on items with a submenu. `WaDropdownItem.OnBlur`/`OnFocus` now actually fire; they were previously bound under the wrong attribute names.
 
+### A parameter for every slot
+
+Every slot Web Awesome declares now has a `RenderFragment` parameter. New:
+
+| Wrapper | New parameter | Slot |
+|---|---|---|
+| `WaAnimatedImage` | `PlayIconContent`, `PauseIconContent` | `play-icon`, `pause-icon` |
+| `WaBreadcrumbItem` | `SeparatorContent` | `separator` (this item only) |
+| `WaCard` | `ActionsContent` | `actions` (horizontal card) |
+| `WaCarousel` | `NextIconContent`, `PreviousIconContent` | `next-icon`, `previous-icon` |
+| `WaDialog`, `WaDrawer` | `LabelContent` | `label` (rich label; takes precedence over `Label`) |
+| `WaInput` | `ClearIconContent`, `ShowPasswordIconContent`, `HidePasswordIconContent` | `clear-icon`, `show-password-icon`, `hide-password-icon` |
+| `WaSelect` | `ClearIconContent`, `ExpandIconContent` | `clear-icon`, `expand-icon` |
+| `WaSlider` | `ReferenceContent` | `reference` (replaces `ChildContent`, see section 7) |
+| `WaTree` | `ExpandIconContent`, `CollapseIconContent` | `expand-icon`, `collapse-icon` |
+| `WaZoomableFrame` | `ZoomInIconContent`, `ZoomOutIconContent` | `zoom-in-icon`, `zoom-out-icon` |
+
+Where the wrapper already had an icon-name shortcut for the slot (`PlayIconName`, `NextIconName`, `ExpandIconName`, `ZoomInIconName`, ...), the fragment wins when both are set. The one slot without a parameter is `wa-date-input`'s per-day `day-YYYY-MM-DD` family, whose names are dates.
+
+`WaSlider.ReferenceContent` and `WaRange.ReferenceContent` now spread the labels along the track: each element of the fragment is a label of its own, as with plain Web Awesome markup. Before, `WaRange` wrapped them all into a single label at the start of the track.
+
 ## Packaging
 
 The package's license file is now resolved relative to `Directory.Build.props`. Building the repository as a git submodule under a consuming solution (with its own `SolutionDir`) no longer fails with NU5019/NU5030.
@@ -187,6 +224,7 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Remove handlers for the callbacks listed in section 4
 - [ ] Remove the parameters listed in section 5 (`WaRadio.Checked`, `WaTab.Closable`, the `WaMutationObserver` and `WaPopup` boundary parameters)
 - [ ] Remove the form control parameters listed in section 6, in C# and in Razor markup (markup keeps compiling)
+- [ ] Move the slot content listed in section 7 (`MarkupLabel` on `WaCheckbox`/`WaSwitch`/`WaRating`, `WaRating.MarkupHint`, `WaComparison`/`WaSlider` child content) to the parameter the table names
 - [ ] If you compare `FocusEventArgs.Type` in an `OnFocus`/`OnBlur` handler of a form control, `WaButton` or `WaFileInput`, expect `"focusin"`/`"focusout"`
 - [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), remove the workaround
 - [ ] Update CSS selectors or tests that match `size="small|medium|large"` to `s|m|l`
@@ -197,5 +235,5 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 
 - **Minimum .NET**: .NET 9.0 (primary target .NET 10.0)
 - **Web Awesome Core**: 3.12.0+
-- **Breaking Changes**: Yes (sections 1–6)
+- **Breaking Changes**: Yes (sections 1–7)
 - **New Dependencies**: None

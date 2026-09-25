@@ -117,12 +117,22 @@ public class WaZoomableFrame : ComponentBase
     #region ------ Content ------
 
     /// <summary>
-    /// Icon rendered into the zoom-in-icon slot, replacing the default zoom-in control icon.
+    /// The zoom-in control icon to use instead of the default, rendered into the element's "zoom-in-icon" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? ZoomInIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="ZoomInIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? ZoomInIconName { get; set; }
 
     /// <summary>
-    /// Icon rendered into the zoom-out-icon slot, replacing the default zoom-out control icon.
+    /// The zoom-out control icon to use instead of the default, rendered into the element's "zoom-out-icon" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? ZoomOutIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="ZoomOutIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? ZoomOutIconName { get; set; }
 
@@ -191,9 +201,31 @@ public class WaZoomableFrame : ComponentBase
         // Add element reference capture
         builder.AddElementReferenceCapture(50, __frameReference => Element = __frameReference);
 
-        // Add zoom control icon slots
-        builder.AddIconSlot(60, "zoom-in-icon", ZoomInIconName);
-        builder.AddIconSlot(65, "zoom-out-icon", ZoomOutIconName);
+        // Add zoom-in icon slot content
+        if (ZoomInIconContent is not null)
+        {
+            builder.OpenElement(60, "span");
+            builder.AddAttribute(61, "slot", "zoom-in-icon");
+            builder.AddContent(62, ZoomInIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(63, "zoom-in-icon", ZoomInIconName);
+        }
+
+        // Add zoom-out icon slot content
+        if (ZoomOutIconContent is not null)
+        {
+            builder.OpenElement(70, "span");
+            builder.AddAttribute(71, "slot", "zoom-out-icon");
+            builder.AddContent(72, ZoomOutIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(73, "zoom-out-icon", ZoomOutIconName);
+        }
 
         builder.CloseElement();
     }

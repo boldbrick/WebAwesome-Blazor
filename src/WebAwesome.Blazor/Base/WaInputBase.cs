@@ -59,19 +59,8 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
-    // Labels & hints as markup; the plain-text Label/Hint, and Readonly, Required, MinLength, MaxLength and
-    // Autocomplete, are declared by the wrappers whose element has the attribute
-    /// <summary>
-    /// Rich markup label rendered into the "label" slot; takes precedence over the plain-text label attribute
-    /// (the wrapper's Label parameter, where the element has one) when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the "hint" slot; takes precedence over the plain-text hint attribute (the
-    /// wrapper's Hint parameter, where the element has one) when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
+    // Readonly, Required, MinLength, MaxLength, Autocomplete, the plain-text Label/Hint and the markup
+    // MarkupLabel/MarkupHint are declared by the wrappers whose element has the attribute or slot
 
     // Common events
     /// <summary>
@@ -223,32 +212,33 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
         => EventCallback.Factory.Create<ChangeEventArgs>(this, HandleImmediateInputAsync);
 
     /// <summary>
-    /// Adds label and hint slots to the render tree if MarkupLabel or MarkupHint are provided
+    /// Adds the markup label and hint to the element's "label" and "hint" slots, each only when set; a wrapper
+    /// passes null for a slot its element does not declare
     /// </summary>
     /// <param name="builder">The render tree builder</param>
-    /// <param name="sequence">The starting sequence number</param>
-    /// <returns>The next available sequence number</returns>
-    protected int AddLabelAndHintSlots(RenderTreeBuilder builder, int sequence)
+    /// <param name="sequence">The constant base sequence number; uses sequence + 0..5</param>
+    /// <param name="markupLabel">Content of the "label" slot, or null</param>
+    /// <param name="markupHint">Content of the "hint" slot, or null</param>
+    /// <returns>The next available sequence number (sequence + 6)</returns>
+    protected int AddLabelAndHintSlots(RenderTreeBuilder builder, int sequence, RenderFragment? markupLabel, RenderFragment? markupHint)
     {
-        var currentSequence = sequence;
-
-        if (MarkupLabel is not null)
+        if (markupLabel is not null)
         {
-            builder.OpenElement(currentSequence++, "span");
-            builder.AddAttribute(currentSequence++, "slot", "label");
-            builder.AddContent(currentSequence++, MarkupLabel);
+            builder.OpenElement(sequence + 0, "span");
+            builder.AddAttribute(sequence + 1, "slot", "label");
+            builder.AddContent(sequence + 2, markupLabel);
             builder.CloseElement();
         }
 
-        if (MarkupHint is not null)
+        if (markupHint is not null)
         {
-            builder.OpenElement(currentSequence++, "span");
-            builder.AddAttribute(currentSequence++, "slot", "hint");
-            builder.AddContent(currentSequence++, MarkupHint);
+            builder.OpenElement(sequence + 3, "span");
+            builder.AddAttribute(sequence + 4, "slot", "hint");
+            builder.AddContent(sequence + 5, markupHint);
             builder.CloseElement();
         }
 
-        return currentSequence;
+        return sequence + 6;
     }
 
     #endregion

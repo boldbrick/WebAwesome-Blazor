@@ -112,12 +112,22 @@ public class WaCarousel : ComponentBase
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Icon rendered into the next-icon slot, replacing the default next navigation icon.
+    /// Optional next icon to use instead of the default, rendered into the element's "next-icon" slot. Works best with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? NextIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="NextIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? NextIconName { get; set; }
 
     /// <summary>
-    /// Icon rendered into the previous-icon slot, replacing the default previous navigation icon.
+    /// Optional previous icon to use instead of the default, rendered into the element's "previous-icon" slot. Works best with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? PreviousIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="PreviousIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? PreviousIconName { get; set; }
 
@@ -156,9 +166,31 @@ public class WaCarousel : ComponentBase
             builder.AddContent(30, ChildContent);
         }
 
-        // Add navigation icon slots
-        builder.AddIconSlot(40, "next-icon", NextIconName);
-        builder.AddIconSlot(45, "previous-icon", PreviousIconName);
+        // Add next icon slot content
+        if (NextIconContent is not null)
+        {
+            builder.OpenElement(40, "span");
+            builder.AddAttribute(41, "slot", "next-icon");
+            builder.AddContent(42, NextIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(43, "next-icon", NextIconName);
+        }
+
+        // Add previous icon slot content
+        if (PreviousIconContent is not null)
+        {
+            builder.OpenElement(50, "span");
+            builder.AddAttribute(51, "slot", "previous-icon");
+            builder.AddContent(52, PreviousIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(53, "previous-icon", PreviousIconName);
+        }
 
         builder.CloseElement();
     }

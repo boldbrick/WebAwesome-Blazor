@@ -333,14 +333,13 @@ public class Wa3120UpgradeValidationTests : BunitContext
     [Fact]
     public void WaInputBase_NoLongerDeclaresElementSpecificParameters()
     {
-        // Assert - MarkupLabel/MarkupHint and the attributes every form control has stay in the base class
+        // Assert - only the attributes every form control has stay in the base class
         Assert.All(FormControlParameterTypes.Keys, name => Assert.Empty(typeof(WaInputBase<string>).GetMember(name)));
         Assert.NotNull(typeof(WaInputBase<string>).GetProperty(nameof(WaInputBase<string>.Disabled)));
-        Assert.NotNull(typeof(WaInputBase<string>).GetProperty(nameof(WaInputBase<string>.MarkupLabel)));
     }
 
     /// <summary>
-    /// The wrapper/parameter pairs removed in 3.12.0 because the element does not declare the attribute.
+    /// The wrapper/parameter pairs removed in 3.12.0 because the element does not declare the attribute (or slot).
     /// </summary>
     public static TheoryData<Type, string> RemovedFormControlParameters => FormControlParameterPairs(kept: false);
 
@@ -389,7 +388,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
 
     #region ------ Internals ------
 
-    // the WaInputBase parameters that only some elements declare, and their types
+    // the WaInputBase parameters that only some elements declare (MarkupLabel/MarkupHint: the label/hint slot), and their types
     private static readonly Dictionary<string, Type> FormControlParameterTypes = new(StringComparer.Ordinal)
     {
         ["Readonly"] = typeof(bool),
@@ -399,27 +398,29 @@ public class Wa3120UpgradeValidationTests : BunitContext
         ["Autocomplete"] = typeof(string),
         ["Label"] = typeof(string),
         ["Hint"] = typeof(string),
+        ["MarkupLabel"] = typeof(RenderFragment),
+        ["MarkupHint"] = typeof(RenderFragment),
     };
 
     // which of them each form control's element declares in the 3.12.0 CEM (docs\MIGRATION-3.12.0.md, section 6)
     private static readonly Dictionary<Type, string[]> DeclaredFormControlParameters = new()
     {
-        [typeof(WaInput)] = ["Readonly", "Required", "MinLength", "MaxLength", "Autocomplete", "Label", "Hint"],
-        [typeof(WaTextArea)] = ["Readonly", "Required", "MinLength", "MaxLength", "Autocomplete", "Label", "Hint"],
-        [typeof(WaNumberInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
-        [typeof(WaCheckbox)] = ["Required", "Hint"],
-        [typeof(WaSwitch)] = ["Required", "Hint"],
-        [typeof(WaRadioGroup)] = ["Required", "Label", "Hint"],
-        [typeof(WaSlider)] = ["Readonly", "Label", "Hint"],
-        [typeof(WaRange)] = ["Readonly", "Label", "Hint"],
+        [typeof(WaInput)] = ["Readonly", "Required", "MinLength", "MaxLength", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaTextArea)] = ["Readonly", "Required", "MinLength", "MaxLength", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaNumberInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaCheckbox)] = ["Required", "Hint", "MarkupHint"],
+        [typeof(WaSwitch)] = ["Required", "Hint", "MarkupHint"],
+        [typeof(WaRadioGroup)] = ["Required", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaSlider)] = ["Readonly", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaRange)] = ["Readonly", "Label", "Hint", "MarkupLabel", "MarkupHint"],
         [typeof(WaRating)] = ["Readonly", "Required", "Label"],
-        [typeof(WaColorPicker)] = ["Required", "Label", "Hint"],
-        [typeof(WaKnownDate)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
-        [typeof(WaOtpInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
-        [typeof(WaTimeInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
-        [typeof(WaSelect)] = ["Required", "Label", "Hint"],
-        [typeof(WaCombobox)] = ["Required", "Label", "Hint"],
-        [typeof(WaDateInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
+        [typeof(WaColorPicker)] = ["Required", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaKnownDate)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaOtpInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaTimeInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaSelect)] = ["Required", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaCombobox)] = ["Required", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaDateInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
     };
 
     private static TheoryData<Type, string> FormControlParameterPairs(bool kept)

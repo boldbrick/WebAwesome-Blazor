@@ -67,12 +67,24 @@ public class WaAnimatedImage : ComponentBase
     #region ------ Content ------
 
     /// <summary>
-    /// Icon rendered into the play-icon slot, replacing the default play icon.
+    /// Optional play icon to use instead of the default, rendered into the element's "play-icon" slot. Works best
+    /// with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? PlayIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="PlayIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? PlayIconName { get; set; }
 
     /// <summary>
-    /// Icon rendered into the pause-icon slot, replacing the default pause icon.
+    /// Optional pause icon to use instead of the default, rendered into the element's "pause-icon" slot. Works best
+    /// with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? PauseIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="PauseIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? PauseIconName { get; set; }
 
@@ -115,9 +127,31 @@ public class WaAnimatedImage : ComponentBase
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __animatedImageReference => Element = __animatedImageReference);
 
-        // Add play/pause icon slots
-        builder.AddIconSlot(30, "play-icon", PlayIconName);
-        builder.AddIconSlot(35, "pause-icon", PauseIconName);
+        // Add play icon slot content
+        if (PlayIconContent is not null)
+        {
+            builder.OpenElement(30, "span");
+            builder.AddAttribute(31, "slot", "play-icon");
+            builder.AddContent(32, PlayIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(35, "play-icon", PlayIconName);
+        }
+
+        // Add pause icon slot content
+        if (PauseIconContent is not null)
+        {
+            builder.OpenElement(40, "span");
+            builder.AddAttribute(41, "slot", "pause-icon");
+            builder.AddContent(42, PauseIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(45, "pause-icon", PauseIconName);
+        }
 
         builder.CloseElement();
     }

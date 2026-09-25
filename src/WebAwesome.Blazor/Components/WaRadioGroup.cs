@@ -21,16 +21,26 @@ public class WaRadioGroup : WaInputBase<string?>
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
     /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupLabel { get; set; }
+
+    /// <summary>
+    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -125,7 +135,7 @@ public class WaRadioGroup : WaInputBase<string?>
         }
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70);
+        AddLabelAndHintSlots(builder, 70, MarkupLabel, MarkupHint);
 
         builder.CloseElement();
     }

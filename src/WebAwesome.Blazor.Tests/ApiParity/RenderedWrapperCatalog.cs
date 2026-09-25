@@ -4,12 +4,14 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using AngleSharp.Dom;
 using Bunit;
 using Bunit.Rendering;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.RenderTree;
 using WebAwesome.Blazor.Extensions;
+using WebAwesome.Blazor.Tests.Components;
 
 // BL0006: the harness reads the renderer's current render tree frames on purpose, see CurrentFrames
 #pragma warning disable BL0006
@@ -23,6 +25,7 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// event-binding parity checks work on this rendered output instead of on source text, so they see bindings
 /// made through constants, variables, computed sequence numbers and base-class helpers alike, and they
 /// resolve each wrapper by the tag it renders rather than by its class name (e.g. WaRange renders wa-slider).
+/// RenderRoots (the attribute checks) and RenderSlots (the slot checks) render given parameter sets the same way.
 /// </summary>
 internal static class RenderedWrapperCatalog
 {
@@ -92,6 +95,19 @@ internal static class RenderedWrapperCatalog
     }
 
     /// <summary>
+    /// Renders one component type once per parameter set and records, from the rendered markup, the root element's
+    /// direct children with the slot each one is assigned to, and the slot a SlotProbe marker rendered into.
+    /// </summary>
+    /// <param name="componentType">Concrete component type</param>
+    /// <param name="parameterSets">Parameters to set in each render, in addition to the required ones</param>
+    /// <returns>One observation per parameter set, in order</returns>
+    public static IReadOnlyList<RenderedSlots> RenderSlots(Type componentType, IReadOnlyList<IReadOnlyList<(string Name, object? Value)>> parameterSets)
+    {
+        using var context = CreateContext();
+        return parameterSets.Select(parameters => RenderSlotSet(context, componentType, parameters)).ToList();
+    }
+
+    /// <summary>
     /// Enumerates the public instance [Parameter] properties of type EventCallback or EventCallback&lt;T&gt;.
     /// </summary>
     /// <param name="componentType">Component type</param>
@@ -127,6 +143,10 @@ internal static class RenderedWrapperCatalog
     private const string StopPropagationAttributePrefix = "__internal_stopPropagation_";
     private const string CurrentFramesMethodName = "GetCurrentRenderTreeFrames";
     private const string ValueExpressionParameter = "ValueExpression";
+    private const string SlotAttribute = "slot";
+    private const string IconTag = "wa-icon";
+    private const string IconNameAttribute = "name";
+    private const string ScriptTag = "script";
 
     private static readonly Lazy<IReadOnlyList<Type>> wrapperTypes = new(() => ApiParityData.WrapperAssembly.GetTypes()
         .Where(IsWrapperComponent)
@@ -166,6 +186,54 @@ internal static class RenderedWrapperCatalog
         catch (Exception ex)
         {
             return new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), $"{ex.GetType().Name}: {ex.Message}");
+        }
+    }
+
+    private static RenderedSlots RenderSlotSet(BunitContext context, Type componentType, IReadOnlyList<(string Name, object? Value)> parameters)
+    {
+        try
+        {
+            var rendered = context.Render(builder =>
+            {
+                var sequence = 0;
+                builder.OpenComponent(sequence++, componentType);
+
+                foreach (var (name, value) in RequiredParameters(componentType))
+                    builder.AddComponentParameter(sequence++, name, value);
+
+                foreach (var (name, value) in parameters)
+                    builder.AddComponentParameter(sequence++, name, value);
+
+                builder.CloseComponent();
+            });
+
+            // the markup of a component rendering another component first is flattened, so its first element is the root
+            var root = rendered.Nodes.OfType<IElement>().FirstOrDefault();
+            if (root == null) return new RenderedSlots(null, Array.Empty<RenderedSlotChild>(), null, null);
+
+            var children = new List<RenderedSlotChild>();
+            foreach (var node in root.ChildNodes)
+            {
+                if (node is IElement element)
+                {
+                    children.Add(new RenderedSlotChild(element.GetAttribute(SlotAttribute) ?? string.Empty, element.LocalName,
+                        element.LocalName == IconTag ? element.GetAttribute(IconNameAttribute) : null));
+                }
+                else if (node is IText text && !string.IsNullOrWhiteSpace(text.Data))
+                {
+                    children.Add(new RenderedSlotChild(string.Empty, null, null));
+                }
+            }
+
+            // the text of a data child (wa-markdown's source script) is raw text in the markup, so a marker rendered
+            // there shows as its markup string instead of as an element
+            var probeInData = root.Children.Any(c => c.LocalName == ScriptTag && c.TextContent.Contains($"<{SlotProbe.Tag}", StringComparison.Ordinal));
+
+            return new RenderedSlots(root.LocalName, children, SlotProbe.SlotOf(root), null) { ProbeInData = probeInData };
+        }
+        catch (Exception ex)
+        {
+            return new RenderedSlots(null, Array.Empty<RenderedSlotChild>(), null, $"{ex.GetType().Name}: {ex.Message}");
         }
     }
 
@@ -413,6 +481,30 @@ internal sealed record RenderedWrapper(
 /// <param name="Attributes">Non-handler attributes of the root element; a present boolean attribute has an empty value</param>
 /// <param name="Error">The render exception, or null when the component rendered</param>
 internal sealed record RenderedRoot(string? Tag, IReadOnlyDictionary<string, string> Attributes, string? Error);
+
+/// <summary>
+/// The root element of one render of a wrapper and the slots of its direct children, read from the markup.
+/// </summary>
+/// <param name="Tag">Local name of the rendered root element, or null when nothing (or no element) was rendered</param>
+/// <param name="Children">The root element's direct child elements and non-blank text nodes</param>
+/// <param name="ProbeSlot">The slot a SlotProbe marker rendered into (empty for the default slot), or null when none rendered</param>
+/// <param name="Error">The render exception, or null when the component rendered</param>
+internal sealed record RenderedSlots(string? Tag, IReadOnlyList<RenderedSlotChild> Children, string? ProbeSlot, string? Error)
+{
+    /// <summary>
+    /// Whether a SlotProbe marker rendered as the text of a &lt;script&gt; data child of the root element (e.g.
+    /// wa-markdown's source), which the element reads instead of slotting.
+    /// </summary>
+    public bool ProbeInData { get; init; }
+}
+
+/// <summary>
+/// One direct child of a rendered root element.
+/// </summary>
+/// <param name="Slot">The child's slot attribute, empty for the default slot (no slot attribute, or a text node)</param>
+/// <param name="LocalName">Local name of the child element, or null for a text node</param>
+/// <param name="IconName">The name attribute of a wa-icon child, otherwise null</param>
+internal sealed record RenderedSlotChild(string Slot, string? LocalName, string? IconName);
 
 /// <summary>
 /// The event handlers one EventCallback parameter added to the root element when set to a no-op delegate.

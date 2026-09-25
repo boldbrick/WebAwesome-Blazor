@@ -51,7 +51,7 @@ public class WaDrawer : ComponentBase
     // Drawer properties
     /// <summary>
     /// The drawer's label as displayed in the header. A relevant label is required for proper accessibility. If you
-    /// need to display HTML, use <see cref="HeaderActionsContent"/> or a custom header instead.
+    /// need to display HTML, use <see cref="LabelContent"/> instead.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
@@ -99,6 +99,12 @@ public class WaDrawer : ComponentBase
     /// Content for additional header actions
     /// </summary>
     [Parameter] public RenderFragment? HeaderActionsContent { get; set; }
+
+    /// <summary>
+    /// The drawer's label as rich content, rendered into the element's "label" slot; takes precedence over
+    /// <see cref="Label"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? LabelContent { get; set; }
 
     #endregion
 
@@ -159,6 +165,15 @@ public class WaDrawer : ComponentBase
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __drawerReference => Element = __drawerReference);
+
+        // Add label slot content
+        if (LabelContent is not null)
+        {
+            builder.OpenElement(25, "span");
+            builder.AddAttribute(26, "slot", "label");
+            builder.AddContent(27, LabelContent);
+            builder.CloseElement();
+        }
 
         // Add header actions slot content
         if (HeaderActionsContent is not null)
