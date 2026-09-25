@@ -1,20 +1,70 @@
-﻿@page "/components/progress-bar"
+@page "/components/progress-bar"
 
 <PageTitle>Progress Bar</PageTitle>
 
-<h1>Progress Bar</h1>
-<p><code>&lt;wa-progress-bar&gt;</code> wrapped by <code>WaProgressBar</code>.</p>
+<h1>Progress Bar <ComponentBadges Tag="wa-progress-bar" /></h1>
+<p>Progress bars show the status of an ongoing operation. <code>&lt;wa-progress-bar&gt;</code> wrapped by <code>WaProgressBar</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaProgressBar Value="50" Label="Uploading..." />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\progress-bar.md) *@
+<ExampleSection Title="Showing Values" Code="@ValuesExample">
+    <WaProgressBar Value="progress" Label="Upload progress">@progress%</WaProgressBar>
+    <WaCluster Gap="GapSize.Gap_S" Style="margin-top: var(--wa-space-m);">
+        <WaButton Size="WaSize.Small" Disabled="progress == 0" OnClick="() => progress = Math.Max(0, progress - 10)">
+            <WaIcon Name="minus" Label="Decrease" />
+        </WaButton>
+        <WaButton Size="WaSize.Small" Disabled="progress == 100" OnClick="() => progress = Math.Min(100, progress + 10)">
+            <WaIcon Name="plus" Label="Increase" />
+        </WaButton>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Indeterminate" Code="@IndeterminateExample">
+    <WaProgressBar Indeterminate="true" Label="Loading" />
+</ExampleSection>
+
+<ExampleSection Title="Height and Colors" Code="@StyleExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaProgressBar Value="25" Label="Thin" Style="--track-height: 6px;" />
+        <WaProgressBar Value="80" Label="Success" Style="--indicator-color: var(--wa-color-success-fill-loud);" />
+    </WaStack>
+</ExampleSection>
 
 <ApiTable Tag="wa-progress-bar" />
 
 @code {
+    private int progress = 40;
+
     private const string DefaultExample = """
         <WaProgressBar Value="50" Label="Uploading..." />
+        """;
+
+    private const string ValuesExample = """
+        <WaProgressBar Value="progress" Label="Upload progress">@progress%</WaProgressBar>
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaButton Size="WaSize.Small" Disabled="progress == 0" OnClick="() => progress = Math.Max(0, progress - 10)">
+                <WaIcon Name="minus" Label="Decrease" />
+            </WaButton>
+            <WaButton Size="WaSize.Small" Disabled="progress == 100" OnClick="() => progress = Math.Min(100, progress + 10)">
+                <WaIcon Name="plus" Label="Increase" />
+            </WaButton>
+        </WaCluster>
+
+        @code {
+            private int progress = 40;
+        }
+        """;
+
+    private const string IndeterminateExample = """
+        <WaProgressBar Indeterminate="true" Label="Loading" />
+        """;
+
+    private const string StyleExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaProgressBar Value="25" Label="Thin" Style="--track-height: 6px;" />
+            <WaProgressBar Value="80" Label="Success" Style="--indicator-color: var(--wa-color-success-fill-loud);" />
+        </WaStack>
         """;
 }

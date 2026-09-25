@@ -1,18 +1,47 @@
 // @ts-check
+const fs = require('fs');
+const path = require('path');
 const { test, expect } = require('@playwright/test');
 const { getAllRoutes } = require('./helpers/routes');
+const { WA_READY_TIMEOUT_MS } = require('./helpers/wa-ready');
 
-// Console/page errors that indicate a genuine app crash, as opposed to benign resource-load
-// noise (e.g. Font Awesome Pro icon 403s when no kit code is configured in this dev environment,
-// which is expected per the project's no-hardcoded-credentials rule).
-function isRealAppError(text) {
-  return (
-    text.includes('Unhandled exception') ||
-    text.startsWith('crit:') ||
-    text.includes('Uncaught') ||
-    text.includes('InvalidOperationException') ||
-    text.includes('JSException')
-  );
+// Visits every demo route and fails on any page error and on any console error or warning that is not known
+// noise. The demo pages set non-default enum, boolean and number values, so an invalid value a wrapper emits
+// surfaces here: Web Awesome throws (a RangeError from Intl for a bad wa-relative-time format reaches
+// 'pageerror') or warns (a deprecated size, an icon button without a label, a popover target that does not exist).
+
+// the time to let late work settle after the elements rendered (timers, Intl formatting in updated(), relays)
+const SETTLE_MS = 1000;
+
+// browser network noise, reported per request: the optional appsettings.Local.json the WASM host probes (404),
+// Font Awesome Pro icons without a kit code (403, by the no-hardcoded-credentials rule), the harness's
+// deliberately unreachable resources; failed resources a spec relies on are asserted by that spec
+const NETWORK_NOISE = /^Failed to load resource: /;
+
+// Web Awesome's warning for a component module that is not on the CDN; expected for Pro components on the free
+// CDN only (with a Pro asset override the Pro specs fail when a Pro component does not upgrade)
+const AUTOLOAD_WARNING = /Unable to autoload <(wa-[a-z-]+)>/;
+
+// the Pro components, from the api-surface document that drives the demo navigation
+const PRO_TAGS = (() => {
+  const surfacePath = path.resolve(__dirname, '..', '..', '..', 'src', 'WebAwesome.Blazor.Demo', 'wwwroot', 'data', 'api-surface.json');
+  const surface = JSON.parse(fs.readFileSync(surfacePath, 'utf8').replace(/^﻿/, ''));
+  return new Set(Object.entries(surface.components).filter(([, c]) => c.pro).map(([tag]) => tag));
+})();
+
+/**
+ * Whether a console message is a problem of the page: every error and warning except known noise.
+ *
+ * @param {import('@playwright/test').ConsoleMessage} msg
+ */
+function isProblem(msg) {
+  if (msg.type() !== 'error' && msg.type() !== 'warning') return false;
+
+  const text = msg.text();
+  if (NETWORK_NOISE.test(text)) return false;
+
+  const autoload = AUTOLOAD_WARNING.exec(text);
+  return !(autoload && PRO_TAGS.has(autoload[1]));
 }
 
 for (const route of getAllRoutes()) {
@@ -20,17 +49,27 @@ for (const route of getAllRoutes()) {
     const problems = [];
     page.on('pageerror', err => problems.push(`[pageerror] ${err.message}`));
     page.on('console', msg => {
-      if (msg.type() === 'error' && isRealAppError(msg.text())) {
-        problems.push(`[console.error] ${msg.text()}`);
-      }
+      if (isProblem(msg)) problems.push(`[console.${msg.type()}] ${msg.text()}`);
     });
 
     // 'load' rather than 'networkidle': some pages (e.g. comparison, carousel autoplay) have
     // continuous background network/animation activity that never goes idle.
     await page.goto(route, { waitUntil: 'load' });
-    await page.waitForSelector('.demo-shell', { timeout: 15_000 });
-    // let Blazor finish first render and any Web Awesome custom-element upgrade/JS-interop calls
-    await page.waitForTimeout(1000);
+    await page.waitForSelector('.demo-shell', { timeout: WA_READY_TIMEOUT_MS });
+
+    // every free Web Awesome element on the page is defined and has rendered once (a Pro one on the free CDN never is)
+    const notReady = await page.evaluate(async ({ proTags, timeoutMs }) => {
+      const tags = [...new Set([...document.querySelectorAll('*')].map(e => e.localName))]
+        .filter(tag => tag.startsWith('wa-') && !proTags.includes(tag));
+      const rendered = Promise.all(tags.map(async tag => {
+        await customElements.whenDefined(tag);
+        await Promise.all([...document.querySelectorAll(tag)].map(el => /** @type {any} */ (el).updateComplete));
+      })).then(() => true);
+      const done = await Promise.race([rendered, new Promise(resolve => setTimeout(() => resolve(false), timeoutMs))]);
+      return done ? [] : tags.filter(tag => !customElements.get(tag));
+    }, { proTags: [...PRO_TAGS], timeoutMs: WA_READY_TIMEOUT_MS });
+    if (notReady.length > 0) problems.push(`[not ready] ${notReady.join(', ')} not defined after ${WA_READY_TIMEOUT_MS} ms`);
+    await page.waitForTimeout(SETTLE_MS);
 
     expect(problems, `Unhandled error(s) on ${route}:\n${problems.join('\n')}`).toEqual([]);
   });

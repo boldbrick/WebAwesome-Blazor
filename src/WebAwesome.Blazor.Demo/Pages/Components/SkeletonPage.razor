@@ -1,18 +1,66 @@
-﻿@page "/components/skeleton"
+@page "/components/skeleton"
 
 <PageTitle>Skeleton</PageTitle>
 
-<h1>Skeleton</h1>
-<p><code>&lt;wa-skeleton&gt;</code> wrapped by <code>WaSkeleton</code>.</p>
+<h1>Skeleton <ComponentBadges Tag="wa-skeleton" /></h1>
+<p>Skeletons are placeholders shown while content is loading. <code>&lt;wa-skeleton&gt;</code> wrapped by <code>WaSkeleton</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaSkeleton />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\skeleton.md) *@
+<ExampleSection Title="Effects" Code="@EffectsExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSkeleton Effect="WaEffect.None" />
+        <WaSkeleton Effect="WaEffect.Sheen" />
+        <WaSkeleton Effect="WaEffect.Pulse" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Paragraphs" Code="@ParagraphsExample">
+    <WaStack Gap="GapSize.Gap_S">
+        <WaSkeleton Effect="WaEffect.Sheen" />
+        <WaSkeleton Effect="WaEffect.Sheen" Style="width: 90%;" />
+        <WaSkeleton Effect="WaEffect.Sheen" Style="width: 75%;" />
+        <WaSkeleton Effect="WaEffect.Sheen" Style="width: 40%;" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Shapes and Colors" Code="@ShapesExample">
+    <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+        <WaSkeleton Effect="WaEffect.Pulse" Style="width: 3rem; height: 3rem; --border-radius: 50%;" />
+        <WaSkeleton Effect="WaEffect.Pulse" Style="width: 3rem; height: 3rem; --border-radius: var(--wa-border-radius-m);" />
+        <WaSkeleton Effect="WaEffect.Pulse" Style="width: 8rem; height: 1rem; --color: var(--wa-color-brand-fill-quiet);" />
+    </WaCluster>
+</ExampleSection>
 
 <ApiTable Tag="wa-skeleton" />
 
 @code {
     private const string DefaultExample = "<WaSkeleton />";
+
+    private const string EffectsExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaSkeleton Effect="WaEffect.None" />
+            <WaSkeleton Effect="WaEffect.Sheen" />
+            <WaSkeleton Effect="WaEffect.Pulse" />
+        </WaStack>
+        """;
+
+    private const string ParagraphsExample = """
+        <WaStack Gap="GapSize.Gap_S">
+            <WaSkeleton Effect="WaEffect.Sheen" />
+            <WaSkeleton Effect="WaEffect.Sheen" Style="width: 90%;" />
+            <WaSkeleton Effect="WaEffect.Sheen" Style="width: 75%;" />
+            <WaSkeleton Effect="WaEffect.Sheen" Style="width: 40%;" />
+        </WaStack>
+        """;
+
+    private const string ShapesExample = """
+        <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+            <WaSkeleton Effect="WaEffect.Pulse" Style="width: 3rem; height: 3rem; --border-radius: 50%;" />
+            <WaSkeleton Effect="WaEffect.Pulse" Style="width: 3rem; height: 3rem; --border-radius: var(--wa-border-radius-m);" />
+            <WaSkeleton Effect="WaEffect.Pulse" Style="width: 8rem; height: 1rem; --color: var(--wa-color-brand-fill-quiet);" />
+        </WaCluster>
+        """;
 }

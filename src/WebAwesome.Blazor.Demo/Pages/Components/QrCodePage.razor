@@ -1,18 +1,105 @@
-﻿@page "/components/qr-code"
+@page "/components/qr-code"
 
-<PageTitle>Qr Code</PageTitle>
+<PageTitle>QR Code</PageTitle>
 
-<h1>Qr Code</h1>
-<p><code>&lt;wa-qr-code&gt;</code> wrapped by <code>WaQrCode</code>.</p>
+<h1>QR Code <ComponentBadges Tag="wa-qr-code" /></h1>
+<p>QR codes generate a scannable code for a URL or other text. <code>&lt;wa-qr-code&gt;</code> wrapped by <code>WaQrCode</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaQrCode />
+    <WaQrCode Value="https://webawesome.com/" Label="Scan to visit Web Awesome" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\qr-code.md) *@
+<ExampleSection Title="Size" Code="@SizeExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+        <WaQrCode Value="https://webawesome.com/" Size="64" Label="Small code" />
+        <WaQrCode Value="https://webawesome.com/" Size="192" Label="Large code" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Colors" Code="@ColorsExample">
+    <WaQrCode Value="https://webawesome.com/" Fill="deeppink" Background="white" Label="Pink on white" />
+</ExampleSection>
+
+<ExampleSection Title="Radius" Code="@RadiusExample">
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaQrCode Value="https://webawesome.com/" Radius="0.25M" Label="Slightly rounded modules" />
+        <WaQrCode Value="https://webawesome.com/" Radius="0.5M" Label="Round modules" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Error Correction" Code="@ErrorCorrectionExample">
+    <p>Higher levels survive more damage but need more modules; unset, the element uses <code>H</code>.</p>
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaQrCode Value="https://webawesome.com/" ErrorCorrection="WaErrorCorrection.L" Label="Error correction L" />
+        <WaQrCode Value="https://webawesome.com/" ErrorCorrection="WaErrorCorrection.M" Label="Error correction M" />
+        <WaQrCode Value="https://webawesome.com/" ErrorCorrection="WaErrorCorrection.Q" Label="Error correction Q" />
+        <WaQrCode Value="https://webawesome.com/" ErrorCorrection="WaErrorCorrection.H" Label="Error correction H" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Images" Code="@ImageExample">
+    <WaQrCode Value="https://webawesome.com/" Size="192" Label="Code with a logo"
+              Image="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=120&q=80"
+              ImageCoverage="0.2M" ImagePadding="4" ImageBackground="white" />
+</ExampleSection>
+
+<ExampleSection Title="Dynamic Value" Code="@DynamicExample">
+    <WaStack Gap="GapSize.Gap_M" Style="max-width: 24rem;">
+        <WaInput Label="Text to encode" @bind-Value="text" Immediate="true" />
+        <WaQrCode Value="@text" Label="@($"QR code for {text}")" />
+    </WaStack>
+</ExampleSection>
 
 <ApiTable Tag="wa-qr-code" />
 
 @code {
-    private const string DefaultExample = "<WaQrCode />";
+    private string? text = "https://github.com/boldbrick/WebAwesome-Blazor";
+
+    private const string DefaultExample = """
+        <WaQrCode Value="https://webawesome.com/" Label="Scan to visit Web Awesome" />
+        """;
+
+    private const string SizeExample = """
+        <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+            <WaQrCode Value="https://webawesome.com/" Size="64" Label="Small code" />
+            <WaQrCode Value="https://webawesome.com/" Size="192" Label="Large code" />
+        </WaCluster>
+        """;
+
+    private const string ColorsExample = """
+        <WaQrCode Value="https://webawesome.com/" Fill="deeppink" Background="white" Label="Pink on white" />
+        """;
+
+    private const string RadiusExample = """
+        <WaCluster Gap="GapSize.Gap_L">
+            <WaQrCode Value="https://webawesome.com/" Radius="0.25M" Label="Slightly rounded modules" />
+            <WaQrCode Value="https://webawesome.com/" Radius="0.5M" Label="Round modules" />
+        </WaCluster>
+        """;
+
+    private const string ErrorCorrectionExample = """
+        <WaCluster Gap="GapSize.Gap_L">
+            <WaQrCode Value="https://webawesome.com/" ErrorCorrection="WaErrorCorrection.L" Label="Error correction L" />
+            <WaQrCode Value="https://webawesome.com/" ErrorCorrection="WaErrorCorrection.M" Label="Error correction M" />
+            <WaQrCode Value="https://webawesome.com/" ErrorCorrection="WaErrorCorrection.Q" Label="Error correction Q" />
+            <WaQrCode Value="https://webawesome.com/" ErrorCorrection="WaErrorCorrection.H" Label="Error correction H" />
+        </WaCluster>
+        """;
+
+    private const string ImageExample = """
+        <WaQrCode Value="https://webawesome.com/" Size="192" Label="Code with a logo"
+                  Image="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=120&q=80"
+                  ImageCoverage="0.2M" ImagePadding="4" ImageBackground="white" />
+        """;
+
+    private const string DynamicExample = """
+        <WaStack Gap="GapSize.Gap_M" Style="max-width: 24rem;">
+            <WaInput Label="Text to encode" @bind-Value="text" Immediate="true" />
+            <WaQrCode Value="@text" Label="@($"QR code for {text}")" />
+        </WaStack>
+
+        @code {
+            private string? text = "https://github.com/boldbrick/WebAwesome-Blazor";
+        }
+        """;
 }
