@@ -46,6 +46,15 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - `WaZoomableFrame.OnLoad`/`OnError` listened for `wa-load`/`wa-error`. The element dispatches native `load`/`error`, so they're rebound.
 - `WaDropdownItem.OnBlur`/`OnFocus` were bound under `blur`/`focus` instead of `onblur`/`onfocus`, so they never fired.
 - **`WaButton.FormNoValidate = false` disabled form validation, and `Spellcheck = false` couldn't turn spell checking off** on `WaInput`, `WaTextArea` and `WaCombobox`. The nullable booleans were emitted through `ToString()` as `"True"`/`"False"`. `formnovalidate` is a plain boolean attribute, so any present value meant true; it's now emitted only for `true`. `spellcheck` uses a case-sensitive `"true"`/`"false"` converter that reads an empty value as false; it's now emitted as exactly `"true"` or `"false"`, and omitted when `null` so the element keeps its default (on for input and textarea, off for combobox).
+- **Every `WaIconLibraryService` call threw at runtime.** It invoked `registerIconLibrary`, `unregisterIconLibrary`, `setDefaultIconFamily` and `getDefaultIconFamily`, which `webawesome-interop.js` never exported. They're now implemented. Web Awesome keeps the icon registry as module state, so the interop module imports the entry point the page itself loaded: it looks for the page's Web Awesome script tag first, then falls back to the configured `WebAwesomeOptions` loader URL. Registrations therefore land in the registry that `wa-icon` reads, and icons already on the page redraw. Because Web Awesome takes JavaScript functions, `IconLibraryOptions` maps them as follows:
+  - `Resolver` is a URL template with `{name}`, `{family}` and `{variant}` placeholders; it's now required.
+  - `Mutator` is the dotted path of a global function, resolved when the library is registered.
+  - `SpriteSheet` is passed through.
+- The built-in helpers were broken as well:
+  - `RegisterLucideAsync` pointed at the `lucide` package, which has no `icons/` folder (404); it now uses `lucide-static`.
+  - `RegisterHeroiconsAsync` put `{variant}` in the path, which is empty unless `WaIcon.Variant` is set (`24//cog.svg`, 400); it now uses the outline set.
+  - `RegisterFontAwesomeProAsync` registered an `fa-pro` library at a URL that serves no icons; it now calls Web Awesome's `setKitCode`, so the default library serves Pro icons, like `WebAwesomeOptions.FontAwesomeKitCode`. It never worked before, so no working code changes behaviour. Icons that referenced `Library="fa-pro"` should drop the `Library`.
+- `WaPopup.RepositionAsync` threw a `ReferenceError`. It called the global `eval` with `"arguments[0].reposition()"`, which runs in global scope, where `arguments` doesn't exist. It now invokes the element's `reposition()` through the interop module.
 - Packaging (issue #1): the license file in `src\Directory.Build.props` is resolved from the props file (`$(MSBuildThisFileDirectory)`) instead of `$(SolutionDir)`. A submodule build under a consumer's solution failed with NU5019/NU5030.
 
 ### Library
@@ -55,13 +64,18 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - every union value must be reachable from the enum (the reverse direction)
   - no `bool` parameter may be bound to a string-literal union (the old `Numeric="false"` defect class)
 - New `BoundEventCemParityTests`: every `onwa-*` binding must be a CEM event of the element it is rendered on (wrapper → CEM, the reverse of the existing parity check). `ParityGuardSelfTests` shows on synthetic data that each new guard catches its defect class.
-- Tests: 787 per TFM on net9.0 and net10.0, in both Debug and Release (was 627). Browser suite: 140 passed, 2 skipped. The skips are `pro-assets.spec.js` without an override, and WaDateInput, which is Pro-only on the free CDN; it was red and then green against the local 3.12.0 Pro dist.
+- Tests: 813 per TFM on net9.0 and net10.0, in both Debug and Release (was 627). Browser suite: 142 passed, 2 skipped. The skips are `pro-assets.spec.js` without an override, and WaDateInput, which is Pro-only on the free CDN; it was red and then green against the local 3.12.0 Pro dist.
 - Browser acceptance: the new `value-sync-binding.spec.js` and `number-value-binding.spec.js` were recorded red against the pre-fix wrappers (18 failed + 1 skipped, and 5 failed) and pass on the fixed build. The driving controls live on the Input/Textarea/Checkbox demo pages and on a harness page at `/testing/value-sync` (outside the component navigation, swept via `HARNESS_ROUTES`).
 - Boolean attribute emission: `AddBooleanAttribute` (present or absent) and `AddTrueFalseAttribute` (`"true"`/`"false"`) replace `ToString()` for `bool?` parameters. `AddAttributeIfNotNull` now rejects `bool`/`bool?` at compile time (`CS0619`), so the `"True"`/`"False"` defect class can't come back. New `BooleanAttributeEmissionTests` render each affected wrapper with `true`, `false` and `null`.
+- New `InteropModuleContractTests` (static):
+  - every `module.Invoke*Async("<id>")` identifier must be exported by `webawesome-interop.js`
+  - every export must be invoked, or be allowlisted with a reason (the list is empty)
+  - apart from the module `import`, the library may invoke no global JS identifier
+- New browser spec `icon-library.spec.js` drives the new Icon Libraries and Default Icon Family sections of the Icon demo page. It checks that registered Lucide, Heroicons and Tabler icons draw, that the named mutator ran, that unregistering takes effect, and that the default family read from the page's own Web Awesome module follows the value set from .NET. Mutation runs failed it on a renamed export (`registerIconLibrary is not a function`, the original defect) and on an import of a different Web Awesome copy. The demo's `js/demo-icons.js` provides the mutator.
 - Event registrations for names no wrapper binds anymore were removed from the JS initializer (`wa-change`, `wa-initial-focus`, `wa-password-toggle`, `wa-password-visibility-change`, `wa-success`, `wa-tab-change`, `wa-tab-close`, `wa-zoom-change`).
 
 ### Public API
-- Baseline promoted with 153 lines added and 125 removed. Every difference is explained by the items above:
+- Baseline promoted with 155 lines added and 125 removed. Every difference is explained by the items above:
   - the relative-time enum swap
   - `WaTextArea` moving onto `WaInputBase` (its duplicated members now come from the base)
   - `Rows` becoming `int?`
@@ -71,6 +85,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - the per-component enums and their `ToHtmlValue` overloads
   - the removed members and types, and the renumbered enum members
   - the four `WaDropdownItem` link parameters
+  - `WebAwesomeJSInterop(IJSRuntime, WebAwesomeOptions)`, which DI picks when `AddWebAwesome` registered the options, and `WebAwesomeJSInterop.SetKitCodeAsync` (icon library fix)
 
 ### Deviations recorded (parity-config.json)
 - `ignoredEnumValues` (new list, each entry with a reason): only `wa-popup` `auto-size`/`sync` `None`, which omit the attribute.

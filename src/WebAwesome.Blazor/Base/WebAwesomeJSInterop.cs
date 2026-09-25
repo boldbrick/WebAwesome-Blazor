@@ -11,20 +11,6 @@ namespace WebAwesome.Blazor.Base;
 /// </summary>
 public class WebAwesomeJSInterop
 {
-    private readonly IJSRuntime jsRuntime;
-    private readonly Lazy<Task<IJSObjectReference>> moduleTask;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WebAwesomeJSInterop"/> service.
-    /// </summary>
-    /// <param name="jsRuntime">JavaScript runtime used to load and invoke the Web Awesome interop module</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="jsRuntime"/> is null</exception>
-    public WebAwesomeJSInterop(IJSRuntime jsRuntime)
-    {
-        this.jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
-        moduleTask = new Lazy<Task<IJSObjectReference>>(() => LoadModuleAsync());
-    }
-
     /// <summary>
     /// Sets a custom validation message on a Web Awesome form control element
     /// </summary>
@@ -222,13 +208,16 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
-    /// Registers a custom icon library with Web Awesome
+    /// Registers an icon library with Web Awesome (its <c>registerIconLibrary</c>). Registering an existing name
+    /// replaces that library, and rendered icons of the library re-resolve.
     /// </summary>
-    /// <param name="name">Name of the icon library</param>
-    /// <param name="options">Configuration options for the library</param>
+    /// <param name="name">Name of the icon library, referenced by <c>WaIcon.Library</c></param>
+    /// <param name="options">Configuration options for the library; <see cref="IconLibraryOptions.Resolver"/> is required</param>
     /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="ArgumentNullException">Thrown when name is null or empty</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the registration fails</exception>
+    /// <exception cref="ArgumentNullException">Thrown when name is null or empty, or options is null</exception>
+    /// <exception cref="ArgumentException">Thrown when the options have no resolver URL template</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the registration fails, e.g. Web Awesome is not loaded
+    /// or the mutator does not name a global function</exception>
     public virtual async Task RegisterIconLibraryAsync(string name, IconLibraryOptions options)
     {
         if (string.IsNullOrEmpty(name))
@@ -237,10 +226,13 @@ public class WebAwesomeJSInterop
         if (options == null)
             throw new ArgumentNullException(nameof(options));
 
+        if (string.IsNullOrEmpty(options.Resolver))
+            throw new ArgumentException("An icon library requires a resolver URL template", nameof(options));
+
         try
         {
             var module = await moduleTask.Value;
-            await module.InvokeVoidAsync("registerIconLibrary", name, options);
+            await module.InvokeVoidAsync("registerIconLibrary", ConfiguredLoaderUrl(), name, options);
         }
         catch (JSException ex)
         {
@@ -253,7 +245,8 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
-    /// Unregisters an icon library from Web Awesome
+    /// Unregisters an icon library from Web Awesome (its <c>unregisterIconLibrary</c>). Icons already rendered
+    /// from the library keep their current image.
     /// </summary>
     /// <param name="name">Name of the icon library to remove</param>
     /// <returns>A task that represents the asynchronous operation</returns>
@@ -267,7 +260,7 @@ public class WebAwesomeJSInterop
         try
         {
             var module = await moduleTask.Value;
-            await module.InvokeVoidAsync("unregisterIconLibrary", name);
+            await module.InvokeVoidAsync("unregisterIconLibrary", ConfiguredLoaderUrl(), name);
         }
         catch (JSException ex)
         {
@@ -280,7 +273,8 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
-    /// Sets the default icon family for Web Awesome icons
+    /// Sets the icon family used by icons without an explicit family (Web Awesome's <c>setDefaultIconFamily</c>);
+    /// rendered icons re-resolve
     /// </summary>
     /// <param name="family">The icon family name (e.g., "classic", "sharp", "brands")</param>
     /// <returns>A task that represents the asynchronous operation</returns>
@@ -294,7 +288,7 @@ public class WebAwesomeJSInterop
         try
         {
             var module = await moduleTask.Value;
-            await module.InvokeVoidAsync("setDefaultIconFamily", family);
+            await module.InvokeVoidAsync("setDefaultIconFamily", ConfiguredLoaderUrl(), family);
         }
         catch (JSException ex)
         {
@@ -307,7 +301,7 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
-    /// Gets the current default icon family
+    /// Gets the icon family used by icons without an explicit family (Web Awesome's <c>getDefaultIconFamily</c>)
     /// </summary>
     /// <returns>The current default icon family name</returns>
     /// <exception cref="InvalidOperationException">Thrown when getting the family fails</exception>
@@ -316,7 +310,7 @@ public class WebAwesomeJSInterop
         try
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<string>("getDefaultIconFamily");
+            return await module.InvokeAsync<string>("getDefaultIconFamily", ConfiguredLoaderUrl());
         }
         catch (JSException ex)
         {
@@ -325,7 +319,36 @@ public class WebAwesomeJSInterop
         catch (JSDisconnectedException)
         {
             // JS runtime is disconnected, return default value silently
-            return "classic";
+            return WebAwesomeDefaultIconFamily;
+        }
+    }
+
+    /// <summary>
+    /// Sets the Font Awesome kit code that unlocks the Pro icons of the default icon library (Web Awesome's
+    /// <c>setKitCode</c>); rendered icons re-resolve. <see cref="WebAwesomeOptions.FontAwesomeKitCode"/> applies
+    /// the same setting at startup.
+    /// </summary>
+    /// <param name="kitCode">Font Awesome kit code; supply it from configuration, never hard-code it</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentNullException">Thrown when kitCode is null or empty</exception>
+    /// <exception cref="InvalidOperationException">Thrown when setting the kit code fails</exception>
+    public virtual async Task SetKitCodeAsync(string kitCode)
+    {
+        if (string.IsNullOrEmpty(kitCode))
+            throw new ArgumentNullException(nameof(kitCode));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setKitCode", ConfiguredLoaderUrl(), kitCode);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the Font Awesome kit code: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
         }
     }
 
@@ -341,8 +364,52 @@ public class WebAwesomeJSInterop
         }
     }
 
+    #region ------ Constructors ------
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WebAwesomeJSInterop"/> service.
+    /// </summary>
+    /// <param name="jsRuntime">JavaScript runtime used to load and invoke the Web Awesome interop module</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="jsRuntime"/> is null</exception>
+    public WebAwesomeJSInterop(IJSRuntime jsRuntime)
+    {
+        this.jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
+        moduleTask = new Lazy<Task<IJSObjectReference>>(() => LoadModuleAsync());
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WebAwesomeJSInterop"/> service with the registered asset options.
+    /// The icon library methods reach Web Awesome through the page's own Web Awesome script tag; the loader URL of
+    /// <paramref name="options"/> is used only when the page has none.
+    /// </summary>
+    /// <param name="jsRuntime">JavaScript runtime used to load and invoke the Web Awesome interop module</param>
+    /// <param name="options">Web Awesome asset options, as registered by AddWebAwesome</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="jsRuntime"/> or <paramref name="options"/> is null</exception>
+    public WebAwesomeJSInterop(IJSRuntime jsRuntime, WebAwesomeOptions options)
+        : this(jsRuntime)
+    {
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+
+    // initial default icon family of Web Awesome, reported while the JS runtime is disconnected
+    private const string WebAwesomeDefaultIconFamily = "classic";
+
+    private readonly IJSRuntime jsRuntime;
+    private readonly Lazy<Task<IJSObjectReference>> moduleTask;
+    private readonly WebAwesomeOptions? options;
+
     private async Task<IJSObjectReference> LoadModuleAsync()
     {
-        return await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/WebAwesome.Blazor/webawesome-interop.js");
+        return await jsRuntime.InvokeAsync<IJSObjectReference>("import", InteropModulePath);
     }
+
+    private string? ConfiguredLoaderUrl() => options?.ResolveLoaderUrl();
+
+    #endregion
 }

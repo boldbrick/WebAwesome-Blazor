@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -21,7 +20,7 @@ public class WaPopup : ComponentBase
 {
     #region ------ Dependency Injection ------
 
-    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
 
@@ -323,7 +322,7 @@ public class WaPopup : ComponentBase
     {
         if (Element.HasValue)
         {
-            await JSRuntime.InvokeVoidAsync("eval", $"arguments[0].reposition()", Element.Value);
+            await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
         }
     }
 

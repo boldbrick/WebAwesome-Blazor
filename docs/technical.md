@@ -54,7 +54,7 @@ Components exposing an icon-shaped slot — a `start`/`end` slot documented as a
 
 The entire JS surface is deliberately two small files; there are no per-component JS modules, no `document.getElementById` lookups, and no library-generated element ids:
 
-- **`webawesome-interop.js`** — an ES module lazily imported by the `WebAwesomeJSInterop` service (`Base\WebAwesomeJSInterop.cs`). Everything is driven by `ElementReference`: generic `invokeMethod` / `getProperty` / `setProperty`, `setCustomValidity`, and Web Awesome global helpers (icon library registration, default icon family). `JSDisconnectedException` is swallowed (returning a default where a value is expected) — circuits legitimately disconnect.
+- **`webawesome-interop.js`** — an ES module lazily imported by the `WebAwesomeJSInterop` service (`Base\WebAwesomeJSInterop.cs`). Everything is driven by `ElementReference`: generic `invokeMethod` / `getProperty` / `setProperty`, `setCustomValidity`, and Web Awesome's module-level helpers (icon library registration, default icon family, kit code). Those helpers are imported from the entry point the page itself loaded (its Web Awesome script tag, or the configured `WebAwesomeOptions` loader URL when there is none): the registry is module state, and another copy or version of Web Awesome would hold a registry no `wa-icon` reads. `InteropModuleContractTests` checks that every invoked identifier is exported. `JSDisconnectedException` is swallowed (returning a default where a value is expected) — circuits legitimately disconnect.
 - **`WebAwesome.Blazor.lib.module.js`** — the Blazor JS initializer, auto-loaded by the runtime, whose sole job is custom-event registration (see the event delivery contract above).
 
 Rules:

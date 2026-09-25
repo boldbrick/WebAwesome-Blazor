@@ -86,6 +86,7 @@ namespace WebAwesome.Blazor.Base
     public class WebAwesomeJSInterop
     {
         public WebAwesomeJSInterop(Microsoft.JSInterop.IJSRuntime jsRuntime) { }
+        public WebAwesomeJSInterop(Microsoft.JSInterop.IJSRuntime jsRuntime, WebAwesome.Blazor.Models.WebAwesomeOptions options) { }
         public System.Threading.Tasks.ValueTask DisposeAsync() { }
         public virtual System.Threading.Tasks.Task<string> GetDefaultIconFamilyAsync() { }
         public System.Threading.Tasks.Task<T> GetPropertyAsync<T>(Microsoft.AspNetCore.Components.ElementReference elementReference, string propertyName) { }
@@ -94,6 +95,7 @@ namespace WebAwesome.Blazor.Base
         public virtual System.Threading.Tasks.Task RegisterIconLibraryAsync(string name, WebAwesome.Blazor.Models.IconLibraryOptions options) { }
         public System.Threading.Tasks.Task SetCustomValidityAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string message) { }
         public virtual System.Threading.Tasks.Task SetDefaultIconFamilyAsync(string family) { }
+        public virtual System.Threading.Tasks.Task SetKitCodeAsync(string kitCode) { }
         public System.Threading.Tasks.Task SetPropertyAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string propertyName, object value) { }
         public System.Threading.Tasks.Task SyncPropertyAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string propertyName, object? value) { }
         public virtual System.Threading.Tasks.Task UnregisterIconLibraryAsync(string name) { }

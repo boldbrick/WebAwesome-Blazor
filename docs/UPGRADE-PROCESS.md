@@ -68,8 +68,9 @@ A wrapper is "functionally equal" to the original component when it renders the 
 4. **EditForm integration tests** (bUnit, `src\WebAwesome.Blazor.Tests\Base\`): every `WaInputBase<T>`/`InputBase<T>`-derived form control is exercised inside a real EditForm — binding, change propagation, DataAnnotations validation lifecycle, validation CSS classes, custom validity interop. New form controls added by an upgrade must join this suite (Phase 5).
 5. **Event delivery guards** (`EventBindingRegistrationTests`): source scan proving every bound `wa-*` event uses the `onwa-` attribute prefix and is registered with `Blazor.registerCustomEventType` in `wwwroot\WebAwesome.Blazor.lib.module.js` — both omissions are silent at build time and at runtime (no event ever fires), which is how the 3.0.0 event-delivery bug shipped.
 6. **Element-method invocation audit** (`ElementMethodInvocationTests`): every JS element method a wrapper invokes must be CEM-documented, a native DOM method, or allowlisted in `parity-config.json` (`extraElementMethods`) with a reason. Allowlisted methods are exactly the ones the CEM diff cannot track — re-verify each against the target source every upgrade.
-7. **Public API snapshot** (`PublicApiSnapshotTests` + `approved-public-api.txt`): parity verifies us against upstream; the snapshot verifies our own consumers against us. Intentional changes are diffed, promoted into the baseline, and surfaced in the CHANGELOG (Phase 5).
-8. **Browser end-to-end** (`tools\e2e\`, Playwright): the sweep visits every demo page asserting no unhandled errors; targeted specs cover checkbox/switch binding, theme switching, and custom-event payload delivery. Run against the upgraded build before delivery (Phase 5).
+7. **Interop module contract** (`InteropModuleContractTests`): every identifier the C# side invokes on `wwwroot\webawesome-interop.js` must be exported by it, every export must be invoked (or allowlisted with a reason), and no other global JS identifier may be invoked. A missing export fails only in the browser, and every test that mocks the interop layer passes regardless (the 3.11.0 icon library service).
+8. **Public API snapshot** (`PublicApiSnapshotTests` + `approved-public-api.txt`): parity verifies us against upstream; the snapshot verifies our own consumers against us. Intentional changes are diffed, promoted into the baseline, and surfaced in the CHANGELOG (Phase 5).
+9. **Browser end-to-end** (`tools\e2e\`, Playwright): the sweep visits every demo page asserting no unhandled errors; targeted specs cover checkbox/switch binding, theme switching, custom-event payload delivery and icon library registration. Run against the upgraded build before delivery (Phase 5).
 
 ## Pro-source containment
 
@@ -90,6 +91,7 @@ Every upgrade that adds components or major features must leave the following co
 | New component | Wrapper + integration tests + skeleton demo page | `ApiSurfaceParityTests` (wrapper), Phase 5 (tests, `New-WaDemoPages.ps1`) |
 | New bound `wa-*` event | `onwa-` binding + JS initializer registration (+ payload mapping if detail carries data) | `EventBindingRegistrationTests` |
 | New element method wrapper | CEM-documented or allowlisted with reason | `ElementMethodInvocationTests` |
+| New interop JS function | exported by `webawesome-interop.js`, invoked through the module, never as a global | `InteropModuleContractTests` (+ an e2e spec when it reaches Web Awesome module state) |
 | New form control (`WaInputBase<T>`) | bUnit EditForm integration coverage | Phase 5 coverage rule (skill) |
 | Any public API change | Snapshot baseline promotion + CHANGELOG mention | `PublicApiSnapshotTests` |
 | New/removed components vs. curated showcases | Removed components pruned from `Pages\Showcases\`; new ones queued as curation follow-up (new form controls added to the form showcase immediately) | Phase 5 (skill) + demo build |
