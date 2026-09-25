@@ -5,7 +5,7 @@
 # Windows PowerShell 5.1 compatible; ASCII only (5.1 misparses BOM-less non-ASCII scripts).
 #
 # Usage (from anywhere):
-#   & tools\release\Test-WaReleasePreflight.ps1 [-SkipE2E] [-SkipBuild] [-ProDist <path>] [-E2EPort <port>]
+#   & tools\release\Test-WaReleasePreflight.ps1 [-SkipE2E] [-SkipBuild] [-ProDist <path>] [-SkipProE2E] [-E2EPort <port>]
 # Exit code 0 = all executed gates passed; 1 = at least one gate failed.
 #
 # The e2e gate starts the WebAssembly demo on a free loopback port (or -E2EPort, which must be free),
@@ -13,17 +13,20 @@
 # CI=1 and --forbid-only. It then reads the JSON report and fails on any failed test, on any skip
 # not listed for the asset mode in tools\e2e\data\expected-skips.json, on a listed skip that ran or
 # no longer exists, and on fewer tests than the mode's minimumTests.
-# -ProDist runs a second, opt-in pass against a self-hosted Pro dist (the extracted Pro package root
-# or its dist-cdn folder, e.g. temp\wa-src\<version> from the release zip): it generates the ignored
-# asset override with tools\demo\Set-WaProAssets.ps1, runs the "pro" mode, and clears the override
-# again. No Pro URL or token is needed or committed; WA_PRO_DIST is used when -ProDist is omitted
-# and -ProE2E is given.
+# A second pass runs against a self-hosted Pro dist (the extracted Pro package root or its dist-cdn
+# folder): it generates the ignored asset override with tools\demo\Set-WaProAssets.ps1, runs the "pro"
+# mode, and clears the override again. By default it uses the local Pro build of the target version,
+# temp\wa-src\<Version.props version> (extracted from the release zip by the upgrade pipeline), and
+# prints a WARNING - not a failure - when that folder does not exist, so the Pro components go
+# unverified in the browser. -ProDist <path> points it at another dist, -ProE2E takes the path from
+# WA_PRO_DIST, and -SkipProE2E turns the pass off. No Pro URL or token is needed or committed.
 
 param(
     [switch]$SkipE2E,   # skip the Playwright sweep (demo server lifecycle)
     [switch]$SkipBuild, # skip builds/tests/nuspec gates (docs-only quick check)
-    [string]$ProDist,   # opt-in: also run the e2e suite against this self-hosted Pro dist
-    [switch]$ProE2E,    # opt-in: like -ProDist, with the path taken from $env:WA_PRO_DIST
+    [string]$ProDist,   # run the Pro e2e pass against this self-hosted Pro dist (default: temp\wa-src\<version>)
+    [switch]$ProE2E,    # like -ProDist, with the path taken from $env:WA_PRO_DIST
+    [switch]$SkipProE2E, # skip the Pro e2e pass (it runs by default when the local Pro build exists)
     [int]$E2EPort = 0   # demo port for the e2e passes; 0 picks a free loopback port
 )
 
@@ -32,6 +35,7 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..')
 Set-Location $repoRoot
 
 $script:results = @()
+$script:proWarning = $null
 function Add-Gate([string]$name, [bool]$ok, [string]$detail) {
     $script:results += New-Object PSObject -Property @{ Name = $name; Ok = $ok; Detail = $detail }
     $tag = 'FAIL'
@@ -354,14 +358,30 @@ function Invoke-E2ePass([string]$mode) {
 
 if (-not $SkipE2E) {
     if ($ProE2E -and -not $ProDist) { $ProDist = $env:WA_PRO_DIST }
+    if ($SkipProE2E -and ($ProDist -or $ProE2E)) {
+        Add-Gate 'e2e-pro-args' $false '-SkipProE2E contradicts -ProDist/-ProE2E - pass one or the other'
+    }
+
+    # by default the Pro pass uses the local Pro build of the target version, when there is one
+    $defaultProDist = Join-Path $repoRoot ('temp\wa-src\{0}' -f $version)
+    $proDistIsDefault = $false
+    if (-not $SkipProE2E -and -not $ProDist -and -not $ProE2E -and -not [string]::IsNullOrEmpty($version) -and (Test-Path $defaultProDist)) {
+        $ProDist = $defaultProDist
+        $proDistIsDefault = $true
+    }
+
     if (-not (Test-Path tools\e2e\node_modules)) {
         Add-Gate 'e2e-free-cdn' $false 'tools\e2e\node_modules missing - run npm install (and npm run install-browsers) first'
     } else {
         Invoke-E2ePass 'free-cdn'
 
-        if ($ProE2E -and -not $ProDist) {
+        if ($SkipProE2E) {
+            Write-Host 'Pro e2e pass skipped (-SkipProE2E): the Pro components are not verified in the browser.'
+        } elseif ($ProE2E -and -not $ProDist) {
             Add-Gate 'e2e-pro' $false '-ProE2E given but WA_PRO_DIST is not set'
         } elseif ($ProDist) {
+            if ($proDistIsDefault) { Write-Host ('Pro e2e pass: local Pro build {0} (default; -SkipProE2E turns it off)' -f $ProDist) }
+            else { Write-Host ('Pro e2e pass: {0}' -f $ProDist) }
             # self-hosted Pro dist through the ignored override files; always restored to the free default
             $savedProDist = $env:WA_PRO_DIST
             try {
@@ -376,7 +396,8 @@ if (-not $SkipE2E) {
                 if ($null -eq $savedProDist) { Remove-Item env:WA_PRO_DIST -ErrorAction SilentlyContinue }
             }
         } else {
-            Write-Host 'Pro e2e pass not requested (opt-in: -ProDist <Pro dist path> or -ProE2E with WA_PRO_DIST).'
+            $script:proWarning = ('Pro e2e pass NOT run: no local Pro build of {0} at {1}' -f $version, $defaultProDist)
+            Write-Warning ('Pro e2e pass NOT run: no local Pro build of {0} at {1}. The Pro components (combobox, date input/picker, file input, video, video playlist, data grid) are not verified in the browser. Extract the Pro release zip there (the wa-upgrade pipeline does), or pass -ProDist <path> / -ProE2E with WA_PRO_DIST; -SkipProE2E silences this warning.' -f $version, $defaultProDist)
         }
     }
 } else {
@@ -387,6 +408,8 @@ if (-not $SkipE2E) {
 $failed = @($script:results | Where-Object { -not $_.Ok })
 Write-Host ''
 Write-Host ("=== Preflight result: {0} gates, {1} failed ===" -f $script:results.Count, $failed.Count)
+# not a gate: the release can proceed, but the Pro components went unverified in the browser
+if ($script:proWarning) { Write-Warning $script:proWarning }
 if ($failed.Count -gt 0) {
     $failed | ForEach-Object { Write-Host ("  BLOCKER: {0} - {1}" -f $_.Name, $_.Detail) }
     exit 1

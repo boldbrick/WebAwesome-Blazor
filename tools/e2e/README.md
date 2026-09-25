@@ -83,7 +83,7 @@ free loopback port, checks that the server answering there is the process it sta
 `npx playwright test --forbid-only --reporter=list,json` with `CI=1` (so `test.only` fails and retries
 are armed; flaky tests are listed). It then checks the JSON report against
 `data\expected-skips.json`: every skipped test must be listed with a reason for the asset mode
-(`free-cdn`, or `pro` for the opt-in `-ProDist <path>` pass against a self-hosted Pro dist), a
+(`free-cdn`, or `pro` for the second pass against a self-hosted Pro dist: by default the local Pro build of the target version at `temp\wa-src\<version>`, else `-ProDist <path>`; the gate warns, without failing, when neither exists, and `-SkipProE2E` turns the pass off), a
 listed test that ran, is listed twice or no longer exists fails, and the pass must run at least `minimumTests`
 tests. So a self-skipping test (a Pro component on the free CDN) must be added to that file, and
 `minimumTests` must be raised when tests are added.

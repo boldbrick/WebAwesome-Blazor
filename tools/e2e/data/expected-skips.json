@@ -6,71 +6,71 @@
       "expectedSkips": [
         {
           "test": "pro-assets.spec.js > Pro components upgrade when a Pro asset override is active",
-          "reason": "guards the Pro asset delivery chain, so it runs only with a Pro asset override (the opt-in Pro pass, -ProDist)"
+          "reason": "guards the Pro asset delivery chain, so it runs only with a Pro asset override (the release gate's Pro pass, e2e-pro)"
         },
         {
           "test": "value-sync-binding.spec.js > value sync: WaDateInput reflects C# model change after user edit",
-          "reason": "wa-date-input is a Pro component and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-date-input is a Pro component and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-dispatch.spec.js > dispatch: WaCombobox focus, keyboard (relayed keydown), input, popup show/hide, create, clear",
-          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-dispatch.spec.js > dispatch: WaDateInput focus, keyboard, input, popup show/hide, clear",
-          "reason": "wa-date-input is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-date-input is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-dispatch.spec.js > dispatch: WaFileInput change and input from a chosen file, focus, blur",
-          "reason": "wa-file-input is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-file-input is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-dispatch.spec.js > dispatch: WaDatePicker input and bound value from a day click",
-          "reason": "wa-date-picker is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-date-picker is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-dispatch.spec.js > dispatch: WaVideo metadata, play, time update, pause, end, volume from the keyboard",
-          "reason": "wa-video is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-video is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-dispatch.spec.js > dispatch: OnInvalid of the Pro form controls when an invalid form is submitted",
-          "reason": "wa-combobox, wa-date-input and wa-file-input are Pro and never upgrade from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-combobox, wa-date-input and wa-file-input are Pro and never upgrade from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-dispatch.spec.js > dispatch: WaCombobox (multiple) SelectedValuesChanged follows option clicks",
-          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-payload.spec.js > payload: wa-focus-day and wa-view-change (date picker) carry ISO dates",
-          "reason": "wa-date-picker is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-date-picker is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-payload.spec.js > payload: wa-video-change (video playlist) carries the indexes and the title of the new video",
-          "reason": "wa-video-playlist is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-video-playlist is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-payload.spec.js > payload: data grid cell, sort, selection, page and filter events carry their details",
-          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-payload.spec.js > payload: data grid row expand/collapse and column move, pin, resize, visibility events carry their details",
-          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "event-payload.spec.js > payload: wa-data-request (server grid) carries sort and paging, wa-data-error the error message and request",
-          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "value-sync-binding.spec.js > value sync: WaCombobox reflects C# model change after user edit",
-          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "value-sync-binding.spec.js > value sync: WaCombobox (multiple) reflects C# model change after user edit",
-          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
           "test": "value-sync-binding.spec.js > value sync: WaDatePicker reflects C# model change after user edit",
-          "reason": "wa-date-picker is Pro and never upgrades from the free CDN; the opt-in Pro pass (-ProDist) runs it"
+          "reason": "wa-date-picker is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         }
       ]
     },

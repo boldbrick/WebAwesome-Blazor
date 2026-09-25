@@ -23,7 +23,7 @@ async function waitForWaReady(page, tags) {
 /**
  * Skips the running test, visibly and with a reason, when one of the given Pro components does not upgrade: the
  * free CDN has no Pro components, so they only run with a Pro asset override (tools\demo\Set-WaProAssets.ps1, or
- * the release gate's opt-in -ProDist pass). The release gate lists every such skip in
+ * the release gate's Pro pass, which runs by default when temp\wa-src\<version> holds the local Pro build). The release gate lists every such skip in
  * tools\e2e\data\expected-skips.json and fails on any other.
  *
  * @param {import('@playwright/test').Page} page
