@@ -695,6 +695,16 @@ public class EnumValueParityTests
     /// <returns>The key</returns>
     internal static string AttributeKey(string tag, string attribute) => $"{tag}:{attribute}";
 
+    /// <summary>
+    /// Returns the attribute value an enum value's ToHtmlValue() extension emits.
+    /// </summary>
+    /// <param name="enumValue">Boxed enum value</param>
+    /// <returns>The emitted value, or null when the enum has no ToHtmlValue method or it fails</returns>
+    internal static string? HtmlValueOf(object enumValue)
+    {
+        return ToHtmlValueMethods.TryGetValue(enumValue.GetType(), out var method) ? InvokeToHtmlValue(method, enumValue).Value : null;
+    }
+
     private static (string? Value, string? Failure) InvokeToHtmlValue(MethodInfo toHtmlValue, object enumValue)
     {
         try

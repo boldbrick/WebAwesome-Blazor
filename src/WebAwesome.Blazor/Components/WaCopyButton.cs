@@ -71,19 +71,20 @@ public class WaCopyButton : ComponentBase
 
     // Labels for different states
     /// <summary>
-    /// A custom label to show in the tooltip.
+    /// A custom label to show in the tooltip. Null (the default) leaves the element's localized label.
     /// </summary>
-    [Parameter] public string? CopyLabel { get; set; } = "Copy to clipboard";
+    [Parameter] public string? CopyLabel { get; set; }
 
     /// <summary>
-    /// A custom label to show in the tooltip after copying.
+    /// A custom label to show in the tooltip after copying. Null (the default) leaves the element's localized label.
     /// </summary>
-    [Parameter] public string? SuccessLabel { get; set; } = "Copied!";
+    [Parameter] public string? SuccessLabel { get; set; }
 
     /// <summary>
-    /// A custom label to show in the tooltip when a copy error occurs.
+    /// A custom label to show in the tooltip when a copy error occurs. Null (the default) leaves the element's
+    /// localized label.
     /// </summary>
-    [Parameter] public string? ErrorLabel { get; set; } = "Copy failed";
+    [Parameter] public string? ErrorLabel { get; set; }
 
     // Feedback duration in milliseconds
     /// <summary>

@@ -229,11 +229,11 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public int? EndDelay { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaAnimationFill Fill { get; set; }
+        public WebAwesome.Blazor.Components.WaAnimationFill? Fill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public double? IterationStart { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public decimal Iterations { get; set; }
+        public decimal? Iterations { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Name { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -558,7 +558,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
         public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaAppearance Appearance { get; set; }
+        public WebAwesome.Blazor.Components.WaAppearance? Appearance { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -573,7 +573,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaVariant Variant { get; set; }
+        public WebAwesome.Blazor.Components.WaVariant? Variant { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
     public enum WaCaptureMode
@@ -1705,7 +1705,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public int Distance { get; set; }
+        public int? Distance { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
@@ -2937,7 +2937,7 @@ namespace WebAwesome.Blazor.Components
         public string? Class { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaErrorCorrection ErrorCorrection { get; set; }
+        public WebAwesome.Blazor.Components.WaErrorCorrection? ErrorCorrection { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Fill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]

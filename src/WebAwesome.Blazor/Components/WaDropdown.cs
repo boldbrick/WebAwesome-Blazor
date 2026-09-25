@@ -62,9 +62,10 @@ public class WaDropdown : ComponentBase
     [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.BottomStart;
 
     /// <summary>
-    /// The distance of the dropdown menu from its trigger.
+    /// The distance of the dropdown menu from its trigger, in pixels. Null (the default) leaves the element's
+    /// default, 0.
     /// </summary>
-    [Parameter] public int Distance { get; set; } = 8;
+    [Parameter] public int? Distance { get; set; }
 
     /// <summary>
     /// The offset of the dropdown menu along its trigger.
@@ -137,8 +138,7 @@ public class WaDropdown : ComponentBase
         builder.AddAttribute(10, "open", Open);
         if (Placement != WaPlacement.BottomStart)
             builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
-        if (Distance != 8)
-            builder.AddNumberAttribute(12, "distance", Distance);
+        builder.AddAttributeIfNotNull(12, "distance", Distance);
         if (Skidding != 0)
             builder.AddNumberAttribute(13, "skidding", Skidding);
         builder.AddAttributeIfNotNull(14, "size", Size?.ToHtmlValue());

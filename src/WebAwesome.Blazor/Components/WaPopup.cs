@@ -114,9 +114,9 @@ public class WaPopup : ComponentBase
     /// <summary>
     /// When neither the preferred placement nor the fallback placements fit, this value determines whether
     /// the popup is positioned using the best available fit based on available space or as it was initially
-    /// preferred.
+    /// preferred ("best-fit" or "initial"). Null (the default) leaves the element's default, best-fit.
     /// </summary>
-    [Parameter] public string? FlipFallbackStrategy { get; set; } = "initial";
+    [Parameter] public string? FlipFallbackStrategy { get; set; }
 
     /// <summary>
     /// The amount of padding, in pixels, to exceed before the flip behavior occurs.

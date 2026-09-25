@@ -58,9 +58,9 @@ public class WaAnimatedImage : ComponentBase
     [Parameter] public string? Alt { get; set; }
 
     /// <summary>
-    /// Plays the animation. When set to false, the animation will pause.
+    /// Plays the animation; false (the default, like the element) shows it paused until the user plays it.
     /// </summary>
-    [Parameter] public bool Play { get; set; } = true;
+    [Parameter] public bool Play { get; set; }
 
     #endregion
 

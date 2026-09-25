@@ -40,14 +40,15 @@ public class WaCallout : ComponentBase
 
     // Callout properties
     /// <summary>
-    /// The callout's theme variant. Defaults to <c>brand</c> if not within another element with a variant.
+    /// The callout's theme variant. Null (the default) leaves the element's default: brand, unless the callout is
+    /// within another element with a variant.
     /// </summary>
-    [Parameter] public WaVariant Variant { get; set; } = WaVariant.Neutral;
+    [Parameter] public WaVariant? Variant { get; set; }
 
     /// <summary>
-    /// The callout's visual appearance.
+    /// The callout's visual appearance. Null (the default) leaves the element's own styling.
     /// </summary>
-    [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.OutlinedFilled;
+    [Parameter] public WaAppearance? Appearance { get; set; }
 
     /// <summary>
     /// The callout's size.
@@ -88,10 +89,8 @@ public class WaCallout : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add callout-specific attributes
-        if (Variant != WaVariant.Neutral)
-            builder.AddAttribute(10, "variant", Variant.ToHtmlValue());
-        if (Appearance != WaAppearance.OutlinedFilled)
-            builder.AddAttribute(11, "appearance", Appearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(10, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(11, "appearance", Appearance?.ToHtmlValue());
         if (Size != WaSize.Medium)
             builder.AddAttribute(12, "size", Size.ToHtmlValue());
 

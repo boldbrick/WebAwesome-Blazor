@@ -361,6 +361,14 @@ public class ComponentParityConfig
     public List<string> WrapperDefaultAttributes { get; set; } = new();
 
     /// <summary>
+    /// CEM attributes whose [Parameter] deliberately has a C# default other than the element's CEM default, because
+    /// the CEM cannot express the element's real default (e.g. a default computed at runtime). Reason key
+    /// "divergentParameterDefaults:&lt;tag&gt;:&lt;attribute&gt;"; an entry whose parameter default now matches is stale.
+    /// </summary>
+    [JsonPropertyName("divergentParameterDefaults")]
+    public List<string> DivergentParameterDefaults { get; set; } = new();
+
+    /// <summary>
     /// wa-* events the wrapper deliberately binds although the element's CEM entry does not declare them. Every
     /// entry needs an ignoreReasons entry keyed "undeclaredBoundEvents:&lt;tag&gt;:&lt;event&gt;".
     /// </summary>

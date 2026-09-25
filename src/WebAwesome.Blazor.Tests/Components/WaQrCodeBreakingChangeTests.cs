@@ -54,10 +54,11 @@ public class WaQrCodeBreakingChangeTests : BunitContext
         // Arrange & Act
         var cut = Render<WaQrCode>(parameters => parameters.Add(p => p.Value, "https://example.com"));
 
-        // Assert - Size, Radius, and ErrorCorrection keep their pre-existing non-nullable defaults
+        // Assert - Size and Radius keep their non-nullable defaults, which are the element's own; ErrorCorrection
+        // is unset since 3.12.0, so the element's default (H) applies
         var element = cut.Find("wa-qr-code");
         Assert.Equal("128", element.GetAttribute("size"));
         Assert.Equal("0", element.GetAttribute("radius"));
-        Assert.Equal("M", element.GetAttribute("error-correction"));
+        Assert.False(element.HasAttribute("error-correction"));
     }
 }

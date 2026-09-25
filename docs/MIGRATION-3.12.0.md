@@ -160,6 +160,24 @@ A render-based check now compares every slot a wrapper renders content into with
 
 C# that sets a removed parameter no longer compiles, and neither does Razor child content for `WaSlider`, `WaComparison` or `WaRating`, which now accept none. A `<MarkupLabel>` child element inside `<WaCheckbox>`/`<WaSwitch>` still compiles, with Razor warning RZ10012 ("Found markup element with unexpected name"), and ends up as ordinary label content; move its content into the checkbox's own content.
 
+### 8. Parameter defaults now match Web Awesome's (BREAKING)
+
+Every wrapper parameter now defaults to what the element itself does when the attribute is absent: an unset parameter renders nothing, and the element's own default applies. These parameters had a different C# default, which either rendered a value the element wouldn't pick, or wasn't rendered and so made the value it named unreachable.
+
+| Wrapper | Parameter | Old default | New default (Web Awesome's) | To keep the old behaviour |
+|---|---|---|---|---|
+| `WaAnimation` | `Fill` | `WaAnimationFill.None`, rendered `fill="none"` | `null` (type `WaAnimationFill?`): the element's `auto` | `Fill="WaAnimationFill.None"` |
+| `WaAnimation` | `Iterations` | `1`, rendered (type `decimal`) | `null` (type `decimal?`): the element's `Infinity`, so an animation loops until stopped | `Iterations="1"` |
+| `WaAnimatedImage` | `Play` | `true`, rendered `play` | `false`: the image starts paused, like the element, until the user plays it | `Play="true"` |
+| `WaQrCode` | `ErrorCorrection` | `WaErrorCorrection.M`, rendered (type `WaErrorCorrection`) | `null` (type `WaErrorCorrection?`): the element's `H` | `ErrorCorrection="WaErrorCorrection.M"` |
+| `WaCopyButton` | `CopyLabel`, `SuccessLabel`, `ErrorLabel` | the English `"Copy to clipboard"`, `"Copied!"`, `"Copy failed"`, rendered, which overrode the element's localized labels | `null`: the element's labels in the page's language | set the labels explicitly |
+| `WaPopup` | `FlipFallbackStrategy` | `"initial"`, rendered | `null`: the element's `best-fit` | `FlipFallbackStrategy="initial"` |
+| `WaCallout` | `Variant` | `WaVariant.Neutral`, not rendered (so the callout was `brand`, and an explicit `Neutral` could never be set) | `null` (type `WaVariant?`): `brand`, or the variant of an enclosing element | nothing: an unset callout looks as before, and `Variant="WaVariant.Neutral"` now renders neutral |
+| `WaCallout` | `Appearance` | `WaAppearance.OutlinedFilled`, not rendered (an explicit `OutlinedFilled` could never be set) | `null` (type `WaAppearance?`): the element's own styling | nothing; `Appearance="WaAppearance.OutlinedFilled"` now renders |
+| `WaDropdown` | `Distance` | `8`, not rendered (so the gap was the element's 0, and an explicit 8 could never be set) | `null` (type `int?`): the element's `0` | nothing: an unset dropdown looks as before, and `Distance="8"` now renders an 8px gap |
+
+The first six change what an unset parameter does; set the value shown to keep the previous look. C# that reads one of the parameters whose type became nullable must handle `null`.
+
 ## Behavioral Changes (non-breaking, but visible)
 
 - **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) and `WaRelativeTime.Date` now use the invariant culture.
@@ -225,6 +243,7 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Remove the parameters listed in section 5 (`WaRadio.Checked`, `WaTab.Closable`, the `WaMutationObserver` and `WaPopup` boundary parameters)
 - [ ] Remove the form control parameters listed in section 6, in C# and in Razor markup (markup keeps compiling)
 - [ ] Move the slot content listed in section 7 (`MarkupLabel` on `WaCheckbox`/`WaSwitch`/`WaRating`, `WaRating.MarkupHint`, `WaComparison`/`WaSlider` child content) to the parameter the table names
+- [ ] Check the parameter defaults listed in section 8 (`WaAnimation` `Fill`/`Iterations`, `WaAnimatedImage.Play`, `WaQrCode.ErrorCorrection`, `WaCopyButton` labels, `WaPopup.FlipFallbackStrategy`) and set the old value where you relied on it
 - [ ] If you compare `FocusEventArgs.Type` in an `OnFocus`/`OnBlur` handler of a form control, `WaButton` or `WaFileInput`, expect `"focusin"`/`"focusout"`
 - [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), remove the workaround
 - [ ] Update CSS selectors or tests that match `size="small|medium|large"` to `s|m|l`
@@ -235,5 +254,5 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 
 - **Minimum .NET**: .NET 9.0 (primary target .NET 10.0)
 - **Web Awesome Core**: 3.12.0+
-- **Breaking Changes**: Yes (sections 1–7)
+- **Breaking Changes**: Yes (sections 1–8)
 - **New Dependencies**: None

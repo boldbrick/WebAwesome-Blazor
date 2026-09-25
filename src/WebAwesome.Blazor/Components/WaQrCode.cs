@@ -73,9 +73,9 @@ public class WaQrCode : ComponentBase
     [Parameter] public decimal Radius { get; set; } = 0;
 
     /// <summary>
-    /// The level of error correction to use.
+    /// The level of error correction to use. Null (the default) leaves the element's default, H.
     /// </summary>
-    [Parameter] public WaErrorCorrection ErrorCorrection { get; set; } = WaErrorCorrection.M;
+    [Parameter] public WaErrorCorrection? ErrorCorrection { get; set; }
 
     /// <summary>
     /// A URL to an image (typically a logo) rendered in the center of the QR code. When set, the error
@@ -118,7 +118,7 @@ public class WaQrCode : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(7, "fill", Fill);
         builder.AddAttributeIfNotNullOrEmpty(8, "background", Background);
         builder.AddNumberAttribute(9, "radius", Radius);
-        builder.AddAttribute(10, "error-correction", ErrorCorrection.ToHtmlValue());
+        builder.AddAttributeIfNotNull(10, "error-correction", ErrorCorrection?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(11, "image", Image);
         builder.AddAttributeIfNotNullOrEmpty(12, "image-background", ImageBackground);
         builder.AddAttributeIfNotNull(13, "image-coverage", ImageCoverage);

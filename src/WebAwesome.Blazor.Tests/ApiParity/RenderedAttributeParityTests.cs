@@ -24,7 +24,8 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// the attribute, and no value is ever "True"/"False"; (d) every CEM attribute has a parameter that renders it when
 /// set to a non-default value (allowlist "unrenderedAttributes"); (e) numbers and dates render in the invariant
 /// culture; (f) with no parameter set, every rendered CEM attribute carries the element's own default (allowlist
-/// "wrapperDefaultAttributes"), so a wrong wrapper default shows. Parameters of other types (collections, objects, fragments, callbacks) are not sampled. Every allowlist
+/// "wrapperDefaultAttributes"), so a wrong wrapper default shows; (g) every parameter's C# default is the element's CEM default,
+/// or null (allowlist "divergentParameterDefaults"). Parameters of other types (collections, objects, fragments, callbacks) are not sampled. Every allowlist
 /// entry needs a reason, and stale entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
 public class RenderedAttributeParityTests
@@ -152,8 +153,29 @@ public class RenderedAttributeParityTests
     }
 
     /// <summary>
-    /// Every "extraRenderedAttributes", "unrenderedAttributes", "attributePrerequisites", "trueFalseAttributes" and
-    /// "wrapperDefaultAttributes" entry must carry a rationale of its own in ignoreReasons (or knownDefects), keyed
+    /// (g) The C# default of every [Parameter] mapped to a CEM attribute is the element's own default, because the
+    /// property's value is visible to consumers even where it is not rendered: a non-null default must equal the CEM
+    /// default (a bool compares as true/false, an enum by its ToHtmlValue(), a number numerically, a string without
+    /// its quotes), and where the element has no default only false, an empty string or null qualifies. A null
+    /// default is always fine (nothing is rendered, see (f)). Allowlist "divergentParameterDefaults" for defaults
+    /// the CEM cannot express.
+    /// </summary>
+    [Fact]
+    public void ParameterDefaults_MatchTheElementDefaults()
+    {
+        SkipUnlessParityEnabled();
+
+        var misses = RenderedElements()
+            .SelectMany(e => ParameterDefaultMisses(e).Where(m => !e.Config.DivergentParameterDefaults.Contains(m.Attribute)).Select(m => m.Miss))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        AssertNoMisses(misses, "Parameter defaults that differ from the element default");
+    }
+
+    /// <summary>
+    /// Every "extraRenderedAttributes", "unrenderedAttributes", "attributePrerequisites", "trueFalseAttributes",
+    /// "wrapperDefaultAttributes" and "divergentParameterDefaults" entry must carry a rationale of its own in ignoreReasons (or knownDefects), keyed
     /// "&lt;list&gt;:&lt;tag&gt;:&lt;attribute&gt;".
     /// </summary>
     [Fact]
@@ -177,6 +199,9 @@ public class RenderedAttributeParityTests
 
             foreach (var attribute in componentConfig.WrapperDefaultAttributes)
                 AddMissingReason(misses, $"{WrapperDefaultAttributesKey}:{tag}:{attribute}");
+
+            foreach (var attribute in componentConfig.DivergentParameterDefaults)
+                AddMissingReason(misses, $"{DivergentParameterDefaultsKey}:{tag}:{attribute}");
         }
 
         AssertNoMisses(misses, "Rendered-attribute allowlist entries without a reason");
@@ -244,6 +269,12 @@ public class RenderedAttributeParityTests
                 if (!ofTag.Any(e => BaselineDefaultMisses(e).Any(m => m.Attribute == attribute)))
                     misses.Add($"{tag}: wrapperDefaultAttributes entry '{attribute}' is not rendered with a non-default value without parameters and must be removed");
             }
+
+            foreach (var attribute in componentConfig.DivergentParameterDefaults)
+            {
+                if (!ofTag.Any(e => ParameterDefaultMisses(e).Any(m => m.Attribute == attribute)))
+                    misses.Add($"{tag}: divergentParameterDefaults entry '{attribute}' names no parameter whose default differs from the element default and must be removed");
+            }
         }
 
         AssertNoMisses(misses, "Stale rendered-attribute allowlist entries");
@@ -298,6 +329,7 @@ public class RenderedAttributeParityTests
     private const string AttributePrerequisitesKey = "attributePrerequisites";
     private const string TrueFalseAttributesKey = "trueFalseAttributes";
     private const string WrapperDefaultAttributesKey = "wrapperDefaultAttributes";
+    private const string DivergentParameterDefaultsKey = "divergentParameterDefaults";
     private const string StringSample = "x-sample-value";
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
@@ -737,6 +769,61 @@ public class RenderedAttributeParityTests
             yield return (attribute, $"{element.Tag} ({element.Name}): renders {attribute}=\"{value}\" with no parameter set, " +
                 $"but the element default is {surface.Default ?? "unset"}");
         }
+    }
+
+    // the CEM attributes whose [Parameter] has a non-null C# default other than the element default
+    private static IEnumerable<(string Attribute, string Miss)> ParameterDefaultMisses(RenderedElement element)
+    {
+        object instance;
+        try
+        {
+            instance = Activator.CreateInstance(element.Renders.ComponentType)!;
+        }
+        catch (Exception ex) when (ex is MissingMethodException or TargetInvocationException)
+        {
+            yield break;
+        }
+
+        foreach (var (attribute, surface, property) in MappedAttributes(element).OrderBy(m => m.Attribute, StringComparer.Ordinal))
+        {
+            if (property == null || !property.CanRead) continue;
+
+            var value = property.GetValue(instance);
+            if (value == null) continue;
+
+            var text = DefaultText(value);
+            if (text == null || ParameterDefaultMatches(value, text, surface)) continue;
+
+            yield return (attribute, $"{element.Tag} ({element.Name}): {property.Name} defaults to {Describe(value)} (\"{text}\"), " +
+                $"but the element default of '{attribute}' is {surface.Default ?? "unset"}");
+        }
+    }
+
+    // the attribute text a parameter value stands for, or null for a type the check cannot compare
+    private static string? DefaultText(object value) => value switch
+    {
+        bool flag => flag ? TrueText : FalseText,
+        string text => text,
+        Enum member => EnumValueParityTests.HtmlValueOf(member),
+        _ when IsNumber(value) => Convert.ToString(value, CultureInfo.InvariantCulture),
+        _ => null
+    };
+
+    // whether a parameter's C# default equals the element default; where the element has none, only false and an
+    // empty text (an empty string, or an enum member whose ToHtmlValue() is empty and so renders nothing) stand for "unset"
+    private static bool ParameterDefaultMatches(object value, string text, AttributeSurface surface)
+    {
+        var defaultText = surface.Default?.Trim();
+        if (string.IsNullOrEmpty(defaultText) || NoDefaultTexts.Contains(defaultText))
+            return value is false || (value is not bool && text.Length == 0);
+
+        if (value is bool) return text == defaultText;
+
+        if (IsNumber(value))
+            return decimal.TryParse(defaultText, NumberStyles.Float, CultureInfo.InvariantCulture, out var defaultNumber)
+                && Convert.ToDecimal(value, CultureInfo.InvariantCulture) == defaultNumber;
+
+        return text == defaultText.Trim(DefaultQuotes);
     }
 
     // whether a rendered value is what the element holds without the attribute: a present boolean reads true, a
