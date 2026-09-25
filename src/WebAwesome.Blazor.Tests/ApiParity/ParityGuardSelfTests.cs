@@ -240,6 +240,73 @@ public class ParityGuardSelfTests
     }
 
     #endregion
+    #region ------ Element method invocations ------
+
+    [Fact]
+    public void MethodScan_ReadsNestedGenericInvocations()
+    {
+        // Arrange - the WaDataGrid shape the old generic-argument pattern skipped (review mutation M4)
+        const string source = """
+            return await JSInterop.InvokeMethodAsync<IReadOnlyList<IReadOnlyDictionary<string, object>>>(Element.Value, "getVisibleRowz");
+            await JSInterop.InvokeMethodAsync(Element.Value, "focus", new { preventScroll });
+            """;
+
+        // Act
+        var names = ElementMethodInvocationTests.InvokedMethods(source).Select(i => i.MethodName);
+
+        // Assert
+        Assert.Equal(new[] { "getVisibleRowz", "focus" }, names);
+    }
+
+    [Fact]
+    public void MethodScan_TracesHelperParameterToCallSiteLiterals()
+    {
+        // Arrange - the WaVideo forwarding helper
+        const string source = """
+            public Task PlayAsync() => InvokeVoidElementMethodAsync("play");
+            public Task SeekAsync(double time) => InvokeVoidElementMethodAsync("seek", time);
+            private Task InvokeVoidElementMethodAsync(string methodName, params object[] args)
+                => JSInterop.InvokeMethodAsync(Element.Value, methodName, args);
+            """;
+
+        // Act
+        var names = ElementMethodInvocationTests.InvokedMethods(source).Select(i => i.MethodName);
+
+        // Assert
+        Assert.Equal(new[] { "play", "seek" }, names);
+    }
+
+    [Fact]
+    public void MethodScan_ReportsUntraceableMethodName()
+    {
+        // Arrange
+        const string source = "await JSInterop.InvokeMethodAsync(Element.Value, computedName);";
+
+        // Act
+        var invocation = Assert.Single(ElementMethodInvocationTests.InvokedMethods(source));
+
+        // Assert
+        Assert.Null(invocation.MethodName);
+        Assert.Equal("computedName", invocation.Expression);
+    }
+
+    [Fact]
+    public void MethodScan_ResolvesBaseClassesAndComputedTagsToRenderedElements()
+    {
+        // Act - WaInputBase declares resetValidity, WaChartBase renders OpenElement(0, TagName)
+        var inputTags = ElementMethodInvocationTests.RenderedTagsOf(new HashSet<string> { "WaInputBase" });
+        var chartTags = ElementMethodInvocationTests.RenderedTagsOf(new HashSet<string> { "WaChartBase" });
+        var unknownTags = ElementMethodInvocationTests.RenderedTagsOf(new HashSet<string> { "NoSuchWrapper" });
+
+        // Assert
+        Assert.Contains("wa-input", inputTags);
+        Assert.Contains("wa-slider", inputTags);
+        Assert.Contains("wa-bar-chart", chartTags);
+        Assert.Empty(unknownTags);
+    }
+
+    #endregion
+
     #region ------ Internals ------
 
     private const string ToHtmlValueMethodName = "ToHtmlValue";
