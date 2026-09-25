@@ -35,6 +35,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - `WaTextArea` now derives from `WaInputBase<string?>` like the other text inputs. It keeps its members, gains `OnKeyDown`/`OnKeyUp`/`OnKeyPress`, and renders `Size`/`Appearance`/`Resize` with the correct values (`xs`/`xl`, `filled-outlined`).
 - `WaSize.Small`/`Medium`/`Large` render `s`/`m`/`l`. Web Awesome 3.12.0 deprecates the long forms for removal in its next major version.
 - Missing union values added: nine `WaIconAnimation` animations, `WaAnimationFill.Auto`, `WaInputType.DateTimeLocal`/`Time`, `WaCurrencyDisplay.NarrowSymbol`, `WaDisplay.Narrow` and `WaHourFormat.Auto`.
+- `WaChartLegendPosition.ChartArea` (`chartArea`): the Chart.js legend position inside the chart area was unreachable from C#.
 - Range-mode `WaSlider` no longer requires `@bind-Value`.
 - `WaRange` gained `OnInvalid` (`wa-invalid`), which `wa-slider` dispatches and `WaSlider` already exposed.
 - wa-color-picker, wa-page, wa-radio-group, wa-slider (`tooltip__content` → `tooltip__body`), wa-textarea and wa-video changed only their CSS `::part`s. No wrapper exposes them, so there is no API change.
@@ -70,6 +71,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - New render-based `EventCallbackBindingParityTests` (replaces the source-scanning `BoundEventCemParityTests` and the name-only `ApiSurfaceParityTests.AllEvents_AreExposedAsEventCallbacks`). `RenderedWrapperCatalog` renders every wrapper with bUnit, once per `EventCallback` with a no-op delegate, and reads the handlers on the root element from the render tree. Each callback must bind exactly the CEM event its name stands for (convention plus `eventOverrides`, native DOM events via `nativeDomEvents`, the `numericchange`/`numericinput` aliases as their browser events), and every CEM event must be bound by each wrapper rendering the element, including secondary wrappers such as `WaRange` (`wa-slider`). It sees constants, base-class helpers and handlers without the `on` prefix, and found the four defects fixed above. `ParityGuardSelfTests` proves each defect class on synthetic wrappers.
 - `EventBindingRegistrationTests` now checks the rendered handlers against the JS initializer in both directions: every custom event a wrapper renders is registered, every registration is bound and CEM-declared, no registration shadows a Blazor built-in, and `Constants.*EventAttribute` matches `numericValueEventAliases` both ways.
 - New `CemEventCorroborationTests`: every CEM event must also be declared by the component's `@event` JSDoc and, for `wa-*` events, have an event class in `dist\events`. `Export-WaApiSurface.ps1` now records both (`jsDocEvents`, `declaredEventTypes`) in `expected-api-surface.json`, which was regenerated (additions only). The invented `wa-data-grid` `request` is allowlisted in `cemOnlyEvents`; the `wa-color-picker` popup events, which the JSDoc omits but the source dispatches, in `sourceVerifiedEvents`.
+- Type aliases are resolved (review H4): `Export-WaApiSurface.ps1` records each alias-typed attribute's union as `resolvedType`, from the release's `.d.ts` files and, for lib.dom/chart.js types (`PlaybackDirection`, `FillMode`, `ChartType`, `LayoutPosition`), the new curated `tools\upgrade\external-type-aliases.json`. `expected-api-surface.json` was regenerated (additions only). `EnumValueParityTests` now checks the 39 enum bindings it used to skip (the Pro date/time controls, `WaIcon.Animation`/`Canvas`, the chart `Type`/`LegendPosition`, `WaAnimation.Direction`/`Fill`) and resolves wrappers by rendered tag, so `WaRange` is covered too. An enum bound to an attribute that still resolves to no union fails unless allowlisted. `WaTooltip.Trigger` is checked token by token for every `WaTrigger` combination. Found: `WaChartLegendPosition` lacked `chartArea`.
 - `ElementMethodInvocationTests` scans all of `src\WebAwesome.Blazor` (it missed `Base\WaInputBase.cs`), reads nested generic calls (it skipped `WaDataGrid.GetVisibleRowsAsync`/`GetProcessedRowsAsync`), follows `WaVideo`/`WaVideoPlaylist`'s forwarding helper (twelve methods were never checked), resolves each file's element from the rendered tags instead of the first `OpenElement(0, "wa-…")`, fails when it cannot, and flags `extraElementMethods` entries nothing invokes.
 - Tests: 833 per TFM on net9.0 and net10.0, in both Debug and Release (was 627). Browser suite: 142 passed, 2 skipped. The skips are `pro-assets.spec.js` without an override, and WaDateInput, which is Pro-only on the free CDN; it was red and then green against the local 3.12.0 Pro dist.
 - Browser acceptance: the new `value-sync-binding.spec.js` and `number-value-binding.spec.js` were recorded red against the pre-fix wrappers (18 failed + 1 skipped, and 5 failed) and pass on the fixed build. The driving controls live on the Input/Textarea/Checkbox demo pages and on a harness page at `/testing/value-sync` (outside the component navigation, swept via `HARNESS_ROUTES`).
@@ -92,16 +94,19 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - the per-component enums and their `ToHtmlValue` overloads
   - the removed members and types, and the renumbered enum members
   - the four `WaDropdownItem` link parameters
+  - `WaChartLegendPosition.ChartArea`
   - `WebAwesomeJSInterop(IJSRuntime, WebAwesomeOptions)`, which DI picks when `AddWebAwesome` registered the options, and `WebAwesomeJSInterop.SetKitCodeAsync` (icon library fix)
   - `WaRange.OnInvalid`
 
 ### Deviations recorded (parity-config.json)
 - `ignoredEnumValues` (new list, each entry with a reason): only `wa-popup` `auto-size`/`sync` `None`, which omit the attribute.
 - `unreachableEnumUnionValues` / `unreachableUnionValues` (new lists):
-  - `WaSize` doesn't emit the deprecated `small`/`medium`/`large`.
+  - `WaSize` doesn't emit the deprecated `small`/`medium`/`large`. The exemption now lists its 25 `size` attributes, and each one must still need it (review H17: it used to apply to every binding and stay live while any one needed it).
+  - `WaChartLegendPosition` has no `center`: it comes from Chart.js' scale-position type, and the Chart.js legend doesn't document it.
   - `wa-badge` `attention` `none` is reached by leaving `Attention` unset.
   - `wa-data-grid` `selectable` `''` is the bare-attribute form of `multiple`, which `WaDataGridSelectable.Multiple` emits.
 - `ignoredBoolUnionAttributes` and `undeclaredBoundEvents` (new lists): empty.
+- `tokenListAttributes` (new): `wa-tooltip` `trigger` (click, hover, focus, manual). `unresolvedEnumAttributes` (new): `wa-animation` `easing`, which takes any CSS easing function.
 - Event-binding lists (new, each entry with a reason and a staleness check): `nativeDomEvents` (`blur`, `click`, `focus`, `keydown`, `keypress`, `keyup`); `derivedEventCallbacks` for the callbacks raised from the value binding (`OnCheckedChange`, `OnValueChange`, `WaRange.OnMinValueChange`/`OnMaxValueChange`) and `WaTabGroup.OnTabChange` (raised from `wa-tab-show`); `unboundEventCallbacks` for `WaRating.OnInput`.
 
 ### Next-release check outcomes

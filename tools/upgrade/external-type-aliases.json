@@ -1,0 +1,21 @@
+{
+  "$comment": "Type aliases the Web Awesome CEM uses for attributes but that no .d.ts of the release declares, because they come from another package. Export-WaApiSurface.ps1 resolves them into the attribute's 'resolvedType'. Only members expressible as an HTML attribute value are listed (object forms are dropped). Re-verify every upgrade against the cited source; a new external alias stays unresolved (and fails the enum parity checks) until it is added here.",
+  "aliases": {
+    "PlaybackDirection": {
+      "union": "'normal' | 'reverse' | 'alternate' | 'alternate-reverse'",
+      "source": "TypeScript lib.dom.d.ts (Web Animations API KeyframeEffect direction); wa-animation passes the attribute to Element.animate()"
+    },
+    "FillMode": {
+      "union": "'none' | 'forwards' | 'backwards' | 'both' | 'auto'",
+      "source": "TypeScript lib.dom.d.ts (Web Animations API KeyframeEffect fill); wa-animation passes the attribute to Element.animate()"
+    },
+    "ChartType": {
+      "union": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'",
+      "source": "chart.js 4 keyof ChartTypeRegistry; the controller ids registered by the Chart.js v4.5.1 bundled in the 3.12.0 dist-cdn, and the valid types listed by the chart.d.ts JSDoc of wa-chart"
+    },
+    "LayoutPosition": {
+      "union": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea'",
+      "source": "chart.js 4 LayoutPosition (the {[scaleId: string]: number} object form is not expressible as an attribute and is dropped)"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace WebAwesome.Blazor.Components;
@@ -960,7 +960,9 @@ public enum WaChartLegendPosition
     /// <summary>At the logical start of the chart.</summary>
     Start,
     /// <summary>At the logical end of the chart.</summary>
-    End
+    End,
+    /// <summary>Inside the chart area (the Chart.js "chartArea" legend position).</summary>
+    ChartArea
 }
 
 /// <summary>
@@ -2411,6 +2413,7 @@ public static class WaEnumExtensions
             WaChartLegendPosition.Right => "right",
             WaChartLegendPosition.Start => "start",
             WaChartLegendPosition.End => "end",
+            WaChartLegendPosition.ChartArea => "chartArea",
             _ => throw new ArgumentOutOfRangeException(nameof(position), position, null)
         };
     }

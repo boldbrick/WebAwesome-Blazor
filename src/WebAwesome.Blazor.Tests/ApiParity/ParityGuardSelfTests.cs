@@ -15,7 +15,8 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// written for, independently of the (fixed) wrapper code they pass against: the enum-value checks
 /// (forward and reverse) catch the pre-3.12.0 WaFormat { Auto, Relative, Numeric } mapping of
 /// wa-relative-time "format", the bool-vs-literal-union check catches the pre-3.12.0 bool Numeric
-/// parameter, and the render-based event-binding check (EventCallbackBindingParityTests) catches a swapped
+/// parameter, the token-list check catches an invalid token in any [Flags] combination (WaTrigger on wa-tooltip
+/// trigger), and the render-based event-binding check (EventCallbackBindingParityTests) catches a swapped
 /// event name, a deleted binding, an event name held in a constant, a swap inside a base-class helper, a
 /// handler bound without the "on" prefix and a derived callback bound to an event the element never
 /// dispatches (the "onwa-change" bindings the 3.12.0 sweep rewired). The synthetic wrappers render real Web
@@ -72,6 +73,43 @@ public class ParityGuardSelfTests
         // Act & Assert
         Assert.Empty(EnumValueParityTests.OutOfUnionValues(binding));
         Assert.Empty(EnumValueParityTests.UnreachableUnionValues(binding));
+    }
+
+    [Fact]
+    public void EnumValueGuard_ChecksEveryFlagCombinationTokenByToken()
+    {
+        // Arrange - the real WaTrigger flags against the wa-tooltip trigger tokens
+        var tokens = GetComponentConfig(TooltipTag).TokenListAttributes[TriggerAttribute];
+        var binding = new EnumValueParityTests.EnumAttributeBinding(TooltipTag, TriggerAttribute, typeof(WaTooltip),
+            typeof(WaTooltip).GetProperty(nameof(WaTooltip.Trigger))!, typeof(WaTrigger), tokens,
+            typeof(WaTrigger).Assembly.GetTypes().SelectMany(t => t.GetMethods())
+                .Single(m => m.Name == ToHtmlValueMethodName && m.IsStatic && m.GetParameters() is { Length: 1 } p && p[0].ParameterType == typeof(WaTrigger)),
+            IsTokenList: true);
+
+        // Act
+        var values = EnumValueParityTests.EnumValuesToCheck(typeof(WaTrigger)).ToList();
+
+        // Assert - four named flags plus the eleven unnamed combinations, all emitting valid tokens only
+        Assert.Equal(15, values.Count);
+        Assert.Contains(values, v => v.Name == "Click|Hover|Focus|Manual");
+        Assert.Empty(EnumValueParityTests.OutOfUnionValues(binding));
+        Assert.Empty(EnumValueParityTests.UnreachableUnionValues(binding));
+    }
+
+    [Fact]
+    public void EnumValueGuard_FlagsInvalidTokenInFlagCombination()
+    {
+        // Arrange - a flag mapping that misspells one token, visible only in combinations containing it
+        var binding = new EnumValueParityTests.EnumAttributeBinding(TooltipTag, TriggerAttribute, typeof(WaTooltip),
+            typeof(WaTooltip).GetProperty(nameof(WaTooltip.Trigger))!, typeof(MisspeltTrigger), TriggerTokens,
+            typeof(MisspeltTriggerMapping).GetMethod(ToHtmlValueMethodName)!, IsTokenList: true);
+
+        // Act
+        var outOfUnion = EnumValueParityTests.OutOfUnionValues(binding).Select(v => v.Member).ToList();
+
+        // Assert
+        Assert.Equal(new[] { "Hover", "Click|Hover" }, outOfUnion);
+        Assert.Equal(new[] { "hover" }, EnumValueParityTests.UnreachableUnionValues(binding));
     }
 
     #endregion
@@ -350,7 +388,11 @@ public class ParityGuardSelfTests
     private const string NumericAttribute = "numeric";
     private const string NumericUnionType = "'always' | 'auto'";
 
+    private const string TooltipTag = "wa-tooltip";
+    private const string TriggerAttribute = "trigger";
+
     private static readonly IReadOnlyList<string> FormatUnion = new[] { "long", "short", "narrow" };
+    private static readonly IReadOnlyList<string> TriggerTokens = new[] { "click", "hover" };
     private static readonly JsInitializerEventRegistrations Registrations = JsInitializerEventRegistrations.Current;
 
     private const string SyntheticJsInitializer = """
@@ -406,6 +448,24 @@ public class ParityGuardSelfTests
     private static class PartialFormatMapping
     {
         public static string ToHtmlValue(PartialFormat format) => format.ToString().ToLowerInvariant();
+    }
+
+    [Flags]
+    private enum MisspeltTrigger
+    {
+        Click = 1,
+        Hover = 2
+    }
+
+    private static class MisspeltTriggerMapping
+    {
+        public static string ToHtmlValue(MisspeltTrigger trigger)
+        {
+            var tokens = new List<string>();
+            if (trigger.HasFlag(MisspeltTrigger.Click)) tokens.Add("click");
+            if (trigger.HasFlag(MisspeltTrigger.Hover)) tokens.Add("hovers");
+            return string.Join(' ', tokens);
+        }
     }
 
     // the pre-3.12.0 WaRelativeTime parameter shape

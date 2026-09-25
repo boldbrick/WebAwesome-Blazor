@@ -86,6 +86,28 @@ internal static class ApiParityData
     }
 
     /// <summary>
+    /// Enumerates every wrapper of every relevant custom element, resolved by the tag the wrapper renders (see
+    /// RenderedWrapperCatalog), so secondary wrappers of an element (WaRange renders wa-slider) are included; an
+    /// element no rendered wrapper produced falls back to its wrapper found by class name.
+    /// </summary>
+    /// <returns>Tag name, expected surface and wrapper type of each (element, wrapper) pair</returns>
+    public static IEnumerable<(string Tag, ComponentSurface Component, Type Wrapper)> WrappersByTag()
+    {
+        var rendered = RenderedWrapperCatalog.All
+            .Where(w => w.Tag != null)
+            .ToLookup(w => w.Tag!, w => w.ComponentType, StringComparer.Ordinal);
+
+        foreach (var (tag, component) in RelevantComponents())
+        {
+            var wrappers = rendered[tag].ToList();
+            if (wrappers.Count == 0 && FindWrapperType(tag, component) is { } byName) wrappers.Add(byName);
+
+            foreach (var wrapper in wrappers)
+                yield return (tag, component, wrapper);
+        }
+    }
+
+    /// <summary>
     /// Removes the generic arity suffix from a CLR type name, e.g. "WaSelect`1" to "WaSelect".
     /// </summary>
     /// <param name="typeName">CLR type name</param>

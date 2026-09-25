@@ -63,6 +63,20 @@ public class AttributeSurface
 
     [JsonPropertyName("default")]
     public string Default { get; set; }
+
+    /// <summary>
+    /// The type with its type aliases replaced by their unions (e.g. "IconCanvas | undefined" to
+    /// "'fixed' | 'auto' | 'square' | 'roomy' | undefined"), resolved by the export from the release's .d.ts files
+    /// and tools\upgrade\external-type-aliases.json; null when the type references no resolvable alias.
+    /// </summary>
+    [JsonPropertyName("resolvedType")]
+    public string ResolvedType { get; set; }
+
+    /// <summary>
+    /// The alias-resolved type when there is one, otherwise the CEM type.
+    /// </summary>
+    [JsonIgnore]
+    public string EffectiveType => ResolvedType ?? Type;
 }
 
 /// <summary>
@@ -123,17 +137,36 @@ public class ParityConfig
 
     /// <summary>
     /// Literals of CEM string-literal unions that deliberately no member of the named enum emits, keyed by enum
-    /// type name (e.g. the long size spellings Web Awesome deprecates), applied to every attribute bound to that
-    /// enum. Every entry needs an ignoreReasons entry keyed "unreachableEnumUnionValues:&lt;enum&gt;".
+    /// type name (e.g. the long size spellings Web Awesome deprecates), applied only to the attributes the entry
+    /// lists ("&lt;tag&gt;:&lt;attribute&gt;"), each of which must still need every literal. Every entry needs an
+    /// ignoreReasons entry keyed "unreachableEnumUnionValues:&lt;enum&gt;".
     /// </summary>
     [JsonPropertyName("unreachableEnumUnionValues")]
-    public Dictionary<string, List<string>> UnreachableEnumUnionValues { get; set; } = new();
+    public Dictionary<string, EnumUnreachableValues> UnreachableEnumUnionValues { get; set; } = new();
 
     /// <summary>
     /// Rationale of each documented omission or deviation, keyed by the ignored name.
     /// </summary>
     [JsonPropertyName("ignoreReasons")]
     public Dictionary<string, string> IgnoreReasons { get; set; } = new();
+}
+
+/// <summary>
+/// Union literals no member of one enum emits, and the attributes bound to that enum the exemption applies to.
+/// </summary>
+public class EnumUnreachableValues
+{
+    /// <summary>
+    /// The deliberately unreachable union literals.
+    /// </summary>
+    [JsonPropertyName("literals")]
+    public List<string> Literals { get; set; } = new();
+
+    /// <summary>
+    /// The exempted attributes, as "&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("attributes")]
+    public List<string> Attributes { get; set; } = new();
 }
 
 /// <summary>
@@ -185,6 +218,24 @@ public class ComponentParityConfig
     /// </summary>
     [JsonPropertyName("ignoredBoolUnionAttributes")]
     public List<string> IgnoredBoolUnionAttributes { get; set; } = new();
+
+    /// <summary>
+    /// CEM attributes typed as a plain string that Web Awesome reads as a space-separated list of tokens, mapped to
+    /// the valid tokens (e.g. wa-tooltip "trigger" to click, hover, focus, manual); the enum checks treat the tokens
+    /// as the attribute's union and split every emitted value. Every entry needs an ignoreReasons entry keyed
+    /// "tokenListAttributes:&lt;tag&gt;:&lt;attribute&gt;" citing the source of the tokens.
+    /// </summary>
+    [JsonPropertyName("tokenListAttributes")]
+    public Dictionary<string, List<string>> TokenListAttributes { get; set; } = new();
+
+    /// <summary>
+    /// CEM attributes bound to an enum parameter although their type resolves to no string-literal union (e.g. a
+    /// free-form string for which the enum offers a subset of valid values), so the enum's values cannot be
+    /// checked against the CEM. Every entry needs an ignoreReasons entry keyed
+    /// "unresolvedEnumAttributes:&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("unresolvedEnumAttributes")]
+    public List<string> UnresolvedEnumAttributes { get; set; } = new();
 
     /// <summary>
     /// wa-* events the wrapper deliberately binds although the element's CEM entry does not declare them. Every

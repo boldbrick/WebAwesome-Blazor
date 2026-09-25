@@ -757,6 +757,7 @@ namespace WebAwesome.Blazor.Components
         Right = 3,
         Start = 4,
         End = 5,
+        ChartArea = 6,
     }
     public enum WaChartType
     {

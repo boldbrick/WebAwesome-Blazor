@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -11,18 +12,23 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// <summary>
 /// Verifies the values, not just the names, of wrapper parameters bound to CEM attributes whose type is
 /// a pure string-literal union (e.g. 'long' | 'short' | 'narrow'; null and undefined members are
-/// ignored). For an enum or nullable enum parameter, every enum member's ToHtmlValue() output must be
-/// one of the union's literals (forward direction), and every union literal must be emitted by some
-/// member (reverse direction, so no valid value is unreachable from C#). A bool/bool? parameter bound
-/// to such an attribute is always a defect: Blazor renders true as an empty attribute and drops false,
-/// so no literal of the union can ever be sent (the WaRelativeTime Numeric=false class of bug).
-/// Attributes map to properties exactly as in ApiSurfaceParityTests (kebab-case to PascalCase,
-/// attributeOverrides, global and per-component ignores). Deliberate deviations are allowlisted in
-/// parity-config.json - per component in "ignoredEnumValues", "unreachableUnionValues" and
-/// "ignoredBoolUnionAttributes", per enum type in the top-level "unreachableEnumUnionValues" - each
-/// with an "ignoreReasons" entry; stale allowlist entries fail. Not covered: unions with non-literal
-/// members (string, number, boolean, type aliases) and wrappers that serialize an enum by other means
-/// than its ToHtmlValue() extension. The value checks are inert until parity-config.json sets
+/// ignored). Types written with a type alias ('IconCanvas | undefined') are checked through the union the
+/// export resolved into 'resolvedType'; an enum parameter bound to an attribute whose type still resolves to
+/// no literal union fails unless allowlisted ("unresolvedEnumAttributes"). A plain-string attribute Web
+/// Awesome reads as a space-separated token list ("tokenListAttributes", e.g. wa-tooltip trigger) is checked
+/// token by token, and a [Flags] enum bound to it with every combination of its flags. For an enum or
+/// nullable enum parameter, every enum member's ToHtmlValue() output must be one of the union's literals
+/// (forward direction), and every union literal must be emitted by some member (reverse direction, so no
+/// valid value is unreachable from C#). A bool/bool? parameter bound to such an attribute is always a
+/// defect: Blazor renders true as an empty attribute and drops false, so no literal of the union can ever be
+/// sent (the WaRelativeTime Numeric=false class of bug). Wrappers are resolved by the tag they render
+/// (WaRange renders wa-slider), and attributes map to properties exactly as in ApiSurfaceParityTests
+/// (kebab-case to PascalCase, attributeOverrides, global and per-component ignores). Deliberate deviations
+/// are allowlisted in parity-config.json - per component in "ignoredEnumValues", "unreachableUnionValues",
+/// "ignoredBoolUnionAttributes", "tokenListAttributes" and "unresolvedEnumAttributes", per enum type and
+/// listed attribute in the top-level "unreachableEnumUnionValues" - each with an "ignoreReasons" entry;
+/// stale allowlist entries fail. This class checks the ToHtmlValue() function; RenderedAttributeParityTests
+/// checks what the wrappers actually render. The value checks are inert until parity-config.json sets
 /// "enabled": true, like the other parity tests.
 /// </summary>
 public class EnumValueParityTests
@@ -75,6 +81,26 @@ public class EnumValueParityTests
         }
 
         AssertNoMisses(misses, "Enum parameters without a ToHtmlValue mapping");
+    }
+
+    /// <summary>
+    /// Every enum parameter mapped to a CEM attribute must be checkable: the attribute's (alias-resolved) type must
+    /// be a string-literal union or a declared token list, unless the attribute is allowlisted in
+    /// "unresolvedEnumAttributes".
+    /// </summary>
+    [Fact]
+    public void AllEnumParameters_AreBoundToResolvedUnion()
+    {
+        if (!Config.Enabled) return;
+
+        var misses = UnresolvedEnumParameters()
+            .Where(p => !GetComponentConfig(p.Tag).UnresolvedEnumAttributes.Contains(p.Attribute))
+            .Select(p => $"{p.Tag}: attribute '{p.Attribute}' ({StripGenericArity(p.Wrapper.Name)}.{p.Property.Name} : {EnumTypeOf(p.Property).Name}) " +
+                $"has type '{p.CemType}', which resolves to no string-literal union, so the enum's values cannot be checked " +
+                "(resolve the alias in the export, e.g. via tools\\upgrade\\external-type-aliases.json, or allowlist it with a reason)")
+            .ToList();
+
+        AssertNoMisses(misses, "Enum parameters bound to attributes whose type resolves to no string-literal union");
     }
 
     /// <summary>
@@ -162,31 +188,34 @@ public class EnumValueParityTests
     {
         if (!Config.Enabled) return;
 
-        var bindings = EnumAttributeBindings().ToDictionary(b => (b.Tag, b.Attribute));
+        var bindings = EnumAttributeBindings().ToLookup(b => (b.Tag, b.Attribute));
         var misses = new List<string>();
 
         foreach (var (tag, componentConfig) in Config.Components)
         {
             foreach (var (attributeName, members) in componentConfig.IgnoredEnumValues)
             {
-                if (!bindings.TryGetValue((tag, attributeName), out var binding))
+                var attributeBindings = bindings[(tag, attributeName)].ToList();
+                if (attributeBindings.Count == 0)
                 {
                     misses.Add($"{tag}: ignoredEnumValues attribute '{attributeName}' is not an enum parameter bound to a CEM string-literal union attribute");
                     continue;
                 }
 
-                var outOfUnion = binding.ToHtmlValue == null
-                    ? new HashSet<string>(StringComparer.Ordinal)
-                    : OutOfUnionValues(binding).Select(v => v.Member).ToHashSet(StringComparer.Ordinal);
-
                 foreach (var member in members)
                 {
-                    var suppressesMiss = member == WildcardMember
-                        ? binding.ToHtmlValue == null || outOfUnion.Count > 0
-                        : outOfUnion.Contains(member);
+                    var suppressesMiss = attributeBindings.Any(binding =>
+                    {
+                        var outOfUnion = binding.ToHtmlValue == null
+                            ? new HashSet<string>(StringComparer.Ordinal)
+                            : OutOfUnionValues(binding).Select(v => v.Member).ToHashSet(StringComparer.Ordinal);
+                        return member == WildcardMember
+                            ? binding.ToHtmlValue == null || outOfUnion.Count > 0
+                            : outOfUnion.Contains(member);
+                    });
 
                     if (!suppressesMiss)
-                        misses.Add($"{Describe(binding)}: ignoredEnumValues entry '{member}' suppresses no miss and must be removed");
+                        misses.Add($"{tag}: attribute '{attributeName}': ignoredEnumValues entry '{member}' suppresses no miss and must be removed");
                 }
             }
         }
@@ -196,8 +225,8 @@ public class EnumValueParityTests
 
     /// <summary>
     /// Every unreachable-literal allowlist entry, per component ("unreachableUnionValues") and
-    /// per enum type ("unreachableEnumUnionValues"), must list at least one literal and carry a
-    /// rationale in ignoreReasons.
+    /// per enum type ("unreachableEnumUnionValues"), must list at least one literal (and, per enum
+    /// type, at least one attribute) and carry a rationale in ignoreReasons.
     /// </summary>
     [Fact]
     public void UnreachableUnionValues_HaveReasons()
@@ -215,10 +244,12 @@ public class EnumValueParityTests
             }
         }
 
-        foreach (var (enumName, literals) in Config.UnreachableEnumUnionValues)
+        foreach (var (enumName, entry) in Config.UnreachableEnumUnionValues)
         {
-            if (literals == null || literals.Count == 0)
+            if (entry.Literals.Count == 0)
                 misses.Add($"unreachableEnumUnionValues entry '{enumName}' lists no union literals");
+            if (entry.Attributes.Count == 0)
+                misses.Add($"unreachableEnumUnionValues entry '{enumName}' lists no attributes");
 
             AddMissingReason(misses, enumName, $"{UnreachableEnumUnionValuesKey}:{enumName}", $"unreachableEnumUnionValues entry '{enumName}'");
         }
@@ -230,7 +261,9 @@ public class EnumValueParityTests
 
     /// <summary>
     /// Every unreachable-literal allowlist entry must still suppress a real miss: the literal must
-    /// be in the bound attribute's union and emitted by no enum member.
+    /// be in the bound attribute's union and emitted by no enum member. An entry of
+    /// "unreachableEnumUnionValues" is checked per listed attribute: each must be bound to that enum
+    /// and still need every literal of the entry.
     /// </summary>
     [Fact]
     public void UnreachableUnionValues_AreNotStale()
@@ -238,37 +271,41 @@ public class EnumValueParityTests
         if (!Config.Enabled) return;
 
         var bindings = EnumAttributeBindings().Where(b => b.ToHtmlValue != null).ToList();
-        var bindingsByAttribute = bindings.ToDictionary(b => (b.Tag, b.Attribute));
+        var bindingsByAttribute = bindings.ToLookup(b => (b.Tag, b.Attribute));
         var misses = new List<string>();
 
         foreach (var (tag, componentConfig) in Config.Components)
         {
             foreach (var (attributeName, literals) in componentConfig.UnreachableUnionValues)
             {
-                if (!bindingsByAttribute.TryGetValue((tag, attributeName), out var binding))
+                var attributeBindings = bindingsByAttribute[(tag, attributeName)].ToList();
+                if (attributeBindings.Count == 0)
                 {
                     misses.Add($"{tag}: unreachableUnionValues attribute '{attributeName}' is not a mapped enum parameter bound to a CEM string-literal union attribute");
                     continue;
                 }
 
-                var unreachable = UnreachableUnionValues(binding).ToHashSet(StringComparer.Ordinal);
+                var unreachable = attributeBindings.SelectMany(UnreachableUnionValues).ToHashSet(StringComparer.Ordinal);
                 foreach (var literal in literals.Where(l => !unreachable.Contains(l)))
-                    misses.Add($"{Describe(binding)}: unreachableUnionValues entry '{literal}' suppresses no miss and must be removed");
+                    misses.Add($"{tag}: attribute '{attributeName}': unreachableUnionValues entry '{literal}' suppresses no miss and must be removed");
             }
         }
 
-        foreach (var (enumName, literals) in Config.UnreachableEnumUnionValues)
+        foreach (var (enumName, entry) in Config.UnreachableEnumUnionValues)
         {
-            var enumBindings = bindings.Where(b => b.EnumType.Name == enumName).ToList();
-            if (enumBindings.Count == 0)
+            foreach (var key in entry.Attributes)
             {
-                misses.Add($"unreachableEnumUnionValues enum '{enumName}' is bound to no CEM string-literal union attribute");
-                continue;
-            }
+                var attributeBindings = bindings.Where(b => AttributeKey(b.Tag, b.Attribute) == key && b.EnumType.Name == enumName).ToList();
+                if (attributeBindings.Count == 0)
+                {
+                    misses.Add($"unreachableEnumUnionValues:{enumName}: attribute '{key}' is not bound to {enumName} with a CEM string-literal union and must be removed");
+                    continue;
+                }
 
-            var unreachable = enumBindings.SelectMany(UnreachableUnionValues).ToHashSet(StringComparer.Ordinal);
-            foreach (var literal in literals.Where(l => !unreachable.Contains(l)))
-                misses.Add($"unreachableEnumUnionValues:{enumName}: entry '{literal}' suppresses no miss and must be removed");
+                var unreachable = attributeBindings.SelectMany(UnreachableUnionValues).ToHashSet(StringComparer.Ordinal);
+                foreach (var literal in entry.Literals.Where(l => !unreachable.Contains(l)))
+                    misses.Add($"unreachableEnumUnionValues:{enumName}: literal '{literal}' is reachable or not in the union of '{key}', so the entry suppresses no miss there and the attribute must be removed from it");
+            }
         }
 
         AssertNoMisses(misses, "Stale unreachableUnionValues/unreachableEnumUnionValues entries");
@@ -320,6 +357,62 @@ public class EnumValueParityTests
         AssertNoMisses(misses, "Stale ignoredBoolUnionAttributes entries");
     }
 
+    /// <summary>
+    /// Every "tokenListAttributes" and "unresolvedEnumAttributes" entry must carry a rationale in ignoreReasons,
+    /// and a token list must list at least one token.
+    /// </summary>
+    [Fact]
+    public void TokenListAndUnresolvedEnumAttributes_HaveReasons()
+    {
+        var misses = new List<string>();
+
+        foreach (var (tag, componentConfig) in Config.Components)
+        {
+            foreach (var (attributeName, tokens) in componentConfig.TokenListAttributes)
+            {
+                if (tokens == null || tokens.Count == 0)
+                    misses.Add($"{tag}: tokenListAttributes entry '{attributeName}' lists no tokens");
+
+                AddMissingReason(misses, tag, ReasonKey(TokenListAttributesKey, tag, attributeName), $"tokenListAttributes entry '{attributeName}'");
+            }
+
+            foreach (var attributeName in componentConfig.UnresolvedEnumAttributes)
+                AddMissingReason(misses, tag, ReasonKey(UnresolvedEnumAttributesKey, tag, attributeName), $"unresolvedEnumAttributes entry '{attributeName}'");
+        }
+
+        AssertNoMisses(misses, "tokenListAttributes/unresolvedEnumAttributes entries without a reason");
+    }
+
+    /// <summary>
+    /// A "tokenListAttributes" entry must name a CEM attribute of the element typed as a plain string (a literal
+    /// union needs no token list), and an "unresolvedEnumAttributes" entry must still name an enum parameter bound
+    /// to an attribute whose type resolves to no string-literal union.
+    /// </summary>
+    [Fact]
+    public void TokenListAndUnresolvedEnumAttributes_AreNotStale()
+    {
+        if (!Config.Enabled) return;
+
+        var unresolved = UnresolvedEnumParameters().Select(p => (p.Tag, p.Attribute)).ToHashSet();
+        var misses = new List<string>();
+
+        foreach (var (tag, componentConfig) in Config.Components)
+        {
+            foreach (var attributeName in componentConfig.TokenListAttributes.Keys)
+            {
+                if (!Surface.Components.TryGetValue(tag, out var component) || !component.Attributes.TryGetValue(attributeName, out var attribute))
+                    misses.Add($"{tag}: tokenListAttributes entry '{attributeName}' is not a CEM attribute of the element and must be removed");
+                else if (attribute.EffectiveType != PlainStringType)
+                    misses.Add($"{tag}: tokenListAttributes entry '{attributeName}' has CEM type '{attribute.EffectiveType}', not '{PlainStringType}'; check it as a union instead");
+            }
+
+            foreach (var attributeName in componentConfig.UnresolvedEnumAttributes.Where(a => !unresolved.Contains((tag, a))))
+                misses.Add($"{tag}: unresolvedEnumAttributes entry '{attributeName}' is not an enum parameter bound to an unresolved attribute type and must be removed");
+        }
+
+        AssertNoMisses(misses, "Stale tokenListAttributes/unresolvedEnumAttributes entries");
+    }
+
     #region ------ Internals ------
 
     private const string ToHtmlValueMethodName = "ToHtmlValue";
@@ -328,7 +421,14 @@ public class EnumValueParityTests
     private const string UnreachableUnionValuesKey = "unreachableUnionValues";
     private const string UnreachableEnumUnionValuesKey = "unreachableEnumUnionValues";
     private const string IgnoredBoolUnionAttributesKey = "ignoredBoolUnionAttributes";
+    private const string TokenListAttributesKey = "tokenListAttributes";
+    private const string UnresolvedEnumAttributesKey = "unresolvedEnumAttributes";
     private const string UnionSeparator = " | ";
+    private const string FlagSeparator = "|";
+    private const string PlainStringType = "string";
+
+    // a [Flags] enum with more single-bit members than this is not expanded into every combination
+    private const int MaxExpandedFlags = 10;
 
     // union members that only express optionality, not an emitted value
     private static readonly HashSet<string> OptionalUnionMembers = new(StringComparer.Ordinal) { "null", "undefined" };
@@ -347,14 +447,16 @@ public class EnumValueParityTests
         .ToDictionary(g => g.Key, g => g.First().Method);
 
     /// <summary>
-    /// A [Parameter] property mapped to a CEM attribute whose type is a pure string-literal union.
+    /// A [Parameter] property mapped to a CEM attribute whose type is a pure string-literal union (or a declared
+    /// token list, whose tokens stand in for the union).
     /// </summary>
     internal sealed record LiteralUnionParameter(
         string Tag,
         string Attribute,
         Type Wrapper,
         PropertyInfo Property,
-        IReadOnlyList<string> Union);
+        IReadOnlyList<string> Union,
+        bool IsTokenList = false);
 
     /// <summary>
     /// An enum-typed <see cref="LiteralUnionParameter"/> with the ToHtmlValue() method serializing its enum, if any.
@@ -366,15 +468,18 @@ public class EnumValueParityTests
         PropertyInfo Property,
         Type EnumType,
         IReadOnlyList<string> Union,
-        MethodInfo? ToHtmlValue);
+        MethodInfo? ToHtmlValue,
+        bool IsTokenList = false);
+
+    /// <summary>
+    /// An enum [Parameter] property mapped to a CEM attribute whose type resolves to no string-literal union.
+    /// </summary>
+    private sealed record UnresolvedEnumParameter(string Tag, string Attribute, Type Wrapper, PropertyInfo Property, string? CemType);
 
     private static IEnumerable<LiteralUnionParameter> AllLiteralUnionParameters()
     {
-        foreach (var (tag, component) in RelevantComponents())
+        foreach (var (tag, component, wrapper) in WrappersByTag())
         {
-            var wrapper = FindWrapperType(tag, component);
-            if (wrapper == null) continue;
-
             foreach (var parameter in LiteralUnionParameters(tag, component, wrapper))
                 yield return parameter;
         }
@@ -384,17 +489,43 @@ public class EnumValueParityTests
     {
         foreach (var parameter in AllLiteralUnionParameters())
         {
-            var enumType = Nullable.GetUnderlyingType(parameter.Property.PropertyType) ?? parameter.Property.PropertyType;
+            var enumType = EnumTypeOf(parameter.Property);
             if (!enumType.IsEnum) continue;
 
             ToHtmlValueMethods.TryGetValue(enumType, out var toHtmlValue);
             yield return new EnumAttributeBinding(parameter.Tag, parameter.Attribute, parameter.Wrapper, parameter.Property,
-                enumType, parameter.Union, toHtmlValue);
+                enumType, parameter.Union, toHtmlValue, parameter.IsTokenList);
         }
     }
 
+    private static IEnumerable<UnresolvedEnumParameter> UnresolvedEnumParameters()
+    {
+        foreach (var (tag, component, wrapper) in WrappersByTag())
+        {
+            var componentConfig = GetComponentConfig(tag);
+
+            foreach (var (attributeName, attribute) in component.Attributes)
+            {
+                if (IsIgnoredAttribute(componentConfig, attributeName)) continue;
+                if (componentConfig.TokenListAttributes.ContainsKey(attributeName)) continue;
+                if (ParseStringLiteralUnion(attribute.EffectiveType) != null) continue;
+
+                var property = FindParameter(wrapper, ExpectedParameterName(componentConfig, attributeName));
+                if (property == null || !EnumTypeOf(property).IsEnum) continue;
+
+                yield return new UnresolvedEnumParameter(tag, attributeName, wrapper, property, attribute.EffectiveType);
+            }
+        }
+    }
+
+    private static Type EnumTypeOf(PropertyInfo property)
+    {
+        return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+    }
+
     /// <summary>
-    /// Maps the string-literal union attributes of one custom element to the wrapper's [Parameter] properties.
+    /// Maps the string-literal union attributes (and declared token-list attributes) of one custom element to the
+    /// wrapper's [Parameter] properties.
     /// </summary>
     /// <param name="tag">Custom element tag name</param>
     /// <param name="component">Expected surface of the custom element</param>
@@ -408,14 +539,15 @@ public class EnumValueParityTests
         {
             if (IsIgnoredAttribute(componentConfig, attributeName)) continue;
 
-            var union = ParseStringLiteralUnion(attribute.Type);
+            var isTokenList = componentConfig.TokenListAttributes.TryGetValue(attributeName, out var tokens);
+            var union = isTokenList ? tokens : ParseStringLiteralUnion(attribute.EffectiveType);
             if (union == null) continue;
 
             // a missing parameter is reported by ApiSurfaceParityTests.AllAttributes_AreExposedAsParameters
             var property = FindParameter(wrapper, ExpectedParameterName(componentConfig, attributeName));
             if (property == null) continue;
 
-            yield return new LiteralUnionParameter(tag, attributeName, wrapper, property, union);
+            yield return new LiteralUnionParameter(tag, attributeName, wrapper, property, union, isTokenList);
         }
     }
 
@@ -445,23 +577,65 @@ public class EnumValueParityTests
     }
 
     /// <summary>
+    /// Returns the values of an enum type to check: every member and, for a [Flags] enum, also every combination
+    /// of its single-bit members no member names (a flag enum parameter can be set to any combination).
+    /// </summary>
+    /// <param name="enumType">Enum type</param>
+    /// <returns>Description ("Member" or "A|B") and boxed value of each value</returns>
+    internal static IEnumerable<(string Name, object Value)> EnumValuesToCheck(Type enumType)
+    {
+        foreach (var name in Enum.GetNames(enumType))
+            yield return (name, Enum.Parse(enumType, name));
+
+        if (!enumType.IsDefined(typeof(FlagsAttribute), inherit: false)) yield break;
+
+        var flags = Enum.GetNames(enumType)
+            .Select(name => (Name: name, Bits: Convert.ToUInt64(Enum.Parse(enumType, name))))
+            .Where(f => BitOperations.PopCount(f.Bits) == 1)
+            .ToList();
+        if (flags.Count > MaxExpandedFlags) throw new InvalidOperationException($"{enumType.Name} has too many flags to combine");
+
+        // the combinations no named member already stands for
+        for (var mask = 1; mask < 1 << flags.Count; mask++)
+        {
+            var members = flags.Where((_, i) => (mask & (1 << i)) != 0).ToList();
+            var value = Enum.ToObject(enumType, members.Aggregate(0UL, (acc, f) => acc | f.Bits));
+            if (Enum.IsDefined(enumType, value)) continue;
+
+            yield return (string.Join(FlagSeparator, members.Select(f => f.Name)), value);
+        }
+    }
+
+    /// <summary>
+    /// Splits an emitted value into the values to look up in the union: the whole value, or its whitespace-separated
+    /// tokens for a token-list attribute.
+    /// </summary>
+    /// <param name="value">Emitted attribute value</param>
+    /// <param name="isTokenList">Whether the attribute is a token list</param>
+    /// <returns>The values to check</returns>
+    internal static IReadOnlyList<string> ValuesOf(string value, bool isTokenList)
+    {
+        return isTokenList ? value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries) : new[] { value };
+    }
+
+    /// <summary>
     /// Returns the enum members whose ToHtmlValue() output is not a literal of the binding's union (or that throw
-    /// or yield null).
+    /// or yield null); for a token-list attribute every token must be in the union.
     /// </summary>
     /// <param name="binding">Enum binding with a ToHtmlValue method</param>
     /// <returns>Member name and a description of the offending output</returns>
     internal static IEnumerable<(string Member, string Detail)> OutOfUnionValues(EnumAttributeBinding binding)
     {
-        foreach (var memberName in Enum.GetNames(binding.EnumType))
+        foreach (var (memberName, value) in EnumValuesToCheck(binding.EnumType))
         {
             var call = $"{ToHtmlValueMethodName}({binding.EnumType.Name}.{memberName})";
-            var (htmlValue, failure) = InvokeToHtmlValue(binding.ToHtmlValue!, Enum.Parse(binding.EnumType, memberName));
+            var (htmlValue, failure) = InvokeToHtmlValue(binding.ToHtmlValue!, value);
 
             if (failure != null)
                 yield return (memberName, $"{call} = <throws {failure}>");
             else if (htmlValue == null)
                 yield return (memberName, $"{call} = null");
-            else if (!binding.Union.Contains(htmlValue, StringComparer.Ordinal))
+            else if (ValuesOf(htmlValue, binding.IsTokenList) is var values && (values.Count == 0 || values.Any(v => !binding.Union.Contains(v, StringComparer.Ordinal))))
                 yield return (memberName, $"{call} = '{htmlValue}'");
         }
     }
@@ -473,9 +647,10 @@ public class EnumValueParityTests
     /// <returns>The unreachable literals, in union order</returns>
     internal static IEnumerable<string> UnreachableUnionValues(EnumAttributeBinding binding)
     {
-        var emitted = Enum.GetNames(binding.EnumType)
-            .Select(name => InvokeToHtmlValue(binding.ToHtmlValue!, Enum.Parse(binding.EnumType, name)).Value)
+        var emitted = EnumValuesToCheck(binding.EnumType)
+            .Select(v => InvokeToHtmlValue(binding.ToHtmlValue!, v.Value).Value)
             .Where(value => value != null)
+            .SelectMany(value => ValuesOf(value!, binding.IsTokenList))
             .ToHashSet(StringComparer.Ordinal);
 
         return binding.Union.Where(literal => !emitted.Contains(literal));
@@ -502,6 +677,24 @@ public class EnumValueParityTests
             $"{parameter.Property.PropertyType.Name}) is a string-literal union {FormatUnion(parameter.Union)}; a bool parameter can emit none of its literals";
     }
 
+    /// <summary>
+    /// Formats a union for a miss description.
+    /// </summary>
+    /// <param name="union">Union literals</param>
+    /// <returns>The literals, quoted and separated by " | "</returns>
+    internal static string FormatUnion(IReadOnlyList<string> union)
+    {
+        return string.Join(UnionSeparator, union.Select(v => $"'{v}'"));
+    }
+
+    /// <summary>
+    /// Returns the allowlist key of an attribute of an element, "&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    /// <param name="tag">Custom element tag name</param>
+    /// <param name="attribute">CEM attribute name</param>
+    /// <returns>The key</returns>
+    internal static string AttributeKey(string tag, string attribute) => $"{tag}:{attribute}";
+
     private static (string? Value, string? Failure) InvokeToHtmlValue(MethodInfo toHtmlValue, object enumValue)
     {
         try
@@ -523,7 +716,9 @@ public class EnumValueParityTests
     private static bool IsAllowedUnreachableValue(ComponentParityConfig componentConfig, EnumAttributeBinding binding, string literal)
     {
         return (componentConfig.UnreachableUnionValues.TryGetValue(binding.Attribute, out var componentLiterals) && componentLiterals.Contains(literal))
-            || (Config.UnreachableEnumUnionValues.TryGetValue(binding.EnumType.Name, out var enumLiterals) && enumLiterals.Contains(literal));
+            || (Config.UnreachableEnumUnionValues.TryGetValue(binding.EnumType.Name, out var entry)
+                && entry.Literals.Contains(literal)
+                && entry.Attributes.Contains(AttributeKey(binding.Tag, binding.Attribute)));
     }
 
     private static void AddMissingReason(List<string> misses, string owner, string key, string entry)
@@ -536,11 +731,6 @@ public class EnumValueParityTests
     {
         return $"{binding.Tag}: attribute '{binding.Attribute}' " +
             $"({StripGenericArity(binding.Wrapper.Name)}.{binding.Property.Name} : {binding.EnumType.Name})";
-    }
-
-    private static string FormatUnion(IReadOnlyList<string> union)
-    {
-        return string.Join(UnionSeparator, union.Select(v => $"'{v}'"));
     }
 
     private static string ReasonKey(string prefix, string tag, string attributeName)

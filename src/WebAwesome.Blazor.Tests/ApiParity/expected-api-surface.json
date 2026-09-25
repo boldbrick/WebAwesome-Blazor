@@ -299,7 +299,8 @@
         "direction": {
           "type": "PlaybackDirection",
           "default": "'normal'",
-          "description": "Determines the direction of playback as well as the behavior when reaching the end of an iteration.\n[Learn more](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction)"
+          "description": "Determines the direction of playback as well as the behavior when reaching the end of an iteration.\n[Learn more](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction)",
+          "resolvedType": "'normal' | 'reverse' | 'alternate' | 'alternate-reverse'"
         },
         "duration": {
           "type": "number",
@@ -319,7 +320,8 @@
         "fill": {
           "type": "FillMode",
           "default": "'auto'",
-          "description": "Sets how the animation applies styles to its target before and after its execution."
+          "description": "Sets how the animation applies styles to its target before and after its execution.",
+          "resolvedType": "'none' | 'forwards' | 'backwards' | 'both' | 'auto'"
         },
         "iteration-start": {
           "type": "number",
@@ -557,7 +559,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -587,7 +590,8 @@
         "type": {
           "type": "ChartType",
           "default": "'bar'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -759,7 +763,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -784,7 +789,8 @@
         "type": {
           "type": "ChartType",
           "default": "'bubble'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -2473,7 +2479,8 @@
         "first-day-of-week": {
           "type": "WaDateInputFirstDayOfWeek",
           "default": "'auto'",
-          "description": "The first day of the week in the popup calendar."
+          "description": "The first day of the week in the popup calendar.",
+          "resolvedType": "'auto' | 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'"
         },
         "hint": {
           "type": "string",
@@ -2513,7 +2520,8 @@
         "mode": {
           "type": "WaDateInputMode",
           "default": "'single'",
-          "description": "Selection mode."
+          "description": "Selection mode.",
+          "resolvedType": "'single' | 'range'"
         },
         "months": {
           "type": "1 | 2",
@@ -2543,7 +2551,8 @@
         "placement": {
           "type": "WaDateInputPlacement",
           "default": "'bottom-start'",
-          "description": "Preferred popup placement."
+          "description": "Preferred popup placement.",
+          "resolvedType": "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end'"
         },
         "readonly": {
           "type": "boolean",
@@ -2558,7 +2567,8 @@
         "size": {
           "type": "WaDateInputSize | 'small' | 'medium' | 'large'",
           "default": "'m'",
-          "description": "The date input's size."
+          "description": "The date input's size.",
+          "resolvedType": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'"
         },
         "today": {
           "type": "string",
@@ -2777,7 +2787,8 @@
         "first-day-of-week": {
           "type": "WaDatePickerFirstDayOfWeek",
           "default": "'auto'",
-          "description": "The first day of the week. The default `auto` uses the current locale's week info. To set a specific day, pass a\nthree-letter weekday name: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, or `sat`."
+          "description": "The first day of the week. The default `auto` uses the current locale's week info. To set a specific day, pass a\nthree-letter weekday name: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, or `sat`.",
+          "resolvedType": "'auto' | 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'"
         },
         "focused-date": {
           "type": "string",
@@ -2817,7 +2828,8 @@
         "mode": {
           "type": "WaDatePickerMode",
           "default": "'single'",
-          "description": "The selection mode."
+          "description": "The selection mode.",
+          "resolvedType": "'single' | 'range'"
         },
         "months": {
           "type": "1 | 2",
@@ -2827,7 +2839,8 @@
         "page-by": {
           "type": "WaDatePickerPageBy",
           "default": "'months'",
-          "description": "Whether prev/next advances by the visible range (`months`) or one month at a time (`single`)."
+          "description": "Whether prev/next advances by the visible range (`months`) or one month at a time (`single`).",
+          "resolvedType": "'months' | 'single'"
         },
         "readonly": {
           "type": "boolean",
@@ -2837,7 +2850,8 @@
         "size": {
           "type": "WaDatePickerSize | 'small' | 'medium' | 'large'",
           "default": "'m'",
-          "description": "Visual size."
+          "description": "Visual size.",
+          "resolvedType": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'"
         },
         "today": {
           "type": "string",
@@ -2852,12 +2866,14 @@
         "view": {
           "type": "WaDatePickerView",
           "default": "'days'",
-          "description": "The current view."
+          "description": "The current view.",
+          "resolvedType": "'days' | 'months' | 'years'"
         },
         "weekday-format": {
           "type": "WaDatePickerWeekdayFormat",
           "default": "'short'",
-          "description": "The weekday header format."
+          "description": "The weekday header format.",
+          "resolvedType": "'narrow' | 'short' | 'long'"
         },
         "with-outside-days": {
           "type": "boolean",
@@ -3235,7 +3251,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -3260,7 +3277,8 @@
         "type": {
           "type": "ChartType",
           "default": "'doughnut'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -4014,7 +4032,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -4039,7 +4058,8 @@
         "type": {
           "type": "ChartType",
           "default": "'bar'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -4302,7 +4322,8 @@
         "animation": {
           "type": "IconAnimation | undefined",
           "default": null,
-          "description": "Sets the animation for the icon"
+          "description": "Sets the animation for the icon",
+          "resolvedType": "'beat' | 'fade' | 'beat-fade' | 'bounce' | 'flip' | 'flip-360' | 'shake' | 'spin' | 'spin-pulse' | 'spin-reverse' | 'spin-snap' | 'spin-snap-4' | 'spin-snap-8' | 'buzz' | 'wag' | 'float' | 'swing' | 'jello' | undefined"
         },
         "auto-width": {
           "type": "boolean",
@@ -4312,7 +4333,8 @@
         "canvas": {
           "type": "IconCanvas | undefined",
           "default": null,
-          "description": "Sets the icon canvas — the box the icon is centered within. Unset renders as `fixed` (1.25em × 1em); `auto` hugs the\nicon's width; `square` is 1.25em × 1.25em; `roomy` is 1.5em × 1.5em. Mirrors Font Awesome's `fa-fixed-width`,\n`fa-width-auto`, `fa-canvas-square`, and `fa-canvas-roomy`. Scales with `font-size`."
+          "description": "Sets the icon canvas — the box the icon is centered within. Unset renders as `fixed` (1.25em × 1em); `auto` hugs the\nicon's width; `square` is 1.25em × 1.25em; `roomy` is 1.5em × 1.5em. Mirrors Font Awesome's `fa-fixed-width`,\n`fa-width-auto`, `fa-canvas-square`, and `fa-canvas-roomy`. Scales with `font-size`.",
+          "resolvedType": "'fixed' | 'auto' | 'square' | 'roomy' | undefined"
         },
         "did-ssr": {
           "type": null,
@@ -4827,7 +4849,8 @@
         "appearance": {
           "type": "WaKnownDateAppearance",
           "default": "'outlined'",
-          "description": "The known date's visual appearance."
+          "description": "The known date's visual appearance.",
+          "resolvedType": "'filled' | 'outlined' | 'filled-outlined'"
         },
         "autocomplete": {
           "type": "string",
@@ -4907,7 +4930,8 @@
         "size": {
           "type": "WaKnownDateSize | 'small' | 'medium' | 'large'",
           "default": "'m'",
-          "description": "The known date's size."
+          "description": "The known date's size.",
+          "resolvedType": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'"
         },
         "value": {
           "type": "string",
@@ -5048,7 +5072,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -5073,7 +5098,8 @@
         "type": {
           "type": "ChartType",
           "default": "'line'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -6001,7 +6027,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -6026,7 +6053,8 @@
         "type": {
           "type": "ChartType",
           "default": "'pie'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -6106,7 +6134,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -6131,7 +6160,8 @@
         "type": {
           "type": "ChartType",
           "default": "'polarArea'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -6652,7 +6682,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -6677,7 +6708,8 @@
         "type": {
           "type": "ChartType",
           "default": "'radar'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -7265,7 +7297,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -7290,7 +7323,8 @@
         "type": {
           "type": "ChartType",
           "default": "'scatter'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -8709,7 +8743,8 @@
         "hour-format": {
           "type": "WaTimeInputHourFormat",
           "default": "'auto'",
-          "description": "Whether the UI uses a 12-hour or 24-hour clock. `auto` follows the resolved locale."
+          "description": "Whether the UI uses a 12-hour or 24-hour clock. `auto` follows the resolved locale.",
+          "resolvedType": "'auto' | '12' | '24'"
         },
         "label": {
           "type": "string",
@@ -8749,7 +8784,8 @@
         "placement": {
           "type": "WaTimeInputPlacement",
           "default": "'bottom-start'",
-          "description": "Preferred popup placement."
+          "description": "Preferred popup placement.",
+          "resolvedType": "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end'"
         },
         "readonly": {
           "type": "boolean",
@@ -8764,7 +8800,8 @@
         "size": {
           "type": "WaTimeInputSize | 'small' | 'medium' | 'large'",
           "default": "'m'",
-          "description": "The time picker's size."
+          "description": "The time picker's size.",
+          "resolvedType": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'"
         },
         "step": {
           "type": "number | 'any'",
