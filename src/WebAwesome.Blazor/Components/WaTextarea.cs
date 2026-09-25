@@ -118,7 +118,7 @@ public class WaTextArea : WaInputBase<string?>
         builder.AddAttributeIfNotNull(21, "rows", Rows);
         builder.AddAttributeIfNotNull(22, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttributeIfNotNull(23, "resize", Resize?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(24, "spellcheck", Spellcheck);
+        builder.AddTrueFalseAttribute(24, "spellcheck", Spellcheck);
         builder.AddAttributeIfNotNullOrEmpty(30, "autocapitalize", AutoCapitalize);
         builder.AddAttributeIfNotNullOrEmpty(31, "autocorrect", AutoCorrect);
         builder.AddAttribute(32, "autofocus", AutoFocus);

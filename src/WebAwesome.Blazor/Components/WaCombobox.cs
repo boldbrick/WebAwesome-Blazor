@@ -231,7 +231,7 @@ public class WaCombobox : WaInputBase<string?>
         builder.AddAttributeIfNotNullOrEmpty(35, "autocorrect", AutoCorrect);
         builder.AddAttributeIfNotNullOrEmpty(36, "enterkeyhint", EnterKeyHint);
         builder.AddAttributeIfNotNullOrEmpty(37, "inputmode", InputMode);
-        builder.AddAttributeIfNotNull(38, "spellcheck", Spellcheck);
+        builder.AddTrueFalseAttribute(38, "spellcheck", Spellcheck);
 
         // Add value binding - handle both single and multiple selection
         if (Multiple)

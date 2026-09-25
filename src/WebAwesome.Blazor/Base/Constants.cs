@@ -20,4 +20,15 @@ public static class Constants
     /// <see cref="NumericChangeEventAttribute"/>.
     /// </summary>
     internal const string NumericInputEventAttribute = "onnumericinput";
+
+    /// <summary>
+    /// Attribute value read as true by Web Awesome's "true"/"false" attribute converters (e.g. spellcheck).
+    /// </summary>
+    internal const string TrueAttributeValue = "true";
+
+    /// <summary>
+    /// Attribute value read as false by Web Awesome's "true"/"false" attribute converters (e.g. spellcheck);
+    /// the comparison is case-sensitive, so "False" would read as true.
+    /// </summary>
+    internal const string FalseAttributeValue = "false";
 }

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
@@ -40,6 +41,70 @@ internal static class RenderTreeBuilderExtensions
         if (value != null)
         {
             builder.AddAttribute(sequence, name, value.ToString());
+        }
+    }
+
+    /// <summary>
+    /// Blocks boolean values from the <see cref="object.ToString"/> path: it would emit "True"/"False", which no
+    /// Web Awesome attribute reads correctly. Use <see cref="AddBooleanAttribute"/> for a plain boolean attribute
+    /// or <see cref="AddTrueFalseAttribute"/> for an attribute whose converter reads "true"/"false".
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(BooleanToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, bool? value)
+    {
+        throw new NotSupportedException(BooleanToStringMessage);
+    }
+
+    /// <summary>
+    /// Blocks boolean values from the <see cref="object.ToString"/> path; see the nullable overload.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(BooleanToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, bool value)
+    {
+        throw new NotSupportedException(BooleanToStringMessage);
+    }
+
+    /// <summary>
+    /// Adds a plain boolean attribute (Lit <c>type: Boolean</c>, where any present attribute means true):
+    /// emitted without a value when true, omitted when false or null.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; only true emits the attribute</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddBooleanAttribute(this RenderTreeBuilder builder, int sequence, string name, bool? value)
+    {
+        // Blazor renders a bool attribute as present (true) or absent (false)
+        builder.AddAttribute(sequence, name, value == true);
+    }
+
+    /// <summary>
+    /// Adds an attribute whose Web Awesome converter reads the literal strings "true" and "false" (e.g.
+    /// spellcheck): emits exactly "true" or "false" in lowercase, and nothing when null so the component
+    /// keeps its own default. A present but empty attribute would read as false for such converters, so
+    /// the Blazor boolean rendering must not be used for them.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddTrueFalseAttribute(this RenderTreeBuilder builder, int sequence, string name, bool? value)
+    {
+        if (value.HasValue)
+        {
+            builder.AddAttribute(sequence, name, value.Value ? Constants.TrueAttributeValue : Constants.FalseAttributeValue);
         }
     }
 
@@ -96,4 +161,11 @@ internal static class RenderTreeBuilderExtensions
         }
         builder.CloseElement();
     }
+
+    #region ------ Internals ------
+
+    private const string BooleanToStringMessage =
+        "A bool would be emitted as \"True\"/\"False\"; use AddBooleanAttribute or AddTrueFalseAttribute";
+
+    #endregion
 }

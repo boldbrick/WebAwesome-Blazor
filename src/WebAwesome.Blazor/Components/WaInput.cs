@@ -187,7 +187,7 @@ public class WaInput : WaInputBase<string?>
         builder.AddAttribute(23, "pill", Pill);
         builder.AddAttribute(24, "with-clear", WithClear);
         builder.AddAttribute(25, "password-toggle", PasswordToggle);
-        builder.AddAttributeIfNotNull(26, "spellcheck", Spellcheck);
+        builder.AddTrueFalseAttribute(26, "spellcheck", Spellcheck);
         builder.AddAttributeIfNotNullOrEmpty(27, "pattern", Pattern);
         builder.AddAttributeIfNotNull(28, "min", Min);
         builder.AddAttributeIfNotNull(29, "max", Max);

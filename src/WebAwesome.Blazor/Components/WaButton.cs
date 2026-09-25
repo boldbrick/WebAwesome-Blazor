@@ -257,7 +257,7 @@ public class WaButton : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(17, "formaction", FormAction);
         builder.AddAttributeIfNotNullOrEmpty(18, "formenctype", FormEncType);
         builder.AddAttributeIfNotNullOrEmpty(19, "formmethod", FormMethod);
-        builder.AddAttributeIfNotNull(60, "formnovalidate", FormNoValidate);
+        builder.AddBooleanAttribute(60, "formnovalidate", FormNoValidate);
         builder.AddAttributeIfNotNullOrEmpty(61, "formtarget", FormTarget);
         builder.AddAttributeIfNotNullOrEmpty(62, "name", Name);
         builder.AddAttributeIfNotNullOrEmpty(63, "value", Value);

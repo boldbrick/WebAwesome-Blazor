@@ -45,6 +45,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - `WaCheckbox`/`WaSwitch.OnCheckedChange`, `WaRadioGroup.OnValueChange` and `WaSlider.OnValueChange` were bound to a `wa-change` event that doesn't exist. They now fire from the real `change`.
 - `WaZoomableFrame.OnLoad`/`OnError` listened for `wa-load`/`wa-error`. The element dispatches native `load`/`error`, so they're rebound.
 - `WaDropdownItem.OnBlur`/`OnFocus` were bound under `blur`/`focus` instead of `onblur`/`onfocus`, so they never fired.
+- **`WaButton.FormNoValidate = false` disabled form validation, and `Spellcheck = false` couldn't turn spell checking off** on `WaInput`, `WaTextArea` and `WaCombobox`. The nullable booleans were emitted through `ToString()` as `"True"`/`"False"`. `formnovalidate` is a plain boolean attribute, so any present value meant true; it's now emitted only for `true`. `spellcheck` uses a case-sensitive `"true"`/`"false"` converter that reads an empty value as false; it's now emitted as exactly `"true"` or `"false"`, and omitted when `null` so the element keeps its default (on for input and textarea, off for combobox).
 - Packaging (issue #1): the license file in `src\Directory.Build.props` is resolved from the props file (`$(MSBuildThisFileDirectory)`) instead of `$(SolutionDir)`. A submodule build under a consumer's solution failed with NU5019/NU5030.
 
 ### Library
@@ -56,6 +57,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - New `BoundEventCemParityTests`: every `onwa-*` binding must be a CEM event of the element it is rendered on (wrapper → CEM, the reverse of the existing parity check). `ParityGuardSelfTests` shows on synthetic data that each new guard catches its defect class.
 - Tests: 787 per TFM on net9.0 and net10.0, in both Debug and Release (was 627). Browser suite: 140 passed, 2 skipped. The skips are `pro-assets.spec.js` without an override, and WaDateInput, which is Pro-only on the free CDN; it was red and then green against the local 3.12.0 Pro dist.
 - Browser acceptance: the new `value-sync-binding.spec.js` and `number-value-binding.spec.js` were recorded red against the pre-fix wrappers (18 failed + 1 skipped, and 5 failed) and pass on the fixed build. The driving controls live on the Input/Textarea/Checkbox demo pages and on a harness page at `/testing/value-sync` (outside the component navigation, swept via `HARNESS_ROUTES`).
+- Boolean attribute emission: `AddBooleanAttribute` (present or absent) and `AddTrueFalseAttribute` (`"true"`/`"false"`) replace `ToString()` for `bool?` parameters. `AddAttributeIfNotNull` now rejects `bool`/`bool?` at compile time (`CS0619`), so the `"True"`/`"False"` defect class can't come back. New `BooleanAttributeEmissionTests` render each affected wrapper with `true`, `false` and `null`.
 - Event registrations for names no wrapper binds anymore were removed from the JS initializer (`wa-change`, `wa-initial-focus`, `wa-password-toggle`, `wa-password-visibility-change`, `wa-success`, `wa-tab-change`, `wa-tab-close`, `wa-zoom-change`).
 
 ### Public API
