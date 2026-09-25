@@ -12,7 +12,8 @@ namespace WebAwesome.Blazor.Tests.Forms;
 /// "wa-change" event Web Awesome never dispatches, and now fire from the element's native change handling
 /// ("onchange", or the "onnumericchange" alias for wa-slider's number-valued change) after the bound value
 /// has been updated. Also covers range-mode WaSlider, which renders and binds MinValue/MaxValue without
-/// @bind-Value. Checked state is read back from the element through the mocked interop module's
+/// @bind-Value, and range-mode WaRange, whose OnMinValueChange/OnMaxValueChange were never raised before
+/// 3.12.0 (range mode bound no change handler at all). Checked state is read back from the element through the mocked interop module's
 /// "getProperty", as the wrappers do in the browser.
 /// </summary>
 public class ChangeCallbackWiringTests : FormControlTestBase
@@ -189,6 +190,57 @@ public class ChangeCallbackWiringTests : FormControlTestBase
         Assert.Equal(20m, cut.Instance.MinValue);
         Assert.Equal(80m, cut.Instance.MaxValue);
         Assert.Equal(0, valueChangeCount);
+    }
+
+    #endregion
+
+    #region ------ WaRange range mode ------
+
+    [Fact]
+    public void WaRange_RangeMode_NumericChange_ReportsOnlyTheChangedBound()
+    {
+        // Arrange
+        decimal bound = 0m;
+        var minChanges = new List<decimal>();
+        var maxChanges = new List<decimal>();
+        var cut = Render<WaRange>(p => p
+            .Add(c => c.ValueExpression, () => bound)
+            .Add(c => c.Range, true)
+            .Add(c => c.MinValue, 10m)
+            .Add(c => c.MaxValue, 90m)
+            .Add(c => c.OnMinValueChange, value => minChanges.Add(value))
+            .Add(c => c.OnMaxValueChange, value => maxChanges.Add(value)));
+
+        // Act - the numericchange alias delivers "<minValue>,<maxValue>" in range mode
+        cut.Find("wa-slider").NumericChange("20,90");
+
+        // Assert
+        Assert.Equal(20m, Assert.Single(minChanges));
+        Assert.Empty(maxChanges);
+        Assert.Equal(20m, cut.Instance.MinValue);
+        Assert.Equal(90m, cut.Instance.MaxValue);
+    }
+
+    [Fact]
+    public void WaRange_RangeMode_UnparsableNumericChange_ReportsNothing()
+    {
+        // Arrange
+        decimal bound = 0m;
+        var changeCount = 0;
+        var cut = Render<WaRange>(p => p
+            .Add(c => c.ValueExpression, () => bound)
+            .Add(c => c.Range, true)
+            .Add(c => c.MinValue, 10m)
+            .Add(c => c.MaxValue, 90m)
+            .Add(c => c.OnMinValueChange, _ => changeCount++)
+            .Add(c => c.OnMaxValueChange, _ => changeCount++));
+
+        // Act
+        cut.Find("wa-slider").NumericChange("20");
+
+        // Assert
+        Assert.Equal(0, changeCount);
+        Assert.Equal(10m, cut.Instance.MinValue);
     }
 
     #endregion

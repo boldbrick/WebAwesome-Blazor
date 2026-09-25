@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Components;
 using Xunit;
 using static WebAwesome.Blazor.Tests.ApiParity.ApiParityData;
 
@@ -12,7 +11,9 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// Verifies that the Blazor wrappers cover the API surface of the bound Web Awesome version.
 /// The expected surface (expected-api-surface.json) is generated from the Web Awesome
 /// Custom Elements Manifest by tools\upgrade\Export-WaApiSurface.ps1; intentional naming
-/// deviations and omissions are documented in parity-config.json. The tests are inert until
+/// deviations and omissions are documented in parity-config.json. Events are checked by
+/// EventCallbackBindingParityTests on the rendered output (each callback must bind its CEM event),
+/// not here by callback name. The tests are inert until
 /// parity-config.json sets "enabled": true, which the upgrade process does once the expected
 /// surface matches the version being implemented.
 /// </summary>
@@ -68,38 +69,6 @@ public class ApiSurfaceParityTests
     }
 
     /// <summary>
-    /// Every named event of every custom element must be exposed as an EventCallback parameter.
-    /// </summary>
-    [Fact]
-    public void AllEvents_AreExposedAsEventCallbacks()
-    {
-        if (!Config.Enabled) return;
-
-        var misses = new List<string>();
-
-        foreach (var (tag, component) in RelevantComponents())
-        {
-            var wrapper = FindWrapperType(tag, component);
-            if (wrapper == null) continue;
-            var componentConfig = GetComponentConfig(tag);
-
-            foreach (var eventName in component.Events.Keys)
-            {
-                if (componentConfig.IgnoredEvents.Contains(eventName)) continue;
-
-                var expected = componentConfig.EventOverrides.TryGetValue(eventName, out var over)
-                    ? over
-                    : ExpectedEventCallbackName(eventName);
-
-                if (!HasEventCallback(wrapper, expected))
-                    misses.Add($"{tag}: event '{eventName}' has no EventCallback parameter '{expected}' on {wrapper.Name}");
-            }
-        }
-
-        AssertNoMisses(misses, "Events not covered by EventCallback parameters");
-    }
-
-    /// <summary>
     /// Every documented public method of every custom element must be exposed as a wrapper
     /// method (typically an Async JS-interop method).
     /// </summary>
@@ -150,26 +119,6 @@ public class ApiSurfaceParityTests
     #region ------ Internals ------
 
     private const string AsyncSuffix = "Async";
-    private const string EventPrefix = "wa-";
-
-    private static string ExpectedEventCallbackName(string eventName)
-    {
-        // "wa-invalid" -> OnInvalid, "blur" -> OnBlur
-        var baseName = eventName.StartsWith(EventPrefix, StringComparison.Ordinal)
-            ? eventName[EventPrefix.Length..]
-            : eventName;
-        return "On" + ToPascalCase(baseName);
-    }
-
-    private static bool HasEventCallback(Type wrapper, string propertyName)
-    {
-        var property = FindParameter(wrapper, propertyName);
-        if (property == null) return false;
-
-        var type = property.PropertyType;
-        return type == typeof(EventCallback)
-            || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(EventCallback<>));
-    }
 
     private static bool HasMethod(Type wrapper, string methodName)
     {

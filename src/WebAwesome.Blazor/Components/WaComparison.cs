@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -95,7 +95,7 @@ public class WaComparison : ComponentBase
         builder.AddAttributeIfNotNull(10, "position", Position);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "change", OnChange);
+        builder.AddAttributeIfHasDelegate(20, "onchange", OnChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __comparisonReference => Element = __comparisonReference);

@@ -77,14 +77,21 @@ public class WaRange : WaInputBase<decimal>
     #region ------ Events ------
 
     /// <summary>
-    /// Invoked when <see cref="MinValue"/> changes in range selection mode.
+    /// Invoked when the user changes <see cref="MinValue"/> in range selection mode, after the change event, with
+    /// the new minimum.
     /// </summary>
     [Parameter] public EventCallback<decimal> OnMinValueChange { get; set; }
 
     /// <summary>
-    /// Invoked when <see cref="MaxValue"/> changes in range selection mode.
+    /// Invoked when the user changes <see cref="MaxValue"/> in range selection mode, after the change event, with
+    /// the new maximum.
     /// </summary>
     [Parameter] public EventCallback<decimal> OnMaxValueChange { get; set; }
+
+    /// <summary>
+    /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
 
     #endregion
 
@@ -129,9 +136,9 @@ public class WaRange : WaInputBase<decimal>
             builder.AddAttribute(33, "value", BindConverter.FormatValue(CurrentValue));
         }
 
-        // Add value binding for single value mode; the element's live value is a JS number, which Blazor's built-in
-        // change reader cannot carry, so the handler listens to the "numericchange" alias of the change event that
-        // delivers it as an invariant-culture string
+        // Add value binding; the element's live value is a JS number, which Blazor's built-in change reader cannot
+        // carry, so the handlers listen to the "numericchange" alias of the change event that delivers it as an
+        // invariant-culture string ("min,max" in range mode)
         if (!Range)
         {
             builder.AddAttribute(40, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChange));
@@ -139,13 +146,15 @@ public class WaRange : WaInputBase<decimal>
         }
         else
         {
-            // TODO: Range mode requires custom event handling for min-value and max-value changes
-            // This requires JavaScript interop to properly handle dual-thumb events
+            builder.AddAttribute(41, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleRangeValueChangeAsync));
         }
 
         // Add common event handlers; the input event carries the same JS number, so OnInput is bound to its alias
         AddCommonEventHandlers(builder, 50, includeInputHandler: false);
         AddNumericInputHandler(builder, 56);
+
+        // Add slider-specific event handlers
+        builder.AddAttributeIfHasDelegate(57, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(60, __sliderReference => Element = __sliderReference);
@@ -224,6 +233,29 @@ public class WaRange : WaInputBase<decimal>
         MarkLiveValueSynced((double)value);
         CurrentValue = value;
     }
+
+    // handles the range-mode change event, whose value the numericchange alias delivers as "<minValue>,<maxValue>"
+    // (JS-formatted numbers); updates MinValue/MaxValue and reports each bound that changed
+    private async Task HandleRangeValueChangeAsync(ChangeEventArgs args)
+    {
+        var parts = args.GetStringValue()?.Split(RangeValueSeparator);
+        if (parts is not { Length: 2 }) return;
+
+        if (ChangeEventArgsExtensions.TryParseJsNumber(parts[0], out var minValue) && minValue != MinValue)
+        {
+            MinValue = minValue;
+            await OnMinValueChange.InvokeAsync(minValue);
+        }
+
+        if (ChangeEventArgsExtensions.TryParseJsNumber(parts[1], out var maxValue) && maxValue != MaxValue)
+        {
+            MaxValue = maxValue;
+            await OnMaxValueChange.InvokeAsync(maxValue);
+        }
+    }
+
+    // separates the min and max value in the range-mode change payload built by the JS initializer
+    private const char RangeValueSeparator = ',';
 
     #endregion
 }

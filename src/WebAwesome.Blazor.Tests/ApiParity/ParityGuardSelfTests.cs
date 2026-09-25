@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Web;
 using WebAwesome.Blazor.Components;
 using Xunit;
 using static WebAwesome.Blazor.Tests.ApiParity.ApiParityData;
@@ -13,8 +15,12 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// written for, independently of the (fixed) wrapper code they pass against: the enum-value checks
 /// (forward and reverse) catch the pre-3.12.0 WaFormat { Auto, Relative, Numeric } mapping of
 /// wa-relative-time "format", the bool-vs-literal-union check catches the pre-3.12.0 bool Numeric
-/// parameter, and the bound-event check catches the "onwa-*" bindings the 3.12.0 sweep removed or
-/// rebound. Each guard is also shown not to flag the fixed shape.
+/// parameter, and the render-based event-binding check (EventCallbackBindingParityTests) catches a swapped
+/// event name, a deleted binding, an event name held in a constant, a swap inside a base-class helper, a
+/// handler bound without the "on" prefix and a derived callback bound to an event the element never
+/// dispatches (the "onwa-change" bindings the 3.12.0 sweep rewired). The synthetic wrappers render real Web
+/// Awesome tags, so they are checked against the real expected surface and configuration. Each guard is also
+/// shown not to flag the fixed shape.
 /// </summary>
 public class ParityGuardSelfTests
 {
@@ -122,64 +128,118 @@ public class ParityGuardSelfTests
 
     #endregion
 
-    #region ------ Bound events declared by the CEM ------
+    #region ------ Rendered event bindings ------
 
     [Fact]
-    public void BoundEventGuard_FlagsEventsTheElementNeverDispatches()
-    {
-        // Arrange - pre-3.12.0 bindings, checked against the real 3.12.0 expected surface
-        const string source = """
-            builder.OpenElement(0, "wa-zoomable-frame");
-            builder.AddAttributeIfHasDelegate(40, "onwa-zoom-change", OnZoomChange);
-            builder.AddAttributeIfHasDelegate(41, "onwa-load", OnLoad);
-            builder.CloseElement();
-            """;
-
-        // Act
-        var undeclared = BoundEventCemParityTests.BoundWaEvents(source)
-            .Where(b => !BoundEventCemParityTests.IsDeclared(b, Surface.Components))
-            .ToList();
-
-        // Assert
-        Assert.Equal(new[] { "wa-zoom-change", "wa-load" }, undeclared.Select(b => b.EventName));
-        Assert.All(undeclared, b => Assert.Equal("wa-zoomable-frame", b.Tag));
-    }
-
-    [Fact]
-    public void BoundEventGuard_AttributesBindingToNearestPrecedingElement()
-    {
-        // Arrange - "wa-change" is not a wa-checkbox event (it dispatches the native change), "wa-invalid" is
-        const string source = """
-            builder.OpenElement(0, "wa-checkbox");
-            builder.AddAttribute(seq++, "onwa-change", OnCheckedChange);
-            builder.AddAttributeIfHasDelegate(42, "onwa-invalid", OnInvalid);
-            """;
-
-        // Act
-        var bindings = BoundEventCemParityTests.BoundWaEvents(source).ToList();
-
-        // Assert
-        Assert.Equal(2, bindings.Count);
-        Assert.False(BoundEventCemParityTests.IsDeclared(bindings[0], Surface.Components));
-        Assert.True(BoundEventCemParityTests.IsDeclared(bindings[1], Surface.Components));
-    }
-
-    [Fact]
-    public void BoundEventGuard_ReportsBindingWithoutElementAsUndeclared()
+    public void BindingGuard_AcceptsFixedShape()
     {
         // Arrange
-        const string source = "builder.AddAttributeIfHasDelegate(1, \"onwa-show\", OnShow);";
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(FixedDialog));
+
+        // Act & Assert
+        Assert.Empty(EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations));
+        Assert.Empty(EventCallbackBindingParityTests.UnboundCemEvents(wrapper, Registrations));
+    }
+
+    [Fact]
+    public void BindingGuard_FlagsSwappedEventName()
+    {
+        // Arrange - review mutation M1: OnShow bound to "onwa-hide"
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(SwappedDialog));
 
         // Act
-        var binding = Assert.Single(BoundEventCemParityTests.BoundWaEvents(source));
+        var misses = EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations).ToList();
 
         // Assert
-        Assert.Null(binding.Tag);
-        Assert.False(BoundEventCemParityTests.IsDeclared(binding, Surface.Components));
+        var miss = Assert.Single(misses);
+        Assert.Contains("SwappedDialog.OnShow): binds 'wa-hide', expected 'wa-show'", miss);
+        Assert.Contains(EventCallbackBindingParityTests.UnboundCemEvents(wrapper, Registrations), m => m.Contains("'wa-show'"));
+    }
+
+    [Fact]
+    public void BindingGuard_FlagsDeletedBinding()
+    {
+        // Arrange - review mutation M2: the OnAfterHide binding deleted
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(DeletedBindingDialog));
+
+        // Act
+        var misses = EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Contains("DeletedBindingDialog.OnAfterHide): binds nothing, expected 'wa-after-hide'", Assert.Single(misses));
+        Assert.Contains("'wa-after-hide'", Assert.Single(EventCallbackBindingParityTests.UnboundCemEvents(wrapper, Registrations)));
+    }
+
+    [Fact]
+    public void BindingGuard_FlagsEventNameHeldInConstant()
+    {
+        // Arrange - review mutation M3: a constant holding an event wa-drawer never dispatches
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(ConstantNameDrawer));
+
+        // Act
+        var misses = EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Contains("ConstantNameDrawer.OnShow): binds 'wa-initial-focus', expected 'wa-show'", Assert.Single(misses));
+    }
+
+    [Fact]
+    public void BindingGuard_FlagsBaseClassBinding()
+    {
+        // Arrange - a base-class helper (like WaInputBase.AddCommonEventHandlers) swapping focus and blur
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(BaseSwapButton));
+
+        // Act
+        var misses = EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Equal(2, misses.Count);
+        Assert.Contains(misses, m => m.Contains("BaseSwapButton.OnFocus): binds 'blur', expected 'focus'"));
+        Assert.Contains(misses, m => m.Contains("BaseSwapButton.OnBlur): binds 'focus', expected 'blur'"));
+    }
+
+    [Fact]
+    public void BindingGuard_FlagsHandlerWithoutOnPrefix()
+    {
+        // Arrange - the pre-fix WaAnimatedImage "load" binding, invisible to bUnit markup and TriggerEvent
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(BareNameImage));
+
+        // Act
+        var misses = EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Contains(misses, m => m.Contains("BareNameImage.OnLoad): bound under 'load', which lacks the \"on\" prefix"));
+        Assert.Contains(misses, m => m.Contains("BareNameImage.OnLoad): binds nothing, expected 'wa-load'"));
+    }
+
+    [Fact]
+    public void BindingGuard_FlagsDerivedCallbackBoundToUndispatchedEvent()
+    {
+        // Arrange - the pre-3.12.0 WaCheckbox: OnCheckedChange bound to "onwa-change"
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(WaChangeCheckbox));
+
+        // Act
+        var misses = EventCallbackBindingParityTests.BindingMisses(wrapper, Registrations).ToList();
+
+        // Assert
+        Assert.Contains("WaChangeCheckbox.OnCheckedChange): raised from 'change' (derivedEventCallbacks) but binds 'wa-change'", Assert.Single(misses));
+    }
+
+    [Fact]
+    public void BindingGuard_ResolvesNumericAliasToItsBrowserEvent()
+    {
+        // Arrange
+        var registrations = JsInitializerEventRegistrations.Parse(SyntheticJsInitializer);
+
+        // Act & Assert
+        Assert.Equal("change", registrations.ResolveAlias("numericchange"));
+        Assert.Equal("wa-show", registrations.ResolveAlias("wa-show"));
+        Assert.Equal(new[] { "wa-show", "wa-hide" }, registrations.EventNames);
+        Assert.Equal(new[] { "beforeinput" }, registrations.NativeCustomEventNames);
+        Assert.Equal(new[] { "wa-show", "wa-hide", "beforeinput", "numericchange" }, registrations.AllRegisteredNames);
     }
 
     #endregion
-
     #region ------ Internals ------
 
     private const string ToHtmlValueMethodName = "ToHtmlValue";
@@ -189,6 +249,20 @@ public class ParityGuardSelfTests
     private const string NumericUnionType = "'always' | 'auto'";
 
     private static readonly IReadOnlyList<string> FormatUnion = new[] { "long", "short", "narrow" };
+    private static readonly JsInitializerEventRegistrations Registrations = JsInitializerEventRegistrations.Current;
+
+    private const string SyntheticJsInitializer = """
+        const eventNames = [
+          'wa-show',
+          'wa-hide',
+        ];
+        const nativeCustomEventNames = [
+          'beforeinput',
+        ];
+        const numericValueEventAliases = {
+          'numericchange': 'change',
+        };
+        """;
 
     private static EnumValueParityTests.EnumAttributeBinding CreateBinding(Type enumType, Type mappingType, IReadOnlyList<string> union)
     {
@@ -241,6 +315,153 @@ public class ParityGuardSelfTests
     private class NullableBoolRelativeTime
     {
         [Parameter] public bool? Numeric { get; set; }
+    }
+
+
+    /// <summary>
+    /// wa-dialog with every event bound correctly (the fixed shape).
+    /// </summary>
+    private sealed class FixedDialog : ComponentBase
+    {
+        [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-dialog");
+            AddIfSet(builder, 1, "onwa-show", OnShow);
+            AddIfSet(builder, 2, "onwa-hide", OnHide);
+            AddIfSet(builder, 3, "onwa-after-show", OnAfterShow);
+            AddIfSet(builder, 4, "onwa-after-hide", OnAfterHide);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// wa-dialog whose OnShow is bound to the hide event (review mutation M1).
+    /// </summary>
+    private sealed class SwappedDialog : ComponentBase
+    {
+        [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-dialog");
+            AddIfSet(builder, 1, "onwa-hide", OnShow);
+            AddIfSet(builder, 2, "onwa-hide", OnHide);
+            AddIfSet(builder, 3, "onwa-after-show", OnAfterShow);
+            AddIfSet(builder, 4, "onwa-after-hide", OnAfterHide);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// wa-dialog whose OnAfterHide binding was deleted (review mutation M2).
+    /// </summary>
+    private sealed class DeletedBindingDialog : ComponentBase
+    {
+        [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
+        [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-dialog");
+            AddIfSet(builder, 1, "onwa-show", OnShow);
+            AddIfSet(builder, 2, "onwa-hide", OnHide);
+            AddIfSet(builder, 3, "onwa-after-show", OnAfterShow);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// wa-drawer whose OnShow is bound through a constant to an event the element never dispatches (review
+    /// mutation M3).
+    /// </summary>
+    private sealed class ConstantNameDrawer : ComponentBase
+    {
+        [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            const string deadShowEvent = "onwa-initial-focus";
+
+            builder.OpenElement(0, "wa-drawer");
+            AddIfSet(builder, 1, deadShowEvent, OnShow);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// Base class whose shared handler helper swaps focus and blur, like a defect in WaInputBase would.
+    /// </summary>
+    private abstract class SwappingFocusBase : ComponentBase
+    {
+        [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
+        [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
+
+        protected void AddFocusHandlers(RenderTreeBuilder builder, int sequence)
+        {
+            AddIfSet(builder, sequence, "onblur", OnFocus);
+            AddIfSet(builder, sequence + 1, "onfocus", OnBlur);
+        }
+    }
+
+    /// <summary>
+    /// wa-button inheriting the swapped focus handlers from its base class.
+    /// </summary>
+    private sealed class BaseSwapButton : SwappingFocusBase
+    {
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-button");
+            AddFocusHandlers(builder, 1);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// wa-animated-image binding its load event under the bare name "load" (the pre-fix WaAnimatedImage).
+    /// </summary>
+    private sealed class BareNameImage : ComponentBase
+    {
+        [Parameter] public EventCallback OnLoad { get; set; }
+        [Parameter] public EventCallback OnError { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-animated-image");
+            if (OnLoad.HasDelegate) builder.AddAttribute(1, "load", OnLoad);
+            if (OnError.HasDelegate) builder.AddAttribute(2, "onwa-error", OnError);
+            builder.CloseElement();
+        }
+    }
+
+    /// <summary>
+    /// wa-checkbox binding its derived OnCheckedChange to "onwa-change" (the pre-3.12.0 WaCheckbox).
+    /// </summary>
+    private sealed class WaChangeCheckbox : ComponentBase
+    {
+        [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "wa-checkbox");
+            builder.AddAttribute(1, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, () => { }));
+            if (OnCheckedChange.HasDelegate) builder.AddAttribute(2, "onwa-change", OnCheckedChange);
+            builder.CloseElement();
+        }
+    }
+
+    private static void AddIfSet<T>(RenderTreeBuilder builder, int sequence, string name, EventCallback<T> callback)
+    {
+        if (callback.HasDelegate) builder.AddAttribute(sequence, name, callback);
     }
 
     #endregion

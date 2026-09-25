@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Tests.ApiParity;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
@@ -395,17 +396,26 @@ public class Wa3120UpgradeValidationTests : BunitContext
     }
 
     [Theory]
-    [InlineData(typeof(WaCheckbox), "OnCheckedChange")]
-    [InlineData(typeof(WaSwitch), "OnCheckedChange")]
-    [InlineData(typeof(WaRadioGroup), "OnValueChange")]
-    [InlineData(typeof(WaSlider), "OnValueChange")]
-    [InlineData(typeof(WaCopyButton), "OnCopy")]
-    [InlineData(typeof(WaZoomableFrame), "OnLoad")]
-    [InlineData(typeof(WaZoomableFrame), "OnError")]
-    public void KeptCallbacks_StillExist(Type wrapper, string memberName)
+    [InlineData(typeof(WaCheckbox), "OnCheckedChange", "onchange")]
+    [InlineData(typeof(WaSwitch), "OnCheckedChange", "onchange")]
+    [InlineData(typeof(WaRadioGroup), "OnValueChange", "onchange")]
+    [InlineData(typeof(WaSlider), "OnValueChange", "onnumericchange")]
+    [InlineData(typeof(WaCopyButton), "OnCopy", "onwa-copy")]
+    [InlineData(typeof(WaZoomableFrame), "OnLoad", "onload")]
+    [InlineData(typeof(WaZoomableFrame), "OnError", "onerror")]
+    public void KeptCallbacks_AreWiredToRealEvents(Type wrapper, string memberName, string expectedHandler)
     {
-        // Assert - these were rewired to real events rather than removed
-        Assert.NotNull(wrapper.GetProperty(memberName));
+        // Arrange - these were rewired to real events rather than removed
+        var rendered = RenderedWrapperCatalog.Observe(wrapper);
+
+        // Act
+        var callback = Assert.Single(rendered.Callbacks, c => c.Name == memberName);
+        var handlers = rendered.BaselineHandlers.Concat(callback.AddedHandlers).ToList();
+
+        // Assert - the rendered handler, not just the property: with the callback set, the element carries the
+        // real event's handler and no handler for the wa-* name Web Awesome never dispatched
+        Assert.Contains(expectedHandler, handlers);
+        Assert.DoesNotContain(handlers, h => h.StartsWith("onwa-", StringComparison.Ordinal) && h != expectedHandler);
     }
 
     #endregion

@@ -107,10 +107,10 @@ public class WaAnimatedImage : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(5, "alt", Alt);
         builder.AddAttribute(6, "play", Play);
 
-        // Add event handlers
-        builder.AddAttributeIfHasDelegate(10, "load", OnLoad);
+        // Add event handlers; wa-animated-image dispatches wa-load/wa-error, not the native load/error
+        builder.AddAttributeIfHasDelegate(10, "onwa-load", OnLoad);
 
-        builder.AddAttributeIfHasDelegate(11, "error", OnError);
+        builder.AddAttributeIfHasDelegate(11, "onwa-error", OnError);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __animatedImageReference => Element = __animatedImageReference);

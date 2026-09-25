@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using WebAwesome.Blazor.Components;
@@ -145,6 +146,32 @@ internal static class ApiParityData
     }
 
     /// <summary>
+    /// Returns the source directory of the wrapper library project (src\WebAwesome.Blazor).
+    /// </summary>
+    /// <param name="thisFile">Supplied by the compiler: the path of this source file</param>
+    /// <returns>Absolute path of the wrapper project directory</returns>
+    public static string WrapperProjectDirectory([CallerFilePath] string thisFile = "")
+    {
+        // this file lives in src\WebAwesome.Blazor.Tests\ApiParity\
+        var testProjectDir = Path.GetDirectoryName(Path.GetDirectoryName(thisFile))!;
+        var wrapperDir = Path.Combine(Path.GetDirectoryName(testProjectDir)!, WrapperProjectName);
+        Assert.True(Directory.Exists(wrapperDir), $"Wrapper source directory not found: {wrapperDir}");
+        return wrapperDir;
+    }
+
+    /// <summary>
+    /// Enumerates every C# source file of the wrapper library (all folders, build output excluded).
+    /// </summary>
+    /// <returns>Absolute paths of the wrapper source files</returns>
+    public static IEnumerable<string> WrapperSourceFiles()
+    {
+        var separator = Path.DirectorySeparatorChar;
+        return Directory.EnumerateFiles(WrapperProjectDirectory(), SourceFilePattern, SearchOption.AllDirectories)
+            .Where(f => !f.Contains($"{separator}bin{separator}", StringComparison.OrdinalIgnoreCase)
+                && !f.Contains($"{separator}obj{separator}", StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
     /// Fails with a single message listing every miss, or passes when there are none.
     /// </summary>
     /// <param name="misses">Collected gap descriptions</param>
@@ -161,6 +188,8 @@ internal static class ApiParityData
     private const string DataDirectory = "ApiParity";
     private const string SurfaceFileName = "expected-api-surface.json";
     private const string ConfigFileName = "parity-config.json";
+    private const string WrapperProjectName = "WebAwesome.Blazor";
+    private const string SourceFilePattern = "*.cs";
 
     private static readonly ComponentParityConfig EmptyComponentConfig = new();
 

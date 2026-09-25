@@ -12,6 +12,10 @@ namespace WebAwesome.Blazor.Components;
 /// A rating input component that allows users to provide feedback using stars or custom symbols.
 /// Corresponds to the wa-rating Web Awesome component.
 /// </summary>
+/// <remarks>
+/// wa-rating dispatches no input event, so the inherited <see cref="WaInputBase{TValue}.OnInput"/> is never
+/// raised; use <c>@bind-Value</c> (the change event) or <see cref="OnHover"/> instead.
+/// </remarks>
 public class WaRating : WaInputBase<decimal>
 {
     #region ------ Rating Properties ------
@@ -74,9 +78,8 @@ public class WaRating : WaInputBase<decimal>
         builder.AddAttributeIfHasDelegate(40, "onwa-hover", OnHover);
         builder.AddAttributeIfHasDelegate(41, "onwa-invalid", OnInvalid);
 
-        // Add common event handlers; an input event would carry the same JS number, so OnInput is bound to its alias
+        // Add common event handlers; wa-rating dispatches no input event, so the inherited OnInput is not bound
         AddCommonEventHandlers(builder, 50, includeInputHandler: false);
-        AddNumericInputHandler(builder, 56);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(60, __ratingReference => Element = __ratingReference);

@@ -96,6 +96,14 @@ public class ParityConfig
     [JsonPropertyName("nativeElementMethods")]
     public List<string> NativeElementMethods { get; set; } = new();
 
+    /// <summary>
+    /// Native DOM events a wrapper may bind on any element although the element's CEM entry does not declare
+    /// them, mapped to the name of the EventCallback that must carry them (e.g. "keydown" -> "OnKeyDown"). Every
+    /// entry needs an ignoreReasons entry keyed "nativeDomEvents:&lt;event&gt;"; entries no wrapper needs fail.
+    /// </summary>
+    [JsonPropertyName("nativeDomEvents")]
+    public Dictionary<string, string> NativeDomEvents { get; set; } = new();
+
     [JsonPropertyName("components")]
     public Dictionary<string, ComponentParityConfig> Components { get; set; } = new();
 
@@ -170,6 +178,30 @@ public class ComponentParityConfig
     /// </summary>
     [JsonPropertyName("undeclaredBoundEvents")]
     public List<string> UndeclaredBoundEvents { get; set; } = new();
+
+    /// <summary>
+    /// EventCallbacks the wrapper raises from its handler of another event instead of binding an event of their
+    /// own, mapped to that event (e.g. "OnCheckedChange" -> "change"). Every entry needs an ignoreReasons entry
+    /// keyed "derivedEventCallbacks:&lt;tag&gt;:&lt;callback&gt;".
+    /// </summary>
+    [JsonPropertyName("derivedEventCallbacks")]
+    public Dictionary<string, string> DerivedEventCallbacks { get; set; } = new();
+
+    /// <summary>
+    /// EventCallbacks the wrapper inherits from a shared base class but deliberately leaves unbound, because the
+    /// element dispatches no matching event. Every entry needs an ignoreReasons entry keyed
+    /// "unboundEventCallbacks:&lt;tag&gt;:&lt;callback&gt;".
+    /// </summary>
+    [JsonPropertyName("unboundEventCallbacks")]
+    public List<string> UnboundEventCallbacks { get; set; } = new();
+
+    /// <summary>
+    /// CEM events that neither the component's @event JSDoc nor dist\events declare, i.e. manifest artifacts the
+    /// element never dispatches; the event-binding checks do not rely on them. Every entry needs an ignoreReasons
+    /// entry keyed "cemOnlyEvents:&lt;tag&gt;:&lt;event&gt;".
+    /// </summary>
+    [JsonPropertyName("cemOnlyEvents")]
+    public List<string> CemOnlyEvents { get; set; } = new();
 }
 
 #nullable restore

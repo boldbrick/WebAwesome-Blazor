@@ -35,7 +35,9 @@ Binding a Web Awesome custom event requires two coordinated pieces; missing eith
 1. In the render tree, the event is bound under the **`on`-prefixed attribute name**: `builder.AddAttributeIfHasDelegate(seq, "onwa-show", OnShow)`.
 2. The event name is **registered with `Blazor.registerCustomEventType`** in the JS initializer `src\WebAwesome.Blazor\wwwroot\WebAwesome.Blazor.lib.module.js` — in the plain `eventNames` list when the event's `detail` is JSON-safe and maps 1:1 onto the typed args, or with a `specialArgs` mapping when the detail carries DOM nodes or the typed args need derived values (payload shapes must stay in sync with `Components\EventArgs.cs`; deserialization is case-insensitive and ignores extra properties).
 
-Only bind events the bound Web Awesome version actually emits (check the CEM). `EventBindingRegistrationTests` enforces both halves of the contract.
+Only bind events the bound Web Awesome version actually emits (check the CEM and the component's `@event` JSDoc), and bind each `EventCallback` to the event its name stands for: `wa-after-hide` → `OnAfterHide`, `blur` → `OnBlur`, with deviations in `parity-config.json` `eventOverrides`. Native DOM events the CEM doesn't list (`click`, `focus`, `blur`, the keyboard events) are admitted through `nativeDomEvents`. A callback the wrapper raises from another handler (e.g. `OnCheckedChange` from the value binding's `change`) goes into `derivedEventCallbacks`. Number-valued elements bind the `onnumericchange`/`onnumericinput` aliases (`Constants.*EventAttribute`) instead of `onchange`/`oninput`.
+
+Two test classes enforce the contract on the **rendered** output, not the source text: `RenderedWrapperCatalog` renders every wrapper with bUnit, once per `EventCallback` with a no-op delegate, and reads the handler names on the root element from the render tree. `EventCallbackBindingParityTests` compares them with the CEM events of the tag the wrapper renders. `EventBindingRegistrationTests` compares them with the JS initializer's registrations, in both directions.
 
 ## Icon slot convenience
 
