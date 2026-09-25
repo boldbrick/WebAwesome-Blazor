@@ -10,27 +10,17 @@ namespace WebAwesome.Blazor.Base
     {
         protected WaInputBase() { }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Autocomplete { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected virtual string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? MaxLength { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? MinLength { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.FocusEventArgs> OnBlur { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -43,10 +33,6 @@ namespace WebAwesome.Blazor.Base
         public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.KeyboardEventArgs> OnKeyPress { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.KeyboardEventArgs> OnKeyUp { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Readonly { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -776,12 +762,16 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool Indeterminate { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<bool> OnCheckedChange { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task ClickAsync() { }
@@ -833,6 +823,10 @@ namespace WebAwesome.Blazor.Components
         public WaColorPicker() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaColorFormat Format { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
@@ -850,6 +844,8 @@ namespace WebAwesome.Blazor.Components
         public bool Open { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaPlacement? Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Swatches { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -897,7 +893,11 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
@@ -925,6 +925,8 @@ namespace WebAwesome.Blazor.Components
         public string? Placeholder { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaListboxPlacement? Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string[]? SelectedValues { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1279,6 +1281,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool DisableFuture { get; set; }
@@ -1298,6 +1302,10 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Max { get; set; }
@@ -1335,6 +1343,10 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaPickerPlacement? Placement { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? PreviousIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2145,20 +2157,30 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AutoFocus { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EndIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EnterKeyHint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool Immediate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxLength { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public decimal? Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinLength { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2173,6 +2195,10 @@ namespace WebAwesome.Blazor.Components
         public bool Pill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Placeholder { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool? Spellcheck { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2262,6 +2288,12 @@ namespace WebAwesome.Blazor.Components
         public WaKnownDate() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Locale { get; set; }
@@ -2273,6 +2305,10 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithHint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2372,6 +2408,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AutoFocus { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? DecrementIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
@@ -2380,11 +2418,15 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EnterKeyHint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool Immediate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? IncrementIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal? Max { get; set; }
@@ -2398,6 +2440,10 @@ namespace WebAwesome.Blazor.Components
         public bool Pill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Placeholder { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2464,9 +2510,15 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AutoSubmit { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaOtpInputCase? Case { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Format { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? Length { get; set; }
         protected override string? LiveValuePropertyName { get; }
@@ -2478,6 +2530,10 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback OnComplete { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaOtpInputType? Type { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2901,6 +2957,10 @@ namespace WebAwesome.Blazor.Components
         public WaRadioGroup() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Name { get; set; }
@@ -2910,6 +2970,8 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<string?> OnValueChange { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithHint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2966,7 +3028,11 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AutoFocus { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public decimal? IndicatorOffset { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal Max { get; set; }
@@ -2986,6 +3052,8 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Range { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ReferenceContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3014,6 +3082,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal DefaultValue { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public int Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaRatingHoverEventArgs> OnHover { get; set; }
@@ -3021,6 +3091,10 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal Precision { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
@@ -3141,6 +3215,10 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EndIconName { get; set; }
         public System.Func<WebAwesome.Blazor.Components.WaOption, int, string>? GetTag { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
@@ -3166,6 +3244,8 @@ namespace WebAwesome.Blazor.Components
         public string? Placeholder { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaListboxPlacement? Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string[]? SelectedValues { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3226,7 +3306,11 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public decimal? IndicatorOffset { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal Max { get; set; }
@@ -3248,6 +3332,8 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Range { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal Step { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3377,11 +3463,15 @@ namespace WebAwesome.Blazor.Components
         public bool Checked { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<bool> OnCheckedChange { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithHint { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
@@ -3526,16 +3616,30 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AutoFocus { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? EnterKeyHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Immediate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxLength { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinLength { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Placeholder { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaResize? Resize { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3593,6 +3697,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? Distance { get; set; }
@@ -3603,7 +3709,11 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaTimeHourFormat? HourFormat { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Max { get; set; }
@@ -3627,6 +3737,10 @@ namespace WebAwesome.Blazor.Components
         public bool Pill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaPickerPlacement? Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]

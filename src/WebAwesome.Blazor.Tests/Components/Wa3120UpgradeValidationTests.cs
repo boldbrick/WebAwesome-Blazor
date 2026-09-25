@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bunit;
 using Microsoft.AspNetCore.Components;
@@ -16,7 +17,8 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// WaRelativeTime's Format/Numeric enums emitted only when set, WaTextArea's nullable Rows and its move onto
 /// WaInputBase, the enums realigned with Web Awesome's value sets (new per-component enums, renamed members,
 /// WaSize short forms, the WaTrigger flag set), the removed callbacks, parameters and types that never worked,
-/// WaZoomableFrame's native load/error events, and WaDropdownItem's link attributes and focus events. Removed
+/// WaZoomableFrame's native load/error events, WaDropdownItem's link attributes and focus events, and the form control
+/// parameters moved out of WaInputBase into the wrappers whose element declares them. Removed
 /// or renamed members are compile-time checks by construction; these tests assert the new shape, the emitted
 /// markup and, for removals, that the members are gone (reflection), so a reintroduction is caught.
 /// </summary>
@@ -302,6 +304,51 @@ public class Wa3120UpgradeValidationTests : BunitContext
 
     #endregion
 
+    #region ------ Form control parameters moved out of WaInputBase ------
+
+    [Theory]
+    [MemberData(nameof(RemovedFormControlParameters))]
+    public void FormControlParameters_TheElementDoesNotDeclare_AreGone(Type wrapper, string parameterName)
+    {
+        // Assert - WaInputBase rendered these on every form control; the element ignored them, so they did nothing
+        Assert.Empty(wrapper.GetMember(parameterName));
+    }
+
+    [Theory]
+    [MemberData(nameof(KeptFormControlParameters))]
+    public void FormControlParameters_TheElementDeclares_KeepTheirApi(Type wrapper, string parameterName)
+    {
+        // Arrange
+        var property = wrapper.GetProperty(parameterName);
+
+        // Assert - same name, type and [Parameter] as the WaInputBase member they replace, now declared by the wrapper
+        Assert.NotNull(property);
+        Assert.Equal(FormControlParameterTypes[parameterName], property!.PropertyType);
+        Assert.Equal(wrapper, property.DeclaringType);
+        Assert.True(property.IsDefined(typeof(ParameterAttribute), inherit: false));
+    }
+
+    [Fact]
+    public void WaInputBase_NoLongerDeclaresElementSpecificParameters()
+    {
+        // Assert - MarkupLabel/MarkupHint and the attributes every form control has stay in the base class
+        Assert.All(FormControlParameterTypes.Keys, name => Assert.Empty(typeof(WaInputBase<string>).GetMember(name)));
+        Assert.NotNull(typeof(WaInputBase<string>).GetProperty(nameof(WaInputBase<string>.Disabled)));
+        Assert.NotNull(typeof(WaInputBase<string>).GetProperty(nameof(WaInputBase<string>.MarkupLabel)));
+    }
+
+    /// <summary>
+    /// The wrapper/parameter pairs removed in 3.12.0 because the element does not declare the attribute.
+    /// </summary>
+    public static TheoryData<Type, string> RemovedFormControlParameters => FormControlParameterPairs(kept: false);
+
+    /// <summary>
+    /// The wrapper/parameter pairs kept in 3.12.0, declared by the wrapper since.
+    /// </summary>
+    public static TheoryData<Type, string> KeptFormControlParameters => FormControlParameterPairs(kept: true);
+
+    #endregion
+
     #region ------ WaZoomableFrame native load/error ------
 
     [Fact]
@@ -401,6 +448,51 @@ public class Wa3120UpgradeValidationTests : BunitContext
     #endregion
 
     #region ------ Internals ------
+
+    // the WaInputBase parameters that only some elements declare, and their types
+    private static readonly Dictionary<string, Type> FormControlParameterTypes = new(StringComparer.Ordinal)
+    {
+        ["Readonly"] = typeof(bool),
+        ["Required"] = typeof(bool),
+        ["MinLength"] = typeof(int?),
+        ["MaxLength"] = typeof(int?),
+        ["Autocomplete"] = typeof(string),
+        ["Label"] = typeof(string),
+        ["Hint"] = typeof(string),
+    };
+
+    // which of them each form control's element declares in the 3.12.0 CEM (docs\MIGRATION-3.12.0.md, section 6)
+    private static readonly Dictionary<Type, string[]> DeclaredFormControlParameters = new()
+    {
+        [typeof(WaInput)] = ["Readonly", "Required", "MinLength", "MaxLength", "Autocomplete", "Label", "Hint"],
+        [typeof(WaTextArea)] = ["Readonly", "Required", "MinLength", "MaxLength", "Autocomplete", "Label", "Hint"],
+        [typeof(WaNumberInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
+        [typeof(WaCheckbox)] = ["Required", "Hint"],
+        [typeof(WaSwitch)] = ["Required", "Hint"],
+        [typeof(WaRadioGroup)] = ["Required", "Label", "Hint"],
+        [typeof(WaSlider)] = ["Readonly", "Label", "Hint"],
+        [typeof(WaRange)] = ["Readonly", "Label", "Hint"],
+        [typeof(WaRating)] = ["Readonly", "Required", "Label"],
+        [typeof(WaColorPicker)] = ["Required", "Label", "Hint"],
+        [typeof(WaKnownDate)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
+        [typeof(WaOtpInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
+        [typeof(WaTimeInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
+        [typeof(WaSelect)] = ["Required", "Label", "Hint"],
+        [typeof(WaCombobox)] = ["Required", "Label", "Hint"],
+        [typeof(WaDateInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint"],
+    };
+
+    private static TheoryData<Type, string> FormControlParameterPairs(bool kept)
+    {
+        var data = new TheoryData<Type, string>();
+        foreach (var (wrapper, declared) in DeclaredFormControlParameters)
+        {
+            foreach (var name in FormControlParameterTypes.Keys.Where(n => declared.Contains(n) == kept))
+                data.Add(wrapper, name);
+        }
+
+        return data;
+    }
 
     private const string SampleDate = "2026-01-15T10:00:00Z";
 

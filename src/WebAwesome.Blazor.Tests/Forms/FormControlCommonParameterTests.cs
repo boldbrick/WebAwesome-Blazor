@@ -7,8 +7,8 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Forms;
 
 /// <summary>
-/// Verifies that the common WaInputBase parameters (Label, Hint, Required, Disabled, Size) render
-/// the expected attributes through the shared WaInputBase.AddCommonAttributes code path, across
+/// Verifies that the form control parameters (Label, Hint, Required or Readonly, Disabled, Size) render the
+/// expected attributes, Disabled and Size through the shared WaInputBase.AddCommonAttributes code path, across
 /// representative controls (WaInput, WaSelect, WaRange and WaTextArea, which moved onto WaInputBase
 /// in the 3.12.0 bindings).
 /// </summary>
@@ -79,7 +79,7 @@ public class FormControlCommonParameterTests : FormControlTestBase
             {
                 builder.AddComponentParameter(10, nameof(WaRange.Label), "Volume");
                 builder.AddComponentParameter(11, nameof(WaRange.Hint), "0 to 100");
-                builder.AddComponentParameter(12, nameof(WaRange.Required), true);
+                builder.AddComponentParameter(12, nameof(WaRange.Readonly), true);
                 builder.AddComponentParameter(13, nameof(WaRange.Disabled), true);
                 builder.AddComponentParameter(14, nameof(WaRange.Size), WaSize.Medium);
             });
@@ -87,7 +87,9 @@ public class FormControlCommonParameterTests : FormControlTestBase
         var element = cut.Find("wa-slider");
         Assert.Equal("Volume", element.GetAttribute("label"));
         Assert.Equal("0 to 100", element.GetAttribute("hint"));
-        Assert.True(element.HasAttribute("required"));
+        // wa-slider declares readonly but no required, so WaRange has Readonly and no Required
+        Assert.True(element.HasAttribute("readonly"));
+        Assert.False(element.HasAttribute("required"));
         Assert.True(element.HasAttribute("disabled"));
         Assert.Equal("m", element.GetAttribute("size"));
     }

@@ -33,6 +33,13 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - `WaTab.Closable`: `wa-tab` has no `closable` since Web Awesome 3.0.
   - `WaMutationObserver.Subtree` (the element always observes the subtree), `AttributeOldValue` and `CharacterDataOldValue` (use `AttrOldValue`/`CharDataOldValue`).
   - `WaPopup.FlipBoundary`/`ShiftBoundary`/`AutoSizeBoundary`: Web Awesome takes live `Element` objects there, which no attribute can carry.
+- `Readonly`, `Required`, `MinLength`, `MaxLength`, `Autocomplete`, `Label` and `Hint` moved from `WaInputBase` into exactly the form controls whose element declares the attribute in the 3.12.0 CEM. `WaInputBase` rendered all seven on every control, and 13 elements ignored some of them, so those parameters did nothing. Their API is unchanged where the element has the attribute. Removed (48 parameters on 14 wrappers; the 44 known defects counted `wa-slider` once for `WaSlider` and `WaRange`):
+  - `WaCheckbox`, `WaSwitch`: `Readonly`, `MinLength`, `MaxLength`, `Autocomplete`, `Label` (the label is the default-slot content, `ChildContent`)
+  - `WaColorPicker`, `WaSelect`, `WaCombobox`, `WaRadioGroup`: `Readonly`, `MinLength`, `MaxLength`, `Autocomplete`
+  - `WaSlider`, `WaRange`: `Required`, `MinLength`, `MaxLength`, `Autocomplete`
+  - `WaRating`: `Hint`, `MinLength`, `MaxLength`, `Autocomplete`
+  - `WaNumberInput`, `WaDateInput`, `WaTimeInput`, `WaKnownDate`, `WaOtpInput`: `MinLength`, `MaxLength`
+  C# that sets one of them no longer compiles. Razor markup still compiles, because the attribute is passed through `AdditionalAttributes`, and it still does nothing; remove it. `AddCommonAttributes` now renders only the pass-through attributes, `name`, `class`, `style`, `size` and `disabled`, and leaves its sequence numbers + 6..12 to the wrapper.
 
 ### Changed
 - `WaDropdownItem` gained `Href`, `Target`, `Rel` and `Download` (new in WA 3.12.0), for menu items that navigate or download.
@@ -107,12 +114,12 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - Event registrations for names no wrapper binds anymore were removed from the JS initializer (`wa-change`, `wa-initial-focus`, `wa-password-toggle`, `wa-password-visibility-change`, `wa-success`, `wa-tab-change`, `wa-tab-close`, `wa-zoom-change`).
 - Allowlist hygiene (review H2): one rule for every allowlist and override of `parity-config.json`, enforced by the new `AllowlistHygieneTests` over the `ParityAllowlists` registry.
   - Every entry has a reason of its own, keyed `<list>:<tag>:<entry>` (`<list>:<entry>` at top level). The flat, name-keyed reasons (`change`, `name`, `custom-error`, `maxlength`, …) were migrated to 232 per-entry reasons; the `change` reasons now name the handler that binds the event for each wrapper. A reason without an entry fails (the orphan `hrefTemplate` reason was dropped).
-  - Known defects are kept apart in `knownDefects` (48: the 44 inherited `WaInputBase` parameters and the 4 non-bubbling `wa-color-picker` popup events); the count is pinned in the test and printed in its output. The e2e event-coverage exemptions for known defects are flagged `"knownDefect": true` and must each have a `KNOWN_DEFECT_CASES` case; the spec and the release preflight print their number.
+  - Known defects are kept apart in `knownDefects`; the count is pinned in the test and printed in its output. It held 48 (the 44 inherited `WaInputBase` parameters and the 4 non-bubbling `wa-color-picker` popup events) until the owner-approved fixes above, and is 0 now: the parameters moved into the wrappers whose element declares them, and the popup events are relayed, their `sourceVerifiedEvents` entries keeping a regular reason. The e2e event-coverage exemptions for known defects are flagged `"knownDefect": true` and must each have a `KNOWN_DEFECT_CASES` case; the spec and the release preflight print their number.
   - New staleness checks for the lists that had none: `globalIgnoredAttributes`/`ignoredAttributes` (the CEM must declare the attribute and the wrapper must not render it from a parameter), `ignoredEvents` (a CEM event no `EventCallback` binds), `attributeOverrides`/`eventOverrides`/`methodOverrides`/`componentClassOverrides` (target exists, differs from the convention), `ignoredMethods`, `ignoredComponents`, `nativeElementMethods`, a `components` entry for a removed element, and the hard-coded unused-export allowlist of `InteropModuleContractTests`. They removed the `wa-details` `wa-after-show`/`wa-after-hide` overrides, which equalled the convention. The preflight also rejects a duplicated expected skip.
 - Disabled parity is visible (review N2): with `"enabled": false` the 26 surface-dependent parity tests report Skipped with the reason (`Assert.SkipUnless`) instead of Passed, and the release preflight fails on `parity-armed` and on the skips in `test-debug`/`test-release`.
 
 ### Public API
-- Baseline promoted with 155 lines added and 125 removed. Every difference is explained by the items above:
+- Baseline promoted with 283 lines added and 139 removed. Every difference is explained by the items above:
   - the relative-time enum swap
   - `WaTextArea` moving onto `WaInputBase` (its duplicated members now come from the base)
   - `Rows` becoming `int?`
@@ -126,6 +133,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
   - `WebAwesomeJSInterop(IJSRuntime, WebAwesomeOptions)`, which DI picks when `AddWebAwesome` registered the options, and `WebAwesomeJSInterop.SetKitCodeAsync` (icon library fix)
   - `WaRange.OnInvalid`
   - the `LiveValuePropertyName`/`GetLiveValue`/`OnParametersSet`/`OnAfterRenderAsync` overrides of `WaSelect` and `WaCombobox` (multiple selection sync)
+  - `Readonly`, `Required`, `MinLength`, `MaxLength`, `Autocomplete`, `Label` and `Hint` removed from `WaInputBase` (14 lines) and declared by the wrappers whose element has the attribute (64 properties, 128 lines)
 
 ### Deviations recorded (parity-config.json)
 - `ignoredEnumValues` (new list, each entry with a reason): only `wa-popup` `auto-size`/`sync` `None`, which omit the attribute.
@@ -137,7 +145,7 @@ Most removed or renamed members never worked. See **[MIGRATION-3.12.0.md](MIGRAT
 - `ignoredBoolUnionAttributes` and `undeclaredBoundEvents` (new lists): empty.
 - Render-check lists (new):
   - `extraRenderedAttributes`: `wa-button` `form` (form-associated; the CEM omits it) and `wa-tab` `active` (an internal reflected property the tab group observes).
-  - **Known defect, recorded for an owner decision:** `WaInputBase` renders `readonly`, `required`, `minlength`, `maxlength`, `autocomplete`, `label` and `hint` on every form control. Thirteen elements declare some of these and ignore them, e.g. `maxlength` on `wa-checkbox` or `hint` on `wa-rating`, so the inherited parameters do nothing there. The reasons of these entries are in `knownDefects`. Fixing it means moving the parameters from `WaInputBase` to the wrappers whose element supports them, which is a breaking change.
+  - The 44 entries for the `WaInputBase` parameters thirteen elements ignored (`maxlength` on `wa-checkbox`, `hint` on `wa-rating`, ...), recorded as known defects during this release, are gone: the parameters moved into the wrappers whose element declares them (see Breaking changes).
   - `unrenderedAttributes`: `wa-checkbox`/`wa-switch` `value` (the constant submission value; `Value` is the bound checked state).
   - `attributePrerequisites`: `wa-popup` arrow, flip, shift and auto-size options, and `wa-slider` `min-value`/`max-value` (range mode). The `wa-popup` `flipBoundary`/`shiftBoundary`/`autoSizeBoundary` properties are `ignoredAttributes`.
 - `tokenListAttributes` (new): `wa-tooltip` `trigger` (click, hover, focus, manual). `unresolvedEnumAttributes` (new): `wa-animation` `easing`, which takes any CSS easing function.

@@ -57,14 +57,12 @@
     },
     "wa-checkbox": {
       "unrenderedAttributes": [ "value" ],
-      "extraRenderedAttributes": [ "autocomplete", "label", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "name", "checked", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnCheckedChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-color-picker": {
-      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "sourceVerifiedEvents": [ "wa-after-hide", "wa-after-show", "wa-hide", "wa-show" ],
@@ -104,14 +102,12 @@
       }
     },
     "wa-select": {
-      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-slider": {
       "attributePrerequisites": { "min-value": { "Range": true }, "max-value": { "Range": true } },
-      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "required" ],
       "attributeOverrides": {
         "autofocus": "AutoFocus"
       },
@@ -122,14 +118,12 @@
     },
     "wa-switch": {
       "unrenderedAttributes": [ "value" ],
-      "extraRenderedAttributes": [ "autocomplete", "label", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnCheckedChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-radio-group": {
-      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "readonly" ],
       "ignoredAttributes": [ "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnValueChange": "change" },
@@ -158,7 +152,6 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-number-input": {
-      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "attributeOverrides": {
         "autofocus": "AutoFocus",
         "enterkeyhint": "EnterKeyHint",
@@ -173,7 +166,6 @@
     },
     "wa-combobox": {
       "trueFalseAttributes": [ "spellcheck" ],
-      "extraRenderedAttributes": [ "autocomplete", "maxlength", "minlength", "readonly" ],
       "attributeOverrides": {
         "autocapitalize": "AutoCapitalize",
         "autocorrect": "AutoCorrect",
@@ -185,19 +177,16 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-date-input": {
-      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-time-input": {
-      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-known-date": {
-      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
@@ -206,7 +195,6 @@
       "ignoredEvents": [ "change" ]
     },
     "wa-rating": {
-      "extraRenderedAttributes": [ "autocomplete", "hint", "maxlength", "minlength" ],
       "ignoredAttributes": [ "getSymbol", "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "unboundEventCallbacks": [ "OnInput" ],
@@ -226,7 +214,6 @@
       }
     },
     "wa-otp-input": {
-      "extraRenderedAttributes": [ "maxlength", "minlength" ],
       "attributeOverrides": {
         "autofocus": "AutoFocus",
         "autosubmit": "AutoSubmit"
@@ -493,50 +480,5 @@
     "ignoredAttributes:wa-radar-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-radar-chart",
     "ignoredAttributes:wa-scatter-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-scatter-chart"
   },
-  "knownDefects": {
-    "extraRenderedAttributes:wa-checkbox:autocomplete": "WaCheckbox inherits WaInputBase.Autocomplete, which renders autocomplete, but wa-checkbox does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-checkbox:label": "WaCheckbox inherits WaInputBase.Label, which renders label, but wa-checkbox does not declare it (the element takes its label as default-slot content, the wrapper's ChildContent) and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-checkbox:maxlength": "WaCheckbox inherits WaInputBase.MaxLength, which renders maxlength, but wa-checkbox does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-checkbox:minlength": "WaCheckbox inherits WaInputBase.MinLength, which renders minlength, but wa-checkbox does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-checkbox:readonly": "WaCheckbox inherits WaInputBase.Readonly, which renders readonly, but wa-checkbox does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-color-picker:autocomplete": "WaColorPicker inherits WaInputBase.Autocomplete, which renders autocomplete, but wa-color-picker does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-color-picker:maxlength": "WaColorPicker inherits WaInputBase.MaxLength, which renders maxlength, but wa-color-picker does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-color-picker:minlength": "WaColorPicker inherits WaInputBase.MinLength, which renders minlength, but wa-color-picker does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-color-picker:readonly": "WaColorPicker inherits WaInputBase.Readonly, which renders readonly, but wa-color-picker does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-select:autocomplete": "WaSelect inherits WaInputBase.Autocomplete, which renders autocomplete, but wa-select does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-select:maxlength": "WaSelect inherits WaInputBase.MaxLength, which renders maxlength, but wa-select does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-select:minlength": "WaSelect inherits WaInputBase.MinLength, which renders minlength, but wa-select does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-select:readonly": "WaSelect inherits WaInputBase.Readonly, which renders readonly, but wa-select does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-slider:autocomplete": "WaSlider (and WaRange, which also renders wa-slider) inherits WaInputBase.Autocomplete, which renders autocomplete, but wa-slider does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-slider:maxlength": "WaSlider (and WaRange, which also renders wa-slider) inherits WaInputBase.MaxLength, which renders maxlength, but wa-slider does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-slider:minlength": "WaSlider (and WaRange, which also renders wa-slider) inherits WaInputBase.MinLength, which renders minlength, but wa-slider does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-slider:required": "WaSlider (and WaRange, which also renders wa-slider) inherits WaInputBase.Required, which renders required, but wa-slider does not declare it (the element declares no required) and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-switch:autocomplete": "WaSwitch inherits WaInputBase.Autocomplete, which renders autocomplete, but wa-switch does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-switch:label": "WaSwitch inherits WaInputBase.Label, which renders label, but wa-switch does not declare it (the element takes its label as default-slot content, the wrapper's ChildContent) and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-switch:maxlength": "WaSwitch inherits WaInputBase.MaxLength, which renders maxlength, but wa-switch does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-switch:minlength": "WaSwitch inherits WaInputBase.MinLength, which renders minlength, but wa-switch does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-switch:readonly": "WaSwitch inherits WaInputBase.Readonly, which renders readonly, but wa-switch does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-radio-group:autocomplete": "WaRadioGroup inherits WaInputBase.Autocomplete, which renders autocomplete, but wa-radio-group does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-radio-group:maxlength": "WaRadioGroup inherits WaInputBase.MaxLength, which renders maxlength, but wa-radio-group does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-radio-group:minlength": "WaRadioGroup inherits WaInputBase.MinLength, which renders minlength, but wa-radio-group does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-radio-group:readonly": "WaRadioGroup inherits WaInputBase.Readonly, which renders readonly, but wa-radio-group does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-number-input:maxlength": "WaNumberInput inherits WaInputBase.MaxLength, which renders maxlength, but wa-number-input does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-number-input:minlength": "WaNumberInput inherits WaInputBase.MinLength, which renders minlength, but wa-number-input does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-combobox:autocomplete": "WaCombobox inherits WaInputBase.Autocomplete, which renders autocomplete, but wa-combobox does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-combobox:maxlength": "WaCombobox inherits WaInputBase.MaxLength, which renders maxlength, but wa-combobox does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-combobox:minlength": "WaCombobox inherits WaInputBase.MinLength, which renders minlength, but wa-combobox does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-combobox:readonly": "WaCombobox inherits WaInputBase.Readonly, which renders readonly, but wa-combobox does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-date-input:maxlength": "WaDateInput inherits WaInputBase.MaxLength, which renders maxlength, but wa-date-input does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-date-input:minlength": "WaDateInput inherits WaInputBase.MinLength, which renders minlength, but wa-date-input does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-time-input:maxlength": "WaTimeInput inherits WaInputBase.MaxLength, which renders maxlength, but wa-time-input does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-time-input:minlength": "WaTimeInput inherits WaInputBase.MinLength, which renders minlength, but wa-time-input does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-known-date:maxlength": "WaKnownDate inherits WaInputBase.MaxLength, which renders maxlength, but wa-known-date does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-known-date:minlength": "WaKnownDate inherits WaInputBase.MinLength, which renders minlength, but wa-known-date does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-rating:autocomplete": "WaRating inherits WaInputBase.Autocomplete, which renders autocomplete, but wa-rating does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-rating:hint": "WaRating inherits WaInputBase.Hint, which renders hint, but wa-rating does not declare it (the element has no hint attribute or slot) and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-rating:maxlength": "WaRating inherits WaInputBase.MaxLength, which renders maxlength, but wa-rating does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-rating:minlength": "WaRating inherits WaInputBase.MinLength, which renders minlength, but wa-rating does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-otp-input:maxlength": "WaOtpInput inherits WaInputBase.MaxLength, which renders maxlength, but wa-otp-input does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0",
-    "extraRenderedAttributes:wa-otp-input:minlength": "WaOtpInput inherits WaInputBase.MinLength, which renders minlength, but wa-otp-input does not declare it and ignores it, so the parameter has no effect here. Fix: move the parameter from WaInputBase down to the wrappers whose element supports it, a breaking change left for an owner decision in 3.12.0"
-  }
+  "knownDefects": {}
 }

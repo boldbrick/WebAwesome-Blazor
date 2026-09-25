@@ -111,6 +111,39 @@ Two `WaMutationObserver` parameters are **kept and now work**:
 - `Attr="true"` rendered an empty `attr`, which watches no attributes. It now renders `attr="*"` (all attributes).
 - `AttributeFilter` rendered a nonexistent `attribute-filter`. It now sets `attr` to the list, e.g. `AttributeFilter="class id"`, and takes precedence over `Attr`.
 
+### 6. Form control parameters the element doesn't have (BREAKING)
+
+`WaInputBase` declared `Readonly`, `Required`, `MinLength`, `MaxLength`, `Autocomplete`, `Label` and `Hint` for every form control and rendered all seven attributes, but many elements don't declare some of them and ignore them, so the parameters did nothing there. Each parameter now lives on exactly the wrappers whose element declares the attribute; there it keeps its name, type and behaviour.
+
+| Wrapper | Removed | Kept |
+|---|---|---|
+| `WaCheckbox` | `Readonly`, `MinLength`, `MaxLength`, `Autocomplete`, `Label` | `Required`, `Hint` |
+| `WaSwitch` | `Readonly`, `MinLength`, `MaxLength`, `Autocomplete`, `Label` | `Required`, `Hint` |
+| `WaColorPicker` | `Readonly`, `MinLength`, `MaxLength`, `Autocomplete` | `Required`, `Label`, `Hint` |
+| `WaSelect` | `Readonly`, `MinLength`, `MaxLength`, `Autocomplete` | `Required`, `Label`, `Hint` |
+| `WaCombobox` | `Readonly`, `MinLength`, `MaxLength`, `Autocomplete` | `Required`, `Label`, `Hint` |
+| `WaRadioGroup` | `Readonly`, `MinLength`, `MaxLength`, `Autocomplete` | `Required`, `Label`, `Hint` |
+| `WaSlider` | `Required`, `MinLength`, `MaxLength`, `Autocomplete` | `Readonly`, `Label`, `Hint` |
+| `WaRange` | `Required`, `MinLength`, `MaxLength`, `Autocomplete` | `Readonly`, `Label`, `Hint` |
+| `WaRating` | `Hint`, `MinLength`, `MaxLength`, `Autocomplete` | `Readonly`, `Required`, `Label` |
+| `WaNumberInput` | `MinLength`, `MaxLength` | `Readonly`, `Required`, `Autocomplete`, `Label`, `Hint` |
+| `WaDateInput` | `MinLength`, `MaxLength` | `Readonly`, `Required`, `Autocomplete`, `Label`, `Hint` |
+| `WaTimeInput` | `MinLength`, `MaxLength` | `Readonly`, `Required`, `Autocomplete`, `Label`, `Hint` |
+| `WaKnownDate` | `MinLength`, `MaxLength` | `Readonly`, `Required`, `Autocomplete`, `Label`, `Hint` |
+| `WaOtpInput` | `MinLength`, `MaxLength` | `Readonly`, `Required`, `Autocomplete`, `Label`, `Hint` |
+| `WaInput`, `WaTextArea` | none | all seven |
+
+What to do:
+- `WaCheckbox`/`WaSwitch` `Label`: put the label text in the content, `<WaCheckbox>Accept terms</WaCheckbox>`.
+- `WaRating` `Hint`: render the hint next to the rating yourself.
+- `WaSlider`/`WaRange` `Required`: a slider always has a value; validate the bound model instead.
+- `WaNumberInput` `MinLength`/`MaxLength`: use `Min`/`Max` for the value range.
+- Everything else in the "Removed" column: remove it. It never had an effect.
+
+C# code that sets a removed parameter (for example through `nameof(WaCheckbox.Label)` or a parameter builder) no longer compiles. **Razor markup still compiles**: `<WaCheckbox Label="...">` is captured by `AdditionalAttributes` and rendered as a plain attribute, which the element ignores just as before. Search your markup for the combinations in the table and remove them.
+
+Derived components that relied on `WaInputBase.AddCommonAttributes` rendering these attributes must render the ones their element declares themselves, at the sequence numbers + 6..12 the method leaves free.
+
 ## Behavioral Changes (non-breaking, but visible)
 
 - **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) and `WaRelativeTime.Date` now use the invariant culture.
@@ -153,6 +186,8 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Rebuild and fix every compile error against the enum table in section 3. Each one was a value Web Awesome didn't accept, or a type that now matches the component
 - [ ] Remove handlers for the callbacks listed in section 4
 - [ ] Remove the parameters listed in section 5 (`WaRadio.Checked`, `WaTab.Closable`, the `WaMutationObserver` and `WaPopup` boundary parameters)
+- [ ] Remove the form control parameters listed in section 6, in C# and in Razor markup (markup keeps compiling)
+- [ ] If you compare `FocusEventArgs.Type` in an `OnFocus`/`OnBlur` handler of a form control, `WaButton` or `WaFileInput`, expect `"focusin"`/`"focusout"`
 - [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), remove the workaround
 - [ ] Update CSS selectors or tests that match `size="small|medium|large"` to `s|m|l`
 - [ ] (Optional) Adopt `Immediate` where the model must be current during typing
@@ -162,5 +197,5 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 
 - **Minimum .NET**: .NET 9.0 (primary target .NET 10.0)
 - **Web Awesome Core**: 3.12.0+
-- **Breaking Changes**: Yes (sections 1–5)
+- **Breaking Changes**: Yes (sections 1–6)
 - **New Dependencies**: None

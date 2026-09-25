@@ -13,6 +13,21 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaCheckbox : WaInputBase<bool>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Hint { get; set; }
+
+    #endregion
+
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
@@ -56,6 +71,10 @@ public class WaCheckbox : WaInputBase<bool>
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
+
+        // Add the form control attributes the element declares
+        builder.AddAttribute(8, "required", Required);
+        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
 
         // Add checkbox-specific attributes
         builder.AddAttribute(20, "checked", BindConverter.FormatValue(CurrentValue));

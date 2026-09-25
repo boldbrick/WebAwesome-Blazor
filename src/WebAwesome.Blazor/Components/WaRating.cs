@@ -19,6 +19,26 @@ namespace WebAwesome.Blazor.Components;
 /// </remarks>
 public class WaRating : WaInputBase<decimal>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Makes the input read-only, allowing its value to be seen but not edited.
+    /// </summary>
+    [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
+
+    #endregion
+
     #region ------ Rating Properties ------
 
     /// <summary>
@@ -61,6 +81,10 @@ public class WaRating : WaInputBase<decimal>
 
         // Add common attributes from base
         AddCommonAttributes(builder, 1);
+
+        // Add the form control attributes the element declares
+        builder.AddAttribute(8, "required", Required);
+        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
 
         // Add rating-specific attributes
         builder.AddNumberAttribute(20, "max", Max);

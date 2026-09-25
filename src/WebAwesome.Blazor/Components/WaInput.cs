@@ -13,6 +13,47 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaInput : WaInputBase<string?>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Makes the input read-only, allowing its value to be seen but not edited.
+    /// </summary>
+    [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// Minimum number of characters required for a valid value.
+    /// </summary>
+    [Parameter] public int? MinLength { get; set; }
+
+    /// <summary>
+    /// Maximum number of characters allowed for the value.
+    /// </summary>
+    [Parameter] public int? MaxLength { get; set; }
+
+    /// <summary>
+    /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
+    /// </summary>
+    [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Hint { get; set; }
+
+    #endregion
+
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
@@ -179,6 +220,15 @@ public class WaInput : WaInputBase<string?>
 
         // Add common attributes
         var sequence = AddCommonAttributes(builder, 1);
+
+        // Add the form control attributes the element declares
+        builder.AddAttribute(7, "readonly", Readonly);
+        builder.AddAttribute(8, "required", Required);
+        builder.AddAttributeIfNotNull(9, "minlength", MinLength);
+        builder.AddAttributeIfNotNull(10, "maxlength", MaxLength);
+        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
 
         // Add input-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);

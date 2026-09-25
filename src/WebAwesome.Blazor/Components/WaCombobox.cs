@@ -18,6 +18,27 @@ namespace WebAwesome.Blazor.Components;
 /// </remarks>
 public class WaCombobox : WaInputBase<string?>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Hint { get; set; }
+
+    #endregion
+
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
@@ -213,6 +234,11 @@ public class WaCombobox : WaInputBase<string?>
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
+
+        // Add the form control attributes the element declares
+        builder.AddAttribute(8, "required", Required);
+        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
 
         // Add combobox-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);

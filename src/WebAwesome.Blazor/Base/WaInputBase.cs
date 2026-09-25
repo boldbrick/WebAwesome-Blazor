@@ -59,53 +59,19 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
+    // Labels & hints as markup; the plain-text Label/Hint, and Readonly, Required, MinLength, MaxLength and
+    // Autocomplete, are declared by the wrappers whose element has the attribute
     /// <summary>
-    /// Makes the input read-only, allowing its value to be seen but not edited.
-    /// </summary>
-    [Parameter] public bool Readonly { get; set; }
-
-    /// <summary>
-    /// Marks the input as required for form validation.
-    /// </summary>
-    [Parameter] public bool Required { get; set; }
-
-    // Labels & hints (string or RenderFragment)
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// Rich markup label rendered into the "label" slot; takes precedence over the plain-text label attribute
+    /// (the wrapper's Label parameter, where the element has one) when set.
     /// </summary>
     [Parameter] public RenderFragment? MarkupLabel { get; set; }
 
     /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// Rich markup hint rendered into the "hint" slot; takes precedence over the plain-text hint attribute (the
+    /// wrapper's Hint parameter, where the element has one) when set.
     /// </summary>
     [Parameter] public RenderFragment? MarkupHint { get; set; }
-
-    // Validation
-    /// <summary>
-    /// Minimum number of characters required for a valid value.
-    /// </summary>
-    [Parameter] public int? MinLength { get; set; }
-
-    /// <summary>
-    /// Maximum number of characters allowed for the value.
-    /// </summary>
-    [Parameter] public int? MaxLength { get; set; }
-
-    // Browser behavior
-    /// <summary>
-    /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
-    /// </summary>
-    [Parameter] public string? Autocomplete { get; set; }
 
     // Common events
     /// <summary>
@@ -165,11 +131,14 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     }
 
     /// <summary>
-    /// Adds common attributes to the render tree builder
+    /// Adds the attributes every form control element has (the pass-through attributes, name, class, style, size
+    /// and disabled) to the render tree builder, at sequence + 0..5. Sequence + 6..12 are left to the wrapper for
+    /// the attributes only some elements declare, in this order: readonly, required, minlength, maxlength,
+    /// autocomplete, label and hint; a wrapper renders exactly the ones its element declares.
     /// </summary>
     /// <param name="builder">The render tree builder</param>
     /// <param name="sequence">The starting sequence number</param>
-    /// <returns>The next available sequence number</returns>
+    /// <returns>The next available sequence number (sequence + 13)</returns>
     protected int AddCommonAttributes(RenderTreeBuilder builder, int sequence)
     {
         builder.AddMultipleAttributes(sequence + 0, AdditionalAttributes);
@@ -178,13 +147,6 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(sequence + 3, "style", Style);
         builder.AddAttributeIfNotNull(sequence + 4, "size", Size?.ToHtmlValue());
         builder.AddAttribute(sequence + 5, "disabled", Disabled);
-        builder.AddAttribute(sequence + 6, "readonly", Readonly);
-        builder.AddAttribute(sequence + 7, "required", Required);
-        builder.AddAttributeIfNotNull(sequence + 8, "minlength", MinLength);
-        builder.AddAttributeIfNotNull(sequence + 9, "maxlength", MaxLength);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 10, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 11, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 12, "hint", Hint);
 
         return sequence + 13;
     }

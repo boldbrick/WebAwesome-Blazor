@@ -13,6 +13,37 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaKnownDate : WaInputBase<string?>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Makes the input read-only, allowing its value to be seen but not edited.
+    /// </summary>
+    [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
+    /// </summary>
+    [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="WaInputBase{TValue}.MarkupLabel"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="WaInputBase{TValue}.MarkupHint"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Hint { get; set; }
+
+    #endregion
+
     #region ------ Visual &amp; Behavior Properties ------
 
     /// <summary>
@@ -70,6 +101,13 @@ public class WaKnownDate : WaInputBase<string?>
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
+
+        // Add the form control attributes the element declares
+        builder.AddAttribute(7, "readonly", Readonly);
+        builder.AddAttribute(8, "required", Required);
+        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
 
         // Add known-date-specific attributes
         builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());

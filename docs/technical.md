@@ -56,7 +56,7 @@ Components exposing an icon-shaped slot — a `start`/`end` slot documented as a
 
 ## Form controls
 
-- Form-associated components inherit **`WaInputBase<TValue>`** (itself deriving from Blazor's `InputBase<TValue>`), giving typed values, `@bind-Value`, full `EditForm`/`EditContext` participation, DataAnnotations validation, and validation CSS classes. Use its `AddCommonAttributes` / `AddCommonEventHandlers` / `AddLabelAndHintSlots` helpers.
+- Form-associated components inherit **`WaInputBase<TValue>`** (itself deriving from Blazor's `InputBase<TValue>`), giving typed values, `@bind-Value`, full `EditForm`/`EditContext` participation, DataAnnotations validation, and validation CSS classes. Use its `AddCommonAttributes` / `AddCommonEventHandlers` / `AddLabelAndHintSlots` helpers. The base declares and renders only what every form control element has (name, class, style, size, disabled, the markup label/hint slots, the focus/keyboard/input events). `Readonly`, `Required`, `MinLength`, `MaxLength`, `Autocomplete`, `Label` and `Hint` are declared by each wrapper whose element declares the attribute in the CEM, and rendered right after `AddCommonAttributes(builder, 1)` at sequence 7..13 in that order; never add an attribute parameter to the base that some element lacks (`RenderedAttributeParityTests` fails on it).
 - **Constraint validation**: controls whose element supports `setCustomValidity()` implement the `WebAwesomeFormControl` interface and expose `SetCustomValidityAsync` (routed through the shared interop service), so new form controls gain custom-validity support via the common ancestor without per-component plumbing.
 
 ## JavaScript interop
