@@ -1,16 +1,43 @@
-﻿@page "/components/zoomable-frame"
+@page "/components/zoomable-frame"
 
 <PageTitle>Zoomable Frame</PageTitle>
 
-<h1>Zoomable Frame</h1>
-<p><code>&lt;wa-zoomable-frame&gt;</code> wrapped by <code>WaZoomableFrame</code>.</p>
+<h1>Zoomable Frame <ComponentBadges Tag="wa-zoomable-frame" /></h1>
+<p>Zoomable frames render an iframe with zoom and interaction controls. <code>&lt;wa-zoomable-frame&gt;</code> wrapped by <code>WaZoomableFrame</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 300px;" OnLoad="@(() => loadCount++)" />
     <p>Frame loaded @loadCount time(s)</p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\zoomable-frame.md) *@
+<ExampleSection Title="Zoom and Zoom Levels" Code="@ZoomExample">
+    <p>Starts at 50%; the controls step through the listed levels only.</p>
+    <WaZoomableFrame SrcDoc="@FrameContent" Zoom="0.5" ZoomLevels="25% 50% 100% 150%" Style="height: 200px;" />
+</ExampleSection>
+
+<ExampleSection Title="Without Controls or Interaction" Code="@ControlsExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaZoomableFrame SrcDoc="@FrameContent" WithoutControls="true" Style="height: 160px; width: 280px;" />
+        <WaZoomableFrame SrcDoc="@FrameContent" WithoutInteraction="true" WithoutControls="false" Style="height: 160px; width: 280px;" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Custom Zoom Icons" Code="@IconsExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaZoomableFrame SrcDoc="@FrameContent" ZoomInIconName="magnifying-glass-plus" ZoomOutIconName="magnifying-glass-minus" Style="height: 160px; width: 280px;" />
+        <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 160px; width: 280px;">
+            <ZoomInIconContent><WaIcon Name="square-plus" Label="Zoom in" /></ZoomInIconContent>
+            <ZoomOutIconContent><WaIcon Name="square-minus" Label="Zoom out" /></ZoomOutIconContent>
+        </WaZoomableFrame>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Loading, Theme Sync and Sandboxing" Code="@OptionsExample">
+    <p>A lazily loaded frame that follows the page's theme and dark mode and sends no referrer, and an eagerly loaded one sandboxed to running scripts (no same-origin access, forms, popups or top navigation) that may go full screen.</p>
+    <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Lazy" WithThemeSync="true"
+                     ReferrerPolicy="no-referrer" AllowFullScreen="false" Style="height: 160px;" />
+    <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Eager" Sandbox="allow-scripts" AllowFullScreen="true" Style="height: 160px; margin-top: var(--wa-space-m);" />
+</ExampleSection>
 
 <ApiTable Tag="wa-zoomable-frame" />
 
@@ -20,6 +47,8 @@
             <h1>Zoom me!</h1>
         </body>
         """;
+
+    private int loadCount;
 
     private const string DefaultExample = """
         <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 300px;" OnLoad="@(() => loadCount++)" />
@@ -33,5 +62,26 @@
         }
         """;
 
-    private int loadCount;
+    private const string ZoomExample = """
+        <WaZoomableFrame SrcDoc="@FrameContent" Zoom="0.5" ZoomLevels="25% 50% 100% 150%" Style="height: 200px;" />
+        """;
+
+    private const string ControlsExample = """
+        <WaZoomableFrame SrcDoc="@FrameContent" WithoutControls="true" Style="height: 160px; width: 280px;" />
+        <WaZoomableFrame SrcDoc="@FrameContent" WithoutInteraction="true" WithoutControls="false" Style="height: 160px; width: 280px;" />
+        """;
+
+    private const string IconsExample = """
+        <WaZoomableFrame SrcDoc="@FrameContent" ZoomInIconName="magnifying-glass-plus" ZoomOutIconName="magnifying-glass-minus" Style="height: 160px; width: 280px;" />
+        <WaZoomableFrame SrcDoc="@FrameContent" Style="height: 160px; width: 280px;">
+            <ZoomInIconContent><WaIcon Name="square-plus" Label="Zoom in" /></ZoomInIconContent>
+            <ZoomOutIconContent><WaIcon Name="square-minus" Label="Zoom out" /></ZoomOutIconContent>
+        </WaZoomableFrame>
+        """;
+
+    private const string OptionsExample = """
+        <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Lazy" WithThemeSync="true"
+                         ReferrerPolicy="no-referrer" AllowFullScreen="false" Style="height: 160px;" />
+        <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Eager" Sandbox="allow-scripts" AllowFullScreen="true" Style="height: 160px;" />
+        """;
 }

@@ -3,7 +3,7 @@
 <PageTitle>Carousel Item</PageTitle>
 
 <h1>Carousel Item <ComponentBadges Tag="wa-carousel-item" /></h1>
-<p><code>&lt;wa-carousel-item&gt;</code> wrapped by <code>WaCarouselItem</code>.</p>
+<p>A single slide of a <a href="components/carousel"><code>WaCarousel</code></a>; it holds any content. <code>&lt;wa-carousel-item&gt;</code> wrapped by <code>WaCarouselItem</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaCarousel Pagination="true" Navigation="true">
@@ -19,7 +19,33 @@
     </WaCarousel>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\carousel-item.md) *@
+<ExampleSection Title="Images" Code="@ImagesExample">
+    <WaCarousel Pagination="true" Navigation="true" Loop="true" Style="--aspect-ratio: 3/2; max-width: 480px;">
+        <WaCarouselItem>
+            <img src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&q=80" alt="A gray tabby kitten looking down" style="width: 100%; height: 100%; object-fit: cover;" />
+        </WaCarouselItem>
+        <WaCarouselItem>
+            <img src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=600&q=80" alt="A white and grayish kitten" style="width: 100%; height: 100%; object-fit: cover;" />
+        </WaCarouselItem>
+    </WaCarousel>
+</ExampleSection>
+
+<ExampleSection Title="Rich Content" Code="@RichExample">
+    <WaCarousel Navigation="true" Pagination="true">
+        <WaCarouselItem>
+            <WaCard Style="width: 100%;">
+                <HeaderContent>Step 1</HeaderContent>
+                <ChildContent>Create an account.</ChildContent>
+            </WaCard>
+        </WaCarouselItem>
+        <WaCarouselItem>
+            <WaCard Style="width: 100%;">
+                <HeaderContent>Step 2</HeaderContent>
+                <ChildContent>Invite your team.</ChildContent>
+            </WaCard>
+        </WaCarouselItem>
+    </WaCarousel>
+</ExampleSection>
 
 <ApiTable Tag="wa-carousel-item" />
 
@@ -34,6 +60,34 @@
             </WaCarouselItem>
             <WaCarouselItem>
                 <div style="background: var(--wa-color-warning-fill-loud); height: 200px;"></div>
+            </WaCarouselItem>
+        </WaCarousel>
+        """;
+
+    private const string ImagesExample = """
+        <WaCarousel Pagination="true" Navigation="true" Loop="true" Style="--aspect-ratio: 3/2; max-width: 480px;">
+            <WaCarouselItem>
+                <img src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&q=80" alt="A gray tabby kitten looking down" style="width: 100%; height: 100%; object-fit: cover;" />
+            </WaCarouselItem>
+            <WaCarouselItem>
+                <img src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=600&q=80" alt="A white and grayish kitten" style="width: 100%; height: 100%; object-fit: cover;" />
+            </WaCarouselItem>
+        </WaCarousel>
+        """;
+
+    private const string RichExample = """
+        <WaCarousel Navigation="true" Pagination="true">
+            <WaCarouselItem>
+                <WaCard Style="width: 100%;">
+                    <HeaderContent>Step 1</HeaderContent>
+                    <ChildContent>Create an account.</ChildContent>
+                </WaCard>
+            </WaCarouselItem>
+            <WaCarouselItem>
+                <WaCard Style="width: 100%;">
+                    <HeaderContent>Step 2</HeaderContent>
+                    <ChildContent>Invite your team.</ChildContent>
+                </WaCard>
             </WaCarouselItem>
         </WaCarousel>
         """;

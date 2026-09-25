@@ -1,9 +1,9 @@
-﻿@page "/components/breadcrumb-item"
+@page "/components/breadcrumb-item"
 
 <PageTitle>Breadcrumb Item</PageTitle>
 
-<h1>Breadcrumb Item</h1>
-<p><code>&lt;wa-breadcrumb-item&gt;</code> wrapped by <code>WaBreadcrumbItem</code>.</p>
+<h1>Breadcrumb Item <ComponentBadges Tag="wa-breadcrumb-item" /></h1>
+<p>A single level of a <a href="components/breadcrumb"><code>WaBreadcrumb</code></a>: a link with <code>Href</code>, or plain text for the current page. <code>&lt;wa-breadcrumb-item&gt;</code> wrapped by <code>WaBreadcrumbItem</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaBreadcrumb>
@@ -13,7 +13,35 @@
     </WaBreadcrumb>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\breadcrumb-item.md) *@
+<ExampleSection Title="Prefix and Suffix" Code="@PrefixExample">
+    <WaBreadcrumb>
+        <WaBreadcrumbItem Href="components/breadcrumb-item" StartIconName="house">Home</WaBreadcrumbItem>
+        <WaBreadcrumbItem Href="components/breadcrumb-item">
+            <StartContent><WaIcon Name="folder-open" /></StartContent>
+            <ChildContent>Documents</ChildContent>
+        </WaBreadcrumbItem>
+        <WaBreadcrumbItem EndIconName="lock">Private</WaBreadcrumbItem>
+    </WaBreadcrumb>
+</ExampleSection>
+
+<ExampleSection Title="Separator for One Item" Code="@SeparatorExample">
+    <WaBreadcrumb>
+        <WaBreadcrumbItem Href="components/breadcrumb-item">Home</WaBreadcrumbItem>
+        <WaBreadcrumbItem Href="components/breadcrumb-item">
+            <SeparatorContent><WaIcon Name="arrow-right" /></SeparatorContent>
+            <ChildContent>Reports</ChildContent>
+        </WaBreadcrumbItem>
+        <WaBreadcrumbItem>2026</WaBreadcrumbItem>
+    </WaBreadcrumb>
+</ExampleSection>
+
+<ExampleSection Title="Link Targets" Code="@TargetExample">
+    <WaBreadcrumb>
+        <WaBreadcrumbItem Href="https://webawesome.com/" Target="_blank" Rel="noopener noreferrer">Web Awesome</WaBreadcrumbItem>
+        <WaBreadcrumbItem Href="https://webawesome.com/docs/components/breadcrumb" Target="_blank" Rel="noopener noreferrer">Docs</WaBreadcrumbItem>
+        <WaBreadcrumbItem>Breadcrumb</WaBreadcrumbItem>
+    </WaBreadcrumb>
+</ExampleSection>
 
 <ApiTable Tag="wa-breadcrumb-item" />
 
@@ -23,6 +51,36 @@
             <WaBreadcrumbItem Href="/">Home</WaBreadcrumbItem>
             <WaBreadcrumbItem Href="/components">Components</WaBreadcrumbItem>
             <WaBreadcrumbItem>Breadcrumb Item</WaBreadcrumbItem>
+        </WaBreadcrumb>
+        """;
+
+    private const string PrefixExample = """
+        <WaBreadcrumb>
+            <WaBreadcrumbItem Href="/" StartIconName="house">Home</WaBreadcrumbItem>
+            <WaBreadcrumbItem Href="documents">
+                <StartContent><WaIcon Name="folder-open" /></StartContent>
+                <ChildContent>Documents</ChildContent>
+            </WaBreadcrumbItem>
+            <WaBreadcrumbItem EndIconName="lock">Private</WaBreadcrumbItem>
+        </WaBreadcrumb>
+        """;
+
+    private const string SeparatorExample = """
+        <WaBreadcrumb>
+            <WaBreadcrumbItem Href="/">Home</WaBreadcrumbItem>
+            <WaBreadcrumbItem Href="reports">
+                <SeparatorContent><WaIcon Name="arrow-right" /></SeparatorContent>
+                <ChildContent>Reports</ChildContent>
+            </WaBreadcrumbItem>
+            <WaBreadcrumbItem>2026</WaBreadcrumbItem>
+        </WaBreadcrumb>
+        """;
+
+    private const string TargetExample = """
+        <WaBreadcrumb>
+            <WaBreadcrumbItem Href="https://webawesome.com/" Target="_blank" Rel="noopener noreferrer">Web Awesome</WaBreadcrumbItem>
+            <WaBreadcrumbItem Href="https://webawesome.com/docs/components/breadcrumb" Target="_blank" Rel="noopener noreferrer">Docs</WaBreadcrumbItem>
+            <WaBreadcrumbItem>Breadcrumb</WaBreadcrumbItem>
         </WaBreadcrumb>
         """;
 }

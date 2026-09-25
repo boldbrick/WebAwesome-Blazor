@@ -1,9 +1,9 @@
-﻿@page "/components/button-group"
+@page "/components/button-group"
 
 <PageTitle>Button Group</PageTitle>
 
-<h1>Button Group</h1>
-<p><code>&lt;wa-button-group&gt;</code> wrapped by <code>WaButtonGroup</code>.</p>
+<h1>Button Group <ComponentBadges Tag="wa-button-group" /></h1>
+<p>Button groups visually join related buttons. <code>&lt;wa-button-group&gt;</code> wrapped by <code>WaButtonGroup</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaButtonGroup Label="Alignment">
@@ -13,7 +13,70 @@
     </WaButtonGroup>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\button-group.md) *@
+<ExampleSection Title="Button Sizes" Code="@SizesExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaButtonGroup Label="Small alignment">
+            <WaButton Size="WaSize.Small">Left</WaButton>
+            <WaButton Size="WaSize.Small">Center</WaButton>
+            <WaButton Size="WaSize.Small">Right</WaButton>
+        </WaButtonGroup>
+        <WaButtonGroup Label="Large alignment">
+            <WaButton Size="WaSize.Large">Left</WaButton>
+            <WaButton Size="WaSize.Large">Center</WaButton>
+            <WaButton Size="WaSize.Large">Right</WaButton>
+        </WaButtonGroup>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Vertical Button Groups" Code="@VerticalExample">
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaButtonGroup Label="Horizontal options" Orientation="WaOrientation.Horizontal">
+            <WaButton StartIconName="plus">New</WaButton>
+            <WaButton StartIconName="folder-open">Open</WaButton>
+        </WaButtonGroup>
+        <WaButtonGroup Label="Vertical options" Orientation="WaOrientation.Vertical">
+            <WaButton StartIconName="plus">New</WaButton>
+            <WaButton StartIconName="folder-open">Open</WaButton>
+            <WaButton StartIconName="floppy-disk">Save</WaButton>
+        </WaButtonGroup>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Theme Buttons" Code="@VariantsExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaButtonGroup Label="Brand options">
+            <WaButton Variant="WaVariant.Brand">Left</WaButton>
+            <WaButton Variant="WaVariant.Brand">Center</WaButton>
+            <WaButton Variant="WaVariant.Brand">Right</WaButton>
+        </WaButtonGroup>
+        <WaButtonGroup Label="Danger options">
+            <WaButton Variant="WaVariant.Danger" Appearance="WaAppearance.Outlined">Left</WaButton>
+            <WaButton Variant="WaVariant.Danger" Appearance="WaAppearance.Outlined">Center</WaButton>
+            <WaButton Variant="WaVariant.Danger" Appearance="WaAppearance.Outlined">Right</WaButton>
+        </WaButtonGroup>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Pill Buttons" Code="@PillExample">
+    <WaButtonGroup Label="Pill alignment">
+        <WaButton Pill="true">Left</WaButton>
+        <WaButton Pill="true">Center</WaButton>
+        <WaButton Pill="true">Right</WaButton>
+    </WaButtonGroup>
+</ExampleSection>
+
+<ExampleSection Title="Dropdowns in Button Groups" Code="@DropdownExample">
+    <WaButtonGroup Label="Save options">
+        <WaButton Variant="WaVariant.Brand">Save</WaButton>
+        <WaDropdown Placement="WaPlacement.BottomEnd">
+            <TriggerContent><WaButton Variant="WaVariant.Brand" WithCaret="true">More</WaButton></TriggerContent>
+            <ChildContent>
+                <WaDropdownItem Value="draft">Save as draft</WaDropdownItem>
+                <WaDropdownItem Value="copy">Save a copy</WaDropdownItem>
+            </ChildContent>
+        </WaDropdown>
+    </WaButtonGroup>
+</ExampleSection>
 
 <ApiTable Tag="wa-button-group" />
 
@@ -23,6 +86,65 @@
             <WaButton>Left</WaButton>
             <WaButton>Center</WaButton>
             <WaButton>Right</WaButton>
+        </WaButtonGroup>
+        """;
+
+    private const string SizesExample = """
+        <WaButtonGroup Label="Small alignment">
+            <WaButton Size="WaSize.Small">Left</WaButton>
+            <WaButton Size="WaSize.Small">Center</WaButton>
+            <WaButton Size="WaSize.Small">Right</WaButton>
+        </WaButtonGroup>
+        <WaButtonGroup Label="Large alignment">
+            <WaButton Size="WaSize.Large">Left</WaButton>
+            <WaButton Size="WaSize.Large">Center</WaButton>
+            <WaButton Size="WaSize.Large">Right</WaButton>
+        </WaButtonGroup>
+        """;
+
+    private const string VerticalExample = """
+        <WaButtonGroup Label="Horizontal options" Orientation="WaOrientation.Horizontal">
+            <WaButton StartIconName="plus">New</WaButton>
+            <WaButton StartIconName="folder-open">Open</WaButton>
+        </WaButtonGroup>
+        <WaButtonGroup Label="Vertical options" Orientation="WaOrientation.Vertical">
+            <WaButton StartIconName="plus">New</WaButton>
+            <WaButton StartIconName="folder-open">Open</WaButton>
+            <WaButton StartIconName="floppy-disk">Save</WaButton>
+        </WaButtonGroup>
+        """;
+
+    private const string VariantsExample = """
+        <WaButtonGroup Label="Brand options">
+            <WaButton Variant="WaVariant.Brand">Left</WaButton>
+            <WaButton Variant="WaVariant.Brand">Center</WaButton>
+            <WaButton Variant="WaVariant.Brand">Right</WaButton>
+        </WaButtonGroup>
+        <WaButtonGroup Label="Danger options">
+            <WaButton Variant="WaVariant.Danger" Appearance="WaAppearance.Outlined">Left</WaButton>
+            <WaButton Variant="WaVariant.Danger" Appearance="WaAppearance.Outlined">Center</WaButton>
+            <WaButton Variant="WaVariant.Danger" Appearance="WaAppearance.Outlined">Right</WaButton>
+        </WaButtonGroup>
+        """;
+
+    private const string PillExample = """
+        <WaButtonGroup Label="Pill alignment">
+            <WaButton Pill="true">Left</WaButton>
+            <WaButton Pill="true">Center</WaButton>
+            <WaButton Pill="true">Right</WaButton>
+        </WaButtonGroup>
+        """;
+
+    private const string DropdownExample = """
+        <WaButtonGroup Label="Save options">
+            <WaButton Variant="WaVariant.Brand">Save</WaButton>
+            <WaDropdown Placement="WaPlacement.BottomEnd">
+                <TriggerContent><WaButton Variant="WaVariant.Brand" WithCaret="true">More</WaButton></TriggerContent>
+                <ChildContent>
+                    <WaDropdownItem Value="draft">Save as draft</WaDropdownItem>
+                    <WaDropdownItem Value="copy">Save a copy</WaDropdownItem>
+                </ChildContent>
+            </WaDropdown>
         </WaButtonGroup>
         """;
 }

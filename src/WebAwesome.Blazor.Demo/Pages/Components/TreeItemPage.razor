@@ -1,9 +1,9 @@
-﻿@page "/components/tree-item"
+@page "/components/tree-item"
 
 <PageTitle>Tree Item</PageTitle>
 
-<h1>Tree Item</h1>
-<p><code>&lt;wa-tree-item&gt;</code> wrapped by <code>WaTreeItem</code>. Must be used as a child of <code>WaTree</code>.</p>
+<h1>Tree Item <ComponentBadges Tag="wa-tree-item" /></h1>
+<p>A node of a <a href="components/tree"><code>WaTree</code></a>; nested items make it a branch. <code>&lt;wa-tree-item&gt;</code> wrapped by <code>WaTreeItem</code>. Must be used as a child of <code>WaTree</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaTree>
@@ -16,11 +16,47 @@
     </WaTree>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tree-item.md) *@
+<ExampleSection Title="Expanded, Selected and Disabled" Code="@StatesExample">
+    <WaTree Selection="WaTreeSelection.Multiple">
+        <WaTreeItem Expanded="true" Selected="false">
+            Fruits
+            <WaTreeItem Selected="true">Apple</WaTreeItem>
+            <WaTreeItem Selected="false">Banana</WaTreeItem>
+            <WaTreeItem Disabled="true">Cherry (out of season)</WaTreeItem>
+        </WaTreeItem>
+        <WaTreeItem Expanded="false" Disabled="false">
+            Vegetables
+            <WaTreeItem>Carrot</WaTreeItem>
+        </WaTreeItem>
+    </WaTree>
+</ExampleSection>
+
+<ExampleSection Title="Items With Icons" Code="@IconsExample">
+    <WaTree>
+        <WaTreeItem Expanded="true">
+            <WaIcon Name="folder" /> Projects
+            <WaTreeItem><WaIcon Name="file-code" /> app.razor</WaTreeItem>
+            <WaTreeItem><WaIcon Name="file-lines" /> README.md</WaTreeItem>
+        </WaTreeItem>
+    </WaTree>
+</ExampleSection>
+
+<ExampleSection Title="Expand and Collapse Events" Code="@EventsExample">
+    <WaTree>
+        <WaTreeItem OnExpand="() => expansions++" OnCollapse="() => collapses++">
+            Toggle me
+            <WaTreeItem>Child</WaTreeItem>
+        </WaTreeItem>
+    </WaTree>
+    <p>Expanded <strong>@expansions</strong> time(s), collapsed <strong>@collapses</strong> time(s).</p>
+</ExampleSection>
 
 <ApiTable Tag="wa-tree-item" />
 
 @code {
+    private int expansions;
+    private int collapses;
+
     private const string DefaultExample = """
         <WaTree>
             <WaTreeItem Expanded="true">
@@ -30,5 +66,45 @@
             </WaTreeItem>
             <WaTreeItem Disabled="true">Archived (disabled)</WaTreeItem>
         </WaTree>
+        """;
+
+    private const string StatesExample = """
+        <WaTree Selection="WaTreeSelection.Multiple">
+            <WaTreeItem Expanded="true" Selected="false">
+                Fruits
+                <WaTreeItem Selected="true">Apple</WaTreeItem>
+                <WaTreeItem Selected="false">Banana</WaTreeItem>
+                <WaTreeItem Disabled="true">Cherry (out of season)</WaTreeItem>
+            </WaTreeItem>
+            <WaTreeItem Expanded="false" Disabled="false">
+                Vegetables
+                <WaTreeItem>Carrot</WaTreeItem>
+            </WaTreeItem>
+        </WaTree>
+        """;
+
+    private const string IconsExample = """
+        <WaTree>
+            <WaTreeItem Expanded="true">
+                <WaIcon Name="folder" /> Projects
+                <WaTreeItem><WaIcon Name="file-code" /> app.razor</WaTreeItem>
+                <WaTreeItem><WaIcon Name="file-lines" /> README.md</WaTreeItem>
+            </WaTreeItem>
+        </WaTree>
+        """;
+
+    private const string EventsExample = """
+        <WaTree>
+            <WaTreeItem OnExpand="() => expansions++" OnCollapse="() => collapses++">
+                Toggle me
+                <WaTreeItem>Child</WaTreeItem>
+            </WaTreeItem>
+        </WaTree>
+        <p>Expanded @expansions time(s), collapsed @collapses time(s).</p>
+
+        @code {
+            private int expansions;
+            private int collapses;
+        }
         """;
 }

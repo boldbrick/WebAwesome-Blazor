@@ -1,9 +1,9 @@
-﻿@page "/components/tab"
+@page "/components/tab"
 
 <PageTitle>Tab</PageTitle>
 
-<h1>Tab</h1>
-<p><code>&lt;wa-tab&gt;</code> wrapped by <code>WaTab</code>.</p>
+<h1>Tab <ComponentBadges Tag="wa-tab" /></h1>
+<p>Tabs are the triggers of a <a href="components/tab-group"><code>WaTabGroup</code></a>; each names the panel it shows with <code>Panel</code>. <code>&lt;wa-tab&gt;</code> wrapped by <code>WaTab</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaTabGroup>
@@ -14,11 +14,43 @@
     </WaTabGroup>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tab.md) *@
+<ExampleSection Title="Disabled Tabs" Code="@DisabledExample">
+    <WaTabGroup>
+        <WaTab Panel="overview">Overview</WaTab>
+        <WaTab Panel="billing" Disabled="true">Billing</WaTab>
+        <WaTab Panel="team" Disabled="false">Team</WaTab>
+        <WaTabPanel Name="overview">The billing tab is disabled until a plan is chosen.</WaTabPanel>
+        <WaTabPanel Name="billing">Billing details.</WaTabPanel>
+        <WaTabPanel Name="team">Team members.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+<ExampleSection Title="Tabs With Icons" Code="@IconsExample">
+    <WaTabGroup>
+        <WaTab Panel="inbox"><WaIcon Name="inbox" /> Inbox</WaTab>
+        <WaTab Panel="sent"><WaIcon Name="paper-plane" /> Sent</WaTab>
+        <WaTab Panel="settings"><WaIcon Name="gear" Label="Settings" /></WaTab>
+        <WaTabPanel Name="inbox">3 unread messages.</WaTabPanel>
+        <WaTabPanel Name="sent">Nothing sent today.</WaTabPanel>
+        <WaTabPanel Name="settings">Mail settings.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+<ExampleSection Title="Click and Focus" Code="@EventsExample">
+    <WaTabGroup>
+        <WaTab Panel="one" OnClick="() => clicks++" OnFocus="() => focused = true" OnBlur="() => focused = false">Tracked tab</WaTab>
+        <WaTab Panel="two">Other tab</WaTab>
+        <WaTabPanel Name="one">Clicked @clicks time(s); @(focused ? "focused" : "not focused").</WaTabPanel>
+        <WaTabPanel Name="two">The other panel.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
 
 <ApiTable Tag="wa-tab" />
 
 @code {
+    private int clicks;
+    private bool focused;
+
     private const string DefaultExample = """
         <WaTabGroup>
             <WaTab Panel="general" Active="true">General</WaTab>
@@ -26,5 +58,41 @@
             <WaTabPanel Name="general" Active="true">This is the general tab panel.</WaTabPanel>
             <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
         </WaTabGroup>
+        """;
+
+    private const string DisabledExample = """
+        <WaTabGroup>
+            <WaTab Panel="overview">Overview</WaTab>
+            <WaTab Panel="billing" Disabled="true">Billing</WaTab>
+            <WaTab Panel="team" Disabled="false">Team</WaTab>
+            <WaTabPanel Name="overview">The billing tab is disabled until a plan is chosen.</WaTabPanel>
+            <WaTabPanel Name="billing">Billing details.</WaTabPanel>
+            <WaTabPanel Name="team">Team members.</WaTabPanel>
+        </WaTabGroup>
+        """;
+
+    private const string IconsExample = """
+        <WaTabGroup>
+            <WaTab Panel="inbox"><WaIcon Name="inbox" /> Inbox</WaTab>
+            <WaTab Panel="sent"><WaIcon Name="paper-plane" /> Sent</WaTab>
+            <WaTab Panel="settings"><WaIcon Name="gear" Label="Settings" /></WaTab>
+            <WaTabPanel Name="inbox">3 unread messages.</WaTabPanel>
+            <WaTabPanel Name="sent">Nothing sent today.</WaTabPanel>
+            <WaTabPanel Name="settings">Mail settings.</WaTabPanel>
+        </WaTabGroup>
+        """;
+
+    private const string EventsExample = """
+        <WaTabGroup>
+            <WaTab Panel="one" OnClick="() => clicks++" OnFocus="() => focused = true" OnBlur="() => focused = false">Tracked tab</WaTab>
+            <WaTab Panel="two">Other tab</WaTab>
+            <WaTabPanel Name="one">Clicked @clicks time(s); @(focused ? "focused" : "not focused").</WaTabPanel>
+            <WaTabPanel Name="two">The other panel.</WaTabPanel>
+        </WaTabGroup>
+
+        @code {
+            private int clicks;
+            private bool focused;
+        }
         """;
 }

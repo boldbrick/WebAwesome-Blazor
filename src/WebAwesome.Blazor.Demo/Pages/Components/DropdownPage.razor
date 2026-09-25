@@ -1,9 +1,9 @@
-﻿@page "/components/dropdown"
+@page "/components/dropdown"
 
 <PageTitle>Dropdown</PageTitle>
 
-<h1>Dropdown</h1>
-<p><code>&lt;wa-dropdown&gt;</code> wrapped by <code>WaDropdown</code>.</p>
+<h1>Dropdown <ComponentBadges Tag="wa-dropdown" /></h1>
+<p>Dropdowns show a menu of <a href="components/dropdown-item"><code>WaDropdownItem</code></a>s when their trigger is activated. <code>&lt;wa-dropdown&gt;</code> wrapped by <code>WaDropdown</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaDropdown>
@@ -18,11 +18,107 @@
     </WaDropdown>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\dropdown.md) *@
+<ExampleSection Title="Getting the Selected Item" Code="@SelectExample">
+    <WaDropdown OnSelect="() => selections++">
+        <TriggerContent><WaButton WithCaret="true">Edit</WaButton></TriggerContent>
+        <ChildContent>
+            <WaDropdownItem Value="cut" IconName="scissors">Cut</WaDropdownItem>
+            <WaDropdownItem Value="copy" IconName="copy">Copy</WaDropdownItem>
+            <WaDropdownItem Value="paste" IconName="paste" Disabled="true">Paste</WaDropdownItem>
+            <WaDivider />
+            <WaDropdownItem Value="delete" IconName="trash" Variant="WaDropdownItemVariant.Danger">Delete</WaDropdownItem>
+        </ChildContent>
+    </WaDropdown>
+    <p>Items selected: <strong>@selections</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Checkbox Items" Code="@CheckboxExample">
+    <WaDropdown>
+        <TriggerContent><WaButton WithCaret="true">View</WaButton></TriggerContent>
+        <ChildContent>
+            <WaDropdownItem Type="WaDropdownItemType.Checkbox" Value="canvas" Checked="true">Show canvas</WaDropdownItem>
+            <WaDropdownItem Type="WaDropdownItemType.Checkbox" Value="grid" Checked="false">Show grid</WaDropdownItem>
+            <WaDropdownItem Type="WaDropdownItemType.Normal" Value="reset">Reset view</WaDropdownItem>
+        </ChildContent>
+    </WaDropdown>
+</ExampleSection>
+
+<ExampleSection Title="Placement" Code="@PlacementExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        @foreach (var placement in Placements)
+        {
+            <WaDropdown Placement="placement">
+                <TriggerContent><WaButton Size="WaSize.Small" WithCaret="true">@placement</WaButton></TriggerContent>
+                <ChildContent>
+                    <WaDropdownItem>First</WaDropdownItem>
+                    <WaDropdownItem>Second</WaDropdownItem>
+                </ChildContent>
+            </WaDropdown>
+        }
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Distance and Skidding" Code="@DistanceExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaDropdown Distance="30">
+            <TriggerContent><WaButton WithCaret="true">30px away</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        <WaDropdown Skidding="40">
+            <TriggerContent><WaButton WithCaret="true">Skidding 40px</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        <WaDropdown Skidding="-40">
+            <TriggerContent><WaButton WithCaret="true">Skidding -40px</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaDropdown Size="WaSize.Small">
+            <TriggerContent><WaButton Size="WaSize.Small" WithCaret="true">Small</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        <WaDropdown Size="WaSize.Medium">
+            <TriggerContent><WaButton WithCaret="true">Medium</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        <WaDropdown Size="WaSize.Large">
+            <TriggerContent><WaButton Size="WaSize.Large" WithCaret="true">Large</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Submenus" Code="@SubmenuExample">
+    <WaDropdown>
+        <TriggerContent><WaButton WithCaret="true">Export</WaButton></TriggerContent>
+        <ChildContent>
+            <WaDropdownItem Value="pdf">PDF</WaDropdownItem>
+            <WaDropdownItem>
+                <ChildContent>Images</ChildContent>
+                <SubmenuContent>
+                    <WaDropdownItem Value="png">PNG</WaDropdownItem>
+                    <WaDropdownItem Value="svg">SVG</WaDropdownItem>
+                </SubmenuContent>
+            </WaDropdownItem>
+        </ChildContent>
+    </WaDropdown>
+</ExampleSection>
 
 <ApiTable Tag="wa-dropdown" />
 
 @code {
+    private static readonly WaPlacement[] Placements =
+    [
+        WaPlacement.Top, WaPlacement.TopStart, WaPlacement.TopEnd, WaPlacement.Bottom, WaPlacement.BottomStart, WaPlacement.BottomEnd,
+        WaPlacement.Left, WaPlacement.LeftStart, WaPlacement.LeftEnd, WaPlacement.Right, WaPlacement.RightStart, WaPlacement.RightEnd
+    ];
+
+    private int selections;
+
     private const string DefaultExample = """
         <WaDropdown>
             <TriggerContent>
@@ -32,6 +128,102 @@
                 <WaDropdownItem>Option 1</WaDropdownItem>
                 <WaDropdownItem>Option 2</WaDropdownItem>
                 <WaDropdownItem>Option 3</WaDropdownItem>
+            </ChildContent>
+        </WaDropdown>
+        """;
+
+    private const string SelectExample = """
+        <WaDropdown OnSelect="() => selections++">
+            <TriggerContent><WaButton WithCaret="true">Edit</WaButton></TriggerContent>
+            <ChildContent>
+                <WaDropdownItem Value="cut" IconName="scissors">Cut</WaDropdownItem>
+                <WaDropdownItem Value="copy" IconName="copy">Copy</WaDropdownItem>
+                <WaDropdownItem Value="paste" IconName="paste" Disabled="true">Paste</WaDropdownItem>
+                <WaDivider />
+                <WaDropdownItem Value="delete" IconName="trash" Variant="WaDropdownItemVariant.Danger">Delete</WaDropdownItem>
+            </ChildContent>
+        </WaDropdown>
+        <p>Items selected: @selections</p>
+
+        @code {
+            private int selections;
+        }
+        """;
+
+    private const string CheckboxExample = """
+        <WaDropdown>
+            <TriggerContent><WaButton WithCaret="true">View</WaButton></TriggerContent>
+            <ChildContent>
+                <WaDropdownItem Type="WaDropdownItemType.Checkbox" Value="canvas" Checked="true">Show canvas</WaDropdownItem>
+                <WaDropdownItem Type="WaDropdownItemType.Checkbox" Value="grid" Checked="false">Show grid</WaDropdownItem>
+                <WaDropdownItem Type="WaDropdownItemType.Normal" Value="reset">Reset view</WaDropdownItem>
+            </ChildContent>
+        </WaDropdown>
+        """;
+
+    private const string PlacementExample = """
+        @foreach (var placement in Placements)
+        {
+            <WaDropdown Placement="placement">
+                <TriggerContent><WaButton Size="WaSize.Small" WithCaret="true">@placement</WaButton></TriggerContent>
+                <ChildContent>
+                    <WaDropdownItem>First</WaDropdownItem>
+                    <WaDropdownItem>Second</WaDropdownItem>
+                </ChildContent>
+            </WaDropdown>
+        }
+
+        @code {
+            private static readonly WaPlacement[] Placements =
+            [
+                WaPlacement.Top, WaPlacement.TopStart, WaPlacement.TopEnd, WaPlacement.Bottom, WaPlacement.BottomStart, WaPlacement.BottomEnd,
+                WaPlacement.Left, WaPlacement.LeftStart, WaPlacement.LeftEnd, WaPlacement.Right, WaPlacement.RightStart, WaPlacement.RightEnd
+            ];
+        }
+        """;
+
+    private const string DistanceExample = """
+        <WaDropdown Distance="30">
+            <TriggerContent><WaButton WithCaret="true">30px away</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        <WaDropdown Skidding="40">
+            <TriggerContent><WaButton WithCaret="true">Skidding 40px</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        <WaDropdown Skidding="-40">
+            <TriggerContent><WaButton WithCaret="true">Skidding -40px</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        """;
+
+    private const string SizesExample = """
+        <WaDropdown Size="WaSize.Small">
+            <TriggerContent><WaButton Size="WaSize.Small" WithCaret="true">Small</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        <WaDropdown Size="WaSize.Medium">
+            <TriggerContent><WaButton WithCaret="true">Medium</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        <WaDropdown Size="WaSize.Large">
+            <TriggerContent><WaButton Size="WaSize.Large" WithCaret="true">Large</WaButton></TriggerContent>
+            <ChildContent><WaDropdownItem>Option</WaDropdownItem></ChildContent>
+        </WaDropdown>
+        """;
+
+    private const string SubmenuExample = """
+        <WaDropdown>
+            <TriggerContent><WaButton WithCaret="true">Export</WaButton></TriggerContent>
+            <ChildContent>
+                <WaDropdownItem Value="pdf">PDF</WaDropdownItem>
+                <WaDropdownItem>
+                    <ChildContent>Images</ChildContent>
+                    <SubmenuContent>
+                        <WaDropdownItem Value="png">PNG</WaDropdownItem>
+                        <WaDropdownItem Value="svg">SVG</WaDropdownItem>
+                    </SubmenuContent>
+                </WaDropdownItem>
             </ChildContent>
         </WaDropdown>
         """;
