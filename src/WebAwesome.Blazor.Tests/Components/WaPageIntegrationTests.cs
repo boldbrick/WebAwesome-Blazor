@@ -101,26 +101,6 @@ public class WaPageIntegrationTests
 
     #endregion
 
-    #region ------ Enum ToHtmlValue Mappings ------
-
-    [Fact]
-    public void WaPageNavigationPlacement_ToHtmlValue_ReturnsCorrectStrings()
-    {
-        // Assert
-        Assert.Equal("start", WaPageNavigationPlacement.Start.ToHtmlValue());
-        Assert.Equal("end", WaPageNavigationPlacement.End.ToHtmlValue());
-    }
-
-    [Fact]
-    public void WaPageView_ToHtmlValue_ReturnsCorrectStrings()
-    {
-        // Assert
-        Assert.Equal("mobile", WaPageView.Mobile.ToHtmlValue());
-        Assert.Equal("desktop", WaPageView.Desktop.ToHtmlValue());
-    }
-
-    #endregion
-
     #region ------ Named Slots ------
 
     [Fact]

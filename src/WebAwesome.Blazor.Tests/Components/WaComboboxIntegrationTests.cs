@@ -134,42 +134,6 @@ public class WaComboboxIntegrationTests
 
     #endregion
 
-    #region ------ Enum Mappings ------
-
-    [Fact]
-    public void Appearance_CanBeSetToEachValue()
-    {
-        // Arrange
-        var component = new WaCombobox();
-
-        // Act & Assert
-        component.Appearance = WaInputAppearance.Outlined;
-        Assert.Equal(WaInputAppearance.Outlined, component.Appearance);
-        Assert.Equal("outlined", component.Appearance?.ToHtmlValue());
-
-        component.Appearance = WaInputAppearance.Filled;
-        Assert.Equal("filled", component.Appearance?.ToHtmlValue());
-
-        component.Appearance = WaInputAppearance.FilledOutlined;
-        Assert.Equal("filled-outlined", component.Appearance?.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Placement_CanBeSetAndMapsToHtmlValue()
-    {
-        // Arrange
-        var component = new WaCombobox();
-
-        // Act
-        component.Placement = WaListboxPlacement.Top;
-
-        // Assert
-        Assert.Equal(WaListboxPlacement.Top, component.Placement);
-        Assert.Equal("top", component.Placement?.ToHtmlValue());
-    }
-
-    #endregion
-
     #region ------ Multiple Selection Support ------
 
     [Fact]

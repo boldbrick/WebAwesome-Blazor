@@ -75,18 +75,6 @@ public class WaDatePickerIntegrationTests
 
     #endregion
 
-    #region ------ Enum Mappings ------
-
-    [Fact]
-    public void View_MapsToHtmlValue()
-    {
-        Assert.Equal("days", WaDatePickerView.Days.ToHtmlValue());
-        Assert.Equal("months", WaDatePickerView.Months.ToHtmlValue());
-        Assert.Equal("years", WaDatePickerView.Years.ToHtmlValue());
-    }
-
-    #endregion
-
     #region ------ Binding &amp; Events ------
 
     [Fact]

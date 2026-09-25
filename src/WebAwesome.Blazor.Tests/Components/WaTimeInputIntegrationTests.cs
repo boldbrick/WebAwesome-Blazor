@@ -71,16 +71,11 @@ public class WaTimeInputIntegrationTests
     [Fact]
     public void HourFormat_MapsToHtmlValue()
     {
+        // change detector for an intentional C# naming choice: the CEM checks see that "12"/"24" are in the union,
+        // not that Twelve emits "12" rather than "24"
         Assert.Equal("auto", WaTimeHourFormat.Auto.ToHtmlValue());
         Assert.Equal("12", WaTimeHourFormat.Twelve.ToHtmlValue());
         Assert.Equal("24", WaTimeHourFormat.TwentyFour.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Placement_MapsToHtmlValue()
-    {
-        var component = new WaTimeInput { Placement = WaPickerPlacement.TopEnd };
-        Assert.Equal("top-end", component.Placement?.ToHtmlValue());
     }
 
     #endregion

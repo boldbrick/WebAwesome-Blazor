@@ -124,21 +124,6 @@ public class WaDataGridIntegrationTests : BunitContext
     }
 
     [Fact]
-    public void Appearance_MapsToHtmlValue()
-    {
-        Assert.Equal("outlined", WaDataGridAppearance.Outlined.ToHtmlValue());
-        Assert.Equal("plain", WaDataGridAppearance.Plain.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Selectable_MapsToHtmlValue()
-    {
-        Assert.Equal("none", WaDataGridSelectable.None.ToHtmlValue());
-        Assert.Equal("single", WaDataGridSelectable.Single.ToHtmlValue());
-        Assert.Equal("multiple", WaDataGridSelectable.Multiple.ToHtmlValue());
-    }
-
-    [Fact]
     public void Data_And_Columns_ArePushedAsJSPropertiesOnFirstRender()
     {
         var module = JSInterop.SetupModule(InteropModulePath);

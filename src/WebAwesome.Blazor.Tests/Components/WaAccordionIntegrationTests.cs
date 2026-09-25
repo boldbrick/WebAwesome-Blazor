@@ -40,25 +40,6 @@ public class WaAccordionIntegrationTests
 
     #endregion
 
-    #region ------ Enum Mappings ------
-
-    [Fact]
-    public void Mode_CanBeSetToEachValue_AndMapsToHtmlValue()
-    {
-        Assert.Equal("single", WaAccordionMode.Single.ToHtmlValue());
-        Assert.Equal("single-collapsible", WaAccordionMode.SingleCollapsible.ToHtmlValue());
-        Assert.Equal("multiple", WaAccordionMode.Multiple.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Appearance_MapsToHtmlValue()
-    {
-        var component = new WaAccordion { Appearance = WaDetailsAppearance.Plain };
-        Assert.Equal("plain", component.Appearance.ToHtmlValue());
-    }
-
-    #endregion
-
     #region ------ Events ------
 
     [Fact]

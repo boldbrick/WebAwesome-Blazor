@@ -103,31 +103,6 @@ public class WaOtpInputIntegrationTests : FormControlTestBase
     }
 
     [Fact]
-    public void Appearance_MapsToHtmlValue()
-    {
-        Assert.Equal("outlined", WaOtpInputAppearance.Outlined.ToHtmlValue());
-        Assert.Equal("filled", WaOtpInputAppearance.Filled.ToHtmlValue());
-        Assert.Equal("filled-outlined", WaOtpInputAppearance.FilledOutlined.ToHtmlValue());
-        Assert.Equal("contained", WaOtpInputAppearance.Contained.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Type_MapsToHtmlValue()
-    {
-        Assert.Equal("numeric", WaOtpInputType.Numeric.ToHtmlValue());
-        Assert.Equal("alpha", WaOtpInputType.Alpha.ToHtmlValue());
-        Assert.Equal("alphanumeric", WaOtpInputType.Alphanumeric.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Case_MapsToHtmlValue()
-    {
-        Assert.Equal("preserve", WaOtpInputCase.Preserve.ToHtmlValue());
-        Assert.Equal("upper", WaOtpInputCase.Upper.ToHtmlValue());
-        Assert.Equal("lower", WaOtpInputCase.Lower.ToHtmlValue());
-    }
-
-    [Fact]
     public void OnClear_WhenWired_ReceivesDomEvent()
     {
         var clearCount = 0;

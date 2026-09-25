@@ -73,34 +73,6 @@ public class WaDateInputIntegrationTests
 
     #endregion
 
-    #region ------ Enum Mappings ------
-
-    [Fact]
-    public void Mode_MapsToHtmlValue()
-    {
-        Assert.Equal("single", WaDateSelectionMode.Single.ToHtmlValue());
-        Assert.Equal("range", WaDateSelectionMode.Range.ToHtmlValue());
-    }
-
-    [Fact]
-    public void FirstDayOfWeek_MapsToHtmlValue()
-    {
-        Assert.Equal("auto", WaFirstDayOfWeek.Auto.ToHtmlValue());
-        Assert.Equal("mon", WaFirstDayOfWeek.Mon.ToHtmlValue());
-        Assert.Equal("sun", WaFirstDayOfWeek.Sun.ToHtmlValue());
-    }
-
-    [Fact]
-    public void PageBy_And_WeekdayFormat_MapToHtmlValue()
-    {
-        Assert.Equal("months", WaDatePageBy.Months.ToHtmlValue());
-        Assert.Equal("single", WaDatePageBy.Single.ToHtmlValue());
-        Assert.Equal("narrow", WaWeekdayFormat.Narrow.ToHtmlValue());
-        Assert.Equal("long", WaWeekdayFormat.Long.ToHtmlValue());
-    }
-
-    #endregion
-
     #region ------ Slots ------
 
     [Fact]

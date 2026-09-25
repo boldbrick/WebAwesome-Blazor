@@ -71,38 +71,6 @@ public class WaCheckboxGroupIntegrationTests
 
     #endregion
 
-    #region ------ Enum Mappings ------
-
-    [Fact]
-    public void Orientation_CanBeSetAndMapsToHtmlValue()
-    {
-        // Arrange
-        var component = new WaCheckboxGroup();
-
-        // Act & Assert
-        component.Orientation = WaOrientation.Horizontal;
-        Assert.Equal("horizontal", component.Orientation?.ToHtmlValue());
-
-        component.Orientation = WaOrientation.Vertical;
-        Assert.Equal("vertical", component.Orientation?.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Size_CanBeSetAndMapsToHtmlValue()
-    {
-        // Arrange
-        var component = new WaCheckboxGroup();
-
-        // Act & Assert - the group size is applied to all grouped items
-        component.Size = WaSize.Small;
-        Assert.Equal("s", component.Size?.ToHtmlValue());
-
-        component.Size = WaSize.Large;
-        Assert.Equal("l", component.Size?.ToHtmlValue());
-    }
-
-    #endregion
-
     #region ------ Slots ------
 
     [Fact]

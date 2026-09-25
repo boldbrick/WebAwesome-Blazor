@@ -233,14 +233,6 @@ public class WaBreakingChangesValidationTests
         Assert.True(Enum.IsDefined(typeof(WaIconPlacement), WaIconPlacement.End));
     }
 
-    [Fact]
-    public void WaIconPlacement_ToHtmlValue_ReturnsCorrectStrings()
-    {
-        // Assert
-        Assert.Equal("start", WaIconPlacement.Start.ToHtmlValue());
-        Assert.Equal("end", WaIconPlacement.End.ToHtmlValue());
-    }
-
     #endregion
 
     #region ------ 3.6.0 Breaking Changes ------
@@ -256,39 +248,9 @@ public class WaBreakingChangesValidationTests
         Assert.Null(fileIconContentProperty);
     }
 
-    [Fact]
-    public void WaSize_ToHtmlValue_ReturnsCorrectStringsForAllValues()
-    {
-        // Assert - WaSize gained ExtraSmall/ExtraLarge in Web Awesome 3.6.0; Small/Medium/Large emit the
-        // short forms since Web Awesome 3.12.0 deprecated "small", "medium" and "large"
-        Assert.Equal("s", WaSize.Small.ToHtmlValue());
-        Assert.Equal("m", WaSize.Medium.ToHtmlValue());
-        Assert.Equal("l", WaSize.Large.ToHtmlValue());
-        Assert.Equal("xs", WaSize.ExtraSmall.ToHtmlValue());
-        Assert.Equal("xl", WaSize.ExtraLarge.ToHtmlValue());
-    }
-
     #endregion
 
     #region ------ 3.9.0 Breaking Changes ------
-
-    [Fact]
-    public void WaTreeSelection_LeafMultiple_IsDefinedAndMapsToHtmlValue()
-    {
-        // Assert - Web Awesome 3.9.0 widened wa-tree's selection attribute with a new
-        // 'leaf-multiple' option (additive; existing values are unchanged)
-        Assert.True(Enum.IsDefined(typeof(WaTreeSelection), WaTreeSelection.LeafMultiple));
-        Assert.Equal("leaf-multiple", WaTreeSelection.LeafMultiple.ToHtmlValue());
-    }
-
-    [Fact]
-    public void WaTreeSelection_ExistingValues_MappingsUnchanged()
-    {
-        // Assert - the existing selection values must keep their mappings
-        Assert.Equal("single", WaTreeSelection.Single.ToHtmlValue());
-        Assert.Equal("multiple", WaTreeSelection.Multiple.ToHtmlValue());
-        Assert.Equal("leaf", WaTreeSelection.Leaf.ToHtmlValue());
-    }
 
     [Fact]
     public void WaTree_Selection_CanBeSetToLeafMultiple()

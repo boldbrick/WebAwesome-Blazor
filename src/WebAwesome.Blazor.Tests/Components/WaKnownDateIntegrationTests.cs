@@ -50,13 +50,6 @@ public class WaKnownDateIntegrationTests
         Assert.True(component.Pill);
     }
 
-    [Fact]
-    public void Appearance_MapsToHtmlValue()
-    {
-        var component = new WaKnownDate { Appearance = WaInputAppearance.FilledOutlined };
-        Assert.Equal("filled-outlined", component.Appearance?.ToHtmlValue());
-    }
-
     #endregion
 
     #region ------ Events ------

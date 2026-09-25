@@ -84,21 +84,6 @@ public class WaPaginationIntegrationTests : BunitContext
     }
 
     [Fact]
-    public void Appearance_MapsToHtmlValue()
-    {
-        Assert.Equal("outlined", WaPaginationAppearance.Outlined.ToHtmlValue());
-        Assert.Equal("filled", WaPaginationAppearance.Filled.ToHtmlValue());
-        Assert.Equal("plain", WaPaginationAppearance.Plain.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Format_MapsToHtmlValue()
-    {
-        Assert.Equal("standard", WaPaginationFormat.Standard.ToHtmlValue());
-        Assert.Equal("compact", WaPaginationFormat.Compact.ToHtmlValue());
-    }
-
-    [Fact]
     public void OnBeforePageChange_WhenWired_ReceivesDomEventWithPage()
     {
         WaPaginationPageChangeEventArgs? received = null;

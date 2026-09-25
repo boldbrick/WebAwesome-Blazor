@@ -44,37 +44,8 @@ public class Wa3120UpgradeValidationTests : BunitContext
         Assert.False(element.HasAttribute("numeric"));
     }
 
-    [Theory]
-    [InlineData(WaRelativeTimeFormat.Long, "long")]
-    [InlineData(WaRelativeTimeFormat.Short, "short")]
-    [InlineData(WaRelativeTimeFormat.Narrow, "narrow")]
-    public void WaRelativeTime_Format_WhenSet_EmitsIntlStyle(WaRelativeTimeFormat format, string expected)
-    {
-        // Arrange & Act
-        var cut = Render<WaRelativeTime>(p => p
-            .Add(c => c.DateString, SampleDate)
-            .Add(c => c.Format, format));
-
-        // Assert
-        Assert.Equal(expected, cut.Find("wa-relative-time").GetAttribute("format"));
-        Assert.Equal(expected, format.ToHtmlValue());
-    }
-
-    [Theory]
-    [InlineData(WaRelativeTimeNumeric.Auto, "auto")]
-    [InlineData(WaRelativeTimeNumeric.Always, "always")]
-    public void WaRelativeTime_Numeric_WhenSet_EmitsIntlNumericOption(WaRelativeTimeNumeric numeric, string expected)
-    {
-        // Arrange & Act - the old bool Numeric=false was dropped by Blazor, so "always" could never be sent
-        var cut = Render<WaRelativeTime>(p => p
-            .Add(c => c.DateString, SampleDate)
-            .Add(c => c.Numeric, numeric));
-
-        // Assert
-        Assert.Equal(expected, cut.Find("wa-relative-time").GetAttribute("numeric"));
-        Assert.Equal(expected, numeric.ToHtmlValue());
-    }
-
+    // the emitted format/numeric values of every member are checked against the CEM unions by
+    // RenderedAttributeParityTests and EnumValueParityTests
     [Fact]
     public void WaRelativeTime_FormatAndNumeric_AreNullableEnums()
     {
@@ -136,83 +107,8 @@ public class Wa3120UpgradeValidationTests : BunitContext
 
     #region ------ New per-component enums ------
 
-    [Fact]
-    public void WaDetailsAppearance_ToHtmlValue_MapsAccordionDetailsUnion()
-    {
-        // Assert
-        Assert.Equal("filled", WaDetailsAppearance.Filled.ToHtmlValue());
-        Assert.Equal("outlined", WaDetailsAppearance.Outlined.ToHtmlValue());
-        Assert.Equal("filled-outlined", WaDetailsAppearance.FilledOutlined.ToHtmlValue());
-        Assert.Equal("plain", WaDetailsAppearance.Plain.ToHtmlValue());
-        Assert.Equal(4, Enum.GetValues<WaDetailsAppearance>().Length);
-    }
-
-    [Fact]
-    public void WaBadgeAppearance_ToHtmlValue_MapsBadgeTagUnion()
-    {
-        // Assert
-        Assert.Equal("accent", WaBadgeAppearance.Accent.ToHtmlValue());
-        Assert.Equal("filled", WaBadgeAppearance.Filled.ToHtmlValue());
-        Assert.Equal("outlined", WaBadgeAppearance.Outlined.ToHtmlValue());
-        Assert.Equal("filled-outlined", WaBadgeAppearance.FilledOutlined.ToHtmlValue());
-        Assert.Equal(4, Enum.GetValues<WaBadgeAppearance>().Length);
-    }
-
-    [Fact]
-    public void WaListboxPlacement_ToHtmlValue_MapsTopAndBottom()
-    {
-        // Assert
-        Assert.Equal("top", WaListboxPlacement.Top.ToHtmlValue());
-        Assert.Equal("bottom", WaListboxPlacement.Bottom.ToHtmlValue());
-        Assert.Equal(2, Enum.GetValues<WaListboxPlacement>().Length);
-    }
-
-    [Fact]
-    public void WaTooltipSide_ToHtmlValue_MapsFourSides()
-    {
-        // Assert
-        Assert.Equal("top", WaTooltipSide.Top.ToHtmlValue());
-        Assert.Equal("right", WaTooltipSide.Right.ToHtmlValue());
-        Assert.Equal("bottom", WaTooltipSide.Bottom.ToHtmlValue());
-        Assert.Equal("left", WaTooltipSide.Left.ToHtmlValue());
-        Assert.Equal(4, Enum.GetValues<WaTooltipSide>().Length);
-    }
-
-    [Fact]
-    public void WaPickerPlacement_ToHtmlValue_MapsSixTopBottomPlacements()
-    {
-        // Assert
-        Assert.Equal("top", WaPickerPlacement.Top.ToHtmlValue());
-        Assert.Equal("top-start", WaPickerPlacement.TopStart.ToHtmlValue());
-        Assert.Equal("top-end", WaPickerPlacement.TopEnd.ToHtmlValue());
-        Assert.Equal("bottom", WaPickerPlacement.Bottom.ToHtmlValue());
-        Assert.Equal("bottom-start", WaPickerPlacement.BottomStart.ToHtmlValue());
-        Assert.Equal("bottom-end", WaPickerPlacement.BottomEnd.ToHtmlValue());
-        Assert.Equal(6, Enum.GetValues<WaPickerPlacement>().Length);
-    }
-
-    [Fact]
-    public void WaDropdownItemVariant_ToHtmlValue_MapsDefaultAndDanger()
-    {
-        // Assert
-        Assert.Equal("default", WaDropdownItemVariant.Default.ToHtmlValue());
-        Assert.Equal("danger", WaDropdownItemVariant.Danger.ToHtmlValue());
-        Assert.Equal(2, Enum.GetValues<WaDropdownItemVariant>().Length);
-    }
-
-    [Fact]
-    public void WaFormatDate_PerOptionEnums_ToHtmlValue_MapIntlDateTimeFormatOptions()
-    {
-        // Assert - out-of-range styles made Intl.DateTimeFormat throw when WaDateTimeStyle was shared by all options
-        Assert.Equal("narrow", WaDateTimeTextStyle.Narrow.ToHtmlValue());
-        Assert.Equal("short", WaDateTimeTextStyle.Short.ToHtmlValue());
-        Assert.Equal("long", WaDateTimeTextStyle.Long.ToHtmlValue());
-        Assert.Equal("numeric", WaDateTimeNumericStyle.Numeric.ToHtmlValue());
-        Assert.Equal("2-digit", WaDateTimeNumericStyle.TwoDigit.ToHtmlValue());
-        Assert.Equal("short", WaTimeZoneNameStyle.Short.ToHtmlValue());
-        Assert.Equal("long", WaTimeZoneNameStyle.Long.ToHtmlValue());
-    }
-
+    // the values of the per-component enums are checked against the CEM unions (forward and reverse) by
+    // EnumValueParityTests and, as rendered, by RenderedAttributeParityTests; this asserts the parameter types
     [Theory]
     [InlineData(typeof(WaAccordion), nameof(WaAccordion.Appearance), typeof(WaDetailsAppearance))]
     [InlineData(typeof(WaDetails), nameof(WaDetails.Appearance), typeof(WaDetailsAppearance))]
@@ -250,21 +146,17 @@ public class Wa3120UpgradeValidationTests : BunitContext
     #region ------ Renamed and remapped members ------
 
     [Fact]
-    public void WaRadioAppearance_Default_EmitsDefault()
+    public void WaRadioAppearance_NormalMember_IsRemoved()
     {
-        // Assert - the old Normal member emitted the invalid "normal"
-        Assert.Equal("default", WaRadioAppearance.Default.ToHtmlValue());
-        Assert.Equal("button", WaRadioAppearance.Button.ToHtmlValue());
+        // Assert - the old Normal member emitted the invalid "normal"; the values are checked by EnumValueParityTests
         Assert.DoesNotContain("Normal", Enum.GetNames<WaRadioAppearance>());
     }
 
     [Fact]
-    public void WaAutoSize_HorizontalAndVertical_EmitWebAwesomeValues()
+    public void WaAutoSize_WidthAndHeightMembers_AreRemoved()
     {
-        // Assert - the old Width/Height members emitted "width"/"height", which Web Awesome ignores
-        Assert.Equal("horizontal", WaAutoSize.Horizontal.ToHtmlValue());
-        Assert.Equal("vertical", WaAutoSize.Vertical.ToHtmlValue());
-        Assert.Equal("both", WaAutoSize.Both.ToHtmlValue());
+        // Assert - the old Width/Height members emitted "width"/"height", which Web Awesome ignores; the values
+        // are checked by EnumValueParityTests
         Assert.DoesNotContain("Width", Enum.GetNames<WaAutoSize>());
         Assert.DoesNotContain("Height", Enum.GetNames<WaAutoSize>());
     }
@@ -272,7 +164,9 @@ public class Wa3120UpgradeValidationTests : BunitContext
     [Fact]
     public void WaSize_SmallMediumLarge_EmitShortForms()
     {
-        // Assert - Web Awesome 3.12.0 deprecates "small"/"medium"/"large"
+        // Assert - change detector for an intentional C# naming choice: the CEM union admits both "s" and the
+        // deprecated "small", so only this pins which spelling the long member names emit (Web Awesome 3.12.0
+        // deprecates "small"/"medium"/"large")
         Assert.Equal("s", WaSize.Small.ToHtmlValue());
         Assert.Equal("m", WaSize.Medium.ToHtmlValue());
         Assert.Equal("l", WaSize.Large.ToHtmlValue());
@@ -303,20 +197,8 @@ public class Wa3120UpgradeValidationTests : BunitContext
 
     #region ------ WaTrigger flags ------
 
-    [Theory]
-    [InlineData(WaTrigger.Click, "click")]
-    [InlineData(WaTrigger.Hover, "hover")]
-    [InlineData(WaTrigger.Focus, "focus")]
-    [InlineData(WaTrigger.Manual, "manual")]
-    [InlineData(WaTrigger.Hover | WaTrigger.Focus, "hover focus")]
-    [InlineData(WaTrigger.Focus | WaTrigger.Click, "click focus")]
-    [InlineData(WaTrigger.Manual | WaTrigger.Hover | WaTrigger.Focus | WaTrigger.Click, "click hover focus manual")]
-    public void WaTrigger_ToHtmlValue_EmitsSpaceSeparatedTokensInFixedOrder(WaTrigger trigger, string expected)
-    {
-        // Act & Assert
-        Assert.Equal(expected, trigger.ToHtmlValue());
-    }
-
+    // every flag combination's tokens are checked against the wa-tooltip trigger tokens by EnumValueParityTests
+    // (tokenListAttributes) and, as rendered, by RenderedAttributeParityTests
     [Theory]
     [InlineData(0)]
     [InlineData(16)]
