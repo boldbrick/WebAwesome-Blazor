@@ -353,6 +353,14 @@ public class ComponentParityConfig
     public List<string> TrueFalseAttributes { get; set; } = new();
 
     /// <summary>
+    /// CEM attributes a wrapper renders with no parameter set although the value differs from the element's own
+    /// default (e.g. a wrapper default that predates a Web Awesome default change, or a form control's name taken
+    /// from its binding). Every entry needs an ignoreReasons entry keyed "wrapperDefaultAttributes:&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("wrapperDefaultAttributes")]
+    public List<string> WrapperDefaultAttributes { get; set; } = new();
+
+    /// <summary>
     /// wa-* events the wrapper deliberately binds although the element's CEM entry does not declare them. Every
     /// entry needs an ignoreReasons entry keyed "undeclaredBoundEvents:&lt;tag&gt;:&lt;event&gt;".
     /// </summary>

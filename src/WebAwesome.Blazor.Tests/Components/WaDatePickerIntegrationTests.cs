@@ -1,133 +1,49 @@
-using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for the WaDatePicker wrapper (new in WA 3.8.0). Unlike the date/time inputs it is not a
-/// form-associated control, so it exposes manual Value/ValueChanged two-way binding rather than deriving from
-/// WaInputBase. Covers defaults, parameter settability, enum mappings, the typed focus-day/view-change event
-/// args, and imperative method guard clauses.
+/// Tests for the WaDatePicker wrapper (new in WA 3.8.0). Unlike the date/time inputs it is not a form-associated
+/// control, so it implements Value/ValueChanged two-way binding itself, from the native change event; that C#
+/// handler logic is tested here, together with the imperative method guard clauses. Its attributes and defaults
+/// are covered by RenderedAttributeParityTests and its events by EventCallbackBindingParityTests, both against the
+/// CEM; the browser delivery of change by the e2e suite.
 /// </summary>
-public class WaDatePickerIntegrationTests
+public class WaDatePickerIntegrationTests : BunitContext
 {
-    #region ------ Defaults ------
-
-    [Fact]
-    public void Constructor_WithDefaultValues_SetsPropertiesCorrectly()
+    public WaDatePickerIntegrationTests()
     {
-        var component = new WaDatePicker();
-
-        Assert.Null(component.Element);
-        Assert.Null(component.Value);
-        Assert.Null(component.Mode);
-        Assert.Null(component.View);
-        Assert.Null(component.Min);
-        Assert.Null(component.Max);
-        Assert.Null(component.FirstDayOfWeek);
-        Assert.Null(component.FocusedDate);
-        Assert.Null(component.Locale);
-        Assert.Null(component.Months);
-        Assert.Null(component.PageBy);
-        Assert.Null(component.Size);
-        Assert.Null(component.WeekdayFormat);
-        Assert.False(component.Disabled);
-        Assert.False(component.Readonly);
-        Assert.False(component.WithOutsideDays);
-        Assert.False(component.WithWeekNumbers);
+        Services.AddScoped<WebAwesomeJSInterop>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
-    #endregion
-
-    #region ------ Parameter Setting ------
-
     [Fact]
-    public void CoreAttributes_CanBeSet()
+    public void Value_RendersAsTheValueAttribute()
     {
-        var component = new WaDatePicker
-        {
-            Value = "2026-07-24",
-            Mode = WaDateSelectionMode.Range,
-            View = WaDatePickerView.Months,
-            Min = "2026-01-01",
-            Max = "2026-12-31",
-            FocusedDate = "2026-07-24",
-            Locale = "en-US",
-            Months = 2,
-            Size = WaSize.Large,
-            Readonly = true
-        };
+        var cut = Render<WaDatePicker>(parameters => parameters.Add(p => p.Value, SampleDate));
 
-        Assert.Equal("2026-07-24", component.Value);
-        Assert.Equal(WaDateSelectionMode.Range, component.Mode);
-        Assert.Equal(WaDatePickerView.Months, component.View);
-        Assert.Equal("2026-01-01", component.Min);
-        Assert.Equal("2026-12-31", component.Max);
-        Assert.Equal("2026-07-24", component.FocusedDate);
-        Assert.Equal("en-US", component.Locale);
-        Assert.Equal(2, component.Months);
-        Assert.Equal(WaSize.Large, component.Size);
-        Assert.True(component.Readonly);
+        Assert.Equal(SampleDate, cut.Find("wa-date-picker").GetAttribute("value"));
     }
 
-    #endregion
-
-    #region ------ Binding &amp; Events ------
-
     [Fact]
-    public async Task ValueChanged_CanBeWired()
+    public void ChangeEvent_UpdatesValueAndRaisesValueChanged()
     {
-        var component = new WaDatePicker();
+        // C# handler logic only: the change binder must pass the element's value to ValueChanged and keep it
         string? received = null;
-        component.ValueChanged = EventCallback.Factory.Create<string?>(new object(), v => received = v);
+        var cut = Render<WaDatePicker>(parameters => parameters
+            .Add(p => p.ValueChanged, value => received = value));
 
-        await component.ValueChanged.InvokeAsync("2026-07-24");
+        cut.Find("wa-date-picker").Change(SampleDate);
 
-        Assert.True(component.ValueChanged.HasDelegate);
-        Assert.Equal("2026-07-24", received);
+        Assert.Equal(SampleDate, received);
+        Assert.Equal(SampleDate, cut.Instance.Value);
     }
-
-    [Fact]
-    public async Task OnFocusDay_CanBeWired_AndCarriesIsoDate()
-    {
-        var component = new WaDatePicker();
-        WaDatePickerFocusDayEventArgs? received = null;
-        component.OnFocusDay = EventCallback.Factory.Create<WaDatePickerFocusDayEventArgs>(new object(), a => received = a);
-
-        await component.OnFocusDay.InvokeAsync(new WaDatePickerFocusDayEventArgs { Date = "2026-07-24" });
-
-        Assert.True(component.OnFocusDay.HasDelegate);
-        Assert.Equal("2026-07-24", received?.Date);
-    }
-
-    [Fact]
-    public async Task OnViewChange_CanBeWired_AndCarriesViewAndDate()
-    {
-        var component = new WaDatePicker();
-        WaDatePickerViewChangeEventArgs? received = null;
-        component.OnViewChange = EventCallback.Factory.Create<WaDatePickerViewChangeEventArgs>(new object(), a => received = a);
-
-        await component.OnViewChange.InvokeAsync(new WaDatePickerViewChangeEventArgs { View = "years", Date = "2026-01-01" });
-
-        Assert.True(component.OnViewChange.HasDelegate);
-        Assert.Equal("years", received?.View);
-        Assert.Equal("2026-01-01", received?.Date);
-    }
-
-    [Fact]
-    public void OnInput_CanBeWired()
-    {
-        var component = new WaDatePicker();
-        component.OnInput = EventCallback.Factory.Create<ChangeEventArgs>(component, () => { });
-        Assert.True(component.OnInput.HasDelegate);
-    }
-
-    #endregion
-
-    #region ------ Public Methods (Guard Clauses) ------
 
     [Fact]
     public async Task ClearAsync_WithNullElement_ThrowsInvalidOperationException()
@@ -147,7 +63,7 @@ public class WaDatePickerIntegrationTests
     public async Task GoToDateAsync_WithNullElement_ThrowsInvalidOperationException()
     {
         var component = new WaDatePicker();
-        await Assert.ThrowsAsync<InvalidOperationException>(() => component.GoToDateAsync("2026-07-24"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => component.GoToDateAsync(SampleDate));
     }
 
     [Fact]
@@ -156,6 +72,10 @@ public class WaDatePickerIntegrationTests
         var component = new WaDatePicker();
         await Assert.ThrowsAsync<InvalidOperationException>(() => component.GoToTodayAsync());
     }
+
+    #region ------ Internals ------
+
+    private const string SampleDate = "2026-07-24";
 
     #endregion
 }

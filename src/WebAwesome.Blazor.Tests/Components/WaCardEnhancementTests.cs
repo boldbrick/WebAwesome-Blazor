@@ -1,121 +1,50 @@
-using System;
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Tests for WaCard component enhancements in Web Awesome 3.0.0-beta.6
+/// Render tests for the WaCard content slots (header-actions and footer-actions were added in Web Awesome
+/// 3.0.0-beta.6): each fragment parameter must render into its named slot of wa-card, ChildContent into the
+/// default slot. The card's attributes, including the orientation added in the same release, are covered by
+/// the CEM-driven RenderedAttributeParityTests.
 /// </summary>
-public class WaCardEnhancementTests
+public class WaCardEnhancementTests : BunitContext
 {
-    [Fact]
-    public void WaCard_OrientationProperty_DefaultsToNull()
+    public WaCardEnhancementTests()
     {
-        // Arrange & Act
-        var component = new WaCard();
+        Services.AddScoped<WebAwesomeJSInterop>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
+    }
 
-        // Assert
-        Assert.Null(component.Orientation);
+    [Theory]
+    [InlineData(nameof(WaCard.ChildContent), "")]
+    [InlineData(nameof(WaCard.MediaContent), "media")]
+    [InlineData(nameof(WaCard.HeaderContent), "header")]
+    [InlineData(nameof(WaCard.HeaderActionsContent), "header-actions")]
+    [InlineData(nameof(WaCard.FooterContent), "footer")]
+    [InlineData(nameof(WaCard.FooterActionsContent), "footer-actions")]
+    public void SlotContent_RendersIntoItsSlot(string parameterName, string slot)
+    {
+        var cut = Render<WaCard>(parameters => parameters.TryAdd(parameterName, SlotProbe.Fragment));
+
+        Assert.Equal(slot, SlotProbe.SlotOf(cut.Find(CardTag)));
     }
 
     [Fact]
-    public void WaCard_OrientationProperty_CanBeSetToHorizontal()
+    public void DefaultRender_RendersNoSlotWrappers()
     {
-        // Arrange
-        var component = new WaCard();
+        var cut = Render<WaCard>();
 
-        // Act
-        component.Orientation = WaOrientation.Horizontal;
-
-        // Assert
-        Assert.Equal(WaOrientation.Horizontal, component.Orientation);
+        Assert.Empty(cut.FindAll("[slot]"));
     }
 
-    [Fact]
-    public void WaCard_OrientationProperty_CanBeSetToVertical()
-    {
-        // Arrange
-        var component = new WaCard();
+    #region ------ Internals ------
 
-        // Act
-        component.Orientation = WaOrientation.Vertical;
+    private const string CardTag = "wa-card";
 
-        // Assert
-        Assert.Equal(WaOrientation.Vertical, component.Orientation);
-    }
-
-    [Fact]
-    public void WaCard_HeaderActionsContentProperty_DefaultsToNull()
-    {
-        // Arrange & Act
-        var component = new WaCard();
-
-        // Assert
-        Assert.Null(component.HeaderActionsContent);
-    }
-
-    [Fact]
-    public void WaCard_FooterActionsContentProperty_DefaultsToNull()
-    {
-        // Arrange & Act
-        var component = new WaCard();
-
-        // Assert
-        Assert.Null(component.FooterActionsContent);
-    }
-
-    [Fact]
-    public void WaCard_WithAllEnhancedProperties_WorksCorrectly()
-    {
-        // Arrange
-        var component = new WaCard();
-
-        // Act
-        component.Orientation = WaOrientation.Horizontal;
-        component.Appearance = WaAppearance.Filled;
-        component.WithHeader = true;
-        component.WithFooter = true;
-
-        // Assert
-        Assert.Equal(WaOrientation.Horizontal, component.Orientation);
-        Assert.Equal(WaAppearance.Filled, component.Appearance);
-        Assert.True(component.WithHeader);
-        Assert.True(component.WithFooter);
-    }
-
-    [Fact]
-    public void WaCard_HasAllRequiredRenderFragmentProperties()
-    {
-        // Arrange & Act
-        var component = new WaCard();
-        var type = component.GetType();
-
-        // Assert - Verify all RenderFragment properties exist
-        Assert.NotNull(type.GetProperty("ChildContent"));
-        Assert.NotNull(type.GetProperty("HeaderContent"));
-        Assert.NotNull(type.GetProperty("FooterContent"));
-        Assert.NotNull(type.GetProperty("MediaContent"));
-        Assert.NotNull(type.GetProperty("HeaderActionsContent"));
-        Assert.NotNull(type.GetProperty("FooterActionsContent"));
-    }
-
-    [Fact]
-    public void WaCard_ExistingPropertiesStillWork()
-    {
-        // Arrange
-        var component = new WaCard();
-
-        // Act
-        component.Appearance = WaAppearance.Plain;
-        component.WithHeader = true;
-        component.WithFooter = true;
-        component.WithMedia = true;
-
-        // Assert
-        Assert.Equal(WaAppearance.Plain, component.Appearance);
-        Assert.True(component.WithHeader);
-        Assert.True(component.WithFooter);
-        Assert.True(component.WithMedia);
-    }
+    #endregion
 }

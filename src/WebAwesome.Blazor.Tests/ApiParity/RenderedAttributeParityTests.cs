@@ -23,7 +23,8 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// bool parameter set to false renders no attribute, or exactly "false" where the CEM default is true, true renders
 /// the attribute, and no value is ever "True"/"False"; (d) every CEM attribute has a parameter that renders it when
 /// set to a non-default value (allowlist "unrenderedAttributes"); (e) numbers and dates render in the invariant
-/// culture. Parameters of other types (collections, objects, fragments, callbacks) are not sampled. Every allowlist
+/// culture; (f) with no parameter set, every rendered CEM attribute carries the element's own default (allowlist
+/// "wrapperDefaultAttributes"), so a wrong wrapper default shows. Parameters of other types (collections, objects, fragments, callbacks) are not sampled. Every allowlist
 /// entry needs a reason, and stale entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
 public class RenderedAttributeParityTests
@@ -132,8 +133,27 @@ public class RenderedAttributeParityTests
     }
 
     /// <summary>
-    /// Every "extraRenderedAttributes", "unrenderedAttributes", "attributePrerequisites" and "trueFalseAttributes"
-    /// entry must carry a rationale of its own in ignoreReasons (or knownDefects), keyed
+    /// (f) With no parameter set, a wrapper renders no CEM attribute other than with the element's own default: an
+    /// attribute without a CEM default is not rendered, a boolean attribute defaulting to false is absent, and any
+    /// other rendered value equals the CEM default (allowlist "wrapperDefaultAttributes"). This catches a wrong
+    /// wrapper default (an initializer that turns on "open", flips a placement or changes a number) that the
+    /// per-parameter samples of (c) and (d) cannot see, because they only compare against the baseline.
+    /// </summary>
+    [Fact]
+    public void BaselineRender_EmitsOnlyElementDefaults()
+    {
+        SkipUnlessParityEnabled();
+
+        var misses = RenderedElements()
+            .SelectMany(e => BaselineDefaultMisses(e).Where(m => !e.Config.WrapperDefaultAttributes.Contains(m.Attribute)).Select(m => m.Miss))
+            .ToList();
+
+        AssertNoMisses(misses, "Attributes rendered without a parameter set whose value is not the element default");
+    }
+
+    /// <summary>
+    /// Every "extraRenderedAttributes", "unrenderedAttributes", "attributePrerequisites", "trueFalseAttributes" and
+    /// "wrapperDefaultAttributes" entry must carry a rationale of its own in ignoreReasons (or knownDefects), keyed
     /// "&lt;list&gt;:&lt;tag&gt;:&lt;attribute&gt;".
     /// </summary>
     [Fact]
@@ -154,6 +174,9 @@ public class RenderedAttributeParityTests
 
             foreach (var attribute in componentConfig.TrueFalseAttributes)
                 AddMissingReason(misses, $"{TrueFalseAttributesKey}:{tag}:{attribute}");
+
+            foreach (var attribute in componentConfig.WrapperDefaultAttributes)
+                AddMissingReason(misses, $"{WrapperDefaultAttributesKey}:{tag}:{attribute}");
         }
 
         AssertNoMisses(misses, "Rendered-attribute allowlist entries without a reason");
@@ -164,7 +187,8 @@ public class RenderedAttributeParityTests
     /// undeclared; every "unrenderedAttributes" entry must still be a CEM attribute some wrapper does not render;
     /// every "attributePrerequisites" entry must name a CEM attribute and parameters a wrapper of the element has;
     /// every "trueFalseAttributes" entry must name a boolean CEM attribute not defaulting to true whose parameter
-    /// renders "false".
+    /// renders "false"; every "wrapperDefaultAttributes" entry must still be rendered without parameters with a
+    /// value other than the element default.
     /// </summary>
     [Fact]
     public void RenderedAttributeAllowlists_AreNotStale()
@@ -213,6 +237,12 @@ public class RenderedAttributeParityTests
                         && s.Root.Attributes.TryGetValue(attribute, out var value) && value == FalseText));
                 if (!needed)
                     misses.Add($"{tag}: trueFalseAttributes entry '{attribute}' is not a non-true-default boolean attribute rendered as \"{FalseText}\" and must be removed");
+            }
+
+            foreach (var attribute in componentConfig.WrapperDefaultAttributes)
+            {
+                if (!ofTag.Any(e => BaselineDefaultMisses(e).Any(m => m.Attribute == attribute)))
+                    misses.Add($"{tag}: wrapperDefaultAttributes entry '{attribute}' is not rendered with a non-default value without parameters and must be removed");
             }
         }
 
@@ -267,6 +297,7 @@ public class RenderedAttributeParityTests
     private const string UnrenderedAttributesKey = "unrenderedAttributes";
     private const string AttributePrerequisitesKey = "attributePrerequisites";
     private const string TrueFalseAttributesKey = "trueFalseAttributes";
+    private const string WrapperDefaultAttributesKey = "wrapperDefaultAttributes";
     private const string StringSample = "x-sample-value";
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
@@ -286,6 +317,12 @@ public class RenderedAttributeParityTests
 
     // non-number values Web Awesome's number attributes accept
     private static readonly HashSet<string> NumberKeywords = new(StringComparer.Ordinal) { "Infinity" };
+
+    // CEM defaults meaning the element leaves the attribute unset
+    private static readonly HashSet<string> NoDefaultTexts = new(StringComparer.Ordinal) { "null", "undefined" };
+
+    // quote characters around a CEM string default ('text')
+    private static readonly char[] DefaultQuotes = { '\'', '"', '`' };
 
     private static readonly DateTime DateSample = new(2026, 1, 2, 3, 4, 5, 678, DateTimeKind.Utc);
 
@@ -684,6 +721,38 @@ public class RenderedAttributeParityTests
                 yield return $"{label}: renders {dateAttribute}=\"{renderedDate}\", which does not parse back to {date:O} with the invariant culture";
             }
         }
+    }
+
+    // the CEM attributes the baseline render (no parameter set) emits with a value other than the element default
+    private static IEnumerable<(string Attribute, string Miss)> BaselineDefaultMisses(RenderedElement element)
+    {
+        var root = element.Renders.Baseline;
+        if (root.Error != null || root.Tag != element.Tag) yield break;
+
+        foreach (var (attribute, value) in root.Attributes.OrderBy(a => a.Key, StringComparer.Ordinal))
+        {
+            if (!element.Component.Attributes.TryGetValue(attribute, out var surface) || IsIgnoredAttribute(element.Config, attribute)) continue;
+            if (RendersElementDefault(value, surface)) continue;
+
+            yield return (attribute, $"{element.Tag} ({element.Name}): renders {attribute}=\"{value}\" with no parameter set, " +
+                $"but the element default is {surface.Default ?? "unset"}");
+        }
+    }
+
+    // whether a rendered value is what the element holds without the attribute: a present boolean reads true, a
+    // number compares numerically, a string default compares without its quotes
+    private static bool RendersElementDefault(string value, AttributeSurface surface)
+    {
+        var defaultText = surface.Default?.Trim();
+        if (string.IsNullOrEmpty(defaultText) || NoDefaultTexts.Contains(defaultText)) return false;
+
+        if (UnionParts(surface.EffectiveType).Contains(BooleanType))
+            return defaultText == TrueDefault && (value == string.Empty || value == TrueText);
+
+        if (decimal.TryParse(defaultText, NumberStyles.Float, CultureInfo.InvariantCulture, out var defaultNumber))
+            return decimal.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number) && number == defaultNumber;
+
+        return value == defaultText.Trim(DefaultQuotes);
     }
 
     // the CEM attributes of the element that are not ignored, with the wrapper parameter mapped to each (if any)

@@ -8,9 +8,10 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Validation tests for the Web Awesome 3.5.0 upgrade: the new SSR hydration-hint attributes,
-/// the color-picker placement, the copy-button default slot, the wa-rating form-control promotion,
-/// and the four non-destructive upstream "breaking" changes.
+/// Validation tests for the Web Awesome 3.5.0 upgrade: the new SSR hydration-hint attributes, the copy-button
+/// default slot, and the non-destructive upstream "breaking" changes the wrapper absorbs. The form-control
+/// attributes 3.5.0 added (wa-color-picker placement, wa-slider with-hint/with-label, wa-textarea with-count,
+/// wa-rating default-value) are covered, defaults included, by the CEM-driven RenderedAttributeParityTests.
 /// </summary>
 public class Wa350UpgradeValidationTests : BunitContext
 {
@@ -66,50 +67,6 @@ public class Wa350UpgradeValidationTests : BunitContext
             .Add(x => x.ChildContent, builder => builder.AddContent(0, "custom-trigger")));
 
         Assert.Contains("custom-trigger", cut.Find("wa-copy-button").TextContent);
-    }
-
-    #endregion
-
-    #region ------ Form-control additions (property-level) ------
-
-    [Fact]
-    public void WaColorPicker_HasPlacementParameter()
-    {
-        var component = new WaColorPicker { Placement = WaPlacement.BottomStart };
-        Assert.Equal(WaPlacement.BottomStart, component.Placement);
-    }
-
-    [Fact]
-    public void WaSlider_WithHintAndWithLabel_DefaultToFalse_AndCanBeSet()
-    {
-        var component = new WaSlider();
-        Assert.False(component.WithHint);
-        Assert.False(component.WithLabel);
-
-        component.WithHint = true;
-        component.WithLabel = true;
-        Assert.True(component.WithHint);
-        Assert.True(component.WithLabel);
-    }
-
-    [Fact]
-    public void WaTextArea_WithCount_DefaultsToFalse_AndCanBeSet()
-    {
-        var component = new WaTextArea();
-        Assert.False(component.WithCount);
-
-        component.WithCount = true;
-        Assert.True(component.WithCount);
-    }
-
-    [Fact]
-    public void WaRating_DefaultValue_DefaultsToZero_AndCanBeSet()
-    {
-        var component = new WaRating();
-        Assert.Equal(0m, component.DefaultValue);
-
-        component.DefaultValue = 3m;
-        Assert.Equal(3m, component.DefaultValue);
     }
 
     #endregion

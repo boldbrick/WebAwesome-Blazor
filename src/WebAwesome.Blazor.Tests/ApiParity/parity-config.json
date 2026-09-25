@@ -57,6 +57,7 @@
     },
     "wa-checkbox": {
       "unrenderedAttributes": [ "value" ],
+      "wrapperDefaultAttributes": [ "value" ],
       "ignoredAttributes": [ "name", "checked", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnCheckedChange": "change" },
@@ -107,6 +108,7 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-slider": {
+      "wrapperDefaultAttributes": [ "value" ],
       "attributePrerequisites": { "min-value": { "Range": true }, "max-value": { "Range": true } },
       "attributeOverrides": {
         "autofocus": "AutoFocus"
@@ -118,12 +120,14 @@
     },
     "wa-switch": {
       "unrenderedAttributes": [ "value" ],
+      "wrapperDefaultAttributes": [ "value" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnCheckedChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-radio-group": {
+      "wrapperDefaultAttributes": [ "name" ],
       "ignoredAttributes": [ "custom-error" ],
       "ignoredEvents": [ "change" ],
       "derivedEventCallbacks": { "OnValueChange": "change" },
@@ -256,7 +260,17 @@
       }
     },
     "wa-animation": {
-      "unresolvedEnumAttributes": [ "easing" ]
+      "unresolvedEnumAttributes": [ "easing" ],
+      "wrapperDefaultAttributes": [ "fill", "iterations" ]
+    },
+    "wa-animated-image": {
+      "wrapperDefaultAttributes": [ "play" ]
+    },
+    "wa-copy-button": {
+      "wrapperDefaultAttributes": [ "copy-label", "error-label", "success-label" ]
+    },
+    "wa-qr-code": {
+      "wrapperDefaultAttributes": [ "error-correction" ]
     },
     "wa-mutation-observer": {
       "extraElementMethods": [ "stopObserver", "startObserver" ]
@@ -289,6 +303,17 @@
     "wa-scatter-chart": { "ignoredAttributes": [ "plugins" ] }
   },
   "ignoreReasons": {
+    "wrapperDefaultAttributes:wa-checkbox:value": "the submission value is the constant 'True', rendered always, like Blazor's InputCheckbox (see unrenderedAttributes:wa-checkbox:value); the element leaves value unset and submits 'on'",
+    "wrapperDefaultAttributes:wa-switch:value": "the submission value is the constant 'True', rendered always, like Blazor's InputCheckbox (see unrenderedAttributes:wa-switch:value); the element leaves value unset and submits 'on'",
+    "wrapperDefaultAttributes:wa-slider:value": "WaRange renders its two-way bound decimal value (0 when unbound) as value in single mode; the value of a bound control comes from the binding, not from an element default",
+    "wrapperDefaultAttributes:wa-radio-group:name": "WaRadioGroup renders name from Blazor's InputBase form integration (the bound field's name, here the harness's ValueExpression field), so a bound control always carries a name",
+    "wrapperDefaultAttributes:wa-animation:fill": "WaAnimation.Fill defaults to WaAnimationFill.None, while the element default is 'auto'; a wrapper default that predates the 3.12.0 bindings, kept as is pending an owner decision (changing it changes how existing pages animate)",
+    "wrapperDefaultAttributes:wa-animation:iterations": "WaAnimation.Iterations defaults to 1 (decimal.MaxValue renders Infinity), while the element default is Infinity; a wrapper default that predates the 3.12.0 bindings, kept as is pending an owner decision (changing it makes one-shot animations loop)",
+    "wrapperDefaultAttributes:wa-animated-image:play": "WaAnimatedImage.Play defaults to true, so the image animates on load like a plain img, while the element starts paused; a wrapper default that predates the 3.12.0 bindings, kept as is pending an owner decision",
+    "wrapperDefaultAttributes:wa-copy-button:copy-label": "WaCopyButton.CopyLabel defaults to the English 'Copy to clipboard', while the element default '' falls back to its localized term; a wrapper default that predates the 3.12.0 bindings (it overrides Web Awesome's localization), kept as is pending an owner decision",
+    "wrapperDefaultAttributes:wa-copy-button:error-label": "WaCopyButton.ErrorLabel defaults to the English 'Copy failed', while the element default '' falls back to its localized term; a wrapper default that predates the 3.12.0 bindings (it overrides Web Awesome's localization), kept as is pending an owner decision",
+    "wrapperDefaultAttributes:wa-copy-button:success-label": "WaCopyButton.SuccessLabel defaults to the English 'Copied!', while the element default '' falls back to its localized term; a wrapper default that predates the 3.12.0 bindings (it overrides Web Awesome's localization), kept as is pending an owner decision",
+    "wrapperDefaultAttributes:wa-qr-code:error-correction": "WaQrCode.ErrorCorrection defaults to M, while the element default is 'H'; a wrapper default that predates the 3.12.0 bindings, kept as is pending an owner decision (changing it changes the rendered code)",
     "globalIgnoredAttributes:title": "native HTML attribute, passed through via AdditionalAttributes",
     "globalIgnoredAttributes:did-ssr": "internal SSR hydration marker set by Web Awesome server-side rendering (added to every component's base element in WA 3.3.0); not a consumer-authorable attribute",
     "globalIgnoredAttributes:dir": "native HTML global attribute, passed through via AdditionalAttributes (added to every component's base element in WA 3.3.0)",

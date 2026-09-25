@@ -1,135 +1,60 @@
-using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for the WaTimeInput wrapper (new in WA 3.8.0): defaults, parameter settability,
-/// enum mappings, slot content, event wiring, and imperative method guard clauses.
+/// Tests for the WaTimeInput wrapper (new in WA 3.8.0): its hour-format member mapping as rendered, its content
+/// fragments in their slots of wa-time-input, and its imperative methods throwing before the first render. Its
+/// other attributes and defaults are covered by RenderedAttributeParityTests and its events by
+/// EventCallbackBindingParityTests, both against the CEM.
 /// </summary>
-public class WaTimeInputIntegrationTests
+public class WaTimeInputIntegrationTests : BunitContext
 {
-    #region ------ Defaults ------
-
-    [Fact]
-    public void Constructor_WithDefaultValues_SetsPropertiesCorrectly()
+    public WaTimeInputIntegrationTests()
     {
-        var component = new WaTimeInput();
-
-        Assert.Null(component.Element);
-        Assert.Null(component.Appearance);
-        Assert.Null(component.HourFormat);
-        Assert.Null(component.Min);
-        Assert.Null(component.Max);
-        Assert.Null(component.Step);
-        Assert.Null(component.Placement);
-        Assert.Null(component.Distance);
-        Assert.False(component.Open);
-        Assert.False(component.Pill);
-        Assert.False(component.WithClear);
-        Assert.False(component.WithNow);
-        Assert.False(component.WithHint);
-        Assert.False(component.WithLabel);
+        Services.AddScoped<WebAwesomeJSInterop>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
-    #endregion
-
-    #region ------ Parameter Setting ------
-
-    [Fact]
-    public void CoreAttributes_CanBeSet()
+    [Theory]
+    [InlineData(WaTimeHourFormat.Auto, "auto")]
+    [InlineData(WaTimeHourFormat.Twelve, "12")]
+    [InlineData(WaTimeHourFormat.TwentyFour, "24")]
+    public void HourFormat_RendersItsHourCycle(WaTimeHourFormat hourFormat, string expected)
     {
-        var component = new WaTimeInput
-        {
-            Min = "09:00:00",
-            Max = "17:00:00",
-            Step = "any",
-            Distance = 8,
-            Open = true,
-            Pill = true,
-            WithClear = true,
-            WithNow = true
-        };
+        // an intentional C# naming choice: the CEM checks see that "12"/"24" are in the union, not that Twelve
+        // renders "12" rather than "24"
+        string? value = null;
+        var cut = Render<WaTimeInput>(parameters => parameters
+            .Add(p => p.ValueExpression, () => value)
+            .Add(p => p.HourFormat, hourFormat));
 
-        Assert.Equal("09:00:00", component.Min);
-        Assert.Equal("17:00:00", component.Max);
-        Assert.Equal("any", component.Step);
-        Assert.Equal(8, component.Distance);
-        Assert.True(component.Open);
-        Assert.True(component.Pill);
-        Assert.True(component.WithClear);
-        Assert.True(component.WithNow);
+        Assert.Equal(expected, cut.Find("wa-time-input").GetAttribute("hour-format"));
     }
 
-    #endregion
-
-    #region ------ Enum Mappings ------
-
-    [Fact]
-    public void HourFormat_MapsToHtmlValue()
+    [Theory]
+    [InlineData(nameof(WaTimeInput.StartContent), "start")]
+    [InlineData(nameof(WaTimeInput.EndContent), "end")]
+    [InlineData(nameof(WaTimeInput.ClearIconContent), "clear-icon")]
+    [InlineData(nameof(WaTimeInput.ExpandIconContent), "expand-icon")]
+    [InlineData(nameof(WaTimeInput.FooterContent), "footer")]
+    [InlineData(nameof(WaTimeInput.MarkupLabel), "label")]
+    [InlineData(nameof(WaTimeInput.MarkupHint), "hint")]
+    public void SlotContent_RendersIntoItsSlot(string parameterName, string slot)
     {
-        // change detector for an intentional C# naming choice: the CEM checks see that "12"/"24" are in the union,
-        // not that Twelve emits "12" rather than "24"
-        Assert.Equal("auto", WaTimeHourFormat.Auto.ToHtmlValue());
-        Assert.Equal("12", WaTimeHourFormat.Twelve.ToHtmlValue());
-        Assert.Equal("24", WaTimeHourFormat.TwentyFour.ToHtmlValue());
+        string? value = null;
+        var cut = Render<WaTimeInput>(parameters => parameters
+            .Add(p => p.ValueExpression, () => value)
+            .TryAdd(parameterName, SlotProbe.Fragment));
+
+        Assert.Equal(slot, SlotProbe.SlotOf(cut.Find("wa-time-input")));
     }
-
-    #endregion
-
-    #region ------ Slots ------
-
-    [Fact]
-    public void SlotContent_CanBeSet()
-    {
-        var component = new WaTimeInput();
-        RenderFragment fragment = builder => { };
-
-        component.StartContent = fragment;
-        component.EndContent = fragment;
-        component.ClearIconContent = fragment;
-        component.ExpandIconContent = fragment;
-        component.FooterContent = fragment;
-
-        Assert.Same(fragment, component.StartContent);
-        Assert.Same(fragment, component.EndContent);
-        Assert.Same(fragment, component.ClearIconContent);
-        Assert.Same(fragment, component.ExpandIconContent);
-        Assert.Same(fragment, component.FooterContent);
-    }
-
-    #endregion
-
-    #region ------ Events ------
-
-    [Fact]
-    public void PopupEvents_CanAllBeWired()
-    {
-        var component = new WaTimeInput();
-        var callback = EventCallback.Factory.Create<EventArgs>(component, () => { });
-        var plain = EventCallback.Factory.Create(component, () => { });
-
-        component.OnClear = plain;
-        component.OnShow = callback;
-        component.OnHide = callback;
-        component.OnAfterShow = callback;
-        component.OnAfterHide = callback;
-        component.OnInvalid = callback;
-
-        Assert.True(component.OnClear.HasDelegate);
-        Assert.True(component.OnShow.HasDelegate);
-        Assert.True(component.OnHide.HasDelegate);
-        Assert.True(component.OnAfterShow.HasDelegate);
-        Assert.True(component.OnAfterHide.HasDelegate);
-        Assert.True(component.OnInvalid.HasDelegate);
-    }
-
-    #endregion
-
-    #region ------ Public Methods (Guard Clauses) ------
 
     [Fact]
     public async Task FocusAsync_WithNullElement_ThrowsInvalidOperationException()
@@ -158,6 +83,4 @@ public class WaTimeInputIntegrationTests
         var component = new WaTimeInput();
         await Assert.ThrowsAsync<InvalidOperationException>(() => component.HideAsync());
     }
-
-    #endregion
 }

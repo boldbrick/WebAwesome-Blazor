@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Components;
@@ -7,62 +6,12 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for the WaAccordion wrapper (new in WA 3.8.0): defaults, parameter settability,
-/// enum mappings, event wiring, and imperative method guard clauses.
+/// Imperative method guard clauses of the WaAccordion wrapper (new in WA 3.8.0): calling a method before the
+/// first render must throw. Its attributes and defaults are covered by RenderedAttributeParityTests and its
+/// expand/collapse events by EventCallbackBindingParityTests, both against the CEM.
 /// </summary>
 public class WaAccordionIntegrationTests
 {
-    #region ------ Defaults ------
-
-    [Fact]
-    public void Constructor_WithDefaultValues_SetsPropertiesCorrectly()
-    {
-        var component = new WaAccordion();
-
-        Assert.Null(component.Element);
-        Assert.Equal(WaDetailsAppearance.Outlined, component.Appearance);
-        Assert.Null(component.HeadingLevel);
-        Assert.Equal(WaIconPlacement.End, component.IconPlacement);
-        Assert.Equal(WaAccordionMode.Multiple, component.Mode);
-        Assert.Null(component.ChildContent);
-    }
-
-    #endregion
-
-    #region ------ Parameter Setting ------
-
-    [Fact]
-    public void HeadingLevel_CanBeSetAndRetrieved()
-    {
-        var component = new WaAccordion { HeadingLevel = "2" };
-        Assert.Equal("2", component.HeadingLevel);
-    }
-
-    #endregion
-
-    #region ------ Events ------
-
-    [Fact]
-    public void ExpandCollapseEvents_CanAllBeWired()
-    {
-        var component = new WaAccordion();
-        var callback = EventCallback.Factory.Create<EventArgs>(component, () => { });
-
-        component.OnExpand = callback;
-        component.OnCollapse = callback;
-        component.OnAfterExpand = callback;
-        component.OnAfterCollapse = callback;
-
-        Assert.True(component.OnExpand.HasDelegate);
-        Assert.True(component.OnCollapse.HasDelegate);
-        Assert.True(component.OnAfterExpand.HasDelegate);
-        Assert.True(component.OnAfterCollapse.HasDelegate);
-    }
-
-    #endregion
-
-    #region ------ Public Methods (Guard Clauses) ------
-
     [Fact]
     public async Task ExpandAllAsync_WithNullElement_ThrowsInvalidOperationException()
     {
@@ -76,6 +25,4 @@ public class WaAccordionIntegrationTests
         var component = new WaAccordion();
         await Assert.ThrowsAsync<InvalidOperationException>(() => component.CollapseAllAsync());
     }
-
-    #endregion
 }

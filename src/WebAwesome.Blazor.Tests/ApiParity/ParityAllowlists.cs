@@ -79,6 +79,7 @@ internal static class ParityAllowlists
         ("unrenderedAttributes", c => c.UnrenderedAttributes),
         ("attributePrerequisites", c => c.AttributePrerequisites.Keys),
         ("trueFalseAttributes", c => c.TrueFalseAttributes),
+        ("wrapperDefaultAttributes", c => c.WrapperDefaultAttributes),
         ("undeclaredBoundEvents", c => c.UndeclaredBoundEvents),
         ("derivedEventCallbacks", c => c.DerivedEventCallbacks.Keys),
         ("unboundEventCallbacks", c => c.UnboundEventCallbacks),
