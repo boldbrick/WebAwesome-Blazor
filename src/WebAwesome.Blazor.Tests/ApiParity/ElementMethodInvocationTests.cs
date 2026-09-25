@@ -123,6 +123,25 @@ public class ElementMethodInvocationTests
         AssertNoMisses(misses, "Stale extraElementMethods entries");
     }
 
+    /// <summary>
+    /// Every "nativeElementMethods" entry must still be invoked by some wrapper; an entry nothing invokes would
+    /// silently admit a misspelled call on any element.
+    /// </summary>
+    [Fact]
+    public void NativeElementMethods_AreInvoked()
+    {
+        var invoked = WrapperSourceFiles()
+            .SelectMany(file => InvokedMethods(File.ReadAllText(file)).Select(i => i.MethodName).OfType<string>())
+            .ToHashSet(StringComparer.Ordinal);
+
+        var misses = Config.NativeElementMethods
+            .Where(m => !invoked.Contains(m))
+            .Select(m => $"nativeElementMethods entry '{m}' is invoked by no wrapper and must be removed")
+            .ToList();
+
+        AssertNoMisses(misses, "Stale nativeElementMethods entries");
+    }
+
     #region ------ Internals ------
 
     // a call of WebAwesomeJSInterop.InvokeMethodAsync (member access, so the declarations do not match) with any

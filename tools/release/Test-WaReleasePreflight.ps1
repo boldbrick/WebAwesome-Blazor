@@ -73,6 +73,14 @@ $parity = Get-Content src\WebAwesome.Blazor.Tests\ApiParity\parity-config.json -
 Add-Gate 'parity-armed' ($parity.enabled -eq $true) ("enabled = {0}" -f $parity.enabled)
 Add-Gate 'parity-version' ($parity.targetWaVersion -eq $version) ("targetWaVersion = {0}" -f $parity.targetWaVersion)
 
+# known defects awaiting an owner decision are no gate, but their number is shown at every release
+$parityDefects = 0
+if ($parity.knownDefects) { $parityDefects = @($parity.knownDefects.PSObject.Properties).Count }
+$coverageExemptions = Get-Content tools\e2e\data\event-coverage-exemptions.json -Raw | ConvertFrom-Json
+$e2eDefects = @($coverageExemptions.exemptions | Where-Object { $_.knownDefect -eq $true } | ForEach-Object { $_.key })
+Write-Host ("Known defects (owner decisions pending): {0} parity-config.json knownDefects entries; {1} e2e event-coverage exemptions ({2})" -f `
+    $parityDefects, $e2eDefects.Count, ($e2eDefects -join ', '))
+
 $surfaceHead = (Get-Content src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json -TotalCount 5) -join ' '
 $surfaceVersion = ''
 if ($surfaceHead -match '"version"\s*:\s*"([^"]+)"') { $surfaceVersion = $Matches[1] }
@@ -229,6 +237,7 @@ function Test-E2eReport($report, $policy) {
     $expected = @{}
     foreach ($entry in @($policy.expectedSkips | Where-Object { $_ })) {
         if ([string]::IsNullOrWhiteSpace($entry.reason)) { $problems += ("expected skip without a reason: {0}" -f $entry.test) }
+        if ($expected.ContainsKey($entry.test)) { $problems += ("expected skip listed twice: {0}" -f $entry.test) }
         $expected[$entry.test] = $entry.reason
     }
 

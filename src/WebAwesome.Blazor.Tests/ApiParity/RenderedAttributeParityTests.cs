@@ -133,8 +133,8 @@ public class RenderedAttributeParityTests
 
     /// <summary>
     /// Every "extraRenderedAttributes", "unrenderedAttributes", "attributePrerequisites" and "trueFalseAttributes"
-    /// entry must carry a rationale in ignoreReasons, keyed "&lt;list&gt;:&lt;tag&gt;:&lt;attribute&gt;"; an
-    /// extraRenderedAttributes entry may instead share the attribute-wide key "extraRenderedAttributes:&lt;attribute&gt;".
+    /// entry must carry a rationale of its own in ignoreReasons (or knownDefects), keyed
+    /// "&lt;list&gt;:&lt;tag&gt;:&lt;attribute&gt;".
     /// </summary>
     [Fact]
     public void RenderedAttributeAllowlists_HaveReasons()
@@ -144,7 +144,7 @@ public class RenderedAttributeParityTests
         foreach (var (tag, componentConfig) in Config.Components)
         {
             foreach (var attribute in componentConfig.ExtraRenderedAttributes)
-                AddMissingReason(misses, $"{ExtraRenderedAttributesKey}:{tag}:{attribute}", $"{ExtraRenderedAttributesKey}:{attribute}");
+                AddMissingReason(misses, $"{ExtraRenderedAttributesKey}:{tag}:{attribute}");
 
             foreach (var attribute in componentConfig.UnrenderedAttributes)
                 AddMissingReason(misses, $"{UnrenderedAttributesKey}:{tag}:{attribute}");
@@ -217,6 +217,48 @@ public class RenderedAttributeParityTests
         }
 
         AssertNoMisses(misses, "Stale rendered-attribute allowlist entries");
+    }
+
+    /// <summary>
+    /// Every "globalIgnoredAttributes" and "ignoredAttributes" entry must still hide a miss: the attribute must be a
+    /// CEM attribute of the element (of some element, for the global list) that a wrapper of the element does not
+    /// render from its parameter. Every "attributeOverrides" entry must differ from the naming convention and name a
+    /// CEM attribute of the element and a [Parameter] a wrapper of the element has.
+    /// </summary>
+    [Fact]
+    public void IgnoredAttributesAndAttributeOverrides_AreNotStale()
+    {
+        if (!Config.Enabled) return;
+
+        var elements = RenderedElements().ToList();
+        var misses = new List<string>();
+
+        foreach (var attribute in Config.GlobalIgnoredAttributes)
+        {
+            if (!elements.Any(e => IsUnrenderedCemAttribute(e, attribute)))
+                misses.Add($"globalIgnoredAttributes entry '{attribute}' is declared by no rendered element, or every wrapper of the elements declaring it renders it from its parameter, and must be removed");
+        }
+
+        foreach (var (tag, componentConfig) in Config.Components)
+        {
+            var ofTag = elements.Where(e => e.Tag == tag).ToList();
+
+            foreach (var attribute in componentConfig.IgnoredAttributes)
+            {
+                if (!ofTag.Any(e => IsUnrenderedCemAttribute(e, attribute)))
+                    misses.Add($"{tag}: ignoredAttributes entry '{attribute}' is no CEM attribute of the element, or every wrapper of the element renders it from its parameter, and must be removed");
+            }
+
+            foreach (var (attribute, parameter) in componentConfig.AttributeOverrides)
+            {
+                if (parameter == ToPascalCase(attribute))
+                    misses.Add($"{tag}: attributeOverrides entry '{attribute}' -> '{parameter}' equals the naming convention and must be removed");
+                else if (!ofTag.Any(e => e.Component.Attributes.ContainsKey(attribute) && FindParameter(e.Renders.ComponentType, parameter) != null))
+                    misses.Add($"{tag}: attributeOverrides entry '{attribute}' -> '{parameter}' names no CEM attribute of the element, or a parameter no wrapper of the element has, and must be removed");
+            }
+        }
+
+        AssertNoMisses(misses, "Stale ignored-attribute and attribute-override entries");
     }
 
     #region ------ Internals ------
@@ -561,6 +603,12 @@ public class RenderedAttributeParityTests
         }
     }
 
+    // whether the attribute is a CEM attribute of the element that its wrapper does not render from a parameter
+    private static bool IsUnrenderedCemAttribute(RenderedElement element, string attribute)
+    {
+        return element.Component.Attributes.ContainsKey(attribute) && UnrenderedAttributeMiss(element, attribute) != null;
+    }
+
     // why the element's wrapper does not render the attribute from its parameter, or null when it does
     private static string? UnrenderedAttributeMiss(RenderedElement element, string attribute)
     {
@@ -660,10 +708,10 @@ public class RenderedAttributeParityTests
         return (type ?? string.Empty).Split('|').Select(p => p.Trim()).Where(p => p.Length > 0).ToHashSet(StringComparer.Ordinal);
     }
 
-    private static void AddMissingReason(List<string> misses, params string[] keys)
+    private static void AddMissingReason(List<string> misses, string key)
     {
-        if (!keys.Any(key => Config.IgnoreReasons.TryGetValue(key, out var reason) && !string.IsNullOrWhiteSpace(reason)))
-            misses.Add($"allowlist entry has no ignoreReasons entry '{keys[0]}'");
+        if (!HasReason(key))
+            misses.Add($"allowlist entry has no ignoreReasons (or knownDefects) entry '{key}'");
     }
 
     #endregion

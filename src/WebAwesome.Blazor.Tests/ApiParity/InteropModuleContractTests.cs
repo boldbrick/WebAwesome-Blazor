@@ -81,13 +81,21 @@ public class InteropModuleContractTests
     }
 
     /// <summary>
-    /// Allowlist entries must still be exports, so a stale entry cannot silently widen the allowlist.
+    /// Allowlist entries must carry a reason and must still be exports that nothing invokes, so a stale entry cannot
+    /// silently widen the allowlist.
     /// </summary>
     [Fact]
-    public void UnusedExportAllowlist_OnlyNamesExistingExports()
+    public void UnusedExportAllowlist_HasReasonsAndIsNotStale()
     {
         var exported = ExportedFunctions();
-        Assert.All(UnusedExportAllowlist.Keys, name => Assert.Contains(name, exported));
+        var invoked = InvokedIdentifiers().Select(i => i.Identifier).ToHashSet(StringComparer.Ordinal);
+
+        Assert.All(UnusedExportAllowlist, entry =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(entry.Value), $"'{entry.Key}' has no reason");
+            Assert.Contains(entry.Key, exported);
+            Assert.DoesNotContain(entry.Key, invoked);
+        });
     }
 
     /// <summary>

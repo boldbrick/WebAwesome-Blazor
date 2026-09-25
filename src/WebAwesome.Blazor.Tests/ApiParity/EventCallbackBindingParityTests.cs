@@ -19,7 +19,7 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// rejects. It catches a callback bound to the wrong event, a deleted binding, a binding to an event the element
 /// never dispatches, and a CEM event no callback binds. Deliberate deviations are allowlisted in
 /// parity-config.json ("derivedEventCallbacks", "unboundEventCallbacks", "undeclaredBoundEvents",
-/// "nativeDomEvents"), each with a reason, and stale entries fail. Inert until parity-config.json sets
+/// "nativeDomEvents", "ignoredEvents", "eventOverrides"), each with a reason, and stale entries fail. Inert until parity-config.json sets
 /// "enabled": true, like the other parity tests.
 /// </summary>
 public class EventCallbackBindingParityTests
@@ -69,7 +69,7 @@ public class EventCallbackBindingParityTests
         }
 
         var misses = keys
-            .Where(key => !Config.IgnoreReasons.TryGetValue(key, out var reason) || string.IsNullOrWhiteSpace(reason))
+            .Where(key => !HasReason(key))
             .Select(key => $"allowlist entry has no ignoreReasons entry '{key}'")
             .ToList();
 
@@ -77,7 +77,9 @@ public class EventCallbackBindingParityTests
     }
 
     /// <summary>
-    /// Every event-binding allowlist entry must still suppress a miss for some rendered wrapper.
+    /// Every event-binding allowlist entry must still suppress a miss for some rendered wrapper; an "ignoredEvents"
+    /// entry must be a CEM event of a rendered element that no EventCallback binds, and an "eventOverrides" entry
+    /// must differ from the convention and map an event of the element to an EventCallback a wrapper of it has.
     /// </summary>
     [Fact]
     public void EventBindingAllowlists_AreNotStale()
@@ -206,10 +208,16 @@ public class EventCallbackBindingParityTests
         var usedNative = new HashSet<string>(StringComparer.Ordinal);
         var usedUndeclared = new HashSet<(string Tag, string Event)>();
         var usedCallbacks = new HashSet<(string Tag, string Callback)>();
+        var boundByCallback = new HashSet<(string Tag, string Event)>();
+        var renderedTags = new HashSet<string>(StringComparer.Ordinal);
 
         foreach (var wrapper in wrappers)
         {
             if (wrapper.Error != null || !TryGetElement(wrapper, out var tag, out var component)) continue;
+
+            renderedTags.Add(tag);
+            foreach (var callback in wrapper.Callbacks)
+                boundByCallback.UnionWith(ResolvedEvents(callback.AddedHandlers, registrations).Select(e => (tag, e)));
 
             var componentConfig = GetComponentConfig(tag);
             var declared = component.Events?.Keys.Except(componentConfig.CemOnlyEvents).ToHashSet(StringComparer.Ordinal)
@@ -240,6 +248,28 @@ public class EventCallbackBindingParityTests
 
             foreach (var callback in componentConfig.UnboundEventCallbacks.Where(c => !usedCallbacks.Contains((tag, c))))
                 yield return $"{tag}: unboundEventCallbacks entry '{callback}' names no EventCallback of a wrapper rendering the element and must be removed";
+
+            var elementEvents = Surface.Components.TryGetValue(tag, out var component) ? ElementEvents(component, componentConfig) : null;
+
+            foreach (var eventName in componentConfig.IgnoredEvents)
+            {
+                if (elementEvents == null || !elementEvents.CemEvents.Contains(eventName))
+                    yield return $"{tag}: ignoredEvents entry '{eventName}' is no CEM event of the element and must be removed";
+                else if (!renderedTags.Contains(tag))
+                    yield return $"{tag}: ignoredEvents entry '{eventName}' belongs to an element no wrapper renders and must be removed";
+                else if (boundByCallback.Contains((tag, eventName)))
+                    yield return $"{tag}: ignoredEvents entry '{eventName}' is now bound by an EventCallback, which the regular checks own, and must be removed";
+            }
+
+            foreach (var (eventName, callback) in componentConfig.EventOverrides)
+            {
+                if (callback == ConventionalCallbackName(eventName))
+                    yield return $"{tag}: eventOverrides entry '{eventName}' -> '{callback}' equals the naming convention and must be removed";
+                else if (elementEvents == null || !(elementEvents.CemEvents.Contains(eventName) || elementEvents.UndeclaredEvents.Contains(eventName)))
+                    yield return $"{tag}: eventOverrides entry '{eventName}' -> '{callback}' names no event of the element and must be removed";
+                else if (!usedCallbacks.Contains((tag, callback)))
+                    yield return $"{tag}: eventOverrides entry '{eventName}' -> '{callback}' names no EventCallback of a wrapper rendering the element and must be removed";
+            }
         }
     }
 
@@ -355,8 +385,12 @@ public class EventCallbackBindingParityTests
     /// <returns>The eventOverrides entry, or "On" plus the PascalCase event name without the "wa-" prefix</returns>
     internal static string ExpectedCallbackName(string eventName, ComponentParityConfig componentConfig)
     {
-        if (componentConfig.EventOverrides.TryGetValue(eventName, out var over)) return over;
+        return componentConfig.EventOverrides.TryGetValue(eventName, out var over) ? over : ConventionalCallbackName(eventName);
+    }
 
+    // "On" plus the PascalCase event name without the "wa-" prefix
+    private static string ConventionalCallbackName(string eventName)
+    {
         var baseName = eventName.StartsWith(WaEventPrefix, StringComparison.Ordinal) ? eventName[WaEventPrefix.Length..] : eventName;
         return CallbackPrefix + ToPascalCase(baseName);
     }

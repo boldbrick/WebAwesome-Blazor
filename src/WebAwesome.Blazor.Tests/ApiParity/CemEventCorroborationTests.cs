@@ -59,8 +59,8 @@ public class CemEventCorroborationTests
             foreach (var (list, eventName) in entries)
             {
                 var key = $"{list}:{tag}:{eventName}";
-                if (!Config.IgnoreReasons.TryGetValue(key, out var reason) || string.IsNullOrWhiteSpace(reason))
-                    misses.Add($"{tag}: {list} entry '{eventName}' has no ignoreReasons entry '{key}'");
+                if (!HasReason(key))
+                    misses.Add($"{tag}: {list} entry '{eventName}' has no ignoreReasons (or knownDefects) entry '{key}'");
 
                 if (componentConfig.CemOnlyEvents.Contains(eventName) && componentConfig.SourceVerifiedEvents.Contains(eventName))
                     misses.Add($"{tag}: '{eventName}' is listed in both {CemOnlyEventsKey} and {SourceVerifiedEventsKey}");

@@ -10,14 +10,18 @@ const { EXTERNAL_COVERAGE, readData, readSpec } = require('./helpers/event-cover
 // every callback in it to be proven by a browser test (EVENT_CASES, PAYLOAD_CASES, EXTERNAL_COVERAGE) or
 // exempted, with a reason, in tools\e2e\data\event-coverage-exemptions.json - and neither list may name a
 // callback that no longer exists. A new callback therefore fails the build until it is covered or exempted.
-// Runs without a browser page.
+// Known-defect exemptions are flagged "knownDefect": true, each must have an expected-failure case in
+// KNOWN_DEFECT_CASES, and their number is printed. Runs without a browser page.
 
 /**
  * @typedef {object} Exemption
  * @property {string} key identifier, referenced by KNOWN_DEFECT_CASES
  * @property {string} reason why the callback cannot, or does not yet, have a browser dispatch test
+ * @property {boolean} [knownDefect] the exemption records a known defect (its reason starts with KNOWN DEFECT)
  * @property {string[]} callbacks "Wrapper.Callback" ids
  */
+
+const KNOWN_DEFECT_MARKER = 'KNOWN DEFECT';
 
 test('every wrapper EventCallback is proven by a browser test or exempted with a reason', () => {
   const manifest = readData('event-callbacks.json');
@@ -51,8 +55,21 @@ test('every wrapper EventCallback is proven by a browser test or exempted with a
       exempted.set(id, x.key);
     }
   }
+  // known defects are flagged structurally, and each one runs as an expected failure that turns red once fixed
+  const knownDefects = exemptions.filter(x => x.knownDefect === true);
+  for (const x of exemptions) {
+    const marked = typeof x.reason === 'string' && x.reason.trimStart().startsWith(KNOWN_DEFECT_MARKER);
+    if (marked !== (x.knownDefect === true)) {
+      problems.push(`exemption '${x.key}': "knownDefect": true and a reason starting with ${KNOWN_DEFECT_MARKER} must go together`);
+    }
+  }
   for (const c of KNOWN_DEFECT_CASES) {
-    if (!keys.has(c.exemption)) problems.push(`KNOWN_DEFECT_CASES '${c.name}' references a missing exemption '${c.exemption}'`);
+    const exemption = exemptions.find(x => x.key === c.exemption);
+    if (!exemption) problems.push(`KNOWN_DEFECT_CASES '${c.name}' references a missing exemption '${c.exemption}'`);
+    else if (exemption.knownDefect !== true) problems.push(`KNOWN_DEFECT_CASES '${c.name}' references '${c.exemption}', which is not flagged "knownDefect": true`);
+  }
+  for (const x of knownDefects) {
+    if (!KNOWN_DEFECT_CASES.some(c => c.exemption === x.key)) problems.push(`known defect '${x.key}' has no expected-failure case in KNOWN_DEFECT_CASES`);
   }
 
   for (const id of known) {
@@ -68,8 +85,9 @@ test('every wrapper EventCallback is proven by a browser test or exempted with a
 
   expect(problems, `event coverage problems:\n${problems.join('\n')}`).toEqual([]);
 
-  test.info().annotations.push({
-    type: 'coverage',
-    description: `${[...known].filter(id => proofs.has(id)).length} of ${known.size} EventCallbacks proven in the browser, ${exempted.size} exempted`,
-  });
+  const defectCallbacks = knownDefects.reduce((n, x) => n + x.callbacks.length, 0);
+  const summary = `${[...known].filter(id => proofs.has(id)).length} of ${known.size} EventCallbacks proven in the browser, ` +
+    `${exempted.size} exempted, of which ${defectCallbacks} by ${knownDefects.length} known defects (${knownDefects.map(x => x.key).join(', ')})`;
+  test.info().annotations.push({ type: 'coverage', description: summary });
+  console.log(`event coverage: ${summary}`);
 });

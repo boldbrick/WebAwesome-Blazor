@@ -33,7 +33,9 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   callback, exported from the rendered bindings by the bUnit test `EventCallbackManifestTests`)
   against the dispatch and payload cases, `EXTERNAL_COVERAGE` in `tests\helpers\event-coverage.js`
   and the reasoned exemptions in `data\event-coverage-exemptions.json`. A new callback fails the
-  bUnit test until the manifest is refreshed, then this spec until it is covered or exempted.
+  bUnit test until the manifest is refreshed, then this spec until it is covered or exempted. An
+  exemption for a known defect is flagged `"knownDefect": true` (with a reason starting `KNOWN DEFECT`)
+  and needs a `KNOWN_DEFECT_CASES` case; the spec prints how many there are.
 - Pro components (combobox, date input/picker, file input, video, video playlist, data grid) upgrade
   only with a Pro asset override; their tests skip visibly on the free CDN (`skipUnlessProUpgrades`).
   To run them locally, point `WA_PRO_DIST` at the release zip's extracted package (e.g.
@@ -79,7 +81,7 @@ free loopback port, checks that the server answering there is the process it sta
 are armed; flaky tests are listed). It then checks the JSON report against
 `data\expected-skips.json`: every skipped test must be listed with a reason for the asset mode
 (`free-cdn`, or `pro` for the opt-in `-ProDist <path>` pass against a self-hosted Pro dist), a
-listed test that ran or no longer exists fails, and the pass must run at least `minimumTests`
+listed test that ran, is listed twice or no longer exists fails, and the pass must run at least `minimumTests`
 tests. So a self-skipping test (a Pro component on the free CDN) must be added to that file, and
 `minimumTests` must be raised when tests are added.
 

@@ -723,8 +723,8 @@ public class EnumValueParityTests
 
     private static void AddMissingReason(List<string> misses, string owner, string key, string entry)
     {
-        if (!Config.IgnoreReasons.TryGetValue(key, out var reason) || string.IsNullOrWhiteSpace(reason))
-            misses.Add($"{owner}: {entry} has no ignoreReasons entry '{key}'");
+        if (!HasReason(key))
+            misses.Add($"{owner}: {entry} has no ignoreReasons (or knownDefects) entry '{key}'");
     }
 
     private static string Describe(EnumAttributeBinding binding)

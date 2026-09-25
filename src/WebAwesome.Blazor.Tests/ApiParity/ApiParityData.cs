@@ -35,6 +35,17 @@ internal static class ApiParityData
     public static readonly Assembly WrapperAssembly = typeof(WaButton).Assembly;
 
     /// <summary>
+    /// Determines whether an allowlist entry has a non-blank reason, in ignoreReasons or in knownDefects.
+    /// </summary>
+    /// <param name="key">Reason key of the entry, e.g. "ignoredEvents:wa-checkbox:change"</param>
+    /// <returns>true when the entry has a reason</returns>
+    public static bool HasReason(string key)
+    {
+        return (Config.IgnoreReasons.TryGetValue(key, out var reason) && !string.IsNullOrWhiteSpace(reason))
+            || (Config.KnownDefects.TryGetValue(key, out var defect) && !string.IsNullOrWhiteSpace(defect));
+    }
+
+    /// <summary>
     /// Enumerates the custom elements of the expected surface that are not ignored as a whole.
     /// </summary>
     /// <returns>Tag name and expected surface of each relevant custom element</returns>

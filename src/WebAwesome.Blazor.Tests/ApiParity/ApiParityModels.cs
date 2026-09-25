@@ -103,25 +103,50 @@ public class MethodSurface
 
 /// <summary>
 /// Deserialized form of parity-config.json: activation switch plus documented naming
-/// deviations and intentional omissions of the Blazor wrappers.
+/// deviations and intentional omissions of the Blazor wrappers. Every entry of every allowlist or override
+/// needs its own reason (see ParityAllowlists and AllowlistHygieneTests), and stale entries fail.
 /// </summary>
 public class ParityConfig
 {
+    /// <summary>
+    /// Whether the surface-dependent parity tests run; while false they report Skipped.
+    /// </summary>
     [JsonPropertyName("enabled")]
     public bool Enabled { get; set; }
 
+    /// <summary>
+    /// The Web Awesome version expected-api-surface.json must describe while parity is enabled.
+    /// </summary>
     [JsonPropertyName("targetWaVersion")]
     public string TargetWaVersion { get; set; }
 
+    /// <summary>
+    /// CEM attributes no wrapper exposes as a parameter, on any element (e.g. native global attributes passed
+    /// through AdditionalAttributes). Reason key "globalIgnoredAttributes:&lt;attribute&gt;"; an entry no element
+    /// declares, or that every declaring element's wrapper renders from a parameter, is stale.
+    /// </summary>
     [JsonPropertyName("globalIgnoredAttributes")]
     public List<string> GlobalIgnoredAttributes { get; set; } = new();
 
+    /// <summary>
+    /// Custom elements deliberately left without a wrapper. Reason key "ignoredComponents:&lt;tag&gt;"; an entry the
+    /// surface does not list, or that a wrapper class now exists for, is stale.
+    /// </summary>
     [JsonPropertyName("ignoredComponents")]
     public List<string> IgnoredComponents { get; set; } = new();
 
+    /// <summary>
+    /// Wrapper class names that deviate from the CEM class name, keyed by tag. Reason key
+    /// "componentClassOverrides:&lt;tag&gt;"; an entry whose tag or class does not exist, or that equals the CEM
+    /// class name, is stale.
+    /// </summary>
     [JsonPropertyName("componentClassOverrides")]
     public Dictionary<string, string> ComponentClassOverrides { get; set; } = new();
 
+    /// <summary>
+    /// DOM methods valid on any element that wrappers may invoke. Reason key "nativeElementMethods:&lt;method&gt;";
+    /// an entry no wrapper invokes is stale.
+    /// </summary>
     [JsonPropertyName("nativeElementMethods")]
     public List<string> NativeElementMethods { get; set; } = new();
 
@@ -133,6 +158,9 @@ public class ParityConfig
     [JsonPropertyName("nativeDomEvents")]
     public Dictionary<string, string> NativeDomEvents { get; set; } = new();
 
+    /// <summary>
+    /// Per-component allowlists and overrides, keyed by tag; a tag the surface does not list is stale.
+    /// </summary>
     [JsonPropertyName("components")]
     public Dictionary<string, ComponentParityConfig> Components { get; set; } = new();
 
@@ -146,10 +174,18 @@ public class ParityConfig
     public Dictionary<string, EnumUnreachableValues> UnreachableEnumUnionValues { get; set; } = new();
 
     /// <summary>
-    /// Rationale of each documented omission or deviation, keyed by the ignored name.
+    /// Rationale of each deliberate deviation, keyed per allowlist entry: "&lt;list&gt;:&lt;tag&gt;:&lt;entry&gt;" for a
+    /// per-component list, "&lt;list&gt;:&lt;entry&gt;" for a top-level one (see ParityAllowlists).
     /// </summary>
     [JsonPropertyName("ignoreReasons")]
     public Dictionary<string, string> IgnoreReasons { get; set; } = new();
+
+    /// <summary>
+    /// Rationale of each allowlist entry that records a known defect awaiting an owner decision instead of a
+    /// deliberate deviation, keyed like IgnoreReasons; an entry's reason is in exactly one of the two maps.
+    /// </summary>
+    [JsonPropertyName("knownDefects")]
+    public Dictionary<string, string> KnownDefects { get; set; } = new();
 }
 
 /// <summary>
@@ -175,24 +211,59 @@ public class EnumUnreachableValues
 /// </summary>
 public class ComponentParityConfig
 {
+    /// <summary>
+    /// [Parameter] names that deviate from the PascalCase of their CEM attribute (e.g. maxlength -> MaxLength),
+    /// keyed by attribute. Reason key "attributeOverrides:&lt;tag&gt;:&lt;attribute&gt;"; an entry whose attribute the
+    /// CEM does not declare, whose parameter no wrapper of the element has, or that equals the convention is stale.
+    /// </summary>
     [JsonPropertyName("attributeOverrides")]
     public Dictionary<string, string> AttributeOverrides { get; set; } = new();
 
+    /// <summary>
+    /// CEM attributes the wrappers of the element deliberately expose through no parameter. Reason key
+    /// "ignoredAttributes:&lt;tag&gt;:&lt;attribute&gt;"; an entry the CEM does not declare, or that every wrapper of the
+    /// element renders from its parameter, is stale.
+    /// </summary>
     [JsonPropertyName("ignoredAttributes")]
     public List<string> IgnoredAttributes { get; set; } = new();
 
+    /// <summary>
+    /// EventCallback names that deviate from the naming convention of their event ("wa-x" -> OnX), keyed by event.
+    /// Reason key "eventOverrides:&lt;tag&gt;:&lt;event&gt;"; an entry whose event the element does not declare, whose
+    /// callback no wrapper of the element has, or that equals the convention is stale.
+    /// </summary>
     [JsonPropertyName("eventOverrides")]
     public Dictionary<string, string> EventOverrides { get; set; } = new();
 
+    /// <summary>
+    /// CEM events no EventCallback carries because the wrapper's value handling binds them (the native change of
+    /// the form controls). Reason key "ignoredEvents:&lt;tag&gt;:&lt;event&gt;"; the value handling must bind the event,
+    /// and an entry the element does not declare, or that an EventCallback now binds, is stale.
+    /// </summary>
     [JsonPropertyName("ignoredEvents")]
     public List<string> IgnoredEvents { get; set; } = new();
 
+    /// <summary>
+    /// Wrapper method names that deviate from "&lt;PascalCase method&gt;Async", keyed by CEM method. Reason key
+    /// "methodOverrides:&lt;tag&gt;:&lt;method&gt;"; an entry whose method the CEM does not document, or that equals the
+    /// convention, is stale.
+    /// </summary>
     [JsonPropertyName("methodOverrides")]
     public Dictionary<string, string> MethodOverrides { get; set; } = new();
 
+    /// <summary>
+    /// CEM-documented methods the wrapper deliberately does not expose. Reason key
+    /// "ignoredMethods:&lt;tag&gt;:&lt;method&gt;"; an entry the CEM does not document, or that the wrapper now exposes,
+    /// is stale.
+    /// </summary>
     [JsonPropertyName("ignoredMethods")]
     public List<string> IgnoredMethods { get; set; } = new();
 
+    /// <summary>
+    /// Element methods verified against the Web Awesome source but absent from the CEM, which wrappers may invoke;
+    /// re-verify them on every upgrade. Reason key "extraElementMethods:&lt;tag&gt;:&lt;method&gt;"; an entry the CEM
+    /// documents, or that no wrapper of the element invokes, is stale.
+    /// </summary>
     [JsonPropertyName("extraElementMethods")]
     public List<string> ExtraElementMethods { get; set; } = new();
 
