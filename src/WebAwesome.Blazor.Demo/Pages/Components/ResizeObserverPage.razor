@@ -1,9 +1,9 @@
-﻿@page "/components/resize-observer"
+@page "/components/resize-observer"
 
 <PageTitle>Resize Observer</PageTitle>
 
-<h1>Resize Observer</h1>
-<p><code>&lt;wa-resize-observer&gt;</code> wrapped by <code>WaResizeObserver</code>.</p>
+<h1>Resize Observer <ComponentBadges Tag="wa-resize-observer" /></h1>
+<p>Resize observers report when their content changes size. <code>&lt;wa-resize-observer&gt;</code> wrapped by <code>WaResizeObserver</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaResizeObserver OnResize="HandleResize">
@@ -14,12 +14,34 @@
     <p>@resizeMessage</p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\resize-observer.md) *@
+<ExampleSection Title="Resizing From C#" Code="@WidthExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSlider Label="Box width (px)" Min="80" Max="400" Step="20" @bind-Value="width" />
+        <WaResizeObserver OnResize="() => resizes++">
+            <div class="demo-box" style="width: @(width)px;"></div>
+        </WaResizeObserver>
+    </WaStack>
+    <p>Resize events: <strong>@resizes</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSwitch @bind-Value="observerDisabled">Observer disabled</WaSwitch>
+        <WaResizeObserver Disabled="observerDisabled" OnResize="() => disabledResizes++">
+            <textarea style="resize: both; width: 200px; height: 60px;">Resize me by the corner</textarea>
+        </WaResizeObserver>
+    </WaStack>
+    <p>Resize events: <strong>@disabledResizes</strong></p>
+</ExampleSection>
 
 <ApiTable Tag="wa-resize-observer" />
 
 @code {
     private string resizeMessage = "Resize the box above to see events fire.";
+    private decimal? width = 160;
+    private int resizes;
+    private bool observerDisabled = true;
+    private int disabledResizes;
 
     private void HandleResize(ResizeEventArgs args)
     {
@@ -41,6 +63,32 @@
             {
                 resizeMessage = $"Resized at {DateTime.Now:T}";
             }
+        }
+        """;
+
+    private const string WidthExample = """
+        <WaSlider Label="Box width (px)" Min="80" Max="400" Step="20" @bind-Value="width" />
+        <WaResizeObserver OnResize="() => resizes++">
+            <div class="demo-box" style="width: @(width)px;"></div>
+        </WaResizeObserver>
+        <p>Resize events: @resizes</p>
+
+        @code {
+            private decimal? width = 160;
+            private int resizes;
+        }
+        """;
+
+    private const string DisabledExample = """
+        <WaSwitch @bind-Value="observerDisabled">Observer disabled</WaSwitch>
+        <WaResizeObserver Disabled="observerDisabled" OnResize="() => disabledResizes++">
+            <textarea style="resize: both; width: 200px; height: 60px;">Resize me by the corner</textarea>
+        </WaResizeObserver>
+        <p>Resize events: @disabledResizes</p>
+
+        @code {
+            private bool observerDisabled = true;
+            private int disabledResizes;
         }
         """;
 }

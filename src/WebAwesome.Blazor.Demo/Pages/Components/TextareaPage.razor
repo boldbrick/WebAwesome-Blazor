@@ -2,8 +2,8 @@
 
 <PageTitle>Textarea</PageTitle>
 
-<h1>Textarea</h1>
-<p><code>&lt;wa-textarea&gt;</code> wrapped by <code>WaTextarea</code>.</p>
+<h1>Textarea <ComponentBadges Tag="wa-textarea" /></h1>
+<p>Textareas collect multi-line text. <code>&lt;wa-textarea&gt;</code> wrapped by <code>WaTextArea</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaTextArea @bind-Value="value" />
@@ -29,8 +29,58 @@
     <p>Model: <code data-testid="textarea-immediate-model">@liveMessage</code></p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\textarea.md) *@
+<ExampleSection Title="Label, Hint and Placeholder" Code="@LabelExample">
+    <WaTextArea Label="Feedback" Hint="Tell us what you liked and what we can do better." Placeholder="Type something" @bind-Value="feedback" />
+</ExampleSection>
 
+<ExampleSection Title="Rows" Code="@RowsExample">
+    <WaTextArea Label="Two rows" Rows="2" @bind-Value="shortText" />
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTextArea Label="Outlined" Appearance="WaInputAppearance.Outlined" @bind-Value="outlined" />
+        <WaTextArea Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filled" />
+        <WaTextArea Label="Filled outlined" Appearance="WaInputAppearance.FilledOutlined" @bind-Value="filledOutlined" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTextArea Label="Small" Size="WaSize.Small" @bind-Value="small" />
+        <WaTextArea Label="Medium" Size="WaSize.Medium" @bind-Value="medium" />
+        <WaTextArea Label="Large" Size="WaSize.Large" @bind-Value="large" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Resizing" Code="@ResizeExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTextArea Label="Not resizable" Resize="WaResize.None" @bind-Value="noResize" />
+        <WaTextArea Label="Vertical (the default)" Resize="WaResize.Vertical" @bind-Value="verticalResize" />
+        <WaTextArea Label="Horizontal" Resize="WaResize.Horizontal" @bind-Value="horizontalResize" />
+        <WaTextArea Label="Both directions" Resize="WaResize.Both" @bind-Value="bothResize" />
+        <WaTextArea Label="Grows with its content" Resize="WaResize.Auto" @bind-Value="autoResize" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Character Count and Length Limits" Code="@CountExample">
+    <WaTextArea Label="Bio" WithCount="true" MinLength="10" MaxLength="140" @bind-Value="bio" />
+</ExampleSection>
+
+<ExampleSection Title="Readonly, Disabled and Required" Code="@StatesExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTextArea Label="Readonly" Readonly="true" @bind-Value="readonlyText" />
+        <WaTextArea Label="Disabled" Disabled="true" @bind-Value="disabledText" />
+        <WaTextArea Label="Required" Required="true" @bind-Value="requiredText" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Spell Checking and Keyboard Hints" Code="@SpellcheckExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTextArea Label="Spellcheck on" Spellcheck="true" AutoCorrect="on" AutoCapitalize="sentences" @bind-Value="spellchecked" />
+        <WaTextArea Label="Spellcheck off (code)" Spellcheck="false" AutoCorrect="off" AutoCapitalize="off" EnterKeyHint="send" InputMode="text" Autocomplete="off" @bind-Value="code" />
+    </WaStack>
+</ExampleSection>
 <ApiTable Tag="wa-textarea" />
 
 @code {
@@ -41,6 +91,64 @@
     private string? draft = "Hello world";
     private string? liveMessage;
 
+    private string? feedback;
+    private string? shortText;
+    private string? outlined;
+    private string? filled;
+    private string? filledOutlined;
+    private string? small;
+    private string? medium;
+    private string? large;
+    private string? noResize;
+    private string? verticalResize;
+    private string? horizontalResize;
+    private string? bothResize;
+    private string? autoResize = "This textarea grows as you type more lines.";
+    private string? bio;
+    private string? readonlyText = "You can read and copy this, but not change it.";
+    private string? disabledText = "Not editable right now.";
+    private string? requiredText;
+    private string? spellchecked = "Teh quick brown fox";
+    private string? code = "var answer = 42;";
+
+    private const string LabelExample = """
+        <WaTextArea Label="Feedback" Hint="Tell us what you liked and what we can do better." Placeholder="Type something" @bind-Value="feedback" />
+        """;
+
+    private const string RowsExample = """<WaTextArea Label="Two rows" Rows="2" @bind-Value="shortText" />""";
+
+    private const string AppearanceExample = """
+        <WaTextArea Label="Outlined" Appearance="WaInputAppearance.Outlined" @bind-Value="outlined" />
+        <WaTextArea Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filled" />
+        <WaTextArea Label="Filled outlined" Appearance="WaInputAppearance.FilledOutlined" @bind-Value="filledOutlined" />
+        """;
+
+    private const string SizesExample = """
+        <WaTextArea Label="Small" Size="WaSize.Small" @bind-Value="small" />
+        <WaTextArea Label="Medium" Size="WaSize.Medium" @bind-Value="medium" />
+        <WaTextArea Label="Large" Size="WaSize.Large" @bind-Value="large" />
+        """;
+
+    private const string ResizeExample = """
+        <WaTextArea Label="Not resizable" Resize="WaResize.None" @bind-Value="noResize" />
+        <WaTextArea Label="Vertical (the default)" Resize="WaResize.Vertical" @bind-Value="verticalResize" />
+        <WaTextArea Label="Horizontal" Resize="WaResize.Horizontal" @bind-Value="horizontalResize" />
+        <WaTextArea Label="Both directions" Resize="WaResize.Both" @bind-Value="bothResize" />
+        <WaTextArea Label="Grows with its content" Resize="WaResize.Auto" @bind-Value="autoResize" />
+        """;
+
+    private const string CountExample = """<WaTextArea Label="Bio" WithCount="true" MinLength="10" MaxLength="140" @bind-Value="bio" />""";
+
+    private const string StatesExample = """
+        <WaTextArea Label="Readonly" Readonly="true" @bind-Value="readonlyText" />
+        <WaTextArea Label="Disabled" Disabled="true" @bind-Value="disabledText" />
+        <WaTextArea Label="Required" Required="true" @bind-Value="requiredText" />
+        """;
+
+    private const string SpellcheckExample = """
+        <WaTextArea Label="Spellcheck on" Spellcheck="true" AutoCorrect="on" AutoCapitalize="sentences" @bind-Value="spellchecked" />
+        <WaTextArea Label="Spellcheck off (code)" Spellcheck="false" AutoCorrect="off" AutoCapitalize="off" EnterKeyHint="send" InputMode="text" Autocomplete="off" @bind-Value="code" />
+        """;
     private void SetNotes() => notes = "Set from C#";
 
     private void ResetNotes() => notes = InitialNotes;

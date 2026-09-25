@@ -9,9 +9,13 @@ actually renders the page and a real user interaction fires a real DOM event. Se
 ## What's covered
 
 - `tests\sweep.spec.js` — visits **every** demo route (every component page from
-  `api-surface.json`, plus the layout pages and the home page) and asserts no unhandled
-  console/page error was logged. This is the first line of defense against the "wrapper throws
-  on first render" class of bug (e.g. the `wa-resize-observer` "initialize" crash).
+  `api-surface.json`, plus the layout, showcase and harness pages and the home page), waits until every
+  free `wa-*` element on it has rendered, and fails on any page error and on every console error or
+  warning except network `Failed to load resource` noise and the autoload warning of a Pro component.
+  Every component page sets non-default enum, boolean and number values, so an invalid value a wrapper
+  emits surfaces here (Web Awesome throws, e.g. a `RangeError` from `Intl`, or warns, e.g. a deprecated
+  size). It is also the first line of defense against the "wrapper throws on first render" class of
+  bug (e.g. the `wa-resize-observer` "initialize" crash).
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug

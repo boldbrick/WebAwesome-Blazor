@@ -176,3 +176,9 @@ h1 .component-badges {
     border-radius: var(--wa-border-radius-m);
     background: var(--demo-box-color, var(--wa-color-brand-fill-loud));
 }
+
+/* the class the intersection observer example adds while its box is visible */
+.demo-intersecting {
+    outline: 3px solid var(--wa-color-success-fill-loud);
+    outline-offset: 2px;
+}

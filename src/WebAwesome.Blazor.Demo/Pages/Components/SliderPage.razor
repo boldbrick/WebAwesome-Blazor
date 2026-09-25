@@ -1,9 +1,9 @@
-﻿@page "/components/slider"
+@page "/components/slider"
 
 <PageTitle>Slider</PageTitle>
 
-<h1>Slider</h1>
-<p><code>&lt;wa-slider&gt;</code> wrapped by <code>WaSlider</code>.</p>
+<h1>Slider <ComponentBadges Tag="wa-slider" /></h1>
+<p>Sliders let the user pick a numeric value, or a range, from a track. <code>&lt;wa-slider&gt;</code> wrapped by <code>WaSlider</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaSlider @bind-Value="value" />
@@ -15,7 +15,58 @@
     <p>OnValueChange calls: <strong>@volumeChanges</strong></p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\slider.md) *@
+<ExampleSection Title="Label and Hint" Code="@HintExample">
+    <WaSlider Label="Brightness" Hint="Applies to every connected display." @bind-Value="brightness" />
+</ExampleSection>
+
+<ExampleSection Title="Min, Max and Step" Code="@StepExample">
+    <WaSlider Label="Temperature (°C)" Min="-10" Max="40" Step="0.5M" WithTooltip="true" @bind-Value="temperature" />
+</ExampleSection>
+
+<ExampleSection Title="Markers and Reference Labels" Code="@MarkersExample">
+    <WaSlider Label="Speed" Min="1" Max="5" Step="1" WithMarkers="true" @bind-Value="speed">
+        <ReferenceContent>
+            <span>Slow</span>
+            <span>Medium</span>
+            <span>Fast</span>
+        </ReferenceContent>
+    </WaSlider>
+</ExampleSection>
+
+<ExampleSection Title="Tooltip Placement and Distance" Code="@TooltipExample">
+    <WaStack Gap="GapSize.Gap_L">
+        <WaSlider Label="Tooltip above" WithTooltip="true" TooltipPlacement="WaTooltipSide.Top" TooltipDistance="12" @bind-Value="above" />
+        <WaSlider Label="Tooltip below" WithTooltip="true" TooltipPlacement="WaTooltipSide.Bottom" @bind-Value="below" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Range" Code="@RangeExample">
+    <WaSlider Label="Price range" Range="true" Min="0" Max="500" Step="10" WithTooltip="true" @bind-MinValue="priceMin" @bind-MaxValue="priceMax" />
+    <p>From <strong>@priceMin</strong> to <strong>@priceMax</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Vertical" Code="@VerticalExample">
+    <WaCluster Gap="GapSize.Gap_2XL" Style="height: 200px;">
+        <WaSlider Label="Bass" Orientation="WaOrientation.Vertical" WithTooltip="true" TooltipPlacement="WaTooltipSide.Left" @bind-Value="bass" />
+        <WaSlider Label="Treble" Orientation="WaOrientation.Vertical" WithTooltip="true" TooltipPlacement="WaTooltipSide.Right" @bind-Value="treble" />
+        <WaSlider Label="Balance" Orientation="WaOrientation.Horizontal" Min="-50" Max="50" IndicatorOffset="0" @bind-Value="balance" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSlider Label="Small" Size="WaSize.Small" @bind-Value="small" />
+        <WaSlider Label="Medium" Size="WaSize.Medium" @bind-Value="medium" />
+        <WaSlider Label="Large" Size="WaSize.Large" @bind-Value="large" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Readonly and Disabled" Code="@ReadonlyExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSlider Label="Readonly" Readonly="true" @bind-Value="locked" />
+        <WaSlider Label="Disabled" Disabled="true" @bind-Value="disabled" />
+    </WaStack>
+</ExampleSection>
 
 <ApiTable Tag="wa-slider" />
 
@@ -23,6 +74,21 @@
     private decimal? value = 50;
     private decimal? volume = 50;
     private int volumeChanges;
+    private decimal? brightness = 70;
+    private decimal? temperature = 21.5M;
+    private decimal? speed = 3;
+    private decimal? above = 30;
+    private decimal? below = 60;
+    private decimal? priceMin = 100;
+    private decimal? priceMax = 350;
+    private decimal? bass = 40;
+    private decimal? treble = 60;
+    private decimal? balance = 10;
+    private decimal? small = 50;
+    private decimal? medium = 50;
+    private decimal? large = 50;
+    private decimal? locked = 25;
+    private decimal? disabled = 75;
 
     private const string DefaultExample = """
         <WaSlider @bind-Value="value" />
@@ -41,5 +107,55 @@
             private decimal? volume = 50;
             private int volumeChanges;
         }
+        """;
+
+    private const string HintExample = """
+        <WaSlider Label="Brightness" Hint="Applies to every connected display." @bind-Value="brightness" />
+        """;
+
+    private const string StepExample = """
+        <WaSlider Label="Temperature (°C)" Min="-10" Max="40" Step="0.5M" WithTooltip="true" @bind-Value="temperature" />
+        """;
+
+    private const string MarkersExample = """
+        <WaSlider Label="Speed" Min="1" Max="5" Step="1" WithMarkers="true" @bind-Value="speed">
+            <ReferenceContent>
+                <span>Slow</span>
+                <span>Medium</span>
+                <span>Fast</span>
+            </ReferenceContent>
+        </WaSlider>
+        """;
+
+    private const string TooltipExample = """
+        <WaSlider Label="Tooltip above" WithTooltip="true" TooltipPlacement="WaTooltipSide.Top" TooltipDistance="12" @bind-Value="above" />
+        <WaSlider Label="Tooltip below" WithTooltip="true" TooltipPlacement="WaTooltipSide.Bottom" @bind-Value="below" />
+        """;
+
+    private const string RangeExample = """
+        <WaSlider Label="Price range" Range="true" Min="0" Max="500" Step="10" WithTooltip="true" @bind-MinValue="priceMin" @bind-MaxValue="priceMax" />
+        <p>From @priceMin to @priceMax</p>
+
+        @code {
+            private decimal? priceMin = 100;
+            private decimal? priceMax = 350;
+        }
+        """;
+
+    private const string VerticalExample = """
+        <WaSlider Label="Bass" Orientation="WaOrientation.Vertical" WithTooltip="true" TooltipPlacement="WaTooltipSide.Left" @bind-Value="bass" />
+        <WaSlider Label="Treble" Orientation="WaOrientation.Vertical" WithTooltip="true" TooltipPlacement="WaTooltipSide.Right" @bind-Value="treble" />
+        <WaSlider Label="Balance" Orientation="WaOrientation.Horizontal" Min="-50" Max="50" IndicatorOffset="0" @bind-Value="balance" />
+        """;
+
+    private const string SizesExample = """
+        <WaSlider Label="Small" Size="WaSize.Small" @bind-Value="small" />
+        <WaSlider Label="Medium" Size="WaSize.Medium" @bind-Value="medium" />
+        <WaSlider Label="Large" Size="WaSize.Large" @bind-Value="large" />
+        """;
+
+    private const string ReadonlyExample = """
+        <WaSlider Label="Readonly" Readonly="true" @bind-Value="locked" />
+        <WaSlider Label="Disabled" Disabled="true" @bind-Value="disabled" />
         """;
 }

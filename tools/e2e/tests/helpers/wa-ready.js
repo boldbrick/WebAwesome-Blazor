@@ -25,6 +25,28 @@ const LOADER_SCRIPT_PATTERN = 'webawesome(\\.loader)?\\.js(\\?|$)';
  * @param {string[]} tags custom element tag names the test is about to interact with
  */
 async function waitForWaReady(page, tags) {
+  try {
+    await waitForWaReadyOnce(page, tags);
+  } catch (error) {
+    // the page navigated while the elements were loading (under a full worker load the WASM boot can reload the
+    // page once); wait for the reloaded demo and check again, visibly, instead of failing on the boot
+    if (!String(error).includes(CONTEXT_DESTROYED)) throw error;
+    test.info().annotations.push({ type: 'wa-ready', description: `page navigated while waiting for ${tags.join(', ')}; waited again` });
+    await page.waitForSelector('.demo-shell', { timeout: WA_READY_TIMEOUT_MS });
+    await waitForWaReadyOnce(page, tags);
+  }
+}
+
+// the Playwright error of an evaluate whose page navigated meanwhile
+const CONTEXT_DESTROYED = 'Execution context was destroyed';
+
+/**
+ * One attempt of waitForWaReady.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string[]} tags custom element tag names the test is about to interact with
+ */
+async function waitForWaReadyOnce(page, tags) {
   const ready = page.evaluate(async (tagNames) => {
     for (const tag of tagNames) {
       await customElements.whenDefined(tag);

@@ -1,9 +1,9 @@
-﻿@page "/components/option"
+@page "/components/option"
 
 <PageTitle>Option</PageTitle>
 
-<h1>Option</h1>
-<p><code>&lt;wa-option&gt;</code> wrapped by <code>WaOption</code>.</p>
+<h1>Option <ComponentBadges Tag="wa-option" /></h1>
+<p>Options are the choices of a <a href="components/select"><code>WaSelect</code></a> or <a href="components/combobox"><code>WaCombobox</code></a>. <code>&lt;wa-option&gt;</code> wrapped by <code>WaOption</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaSelect Label="Select one" @bind-Value="value">
@@ -13,12 +13,52 @@
     </WaSelect>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\option.md) *@
+<ExampleSection Title="Disabled Options" Code="@DisabledExample">
+    <WaSelect Label="Shipping" @bind-Value="shipping">
+        <WaOption Value="standard">Standard</WaOption>
+        <WaOption Value="express" Disabled="false">Express</WaOption>
+        <WaOption Value="overnight" Disabled="true">Overnight (unavailable)</WaOption>
+    </WaSelect>
+</ExampleSection>
+
+<ExampleSection Title="Start and End Decorations" Code="@IconsExample">
+    <WaSelect Label="Share via" @bind-Value="share">
+        <WaOption Value="email" StartIconName="envelope">Email</WaOption>
+        <WaOption Value="link" StartIconName="link" EndIconName="copy">Copy link</WaOption>
+        <WaOption Value="print">
+            <StartContent><WaIcon Name="print" /></StartContent>
+            <ChildContent>Print</ChildContent>
+            <EndContent><WaBadge Variant="WaVariant.Neutral">PDF</WaBadge></EndContent>
+        </WaOption>
+    </WaSelect>
+</ExampleSection>
+
+<ExampleSection Title="Label for Rich Content" Code="@LabelExample">
+    <p><code>Label</code> sets the text the select shows for an option whose content is more than text.</p>
+    <WaSelect Label="Plan" @bind-Value="plan">
+        <WaOption Value="free" Label="Free">Free <small>(up to 3 projects)</small></WaOption>
+        <WaOption Value="pro" Label="Pro">Pro <small>(unlimited projects)</small></WaOption>
+    </WaSelect>
+</ExampleSection>
+
+<ExampleSection Title="Initially Selected Options" Code="@SelectedExample">
+    <WaSelect Label="Toppings" Multiple="true" @bind-SelectedValues="toppings" ValueExpression="() => toppingsValue">
+        <WaOption Value="cheese" Selected="true">Cheese</WaOption>
+        <WaOption Value="olives" Selected="false">Olives</WaOption>
+        <WaOption Value="peppers">Peppers</WaOption>
+    </WaSelect>
+</ExampleSection>
 
 <ApiTable Tag="wa-option" />
 
 @code {
     private string? value = "option-1";
+    private string? shipping = "standard";
+    private string? share = "email";
+    private string? plan = "free";
+    private string[]? toppings = ["cheese"];
+    // multiple mode binds SelectedValues; InputBase still needs a ValueExpression
+    private string? toppingsValue = null;
 
     private const string DefaultExample = """
         <WaSelect Label="Select one" @bind-Value="value">
@@ -29,6 +69,48 @@
 
         @code {
             private string? value = "option-1";
+        }
+        """;
+
+    private const string DisabledExample = """
+        <WaSelect Label="Shipping" @bind-Value="shipping">
+            <WaOption Value="standard">Standard</WaOption>
+            <WaOption Value="express" Disabled="false">Express</WaOption>
+            <WaOption Value="overnight" Disabled="true">Overnight (unavailable)</WaOption>
+        </WaSelect>
+        """;
+
+    private const string IconsExample = """
+        <WaSelect Label="Share via" @bind-Value="share">
+            <WaOption Value="email" StartIconName="envelope">Email</WaOption>
+            <WaOption Value="link" StartIconName="link" EndIconName="copy">Copy link</WaOption>
+            <WaOption Value="print">
+                <StartContent><WaIcon Name="print" /></StartContent>
+                <ChildContent>Print</ChildContent>
+                <EndContent><WaBadge Variant="WaVariant.Neutral">PDF</WaBadge></EndContent>
+            </WaOption>
+        </WaSelect>
+        """;
+
+    private const string LabelExample = """
+        <WaSelect Label="Plan" @bind-Value="plan">
+            <WaOption Value="free" Label="Free">Free <small>(up to 3 projects)</small></WaOption>
+            <WaOption Value="pro" Label="Pro">Pro <small>(unlimited projects)</small></WaOption>
+        </WaSelect>
+        """;
+
+    private const string SelectedExample = """
+        <WaSelect Label="Toppings" Multiple="true" @bind-SelectedValues="toppings" ValueExpression="() => toppingsValue">
+            <WaOption Value="cheese" Selected="true">Cheese</WaOption>
+            <WaOption Value="olives" Selected="false">Olives</WaOption>
+            <WaOption Value="peppers">Peppers</WaOption>
+        </WaSelect>
+
+        @code {
+            private string[]? toppings = ["cheese"];
+
+            // multiple mode binds SelectedValues; InputBase still needs a ValueExpression
+            private string? toppingsValue;
         }
         """;
 }

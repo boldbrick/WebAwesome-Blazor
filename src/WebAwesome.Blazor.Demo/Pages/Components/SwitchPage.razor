@@ -2,8 +2,8 @@
 
 <PageTitle>Switch</PageTitle>
 
-<h1>Switch</h1>
-<p><code>&lt;wa-switch&gt;</code> wrapped by <code>WaSwitch</code>.</p>
+<h1>Switch <ComponentBadges Tag="wa-switch" /></h1>
+<p>Switches toggle a setting on or off. <code>&lt;wa-switch&gt;</code> wrapped by <code>WaSwitch</code>; its label is the content.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaSwitch @bind-Value="value">Switch</WaSwitch>
@@ -15,7 +15,50 @@
     <p>OnCheckedChange calls: <strong>@checkedChanges</strong></p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\switch.md) *@
+<ExampleSection Title="Checked" Code="@CheckedExample">
+    <WaStack Gap="GapSize.Gap_S">
+        <WaSwitch @bind-Value="autoSave">Auto-save</WaSwitch>
+        <WaSwitch @bind-Value="betaFeatures">Beta features</WaSwitch>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Hint" Code="@HintExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSwitch Hint="Sends a weekly summary every Monday." @bind-Value="digest">Weekly digest</WaSwitch>
+        <WaSwitch @bind-Value="twoFactor">
+            <ChildContent>Two-factor sign-in</ChildContent>
+            <MarkupHint>Requires the <strong>Authenticator</strong> app.</MarkupHint>
+        </WaSwitch>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaStack Gap="GapSize.Gap_S">
+        <WaSwitch Size="WaSize.Small" @bind-Value="small">Small</WaSwitch>
+        <WaSwitch Size="WaSize.Medium" @bind-Value="medium">Medium</WaSwitch>
+        <WaSwitch Size="WaSize.Large" @bind-Value="large">Large</WaSwitch>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaStack Gap="GapSize.Gap_S">
+        <WaSwitch Disabled="true" @bind-Value="lockedOn">Managed by your organization</WaSwitch>
+        <WaSwitch Disabled="false" @bind-Value="unlocked">Yours to change</WaSwitch>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Required in a Form" Code="@RequiredExample">
+    <EditForm Model="terms" OnValidSubmit="() => submitted = true">
+        <WaStack Gap="GapSize.Gap_M">
+            <WaSwitch Required="true" @bind-Value="terms.Accepted">I accept the terms</WaSwitch>
+            <WaButton Type="WaButtonType.Submit" Variant="WaVariant.Brand" Style="align-self: start;">Continue</WaButton>
+        </WaStack>
+    </EditForm>
+    @if (submitted)
+    {
+        <p>Submitted.</p>
+    }
+</ExampleSection>
 
 <ApiTable Tag="wa-switch" />
 
@@ -23,6 +66,25 @@
     private bool value;
     private bool notifications;
     private int checkedChanges;
+    private bool autoSave = true;
+    private bool betaFeatures;
+    private bool digest = true;
+    private bool twoFactor;
+    private bool small;
+    private bool medium = true;
+    private bool large;
+    private bool lockedOn = true;
+    private bool unlocked;
+    private readonly TermsModel terms = new();
+    private bool submitted;
+
+    /// <summary>
+    /// The form model of the required switch example.
+    /// </summary>
+    private sealed class TermsModel
+    {
+        public bool Accepted { get; set; }
+    }
 
     private const string BindingExample = """
         <WaSwitch @bind-Value="notifications" OnCheckedChange="@(isChecked => checkedChanges++)">Notifications</WaSwitch>
@@ -40,6 +102,52 @@
 
         @code {
             private bool value;
+        }
+        """;
+
+    private const string CheckedExample = """
+        <WaSwitch @bind-Value="autoSave">Auto-save</WaSwitch>
+        <WaSwitch @bind-Value="betaFeatures">Beta features</WaSwitch>
+
+        @code {
+            private bool autoSave = true;
+            private bool betaFeatures;
+        }
+        """;
+
+    private const string HintExample = """
+        <WaSwitch Hint="Sends a weekly summary every Monday." @bind-Value="digest">Weekly digest</WaSwitch>
+        <WaSwitch @bind-Value="twoFactor">
+            <ChildContent>Two-factor sign-in</ChildContent>
+            <MarkupHint>Requires the <strong>Authenticator</strong> app.</MarkupHint>
+        </WaSwitch>
+        """;
+
+    private const string SizesExample = """
+        <WaSwitch Size="WaSize.Small" @bind-Value="small">Small</WaSwitch>
+        <WaSwitch Size="WaSize.Medium" @bind-Value="medium">Medium</WaSwitch>
+        <WaSwitch Size="WaSize.Large" @bind-Value="large">Large</WaSwitch>
+        """;
+
+    private const string DisabledExample = """
+        <WaSwitch Disabled="true" @bind-Value="lockedOn">Managed by your organization</WaSwitch>
+        <WaSwitch Disabled="false" @bind-Value="unlocked">Yours to change</WaSwitch>
+        """;
+
+    private const string RequiredExample = """
+        <EditForm Model="terms" OnValidSubmit="() => submitted = true">
+            <WaSwitch Required="true" @bind-Value="terms.Accepted">I accept the terms</WaSwitch>
+            <WaButton Type="WaButtonType.Submit" Variant="WaVariant.Brand">Continue</WaButton>
+        </EditForm>
+
+        @code {
+            private readonly TermsModel terms = new();
+            private bool submitted;
+
+            private sealed class TermsModel
+            {
+                public bool Accepted { get; set; }
+            }
         }
         """;
 }

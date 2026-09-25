@@ -1,9 +1,9 @@
-﻿@page "/components/radio"
+@page "/components/radio"
 
 <PageTitle>Radio</PageTitle>
 
-<h1>Radio</h1>
-<p><code>&lt;wa-radio&gt;</code> wrapped by <code>WaRadio</code>.</p>
+<h1>Radio <ComponentBadges Tag="wa-radio" /></h1>
+<p>Radios are the choices of a <a href="components/radio-group"><code>WaRadioGroup</code></a>, which holds the selected value. <code>&lt;wa-radio&gt;</code> wrapped by <code>WaRadio</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaRadioGroup Label="Select an option" @bind-Value="value">
@@ -13,12 +13,56 @@
     </WaRadioGroup>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\radio.md) *@
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaRadioGroup Label="Delivery" @bind-Value="delivery">
+        <WaRadio Value="pickup">Pick up in store</WaRadio>
+        <WaRadio Value="courier" Disabled="false">Courier</WaRadio>
+        <WaRadio Value="drone" Disabled="true">Drone (coming soon)</WaRadio>
+    </WaRadioGroup>
+</ExampleSection>
+
+<ExampleSection Title="Radio Buttons" Code="@ButtonsExample">
+    <WaRadioGroup Label="Alignment" Orientation="WaOrientation.Horizontal" @bind-Value="alignment">
+        <WaRadio Value="left" Appearance="WaRadioAppearance.Button">Left</WaRadio>
+        <WaRadio Value="center" Appearance="WaRadioAppearance.Button">Center</WaRadio>
+        <WaRadio Value="right" Appearance="WaRadioAppearance.Button">Right</WaRadio>
+    </WaRadioGroup>
+    <WaRadioGroup Label="Default appearance" Orientation="WaOrientation.Horizontal" @bind-Value="plainAlignment" Style="margin-top: var(--wa-space-m);">
+        <WaRadio Value="left" Appearance="WaRadioAppearance.Default">Left</WaRadio>
+        <WaRadio Value="center" Appearance="WaRadioAppearance.Default">Center</WaRadio>
+    </WaRadioGroup>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaRadioGroup Label="Size" @bind-Value="size">
+        <WaRadio Value="s" Size="WaSize.Small">Small</WaRadio>
+        <WaRadio Value="m" Size="WaSize.Medium">Medium</WaRadio>
+        <WaRadio Value="l" Size="WaSize.Large">Large</WaRadio>
+    </WaRadioGroup>
+</ExampleSection>
+
+<ExampleSection Title="Focus and Blur" Code="@FocusExample">
+    <WaRadioGroup Label="Contact me by" @bind-Value="contact">
+        <WaRadio Value="email" OnFocus="() => focusedRadio = EmailRadio" OnBlur="() => focusedRadio = NoRadio">Email</WaRadio>
+        <WaRadio Value="phone" OnFocus="() => focusedRadio = PhoneRadio" OnBlur="() => focusedRadio = NoRadio">Phone</WaRadio>
+    </WaRadioGroup>
+    <p>Focused radio: <strong>@focusedRadio</strong></p>
+</ExampleSection>
 
 <ApiTable Tag="wa-radio" />
 
 @code {
+    private const string EmailRadio = "Email";
+    private const string PhoneRadio = "Phone";
+    private const string NoRadio = "none";
+
     private string? value = "1";
+    private string? delivery = "pickup";
+    private string? alignment = "center";
+    private string? plainAlignment = "left";
+    private string? size = "m";
+    private string? contact = "email";
+    private string focusedRadio = NoRadio;
 
     private const string DefaultExample = """
         <WaRadioGroup Label="Select an option" @bind-Value="value">
@@ -30,5 +74,41 @@
         @code {
             private string? value = "1";
         }
+        """;
+
+    private const string DisabledExample = """
+        <WaRadioGroup Label="Delivery" @bind-Value="delivery">
+            <WaRadio Value="pickup">Pick up in store</WaRadio>
+            <WaRadio Value="courier" Disabled="false">Courier</WaRadio>
+            <WaRadio Value="drone" Disabled="true">Drone (coming soon)</WaRadio>
+        </WaRadioGroup>
+        """;
+
+    private const string ButtonsExample = """
+        <WaRadioGroup Label="Alignment" Orientation="WaOrientation.Horizontal" @bind-Value="alignment">
+            <WaRadio Value="left" Appearance="WaRadioAppearance.Button">Left</WaRadio>
+            <WaRadio Value="center" Appearance="WaRadioAppearance.Button">Center</WaRadio>
+            <WaRadio Value="right" Appearance="WaRadioAppearance.Button">Right</WaRadio>
+        </WaRadioGroup>
+        <WaRadioGroup Label="Default appearance" Orientation="WaOrientation.Horizontal" @bind-Value="plainAlignment">
+            <WaRadio Value="left" Appearance="WaRadioAppearance.Default">Left</WaRadio>
+            <WaRadio Value="center" Appearance="WaRadioAppearance.Default">Center</WaRadio>
+        </WaRadioGroup>
+        """;
+
+    private const string SizesExample = """
+        <WaRadioGroup Label="Size" @bind-Value="size">
+            <WaRadio Value="s" Size="WaSize.Small">Small</WaRadio>
+            <WaRadio Value="m" Size="WaSize.Medium">Medium</WaRadio>
+            <WaRadio Value="l" Size="WaSize.Large">Large</WaRadio>
+        </WaRadioGroup>
+        """;
+
+    private const string FocusExample = """
+        <WaRadioGroup Label="Contact me by" @bind-Value="contact">
+            <WaRadio Value="email" OnFocus="() => focusedRadio = EmailRadio" OnBlur="() => focusedRadio = NoRadio">Email</WaRadio>
+            <WaRadio Value="phone" OnFocus="() => focusedRadio = PhoneRadio" OnBlur="() => focusedRadio = NoRadio">Phone</WaRadio>
+        </WaRadioGroup>
+        <p>Focused radio: @focusedRadio</p>
         """;
 }

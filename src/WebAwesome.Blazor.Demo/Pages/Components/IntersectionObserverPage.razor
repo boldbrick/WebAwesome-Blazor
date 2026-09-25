@@ -1,9 +1,9 @@
-﻿@page "/components/intersection-observer"
+@page "/components/intersection-observer"
 
 <PageTitle>Intersection Observer</PageTitle>
 
-<h1>Intersection Observer</h1>
-<p><code>&lt;wa-intersection-observer&gt;</code> wrapped by <code>WaIntersectionObserver</code>.</p>
+<h1>Intersection Observer <ComponentBadges Tag="wa-intersection-observer" /></h1>
+<p>Intersection observers report when their content enters or leaves the viewport (or another root element). <code>&lt;wa-intersection-observer&gt;</code> wrapped by <code>WaIntersectionObserver</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaIntersectionObserver Threshold="1" OnIntersect="HandleIntersect">
@@ -14,12 +14,49 @@
     <p>@intersectMessage</p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\intersection-observer.md) *@
+<ExampleSection Title="Custom Root, Margin and Thresholds" Code="@RootExample">
+    <p>The box is observed against the scrollable container, with a 20px margin, and reports at 0%, 50% and 100% visibility.</p>
+    <div id="observer-root" style="height: 160px; overflow: auto; border: 1px dashed var(--wa-color-surface-border);">
+        <div style="height: 200px;"></div>
+        <WaIntersectionObserver Root="observer-root" RootMargin="20px" Threshold="0 0.5 1" OnIntersect="e => rootVisible = e.IsIntersecting">
+            <div class="demo-box" style="margin: auto;"></div>
+        </WaIntersectionObserver>
+        <div style="height: 200px;"></div>
+    </div>
+    <p>Box visible in the container: <strong>@rootVisible</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Intersect Class" Code="@ClassExample">
+    <p>While the box intersects, the observer adds <code>IntersectClass</code> to it; <code>Once</code> stops after the first time it becomes visible.</p>
+    <WaStack Gap="GapSize.Gap_M">
+        <WaIntersectionObserver IntersectClass="demo-intersecting" Threshold="0.5">
+            <div class="demo-box"></div>
+        </WaIntersectionObserver>
+        <WaIntersectionObserver Once="true" OnIntersect="() => onceCount++">
+            <div class="demo-box" style="--demo-box-color: var(--wa-color-success-fill-loud);"></div>
+        </WaIntersectionObserver>
+    </WaStack>
+    <p>The green box reported <strong>@onceCount</strong> time(s).</p>
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+        <WaIntersectionObserver Disabled="observerDisabled" OnIntersect="() => disabledCount++">
+            <div class="demo-box"></div>
+        </WaIntersectionObserver>
+        <WaSwitch @bind-Value="observerDisabled">Disabled</WaSwitch>
+    </WaCluster>
+    <p>Reported <strong>@disabledCount</strong> time(s).</p>
+</ExampleSection>
 
 <ApiTable Tag="wa-intersection-observer" />
 
 @code {
     private string intersectMessage = "Scroll the box above into and out of view to see events fire.";
+    private bool rootVisible;
+    private int onceCount;
+    private bool observerDisabled = true;
+    private int disabledCount;
 
     private void HandleIntersect(WaIntersectionEventArgs args)
     {
@@ -41,6 +78,48 @@
             {
                 intersectMessage = $"Intersecting: {args.IsIntersecting}";
             }
+        }
+        """;
+
+    private const string RootExample = """
+        <div id="observer-root" style="height: 160px; overflow: auto;">
+            <div style="height: 200px;"></div>
+            <WaIntersectionObserver Root="observer-root" RootMargin="20px" Threshold="0 0.5 1" OnIntersect="e => rootVisible = e.IsIntersecting">
+                <div class="demo-box"></div>
+            </WaIntersectionObserver>
+            <div style="height: 200px;"></div>
+        </div>
+        <p>Box visible in the container: @rootVisible</p>
+
+        @code {
+            private bool rootVisible;
+        }
+        """;
+
+    private const string ClassExample = """
+        <WaIntersectionObserver IntersectClass="demo-intersecting" Threshold="0.5">
+            <div class="demo-box"></div>
+        </WaIntersectionObserver>
+        <WaIntersectionObserver Once="true" OnIntersect="() => onceCount++">
+            <div class="demo-box"></div>
+        </WaIntersectionObserver>
+        <p>The green box reported @onceCount time(s).</p>
+
+        @code {
+            private int onceCount;
+        }
+        """;
+
+    private const string DisabledExample = """
+        <WaIntersectionObserver Disabled="observerDisabled" OnIntersect="() => disabledCount++">
+            <div class="demo-box"></div>
+        </WaIntersectionObserver>
+        <WaSwitch @bind-Value="observerDisabled">Disabled</WaSwitch>
+        <p>Reported @disabledCount time(s).</p>
+
+        @code {
+            private bool observerDisabled = true;
+            private int disabledCount;
         }
         """;
 }
