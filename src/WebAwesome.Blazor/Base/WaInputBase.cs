@@ -67,16 +67,25 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// Invoked when the focus moves into the control, by keyboard or pointer. Bound to the bubbling, composed
     /// focusin event (so <see cref="FocusEventArgs.Type"/> is "focusin"), because the element that takes the
     /// focus usually lies in the control's shadow root, where Blazor never sees the non-bubbling focus event.
-    /// Moving the focus between the parts of the control's own shadow root raises nothing; moving it between
-    /// the control and content slotted into it (e.g. from one radio of a radio group to the next, or from a
-    /// select's input into its option list) raises <see cref="OnBlur"/> followed by <see cref="OnFocus"/>.
     /// </summary>
+    /// <remarks>
+    /// A focus move between two parts of the control's own shadow root (the segments of an OTP input, the thumbs
+    /// of a range slider) is not dispatched outside it and raises nothing. A move between the control and content
+    /// slotted into it (from one radio of a radio group to the next, or from a select's input into its option
+    /// list by keyboard) raises <see cref="OnBlur"/> followed by <see cref="OnFocus"/>, although the focus stays
+    /// within the control.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     /// <summary>
     /// Invoked when the focus leaves the control. Bound to the bubbling, composed focusout event (so
-    /// <see cref="FocusEventArgs.Type"/> is "focusout"); see <see cref="OnFocus"/>.
+    /// <see cref="FocusEventArgs.Type"/> is "focusout").
     /// </summary>
+    /// <remarks>
+    /// Also raised, followed by <see cref="OnFocus"/>, when the focus moves between the control and content
+    /// slotted into it (radio to radio in a radio group, a select's input into its option list); a move inside
+    /// the control's own shadow root raises nothing. See <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
     /// <summary>

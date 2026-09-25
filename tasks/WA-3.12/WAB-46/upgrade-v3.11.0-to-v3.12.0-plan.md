@@ -383,3 +383,16 @@ These were found during this run. Items marked "fixed" were resolved under the o
 - **Red-first for relative time.** The pre-fix API can't express Short/Narrow, so the red run shows
   the pre-fix enum's failure (RangeError or wrong text) on the same spec rows. This is stated
   explicitly in the report.
+
+## Follow-ups
+
+- **Revisit: filter intra-component focus moves via the relay.** Since 3.12.0 `OnFocus`/`OnBlur` bind
+  `focusin`/`focusout`, so a move between a control and content slotted into it (radio to radio in a
+  `WaRadioGroup`, a `WaSelect`'s input into its option list by keyboard) raises `OnBlur` then `OnFocus`,
+  while a move inside one shadow root raises nothing. The owner kept this behaviour and had it documented
+  (callback `<remarks>`, CHANGELOG, MIGRATION); a relay could drop a focusout/focusin pair whose
+  `relatedTarget` stays inside the same host.
+- **`wa-date-input` per-day slots (owner decision).** `day-YYYY-MM-DD` (forwarded to `wa-date-picker`,
+  whose CEM omits the same family) is the only CEM slot without a `RenderFragment` parameter and is
+  allowlisted in `unreachableSlots`; exposing it needs a date-keyed API (e.g. a map of `DateOnly` to fragment).
+- `WaDataGrid`'s eight JS accessor-only properties, carried forward (see the next-release check items).

@@ -182,12 +182,23 @@ public class WaButton : ComponentBase, IFormValidation
 
     /// <summary>
     /// Invoked when the focus moves into the button. Bound to the bubbling, composed focusin event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusin"), because the focus lands on the native button in the
+    /// element's shadow root, where Blazor never sees the non-bubbling focus event.
     /// </summary>
+    /// <remarks>
+    /// A focus move inside the button's shadow root raises nothing; a move between the button and focusable
+    /// content slotted into it raises <see cref="OnBlur"/> followed by <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     /// <summary>
     /// Invoked when the focus leaves the button. Bound to the bubbling, composed focusout event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusout").
     /// </summary>
+    /// <remarks>
+    /// Also raised, followed by <see cref="OnFocus"/>, when the focus moves between the button and focusable
+    /// content slotted into it; see <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
     /// <summary>

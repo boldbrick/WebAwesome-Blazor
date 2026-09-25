@@ -122,12 +122,24 @@ public class WaFileInput : ComponentBase, IFormValidation
 
     /// <summary>
     /// Invoked when the focus moves into the control. Bound to the bubbling, composed focusin event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusin"), because the focus lands in the element's shadow root,
+    /// where Blazor never sees the non-bubbling focus event.
     /// </summary>
+    /// <remarks>
+    /// A focus move inside the control's shadow root raises nothing; a move between the control and focusable
+    /// content slotted into it (e.g. a button in <see cref="DropzoneContent"/>) raises <see cref="OnBlur"/>
+    /// followed by <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     /// <summary>
     /// Invoked when the focus leaves the control. Bound to the bubbling, composed focusout event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusout").
     /// </summary>
+    /// <remarks>
+    /// Also raised, followed by <see cref="OnFocus"/>, when the focus moves between the control and focusable
+    /// content slotted into it; see <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
     /// <summary>
