@@ -4,7 +4,7 @@
 [![release](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/release.yml/badge.svg)](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/release.yml)
 [![NuGet](https://img.shields.io/nuget/v/WebAwesome.Blazor.svg)](https://www.nuget.org/packages/WebAwesome.Blazor)
 
-Blazor-first wrappers for the **Web Awesome (WA)** web components, providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. No additional application logic and no additional / extension components.
+Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web components ([GitHub](https://github.com/shoelace-style/webawesome)), providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. No additional application logic and no additional / extension components.
 
 > **Status**
 > - Active train: **WA 3.12**
