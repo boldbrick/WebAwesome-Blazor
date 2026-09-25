@@ -8,7 +8,13 @@ namespace WebAwesome.Blazor.Tests.Forms;
 /// Dispatches the "numericchange" and "numericinput" events the number-valued wrappers (WaSlider, WaRange, WaRating) bind
 /// instead of "change". wa-slider and wa-rating report their value as a JS number, which Blazor's built-in
 /// change reader rejects, so the library's JS initializer registers "numericchange" as a string-valued
-/// alias of the browser change event; bUnit tests drive that alias the same way the browser does.
+/// alias of the browser change event. This helper covers the C# half only: it raises the alias handler with the
+/// string the alias is meant to deliver, so a test proves what the wrapper does with that string (parsing, range
+/// splitting, binding, callbacks), never that the alias exists or delivers it. bUnit cannot see the JS side: a
+/// missing or misdirected alias in the initializer stays green here. The alias names are checked against
+/// Constants and the initializer's numericValueEventAliases by EventBindingRegistrationTests
+/// (AliasEventAttributeConstants_MatchJsAliases), and the browser delivery of a real JS number by the e2e
+/// number-value-binding.spec.js (change) and event-dispatch.spec.js (input).
 /// </summary>
 internal static class NumericChangeExtensions
 {
