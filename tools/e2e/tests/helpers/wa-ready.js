@@ -90,33 +90,55 @@ async function waitForWaReadyOnce(page, tags) {
  */
 async function skipUnlessProUpgrades(page, tags) {
   for (const tag of tags) {
-    const outcome = await page.evaluate(async ({ name, notFound, loaderPattern, timeoutMs }) => {
-      if (customElements.get(name)) return 'upgraded';
-
-      // the autoloader imports components/<name without wa->/<name without wa->.js next to the loader script
-      const loader = [...document.querySelectorAll('script[src]')]
-        .map(s => /** @type {HTMLScriptElement} */ (s).src)
-        .find(src => new RegExp(loaderPattern).test(src));
-      if (loader) {
-        const file = name.replace(/^wa-/, '');
-        try {
-          const response = await fetch(new URL(`components/${file}/${file}.js`, loader).href, { method: 'HEAD', cache: 'no-store' });
-          if (response.status === notFound) return 'unavailable';
-        } catch {
-          // not probeable (e.g. cross-origin without CORS): decide on the upgrade alone
-        }
-      }
-
-      const upgraded = await Promise.race([
-        customElements.whenDefined(name).then(() => true),
-        new Promise(resolve => setTimeout(() => resolve(false), timeoutMs)),
-      ]);
-      return upgraded ? 'upgraded' : 'timeout';
-    }, { name: tag, notFound: HTTP_NOT_FOUND, loaderPattern: LOADER_SCRIPT_PATTERN, timeoutMs: WA_READY_TIMEOUT_MS });
+    let outcome;
+    try {
+      outcome = await proUpgradeOutcome(page, tag);
+    } catch (error) {
+      // the page navigated while the probe ran (the WASM boot reload under a full worker load, see waitForWaReady):
+      // wait for the reloaded demo and probe again, visibly
+      if (!String(error).includes(CONTEXT_DESTROYED)) throw error;
+      test.info().annotations.push({ type: 'wa-ready', description: `page navigated while probing ${tag}; probed again` });
+      await page.waitForSelector('.demo-shell', { timeout: WA_READY_TIMEOUT_MS });
+      outcome = await proUpgradeOutcome(page, tag);
+    }
 
     test.skip(outcome === 'unavailable', `${tag} is a Pro component and its module is not on the free CDN - run with a Pro asset override (tools\\demo\\Set-WaProAssets.ps1)`);
     test.skip(outcome === 'timeout', `${tag} is a Pro component and did not upgrade within ${WA_READY_TIMEOUT_MS} ms - run with a Pro asset override (tools\\demo\\Set-WaProAssets.ps1)`);
   }
+}
+
+/**
+ * Probes whether one Pro component upgrades: 'upgraded', 'unavailable' (its module is not on the server) or
+ * 'timeout'; see skipUnlessProUpgrades.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string} tag Pro custom element tag name
+ * @returns {Promise<string>}
+ */
+async function proUpgradeOutcome(page, tag) {
+  return page.evaluate(async ({ name, notFound, loaderPattern, timeoutMs }) => {
+    if (customElements.get(name)) return 'upgraded';
+
+    // the autoloader imports components/<name without wa->/<name without wa->.js next to the loader script
+    const loader = [...document.querySelectorAll('script[src]')]
+      .map(s => /** @type {HTMLScriptElement} */ (s).src)
+      .find(src => new RegExp(loaderPattern).test(src));
+    if (loader) {
+      const file = name.replace(/^wa-/, '');
+      try {
+        const response = await fetch(new URL(`components/${file}/${file}.js`, loader).href, { method: 'HEAD', cache: 'no-store' });
+        if (response.status === notFound) return 'unavailable';
+      } catch {
+        // not probeable (e.g. cross-origin without CORS): decide on the upgrade alone
+      }
+    }
+
+    const upgraded = await Promise.race([
+      customElements.whenDefined(name).then(() => true),
+      new Promise(resolve => setTimeout(() => resolve(false), timeoutMs)),
+    ]);
+    return upgraded ? 'upgraded' : 'timeout';
+  }, { name: tag, notFound: HTTP_NOT_FOUND, loaderPattern: LOADER_SCRIPT_PATTERN, timeoutMs: WA_READY_TIMEOUT_MS });
 }
 
 module.exports = { waitForWaReady, skipUnlessProUpgrades, WA_READY_TIMEOUT_MS };

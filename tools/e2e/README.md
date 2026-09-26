@@ -66,6 +66,11 @@ actually renders the page and a real user interaction fires a real DOM event. Se
 - Timing: a test may take 60 s (`playwright.config.js`), because booting the WASM demo and loading the
   CDN modules under a full worker load can take most of 30 s; `waitForWaReady` fails after 45 s naming
   the elements that never got ready, and every assertion keeps its own `expect` timeout.
+- Readiness, not timing: a test acts only on elements that have upgraded (`waitForWaReady` with every tag it
+  touches), waits for the element's own state where one exists (a tooltip's resolved `anchor`), hovers and clicks
+  at action time rather than at coordinates read earlier, and asserts on a request or event issued after its own
+  action (`expectFired` with the count it expects), never on whichever came last. Both readiness probes also survive
+  the one-off page navigation a full worker load can cause during the boot.
   To run them locally, point `WA_PRO_DIST` at the release zip's extracted package (e.g.
   `temp\wa-src\<version>`) and run `tools\demo\Set-WaProAssets.ps1`; clear it with `-Clear`. Build the
   demo only with the override cleared: a build made while it is active serves a stale

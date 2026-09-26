@@ -35,6 +35,20 @@ public class WaRelativeTimeIntegrationTests : BunitContext
         Assert.Contains("Cannot update relative time: component has not been rendered yet", exception.Message);
     }
 
+    [Fact]
+    public void ParameterChange_RefreshesOnlyAnElementThatIsDefined()
+    {
+        // the refresh on a parameter change can run while the element's module is still loading, when it has no
+        // update method yet: it must go through the guarded call, which does nothing before the element is defined
+        var module = JSInterop.SetupModule(InteropModulePath);
+        var cut = Render<WaRelativeTime>(p => p.Add(x => x.Format, WaRelativeTimeFormat.Short));
+
+        cut.Render(p => p.Add(x => x.Format, WaRelativeTimeFormat.Narrow));
+
+        var refresh = Assert.Single(module.Invocations, i => i.Identifier == GuardedInvokeIdentifier);
+        Assert.Equal(UpdateMethod, refresh.Arguments[1]);
+        Assert.DoesNotContain(module.Invocations, i => i.Identifier == UnguardedInvokeIdentifier);
+    }
     [Theory]
     [InlineData(-5, "2026-01-02T03:04:05.678-05:00")]
     [InlineData(0, "2026-01-02T03:04:05.678+00:00")]
@@ -74,4 +88,14 @@ public class WaRelativeTimeIntegrationTests : BunitContext
         Assert.Equal(typeof(DateTimeOffset?), typeof(WaRelativeTime).GetProperty(nameof(WaRelativeTime.Date))!.PropertyType);
         Assert.Equal(typeof(DateTimeOffset?), typeof(WaFormatDate).GetProperty(nameof(WaFormatDate.Date))!.PropertyType);
     }
+
+    #region ------ Internals ------
+
+    // the interop module and the identifiers of its guarded and plain element method calls
+    private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+    private const string GuardedInvokeIdentifier = "invokeMethodIfDefined";
+    private const string UnguardedInvokeIdentifier = "invokeMethod";
+    private const string UpdateMethod = "update";
+
+    #endregion
 }

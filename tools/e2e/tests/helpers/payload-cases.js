@@ -1,6 +1,6 @@
 // @ts-check
 const { expect } = require('@playwright/test');
-const { expectFired, payloadOf } = require('./event-log');
+const { countOf, expectFired, payloadOf } = require('./event-log');
 
 // The cases of event-payload.spec.js (review X6): events whose payload the library's JS initializer builds by
 // hand (specialArgs in src\WebAwesome.Blazor\wwwroot\WebAwesome.Blazor.lib.module.js), because the element's
@@ -200,14 +200,30 @@ const PAYLOAD_CASES = [
     callbacks: ['WaDataGrid.OnDataRequest', 'WaDataGrid.OnDataError'],
     run: async page => {
       const grid = page.getByTestId('pl-server-grid');
-      await expectFired(page, 'WaDataGrid.OnDataRequest');
+      const request = 'WaDataGrid.OnDataRequest';
+
+      // the grid gets its columns from .NET after its first render; only then are its headers there to sort by
+      await expect(grid.locator('[part~="header-cell"]').first()).toBeVisible();
+
+      // each step waits for a request issued after it, never for whichever request came last: the grid's own first
+      // request is sent on its first update, whenever the element's module arrives, and under a full worker load it
+      // can reach .NET before or after the test starts looking. A fresh request, asked for once the handler is
+      // attached, makes the starting point deterministic
+      let seen = await countOf(page, request);
+      await grid.evaluate(el => /** @type {any} */ (el).reload());
+      await expectFired(page, request, ++seen);
+      expect(await payloadOf(page, request)).toEqual({ sort: [], filters: [], search: '', page: 0, pageSize: 2 });
 
       await grid.locator('[part~="header-cell"]').nth(0).click();
-      await expect.poll(async () => (await payloadOf(page, 'WaDataGrid.OnDataRequest')).sort, { message: 'sort in wa-data-request' })
+      await expectFired(page, request, ++seen);
+      await expect.poll(async () => (await payloadOf(page, request)).sort, { message: 'sort in wa-data-request' })
         .toEqual([{ id: 'name', desc: false }]);
+
+      seen = await countOf(page, request);
       await grid.locator('[part~="pager"]').locator('[part~="next-button"]').click();
-      await expect.poll(async () => (await payloadOf(page, 'WaDataGrid.OnDataRequest')).page, { message: 'page in wa-data-request' }).toBe(1);
-      expect(await payloadOf(page, 'WaDataGrid.OnDataRequest')).toEqual({ sort: [{ id: 'name', desc: false }], filters: [], search: '', page: 1, pageSize: 2 });
+      await expectFired(page, request, ++seen);
+      await expect.poll(async () => payloadOf(page, request), { message: 'the page 1 request' })
+        .toEqual({ sort: [{ id: 'name', desc: false }], filters: [], search: '', page: 1, pageSize: 2 });
 
       // wa-data-error needs a failing JS dataSource, which the wrapper cannot supply (it is a function); the
       // test installs one and reloads, so the element dispatches the real event and the projection runs

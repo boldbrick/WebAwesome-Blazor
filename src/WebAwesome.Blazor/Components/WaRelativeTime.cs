@@ -134,9 +134,10 @@ public class WaRelativeTime : ComponentBase
     /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
+        // the refresh is skipped while the element's module is still loading: its upgrade renders the current attributes
         if (Element != null)
         {
-            await JSInterop.InvokeMethodAsync(Element.Value, "update");
+            await JSInterop.InvokeMethodIfDefinedAsync(Element.Value, "update");
         }
 
         await base.OnParametersSetAsync();

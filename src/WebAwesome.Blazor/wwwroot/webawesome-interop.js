@@ -28,6 +28,25 @@ export function setCustomValidity(element, message) {
 }
 
 /**
+ * Invokes a method on a Web Awesome element once its custom element is defined, and does nothing before: an element
+ * whose module is still loading has none of its methods yet, and its upgrade renders it from its current attributes
+ * anyway. For refreshes a wrapper requests on every parameter change (wa-relative-time's update), which can run while
+ * the autoloader is still importing the element's module.
+ * @param {HTMLElement} element - The Web Awesome element
+ * @param {string} methodName - The name of the method to invoke
+ * @returns {boolean} Whether the method was invoked
+ */
+export function invokeMethodIfDefined(element, methodName) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    if (!customElements.get(element.localName)) return false;
+
+    invokeMethod(element, methodName, []);
+    return true;
+}
+/**
  * Invokes a method on a Web Awesome element
  * @param {HTMLElement} element - The Web Awesome element
  * @param {string} methodName - The name of the method to invoke

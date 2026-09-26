@@ -303,12 +303,20 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
             return;
         }
 
-        if (Element is null || Equals(liveValue, lastSyncedLiveValue)) return;
+        if (Element is null || SameLiveValue(liveValue, lastSyncedLiveValue)) return;
 
         // recorded before the call, so a render completing meanwhile does not push the same value again
         MarkLiveValueSynced(liveValue);
         await JSInterop.SyncPropertyAsync(Element.Value, propertyName, liveValue);
     }
+
+    // whether two live values are the same: an element reports a cleared or incomplete value as "", which a typed
+    // wrapper binds and formats back as null, so both mean "no value" and nothing is pushed; pushing that null late,
+    // after the user had typed on, would clear what the element holds by then (wa-known-date lost its month and year)
+    private static bool SameLiveValue(object? value, object? other)
+        => Equals(value, other) || (IsNoLiveValue(value) && IsNoLiveValue(other));
+
+    private static bool IsNoLiveValue(object? value) => value is null or string { Length: 0 };
 
     // the merged immediate-binding input handler, see CreateImmediateInputHandler
     private async Task HandleImmediateInputAsync(ChangeEventArgs args)

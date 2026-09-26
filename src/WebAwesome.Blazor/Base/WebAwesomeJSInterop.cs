@@ -382,6 +382,36 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
+    /// Invokes a parameterless method on a Web Awesome element once its custom element is defined, and does nothing
+    /// before: an element whose module is still loading has none of its methods yet, and its upgrade renders it from
+    /// its current attributes anyway. For refreshes a wrapper requests on every parameter change.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="methodName">Name of the method to invoke</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the defined element's method call fails</exception>
+    internal async Task InvokeMethodIfDefinedAsync(ElementReference elementReference, string methodName)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeAsync<bool>("invokeMethodIfDefined", elementReference, methodName);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to invoke method '{methodName}': {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
     /// Disposes the JavaScript module reference
     /// </summary>
     public async ValueTask DisposeAsync()

@@ -113,7 +113,9 @@ test('date typing: DisabledDates and DisabledDaysOfWeek disable exactly those ca
   }
 
   // a disabled cell cannot be picked; an enabled one can
-  await cell('2024-03-20').click({ force: true });
+  // dispatched on the cell itself: a forced click goes to the cell's coordinates, which under load can still shift and
+  // hit the enabled neighbour
+  await cell('2024-03-20').dispatchEvent('click');
   await expect(page.getByTestId('dt-disabled-picker-model'), 'a click on a disabled day binds nothing').toHaveText('');
   await cell('2024-03-22').click();
   await expect(page.getByTestId('dt-disabled-picker-model')).toHaveText('2024-03-22');

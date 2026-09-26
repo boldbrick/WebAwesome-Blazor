@@ -101,6 +101,28 @@ public class LiveValueSyncTests : FormControlTestBase
         Assert.Empty(SyncInvocations(module));
     }
 
+    /// <summary>
+    /// The typed controls whose element reports a cleared or incomplete value as "", which binds as null.
+    /// </summary>
+    public static TheoryData<string> ClearableTypedControls => new(ClearCases.Keys);
+
+    [Theory]
+    [MemberData(nameof(ClearableTypedControls))]
+    public void ElementClearedToEmpty_IsNotPushedBackAsNull(string control)
+    {
+        // Arrange
+        var module = JSInterop.SetupModule(InteropModulePath);
+        var run = ClearCases[control].Render(this);
+
+        // Act - the element reports "" and the parent re-renders with the null it bound
+        run.ChangeFromElement();
+        run.RenderBoundValue();
+
+        // Assert - "" and null are the same live value; a null pushed late, after the user had typed on, cleared the
+        // other fields of wa-known-date in the browser
+        Assert.True(run.BoundIsElementValue(), $"{control}: the cleared value did not bind as null");
+        Assert.Empty(SyncInvocations(module));
+    }
     #endregion
 
     #region ------ Specific scenarios ------
@@ -294,6 +316,18 @@ public class LiveValueSyncTests : FormControlTestBase
         new LiveSyncCase<WaRange, decimal>("wa-slider", ValueProperty, 50m, 75m, 75d, e => e.NumericChange("60"), 60m),
         new LiveSyncCase<WaCheckbox, bool>("wa-checkbox", CheckedProperty, false, true, true, e => e.Change(bool.TrueString), true, readsCheckedBack: true),
         new LiveSyncCase<WaSwitch, bool>("wa-switch", CheckedProperty, false, true, true, e => e.Change(bool.TrueString), true, readsCheckedBack: true),
+    }.ToDictionary(c => c.Name, StringComparer.Ordinal);
+
+    // the typed controls whose element reports a cleared or incomplete value as "": the value bound first, and the
+    // cleared value from the element, which binds as null (the changed and synced values are not used)
+    private static readonly Dictionary<string, LiveSyncCase> ClearCases = new LiveSyncCase[]
+    {
+        new LiveSyncCase<WaNumberInput, decimal?>("wa-number-input", ValueProperty, 1.5m, null, string.Empty, e => e.Change(string.Empty), null),
+        new LiveSyncCase<WaDateInput, DateOnly?>("wa-date-input", ValueProperty, new DateOnly(2026, 1, 1), null, string.Empty, e => e.Change(string.Empty), null),
+        new LiveSyncCase<WaDateRangeInput, WaDateRange?>("wa-date-input", ValueProperty, new WaDateRange(new DateOnly(2026, 1, 1), new DateOnly(2026, 1, 5)),
+            null, string.Empty, e => e.Change(string.Empty), null),
+        new LiveSyncCase<WaKnownDate, DateOnly?>("wa-known-date", ValueProperty, new DateOnly(2000, 1, 15), null, string.Empty, e => e.Change(string.Empty), null),
+        new LiveSyncCase<WaTimeInput, TimeOnly?>("wa-time-input", ValueProperty, new TimeOnly(9, 0), null, string.Empty, e => e.Change(string.Empty), null),
     }.ToDictionary(c => c.Name, StringComparer.Ordinal);
 
     private class TextModel

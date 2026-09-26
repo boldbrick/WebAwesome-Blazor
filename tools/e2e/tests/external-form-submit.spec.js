@@ -1,5 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { waitForWaReady } = require('./helpers/wa-ready');
 
 // WaButton.Form renders the form="id" content attribute. The attribute left the Web Awesome
 // 3.1.0 CEM (form association moved to the native ElementInternals mechanism, upstream PR 1815)
@@ -13,6 +14,9 @@ test('external submit wa-button drives an EditForm via form="id" association', a
 
   await page.goto('/components/button');
   await page.waitForSelector('.demo-shell');
+  // a click on a wa-button whose module is still loading is a click on a plain element: it submits nothing, so the
+  // button (and the input typed into) must have upgraded before the test acts
+  await waitForWaReady(page, ['wa-button', 'wa-input']);
 
   const button = page.locator('wa-button[data-testid="external-submit"]');
   await expect(button).toHaveAttribute('form', 'external-submit-form');

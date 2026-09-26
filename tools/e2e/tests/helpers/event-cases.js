@@ -99,17 +99,9 @@ async function pageEventCounts(page) {
   return page.evaluate(() => ({ .../** @type {any} */ (window).__pageEventCounts }));
 }
 
-/**
- * The centre of an element's bounding box, after scrolling it into view (page.mouse does not scroll).
- *
- * @param {Locator} locator
- */
-async function centreOf(locator) {
-  await locator.scrollIntoViewIfNeeded();
-  const box = await locator.boundingBox();
-  if (!box) throw new Error('element has no bounding box');
-  return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
-}
+// the pointer's x within a five-star wa-rating over its fourth and its fifth star
+const FOURTH_STAR_FRACTION = 0.7;
+const FIFTH_STAR_FRACTION = 0.9;
 
 /** @type {EventCase[]} */
 const EVENT_CASES = [
@@ -286,11 +278,17 @@ const EVENT_CASES = [
       // wa-rating takes focus on its host
       await focusTypeAndLeave(rating, ['a', 'ArrowRight']);
       await expect(page.getByTestId('ev-rating-model')).toHaveText('3');
-      const star = await centreOf(rating.locator('.symbol').nth(4));
-      await page.mouse.move(star.x - 30, star.y);
-      await page.mouse.move(star.x, star.y, { steps: 5 });
+      // hovered at positions relative to the element, which Playwright resolves when it acts: page coordinates read
+      // beforehand go stale when the harness's layout still shifts under load (controls above upgrading late), and the
+      // pointer then misses the stars (wa-rating reads the value from the pointer's x within its own box)
+      const box = await rating.boundingBox();
+      if (!box) throw new Error('wa-rating has no bounding box');
+      await rating.hover({ position: { x: box.width * FOURTH_STAR_FRACTION, y: box.height / 2 } });
+      await rating.hover({ position: { x: box.width * FIFTH_STAR_FRACTION, y: box.height / 2 } });
       await expectFired(page, 'WaRating.OnHover');
-      expect((await payloadOf(page, 'WaRating.OnHover')).value).toBe(5);
+      // the pointer passes the fourth star on its way, so the first hover to reach .NET need not be the last: wait
+      // for the one over the fifth star
+      await expect.poll(async () => (await payloadOf(page, 'WaRating.OnHover')).value, { message: 'hover value over the fifth star' }).toBe(5);
     },
   },
   {
@@ -425,7 +423,11 @@ const EVENT_CASES = [
   },
   {
     name: 'OnInvalid of every form control when an invalid form is submitted',
-    route: FORMS, tags: ['wa-input', 'wa-button', 'wa-slider', 'wa-select', 'wa-color-picker'],
+    // every control the harness marks invalid must have upgraded first: an element whose module is still loading has
+    // no setCustomValidity yet, so marking it throws and the form is never marked (the Pro pass serves the modules
+    // from the demo itself, where under a full worker load wa-otp-input or wa-known-date can lag behind)
+    route: FORMS, tags: ['wa-input', 'wa-textarea', 'wa-number-input', 'wa-checkbox', 'wa-switch', 'wa-radio-group', 'wa-slider',
+      'wa-rating', 'wa-color-picker', 'wa-known-date', 'wa-otp-input', 'wa-time-input', 'wa-select', 'wa-button'],
     callbacks: ids('WaInput', ['OnInvalid']).concat(
       ['WaTextArea', 'WaNumberInput', 'WaCheckbox', 'WaSwitch', 'WaRadioGroup', 'WaSlider', 'WaRange', 'WaRating',
         'WaColorPicker', 'WaKnownDate', 'WaOtpInput', 'WaTimeInput', 'WaSelect', 'WaButton'].map(w => `${w}.OnInvalid`)),
@@ -591,9 +593,16 @@ const EVENT_CASES = [
     route: OVERLAYS, tags: ['wa-tooltip', 'wa-button'],
     callbacks: ids('WaTooltip', ['OnShow', 'OnAfterShow', 'OnHide', 'OnAfterHide']),
     run: async page => {
-      await page.getByTestId('ov-tooltip-anchor').hover();
+      // wa-tooltip listens on its anchor only once it has resolved the for id; a hover before that is never seen
+      await expect.poll(() => page.getByTestId('ov-tooltip').evaluate(el => /** @type {any} */ (el).anchor?.id ?? null),
+        { message: 'the tooltip listens on its anchor' }).toBe('ov-tooltip-anchor');
+      // the hover is the anchor's mouseover and mouseout, which the tooltip listens for: dispatched on the anchor, so a
+      // layout shift under load (the popover beside it upgrading late) cannot move the anchor away from a resting
+      // pointer and cancel the show before its delay
+      const anchor = page.getByTestId('ov-tooltip-anchor');
+      await anchor.dispatchEvent('mouseover');
       await expectFired(page, 'WaTooltip.OnAfterShow');
-      await page.mouse.move(0, 0);
+      await anchor.dispatchEvent('mouseout');
       await expectFired(page, 'WaTooltip.OnAfterHide');
     },
   },
@@ -767,4 +776,4 @@ const EVENT_CASES = [
 // initializer's relay) and proven by the regular cases above.
 /** @type {KnownDefectCase[]} */
 const KNOWN_DEFECT_CASES = [];
-module.exports = { EVENT_CASES, KNOWN_DEFECT_CASES, focusTypeAndLeave, leaveControls, centreOf };
+module.exports = { EVENT_CASES, KNOWN_DEFECT_CASES, focusTypeAndLeave, leaveControls };
