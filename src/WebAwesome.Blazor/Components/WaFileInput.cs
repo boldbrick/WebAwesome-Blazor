@@ -19,7 +19,7 @@ namespace WebAwesome.Blazor.Components;
 /// use the underlying element's change/input events together with JavaScript interop or a custom
 /// upload handler to read the selected files.
 /// </remarks>
-public class WaFileInput : ComponentBase, IFormValidation
+public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
 {
     #region ------ Dependency Injection ------
 
@@ -60,12 +60,12 @@ public class WaFileInput : ComponentBase, IFormValidation
     [Parameter] public string? Accept { get; set; }
 
     /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute. Ignored when <see cref="HintContent"/> is set.
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes precedence when set.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
 
     /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute. Ignored when <see cref="LabelContent"/> is set.
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes precedence when set.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
@@ -157,14 +157,14 @@ public class WaFileInput : ComponentBase, IFormValidation
     [Parameter] public RenderFragment? DropzoneContent { get; set; }
 
     /// <summary>
-    /// Rich markup rendered into the "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
     /// </summary>
-    [Parameter] public RenderFragment? LabelContent { get; set; }
+    [Parameter] public RenderFragment? MarkupLabel { get; set; }
 
     /// <summary>
-    /// Rich markup rendered into the "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
     /// </summary>
-    [Parameter] public RenderFragment? HintContent { get; set; }
+    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -182,6 +182,8 @@ public class WaFileInput : ComponentBase, IFormValidation
 
         // Add file-input-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "accept", Accept);
+
+        // hint before label, unlike the shared label cluster renderer, so the attribute order stays as it was
         builder.AddAttributeIfNotNullOrEmpty(11, "hint", Hint);
         builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
         builder.AddAttribute(13, "multiple", Multiple);
@@ -189,8 +191,7 @@ public class WaFileInput : ComponentBase, IFormValidation
         builder.AddAttribute(18, "disabled", Disabled);
         builder.AddAttributeIfNotNull(15, "size", Size?.ToHtmlValue());
         builder.AddAttributeIfNotNull(19, "capture", Capture?.ToHtmlValue());
-        builder.AddAttribute(16, "with-hint", WithHint);
-        builder.AddAttribute(17, "with-label", WithLabel);
+        FormControlRendering.AddWithHintAndLabelAttributes(builder, 16, this);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(30, "onchange", OnChange);
@@ -211,23 +212,8 @@ public class WaFileInput : ComponentBase, IFormValidation
             builder.CloseElement();
         }
 
-        // Add label slot content
-        if (LabelContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "label");
-            builder.AddContent(62, LabelContent);
-            builder.CloseElement();
-        }
-
-        // Add hint slot content
-        if (HintContent is not null)
-        {
-            builder.OpenElement(65, "span");
-            builder.AddAttribute(66, "slot", "hint");
-            builder.AddContent(67, HintContent);
-            builder.CloseElement();
-        }
+        // Add label and hint slot content
+        FormControlRendering.AddLabelAndHintSlots(builder, 60, this);
 
         builder.CloseElement();
     }

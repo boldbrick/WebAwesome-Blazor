@@ -178,6 +178,19 @@ Every wrapper parameter now defaults to what the element itself does when the at
 
 The first six change what an unset parameter does; set the value shown to keep the previous look. C# that reads one of the parameters whose type became nullable must handle `null`.
 
+### 9. Renamed parameters (BREAKING)
+
+The form control hierarchy now shares one label and hint cluster (`IWaLabeledControl`), and `WaFileInput` was the only control whose markup label and hint had different names.
+
+| Wrapper | Old name | New name | Slot |
+|---|---|---|---|
+| `WaFileInput` | `LabelContent` | `MarkupLabel` | `label` |
+| `WaFileInput` | `HintContent` | `MarkupHint` | `hint` |
+
+Rename them; the type (`RenderFragment?`) and behaviour are unchanged. C# that sets the old names no longer compiles. In Razor, an old `<LabelContent>`/`<HintContent>` child element still compiles, with warning RZ10012 ("Found markup element with unexpected name"), but it becomes child content, which `WaFileInput` doesn't take, so rendering fails at runtime.
+
+The other moves of the hierarchy (the label, popup and slider parameters now declared by `WaLabeledInputBase<TValue>`, `WaPopupInputBase<TValue>` and `WaSliderBase<TValue>`) keep every name, type and behaviour and need no change.
+
 ## Behavioral Changes (non-breaking, but visible)
 
 - **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) and `WaRelativeTime.Date` now use the invariant culture.
@@ -244,6 +257,7 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Remove the form control parameters listed in section 6, in C# and in Razor markup (markup keeps compiling)
 - [ ] Move the slot content listed in section 7 (`MarkupLabel` on `WaCheckbox`/`WaSwitch`/`WaRating`, `WaRating.MarkupHint`, `WaComparison`/`WaSlider` child content) to the parameter the table names
 - [ ] Check the parameter defaults listed in section 8 (`WaAnimation` `Fill`/`Iterations`, `WaAnimatedImage.Play`, `WaQrCode.ErrorCorrection`, `WaCopyButton` labels, `WaPopup.FlipFallbackStrategy`) and set the old value where you relied on it
+- [ ] Rename `WaFileInput.LabelContent`/`HintContent` to `MarkupLabel`/`MarkupHint` (see section 9)
 - [ ] If you compare `FocusEventArgs.Type` in an `OnFocus`/`OnBlur` handler of a form control, `WaButton` or `WaFileInput`, expect `"focusin"`/`"focusout"`
 - [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), remove the workaround
 - [ ] Update CSS selectors or tests that match `size="small|medium|large"` to `s|m|l`
@@ -254,5 +268,5 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 
 - **Minimum .NET**: .NET 9.0 (primary target .NET 10.0)
 - **Web Awesome Core**: 3.12.0+
-- **Breaking Changes**: Yes (sections 1–8)
+- **Breaking Changes**: Yes (sections 1–9)
 - **New Dependencies**: None

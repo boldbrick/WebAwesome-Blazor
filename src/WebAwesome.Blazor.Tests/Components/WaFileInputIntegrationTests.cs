@@ -73,8 +73,8 @@ public class WaFileInputIntegrationTests : BunitContext
         // Arrange & Act
         var cut = Render<WaFileInput>(parameters => parameters
             .Add(p => p.DropzoneContent, builder => builder.AddContent(0, "Drop files here"))
-            .Add(p => p.LabelContent, builder => builder.AddContent(0, "Rich label"))
-            .Add(p => p.HintContent, builder => builder.AddContent(0, "Rich hint")));
+            .Add(p => p.MarkupLabel, builder => builder.AddContent(0, "Rich label"))
+            .Add(p => p.MarkupHint, builder => builder.AddContent(0, "Rich hint")));
 
         // Assert
         Assert.Equal("Drop files here", cut.Find("span[slot='dropzone']").TextContent);

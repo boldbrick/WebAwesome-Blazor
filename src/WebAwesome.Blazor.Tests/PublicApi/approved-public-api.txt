@@ -1942,7 +1942,7 @@ namespace WebAwesome.Blazor.Components
         Q = 2,
         H = 3,
     }
-    public class WaFileInput : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IFormValidation
+    public class WaFileInput : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IFormValidation, WebAwesome.Blazor.Base.IWaLabeledControl
     {
         public WaFileInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1961,11 +1961,11 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Hint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? HintContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? LabelContent { get; set; }
+        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Multiple { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]

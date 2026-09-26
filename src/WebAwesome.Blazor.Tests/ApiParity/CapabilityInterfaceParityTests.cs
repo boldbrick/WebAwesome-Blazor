@@ -8,8 +8,8 @@ using static WebAwesome.Blazor.Tests.ApiParity.ApiParityData;
 namespace WebAwesome.Blazor.Tests.ApiParity;
 
 /// <summary>
-/// Ties the capability interfaces of the form control hierarchy (IWaPopupControl, IWaClearableControl,
-/// IWaAffixedControl, IWaCalendarOptions) to the Custom Elements Manifest: a wrapper implements an interface exactly
+/// Ties the capability interfaces of the form control hierarchy (IWaLabeledControl, IWaPopupControl,
+/// IWaClearableControl, IWaAffixedControl, IWaCalendarOptions) to the Custom Elements Manifest: a wrapper implements an interface exactly
 /// when the element it renders (resolved by rendered tag, so WaRange counts as a wa-slider wrapper) declares every
 /// attribute, slot, event and method of the cluster. The shared render helpers take the interface, so a wrapper
 /// rendering a cluster through them implements it already; this check catches a wrapper that renders a cluster by
@@ -77,6 +77,7 @@ public class CapabilityInterfaceParityTests
 
     private static readonly Capability[] Capabilities =
     [
+        new(typeof(IWaLabeledControl), FormControlsOnly: false, ["label", "hint", "with-label", "with-hint"], ["label", "hint"], [], []),
         new(typeof(IWaPopupControl), FormControlsOnly: true, ["open"], [], ["wa-show", "wa-hide", "wa-after-show", "wa-after-hide"], ["show", "hide"]),
         new(typeof(IWaClearableControl), FormControlsOnly: false, ["with-clear"], ["clear-icon"], ["wa-clear"], []),
         new(typeof(IWaAffixedControl), FormControlsOnly: true, [], ["start", "end"], [], []),

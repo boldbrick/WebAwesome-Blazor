@@ -332,6 +332,17 @@ public class Wa3120UpgradeValidationTests : BunitContext
     }
 
     [Fact]
+    public void WaFileInput_MarkupLabelAndHint_AreNamedLikeEveryFormControl()
+    {
+        // Assert - LabelContent/HintContent were renamed; the label cluster is the one IWaLabeledControl groups
+        Assert.Empty(typeof(WaFileInput).GetMember("LabelContent"));
+        Assert.Empty(typeof(WaFileInput).GetMember("HintContent"));
+        Assert.Equal(typeof(RenderFragment), typeof(WaFileInput).GetProperty(nameof(WaFileInput.MarkupLabel))!.PropertyType);
+        Assert.Equal(typeof(RenderFragment), typeof(WaFileInput).GetProperty(nameof(WaFileInput.MarkupHint))!.PropertyType);
+        Assert.True(typeof(IWaLabeledControl).IsAssignableFrom(typeof(WaFileInput)));
+    }
+
+    [Fact]
     public void WaInputBase_NoLongerDeclaresElementSpecificParameters()
     {
         // Assert - only the attributes every form control has stay in the base class
