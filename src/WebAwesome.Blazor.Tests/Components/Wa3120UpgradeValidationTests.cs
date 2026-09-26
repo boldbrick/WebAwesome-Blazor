@@ -370,7 +370,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
         // Arrange & Act
         var cut = Render<WaDropdownItem>(p => p
             .Add(c => c.Href, "/files/report.pdf")
-            .Add(c => c.Target, "_blank")
+            .Add(c => c.Target, WaLinkTarget.Blank)
             .Add(c => c.Rel, "noopener noreferrer")
             .Add(c => c.Download, "report.pdf"));
 

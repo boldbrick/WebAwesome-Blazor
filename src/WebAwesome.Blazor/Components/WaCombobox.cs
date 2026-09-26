@@ -80,23 +80,24 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     /// <summary>
     /// Controls whether and how text input is automatically capitalized as it is entered by the user.
     /// </summary>
-    [Parameter] public string? AutoCapitalize { get; set; }
+    [Parameter] public WaAutoCapitalize? AutoCapitalize { get; set; }
 
     /// <summary>
-    /// Indicates whether the browser's autocorrect feature is on or off. As an attribute, use "off" or "on".
+    /// Turns the browser's autocorrect feature on (true, rendered "on") or off (false, rendered "off"); null leaves
+    /// the element's default, which is off.
     /// </summary>
-    [Parameter] public string? AutoCorrect { get; set; }
+    [Parameter] public bool? AutoCorrect { get; set; }
 
     /// <summary>
     /// Used to customize the label or icon of the Enter key on virtual keyboards.
     /// </summary>
-    [Parameter] public string? EnterKeyHint { get; set; }
+    [Parameter] public WaEnterKeyHint? EnterKeyHint { get; set; }
 
     /// <summary>
     /// Tells the browser what type of data will be entered by the user, allowing it to display the appropriate
     /// virtual keyboard on supportive devices.
     /// </summary>
-    [Parameter] public string? InputMode { get; set; }
+    [Parameter] public WaInputMode? InputMode { get; set; }
 
     /// <summary>
     /// Enables spell checking on the combobox.
@@ -204,10 +205,10 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
         builder.AddAttribute(28, "open", Open);
         AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(33, "allow-create", AllowCreate);
-        builder.AddAttributeIfNotNullOrEmpty(34, "autocapitalize", AutoCapitalize);
-        builder.AddAttributeIfNotNullOrEmpty(35, "autocorrect", AutoCorrect);
-        builder.AddAttributeIfNotNullOrEmpty(36, "enterkeyhint", EnterKeyHint);
-        builder.AddAttributeIfNotNullOrEmpty(37, "inputmode", InputMode);
+        builder.AddAttributeIfNotNull(34, "autocapitalize", AutoCapitalize?.ToHtmlValue());
+        builder.AddOnOffAttribute(35, "autocorrect", AutoCorrect);
+        builder.AddAttributeIfNotNull(36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(37, "inputmode", InputMode?.ToHtmlValue());
         builder.AddTrueFalseAttribute(38, "spellcheck", Spellcheck);
 
         // Add value binding - handle both single and multiple selection

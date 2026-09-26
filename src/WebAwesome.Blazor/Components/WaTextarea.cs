@@ -72,12 +72,13 @@ public class WaTextArea : WaLabeledInputBase<string?>
     /// <summary>
     /// Controls whether and how text input is automatically capitalized as it is entered by the user.
     /// </summary>
-    [Parameter] public string? AutoCapitalize { get; set; }
+    [Parameter] public WaAutoCapitalize? AutoCapitalize { get; set; }
 
     /// <summary>
-    /// Indicates whether the browser's autocorrect feature is on or off.
+    /// Turns the browser's autocorrect feature on (true, rendered "on") or off (false, rendered "off"); null leaves
+    /// the element's default, which is off.
     /// </summary>
-    [Parameter] public string? AutoCorrect { get; set; }
+    [Parameter] public bool? AutoCorrect { get; set; }
 
     /// <summary>
     /// Indicates that the textarea should receive focus on page load.
@@ -87,13 +88,13 @@ public class WaTextArea : WaLabeledInputBase<string?>
     /// <summary>
     /// Used to customize the label or icon of the Enter key on virtual keyboards.
     /// </summary>
-    [Parameter] public string? EnterKeyHint { get; set; }
+    [Parameter] public WaEnterKeyHint? EnterKeyHint { get; set; }
 
     /// <summary>
     /// Tells the browser what type of data will be entered by the user, allowing it to display the appropriate
     /// virtual keyboard on supportive devices.
     /// </summary>
-    [Parameter] public string? InputMode { get; set; }
+    [Parameter] public WaInputMode? InputMode { get; set; }
 
     /// <summary>
     /// Shows a character count below the textarea. When <see cref="MaxLength"/> is set, shows
@@ -144,11 +145,11 @@ public class WaTextArea : WaLabeledInputBase<string?>
         builder.AddAttributeIfNotNull(22, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttributeIfNotNull(23, "resize", Resize?.ToHtmlValue());
         builder.AddTrueFalseAttribute(24, "spellcheck", Spellcheck);
-        builder.AddAttributeIfNotNullOrEmpty(30, "autocapitalize", AutoCapitalize);
-        builder.AddAttributeIfNotNullOrEmpty(31, "autocorrect", AutoCorrect);
+        builder.AddAttributeIfNotNull(30, "autocapitalize", AutoCapitalize?.ToHtmlValue());
+        builder.AddOnOffAttribute(31, "autocorrect", AutoCorrect);
         builder.AddAttribute(32, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNullOrEmpty(33, "enterkeyhint", EnterKeyHint);
-        builder.AddAttributeIfNotNullOrEmpty(34, "inputmode", InputMode);
+        builder.AddAttributeIfNotNull(33, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(34, "inputmode", InputMode?.ToHtmlValue());
         AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(37, "with-count", WithCount);
 

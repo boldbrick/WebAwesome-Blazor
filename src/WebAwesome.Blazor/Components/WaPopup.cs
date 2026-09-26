@@ -114,9 +114,9 @@ public class WaPopup : ComponentBase
     /// <summary>
     /// When neither the preferred placement nor the fallback placements fit, this value determines whether
     /// the popup is positioned using the best available fit based on available space or as it was initially
-    /// preferred ("best-fit" or "initial"). Null (the default) leaves the element's default, best-fit.
+    /// preferred. Null (the default) leaves the element's default, <see cref="WaFlipFallbackStrategy.BestFit"/>.
     /// </summary>
-    [Parameter] public string? FlipFallbackStrategy { get; set; }
+    [Parameter] public WaFlipFallbackStrategy? FlipFallbackStrategy { get; set; }
 
     /// <summary>
     /// The amount of padding, in pixels, to exceed before the flip behavior occurs.
@@ -165,7 +165,7 @@ public class WaPopup : ComponentBase
     /// <summary>
     /// The bounding box to use for flipping, shifting, and auto-sizing.
     /// </summary>
-    [Parameter] public string? Boundary { get; set; }
+    [Parameter] public WaPopupBoundary? Boundary { get; set; }
 
     #endregion
 
@@ -230,7 +230,7 @@ public class WaPopup : ComponentBase
         {
             builder.AddAttribute(30, "flip", true);
             builder.AddAttributeIfNotNullOrEmpty(31, "flip-fallback-placements", FlipFallbackPlacements);
-            builder.AddAttributeIfNotNullOrEmpty(32, "flip-fallback-strategy", FlipFallbackStrategy);
+            builder.AddAttributeIfNotNull(32, "flip-fallback-strategy", FlipFallbackStrategy?.ToHtmlValue());
             if (FlipPadding != 0)
                 builder.AddNumberAttribute(34, "flip-padding", FlipPadding);
         }
@@ -260,7 +260,7 @@ public class WaPopup : ComponentBase
             builder.AddAttribute(70, "hover-bridge", true);
 
         // Add boundary
-        builder.AddAttributeIfNotNullOrEmpty(80, "boundary", Boundary);
+        builder.AddAttributeIfNotNull(80, "boundary", Boundary?.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(85, "onwa-reposition", OnReposition);

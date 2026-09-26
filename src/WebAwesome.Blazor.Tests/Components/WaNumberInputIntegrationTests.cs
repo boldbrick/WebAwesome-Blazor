@@ -48,13 +48,13 @@ public class WaNumberInputIntegrationTests : FormControlTestBase
             {
                 builder.AddComponentParameter(10, nameof(WaNumberInput.Appearance), WaInputAppearance.Filled);
                 builder.AddComponentParameter(11, nameof(WaNumberInput.AutoFocus), true);
-                builder.AddComponentParameter(12, nameof(WaNumberInput.EnterKeyHint), "go");
-                builder.AddComponentParameter(13, nameof(WaNumberInput.InputMode), "decimal");
+                builder.AddComponentParameter(12, nameof(WaNumberInput.EnterKeyHint), WaEnterKeyHint.Go);
+                builder.AddComponentParameter(13, nameof(WaNumberInput.InputMode), WaNumberInputMode.Decimal);
                 builder.AddComponentParameter(14, nameof(WaNumberInput.Max), 100m);
                 builder.AddComponentParameter(15, nameof(WaNumberInput.Min), 0m);
                 builder.AddComponentParameter(16, nameof(WaNumberInput.Pill), true);
                 builder.AddComponentParameter(17, nameof(WaNumberInput.Placeholder), "Enter a number");
-                builder.AddComponentParameter(18, nameof(WaNumberInput.Step), "0.5");
+                builder.AddComponentParameter(18, nameof(WaNumberInput.Step), (WaStep?)0.5);
                 builder.AddComponentParameter(19, nameof(WaNumberInput.WithoutSteppers), true);
             });
 

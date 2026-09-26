@@ -1,3 +1,5 @@
+using WebAwesome.Blazor.Components;
+
 namespace WebAwesome.Blazor.Models;
 
 /// <summary>
@@ -32,15 +34,15 @@ public class WaDataGridColumn
     public string? Label { get; set; }
 
     /// <summary>
-    /// Horizontal alignment of the cell content: <c>start</c>, <c>center</c>, or <c>end</c>.
+    /// Horizontal alignment of the cell content. Null leaves the element's default, start.
     /// </summary>
-    public string? Align { get; set; }
+    public WaDataGridAlign? Align { get; set; }
 
     /// <summary>
-    /// Horizontal alignment of the header content: <c>start</c>, <c>center</c>, or <c>end</c>. Defaults
+    /// Horizontal alignment of the header content. Defaults
     /// to <see cref="Align"/>.
     /// </summary>
-    public string? HeaderAlign { get; set; }
+    public WaDataGridAlign? HeaderAlign { get; set; }
 
     /// <summary>
     /// Whether the column can be sorted. Defaults to true for columns with a <see cref="Field"/>.
@@ -54,19 +56,17 @@ public class WaDataGridColumn
     public bool? SortDescFirst { get; set; }
 
     /// <summary>
-    /// The built-in comparison strategy used when sorting this column: <c>alphanumeric</c> (default),
-    /// <c>alphanumericCaseSensitive</c>, <c>text</c> (faster, strings only), <c>textCaseSensitive</c>,
-    /// <c>datetime</c> (for date objects or date strings), or <c>basic</c> (fastest, plain
-    /// greater-than/less-than). Ignored when a custom comparator is provided, which the wrapper does not
-    /// support.
+    /// The built-in comparison strategy used when sorting this column; null leaves the element's default,
+    /// <see cref="WaDataGridSortFn.Alphanumeric"/>. Ignored when a custom comparator is provided, which the wrapper
+    /// does not support.
     /// </summary>
-    public string? SortFn { get; set; }
+    public WaDataGridSortFn? SortFn { get; set; }
 
     /// <summary>
-    /// Where null and undefined values sort: <c>first</c> or <c>last</c>. Omit to leave them in place,
+    /// Where null and undefined values sort (<see cref="WaDataGridSortUndefined"/>). Omit to leave them in place,
     /// which is the element's default.
     /// </summary>
-    public string? SortUndefined { get; set; }
+    public WaDataGridSortUndefined? SortUndefined { get; set; }
 
     /// <summary>
     /// Whether the global search box matches this column. Defaults to true for columns with a
@@ -80,10 +80,9 @@ public class WaDataGridColumn
     public bool? Filterable { get; set; }
 
     /// <summary>
-    /// How the column's filter matches: <c>text</c> (default, case-insensitive substring), <c>equals</c>,
-    /// <c>number-range</c>, <c>date-range</c>, <c>set</c>, <c>includes-any</c>, or <c>includes-all</c>.
+    /// How the column's filter matches; null leaves the element's default, <see cref="WaDataGridFilterType.Text"/>.
     /// </summary>
-    public string? FilterType { get; set; }
+    public WaDataGridFilterType? FilterType { get; set; }
 
     /// <summary>
     /// Whether the column starts hidden.
@@ -111,10 +110,10 @@ public class WaDataGridColumn
     public bool? Pinnable { get; set; }
 
     /// <summary>
-    /// Pins the column to an edge (<c>left</c> or <c>right</c>) initially. The user can still unpin it
+    /// Pins the column to an edge initially. The user can still unpin it
     /// (when <see cref="Pinnable"/>); use the grid's <c>PinColumnAsync</c> method for programmatic control.
     /// </summary>
-    public string? Pinned { get; set; }
+    public WaDataGridPinSide? Pinned { get; set; }
 
     /// <summary>
     /// Initial column width in pixels. Ignored when <see cref="Flex"/> is set.
@@ -145,11 +144,10 @@ public class WaDataGridColumn
     public string? Footer { get; set; }
 
     /// <summary>
-    /// A built-in aggregation name applied on grouped rows: <c>sum</c>, <c>min</c>, <c>max</c>,
-    /// <c>extent</c>, <c>mean</c>, <c>median</c>, <c>unique</c>, <c>uniqueCount</c>, or <c>count</c>. The
-    /// custom function form is not marshalable and is not supported.
+    /// A built-in aggregation applied on grouped rows. The custom function form is not marshalable and is not
+    /// supported.
     /// </summary>
-    public string? Aggregation { get; set; }
+    public WaDataGridAggregation? Aggregation { get; set; }
 
     /// <summary>
     /// A static CSS class (or space-separated classes) applied to every cell in the column. The

@@ -83,15 +83,27 @@ public class Wa350UpgradeValidationTests : BunitContext
         Assert.NotNull(type.GetMethod("FocusAsync", BindingFlags.Public | BindingFlags.Instance));
     }
 
-    [Fact]
-    public void WaTextArea_AutoCorrect_RemainsStringTyped()
+    [Theory]
+    [InlineData(true, "on")]
+    [InlineData(false, "off")]
+    public void WaTextArea_AutoCorrect_IsBooleanRenderedOnOff(bool autoCorrect, string expected)
     {
-        // WA 3.5.0 widened the autocorrect JS property to boolean, but the attribute form is still
-        // "off"/"on" - the wrapper keeps AutoCorrect as string?, unchanged
-        var property = typeof(WaTextArea).GetProperty("AutoCorrect", BindingFlags.Public | BindingFlags.Instance);
-        Assert.NotNull(property);
-        Assert.Equal(typeof(string), property!.PropertyType);
+        // WA 3.5.0 widened the autocorrect JS property to boolean; the attribute converter reads "on"/"off"
+        // (only "off" or an empty value reads false), so the bool? parameter (3.12.0) renders exactly those
+        var cut = Render<WaTextArea>(p => p
+            .Add(x => x.AutoCorrect, autoCorrect)
+            .Add(x => x.ValueExpression, () => textValue));
+
+        Assert.Equal(expected, cut.Find("wa-textarea").GetAttribute("autocorrect"));
+        Assert.False(Render<WaTextArea>(p => p.Add(x => x.ValueExpression, () => textValue)).Find("wa-textarea").HasAttribute("autocorrect"));
     }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // the bound field the text area's ValueExpression points at
+    private readonly string? textValue = null;
 
     #endregion
 }

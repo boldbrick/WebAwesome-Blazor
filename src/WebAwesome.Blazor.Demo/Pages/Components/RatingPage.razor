@@ -46,7 +46,7 @@
 
 @code {
     // the phase of the wa-hover event that ends the hover
-    private const string HoverEnd = "end";
+    private const WaRatingHoverPhase HoverEnd = WaRatingHoverPhase.End;
 
     private decimal value = 3;
     private decimal recipe = 4;
@@ -93,7 +93,7 @@
         <p>@(hovered is null ? "Hover over the stars." : $"You would rate {hovered} of 5.")</p>
 
         @code {
-            private const string HoverEnd = "end";
+            private const WaRatingHoverPhase HoverEnd = WaRatingHoverPhase.End;
 
             private decimal experience;
             private decimal? hovered;

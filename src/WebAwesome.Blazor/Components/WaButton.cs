@@ -112,7 +112,7 @@ public class WaButton : ComponentBase, IFormValidation
     /// <summary>
     /// Tells the browser where to open the link. Only used when <see cref="Href"/> is present.
     /// </summary>
-    [Parameter] public string? Target { get; set; }
+    [Parameter] public WaLinkTarget? Target { get; set; }
 
     /// <summary>
     /// Tells the browser to download the linked file as this filename. Only used when <see cref="Href"/> is present.
@@ -142,12 +142,12 @@ public class WaButton : ComponentBase, IFormValidation
     /// <summary>
     /// Used to override the form owner's <c>enctype</c> attribute.
     /// </summary>
-    [Parameter] public string? FormEncType { get; set; }
+    [Parameter] public WaFormEncType? FormEncType { get; set; }
 
     /// <summary>
     /// Used to override the form owner's <c>method</c> attribute.
     /// </summary>
-    [Parameter] public string? FormMethod { get; set; }
+    [Parameter] public WaFormMethod? FormMethod { get; set; }
 
     /// <summary>
     /// Used to override the form owner's <c>novalidate</c> attribute.
@@ -259,15 +259,15 @@ public class WaButton : ComponentBase, IFormValidation
 
         // Link behavior attributes
         builder.AddAttributeIfNotNullOrEmpty(12, "href", Href);
-        builder.AddAttributeIfNotNullOrEmpty(13, "target", Target);
+        builder.AddAttributeIfNotNull(13, "target", Target?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(14, "download", Download);
         builder.AddAttributeIfNotNullOrEmpty(15, "rel", Rel);
 
         // Form-submission attributes
         builder.AddAttributeIfNotNullOrEmpty(16, "form", Form);
         builder.AddAttributeIfNotNullOrEmpty(17, "formaction", FormAction);
-        builder.AddAttributeIfNotNullOrEmpty(18, "formenctype", FormEncType);
-        builder.AddAttributeIfNotNullOrEmpty(19, "formmethod", FormMethod);
+        builder.AddAttributeIfNotNull(18, "formenctype", FormEncType?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(19, "formmethod", FormMethod?.ToHtmlValue());
         builder.AddBooleanAttribute(60, "formnovalidate", FormNoValidate);
         builder.AddAttributeIfNotNullOrEmpty(61, "formtarget", FormTarget);
         builder.AddAttributeIfNotNullOrEmpty(62, "name", Name);

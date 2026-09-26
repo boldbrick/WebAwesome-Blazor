@@ -154,6 +154,80 @@ public class EnumValueParityTests
     }
 
     /// <summary>
+    /// No string or decimal parameter may be bound to an attribute whose (alias-resolved) CEM type is a pure literal
+    /// union (string or number literals, e.g. 'on' | 'off' or 1 | 2): the value set is closed, so the parameter must be
+    /// an enum with a ToHtmlValue() mapping (technical.md, strong typing), which the checks above then verify. A string
+    /// would pass any text through unchecked. Allowlist "untypedLiteralUnionAttributes" with a reason.
+    /// </summary>
+    [Fact]
+    public void NoStringOrDecimalParameter_IsBoundToLiteralUnion()
+    {
+        SkipUnlessParityEnabled();
+
+        var misses = UntypedLiteralUnionParameters()
+            .Where(p => !GetComponentConfig(p.Tag).UntypedLiteralUnionAttributes.Contains(p.Attribute))
+            .Select(DescribeUntypedBinding)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        AssertNoMisses(misses, "String or decimal parameters bound to a CEM literal union attribute (make them enums)");
+    }
+
+    /// <summary>
+    /// Every "untypedLiteralUnionAttributes" entry must carry a reason and still name a string or decimal parameter
+    /// bound to a literal union attribute.
+    /// </summary>
+    [Fact]
+    public void UntypedLiteralUnionAttributes_AreNeededAndHaveReasons()
+    {
+        var misses = new List<string>();
+        foreach (var (tag, componentConfig) in Config.Components)
+        {
+            foreach (var attributeName in componentConfig.UntypedLiteralUnionAttributes)
+                AddMissingReason(misses, tag, ReasonKey(UntypedLiteralUnionAttributesKey, tag, attributeName), $"untypedLiteralUnionAttributes entry '{attributeName}'");
+        }
+
+        if (Config.Enabled)
+        {
+            var untyped = UntypedLiteralUnionParameters().Select(p => (p.Tag, p.Attribute)).ToHashSet();
+            foreach (var (tag, componentConfig) in Config.Components)
+            {
+                foreach (var attributeName in componentConfig.UntypedLiteralUnionAttributes.Where(a => !untyped.Contains((tag, a))))
+                    misses.Add($"{tag}: untypedLiteralUnionAttributes entry '{attributeName}' is not a string or decimal parameter bound to a literal union and must be removed");
+            }
+        }
+
+        AssertNoMisses(misses, "untypedLiteralUnionAttributes entries without a reason, or stale");
+    }
+
+    /// <summary>
+    /// Parses a CEM attribute type that is a pure literal union of string and number literals.
+    /// </summary>
+    /// <param name="type">CEM attribute type, e.g. "'on' | 'off'" or "1 | 2"</param>
+    /// <returns>The literals, or null when the type has a non-literal member</returns>
+    internal static IReadOnlyList<string>? ParseLiteralUnion(string? type)
+    {
+        if (string.IsNullOrWhiteSpace(type)) return null;
+
+        var literals = new List<string>();
+        foreach (var part in type.Split('|'))
+        {
+            var member = part.Trim();
+            if (member.Length == 0 || OptionalUnionMembers.Contains(member)) continue;
+
+            var match = StringLiteralRegex.Match(member);
+            if (match.Success)
+                literals.Add(match.Groups["value"].Value);
+            else if (NumberLiteralRegex.IsMatch(member))
+                literals.Add(member);
+            else
+                return null;
+        }
+
+        return literals.Count == 0 ? null : literals;
+    }
+
+    /// <summary>
     /// Every allowlisted attribute entry must list at least one enum member and carry a
     /// rationale covering its members in ignoreReasons, keyed "ignoredEnumValues:&lt;tag&gt;:&lt;attribute&gt;".
     /// </summary>
@@ -423,6 +497,7 @@ public class EnumValueParityTests
     private const string IgnoredBoolUnionAttributesKey = "ignoredBoolUnionAttributes";
     private const string TokenListAttributesKey = "tokenListAttributes";
     private const string UnresolvedEnumAttributesKey = "unresolvedEnumAttributes";
+    private const string UntypedLiteralUnionAttributesKey = "untypedLiteralUnionAttributes";
     private const string UnionSeparator = " | ";
     private const string FlagSeparator = "|";
     private const string PlainStringType = "string";
@@ -436,6 +511,12 @@ public class EnumValueParityTests
     // a single- or double-quoted string literal with no embedded quote of the same kind
     private static readonly Regex StringLiteralRegex = new(
         "^(?:'(?<value>[^']*)'|\"(?<value>[^\"]*)\")$", RegexOptions.Compiled);
+
+    // a TypeScript number literal type (1, -1, 0.5)
+    private static readonly Regex NumberLiteralRegex = new(@"^-?\d+(?:\.\d+)?$", RegexOptions.Compiled);
+
+    // parameter types that carry a literal-union value unchecked
+    private static readonly HashSet<Type> UntypedUnionParameterTypes = new() { typeof(string), typeof(decimal) };
 
     // enum type -> public static ToHtmlValue(enum) method anywhere in the wrapper assembly
     private static readonly Dictionary<Type, MethodInfo> ToHtmlValueMethods = WrapperAssembly.GetTypes()
@@ -518,6 +599,34 @@ public class EnumValueParityTests
         }
     }
 
+    // the string and decimal parameters mapped to an attribute whose effective CEM type is a pure literal union
+    private static IEnumerable<LiteralUnionParameter> UntypedLiteralUnionParameters()
+    {
+        foreach (var (tag, component, wrapper) in WrappersByTag())
+        {
+            var componentConfig = GetComponentConfig(tag);
+
+            foreach (var (attributeName, attribute) in component.Attributes)
+            {
+                if (IsIgnoredAttribute(componentConfig, attributeName)) continue;
+
+                var union = ParseLiteralUnion(attribute.EffectiveType);
+                if (union == null) continue;
+
+                var property = FindParameter(wrapper, ExpectedParameterName(componentConfig, attributeName));
+                if (property == null || !UntypedUnionParameterTypes.Contains(EnumTypeOf(property))) continue;
+
+                yield return new LiteralUnionParameter(tag, attributeName, wrapper, property, union);
+            }
+        }
+    }
+
+    private static string DescribeUntypedBinding(LiteralUnionParameter parameter)
+    {
+        return $"{parameter.Tag}: attribute '{parameter.Attribute}' ({StripGenericArity(parameter.Wrapper.Name)}.{parameter.Property.Name} : " +
+            $"{EnumTypeOf(parameter.Property).Name}) is the closed union {FormatUnion(parameter.Union)}; make it an enum with ToHtmlValue()";
+    }
+
     private static Type EnumTypeOf(PropertyInfo property)
     {
         return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
@@ -578,7 +687,8 @@ public class EnumValueParityTests
 
     /// <summary>
     /// Returns the values of an enum type to check: every member and, for a [Flags] enum, also every combination
-    /// of its single-bit members no member names (a flag enum parameter can be set to any combination).
+    /// of its single-bit members no member names (a flag enum parameter can be set to any combination); an enum with
+    /// more than MaxExpandedFlags flags adds only the combination of all of them.
     /// </summary>
     /// <param name="enumType">Enum type</param>
     /// <returns>Description ("Member" or "A|B") and boxed value of each value</returns>
@@ -593,7 +703,14 @@ public class EnumValueParityTests
             .Select(name => (Name: name, Bits: Convert.ToUInt64(Enum.Parse(enumType, name))))
             .Where(f => BitOperations.PopCount(f.Bits) == 1)
             .ToList();
-        if (flags.Count > MaxExpandedFlags) throw new InvalidOperationException($"{enumType.Name} has too many flags to combine");
+        if (flags.Count > MaxExpandedFlags)
+        {
+            // too many to combine exhaustively (WaIframeSandbox): each flag on its own (the members above) and all at once
+            var all = Enum.ToObject(enumType, flags.Aggregate(0UL, (acc, f) => acc | f.Bits));
+            if (!Enum.IsDefined(enumType, all))
+                yield return (string.Join(FlagSeparator, flags.Select(f => f.Name)), all);
+            yield break;
+        }
 
         // the combinations no named member already stands for
         for (var mask = 1; mask < 1 << flags.Count; mask++)
@@ -635,7 +752,8 @@ public class EnumValueParityTests
                 yield return (memberName, $"{call} = <throws {failure}>");
             else if (htmlValue == null)
                 yield return (memberName, $"{call} = null");
-            else if (ValuesOf(htmlValue, binding.IsTokenList) is var values && (values.Count == 0 || values.Any(v => !binding.Union.Contains(v, StringComparer.Ordinal))))
+            else if (ValuesOf(htmlValue, binding.IsTokenList) is var values
+                && ((values.Count == 0 && !binding.IsTokenList) || values.Any(v => !binding.Union.Contains(v, StringComparer.Ordinal))))
                 yield return (memberName, $"{call} = '{htmlValue}'");
         }
     }

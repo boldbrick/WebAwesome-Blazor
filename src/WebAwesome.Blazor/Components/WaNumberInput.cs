@@ -48,13 +48,13 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
     /// <summary>
     /// Used to customize the label or icon of the Enter key on virtual keyboards.
     /// </summary>
-    [Parameter] public string? EnterKeyHint { get; set; }
+    [Parameter] public WaEnterKeyHint? EnterKeyHint { get; set; }
 
     /// <summary>
     /// Tells the browser what type of data will be entered by the user, allowing it to display the appropriate
     /// virtual keyboard on supportive devices.
     /// </summary>
-    [Parameter] public string? InputMode { get; set; }
+    [Parameter] public WaNumberInputMode? InputMode { get; set; }
 
     /// <summary>
     /// The input's maximum value.
@@ -77,9 +77,10 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
     [Parameter] public string? Placeholder { get; set; }
 
     /// <summary>
-    /// Specifies the granularity that the value must adhere to. Set to <c>any</c> to disable stepping constraints.
+    /// Specifies the granularity that the value must adhere to, or <see cref="WaStep.Any"/> to disable stepping
+    /// constraints. A number converts implicitly (<c>Step="0.5"</c>).
     /// </summary>
-    [Parameter] public string? Step { get; set; }
+    [Parameter] public WaStep? Step { get; set; }
 
     /// <summary>
     /// Hides the increment and decrement stepper buttons.
@@ -163,13 +164,13 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
         // Add number-input-specific attributes
         builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttribute(21, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNullOrEmpty(22, "enterkeyhint", EnterKeyHint);
-        builder.AddAttributeIfNotNullOrEmpty(23, "inputmode", InputMode);
+        builder.AddAttributeIfNotNull(22, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(23, "inputmode", InputMode?.ToHtmlValue());
         builder.AddAttributeIfNotNull(24, "max", Max);
         builder.AddAttributeIfNotNull(25, "min", Min);
         builder.AddAttribute(26, "pill", Pill);
         builder.AddAttributeIfNotNullOrEmpty(27, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNullOrEmpty(28, "step", Step);
+        builder.AddStepAttribute(28, "step", Step);
         builder.AddAttribute(29, "without-steppers", WithoutSteppers);
         AddWithHintAndLabelAttributes(builder, 14);
 
@@ -227,7 +228,7 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
             return true;
         }
 
-        if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsedValue))
+        if (decimal.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsedValue))
         {
             result = parsedValue;
             validationErrorMessage = null;

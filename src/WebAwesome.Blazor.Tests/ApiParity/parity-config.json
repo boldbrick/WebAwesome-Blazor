@@ -70,6 +70,7 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-input": {
+      "onOffAttributes": [ "autocorrect" ],
       "attributeOverrides": {
         "maxlength": "MaxLength",
         "minlength": "MinLength",
@@ -96,6 +97,10 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-zoomable-frame": {
+      "tokenListAttributes": {
+        "sandbox": [ "allow-downloads", "allow-forms", "allow-modals", "allow-orientation-lock", "allow-pointer-lock", "allow-popups", "allow-popups-to-escape-sandbox", "allow-presentation", "allow-same-origin", "allow-scripts", "allow-top-navigation", "allow-top-navigation-by-user-activation", "allow-top-navigation-to-custom-protocols" ],
+        "referrerpolicy": [ "no-referrer", "no-referrer-when-downgrade", "origin", "origin-when-cross-origin", "same-origin", "strict-origin", "strict-origin-when-cross-origin", "unsafe-url" ]
+      },
       "attributeOverrides": {
         "srcdoc": "SrcDoc",
         "allowfullscreen": "AllowFullScreen",
@@ -143,6 +148,7 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-textarea": {
+      "onOffAttributes": [ "autocorrect" ],
       "attributeOverrides": {
         "maxlength": "MaxLength",
         "minlength": "MinLength",
@@ -170,6 +176,7 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-combobox": {
+      "onOffAttributes": [ "autocorrect" ],
       "trueFalseAttributes": [ "spellcheck" ],
       "attributeOverrides": {
         "autocapitalize": "AutoCapitalize",
@@ -260,6 +267,11 @@
         "sync": [ "None" ]
       }
     },
+    "wa-accordion": {
+      "tokenListAttributes": {
+        "heading-level": [ "1", "2", "3", "4", "5", "6", "none" ]
+      }
+    },
     "wa-tooltip": {
       "tokenListAttributes": {
         "trigger": [ "click", "hover", "focus", "manual" ]
@@ -278,6 +290,7 @@
       "extraElementMethods": [ "update" ]
     },
     "wa-page": {
+      "extraRenderedAttributes": [ "disable-sticky" ],
       "ignoredMethods": [ "visiblePixelsInViewport" ]
     },
     "wa-video": {
@@ -299,6 +312,13 @@
     "wa-scatter-chart": { "ignoredAttributes": [ "plugins" ] }
   },
   "ignoreReasons": {
+    "extraRenderedAttributes:wa-page:disable-sticky": "wa-page's disable-sticky is a CSS-only attribute the CEM omits: the 3.12.0 page styles match it with :host([disable-sticky~='banner'|'header'|'subheader'|'aside'|'menu']) rules (chunk.NSKMM5IJ.js:86-116) and page.md (Sticky Sections) documents it; WaPage.DisableSticky renders the WaPageSections tokens, which FlagTokenTests pins - re-verify every upgrade",
+    "onOffAttributes:wa-input:autocorrect": "wa-input's autocorrect converter is fromAttribute: (value) => !value || value === \"off\" ? false : true, toAttribute: value ? \"on\" : \"off\" (3.12.0 chunk.3UR7XKQK.js), so a present empty attribute (Blazor's true) reads false; AutoCorrect (bool?) must render exactly \"on\"/\"off\"",
+    "onOffAttributes:wa-textarea:autocorrect": "wa-textarea's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.YIEXWZ6G.js), so AutoCorrect must render exactly \"on\"/\"off\"",
+    "onOffAttributes:wa-combobox:autocorrect": "wa-combobox's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.HYTAIWXE.js), so AutoCorrect must render exactly \"on\"/\"off\"",
+    "tokenListAttributes:wa-zoomable-frame:sandbox": "wa-zoomable-frame forwards sandbox to its iframe (sandbox=${ifDefined(this.sandbox)}, 3.12.0 chunk.PJARYDTD.js); the CEM types it string, but HTML defines it as a space-separated set of these tokens (HTML Living Standard, the iframe sandbox attribute), which WaIframeSandbox flags emit; re-verify every upgrade",
+    "tokenListAttributes:wa-zoomable-frame:referrerpolicy": "wa-zoomable-frame forwards referrerpolicy to its iframe (3.12.0 chunk.PJARYDTD.js); the CEM types it string, but the value is one referrer-policy token of this fixed set (W3C Referrer Policy), which WaReferrerPolicy emits; the token check validates the single value",
+    "tokenListAttributes:wa-accordion:heading-level": "wa-accordion's heading-level is typed string, but the element reads it as parseInt 1..6 (else 3) or \"none\" to omit the heading (3.12.0 chunk.LVL7ACR6.js renderHeadingWrapper and render); WaHeadingLevel emits exactly those tokens",
     "wrapperDefaultAttributes:wa-checkbox:value": "the submission value is the constant 'True', rendered always, like Blazor's InputCheckbox (see unrenderedAttributes:wa-checkbox:value); the element leaves value unset and submits 'on'",
     "wrapperDefaultAttributes:wa-switch:value": "the submission value is the constant 'True', rendered always, like Blazor's InputCheckbox (see unrenderedAttributes:wa-switch:value); the element leaves value unset and submits 'on'",
     "wrapperDefaultAttributes:wa-slider:value": "WaRange renders its two-way bound decimal value (0 when unbound) as value in single mode; the value of a bound control comes from the binding, not from an element default",

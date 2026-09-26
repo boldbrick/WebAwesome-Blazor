@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
+using WebAwesome.Blazor.Components;
 
 namespace WebAwesome.Blazor.Base;
 
@@ -301,6 +302,44 @@ internal static class RenderTreeBuilderExtensions
         if (value.HasValue)
         {
             builder.AddAttribute(sequence, name, value.Value ? Constants.TrueAttributeValue : Constants.FalseAttributeValue);
+        }
+    }
+
+    /// <summary>
+    /// Adds an attribute whose Web Awesome converter reads "on" and "off" (<c>autocorrect</c>): emits exactly "on"
+    /// or "off", and nothing when null.
+    /// </summary>
+    /// <remarks>
+    /// The element's converter is <c>!value || value === "off" ? false : true</c>, so a present but empty attribute
+    /// (Blazor's rendering of true) would read as false; only "on" reads as true.
+    /// </remarks>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddOnOffAttribute(this RenderTreeBuilder builder, int sequence, string name, bool? value)
+    {
+        if (value.HasValue)
+        {
+            builder.AddAttribute(sequence, name, value.Value ? Constants.OnAttributeValue : Constants.OffAttributeValue);
+        }
+    }
+
+    /// <summary>
+    /// Adds a step attribute in its wire form (<see cref="WaStep.ToString"/>: "any", or the number in the invariant
+    /// culture); nothing when null.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddStepAttribute(this RenderTreeBuilder builder, int sequence, string name, WaStep? value)
+    {
+        if (value.HasValue)
+        {
+            builder.AddAttribute(sequence, name, value.Value.ToString());
         }
     }
 

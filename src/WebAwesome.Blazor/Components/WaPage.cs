@@ -58,6 +58,17 @@ public class WaPage : ComponentBase
     [Parameter] public bool DisableNavigationToggle { get; set; }
 
     /// <summary>
+    /// The sections that stay in the document flow instead of sticking to the top or side when the page scrolls (by
+    /// default the banner, header, subheader, menu and aside are sticky); null keeps them all sticky. Rendered as the
+    /// space-separated disable-sticky tokens, e.g. <c>DisableSticky="WaPageSections.Header | WaPageSections.Aside"</c>.
+    /// </summary>
+    /// <remarks>
+    /// A CSS-only attribute: the 3.12.0 page styles match it with <c>:host([disable-sticky~='header'])</c> rules and
+    /// document it (page.md, Sticky Sections), but the Custom Elements Manifest does not list it.
+    /// </remarks>
+    [Parameter] public WaPageSections? DisableSticky { get; set; }
+
+    /// <summary>
     /// At what page width to hide the "navigation" slot and collapse into a hamburger button. Accepts both numbers
     /// (interpreted as px) and CSS lengths (e.g. <c>50em</c>), which are resolved based on the root element.
     /// </summary>
@@ -185,6 +196,7 @@ public class WaPage : ComponentBase
 
         // Add page-specific attributes
         builder.AddAttribute(10, "disable-navigation-toggle", DisableNavigationToggle);
+        builder.AddAttributeIfNotNull(15, "disable-sticky", DisableSticky?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(11, "mobile-breakpoint", MobileBreakpoint);
         builder.AddAttributeIfNotNull(12, "navigation-placement", NavigationPlacement?.ToHtmlValue());
         builder.AddAttribute(13, "nav-open", NavOpen);

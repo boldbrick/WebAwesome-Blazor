@@ -74,6 +74,16 @@ public static class Constants
     internal const string FalseAttributeValue = "false";
 
     /// <summary>
+    /// Attribute value read as true by Web Awesome's "on"/"off" attribute converters (autocorrect).
+    /// </summary>
+    internal const string OnAttributeValue = "on";
+
+    /// <summary>
+    /// Attribute value read as false by Web Awesome's "on"/"off" attribute converters (autocorrect).
+    /// </summary>
+    internal const string OffAttributeValue = "off";
+
+    /// <summary>
     /// Inline style of the element a wrapper puts around a fragment to assign it to a slot whose layout treats every
     /// slotted element as an item (e.g. wa-slider's "reference" slot, a flex row spreading the labels): the wrapper
     /// then generates no box, so the fragment's own elements are laid out as the slot's items.

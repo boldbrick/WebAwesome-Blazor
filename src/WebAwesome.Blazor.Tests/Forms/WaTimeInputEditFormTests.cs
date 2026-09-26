@@ -41,14 +41,13 @@ public class WaTimeInputEditFormTests : FormControlTestBase
     [InlineData("60", "09:30")]
     [InlineData("120", "09:30")]
     [InlineData("3600", "09:30")]
-    [InlineData("0", "09:30")]
-    [InlineData("-5", "09:30")]
-    [InlineData("bogus", "09:30")]
-    public void Step_DecidesWhetherSecondsAreRendered_AsTheElementDoes(string step, string expected)
+    [InlineData("0.5", "09:30:15")]
+    [InlineData(null, "09:30")]
+    public void Step_DecidesWhetherSecondsAreRendered_AsTheElementDoes(string? step, string expected)
     {
         using var culture = new CultureScope(RenderedAttributeParityTests.HostileCulture);
         var model = new TimeModel { Time = new TimeOnly(9, 30, 15) };
-        var cut = RenderForm(model, configure: builder => builder.AddComponentParameter(10, nameof(WaTimeInput.Step), step));
+        var cut = RenderForm(model, configure: builder => builder.AddComponentParameter(10, nameof(WaTimeInput.Step), ToStep(step)));
 
         Assert.Equal(expected, cut.Find("wa-time-input").GetAttribute("value"));
     }
@@ -171,6 +170,16 @@ public class WaTimeInputEditFormTests : FormControlTestBase
             configureComponent: configure,
             onEditContext: onEditContext);
     }
+
+    private const string AnyStep = "any";
+
+    // the step a test row stands for: null, "any", or an invariant number
+    private static WaStep? ToStep(string? step) => step switch
+    {
+        null => null,
+        AnyStep => WaStep.Any,
+        _ => decimal.Parse(step, System.Globalization.CultureInfo.InvariantCulture)
+    };
 
     #endregion
 }

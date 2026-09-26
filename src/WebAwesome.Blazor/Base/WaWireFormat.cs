@@ -157,27 +157,6 @@ internal static class WaWireFormat
     }
 
     /// <summary>
-    /// Whether wa-time-input shows (and emits) seconds for a step attribute value, as withSecondsForStep reads the
-    /// step stepFromAttribute converts: "any", or a positive step under a minute or not a whole number of minutes.
-    /// A missing or invalid step is the default, 60 seconds, which hides them.
-    /// </summary>
-    /// <param name="step">The step attribute value</param>
-    /// <returns>true when the element shows seconds</returns>
-    public static bool TimeStepShowsSeconds(string? step)
-    {
-        if (step is null) return false;
-        if (step == AnyStep) return true;
-
-        if (!double.TryParse(step.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var seconds)
-            || !double.IsFinite(seconds) || seconds <= 0)
-        {
-            return false;
-        }
-
-        return seconds < SecondsPerMinute || seconds % SecondsPerMinute != 0;
-    }
-
-    /// <summary>
     /// Formats an instant in the ECMAScript date-time string format <c>new Date(text)</c> reads unambiguously:
     /// <c>yyyy-MM-ddTHH:mm:ss.fff</c> with the offset (<c>+01:00</c>, <c>+00:00</c> for UTC).
     /// </summary>
@@ -219,8 +198,6 @@ internal static class WaWireFormat
     private const int MaxHour = 23;
     private const int MaxMinuteOrSecond = 59;
     private const int TickDigits = 7;
-    private const string AnyStep = "any";
-    private const double SecondsPerMinute = 60;
     private const string InstantPattern = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffzzz";
     private const string ListSeparator = " ";
 

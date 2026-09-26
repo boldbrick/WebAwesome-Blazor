@@ -97,19 +97,21 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     [Parameter] public decimal? Max { get; set; }
 
     /// <summary>
-    /// Specifies the granularity that the value must adhere to. Only applies to date and number input types.
+    /// Specifies the granularity that the value must adhere to, or <see cref="WaStep.Any"/>. Only applies to date and
+    /// number input types. A number converts implicitly (<c>Step="0.5"</c>).
     /// </summary>
-    [Parameter] public decimal? Step { get; set; }
+    [Parameter] public WaStep? Step { get; set; }
 
     /// <summary>
     /// Controls whether and how text input is automatically capitalized as it is entered by the user.
     /// </summary>
-    [Parameter] public string? AutoCapitalize { get; set; }
+    [Parameter] public WaAutoCapitalize? AutoCapitalize { get; set; }
 
     /// <summary>
-    /// Indicates whether the browser's autocorrect feature is on or off.
+    /// Turns the browser's autocorrect feature on (true, rendered "on") or off (false, rendered "off"); null leaves
+    /// the element's default, which is off.
     /// </summary>
-    [Parameter] public string? AutoCorrect { get; set; }
+    [Parameter] public bool? AutoCorrect { get; set; }
 
     /// <summary>
     /// Indicates that the input should receive focus on page load.
@@ -119,13 +121,13 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// <summary>
     /// Used to customize the label or icon of the Enter key on virtual keyboards.
     /// </summary>
-    [Parameter] public string? EnterKeyHint { get; set; }
+    [Parameter] public WaEnterKeyHint? EnterKeyHint { get; set; }
 
     /// <summary>
     /// Tells the browser what type of data will be entered by the user, allowing it to display the appropriate
     /// virtual keyboard on supportive devices.
     /// </summary>
-    [Parameter] public string? InputMode { get; set; }
+    [Parameter] public WaInputMode? InputMode { get; set; }
 
     /// <summary>
     /// Determines whether or not the password is currently visible. Only applies to password input types.
@@ -233,12 +235,12 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         builder.AddAttributeIfNotNullOrEmpty(27, "pattern", Pattern);
         builder.AddAttributeIfNotNull(28, "min", Min);
         builder.AddAttributeIfNotNull(29, "max", Max);
-        builder.AddAttributeIfNotNull(30, "step", Step);
-        builder.AddAttributeIfNotNullOrEmpty(33, "autocapitalize", AutoCapitalize);
-        builder.AddAttributeIfNotNullOrEmpty(34, "autocorrect", AutoCorrect);
+        builder.AddStepAttribute(30, "step", Step);
+        builder.AddAttributeIfNotNull(33, "autocapitalize", AutoCapitalize?.ToHtmlValue());
+        builder.AddOnOffAttribute(34, "autocorrect", AutoCorrect);
         builder.AddAttribute(35, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNullOrEmpty(36, "enterkeyhint", EnterKeyHint);
-        builder.AddAttributeIfNotNullOrEmpty(37, "inputmode", InputMode);
+        builder.AddAttributeIfNotNull(36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(37, "inputmode", InputMode?.ToHtmlValue());
         builder.AddAttribute(38, "password-visible", PasswordVisible);
         AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(48, "without-spin-buttons", WithoutSpinButtons);

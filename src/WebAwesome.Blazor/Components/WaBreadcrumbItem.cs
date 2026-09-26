@@ -54,7 +54,7 @@ public class WaBreadcrumbItem : ComponentBase
     /// <summary>
     /// Tells the browser where to open the link when <see cref="Href"/> is set.
     /// </summary>
-    [Parameter] public string? Target { get; set; }
+    [Parameter] public WaLinkTarget? Target { get; set; }
 
     #endregion
 
@@ -117,7 +117,7 @@ public class WaBreadcrumbItem : ComponentBase
         // Add breadcrumb item-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "href", Href);
         builder.AddAttributeIfNotNullOrEmpty(11, "rel", Rel);
-        builder.AddAttributeIfNotNullOrEmpty(12, "target", Target);
+        builder.AddAttributeIfNotNull(12, "target", Target?.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);

@@ -226,6 +226,9 @@ public class RenderedAttributeParityTests
             foreach (var attribute in componentConfig.TrueFalseAttributes)
                 AddMissingReason(misses, $"{TrueFalseAttributesKey}:{tag}:{attribute}");
 
+            foreach (var attribute in componentConfig.OnOffAttributes)
+                AddMissingReason(misses, $"{OnOffAttributesKey}:{tag}:{attribute}");
+
             foreach (var attribute in componentConfig.WrapperDefaultAttributes)
                 AddMissingReason(misses, $"{WrapperDefaultAttributesKey}:{tag}:{attribute}");
 
@@ -291,6 +294,17 @@ public class RenderedAttributeParityTests
                         && s.Root.Attributes.TryGetValue(attribute, out var value) && value == FalseText));
                 if (!needed)
                     misses.Add($"{tag}: trueFalseAttributes entry '{attribute}' is not a non-true-default boolean attribute rendered as \"{FalseText}\" and must be removed");
+            }
+
+            foreach (var attribute in componentConfig.OnOffAttributes)
+            {
+                var needed = ofTag.Any(e => e.Component.Attributes.TryGetValue(attribute, out var surface)
+                    && UnionParts(surface.EffectiveType).Contains(BooleanType)
+                    && e.Renders.Samples.Any(s => s.Sample.Value is true
+                        && s.Sample.Property.Name == ExpectedParameterName(componentConfig, attribute)
+                        && s.Root.Attributes.TryGetValue(attribute, out var value) && value == OnText));
+                if (!needed)
+                    misses.Add($"{tag}: onOffAttributes entry '{attribute}' is not a boolean attribute whose parameter renders \"{OnText}\" and must be removed");
             }
 
             foreach (var attribute in componentConfig.WrapperDefaultAttributes)
@@ -368,13 +382,19 @@ public class RenderedAttributeParityTests
     private const string DateSetKind = "IReadOnlySet<DateOnly>";
     private const string WeekdaySetKind = "IReadOnlySet<DayOfWeek>";
 
-    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind];
+    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind];
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
     private const string StringType = "string";
     private const string TrueDefault = "true";
     private const string TrueText = "true";
     private const string FalseText = "false";
+    private const string OnText = "on";
+    private const string OffText = "off";
+    private const string OnOffAttributesKey = "onOffAttributes";
+    private const string AnyStepText = "any";
+    private const string AnyStepLiteral = "'any'";
+    private const string StepKind = "WaStep";
     private const string AriaPrefix = "aria-";
     private const string DataPrefix = "data-";
     private const string MinusSign = "−";
@@ -616,6 +636,11 @@ public class RenderedAttributeParityTests
             yield return new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
             yield return new HashSet<DayOfWeek>();
         }
+        else if (type == typeof(WaStep))
+        {
+            yield return (WaStep)(decimal)FractionalSample;
+            yield return WaStep.Any;
+        }
     }
 
     private static bool IsNumber(object value) => FloatingTypes.Contains(value.GetType())
@@ -681,8 +706,9 @@ public class RenderedAttributeParityTests
                 // a string parameter passes its own value through; it is not an enum defect
                 if (render?.Sample.Value is string && value.Contains(StringSample, StringComparison.Ordinal)) continue;
 
+                // an empty token list holds no token outside the union (an empty sandbox is the strictest one)
                 var values = EnumValueParityTests.ValuesOf(value, isTokenList);
-                if (values.Count > 0 && values.All(v => union.Contains(v, StringComparer.Ordinal))) continue;
+                if ((values.Count > 0 || isTokenList) && values.All(v => union.Contains(v, StringComparer.Ordinal))) continue;
                 if (!isTokenList && union.Contains(value, StringComparer.Ordinal)) continue;
 
                 yield return $"{element.Tag} ({element.Name}): renders {attribute}=\"{value}\" ({render?.Sample.Label ?? "no parameter set"}), " +
@@ -711,13 +737,21 @@ public class RenderedAttributeParityTests
             if (!UnionParts(surface.EffectiveType).Contains(BooleanType)) continue;
 
             var readsFalse = string.Equals(surface.Default, TrueDefault, StringComparison.Ordinal) || element.Config.TrueFalseAttributes.Contains(attribute);
+            var isOnOff = element.Config.OnOffAttributes.Contains(attribute);
 
             foreach (var render in element.Renders.Samples.Where(s => s.Sample.Property == property && s.Root.Error == null))
             {
                 var present = render.Root.Attributes.TryGetValue(attribute, out var value);
                 var label = $"{element.Tag} ({element.Name}.{render.Sample.Label})";
 
-                if ((bool)render.Sample.Value)
+                if (isOnOff)
+                {
+                    // the converter reads only "off" (and absence or an empty value) as false, anything else as true
+                    var expected = (bool)render.Sample.Value ? OnText : OffText;
+                    if (value != expected)
+                        yield return $"{label}: '{attribute}' reads \"{OnText}\"/\"{OffText}\" (onOffAttributes), so it must render {attribute}=\"{expected}\", but it renders {(present ? $"\"{value}\"" : "nothing")}";
+                }
+                else if ((bool)render.Sample.Value)
                 {
                     if (!present)
                         yield return $"{label}: renders no '{attribute}' attribute";
@@ -786,8 +820,9 @@ public class RenderedAttributeParityTests
                 var parts = UnionParts(surface.EffectiveType);
                 if (!parts.Contains(NumberType) || parts.Contains(StringType)) continue;
 
-                // a string parameter (e.g. a step that also takes "any") passes its own value through
+                // a string parameter passes its own value through, and a number | 'any' step may be "any"
                 if (value.Contains(StringSample, StringComparison.Ordinal)) continue;
+                if (value == AnyStepText && surface.EffectiveType.Contains(AnyStepLiteral, StringComparison.Ordinal)) continue;
                 if (NumberKeywords.Contains(value) || decimal.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _)) continue;
 
                 yield return $"{element.Tag} ({element.Name}): renders number attribute {attribute}=\"{value}\" ({label}), which is no invariant-culture number";
@@ -875,6 +910,14 @@ public class RenderedAttributeParityTests
                 case IReadOnlySet<DayOfWeek> days:
                     checkedKinds.Add(WeekdaySetKind);
                     miss = SetMiss(present, value, days.Order().ToList(), ReadsAsWeekday, rendered);
+                    break;
+                case WaStep step:
+                    checkedKinds.Add(StepKind);
+                    miss = present && (step.IsAny
+                            ? value == AnyStepText
+                            : decimal.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var number) && number == step.Number)
+                        ? null
+                        : $"renders {rendered}, expected \"{AnyStepText}\" or the invariant number reading as {step}";
                     break;
                 default:
                     continue;

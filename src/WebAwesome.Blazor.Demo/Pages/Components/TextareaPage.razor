@@ -77,8 +77,8 @@
 
 <ExampleSection Title="Spell Checking and Keyboard Hints" Code="@SpellcheckExample">
     <WaStack Gap="GapSize.Gap_M">
-        <WaTextArea Label="Spellcheck on" Spellcheck="true" AutoCorrect="on" AutoCapitalize="sentences" @bind-Value="spellchecked" />
-        <WaTextArea Label="Spellcheck off (code)" Spellcheck="false" AutoCorrect="off" AutoCapitalize="off" EnterKeyHint="send" InputMode="text" Autocomplete="off" @bind-Value="code" />
+        <WaTextArea Label="Spellcheck on" Spellcheck="true" AutoCorrect="true" AutoCapitalize="WaAutoCapitalize.Sentences" @bind-Value="spellchecked" />
+        <WaTextArea Label="Spellcheck off (code)" Spellcheck="false" AutoCorrect="false" AutoCapitalize="WaAutoCapitalize.Off" EnterKeyHint="WaEnterKeyHint.Send" InputMode="WaInputMode.Text" Autocomplete="off" @bind-Value="code" />
     </WaStack>
 </ExampleSection>
 <ApiTable Tag="wa-textarea" />
@@ -146,8 +146,8 @@
         """;
 
     private const string SpellcheckExample = """
-        <WaTextArea Label="Spellcheck on" Spellcheck="true" AutoCorrect="on" AutoCapitalize="sentences" @bind-Value="spellchecked" />
-        <WaTextArea Label="Spellcheck off (code)" Spellcheck="false" AutoCorrect="off" AutoCapitalize="off" EnterKeyHint="send" InputMode="text" Autocomplete="off" @bind-Value="code" />
+        <WaTextArea Label="Spellcheck on" Spellcheck="true" AutoCorrect="true" AutoCapitalize="WaAutoCapitalize.Sentences" @bind-Value="spellchecked" />
+        <WaTextArea Label="Spellcheck off (code)" Spellcheck="false" AutoCorrect="false" AutoCapitalize="WaAutoCapitalize.Off" EnterKeyHint="WaEnterKeyHint.Send" InputMode="WaInputMode.Text" Autocomplete="off" @bind-Value="code" />
         """;
     private void SetNotes() => notes = "Set from C#";
 

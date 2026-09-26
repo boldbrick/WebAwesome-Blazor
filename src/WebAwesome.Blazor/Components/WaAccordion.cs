@@ -55,9 +55,9 @@ public class WaAccordion : ComponentBase
     [Parameter] public WaDetailsAppearance Appearance { get; set; } = WaDetailsAppearance.Outlined;
 
     /// <summary>
-    /// The heading level for child item triggers (1–6), or "none" to omit the heading wrapper. Defaults to "3".
+    /// The heading level for child item triggers, or <see cref="WaHeadingLevel.None"/> to omit the heading wrapper. Null leaves the element's default, <see cref="WaHeadingLevel.H3"/>.
     /// </summary>
-    [Parameter] public string? HeadingLevel { get; set; }
+    [Parameter] public WaHeadingLevel? HeadingLevel { get; set; }
 
     /// <summary>
     /// The location of the expand/collapse icon in child items.
@@ -119,7 +119,7 @@ public class WaAccordion : ComponentBase
         // Add accordion-specific attributes
         if (Appearance != WaDetailsAppearance.Outlined)
             builder.AddAttribute(10, "appearance", Appearance.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(11, "heading-level", HeadingLevel);
+        builder.AddAttributeIfNotNull(11, "heading-level", HeadingLevel?.ToHtmlValue());
         if (IconPlacement != WaIconPlacement.End)
             builder.AddAttribute(12, "icon-placement", IconPlacement.ToHtmlValue());
         if (Mode != WaAccordionMode.Multiple)

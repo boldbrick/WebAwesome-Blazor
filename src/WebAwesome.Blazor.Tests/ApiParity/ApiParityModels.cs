@@ -320,6 +320,14 @@ public class ComponentParityConfig
     public List<string> UnresolvedEnumAttributes { get; set; } = new();
 
     /// <summary>
+    /// CEM attributes typed as a pure literal union that are deliberately bound to a string or decimal parameter
+    /// instead of an enum. Every entry needs an ignoreReasons entry keyed
+    /// "untypedLiteralUnionAttributes:&lt;tag&gt;:&lt;attribute&gt;".
+    /// </summary>
+    [JsonPropertyName("untypedLiteralUnionAttributes")]
+    public List<string> UntypedLiteralUnionAttributes { get; set; } = new();
+
+    /// <summary>
     /// Attributes a wrapper deliberately renders on the element although neither the element's CEM entry nor the
     /// HTML global attributes declare them. Every entry needs an ignoreReasons entry keyed
     /// "extraRenderedAttributes:&lt;tag&gt;:&lt;attribute&gt;".
@@ -351,6 +359,14 @@ public class ComponentParityConfig
     /// </summary>
     [JsonPropertyName("trueFalseAttributes")]
     public List<string> TrueFalseAttributes { get; set; } = new();
+
+    /// <summary>
+    /// Boolean CEM attributes whose Web Awesome converter reads "on"/"off" (e.g. autocorrect: only "off" or an empty
+    /// value reads false), so true must render exactly "on" and false exactly "off". Every entry needs an
+    /// ignoreReasons entry keyed "onOffAttributes:&lt;tag&gt;:&lt;attribute&gt;" citing the converter.
+    /// </summary>
+    [JsonPropertyName("onOffAttributes")]
+    public List<string> OnOffAttributes { get; set; } = new();
 
     /// <summary>
     /// CEM attributes a wrapper renders with no parameter set although the value differs from the element's own

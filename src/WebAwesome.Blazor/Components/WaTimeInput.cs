@@ -63,9 +63,10 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
 
     /// <summary>
     /// The granularity, in seconds, matching HTML <c>&lt;input type="time"&gt;</c>. The default <c>60</c> hides the
-    /// seconds segment; values below 60 reveal it; <c>"any"</c> disables step-mismatch enforcement.
+    /// seconds segment; values below 60 (or not a whole number of minutes) reveal it; <see cref="WaStep.Any"/> reveals it
+    /// and disables step-mismatch enforcement. A number converts implicitly (<c>Step="1"</c>).
     /// </summary>
-    [Parameter] public string? Step { get; set; }
+    [Parameter] public WaStep? Step { get; set; }
 
     /// <summary>
     /// The preferred placement of the time picker popup, above or below the field. When null, the attribute is omitted and
@@ -159,7 +160,7 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
         builder.AddAttributeIfNotNull(21, "hour-format", HourFormat?.ToHtmlValue());
         builder.AddTimeAttribute(22, "min", Min);
         builder.AddTimeAttribute(23, "max", Max);
-        builder.AddAttributeIfNotNullOrEmpty(24, "step", Step);
+        builder.AddStepAttribute(24, "step", Step);
         builder.AddAttributeIfNotNull(25, "placement", Placement?.ToHtmlValue());
         builder.AddAttributeIfNotNull(26, "distance", Distance);
         builder.AddAttribute(27, "open", Open);
@@ -221,7 +222,7 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
     /// <param name="value">The value</param>
     /// <returns>The wire string</returns>
     protected override string? FormatValueAsString(TimeOnly? value)
-        => value.HasValue ? WaWireFormat.FormatTime(value.Value, WaWireFormat.TimeStepShowsSeconds(Step)) : null;
+        => value.HasValue ? WaWireFormat.FormatTime(value.Value, Step?.ShowsTimeSeconds == true) : null;
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out TimeOnly? result, [NotNullWhen(false)] out string? validationErrorMessage)

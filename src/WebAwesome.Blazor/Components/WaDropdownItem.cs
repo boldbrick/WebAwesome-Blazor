@@ -85,10 +85,10 @@ public class WaDropdownItem : ComponentBase
     [Parameter] public string? Href { get; set; }
 
     /// <summary>
-    /// Tells the browser where to open the link, e.g. "_blank", "_parent", "_self" or "_top".
+    /// Tells the browser where to open the link.
     /// Only used when <see cref="Href"/> is present.
     /// </summary>
-    [Parameter] public string? Target { get; set; }
+    [Parameter] public WaLinkTarget? Target { get; set; }
 
     /// <summary>
     /// When using <see cref="Href"/>, this maps to the underlying link's <c>rel</c> attribute.
@@ -159,7 +159,7 @@ public class WaDropdownItem : ComponentBase
 
         // Add link attributes
         builder.AddAttributeIfNotNullOrEmpty(5, "href", Href);
-        builder.AddAttributeIfNotNullOrEmpty(6, "target", Target);
+        builder.AddAttributeIfNotNull(6, "target", Target?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(7, "rel", Rel);
         builder.AddAttributeIfNotNullOrEmpty(8, "download", Download);
 

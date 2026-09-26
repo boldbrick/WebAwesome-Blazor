@@ -35,8 +35,8 @@
 <ExampleSection Title="Loading, Theme Sync and Sandboxing" Code="@OptionsExample">
     <p>A lazily loaded frame that follows the page's theme and dark mode and sends no referrer, and an eagerly loaded one sandboxed to running scripts (no same-origin access, forms, popups or top navigation) that may go full screen.</p>
     <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Lazy" WithThemeSync="true"
-                     ReferrerPolicy="no-referrer" AllowFullScreen="false" Style="height: 160px;" />
-    <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Eager" Sandbox="allow-scripts" AllowFullScreen="true" Style="height: 160px; margin-top: var(--wa-space-m);" />
+                     ReferrerPolicy="WaReferrerPolicy.NoReferrer" AllowFullScreen="false" Style="height: 160px;" />
+    <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Eager" Sandbox="WaIframeSandbox.AllowScripts" AllowFullScreen="true" Style="height: 160px; margin-top: var(--wa-space-m);" />
 </ExampleSection>
 
 <ApiTable Tag="wa-zoomable-frame" />
@@ -81,7 +81,7 @@
 
     private const string OptionsExample = """
         <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Lazy" WithThemeSync="true"
-                         ReferrerPolicy="no-referrer" AllowFullScreen="false" Style="height: 160px;" />
-        <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Eager" Sandbox="allow-scripts" AllowFullScreen="true" Style="height: 160px;" />
+                         ReferrerPolicy="WaReferrerPolicy.NoReferrer" AllowFullScreen="false" Style="height: 160px;" />
+        <WaZoomableFrame SrcDoc="@FrameContent" Loading="WaLoading.Eager" Sandbox="WaIframeSandbox.AllowScripts" AllowFullScreen="true" Style="height: 160px;" />
         """;
 }

@@ -48,9 +48,9 @@ public class WaTabChangeEventArgs : EventArgs
 public class WaRatingHoverEventArgs : EventArgs
 {
     /// <summary>
-    /// Hover phase: 'start', 'move', or 'end'
+    /// The hover phase.
     /// </summary>
-    public string Phase { get; set; } = string.Empty;
+    public WaRatingHoverPhase Phase { get; set; }
 
     /// <summary>
     /// The potential rating value during hover
@@ -250,9 +250,9 @@ public class WaDatePickerFocusDayEventArgs : EventArgs
 public class WaDatePickerViewChangeEventArgs : EventArgs
 {
     /// <summary>
-    /// The view the picker switched to: <c>days</c>, <c>months</c>, or <c>years</c>.
+    /// The view the picker switched to, or null when the event carries none.
     /// </summary>
-    public string? View { get; set; }
+    public WaDatePickerView? View { get; set; }
 
     /// <summary>
     /// The anchor date of the new view, or null when the event carries no valid date (projected from the detail's
@@ -421,9 +421,9 @@ public class WaDataGridColumnPinEventArgs : EventArgs
     public string Column { get; set; } = string.Empty;
 
     /// <summary>
-    /// The side the column is now pinned to (<c>left</c> or <c>right</c>), or null when unpinned.
+    /// The side the column is now pinned to, or null when unpinned.
     /// </summary>
-    public string? Side { get; set; }
+    public WaDataGridPinSide? Side { get; set; }
 }
 
 /// <summary>

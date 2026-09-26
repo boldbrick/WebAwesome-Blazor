@@ -105,12 +105,12 @@ public class WaZoomableFrame : ComponentBase
     /// <summary>
     /// Indicates which referrer to send when fetching the frame's content.
     /// </summary>
-    [Parameter] public string? ReferrerPolicy { get; set; }
+    [Parameter] public WaReferrerPolicy? ReferrerPolicy { get; set; }
 
     /// <summary>
-    /// Applies extra restrictions to the content in the frame, e.g. <c>allow-scripts allow-same-origin</c>.
+    /// Sandboxes the frame's content, lifting the given restrictions (e.g. <c>WaIframeSandbox.AllowScripts | WaIframeSandbox.AllowSameOrigin</c>); <see cref="WaIframeSandbox.None"/> applies all of them, null sets no sandbox.
     /// </summary>
-    [Parameter] public string? Sandbox { get; set; }
+    [Parameter] public WaIframeSandbox? Sandbox { get; set; }
 
     #endregion
 
@@ -189,8 +189,8 @@ public class WaZoomableFrame : ComponentBase
         // Add remaining iframe passthrough attributes
         builder.AddAttribute(32, "allowfullscreen", AllowFullScreen);
         builder.AddAttributeIfNotNull(33, "loading", Loading?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(34, "referrerpolicy", ReferrerPolicy);
-        builder.AddAttributeIfNotNullOrEmpty(35, "sandbox", Sandbox);
+        builder.AddAttributeIfNotNull(34, "referrerpolicy", ReferrerPolicy?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(35, "sandbox", Sandbox?.ToHtmlValue());
 
         // native load/error events re-dispatched by wa-zoomable-frame on the host element (non-bubbling,
         // composed); delivered through Blazor's built-in non-bubbling event registration (no

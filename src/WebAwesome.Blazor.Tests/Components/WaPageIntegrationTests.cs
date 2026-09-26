@@ -22,6 +22,16 @@ public class WaPageIntegrationTests : BunitContext
         JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
+    [Fact]
+    public void DisableSticky_RendersTheSectionTokens_AndNothingWhenUnset()
+    {
+        var unset = Render<WaPage>().Find("wa-page");
+        var set = Render<WaPage>(p => p.Add(x => x.DisableSticky, WaPageSections.Header | WaPageSections.Aside)).Find("wa-page");
+
+        Assert.False(unset.HasAttribute("disable-sticky"));
+        Assert.Equal("header aside", set.GetAttribute("disable-sticky"));
+    }
+
     [Theory]
     [InlineData(nameof(WaPage.ChildContent), "")]
     [InlineData(nameof(WaPage.Aside), "aside")]
