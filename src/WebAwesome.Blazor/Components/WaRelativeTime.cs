@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -57,7 +58,9 @@ public class WaRelativeTime : ComponentBase
     /// <summary>
     /// The instant from which to calculate elapsed time. Rendered with its offset (ISO 8601,
     /// <c>2026-01-02T03:04:05.678+01:00</c>), so the browser reads the same instant in every time zone. When null, the
-    /// attribute is omitted and Web Awesome uses the current time.
+    /// attribute is omitted and Web Awesome uses the current time; once a date was rendered, a return to null renders the current
+    /// instant (read from the registered <see cref="TimeProvider"/>) instead of removing the attribute, which the element would
+    /// read as the 1970 epoch.
     /// </summary>
     /// <remarks>
     /// A <see cref="DateTime"/> converts implicitly: a UTC one (<see cref="DateTimeKind.Utc"/>) keeps its instant, but
@@ -116,7 +119,7 @@ public class WaRelativeTime : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add relative time attributes
-        builder.AddDateTimeOffsetAttribute(10, "date", Date);
+        builder.AddDateTimeOffsetAttribute(attributes, 10, "date", Date, Clock);
         builder.AddAttribute(11, "sync", Sync);
         builder.AddAttributeIfNotNull(attributes, 12, "format", Format?.ToHtmlValue(), DefaultFormat.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(13, "lang", Lang);
@@ -171,6 +174,13 @@ public class WaRelativeTime : ComponentBase
 
         return string.Join(' ', classes);
     }
+
+    // the element's date defaults to new Date() when it is set up, and a removed attribute would read as the 1970
+    // epoch, so once rendered, a return to null renders the current instant of this clock: the application's
+    // TimeProvider (AddWebAwesome registers the system clock), or the system clock when none is registered
+    private TimeProvider Clock => Services.GetService<TimeProvider>() ?? TimeProvider.System;
+
+    [Inject] private IServiceProvider Services { get; set; } = default!;
 
     #endregion
 }

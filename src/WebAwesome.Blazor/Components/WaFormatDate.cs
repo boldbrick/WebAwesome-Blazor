@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -41,7 +42,9 @@ public class WaFormatDate : ComponentBase
 
     // Date/time properties
     /// <summary>
-    /// The instant to format; when null, the attribute is omitted and Web Awesome formats the current date and time.
+    /// The instant to format; when null, the attribute is omitted and Web Awesome formats the current date and time. Once a date
+    /// was rendered, a return to null renders the current instant (read from the registered <see cref="TimeProvider"/>)
+    /// instead of removing the attribute, which the element would read as the 1970 epoch.
     /// Rendered with its offset (ISO 8601, <c>2026-01-02T03:04:05.678+01:00</c>), so the browser reads the same instant
     /// in every time zone and expresses it in <see cref="TimeZone"/> (or the browser's own).
     /// </summary>
@@ -135,7 +138,7 @@ public class WaFormatDate : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddDateTimeOffsetAttribute(4, "date", Date);
+        builder.AddDateTimeOffsetAttribute(attributes, 4, "date", Date, Clock);
         builder.AddAttributeIfNotNullOrEmpty(5, "lang", Lang);
         builder.AddAttributeIfNotNull(attributes, 6, "hour-format", HourFormat?.ToHtmlValue(), DefaultHourFormat.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(7, "time-zone", TimeZone);
@@ -173,6 +176,13 @@ public class WaFormatDate : ComponentBase
 
         return string.Join(' ', classes);
     }
+
+    // the element's date defaults to new Date() when it is set up, and a removed attribute would read as the 1970
+    // epoch, so once rendered, a return to null renders the current instant of this clock: the application's
+    // TimeProvider (AddWebAwesome registers the system clock), or the system clock when none is registered
+    private TimeProvider Clock => Services.GetService<TimeProvider>() ?? TimeProvider.System;
+
+    [Inject] private IServiceProvider Services { get; set; } = default!;
 
     #endregion
 }

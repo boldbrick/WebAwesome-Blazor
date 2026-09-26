@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using WebAwesome.Blazor.Base;
@@ -11,7 +13,8 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// attribute was rendered, returning to the default (or to null) renders the element default instead of removing the
 /// attribute, which would make Lit set the element property to null (a slider's max 0, an input's type null). Exempt:
 /// boolean attributes (a removed Lit boolean reads false, the default) and attributes without a literal default. The
-/// browser half is sticky-attributes.spec.js; RenderedAttributeParityTests (i) checks every wrapper parameter.
+/// browser half is sticky-attributes.spec.js; RenderedAttributeParityTests (i) checks every wrapper parameter. The date of
+/// wa-relative-time and wa-format-date defaults to new Date(), so a return to null renders the clock's current instant.
 /// </summary>
 public class StickyAttributeTests : BunitContext
 {
@@ -87,11 +90,62 @@ public class StickyAttributeTests : BunitContext
         Assert.False(element.HasAttribute("pattern"));
     }
 
+    [Fact]
+    public void RelativeTimeDate_BackToNull_RendersTheClocksCurrentInstant()
+    {
+        Services.AddSingleton<TimeProvider>(new FixedTimeProvider(FixedNow));
+        var cut = Render<WaRelativeTime>();
+        Assert.False(cut.Find("wa-relative-time").HasAttribute("date"));
+
+        cut.Render(p => p.Add(x => x.Date, PastDate));
+        Assert.Equal(PastDateText, cut.Find("wa-relative-time").GetAttribute("date"));
+
+        // the element's own default is new Date(); a removed attribute would read as the 1970 epoch
+        cut.Render(p => p.Add(x => x.Date, (DateTimeOffset?)null));
+        Assert.Equal(FixedNowText, cut.Find("wa-relative-time").GetAttribute("date"));
+    }
+
+    [Fact]
+    public void FormatDateDate_BackToNull_RendersTheClocksCurrentInstant()
+    {
+        Services.AddSingleton<TimeProvider>(new FixedTimeProvider(FixedNow));
+        var cut = Render<WaFormatDate>();
+        Assert.False(cut.Find("wa-format-date").HasAttribute("date"));
+
+        cut.Render(p => p.Add(x => x.Date, PastDate));
+        Assert.Equal(PastDateText, cut.Find("wa-format-date").GetAttribute("date"));
+
+        cut.Render(p => p.Add(x => x.Date, (DateTimeOffset?)null));
+        Assert.Equal(FixedNowText, cut.Find("wa-format-date").GetAttribute("date"));
+    }
+
+    [Fact]
+    public void DateBackToNull_WithoutARegisteredClock_RendersTheSystemClocksCurrentInstant()
+    {
+        var cut = Render<WaRelativeTime>(p => p.Add(x => x.Date, PastDate));
+        cut.Render(p => p.Add(x => x.Date, (DateTimeOffset?)null));
+
+        var rendered = DateTimeOffset.Parse(cut.Find("wa-relative-time").GetAttribute("date")!, CultureInfo.InvariantCulture);
+        Assert.InRange(DateTimeOffset.UtcNow - rendered, TimeSpan.Zero, SystemClockTolerance);
+    }
+
     #region ------ Internals ------
 
     // the bound fields the ValueExpressions point at
     private readonly decimal? sliderValue = null;
     private readonly string? textValue = null;
+
+    private static readonly DateTimeOffset FixedNow = new(2026, 9, 26, 10, 30, 0, TimeSpan.Zero);
+    private const string FixedNowText = "2026-09-26T10:30:00.000+00:00";
+    private static readonly DateTimeOffset PastDate = new(2020, 1, 1, 12, 0, 0, TimeSpan.Zero);
+    private const string PastDateText = "2020-01-01T12:00:00.000+00:00";
+    private static readonly TimeSpan SystemClockTolerance = TimeSpan.FromMinutes(1);
+
+    // a clock standing still at the given instant
+    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => now;
+    }
 
     #endregion
 }

@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Models;
 using WebAwesome.Blazor.Services;
@@ -23,8 +24,9 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The IServiceCollection to add services to</param>
     /// <returns>The IServiceCollection so that additional calls can be chained</returns>
     /// <remarks>
-    /// This method registers the WebAwesomeJSInterop service, WaIconLibraryService, and the
-    /// WebAwesomeOptions consumed by the WebAwesomeAssets component.
+    /// This method registers the WebAwesomeJSInterop service, WaIconLibraryService, the WebAwesomeOptions consumed
+    /// by the WebAwesomeAssets component, and <see cref="TimeProvider.System"/> as the <see cref="TimeProvider"/>
+    /// unless one is registered already (the clock the date components render the current instant from).
     /// </remarks>
     public static IServiceCollection AddWebAwesome(this IServiceCollection services)
     {
@@ -48,6 +50,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(options);
         services.AddScoped<WebAwesomeJSInterop>();
         services.AddScoped<WaIconLibraryService>();
+
+        // the clock wa-relative-time and wa-format-date read "now" from; an application's own TimeProvider wins
+        services.TryAddSingleton(TimeProvider.System);
         return services;
     }
 

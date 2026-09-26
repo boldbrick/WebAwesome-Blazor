@@ -6,7 +6,9 @@ const { waitForWaReady } = require('./helpers/wa-ready');
 // the element's property to null instead of back to its default, so a parameter returning to its default after it
 // was rendered must render the element default explicitly. Each case sets a parameter away from its default and back
 // on the harness /testing/sticky-attributes and reads the element's own property: with the attribute removed, the
-// slider's max would be null (0 in its arithmetic), the input's type null, and the tooltip's distance null.
+// slider's max would be null (0 in its arithmetic), the input's type null, and the tooltip's distance null. The date of
+// wa-relative-time and wa-format-date defaults to new Date(): with the attribute removed, new Date(null) is the 1970
+// epoch, so the wrappers render the current instant instead.
 
 const ROUTE = '/testing/sticky-attributes';
 
@@ -18,7 +20,7 @@ const ROUTE = '/testing/sticky-attributes';
 async function open(page) {
   await page.goto(ROUTE);
   await page.waitForSelector('.demo-shell');
-  await waitForWaReady(page, ['wa-slider', 'wa-input', 'wa-tooltip', 'wa-button']);
+  await waitForWaReady(page, ['wa-slider', 'wa-input', 'wa-tooltip', 'wa-button', 'wa-relative-time', 'wa-format-date']);
 }
 
 test('sticky attributes: WaSlider Max 50 -> 100 (the default) keeps the slider max at 100', async ({ page }) => {
@@ -62,4 +64,57 @@ test('sticky attributes: a nullable WaTooltip Distance 20 -> null goes back to t
   await page.getByTestId('sa-tooltip-distance-unset').click();
   await expect(tooltip, 'the element distance is the default again, not null').toHaveJSProperty('distance', 8);
   await expect(tooltip).toHaveAttribute('distance', '8');
+});
+
+// the tolerance between the instant the wrapper renders for "now" and the browser's clock when the test reads it
+const NOW_TOLERANCE_MS = 5 * 60 * 1000;
+
+// the relative time an instant long past reads as, in en-US
+const YEARS_AGO = /years? ago/;
+
+// the year the epoch that new Date(null) stands for displays
+const EPOCH_YEAR = '1970';
+
+/**
+ * Reads the text and the datetime of the <time> an element renders in its shadow root.
+ *
+ * @param {import('@playwright/test').Locator} element
+ * @returns {Promise<{ text: string, dateTime: string }>}
+ */
+async function shownTime(element) {
+  return element.evaluate((el) => {
+    const time = el.shadowRoot?.querySelector('time');
+    return { text: time?.textContent?.trim() ?? '', dateTime: time?.dateTime ?? '' };
+  });
+}
+
+test('sticky attributes: WaRelativeTime Date 2020 -> null shows the current time again, not the 1970 epoch', async ({ page }) => {
+  await open(page);
+  const relative = page.getByTestId('sa-relative-time');
+  await expect(relative).not.toHaveAttribute('date');
+
+  await page.getByTestId('sa-relative-time-past').click();
+  await expect.poll(async () => (await shownTime(relative)).text).toMatch(YEARS_AGO);
+
+  await page.getByTestId('sa-relative-time-unset').click();
+  await expect.poll(async () => (await shownTime(relative)).text, 'the element reads now, not 1970').not.toMatch(YEARS_AGO);
+  await expect(relative, 'the date is rendered, not the attribute removed').toHaveAttribute('date', /.+/);
+  const shown = await shownTime(relative);
+  expect(Math.abs(Date.parse(shown.dateTime) - Date.now()), `datetime ${shown.dateTime} is now`).toBeLessThan(NOW_TOLERANCE_MS);
+});
+
+test('sticky attributes: WaFormatDate Date 2020 -> null shows the current date again, not the 1970 epoch', async ({ page }) => {
+  await open(page);
+  const format = page.getByTestId('sa-format-date');
+  await expect(format).not.toHaveAttribute('date');
+
+  await page.getByTestId('sa-format-date-past').click();
+  await expect.poll(async () => (await shownTime(format)).text).toContain('2020');
+
+  await page.getByTestId('sa-format-date-unset').click();
+  await expect.poll(async () => (await shownTime(format)).text, 'the element shows today, not 1970').toContain(String(new Date().getFullYear()));
+  await expect(format, 'the date is rendered, not the attribute removed').toHaveAttribute('date', /.+/);
+  const shown = await shownTime(format);
+  expect(shown.text).not.toContain(EPOCH_YEAR);
+  expect(Math.abs(Date.parse(shown.dateTime) - Date.now()), `datetime ${shown.dateTime} is now`).toBeLessThan(NOW_TOLERANCE_MS);
 });

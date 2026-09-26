@@ -42,6 +42,22 @@
                     <WaButton data-testid="sa-tooltip-distance-unset" OnClick="() => tooltipDistance = null">Unset</WaButton>
                 </td>
             </tr>
+            <tr>
+                <td><code>WaRelativeTime.Date</code> (nullable, element default <code>new Date()</code>, now)</td>
+                <td><WaRelativeTime data-testid="sa-relative-time" Date="relativeDate" Lang="en-US" /></td>
+                <td>
+                    <WaButton data-testid="sa-relative-time-past" OnClick="() => relativeDate = PastDate">2020-01-01</WaButton>
+                    <WaButton data-testid="sa-relative-time-unset" OnClick="() => relativeDate = null">Unset</WaButton>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaFormatDate.Date</code> (nullable, element default <code>new Date()</code>, now)</td>
+                <td><WaFormatDate data-testid="sa-format-date" Date="formatDate" Lang="en-US" /></td>
+                <td>
+                    <WaButton data-testid="sa-format-date-past" OnClick="() => formatDate = PastDate">2020-01-01</WaButton>
+                    <WaButton data-testid="sa-format-date-unset" OnClick="() => formatDate = null">Unset</WaButton>
+                </td>
+            </tr>
         </tbody>
     </table>
 </ExampleSection>
@@ -50,9 +66,14 @@
     private const decimal LowMax = 50;
     private const int FarDistance = 20;
 
+    // a fixed instant far enough from now that both elements display it unmistakably (2020, "years ago")
+    private static readonly DateTimeOffset PastDate = new(2020, 1, 1, 12, 0, 0, TimeSpan.Zero);
+
     private decimal sliderMax = WaSlider.DefaultMax;
     private decimal? sliderValue = 30;
     private WaInputType inputType = WaInput.DefaultType;
     private string? inputValue = "hunter2";
     private int? tooltipDistance;
+    private DateTimeOffset? relativeDate;
+    private DateTimeOffset? formatDate;
 }

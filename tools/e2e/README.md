@@ -46,7 +46,8 @@ actually renders the page and a real user interaction fires a real DOM event. Se
 - `tests\sticky-attributes.spec.js` — the sticky attribute rule (`/testing/sticky-attributes`): `WaSlider` Max 50 back
   to its default 100, `WaInput` Type Password back to Text and a nullable `WaTooltip` Distance 20 back to null each leave
   the element property at Web Awesome's default (100, `text`, 8). With the attribute removed instead, Lit sets the
-  slider max and the tooltip distance to null (both cases fail then).
+  slider max and the tooltip distance to null (both cases fail then). A WaRelativeTime and a WaFormatDate Date set to 2020
+  and back to null show the current time again, not the 1970 epoch a removed date attribute reads as.
 - `tests\event-payload.spec.js` — the payloads the JS initializer builds by hand (`specialArgs`):
   split panel, observers, random content, date picker, video playlist and data grid events, each
   with its non-default field values as .NET received them (`/testing/event-payloads`).
