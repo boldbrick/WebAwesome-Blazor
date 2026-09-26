@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady } = require('./helpers/wa-ready');
 
 // Browser acceptance for WaIconLibraryService. Web Awesome keeps its icon library registry and default

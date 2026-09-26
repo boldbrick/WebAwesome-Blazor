@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady, skipUnlessProUpgrades } = require('./helpers/wa-ready');
 
 // Browser acceptance for GitHub issue #1 (Web Awesome 3.12.0 upgrade). In WA 3 the value/checked

@@ -355,6 +355,39 @@ public class ParityGuardSelfTests
         Assert.Contains("onwablazor-intersect", Assert.Single(wrapper.Callbacks).AddedStopPropagations);
     }
 
+    [Fact]
+    public void OwnEventGuard_FlagsWaEventWithoutStopPropagation()
+    {
+        // Arrange - wa-dialog binding its events only while a callback is set, without Blazor's stopPropagation (the
+        // pre-fix shape, in which a nested WaSelect's wa-hide invoked WaDialog.OnHide)
+        var wrapper = RenderedWrapperCatalog.Observe(typeof(FixedDialog));
+
+        // Act
+        var misses = EventBindingRegistrationTests.OwnEventStopPropagationMisses(wrapper).ToList();
+
+        // Assert
+        Assert.Equal(4, misses.Count);
+        Assert.Contains(misses, m => m.Contains("FixedDialog binds 'onwa-hide' without its stopPropagation"));
+    }
+
+    [Fact]
+    public void OwnEventGuard_AcceptsTheWrappersEvents()
+    {
+        // Arrange - the real WaDialog and WaTabGroup (whose wa-tab-show handler is not bound through the helper)
+        var dialog = RenderedWrapperCatalog.Observe(typeof(WaDialog));
+        var tabGroup = RenderedWrapperCatalog.Observe(typeof(WaTabGroup));
+
+        // Act
+        var misses = EventBindingRegistrationTests.OwnEventStopPropagationMisses(dialog)
+            .Concat(EventBindingRegistrationTests.OwnEventStopPropagationMisses(tabGroup))
+            .ToList();
+
+        // Assert
+        Assert.Empty(misses);
+        Assert.Contains("onwa-hide", dialog.BaselineStopPropagations);
+        Assert.Contains("onwa-tab-show", tabGroup.BaselineStopPropagations);
+    }
+
     #endregion
     #region ------ CEM event corroboration ------
 

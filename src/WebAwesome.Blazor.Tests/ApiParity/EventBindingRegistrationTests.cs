@@ -185,6 +185,24 @@ public class EventBindingRegistrationTests
     }
 
     /// <summary>
+    /// Every wa-* event a wrapper can bind must stop at the wrapper in Blazor's dispatch, whether or not its callback is
+    /// set: Web Awesome's events bubble, so without the stopPropagation a nested wrapper's event would invoke the
+    /// outer wrapper's callback for the same event (a WaSelect closing inside a WaDialog closed the dialog through
+    /// WaDialog.OnHide).
+    /// </summary>
+    [Fact]
+    public void WaEventHandlers_StopAtTheirOwnWrapper()
+    {
+        // guard the harness itself: without a wa-* binding the check passes vacuously
+        var waHandlerCount = RenderedWrapperCatalog.All.SelectMany(w => w.AllHandlers).Count(IsWaEventHandler);
+        Assert.True(waHandlerCount > 0, "No rendered wrapper binds a wa-* event");
+
+        var misses = RenderedWrapperCatalog.All.SelectMany(OwnEventStopPropagationMisses).ToList();
+
+        AssertNoMisses(misses, "wa-* event handlers that do not stop at their own wrapper");
+    }
+
+    /// <summary>
     /// The JS initializer must register every list the registration check reads.
     /// </summary>
     [Fact]
@@ -239,6 +257,23 @@ public class EventBindingRegistrationTests
             yield return $"{wrapper.ComponentType.Name} always binds the relayed '{handler}'; relayed events belong to an EventCallback, bound only when it has a delegate";
     }
 
+    /// <summary>
+    /// Collects the wa-* event handlers of one rendered wrapper that lack Blazor's stopPropagation while the callback is
+    /// not set (the stopPropagation must not depend on the callback, see Constants.WaEventAttributePrefix).
+    /// </summary>
+    /// <param name="wrapper">The rendered wrapper</param>
+    /// <returns>Descriptions of the misses</returns>
+    internal static IEnumerable<string> OwnEventStopPropagationMisses(RenderedWrapper wrapper)
+    {
+        var handlers = wrapper.AllHandlers.Where(IsWaEventHandler).Where(h => !wrapper.BaselineStopPropagations.Contains(h));
+        foreach (var handler in handlers)
+            yield return $"{wrapper.ComponentType.Name} binds '{handler}' without its stopPropagation (bind it with RenderTreeBuilderExtensions.AddAttributeIfHasDelegate, or add AddOwnEventStopPropagation)";
+    }
+
+    // a handler of a Web Awesome event ("onwa-hide"), as opposed to a relay, an alias or a native event
+    private static bool IsWaEventHandler(string handler) => handler.StartsWith(WaEventHandlerPrefix, StringComparison.Ordinal);
+
+    private const string WaEventHandlerPrefix = "onwa-";
     private const string AliasConstantSuffix = "EventAttribute";
     private const string WaEventPrefix = "wa-";
     private const string RelaySourceHost = "host";

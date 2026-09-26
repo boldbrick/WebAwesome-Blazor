@@ -51,6 +51,7 @@ const HARNESS_ROUTES = [
   '/testing/day-content',
   '/testing/sticky-attributes',
   '/testing/toast-items',
+  '/testing/carousel-slides',
 ];
 
 function getComponentRoutes() {

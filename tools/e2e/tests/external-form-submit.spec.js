@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady } = require('./helpers/wa-ready');
 
 // WaButton.Form renders the form="id" content attribute. The attribute left the Web Awesome

@@ -30,6 +30,16 @@ public static class Constants
     internal const string BlazorOwnedAttribute = "data-wablazor-owned";
 
     /// <summary>
+    /// Prefix of the render-tree attribute names of Web Awesome's own events (e.g. "onwa-hide"). Web Awesome's events
+    /// bubble, and Blazor delivers a bubbling event to every handler for it up the tree, so the wa-hide of a nested
+    /// component (a WaSelect closing inside a WaDialog) would also invoke the outer wrapper's callback for the same
+    /// event (WaDialog.OnHide). A wrapper therefore adds Blazor's stopPropagation for every wa-* event it can bind,
+    /// whether or not the callback is set (<see cref="RenderTreeBuilderExtensions.AddAttributeIfHasDelegate{T}"/>):
+    /// each wrapper's callbacks see only the events of its own element and of the plain markup inside it.
+    /// </summary>
+    internal const string WaEventAttributePrefix = "onwa-";
+
+    /// <summary>
     /// Render-tree attribute name of the "wablazor-show" event, the relay of wa-color-picker's wa-show. The JS
     /// initializer (WebAwesome.Blazor.lib.module.js, relayedEvents) re-dispatches an event Blazor cannot receive
     /// where Web Awesome dispatches it (non-bubbling, or with its propagation stopped in the shadow root) as a

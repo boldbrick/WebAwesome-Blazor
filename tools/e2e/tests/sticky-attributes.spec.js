@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady } = require('./helpers/wa-ready');
 
 // Browser proof of the sticky attribute rule (3.12.0, docs\technical.md): when Blazor removes an attribute, Lit sets

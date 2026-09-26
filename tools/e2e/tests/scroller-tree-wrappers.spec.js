@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady } = require('./helpers/wa-ready');
 
 // how long the scroller's content may take to lay out once the element has rendered

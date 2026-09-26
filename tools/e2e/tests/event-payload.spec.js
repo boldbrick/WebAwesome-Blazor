@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady, skipUnlessProUpgrades } = require('./helpers/wa-ready');
 const { PAYLOAD_CASES, PAYLOADS } = require('./helpers/payload-cases');
 

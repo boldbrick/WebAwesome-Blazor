@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady, skipUnlessProUpgrades } = require('./helpers/wa-ready');
 
 // Browser acceptance for the strongly typed date and time wrappers (3.12.0): a real user picks a date, a range and a

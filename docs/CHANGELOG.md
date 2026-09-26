@@ -66,10 +66,12 @@ Most removed or renamed members never worked, so the compiler now points out cod
 - `WaRelativeTime` no longer fails when its parameters change before the element has loaded.
 - `WaTextArea` renders the correct `Size`, `Appearance` and `Resize` values (`xs`/`xl`, `filled-outlined`).
 - A declarative `WaToastItem` no longer crashes Blazor when it closes; remove it from the model in `OnAfterHide`.
+- A wrapper's callbacks no longer fire for the events of a component nested in it: a `WaSelect` closing inside a `WaDialog` no longer raises `WaDialog.OnHide` (which closed the dialog), and nested tab groups, tree items or details no longer reach the outer one's callbacks. A `@onwa-*` handler on a plain element no longer receives the events of wrappers inside it.
 
 ### Library
 - Versioned reference docs refreshed to the `v3.12.0` tag. Test, parity and browser coverage now check the rendered attributes, slots and defaults of every wrapper and the delivery of every event callback; this found most of the fixes above.
 - Demo: all component pages are curated, with new Date Range Input and Date Range Picker pages and examples for per-day content and icon libraries.
+- Browser tests fail whenever Blazor shows its error UI; a new interaction sweep drives every control of every demo page, and each showcase has a flow spec. The Settings showcase shows its saved settings.
 
 ### Public API
 - Baseline promoted; every difference is covered by the entries above.

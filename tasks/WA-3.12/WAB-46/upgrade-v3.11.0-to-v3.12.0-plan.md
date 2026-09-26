@@ -423,3 +423,13 @@ owner-approved remediation on this branch, grouped by sequential agents:
   `MinDate`, ...) sit behind `#if NET11_0_OR_GREATER` / `#error Use a union type here`; when net11.0 is
   targeted, replace them with a C# 15 union type (a deliberate breaking change on that target).
 - `WaDataGrid`'s eight JS accessor-only properties, carried forward (see the next-release check items).
+- **Demo pages of Pro components crash Blazor on the free CDN when a method button is clicked.** The buttons of the
+  Data Grid (auto-size, expand, CSV, copy) and Video Playlist (previous, first, next) examples call the element's
+  methods, which do not exist while the Pro component has not upgraded, so `WebAwesomeJSInterop` throws (by design)
+  and the unhandled exception shows the Blazor error UI. The interaction sweep passes over a button next to a Pro
+  component that did not upgrade and drives it in the Pro pass. Owner to decide whether the demo should disable those
+  buttons (or catch the exception and show a notice) when the Pro assets are missing.
+- The interaction sweep grants the clipboard permission: a headless browser denies `navigator.clipboard.writeText`,
+  so the Data Grid page's "Copy selected rows" (`CopySelectedRowsAsync`, unhandled in the demo) crashed Blazor
+  there, while a real click is a user gesture and succeeds. In a context that denies the clipboard (an iframe
+  without the permission policy) the demo would still crash; same decision as above.

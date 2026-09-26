@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady, skipUnlessProUpgrades } = require('./helpers/wa-ready');
 
 // Browser acceptance for WaDayContent (3.12.0): per-day content rendered into the day-YYYY-MM-DD slots of

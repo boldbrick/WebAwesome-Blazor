@@ -57,7 +57,7 @@ internal static class RenderedWrapperCatalog
             callbacks.Add(new RenderedCallback(property.Name, added, withCallback.Error) { AddedStopPropagations = addedStops });
         }
 
-        return new RenderedWrapper(componentType, baseline.Tag, baseline.Handlers, callbacks, baseline.Error);
+        return new RenderedWrapper(componentType, baseline.Tag, baseline.Handlers, callbacks, baseline.Error) { BaselineStopPropagations = baseline.StopPropagations };
     }
 
     /// <summary>
@@ -568,6 +568,11 @@ internal sealed record RenderedWrapper(
     /// Every event handler attribute name the wrapper renders on its root element in any observed render.
     /// </summary>
     public IEnumerable<string> AllHandlers => BaselineHandlers.Concat(Callbacks.SelectMany(c => c.AddedHandlers)).Distinct(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Handler attribute names with a Blazor-side stopPropagation directive on the root element with no callback set.
+    /// </summary>
+    public IReadOnlySet<string> BaselineStopPropagations { get; init; } = new HashSet<string>(StringComparer.Ordinal);
 }
 
 /// <summary>

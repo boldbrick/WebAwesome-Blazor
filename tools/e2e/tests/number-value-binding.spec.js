@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady } = require('./helpers/wa-ready');
 
 // Number-valued form controls (follow-up to value-sync-binding.spec.js, GitHub issue #1 / WA 3.12.0).

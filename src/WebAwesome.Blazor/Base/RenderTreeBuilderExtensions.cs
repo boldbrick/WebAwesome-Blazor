@@ -482,13 +482,16 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds an event handler attribute to the render tree only when the callback has a delegate attached.
+    /// Adds an event handler attribute to the render tree only when the callback has a delegate attached. For a Web
+    /// Awesome event (a name starting with "onwa-") it also adds Blazor's stopPropagation for it, with or without a
+    /// delegate, so the element's own event is consumed here and a wrapper further up the tree never receives it as
+    /// its own (see <see cref="Constants.WaEventAttributePrefix"/>).
     /// </summary>
     /// <typeparam name="T">Type of the event arguments</typeparam>
     /// <param name="builder">Render tree builder</param>
-    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="sequence">Sequence number for the attribute frames</param>
     /// <param name="name">Event attribute name</param>
-    /// <param name="callback">Event callback; nothing is emitted when no delegate is attached</param>
+    /// <param name="callback">Event callback; no handler is emitted when no delegate is attached</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void AddAttributeIfHasDelegate<T>(this RenderTreeBuilder builder, int sequence, string name, EventCallback<T> callback)
     {
@@ -496,21 +499,43 @@ internal static class RenderTreeBuilderExtensions
         {
             builder.AddAttribute(sequence, name, callback);
         }
+
+        AddOwnEventStopPropagation(builder, sequence, name);
     }
 
     /// <summary>
-    /// Adds an event handler attribute to the render tree only when the callback has a delegate attached.
+    /// Adds an event handler attribute to the render tree only when the callback has a delegate attached, and Blazor's
+    /// stopPropagation for a Web Awesome event; see the generic overload.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
-    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="sequence">Sequence number for the attribute frames</param>
     /// <param name="name">Event attribute name</param>
-    /// <param name="callback">Event callback; nothing is emitted when no delegate is attached</param>
+    /// <param name="callback">Event callback; no handler is emitted when no delegate is attached</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void AddAttributeIfHasDelegate(this RenderTreeBuilder builder, int sequence, string name, EventCallback callback)
     {
         if (callback.HasDelegate)
         {
             builder.AddAttribute(sequence, name, callback);
+        }
+
+        AddOwnEventStopPropagation(builder, sequence, name);
+    }
+
+    /// <summary>
+    /// Adds Blazor's stopPropagation for a Web Awesome event (a name starting with "onwa-"), so the event of the
+    /// wrapper's own element stops at it in Blazor's dispatch and reaches no wrapper further up the tree; any other
+    /// name is left alone. The frame shares the handler's sequence number (attributes are diffed by name).
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number of the event's handler attribute</param>
+    /// <param name="name">Event attribute name</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddOwnEventStopPropagation(this RenderTreeBuilder builder, int sequence, string name)
+    {
+        if (name.StartsWith(Constants.WaEventAttributePrefix, StringComparison.Ordinal))
+        {
+            builder.AddEventStopPropagationAttribute(sequence, name, true);
         }
     }
 

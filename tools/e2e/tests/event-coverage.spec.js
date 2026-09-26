@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { EVENT_CASES, KNOWN_DEFECT_CASES } = require('./helpers/event-cases');
 const { PAYLOAD_CASES } = require('./helpers/payload-cases');
 const { EXTERNAL_COVERAGE, readData, readSpec } = require('./helpers/event-coverage');

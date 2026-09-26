@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -140,6 +140,9 @@ public class WaTabGroup : ComponentBase
         // by the same browser event as OnTabShow
         if (OnTabShow.HasDelegate || OnTabChange.HasDelegate)
             builder.AddAttribute(11, "onwa-tab-show", EventCallback.Factory.Create<WaTabChangeEventArgs>(this, HandleTabShownAsync));
+
+        // a nested tab group's wa-tab-show stops at its own wrapper (see Constants.WaEventAttributePrefix)
+        builder.AddOwnEventStopPropagation(11, "onwa-tab-show");
 
         builder.AddAttributeIfHasDelegate(12, "onwa-tab-hide", OnTabHide);
 

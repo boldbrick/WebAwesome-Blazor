@@ -8,6 +8,41 @@ actually renders the page and a real user interaction fires a real DOM event. Se
 
 ## What's covered
 
+- **Every spec fails when Blazor crashes.** Specs take `test` and `expect` from the common test base
+  `tests\helpers\test.js` instead of `@playwright/test`. Its page fixture watches Blazor's error UI
+  (`#blazor-error-ui`, "An unhandled error has occurred") from the first document on and fails the test when the
+  error UI was shown at any point, even if the test itself passed or navigated away; the failure quotes the console
+  errors logged before it (the .NET exception). `tests\test-base.spec.js` checks that every spec uses the base and,
+  as an expected failure, that the fixture fails a test whose page showed the error UI.
+- `tests\interaction-sweep.spec.js` — drives every demo route except the harness pages the way a curious user
+  would: each enabled control in the page's content area (`main.demo-content`, not the sidebar) once, in document
+  order, with tabs and disclosures after the other visible controls so each panel's content gets its turn. Buttons,
+  switches, checkboxes, radios, tabs, details and accordion items, selects and comboboxes (an option picked), inputs
+  and text areas (a value typed), one-time-code and known-date fields, sliders, ratings, color and date pickers,
+  dropdowns (an item that is not a link picked), tree items, removable tags, pagination, carousels, split panels and
+  comparisons; every dialog, drawer, popover or menu an interaction opens is closed again. Links are never followed,
+  and a button next to a Pro component that did not upgrade (the free CDN) is passed over, because its handler calls
+  the missing element's methods; the Pro pass drives it. The page clock (`page.clock`, installed before the app
+  starts) jumps 6 s after each interaction, twice, so toasts, delays and autoplay finish without real waiting. After
+  each interaction the page must be healthy: no error UI, no page error, no console problem (the sweep's filter,
+  `tests\helpers\page-health.js`), no overlay left open, no navigation away. Pages whose interactions legitimately
+  leave the page list the element in `ROUTE_EXCLUSIONS` with the reason (none today). Each page has a 30 s
+  interaction budget; every test is annotated with how many elements it drove and how long it took, and
+  `E2E_SWEEP_DETAIL=1` lists them.
+- `tests\showcase-*.spec.js` — one flow spec per showcase, with real user tasks and assertions on what Blazor
+  renders: the Overlays invite dialog feeds the typed e-mail and the picked role into the feedback, the drawer,
+  popover and popup open and close (also by Escape), the dropdown items feed the feedback, and the programmatic and
+  declarative toasts show, close and show again; the Registration Form lists each required field's message and follows
+  each correction (completing it needs the Pro `WaDateInput`); the Settings controls update the footer's saved
+  settings and the tabs the section being edited; the Dashboard refresh shows its skeletons and the pagination drives
+  the page caption (and, with Pro, the grid's rows); the Media Gallery carousel reports its slide; the Content tree,
+  tip rotator, split panel, resize, mutation and intersection observers report their payloads. Timers are
+  fast-forwarded with the page clock, never waited for.
+- `tests\carousel-slides.spec.js` — carousel slides rendered from a model with `@key` (`/testing/carousel-slides`,
+  plain and looping): adding a slide, removing the active slide (the last one included) and removing the last slide
+  keep one pagination dot per slide, the active dot, `OnSlideChange` and the navigation in step, without a Blazor
+  error. Removing the active slide keeps the active index, so the next slide shows; removing the active last slide
+  shows the new last slide, or the first one when the carousel loops.
 - `tests\sweep.spec.js` — visits **every** demo route (every component page from
   `api-surface.json`, plus the layout, showcase and harness pages and the home page), waits until every
   free `wa-*` element on it has rendered, and fails on any page error and on every console error or
@@ -125,6 +160,15 @@ tests. So a self-skipping test (a Pro component on the free CDN) must be added t
 
 ## Adding tests
 
+- Take `test` and `expect` from `./helpers/test`, never from `@playwright/test` (`test-base.spec.js` fails
+  otherwise), so the spec fails when Blazor crashes.
+- New demo pages are driven by `interaction-sweep.spec.js` automatically. If one of their interactions legitimately
+  leaves the page (a navigation, a download, a new window), list the element in its `ROUTE_EXCLUSIONS` with the
+  reason; fix any other failure.
+- A new showcase needs a flow spec (`showcase-<name>.spec.js`) with its real user tasks, and its route in
+  `SHOWCASE_ROUTES`; a component worked into a showcase gets steps in that showcase's flow.
+- Assert with polling `expect`, never fixed timeouts; drive timers with the page clock (`openShowcase` with
+  `clock: true`, then `page.clock.fastForward`, or `pauseClock` to hold a state that ends on a timer).
 - New component demo pages are picked up automatically by `sweep.spec.js` (it reads routes
   straight from `api-surface.json`, the same document that drives the demo's own nav) — no
   maintenance needed there.
