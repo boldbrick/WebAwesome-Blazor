@@ -83,75 +83,8 @@ public class WaSlider : WaSliderBase<decimal?>
     }
 
     /// <inheritdoc />
-    protected override void BuildRenderTree(RenderTreeBuilder builder)
-    {
-        var attributes = builder.OpenWaElement(this, 0, "wa-slider");
-
-        // Add common attributes
-        AddCommonAttributes(builder, 1);
-
-        // Add the form control attributes the element declares
-        builder.AddAttribute(7, "readonly", Readonly);
-        AddLabelAndHintAttributes(builder, 12);
-
-        // Add slider-specific attributes
-        builder.AddNumberAttribute(attributes, 20, "min", Min);
-        builder.AddNumberAttribute(attributes, 21, "max", Max);
-        builder.AddNumberAttribute(attributes, 22, "step", Step);
-        builder.AddAttributeIfNotNull(attributes, 23, "indicator-offset", IndicatorOffset);
-        builder.AddAttribute(24, "range", Range);
-        builder.AddAttributeIfNotNull(attributes, 25, "orientation", Orientation?.ToHtmlValue());
-        builder.AddAttribute(26, "with-tooltip", WithTooltip);
-        builder.AddAttribute(27, "with-markers", WithMarkers);
-        builder.AddAttributeIfNotNull(attributes, 28, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 29, "tooltip-distance", TooltipDistance);
-        builder.AddAttribute(33, "autofocus", AutoFocus);
-        AddWithHintAndLabelAttributes(builder, 14);
-
-        // Add value binding - handle both single and range mode; the element's live value is a JS number, which
-        // Blazor's built-in change reader cannot carry, so the handlers listen to the "numericchange" alias of the
-        // change event that delivers it as an invariant-culture string ("min,max" in range mode)
-        if (Range)
-        {
-            // For range mode, set min-value and max-value
-            builder.AddAttributeIfNotNull(attributes, 30, "min-value", MinValue);
-            builder.AddAttributeIfNotNull(attributes, 31, "max-value", MaxValue);
-            builder.AddAttribute(32, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleRangeValueChange));
-        }
-        else
-        {
-            // For single value mode, bind the value
-            builder.AddAttributeIfNotNull(attributes, 30, "value", CurrentValue);
-            builder.AddAttribute(31, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChangeAsync));
-        }
-
-        builder.SetUpdatesAttributeName("value");
-
-        // Add common event handlers; the input event carries the same JS number, so OnInput is bound to its alias
-        AddCommonEventHandlers(builder, 40, includeInputHandler: false);
-        AddNumericInputHandler(builder, 46);
-
-        // Add slider-specific event handlers; OnValueChange is invoked by the single-value change handler above
-        builder.AddAttributeIfHasDelegate(52, "onwa-invalid", OnInvalid);
-
-        // Add element reference capture
-        builder.AddElementReferenceCapture(53, __sliderReference => Element = __sliderReference);
-
-        // Add reference labels; the wrapper takes no box of its own, so each label is an item of the slot's flex row
-        if (ReferenceContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "reference");
-            builder.AddAttribute(62, "style", Constants.TransparentSlotWrapperStyle);
-            builder.AddContent(63, ReferenceContent);
-            builder.CloseElement();
-        }
-
-        // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70);
-
-        builder.CloseElement();
-    }
+    private protected override void AddValueAttribute(RenderTreeBuilder builder, WaAttributeMemory attributes, int sequence)
+        => builder.AddAttributeIfNotNull(attributes, sequence, "value", CurrentValue);
 
     /// <inheritdoc />
     /// <remarks>
@@ -198,7 +131,7 @@ public class WaSlider : WaSliderBase<decimal?>
     // handles the single-value change event, whose value the numericchange alias delivers as a JS-formatted number;
     // records the element's live value (a JS number) before assigning the model and then reports the new value
     // through OnValueChange, and leaves the model unchanged (reporting nothing) when the value cannot be parsed
-    private async Task HandleValueChangeAsync(ChangeEventArgs args)
+    private protected override async Task HandleValueChangeAsync(ChangeEventArgs args)
     {
         var text = args.GetStringValue();
         if (string.IsNullOrEmpty(text))
@@ -220,7 +153,7 @@ public class WaSlider : WaSliderBase<decimal?>
     }
 
     // handles the range-mode change event: assigns and reports each bound that parses
-    private async Task HandleRangeValueChange(ChangeEventArgs args)
+    private protected override async Task HandleRangeValueChangeAsync(ChangeEventArgs args)
     {
         var values = ParseRangeValues(args);
         if (values is null) return;

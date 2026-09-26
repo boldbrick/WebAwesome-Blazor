@@ -1,14 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Components;
 
 namespace WebAwesome.Blazor.Base;
 
 /// <summary>
 /// Base class of the wrappers of wa-slider (<see cref="WaSlider"/> with a nullable value, <see cref="WaRange"/> with
-/// a non-nullable one): declares the element's parameters, content and methods once. The value binding and the
-/// range-mode callbacks, which differ between the two, are declared by each wrapper.
+/// a non-nullable one): declares the element's parameters, content and methods once and renders the element for both.
+/// The value attribute, the change handlers and the range-mode callbacks, which differ between the two, come from each
+/// wrapper through the private protected hooks.
 /// </summary>
 /// <typeparam name="TValue">The type of value bound to the slider</typeparam>
 public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
@@ -181,6 +183,73 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
         await JSInterop.InvokeMethodAsync(Element.Value, "stepUp");
     }
 
+    /// <inheritdoc />
+    protected override void BuildRenderTree(RenderTreeBuilder builder)
+    {
+        var attributes = builder.OpenWaElement(this, 0, "wa-slider");
+
+        // Add common attributes
+        AddCommonAttributes(builder, 1);
+
+        // Add the form control attributes the element declares
+        builder.AddAttribute(7, "readonly", Readonly);
+        AddLabelAndHintAttributes(builder, 12);
+
+        // Add slider-specific attributes
+        builder.AddNumberAttribute(attributes, 20, "min", Min);
+        builder.AddNumberAttribute(attributes, 21, "max", Max);
+        builder.AddNumberAttribute(attributes, 22, "step", Step);
+        builder.AddAttributeIfNotNull(attributes, 23, "indicator-offset", IndicatorOffset);
+        builder.AddAttribute(24, "range", Range);
+        builder.AddAttributeIfNotNull(attributes, 25, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttribute(26, "with-tooltip", WithTooltip);
+        builder.AddAttribute(27, "with-markers", WithMarkers);
+        builder.AddAttributeIfNotNull(attributes, 28, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 29, "tooltip-distance", TooltipDistance);
+        builder.AddAttribute(33, "autofocus", AutoFocus);
+        AddWithHintAndLabelAttributes(builder, 14);
+
+        // Add value binding - handle both single and range mode; the element's live value is a JS number, which
+        // Blazor's built-in change reader cannot carry, so the handlers listen to the "numericchange" alias of the
+        // change event that delivers it as an invariant-culture string ("min,max" in range mode)
+        if (Range)
+        {
+            builder.AddAttributeIfNotNull(attributes, 30, "min-value", MinValue);
+            builder.AddAttributeIfNotNull(attributes, 31, "max-value", MaxValue);
+            builder.AddAttribute(32, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleRangeValueChangeAsync));
+        }
+        else
+        {
+            AddValueAttribute(builder, attributes, 30);
+            builder.AddAttribute(31, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChangeAsync));
+            builder.SetUpdatesAttributeName("value");
+        }
+
+        // Add common event handlers; the input event carries the same JS number, so OnInput is bound to its alias
+        AddCommonEventHandlers(builder, 40, includeInputHandler: false);
+        AddNumericInputHandler(builder, 46);
+
+        // Add slider-specific event handlers; the value change callbacks are invoked by the change handlers above
+        builder.AddAttributeIfHasDelegate(52, "onwa-invalid", OnInvalid);
+
+        // Add element reference capture
+        builder.AddElementReferenceCapture(53, __sliderReference => Element = __sliderReference);
+
+        // Add reference labels; the wrapper takes no box of its own, so each label is an item of the slot's flex row
+        if (ReferenceContent is not null)
+        {
+            builder.OpenElement(60, "span");
+            builder.AddAttribute(61, "slot", "reference");
+            builder.AddAttribute(62, "style", Constants.TransparentSlotWrapperStyle);
+            builder.AddContent(63, ReferenceContent);
+            builder.CloseElement();
+        }
+
+        // Add label and hint slots
+        AddLabelAndHintSlots(builder, 70);
+
+        builder.CloseElement();
+    }
     #region ------ Internals ------
 
     /// <summary>
@@ -201,6 +270,32 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
 
     // separates the min and max value in the range-mode change payload built by the JS initializer
     private const char RangeValueSeparator = ',';
+
+    #endregion
+
+    #region ------ Interface for descendants ------
+
+    /// <summary>
+    /// Adds the single-value mode's value attribute at the given sequence number.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="attributes">The component's attribute memory</param>
+    /// <param name="sequence">The sequence number of the attribute</param>
+    private protected abstract void AddValueAttribute(RenderTreeBuilder builder, WaAttributeMemory attributes, int sequence);
+
+    /// <summary>
+    /// Handles the single-value mode's change event, whose value the numericchange alias delivers as a JS-formatted number.
+    /// </summary>
+    /// <param name="args">The change event arguments</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    private protected abstract Task HandleValueChangeAsync(ChangeEventArgs args);
+
+    /// <summary>
+    /// Handles the range mode's change event, whose payload the numericchange alias delivers as "min,max".
+    /// </summary>
+    /// <param name="args">The change event arguments</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    private protected abstract Task HandleRangeValueChangeAsync(ChangeEventArgs args);
 
     #endregion
 }
