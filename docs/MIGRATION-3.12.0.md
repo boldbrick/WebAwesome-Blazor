@@ -5,7 +5,8 @@ This guide helps you migrate from Web Awesome Blazor 3.11.0 to 3.12.0.
 The Web Awesome 3.12.0 release itself is small and additive: `wa-dropdown-item` gained link attributes. This version of the bindings is still **breaking**, for these reasons:
 
 - It fixes the defects reported in [GitHub issue #1](https://github.com/boldbrick/WebAwesome-Blazor/issues/1).
-- It completes a correctness sweep that makes every enum match the value set Web Awesome accepts, and removes event callbacks that could never fire.
+- It makes every enum match the value set Web Awesome accepts, and removes event callbacks that could never fire (sections 1, 3, 4).
+- It removes parameters and slot content for attributes and slots the element doesn't have, renames the one inconsistently named pair, and makes every parameter default match Web Awesome's (sections 2, 5 to 9).
 - It types the date and time controls (`DateOnly`, `TimeOnly`, `DateTimeOffset`, `WaDateRange`, sets of dates and weekdays) instead of wire-format strings, and splits the range mode into wrappers of its own (section 10).
 - It types every other parameter whose value set or shape is known: closed value sets are enums, the `number | 'any'` step is `WaStep`, lists are collections, event payloads are records, and `WaInput`'s bounds get typed accessors (sections 11 to 14).
 - Parameters at Web Awesome's default no longer render, and a rendered attribute is never removed again (section 15).
@@ -50,7 +51,7 @@ Month names in formatted dates ("August" instead of "8") are a `WaFormatDate` fe
 
 `Rows` was a non-nullable `int` that always rendered `rows="0"`, overriding Web Awesome's default of 4. It is now `int?` and emitted only when set. Assignments such as `Rows="6"` compile unchanged. Only code that reads `Rows` as an `int` needs a change.
 
-`WaTextArea` now derives from `WaInputBase<string?>` like the other text inputs. Its members keep their names and types. It gains `OnKeyDown`/`OnKeyUp`/`OnKeyPress` and `Immediate`, and its `Size`/`Appearance`/`Resize` now render the correct Web Awesome values (`xs`/`xl`, `filled-outlined`), which were previously misspelled.
+`WaTextArea` now derives from `WaInputBase<string?>` (it derived from Blazor's `InputBase<string?>` directly) like the other text inputs. Its members keep their names; the only type changes are the typed browser hints of section 11 (`AutoCapitalize`, `AutoCorrect`, `EnterKeyHint`, `InputMode`). A component derived from `WaTextArea` now inherits the shared form control members and helpers of `WaInputBase`. Its `Size`, `Appearance` and `Resize` values now render as Web Awesome spells them (`xs`/`xl`, `filled-outlined`); before, `WaSize.ExtraSmall` rendered `extrasmall` and `WaInputAppearance.FilledOutlined` rendered `filledoutlined`, which the element ignored, so only CSS or tests that match those misspelled attribute values need a change.
 
 ### 3. Enums now match Web Awesome's value sets (BREAKING)
 
@@ -64,17 +65,18 @@ Every enum parameter now accepts exactly the values its Web Awesome attribute ac
 | `WaPlacement.Start` / `WaPlacement.End` removed (`start`/`end` accepted nowhere) | tooltip, popover, popup, dropdown, color picker | use a side (`Top`, `Bottom`, ...) or an aligned value (`TopStart`, ...) |
 | New `WaListboxPlacement` (`Top`, `Bottom`) | `WaSelect.Placement`, `WaCombobox.Placement` | `WaPlacement.Top/Bottom` → `WaListboxPlacement.Top/Bottom` |
 | New `WaTooltipSide` (`Top`, `Right`, `Bottom`, `Left`) | `WaSlider.TooltipPlacement`, `WaCopyButton.TooltipPlacement` | `WaPlacement.X` → `WaTooltipSide.X` |
-| New `WaPickerPlacement` (`Top`, `TopStart`, `TopEnd`, `Bottom`, `BottomStart`, `BottomEnd`) | `WaDateInput.Placement`, `WaTimeInput.Placement` | `WaPlacement.X` → `WaPickerPlacement.X` |
+| New `WaPickerPlacement` (`Top`, `TopStart`, `TopEnd`, `Bottom`, `BottomStart`, `BottomEnd`) | `WaDateInput.Placement` (and the new `WaDateRangeInput`), `WaTimeInput.Placement` | `WaPlacement.X` → `WaPickerPlacement.X` |
 | `WaRadioAppearance.Normal` → `Default` (emits `default`; `normal` was invalid) | `WaRadio.Appearance` | rename, or leave `Appearance` unset |
 | `WaAutoSize.Width`/`Height` → `Horizontal`/`Vertical` (Web Awesome takes `horizontal`/`vertical`; `width`/`height` silently did nothing) | `WaPopup.AutoSize` | rename |
 | `WaDropdownItemType.Radio` removed (never valid) | `WaDropdownItem.Type` | use `Checkbox`, or a `WaRadioGroup` |
 | New `WaDropdownItemVariant` (`Default`, `Danger`) | `WaDropdownItem.Variant` | `WaVariant.Danger` → `WaDropdownItemVariant.Danger`; other `WaVariant` values were ignored |
 | `WaFormatDate` per-option enums: `Weekday`/`Era` → `WaDateTimeTextStyle`; `Year`/`Day`/`Hour`/`Minute`/`Second` → `WaDateTimeNumericStyle`; `TimeZoneName` → `WaTimeZoneNameStyle`; `Month` keeps `WaDateTimeStyle` | `WaFormatDate` | `WaDateTimeStyle.Numeric` → `WaDateTimeNumericStyle.Numeric`, `WaDateTimeStyle.Long` → `WaDateTimeTextStyle.Long` / `WaTimeZoneNameStyle.Long`. Out-of-range values made `Intl.DateTimeFormat` throw. |
-| `WaHourFormat.Auto` added | `WaFormatDate.HourFormat` | none (additive) |
 | `WaRange.TooltipPlacement` is `WaTooltipSide?` (was `string?`) | `WaRange` | `TooltipPlacement="top"` → `TooltipPlacement="WaTooltipSide.Top"` |
 | `WaTrigger` is a `[Flags]` enum with `Focus` added; `WaTooltip.Trigger` is `WaTrigger?`. Unset means Web Awesome's default `hover focus`, which the old `WaTrigger.Hover` default silently meant. | `WaTooltip` | remove `Trigger="WaTrigger.Hover"`; combine with `\|`, e.g. `WaTrigger.Hover \| WaTrigger.Click` |
 
-Missing union values were added (additive): `WaIconAnimation` gains the nine newer Font Awesome animations (`Flip360`, `SpinSnap`, `SpinSnap4`, `SpinSnap8`, `Buzz`, `Wag`, `Float`, `Swing`, `Jello`); `WaAnimationFill.Auto`; `WaInputType.DateTimeLocal`/`Time`; `WaCurrencyDisplay.NarrowSymbol`; `WaDisplay.Narrow`.
+Values Web Awesome accepts but the enums lacked were added; nothing needs to change for them: `WaIconAnimation` gains the nine newer Font Awesome animations (`Flip360`, `SpinSnap`, `SpinSnap4`, `SpinSnap8`, `Buzz`, `Wag`, `Float`, `Swing`, `Jello`); `WaAnimationFill.Auto`; `WaAttention.None`; `WaInputType.DateTimeLocal`/`Time`; `WaCurrencyDisplay.NarrowSymbol`; `WaDisplay.Narrow`; `WaHourFormat.Auto` (`WaFormatDate.HourFormat`); `WaChartLegendPosition.ChartArea`.
+
+Adding and removing members shifted the numeric values of other members in several enums (for example `WaAppearance`, `WaPlacement`, `WaTrigger`, `WaHourFormat`, `WaCurrencyDisplay`). Code that uses the members by name is unaffected. Code that stores an enum as its number (a database column, a serialized setting) or casts integers to these enums must map the old numbers to the new members, or switch to storing names.
 
 `WaTrigger.Hover` set explicitly now renders `trigger="hover"` (hover only). Previously it omitted the attribute and so meant `hover focus`. Leave `Trigger` unset to keep `hover focus`. The unused `WaDropdownTrigger` and `WaTriggerType` enums are removed (`wa-dropdown` has no `trigger` attribute; nothing consumed either enum).
 
@@ -84,7 +86,7 @@ Missing union values were added (additive): `WaIconAnimation` gains the nine new
 
 ### 4. Event callbacks that never fired (BREAKING)
 
-These callbacks were bound to events Web Awesome never dispatches. No such event name appears anywhere in the compiled Web Awesome 3.0.0 or 3.12.0 sources, so they never fired. They're removed.
+These callbacks were bound to events Web Awesome never dispatches, so they never fired. They're removed; a handler you assigned to one never ran, so removing it changes nothing at runtime.
 
 | Removed | Use instead |
 |---|---|
@@ -100,7 +102,7 @@ These callbacks are **kept and now work**:
 
 ### 5. Parameters for attributes the element doesn't have (BREAKING)
 
-A render-based check now compares every attribute a wrapper renders with the attributes Web Awesome declares. These parameters rendered an attribute the element doesn't have, so they did nothing. They're removed.
+These parameters rendered an attribute the element doesn't have, so they did nothing. They're removed.
 
 | Removed | Why it did nothing | Use instead |
 |---|---|---|
@@ -149,7 +151,7 @@ Derived components that relied on `WaInputBase.AddCommonAttributes` rendering th
 
 ### 7. Slot content the element doesn't have (BREAKING)
 
-A render-based check now compares every slot a wrapper renders content into with the slots Web Awesome declares. These parameters rendered their content into a slot the element doesn't have, so it was never shown. They're removed.
+These parameters rendered their content into a slot the element doesn't have, so it was never shown. They're removed.
 
 | Wrapper | Removed | Why it was never shown | Use instead |
 |---|---|---|---|
@@ -159,9 +161,11 @@ A render-based check now compares every slot a wrapper renders content into with
 | `WaComparison` | `ChildContent` | `wa-comparison` has no default slot, only `before`, `after` and `handle` | `BeforeContent`, `AfterContent` |
 | `WaSlider` | `ChildContent` | `wa-slider` has no default slot; the reference labels it was documented for go into the `reference` slot | `ReferenceContent` (new), e.g. `<ReferenceContent><span>Low</span><span>High</span></ReferenceContent>` |
 
-`MarkupLabel` and `MarkupHint` moved from `WaInputBase` into the form controls whose element declares the `label`/`hint` slot, with the same name, type and behaviour: `MarkupHint` stays on `WaCheckbox` and `WaSwitch`, and both stay on every other form control. The protected `WaInputBase.AddLabelAndHintSlots(builder, sequence)` now takes the fragments, `AddLabelAndHintSlots(builder, sequence, markupLabel, markupHint)`; a derived component passes its own parameters (or `null` for a slot its element lacks).
+`MarkupLabel` and `MarkupHint` moved from `WaInputBase` into the form controls whose element declares the `label`/`hint` slot, with the same name, type and behaviour: `MarkupHint` stays on `WaCheckbox` and `WaSwitch`, and both stay on every other form control except `WaRating`. The protected `WaInputBase.AddLabelAndHintSlots(builder, sequence)` now takes the fragments, `AddLabelAndHintSlots(builder, sequence, markupLabel, markupHint)`; a derived component passes its own parameters (or `null` for a slot its element lacks). A component derived from `WaLabeledInputBase<TValue>` (every labeled control) can keep calling `AddLabelAndHintSlots(builder, sequence)`: that overload passes the control's own `MarkupLabel` and `MarkupHint`.
 
-C# that sets a removed parameter no longer compiles, and neither does Razor child content for `WaSlider`, `WaComparison` or `WaRating`, which now accept none. A `<MarkupLabel>` child element inside `<WaCheckbox>`/`<WaSwitch>` still compiles, with Razor warning RZ10012 ("Found markup element with unexpected name"), and ends up as ordinary label content; move its content into the checkbox's own content.
+C# that sets a removed parameter no longer compiles. Razor child content still compiles, so search for it:
+- Child content of `WaSlider` or `WaComparison`, which now take none, is captured as an unmatched parameter, and rendering then fails in the browser ("Attribute should be an event name, but doesn't start with 'on'. Value: 'ChildContent'"). Move it to the parameter the table names, or remove it.
+- A `<MarkupLabel>` child element inside `<WaCheckbox>`/`<WaSwitch>` compiles with Razor warning RZ10012 ("Found markup element with unexpected name") and ends up as a literal `<MarkupLabel>` element in the label content, so the text still shows. Move its content into the checkbox's own content.
 
 ### 8. Parameter defaults now match Web Awesome's (BREAKING)
 
@@ -180,7 +184,11 @@ Every wrapper parameter now defaults to what the element itself does when the at
 | `WaCallout` | `Appearance` | `WaAppearance.OutlinedFilled`, not rendered (an explicit `OutlinedFilled` could never be set) | `null` (type `WaAppearance?`): the element's own styling | nothing; `Appearance="WaAppearance.OutlinedFilled"` now renders |
 | `WaDropdown` | `Distance` | `8`, not rendered (so the gap was the element's 0, and an explicit 8 could never be set) | `null` (type `int?`): the element's `0` | nothing: an unset dropdown looks as before, and `Distance="8"` now renders an 8px gap |
 
-The first six change what an unset parameter does; set the value shown to keep the previous look. C# that reads one of the parameters whose type became nullable, or `WaPage.MobileBreakpoint`, must handle `null`.
+What to do:
+- The first six rows change what an **unset** parameter does. Where you relied on the old behaviour, set the value in the last column.
+- `WaPage.MobileBreakpoint`: nothing changes in the browser.
+- `WaCallout.Variant`/`Appearance` and `WaDropdown.Distance`: an unset parameter looks as before, but an **explicit** value the old wrapper swallowed now takes effect. Search for `Variant="WaVariant.Neutral"` and `Appearance="WaAppearance.OutlinedFilled"` on `WaCallout`, and `Distance="8"` on `WaDropdown`. Such a callout now renders neutral instead of brand (and filled-outlined instead of the element's own styling), and such a dropdown opens 8px from its trigger instead of touching it. Keep the value if that's what you meant; remove it to keep the look you had.
+- C# that reads one of the parameters whose type became nullable, or `WaPage.MobileBreakpoint` (now `null` by default instead of `"768px"`), must handle `null`.
 
 ### 9. Renamed parameters (BREAKING)
 
@@ -191,7 +199,7 @@ The form control hierarchy now shares one label and hint cluster (`IWaLabeledCon
 | `WaFileInput` | `LabelContent` | `MarkupLabel` | `label` |
 | `WaFileInput` | `HintContent` | `MarkupHint` | `hint` |
 
-Rename them; the type (`RenderFragment?`) and behaviour are unchanged. C# that sets the old names no longer compiles. In Razor, an old `<LabelContent>`/`<HintContent>` child element still compiles, with warning RZ10012 ("Found markup element with unexpected name"), but it becomes child content, which `WaFileInput` doesn't take, so rendering fails at runtime.
+Rename them; the type (`RenderFragment?`) and behaviour are unchanged. C# that sets the old names no longer compiles. In Razor, an old `<LabelContent>`/`<HintContent>` child element still compiles, with warning RZ10012 ("Found markup element with unexpected name"), but it becomes child content, which `WaFileInput` doesn't take: it is captured as an unmatched parameter, and rendering fails in the browser ("Attribute should be an event name, but doesn't start with 'on'. Value: 'ChildContent'").
 
 The other moves of the hierarchy (the label, popup and slider parameters now declared by `WaLabeledInputBase<TValue>`, `WaPopupInputBase<TValue>` and `WaSliderBase<TValue>`) keep every name, type and behaviour and need no change.
 
@@ -275,7 +283,7 @@ Time:
 }
 ```
 
-The value is sent as `HH:mm`, or `HH:mm:ss` when the `Step` shows seconds (below 60, not a whole number of minutes, or `WaStep.Any`; `Step` is a `WaStep?`, section 12), which is the form the element emits itself; fractions of a second are not sent. A bound with seconds renders them (`06:30:45`).
+The value is sent as `HH:mm`, or `HH:mm:ss` when the `Step` shows seconds (a step below 60 seconds or not a whole number of minutes, or `WaStep.Any`; `Step` is a `WaStep?`, section 12), which is the form the element emits itself; fractions of a second are not sent. A bound with seconds renders them (`06:30:45`).
 
 Instants (`WaRelativeTime`, `WaFormatDate`):
 
@@ -371,10 +379,9 @@ List attributes took one string in the element's own list syntax; they now take 
 | `WaColorPicker` | `Swatches` | `string?` (`"#f00; #0f0"`) | `IReadOnlyList<string>?` | `;`-separated (a swatch may contain commas) |
 | `WaFileInput` | `Accept` | `string?` (`"image/*,.pdf"`) | `IReadOnlyList<string>?` | `,`-separated |
 | `WaMutationObserver` | `AttributeFilter` | `string?` (`"class id"`) | `IReadOnlySet<string>?` | ordinal order, space-separated; empty falls back to `Attr` |
-| `WaColorPicker` | `SetSwatchesAsync(colors)` | `string[]` | `IEnumerable<string>` | (source-compatible) |
 | `WaSelect`, `WaCombobox` | `SelectedValues` / `SelectedValuesChanged` | `string[]?` / `EventCallback<string[]?>` | `IReadOnlyList<string>?` / `EventCallback<IReadOnlyList<string>?>` | (bound selection) |
-| `WaColorPicker` | `Value` (`@bind-Value`) | `string` | `string?` | (the only non-nullable text value) |
-| `WaAnimation` | `Iterations` | `decimal?` (`decimal.MaxValue` for Infinity) | `double?` (`double.PositiveInfinity` renders `Infinity`) | invariant number |
+| `WaColorPicker` | `Value` (`@bind-Value`) | `string` | `string?` | (like every other text-valued control; it was the only one bound to a non-nullable `string`) |
+| `WaAnimation` | `Iterations` | `decimal` (`decimal.MaxValue` for Infinity) | `double?` (`double.PositiveInfinity` renders `Infinity`; unset is the element's `Infinity`, see section 8) | invariant number |
 
 ```razor
 @* before *@
@@ -397,6 +404,8 @@ List attributes took one string in the element's own list syntax; they now take 
 <WaSelect Multiple="true" @bind-SelectedValues="toppings" />
 @code { private IReadOnlyList<string>? toppings; private string? color = "#d0021b"; }
 ```
+
+`WaColorPicker.SetSwatchesAsync(colors)` now takes an `IEnumerable<string>` instead of a `string[]`. Calls that pass an array compile unchanged, and any other sequence of colors is accepted too; only code compiled against the old signature (a precompiled library) needs a rebuild.
 
 Event payloads that were `object[]` of raw `JsonElement`s are records now:
 
@@ -448,29 +457,38 @@ A number literal on `Min`/`Max` no longer compiles in C# (it is a string now); i
 
 ### 15. Default values render nothing, and a rendered attribute stays (visible in the markup)
 
-Following the owner rule that an unset parameter emits nothing:
+An unset parameter renders nothing, so the element's own default applies:
 
-- A non-nullable parameter holding Web Awesome's default no longer renders its attribute: `WaSlider` renders no `min`/`max`/`step` by default, `WaInput` no `type="text"`, `WaTooltip` no `placement="top"`, `WaCopyButton` no `feedback-duration="1000"` or `tooltip="full"`, and so on. The element's own default applies, so nothing changes in the browser. Each such default is a public constant on the wrapper, e.g. `WaSlider.DefaultMax`, `WaInput.DefaultType`, `WaCopyButton.DefaultFeedbackDuration`; use it instead of a copied literal.
+- A non-nullable parameter holding Web Awesome's default no longer renders its attribute: `WaSlider` renders no `min`/`max`/`step` by default, `WaInput` no `type="text"`, `WaTooltip` no `placement="top"`, `WaCopyButton` no `feedback-duration="1000"` or `tooltip="full"`, and so on. The element's own default applies, so nothing changes in the browser. Each such default is a public `Default<Name>` member on the wrapper (a constant, or a static read-only field for `decimal` values), e.g. `WaSlider.DefaultMax`, `WaInput.DefaultType`, `WaCopyButton.DefaultFeedbackDuration`; use it instead of a copied literal.
 - Once a wrapper has rendered an attribute, it never removes it: returning a parameter to its default (or a nullable one to null) renders Web Awesome's default explicitly. Removing the attribute made Lit set the element property to null instead of back to its default: a `WaSlider` whose `Max` went from 50 back to 100 got `max = null` (0 in its arithmetic), a `WaTooltip` whose `Distance` went from 20 back to unset got `distance = null`. Boolean attributes are still removed (a removed boolean reads as false, its default), and so are attributes without a Web Awesome default (removal restores the unset state).
 
 Only CSS selectors or tests that match a default attribute in the rendered markup (for example `wa-slider[max="100"]` on first render) need a change.
 
-## Behavioral Changes (non-breaking, but visible)
+## Behavioral Changes (no compile errors, but code may behave differently)
 
-- **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) now uses the invariant culture; the dates and times use their explicit wire formats (section 10).
+These fixes need no change to compile, but code can now behave differently: a handler that never ran now runs, and a workaround for a defect fixed here may now get in the way.
 
-- **C# value changes reach the element after the user has edited it.** In Web Awesome 3 the `value`/`checked` attribute sets only the default, and the element ignores it once the user has interacted. The form controls now also assign the live property after a C#-side change. This makes reset-after-submit, normalizing setters, and "clear"/"select all" buttons work. Affected: `WaInput`, `WaTextArea`, `WaNumberInput`, `WaColorPicker`, `WaDateInput`, `WaKnownDate`, `WaOtpInput`, `WaRadioGroup`, `WaTimeInput`, `WaSlider`, `WaRange`, `WaCheckbox` and `WaSwitch`.
-- **`WaSlider`, `WaRange` and `WaRating` user edits now reach `@bind-Value`.** These elements report their value as a number, which Blazor's built-in change event can't carry. The server rejected every change event, so the bound model never updated. The wrappers now listen on a string-valued alias of the change event.
-- **`SetRangeTextAsync` updates the bound value** on `WaInput` and `WaTextArea` (Web Awesome dispatches no event for it). `EditContext` is notified.
-- **Range-mode `WaSlider` no longer requires `@bind-Value`.** Bind `MinValue`/`MaxValue` only.
-- **`OnFocus`/`OnBlur` now fire on the form controls, `WaButton` and `WaFileInput`.** They never did where the focus lands inside the control's shadow root (every text control, toggle and picker, `WaRadioGroup`, `WaButton`, `WaFileInput`). They now listen to `focusin`/`focusout`, so `FocusEventArgs.Type` is `"focusin"`/`"focusout"` instead of `"focus"`/`"blur"`. Moving the focus inside one control (OTP segments, the two thumbs of a range `WaSlider`/`WaRange`) raises nothing; moving it between a control and its slotted content (from one radio of a `WaRadioGroup` to the next, or into a `WaSelect`'s option list from the keyboard) raises `OnBlur` followed by `OnFocus`, although the focus stays within the control. The callbacks' docs state both cases. `WaRadio`, `WaTab` and `WaDropdownItem` are unchanged.
-- **`WaColorPicker.OnShow`/`OnHide`/`OnAfterShow`/`OnAfterHide`, `WaIntersectionObserver.OnIntersect` and `WaCombobox.OnKeyDown` now fire**, and `WaSelect.OnKeyDown` (and `WaColorPicker.OnKeyDown` for Escape while open) fire for keys pressed in the control itself. Web Awesome dispatches these events where Blazor doesn't listen (non-bubbling, or with the keydown's propagation stopped); the library's JS initializer relays them under private event names, so other listeners on the page see no duplicate events.
+### Callbacks that now fire
+
+- **`OnFocus`/`OnBlur` on the form controls, `WaButton` and `WaFileInput`.** They never fired where the focus lands inside the control's shadow root (every text control, toggle and picker, `WaRadioGroup`, `WaButton`, `WaFileInput`). They now listen to `focusin`/`focusout`, so `FocusEventArgs.Type` is `"focusin"`/`"focusout"` instead of `"focus"`/`"blur"`; update a handler that compares `Type`. Moving the focus inside one control (OTP segments, the two thumbs of a range `WaSlider`/`WaRange`) raises nothing; moving it between a control and its slotted content (from one radio of a `WaRadioGroup` to the next, or into a `WaSelect`'s option list from the keyboard) raises `OnBlur` followed by `OnFocus`, although the focus stays within the control. The callbacks' docs state both cases. `WaRadio`, `WaTab` and `WaDropdownItem` keep `focus`/`blur`.
+- **`WaColorPicker.OnShow`/`OnHide`/`OnAfterShow`/`OnAfterHide`, `WaIntersectionObserver.OnIntersect` and `WaCombobox.OnKeyDown`**, and `WaSelect.OnKeyDown` (and `WaColorPicker.OnKeyDown` for Escape while open) for keys pressed in the control itself. Web Awesome dispatches these events where Blazor doesn't listen (non-bubbling, or with the keydown's propagation stopped); the library's JS initializer relays them under private event names, so other listeners on the page see no duplicate events.
+- **`WaCheckbox`/`WaSwitch.OnCheckedChange`, `WaRadioGroup.OnValueChange`, `WaSlider.OnValueChange` and `WaZoomableFrame.OnLoad`/`OnError`** (section 4), and **`WaDropdownItem.OnFocus`/`OnBlur`**.
+
+A handler you assigned to one of these never ran before. Check that it does what you want now that it runs.
+
+### Workarounds you can remove
+
+- **C# value changes reach the element after the user has edited it.** In Web Awesome 3 the `value`/`checked` attribute sets only the default, and the element ignores it once the user has interacted. The form controls now also assign the element's live property after a C#-side change, so reset-after-submit, normalizing setters and "clear"/"select all" buttons work: `WaInput`, `WaTextArea`, `WaNumberInput`, `WaColorPicker`, `WaDateInput`, `WaKnownDate`, `WaOtpInput`, `WaRadioGroup`, `WaTimeInput`, `WaSlider`, `WaRange`, `WaCheckbox` and `WaSwitch`. Remove workarounds such as forcing a re-render with a changing `@key` or setting `.value` through JS interop.
+- **`WaSlider`, `WaRange` and `WaRating` user edits reach `@bind-Value`.** These elements report their value as a JS number, which Blazor's built-in change event can't carry, so Blazor rejected every change event and the bound model never updated. The wrappers now listen on a string-valued alias of the change event. Remove workarounds that read the value through JS interop or `OnInput`.
+- **Range-mode `WaSlider` no longer requires `@bind-Value`.** Bind `MinValue`/`MaxValue` only; a dummy `@bind-Value` can go.
+- **`SetRangeTextAsync` updates the bound value** on `WaInput` and `WaTextArea` (Web Awesome dispatches no event for it), and the `EditContext` is notified.
+- **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) now uses the invariant culture; the dates and times use their explicit wire formats (section 10). Remove workarounds such as passing preformatted numbers through `AdditionalAttributes` or switching the culture around rendering.
 
 ## New Features
 
 ### Immediate binding — `Immediate` on `WaInput`, `WaTextArea`, `WaNumberInput`
 
-By default the bound value updates when the control commits (`change`, on blur). With `Immediate="true"` it updates on every keystroke. Your `OnInput` handler still runs, after the value has been updated. So a `OnKeyDown` handler such as Ctrl+Enter "send" sees the current text:
+By default the bound value updates when the control commits (`change`, on blur). With `Immediate="true"` it updates on every keystroke. Your `OnInput` handler still runs, after the value has been updated, and so does an `OnKeyDown` handler, so a Ctrl+Enter "send" handler sees the current text:
 
 ```razor
 <WaTextArea @bind-Value="message" Immediate="true" OnKeyDown="HandleKeyDown" />
@@ -534,11 +552,13 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Replace `WaFormat` on `WaRelativeTime` (see section 1)
 - [ ] Update C# code that reads `WaTextArea.Rows` as `int`
 - [ ] Rebuild and fix every compile error against the enum table in section 3. Each one was a value Web Awesome didn't accept, or a type that now matches the component
+- [ ] If you store or cast enum values as numbers, map them to the renumbered members (section 3)
 - [ ] Remove handlers for the callbacks listed in section 4
 - [ ] Remove the parameters listed in section 5 (`WaRadio.Checked`, `WaTab.Closable`, the `WaMutationObserver` and `WaPopup` boundary parameters)
 - [ ] Remove the form control parameters listed in section 6, in C# and in Razor markup (markup keeps compiling)
-- [ ] Move the slot content listed in section 7 (`MarkupLabel` on `WaCheckbox`/`WaSwitch`/`WaRating`, `WaRating.MarkupHint`, `WaComparison`/`WaSlider` child content) to the parameter the table names
+- [ ] Move the slot content listed in section 7 (`MarkupLabel` on `WaCheckbox`/`WaSwitch`/`WaRating`, `WaRating.MarkupHint`, `WaComparison`/`WaSlider` child content) to the parameter the table names. Search the Razor markup: child content of these two still compiles but fails to render in the browser
 - [ ] Check the parameter defaults listed in section 8 (`WaAnimation` `Fill`/`Iterations`, `WaAnimatedImage.Play`, `WaQrCode.ErrorCorrection`, `WaCopyButton` labels, `WaPopup.FlipFallbackStrategy`) and set the old value where you relied on it
+- [ ] Search for explicit `Variant="WaVariant.Neutral"`/`Appearance="WaAppearance.OutlinedFilled"` on `WaCallout` and `Distance="8"` on `WaDropdown`: these now take effect (section 8). Keep them for the new look, or remove them to keep the old one
 - [ ] Rename `WaFileInput.LabelContent`/`HintContent` to `MarkupLabel`/`MarkupHint` (see section 9)
 - [ ] Retype the date and time models, bounds and disabled days (`DateOnly?`, `TimeOnly?`, `DateTimeOffset?`, `IReadOnlySet<DateOnly>`, `IReadOnlySet<DayOfWeek>`), replace `Mode="WaDateSelectionMode.Range"` with `WaDateRangeInput`/`WaDateRangePicker` bound to a `WaDateRange?`, and replace `WaRelativeTime.DateString` (see section 10)
 - [ ] Check every `DateTime` you pass to `WaRelativeTime.Date` or `WaFormatDate.Date`: an unspecified `Kind` now means server-local time (see section 10)
@@ -548,7 +568,8 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Move numeric and date bounds of `WaInput` to the typed accessors (`MinDecimal`, `MinDate`, ...), one per bound (section 14)
 - [ ] Update CSS selectors or tests that match a default attribute (`max="100"`, `type="text"`, `placement="top"`) on first render (section 15)
 - [ ] If you compare `FocusEventArgs.Type` in an `OnFocus`/`OnBlur` handler of a form control, `WaButton` or `WaFileInput`, expect `"focusin"`/`"focusout"`
-- [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), remove the workaround
+- [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), the slider and rating binding, or culture-formatted numbers, remove the workaround (Behavioral Changes)
+- [ ] Check the handlers of callbacks that never fired before and now do (Behavioral Changes, section 4)
 - [ ] Update CSS selectors or tests that match `size="small|medium|large"` to `s|m|l`
 - [ ] (Optional) Adopt `Immediate` where the model must be current during typing
 - [ ] Test all changes thoroughly; update unit tests if needed
