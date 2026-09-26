@@ -52,6 +52,149 @@ namespace WebAwesome.Blazor.Base
         System.Threading.Tasks.Task HideAsync();
         System.Threading.Tasks.Task ShowAsync();
     }
+    public abstract class WaDateInputBase<TValue> : WebAwesome.Blazor.Base.WaPopupInputBase<TValue>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaCalendarOptions, WebAwesome.Blazor.Base.IWaClearableControl
+    {
+        protected WaDateInputBase() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool DisableFuture { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool DisablePast { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? DisabledDates { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? DisabledDaysOfWeek { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Distance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
+        protected override string? LiveValuePropertyName { get; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Max { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Months { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NextIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDatePageBy? PageBy { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaPickerPlacement? Placement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? PreviousIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Today { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaWeekdayFormat? WeekdayFormat { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithOutsideDays { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithWeekNumbers { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ClearAsync() { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+    }
+    public abstract class WaDatePickerBase<TValue> : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IWaCalendarOptions
+    {
+        protected WaDatePickerBase() { }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool DisableFuture { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool DisablePast { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? DisabledDates { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? DisabledDaysOfWeek { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? FocusedDate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? HeaderContent { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Locale { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Max { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? Months { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? NextIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDatePickerFocusDayEventArgs> OnFocusDay { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs> OnInput { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDatePickerViewChangeEventArgs> OnViewChange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDatePageBy? PageBy { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? PreviousIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Today { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public TValue Value { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<TValue> ValueChanged { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaDatePickerView? View { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaWeekdayFormat? WeekdayFormat { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithOutsideDays { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithWeekNumbers { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task ClearAsync() { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task GoToDateAsync(string date) { }
+        public System.Threading.Tasks.Task GoToTodayAsync() { }
+    }
     public abstract class WaInputBase<TValue> : Microsoft.AspNetCore.Components.Forms.InputBase<TValue>, WebAwesome.Blazor.Base.IFormValidation
     {
         protected WaInputBase() { }
@@ -1366,80 +1509,15 @@ namespace WebAwesome.Blazor.Components
         public WaDataGridSortChangeEventArgs() { }
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
     }
-    public class WaDateInput : WebAwesome.Blazor.Base.WaPopupInputBase<string?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaCalendarOptions, WebAwesome.Blazor.Base.IWaClearableControl
+    public class WaDateInput : WebAwesome.Blazor.Base.WaDateInputBase<string?>
     {
         public WaDateInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Autocomplete { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool DisableFuture { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool DisablePast { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? DisabledDates { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? DisabledDaysOfWeek { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? Distance { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
-        protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Max { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxRange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Min { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MinRange { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDateSelectionMode Mode { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? Months { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? NextIconContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaDatePageBy? PageBy { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Pill { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaPickerPlacement? Placement { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? PreviousIconContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Readonly { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Required { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Today { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaWeekdayFormat? WeekdayFormat { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithClear { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithOutsideDays { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithWeekNumbers { get; set; }
-        public System.Threading.Tasks.Task BlurAsync() { }
-        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
-        public System.Threading.Tasks.Task ClearAsync() { }
-        public System.Threading.Tasks.Task FocusAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public enum WaDatePageBy
@@ -1447,85 +1525,15 @@ namespace WebAwesome.Blazor.Components
         Months = 0,
         Single = 1,
     }
-    public class WaDatePicker : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IWaCalendarOptions
+    public class WaDatePicker : WebAwesome.Blazor.Base.WaDatePickerBase<string?>
     {
         public WaDatePicker() { }
-        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
-        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Class { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool DisableFuture { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool DisablePast { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Disabled { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? DisabledDates { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? DisabledDaysOfWeek { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? FocusedDate { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? HeaderContent { get; set; }
-        [Microsoft.AspNetCore.Components.Inject]
-        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Locale { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxRange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Min { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MinRange { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDateSelectionMode? Mode { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? Months { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? NextIconContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDatePickerFocusDayEventArgs> OnFocusDay { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs> OnInput { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaDatePickerViewChangeEventArgs> OnViewChange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaDatePageBy? PageBy { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? PreviousIconContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Readonly { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Style { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Today { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Value { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<string?> ValueChanged { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaDatePickerView? View { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaWeekdayFormat? WeekdayFormat { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithOutsideDays { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithWeekNumbers { get; set; }
-        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
-        public System.Threading.Tasks.Task ClearAsync() { }
-        public System.Threading.Tasks.Task FocusAsync() { }
-        public System.Threading.Tasks.Task GoToDateAsync(string date) { }
-        public System.Threading.Tasks.Task GoToTodayAsync() { }
     }
     public class WaDatePickerFocusDayEventArgs : System.EventArgs
     {

@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
 namespace WebAwesome.Blazor.Components;
@@ -14,50 +12,12 @@ namespace WebAwesome.Blazor.Components;
 /// <remarks>
 /// This is a Pro component.
 /// </remarks>
-public class WaDateInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAffixedControl, IWaCalendarOptions
+public class WaDateInput : WaDateInputBase<string?>
 {
-    #region ------ Form Control Properties ------
-
-    /// <summary>
-    /// Makes the input read-only, allowing its value to be seen but not edited.
-    /// </summary>
-    [Parameter] public bool Readonly { get; set; }
-
-    /// <summary>
-    /// Marks the input as required for form validation.
-    /// </summary>
-    [Parameter] public bool Required { get; set; }
-
-    /// <summary>
-    /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
-    /// </summary>
-    [Parameter] public string? Autocomplete { get; set; }
-
-    #endregion
-
-    #region ------ Visual &amp; Behavior Properties ------
-
-    /// <summary>
-    /// The date input's visual appearance.
-    /// </summary>
-    [Parameter] public WaInputAppearance? Appearance { get; set; }
-
     /// <summary>
     /// Selection mode.
     /// </summary>
     [Parameter] public WaDateSelectionMode Mode { get; set; } = WaDateSelectionMode.Single;
-
-    /// <summary>
-    /// Earliest selectable date as <c>YYYY-MM-DD</c>. A committed value before <see cref="Min"/> fails
-    /// constraint validation with <c>rangeUnderflow</c>.
-    /// </summary>
-    [Parameter] public string? Min { get; set; }
-
-    /// <summary>
-    /// Latest selectable date as <c>YYYY-MM-DD</c>. A committed value after <see cref="Max"/> fails
-    /// constraint validation with <c>rangeOverflow</c>.
-    /// </summary>
-    [Parameter] public string? Max { get; set; }
 
     /// <summary>
     /// Minimum range length in days (range mode only). <c>0</c> disables.
@@ -69,242 +29,7 @@ public class WaDateInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAf
     /// </summary>
     [Parameter] public int? MaxRange { get; set; }
 
-    /// <summary>
-    /// Disable all dates strictly before today.
-    /// </summary>
-    [Parameter] public bool DisablePast { get; set; }
-
-    /// <summary>
-    /// Disable all dates strictly after today.
-    /// </summary>
-    [Parameter] public bool DisableFuture { get; set; }
-
-    /// <summary>
-    /// Dates that cannot be selected. Accepts a whitespace-separated list of ISO dates.
-    /// </summary>
-    [Parameter] public string? DisabledDates { get; set; }
-
-    /// <summary>
-    /// Days of the week that cannot be selected. Accepts a space-separated list of three-letter weekday names.
-    /// </summary>
-    [Parameter] public string? DisabledDaysOfWeek { get; set; }
-
-    /// <summary>
-    /// The first day of the week in the popup calendar.
-    /// </summary>
-    [Parameter] public WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
-
-    /// <summary>
-    /// Number of months rendered in the popup calendar. Either 1 or 2.
-    /// </summary>
-    [Parameter] public int? Months { get; set; }
-
-    /// <summary>
-    /// Whether prev/next pages by the visible range or one month at a time.
-    /// </summary>
-    [Parameter] public WaDatePageBy? PageBy { get; set; }
-
-    /// <summary>
-    /// Weekday header format in the popup calendar.
-    /// </summary>
-    [Parameter] public WaWeekdayFormat? WeekdayFormat { get; set; }
-
-    /// <summary>
-    /// Override "today" as <c>YYYY-MM-DD</c> (defaults to the runtime date).
-    /// </summary>
-    [Parameter] public string? Today { get; set; }
-
-    /// <summary>
-    /// The preferred placement of the date picker popup, above or below the field. When null, the attribute is omitted and
-    /// Web Awesome's default (bottom-start) applies.
-    /// </summary>
-    [Parameter] public WaPickerPlacement? Placement { get; set; }
-
-    /// <summary>
-    /// Distance in pixels between the popup and the input.
-    /// </summary>
-    [Parameter] public int? Distance { get; set; }
-
-    /// <summary>
-    /// Draws a pill-style date input with rounded edges.
-    /// </summary>
-    [Parameter] public bool Pill { get; set; }
-
-    /// <summary>
-    /// Shows a clear button when the date input has a value.
-    /// </summary>
-    [Parameter] public bool WithClear { get; set; }
-
-    /// <summary>
-    /// Show leading/trailing days from adjacent months in the popup calendar.
-    /// </summary>
-    [Parameter] public bool WithOutsideDays { get; set; }
-
-    /// <summary>
-    /// Show ISO 8601 week numbers in the popup calendar.
-    /// </summary>
-    [Parameter] public bool WithWeekNumbers { get; set; }
-
-    #endregion
-
-    #region ------ Events ------
-
-    /// <summary>
-    /// Invoked when the clear button is activated.
-    /// </summary>
-    [Parameter] public EventCallback OnClear { get; set; }
-
-    /// <summary>
-    /// Invoked when the form control has been checked for validity and its constraints aren't satisfied.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
-
-    #endregion
-
-    #region ------ Slots ------
-
-    /// <summary>
-    /// Content placed at the start of the input.
-    /// </summary>
-    [Parameter] public RenderFragment? StartContent { get; set; }
-
-    /// <summary>
-    /// Content placed at the end of the input.
-    /// </summary>
-    [Parameter] public RenderFragment? EndContent { get; set; }
-
-    /// <summary>
-    /// An icon to use in lieu of the default clear icon.
-    /// </summary>
-    [Parameter] public RenderFragment? ClearIconContent { get; set; }
-
-    /// <summary>
-    /// The icon to show on the date picker toggle button. Defaults to a calendar icon.
-    /// </summary>
-    [Parameter] public RenderFragment? ExpandIconContent { get; set; }
-
-    /// <summary>
-    /// Content shown below the date picker inside the popup.
-    /// </summary>
-    [Parameter] public RenderFragment? FooterContent { get; set; }
-
-    /// <summary>
-    /// Icon for the date picker's previous-page button.
-    /// </summary>
-    [Parameter] public RenderFragment? PreviousIconContent { get; set; }
-
-    /// <summary>
-    /// Icon for the date picker's next-page button.
-    /// </summary>
-    [Parameter] public RenderFragment? NextIconContent { get; set; }
-
-    #endregion
-
     #region ------ Overrides ------
-
-    /// <inheritdoc />
-    protected override void BuildRenderTree(RenderTreeBuilder builder)
-    {
-        builder.OpenElement(0, "wa-date-input");
-
-        // Add common attributes
-        AddCommonAttributes(builder, 1);
-
-        // Add the form control attributes the element declares
-        builder.AddAttribute(7, "readonly", Readonly);
-        builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
-        AddLabelAndHintAttributes(builder, 12);
-
-        // Add date-input-specific attributes
-        builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
-        if (Mode != WaDateSelectionMode.Single)
-            builder.AddAttribute(21, "mode", Mode.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(22, "min", Min);
-        builder.AddAttributeIfNotNullOrEmpty(23, "max", Max);
-        builder.AddAttributeIfNotNull(24, "min-range", MinRange);
-        builder.AddAttributeIfNotNull(25, "max-range", MaxRange);
-        builder.AddAttribute(26, "disable-past", DisablePast);
-        builder.AddAttribute(27, "disable-future", DisableFuture);
-        builder.AddAttributeIfNotNullOrEmpty(28, "disabled-dates", DisabledDates);
-        builder.AddAttributeIfNotNullOrEmpty(29, "disabled-days-of-week", DisabledDaysOfWeek);
-        builder.AddAttributeIfNotNull(30, "first-day-of-week", FirstDayOfWeek?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(31, "months", Months);
-        builder.AddAttributeIfNotNull(32, "page-by", PageBy?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(33, "weekday-format", WeekdayFormat?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(34, "today", Today);
-        builder.AddAttributeIfNotNull(35, "placement", Placement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(36, "distance", Distance);
-        builder.AddAttribute(37, "open", Open);
-        builder.AddAttribute(38, "pill", Pill);
-        FormControlRendering.AddWithClearAttribute(builder, 39, this);
-        builder.AddAttribute(40, "with-outside-days", WithOutsideDays);
-        builder.AddAttribute(41, "with-week-numbers", WithWeekNumbers);
-        AddWithHintAndLabelAttributes(builder, 14);
-
-        // Add value binding
-        builder.AddAttribute(45, "value", CurrentValueAsString);
-        builder.AddAttribute(46, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
-        builder.SetUpdatesAttributeName("value");
-
-        // Add common event handlers
-        AddCommonEventHandlers(builder, 50);
-
-        // Add date-input-specific event handlers
-        FormControlRendering.AddClearEventHandler(builder, 60, this);
-        AddPopupEventHandlers(builder, 61);
-        builder.AddAttributeIfHasDelegate(65, "onwa-invalid", OnInvalid);
-
-        // Add element reference capture
-        builder.AddElementReferenceCapture(66, __dateInputReference => Element = __dateInputReference);
-
-        // Add start and end slot content
-        FormControlRendering.AddAffixSlots(builder, 70, this);
-
-        // Add clear-icon slot content
-        FormControlRendering.AddClearIconSlot(builder, 80, this);
-
-        // Add expand-icon slot content
-        if (ExpandIconContent is not null)
-        {
-            builder.OpenElement(85, "span");
-            builder.AddAttribute(86, "slot", "expand-icon");
-            builder.AddContent(87, ExpandIconContent);
-            builder.CloseElement();
-        }
-
-        // Add footer slot content
-        if (FooterContent is not null)
-        {
-            builder.OpenElement(90, "span");
-            builder.AddAttribute(91, "slot", "footer");
-            builder.AddContent(92, FooterContent);
-            builder.CloseElement();
-        }
-
-        // Add previous-icon slot content
-        if (PreviousIconContent is not null)
-        {
-            builder.OpenElement(95, "span");
-            builder.AddAttribute(96, "slot", "previous-icon");
-            builder.AddContent(97, PreviousIconContent);
-            builder.CloseElement();
-        }
-
-        // Add next-icon slot content
-        if (NextIconContent is not null)
-        {
-            builder.OpenElement(100, "span");
-            builder.AddAttribute(101, "slot", "next-icon");
-            builder.AddContent(102, NextIconContent);
-            builder.CloseElement();
-        }
-
-        // Add label and hint slots
-        AddLabelAndHintSlots(builder, 110);
-
-        builder.CloseElement();
-    }
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
@@ -314,50 +39,17 @@ public class WaDateInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAf
         return true;
     }
 
-    /// <inheritdoc />
-    protected override string? LiveValuePropertyName => "value";
-
     #endregion
 
-    #region ------ Public Methods ------
+    #region ------ Internals ------
 
-    /// <summary>
-    /// Sets focus on the first empty (else first) segment.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task FocusAsync()
+    /// <inheritdoc />
+    private protected override void AddSelectionModeAttributes(RenderTreeBuilder builder, int sequence)
     {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot focus the date input before the component is rendered. Element reference is null.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
-    }
-
-    /// <summary>
-    /// Removes focus from the date input.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task BlurAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot blur the date input before the component is rendered. Element reference is null.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
-    }
-
-    /// <summary>
-    /// Clears the current value. No-op when already empty or when disabled/readonly.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ClearAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot clear the date input before the component is rendered. Element reference is null.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "clear");
+        if (Mode != WaDateSelectionMode.Single)
+            builder.AddAttribute(sequence + 0, "mode", Mode.ToHtmlValue());
+        builder.AddAttributeIfNotNull(sequence + 1, "min-range", MinRange);
+        builder.AddAttributeIfNotNull(sequence + 2, "max-range", MaxRange);
     }
 
     #endregion

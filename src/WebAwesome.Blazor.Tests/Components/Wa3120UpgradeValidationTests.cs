@@ -440,6 +440,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
     [
         (typeof(WaLabeledInputBase<>), ["Label", "Hint", "MarkupLabel", "MarkupHint"]),
         (typeof(WaSliderBase<>), ["Readonly"]),
+        (typeof(WaDateInputBase<>), ["Readonly", "Required", "Autocomplete"]),
     ];
 
     // the closed cluster base of the wrapper declaring the parameter, or the wrapper itself

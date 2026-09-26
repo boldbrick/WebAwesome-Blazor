@@ -192,7 +192,7 @@ public enum WaListboxPlacement
 /// <summary>
 /// Preferred placement of the picker popup relative to its field, for the date input and time input components, whose
 /// placement attribute takes 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end'. Used by
-/// <see cref="WaDateInput.Placement"/> and <see cref="WaTimeInput.Placement"/>.
+/// <see cref="Base.WaDateInputBase{TValue}.Placement"/> and <see cref="WaTimeInput.Placement"/>.
 /// </summary>
 public enum WaPickerPlacement
 {

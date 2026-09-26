@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using WebAwesome.Blazor.Components;
 
 namespace WebAwesome.Blazor.Base;
 
@@ -141,7 +142,46 @@ internal static class FormControlRendering
             builder.AddIconSlot(sequence + 5 + AffixIconSequenceOffset, EndSlot, endIconName);
     }
 
+    /// <summary>
+    /// Adds the calendar options wa-date-input and wa-date-picker share, each only when set (a flag when true), at
+    /// sequence + 0..12 in this order: min, max, today, disabled-dates, disabled-days-of-week, disable-past,
+    /// disable-future, first-day-of-week, months, page-by, weekday-format, with-outside-days, with-week-numbers.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number</param>
+    /// <param name="calendar">The calendar options</param>
+    public static void AddCalendarAttributes(RenderTreeBuilder builder, int sequence, IWaCalendarOptions calendar)
+    {
+        builder.AddAttributeIfNotNullOrEmpty(sequence + 0, MinAttribute, calendar.Min);
+        builder.AddAttributeIfNotNullOrEmpty(sequence + 1, MaxAttribute, calendar.Max);
+        builder.AddAttributeIfNotNullOrEmpty(sequence + 2, TodayAttribute, calendar.Today);
+        builder.AddAttributeIfNotNullOrEmpty(sequence + 3, DisabledDatesAttribute, calendar.DisabledDates);
+        builder.AddAttributeIfNotNullOrEmpty(sequence + 4, DisabledDaysOfWeekAttribute, calendar.DisabledDaysOfWeek);
+        builder.AddAttribute(sequence + 5, DisablePastAttribute, calendar.DisablePast);
+        builder.AddAttribute(sequence + 6, DisableFutureAttribute, calendar.DisableFuture);
+        builder.AddAttributeIfNotNull(sequence + 7, FirstDayOfWeekAttribute, calendar.FirstDayOfWeek?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(sequence + 8, MonthsAttribute, calendar.Months);
+        builder.AddAttributeIfNotNull(sequence + 9, PageByAttribute, calendar.PageBy?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(sequence + 10, WeekdayFormatAttribute, calendar.WeekdayFormat?.ToHtmlValue());
+        builder.AddAttribute(sequence + 11, WithOutsideDaysAttribute, calendar.WithOutsideDays);
+        builder.AddAttribute(sequence + 12, WithWeekNumbersAttribute, calendar.WithWeekNumbers);
+    }
+
     #region ------ Internals ------
+
+    private const string MinAttribute = "min";
+    private const string MaxAttribute = "max";
+    private const string TodayAttribute = "today";
+    private const string DisabledDatesAttribute = "disabled-dates";
+    private const string DisabledDaysOfWeekAttribute = "disabled-days-of-week";
+    private const string DisablePastAttribute = "disable-past";
+    private const string DisableFutureAttribute = "disable-future";
+    private const string FirstDayOfWeekAttribute = "first-day-of-week";
+    private const string MonthsAttribute = "months";
+    private const string PageByAttribute = "page-by";
+    private const string WeekdayFormatAttribute = "weekday-format";
+    private const string WithOutsideDaysAttribute = "with-outside-days";
+    private const string WithWeekNumbersAttribute = "with-week-numbers";
 
     private const string WithClearAttribute = "with-clear";
     private const string ClearEventAttribute = "onwa-clear";
