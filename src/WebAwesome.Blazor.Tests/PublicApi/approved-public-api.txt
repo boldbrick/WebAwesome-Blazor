@@ -1552,6 +1552,24 @@ namespace WebAwesome.Blazor.Components
         public static WebAwesome.Blazor.Components.WaDateRange Parse(string value) { }
         public static bool TryParse([System.Diagnostics.CodeAnalysis.NotNullWhen(true)] string? value, out WebAwesome.Blazor.Components.WaDateRange result) { }
     }
+    public class WaDateRangeInput : WebAwesome.Blazor.Base.WaDateInputBase<WebAwesome.Blazor.Components.WaDateRange?>
+    {
+        public WaDateRangeInput() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxRange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinRange { get; set; }
+        protected override string? FormatValueAsString(WebAwesome.Blazor.Components.WaDateRange? value) { }
+        protected override bool TryParseValueFromString(string? value, out WebAwesome.Blazor.Components.WaDateRange? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
+    public class WaDateRangePicker : WebAwesome.Blazor.Base.WaDatePickerBase<WebAwesome.Blazor.Components.WaDateRange?>
+    {
+        public WaDateRangePicker() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxRange { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinRange { get; set; }
+    }
     public enum WaDateTimeNumericStyle
     {
         Numeric = 0,

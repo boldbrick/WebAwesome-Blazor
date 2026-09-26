@@ -5,7 +5,7 @@ using WebAwesome.Blazor.Base;
 namespace WebAwesome.Blazor.Components;
 
 /// <summary>
-/// A range of calendar dates, the value of <c>WaDateRangeInput</c> and <c>WaDateRangePicker</c>. Either
+/// A range of calendar dates, the value of <see cref="WaDateRangeInput"/> and <see cref="WaDateRangePicker"/>. Either
 /// end may be missing: while the user is picking a range, Web Awesome reports the half-filled range as its one date.
 /// </summary>
 /// <remarks>

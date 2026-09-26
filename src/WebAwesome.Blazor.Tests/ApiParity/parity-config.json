@@ -183,6 +183,7 @@
     },
     "wa-date-input": {
       "unrenderedAttributes": [ "mode", "min-range", "max-range" ],
+      "wrapperDefaultAttributes": [ "mode" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ],
@@ -200,6 +201,7 @@
     },
     "wa-date-picker": {
       "unrenderedAttributes": [ "mode", "min-range", "max-range" ],
+      "wrapperDefaultAttributes": [ "mode" ],
       "ignoredEvents": [ "change" ]
     },
     "wa-rating": {
@@ -434,9 +436,11 @@
     "ignoredEvents:wa-known-date:change": "WaKnownDate binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
     "ignoredMethods:wa-known-date:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-known-date to restore or autofill its state; not consumer API and not callable from Blazor",
     "unrenderedAttributes:wa-date-input:mode": "the selection mode is the wrapper's value type since 3.12.0: WaDateInput binds a DateOnly? and leaves mode unset (single), WaDateRangeInput binds a WaDateRange? and always renders mode=\"range\"; no Mode parameter chooses it",
+    "wrapperDefaultAttributes:wa-date-input:mode": "WaDateRangeInput is the range-mode wrapper of wa-date-input: it binds a WaDateRange? and so always renders mode=\"range\" (the element default is single, which WaDateInput leaves unset)",
     "unrenderedAttributes:wa-date-input:min-range": "a range-mode-only option (CEM: range mode only), exposed as MinRange on WaDateRangeInput only; WaDateInput, the single-date wrapper, has no range to constrain",
     "unrenderedAttributes:wa-date-input:max-range": "a range-mode-only option (CEM: range mode only), exposed as MaxRange on WaDateRangeInput only; WaDateInput, the single-date wrapper, has no range to constrain",
     "unrenderedAttributes:wa-date-picker:mode": "the selection mode is the wrapper's value type since 3.12.0: WaDatePicker binds a DateOnly? and leaves mode unset (single), WaDateRangePicker binds a WaDateRange? and always renders mode=\"range\"; no Mode parameter chooses it",
+    "wrapperDefaultAttributes:wa-date-picker:mode": "WaDateRangePicker is the range-mode wrapper of wa-date-picker: it binds a WaDateRange? and so always renders mode=\"range\" (the element default is single, which WaDatePicker leaves unset)",
     "unrenderedAttributes:wa-date-picker:min-range": "a range-mode-only option (CEM: range mode only), exposed as MinRange on WaDateRangePicker only; WaDatePicker, the single-date wrapper, has no range to constrain",
     "unrenderedAttributes:wa-date-picker:max-range": "a range-mode-only option (CEM: range mode only), exposed as MaxRange on WaDateRangePicker only; WaDatePicker, the single-date wrapper, has no range to constrain",
     "ignoredEvents:wa-date-picker:change": "WaDatePicker binds change as its @bind-Value binder (SetValueAsync), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",

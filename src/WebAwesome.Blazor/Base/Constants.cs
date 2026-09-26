@@ -81,6 +81,27 @@ public static class Constants
     internal const string TransparentSlotWrapperStyle = "display: contents";
 
     /// <summary>
+    /// The selection-mode attribute of wa-date-input and wa-date-picker; the range wrappers render it as
+    /// <see cref="RangeModeValue"/>, the single-date wrappers leave it unset (the element default, single).
+    /// </summary>
+    internal const string ModeAttribute = "mode";
+
+    /// <summary>
+    /// The <see cref="ModeAttribute"/> value of the range wrappers.
+    /// </summary>
+    internal const string RangeModeValue = "range";
+
+    /// <summary>
+    /// The minimum range length attribute of wa-date-input and wa-date-picker (range mode only).
+    /// </summary>
+    internal const string MinRangeAttribute = "min-range";
+
+    /// <summary>
+    /// The maximum range length attribute of wa-date-input and wa-date-picker (range mode only).
+    /// </summary>
+    internal const string MaxRangeAttribute = "max-range";
+
+    /// <summary>
     /// Validation message of a date control whose element value is not an ISO date; {0} is the field's display name.
     /// Worded like Blazor's own InputDate.
     /// </summary>

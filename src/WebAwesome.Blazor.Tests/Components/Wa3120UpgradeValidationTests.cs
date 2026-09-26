@@ -433,6 +433,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
         [typeof(WaSelect)] = ["Required", "Label", "Hint", "MarkupLabel", "MarkupHint"],
         [typeof(WaCombobox)] = ["Required", "Label", "Hint", "MarkupLabel", "MarkupHint"],
         [typeof(WaDateInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
+        [typeof(WaDateRangeInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
     };
 
     // the intermediate bases declaring a cluster's parameters for every wrapper under them

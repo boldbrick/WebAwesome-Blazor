@@ -284,6 +284,8 @@ public class LiveValueSyncTests : FormControlTestBase
         new LiveSyncCase<WaNumberInput, decimal?>("wa-number-input", ValueProperty, 1.5m, 2.5m, "2.5", e => e.Change("3.5"), 3.5m),
         new LiveSyncCase<WaColorPicker, string>("wa-color-picker", ValueProperty, "#ff0000", "#00ff00", "#00ff00", e => e.Change("#0000ff"), "#0000ff"),
         new LiveSyncCase<WaDateInput, DateOnly?>("wa-date-input", ValueProperty, new DateOnly(2026, 1, 1), new DateOnly(2026, 2, 2), "2026-02-02", e => e.Change("2026-03-03"), new DateOnly(2026, 3, 3)),
+        new LiveSyncCase<WaDateRangeInput, WaDateRange?>("wa-date-input", ValueProperty, new WaDateRange(new DateOnly(2026, 1, 1), new DateOnly(2026, 1, 5)),
+            new WaDateRange(new DateOnly(2026, 2, 2), null), "2026-02-02", e => e.Change("2026-03-03/2026-03-09"), new WaDateRange(new DateOnly(2026, 3, 3), new DateOnly(2026, 3, 9))),
         new LiveSyncCase<WaKnownDate, string?>("wa-known-date", ValueProperty, "1990-01-01", "1991-02-02", "1991-02-02", e => e.Change("1992-03-03"), "1992-03-03"),
         new LiveSyncCase<WaTimeInput, string?>("wa-time-input", ValueProperty, "09:00:00", "10:30:00", "10:30:00", e => e.Change("11:45:00"), "11:45:00"),
         new LiveSyncCase<WaOtpInput, string?>("wa-otp-input", ValueProperty, "123456", "654321", "654321", e => e.Change("111111"), "111111"),

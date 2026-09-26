@@ -9,7 +9,8 @@ using WebAwesome.Blazor.Components;
 namespace WebAwesome.Blazor.Base;
 
 /// <summary>
-/// Base class of the wrappers of wa-date-picker (<see cref="WaDatePicker"/> for a single date): declares the
+/// Base class of the wrappers of wa-date-picker (<see cref="WaDatePicker"/> for a single date,
+/// <see cref="WaDateRangePicker"/> for a date range): declares the
 /// element's parameters, content, events and methods once and renders the element, including the calendar options
 /// (<see cref="IWaCalendarOptions"/>) through the renderer wa-date-input shares. Each wrapper declares the value
 /// conversion of its value type and the selection-mode attributes that go with it.

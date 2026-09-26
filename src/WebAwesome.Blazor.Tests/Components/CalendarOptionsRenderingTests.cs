@@ -31,6 +31,8 @@ public class CalendarOptionsRenderingTests : BunitContext
     {
         { typeof(WaDateInput), "wa-date-input" },
         { typeof(WaDatePicker), "wa-date-picker" },
+        { typeof(WaDateRangeInput), "wa-date-input" },
+        { typeof(WaDateRangePicker), "wa-date-picker" },
     };
 
     [Theory]
@@ -102,11 +104,14 @@ public class CalendarOptionsRenderingTests : BunitContext
     private AngleSharp.Dom.IElement RenderWrapper(Type wrapper, string tag, params (string Name, object Value)[] parameters)
     {
         DateOnly? value = null;
+        WaDateRange? range = null;
         var cut = Render(builder =>
         {
             builder.OpenComponent(0, wrapper);
             if (typeof(WaDateInputBase<DateOnly?>).IsAssignableFrom(wrapper))
                 builder.AddComponentParameter(1, "ValueExpression", (System.Linq.Expressions.Expression<Func<DateOnly?>>)(() => value));
+            else if (typeof(WaDateInputBase<WaDateRange?>).IsAssignableFrom(wrapper))
+                builder.AddComponentParameter(1, "ValueExpression", (System.Linq.Expressions.Expression<Func<WaDateRange?>>)(() => range));
 
             var sequence = 2;
             foreach (var (name, parameterValue) in parameters)

@@ -590,6 +590,121 @@
       "handlers": []
     },
     {
+      "id": "WaDateRangeInput.OnAfterHide",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnAfterShow",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnBlur",
+      "tag": "wa-date-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnClear",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnFocus",
+      "tag": "wa-date-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnHide",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnInput",
+      "tag": "wa-date-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnInvalid",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnKeyDown",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnKeyPress",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnKeyUp",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnShow",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.ValueChanged",
+      "tag": "wa-date-input",
+      "handlers": []
+    },
+    {
+      "id": "WaDateRangePicker.OnFocusDay",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "wa-focus-day"
+      ]
+    },
+    {
+      "id": "WaDateRangePicker.OnInput",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaDateRangePicker.OnViewChange",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "wa-view-change"
+      ]
+    },
+    {
+      "id": "WaDateRangePicker.ValueChanged",
+      "tag": "wa-date-picker",
+      "handlers": []
+    },
+    {
       "id": "WaDetails.OnAfterHide",
       "tag": "wa-details",
       "handlers": [
