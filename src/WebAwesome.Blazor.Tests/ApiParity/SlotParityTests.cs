@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components;
-using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
 using WebAwesome.Blazor.Tests.Components;
 using Xunit;
@@ -253,6 +252,7 @@ public class SlotParityTests
     private const string ScriptTag = "script";
     private const string ChildContentParameter = "ChildContent";
     private const string SourceVerifiedSlotsKey = "sourceVerifiedSlots";
+    private const string DayContentHostTypeName = "WebAwesome.Blazor.Base.IWaDayContentHost";
     private const char SlotNameSeparator = '-';
 
     // the placeholders a CEM slot name uses for the parts of a date (wa-date-input's day-YYYY-MM-DD), each a whole
@@ -416,7 +416,11 @@ public class SlotParityTests
 
     // whether a fragment parameter is the ChildContent of a day content host, meant for WaDayContent children
     private static bool IsDayContent(Type componentType, PropertyInfo parameter)
-        => parameter.Name == ChildContentParameter && typeof(IWaDayContentHost).IsAssignableFrom(componentType);
+        => parameter.Name == ChildContentParameter && DayContentHostType.IsAssignableFrom(componentType);
+
+    // the internal host interface the date bases implement, looked up by name: the tests see the library's internals
+    // only in Debug builds (InternalsVisibleTo, src\Directory.Build.props)
+    private static readonly Type DayContentHostType = typeof(WaDayContent).Assembly.GetType(DayContentHostTypeName, throwOnError: true)!;
 
     // the sample of a fragment parameter: the marker, or for a day content host's ChildContent the marker inside a
     // WaDayContent (docs\technical.md, "Dynamic slots")
