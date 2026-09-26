@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
@@ -56,14 +55,16 @@ public class WaRelativeTime : ComponentBase
 
     // Relative time properties
     /// <summary>
-    /// The date from which to calculate elapsed time. Takes precedence over <see cref="DateString"/> when set.
+    /// The instant from which to calculate elapsed time. Rendered with its offset (ISO 8601,
+    /// <c>2026-01-02T03:04:05.678+01:00</c>), so the browser reads the same instant in every time zone. When null, the
+    /// attribute is omitted and Web Awesome uses the current time.
     /// </summary>
-    [Parameter] public DateTime? Date { get; set; }
-
-    /// <summary>
-    /// The date from which to calculate elapsed time, as an ISO 8601 string. Used only when <see cref="Date"/> is not set.
-    /// </summary>
-    [Parameter] public string? DateString { get; set; }
+    /// <remarks>
+    /// A <see cref="DateTime"/> converts implicitly: a UTC one (<see cref="DateTimeKind.Utc"/>) keeps its instant, but
+    /// an unspecified or local one takes the offset of the server's time zone. Convert a UTC value read without its kind
+    /// (e.g. from a database column) with <c>DateTime.SpecifyKind(value, DateTimeKind.Utc)</c> first.
+    /// </remarks>
+    [Parameter] public DateTimeOffset? Date { get; set; }
 
     /// <summary>
     /// Keeps the displayed value up to date as time passes.
@@ -103,16 +104,7 @@ public class WaRelativeTime : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add relative time attributes
-        if (Date.HasValue)
-        {
-            // Convert DateTime to ISO 8601 string
-            builder.AddAttribute(10, "date", Date.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffK", CultureInfo.InvariantCulture));
-        }
-        else
-        {
-            builder.AddAttributeIfNotNullOrEmpty(10, "date", DateString);
-        }
-
+        builder.AddDateTimeOffsetAttribute(10, "date", Date);
         builder.AddAttribute(11, "sync", Sync);
         builder.AddAttributeIfNotNull(12, "format", Format?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(13, "lang", Lang);

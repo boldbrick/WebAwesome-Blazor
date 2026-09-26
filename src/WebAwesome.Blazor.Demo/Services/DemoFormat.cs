@@ -18,11 +18,12 @@ public static class DemoFormat
     public static string Iso(DateOnly? date) => date?.ToString(DatePattern, CultureInfo.InvariantCulture) ?? string.Empty;
 
     /// <summary>
-    /// Formats a time as 24-hour <c>HH:mm:ss</c>.
+    /// Formats a time as 24-hour <c>HH:mm</c>, or <c>HH:mm:ss</c> when it has seconds (like the time input's wire value).
     /// </summary>
     /// <param name="time">The time</param>
     /// <returns>The time, or an empty string for null</returns>
-    public static string Iso(TimeOnly? time) => time?.ToString(TimePattern, CultureInfo.InvariantCulture) ?? string.Empty;
+    public static string Iso(TimeOnly? time)
+        => time?.ToString(time.Value.Second != 0 ? TimeWithSecondsPattern : TimePattern, CultureInfo.InvariantCulture) ?? string.Empty;
 
     /// <summary>
     /// Formats a date range as <c>from … to</c> in ISO dates, with <c>?</c> for a missing end.
@@ -35,7 +36,8 @@ public static class DemoFormat
     #region ------ Internals ------
 
     private const string DatePattern = "yyyy-MM-dd";
-    private const string TimePattern = "HH':'mm':'ss";
+    private const string TimePattern = "HH':'mm";
+    private const string TimeWithSecondsPattern = "HH':'mm':'ss";
     private const string MissingEnd = "?";
 
     private static string EndOrMissing(DateOnly? date) => date.HasValue ? Iso(date) : MissingEnd;

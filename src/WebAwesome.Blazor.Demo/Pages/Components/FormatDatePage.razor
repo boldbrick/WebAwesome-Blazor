@@ -3,90 +3,100 @@
 <PageTitle>Format Date</PageTitle>
 
 <h1>Format Date <ComponentBadges Tag="wa-format-date" /></h1>
-<p>Formats a date and time with the browser's <code>Intl.DateTimeFormat</code>, in the page's language. <code>&lt;wa-format-date&gt;</code> wrapped by <code>WaFormatDate</code>. The examples use a fixed date and time zone so they read the same everywhere.</p>
+<p>Formats a date and time with the browser's <code>Intl.DateTimeFormat</code>, in the page's language. <code>Date</code> is a <code>DateTimeOffset?</code>, sent with its offset so every browser reads the same instant (unset formats the current time). <code>&lt;wa-format-date&gt;</code> wrapped by <code>WaFormatDate</code>. The examples use a fixed instant and time zone so they read the same everywhere.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" />
+    <WaFormatDate Date="launch" TimeZone="UTC" />
 </ExampleSection>
 
 <ExampleSection Title="Date Parts" Code="@PartsExample">
     <ul>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Long" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Short" Month="WaDateTimeStyle.Short" Day="WaDateTimeNumericStyle.Numeric" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Narrow" Month="WaDateTimeStyle.Narrow" Day="WaDateTimeNumericStyle.TwoDigit" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.Numeric" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.TwoDigit" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.TwoDigit" Day="WaDateTimeNumericStyle.TwoDigit" Year="WaDateTimeNumericStyle.Numeric" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Era="WaDateTimeTextStyle.Long" Year="WaDateTimeNumericStyle.Numeric" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Long" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Short" Month="WaDateTimeStyle.Short" Day="WaDateTimeNumericStyle.Numeric" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Narrow" Month="WaDateTimeStyle.Narrow" Day="WaDateTimeNumericStyle.TwoDigit" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.Numeric" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.TwoDigit" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.TwoDigit" Day="WaDateTimeNumericStyle.TwoDigit" Year="WaDateTimeNumericStyle.Numeric" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="UTC" Era="WaDateTimeTextStyle.Long" Year="WaDateTimeNumericStyle.Numeric" /></li>
     </ul>
 </ExampleSection>
 
 <ExampleSection Title="Time Formatting" Code="@TimeExample">
     <ul>
-        <li><WaFormatDate Date="2026-09-25T14:30:05Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:05Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.TwoDigit" Minute="WaDateTimeNumericStyle.TwoDigit" Second="WaDateTimeNumericStyle.TwoDigit" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:05Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" Second="WaDateTimeNumericStyle.Numeric" /></li>
+        <li><WaFormatDate Date="launchWithSeconds" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" /></li>
+        <li><WaFormatDate Date="launchWithSeconds" TimeZone="UTC" Hour="WaDateTimeNumericStyle.TwoDigit" Minute="WaDateTimeNumericStyle.TwoDigit" Second="WaDateTimeNumericStyle.TwoDigit" /></li>
+        <li><WaFormatDate Date="launchWithSeconds" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" Second="WaDateTimeNumericStyle.Numeric" /></li>
     </ul>
 </ExampleSection>
 
 <ExampleSection Title="Hour Formatting" Code="@HourFormatExample">
     <ul>
-        <li>Auto: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.Auto" /></li>
-        <li>12-hour: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.Twelve" /></li>
-        <li>24-hour: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.TwentyFour" /></li>
+        <li>Auto: <WaFormatDate Date="launch" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.Auto" /></li>
+        <li>12-hour: <WaFormatDate Date="launch" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.Twelve" /></li>
+        <li>24-hour: <WaFormatDate Date="launch" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.TwentyFour" /></li>
     </ul>
 </ExampleSection>
 
 <ExampleSection Title="Time Zones" Code="@TimeZoneExample">
     <ul>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="America/New_York" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Short" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="Europe/Prague" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Long" /></li>
-        <li><WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="Asia/Tokyo" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Short" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="America/New_York" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Short" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="Europe/Prague" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Long" /></li>
+        <li><WaFormatDate Date="launch" TimeZone="Asia/Tokyo" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Short" /></li>
     </ul>
 </ExampleSection>
 
 <ExampleSection Title="Localization" Code="@LocalizationExample">
     <ul>
-        <li>English: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="en" /></li>
-        <li>French: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="fr" /></li>
-        <li>Czech: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="cs" /></li>
+        <li>English: <WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="en" /></li>
+        <li>French: <WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="fr" /></li>
+        <li>Czech: <WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="cs" /></li>
     </ul>
 </ExampleSection>
 
 <ApiTable Tag="wa-format-date" />
 
 @code {
-    private const string DefaultExample = """<WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" />""";
+    // a fixed instant (14:30 UTC), so the examples read the same in every browser time zone
+    private readonly DateTimeOffset launch = new(2026, 9, 25, 14, 30, 0, TimeSpan.Zero);
+    private readonly DateTimeOffset launchWithSeconds = new(2026, 9, 25, 14, 30, 5, TimeSpan.Zero);
+
+    private const string DefaultExample = """
+        <WaFormatDate Date="launch" TimeZone="UTC" />
+
+        @code {
+            private readonly DateTimeOffset launch = new(2026, 9, 25, 14, 30, 0, TimeSpan.Zero);
+        }
+        """;
 
     private const string PartsExample = """
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Long" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Short" Month="WaDateTimeStyle.Short" Day="WaDateTimeNumericStyle.Numeric" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Narrow" Month="WaDateTimeStyle.Narrow" Day="WaDateTimeNumericStyle.TwoDigit" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.Numeric" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.TwoDigit" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.TwoDigit" Day="WaDateTimeNumericStyle.TwoDigit" Year="WaDateTimeNumericStyle.Numeric" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Era="WaDateTimeTextStyle.Long" Year="WaDateTimeNumericStyle.Numeric" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Long" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Short" Month="WaDateTimeStyle.Short" Day="WaDateTimeNumericStyle.Numeric" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Weekday="WaDateTimeTextStyle.Narrow" Month="WaDateTimeStyle.Narrow" Day="WaDateTimeNumericStyle.TwoDigit" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.Numeric" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.TwoDigit" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.TwoDigit" Day="WaDateTimeNumericStyle.TwoDigit" Year="WaDateTimeNumericStyle.Numeric" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Era="WaDateTimeTextStyle.Long" Year="WaDateTimeNumericStyle.Numeric" />
         """;
 
     private const string TimeExample = """
-        <WaFormatDate Date="2026-09-25T14:30:05Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" />
-        <WaFormatDate Date="2026-09-25T14:30:05Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.TwoDigit" Minute="WaDateTimeNumericStyle.TwoDigit" Second="WaDateTimeNumericStyle.TwoDigit" />
-        <WaFormatDate Date="2026-09-25T14:30:05Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" Second="WaDateTimeNumericStyle.Numeric" />
+        <WaFormatDate Date="launchWithSeconds" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" />
+        <WaFormatDate Date="launchWithSeconds" TimeZone="UTC" Hour="WaDateTimeNumericStyle.TwoDigit" Minute="WaDateTimeNumericStyle.TwoDigit" Second="WaDateTimeNumericStyle.TwoDigit" />
+        <WaFormatDate Date="launchWithSeconds" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" Second="WaDateTimeNumericStyle.Numeric" />
         """;
 
     private const string HourFormatExample = """
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.Auto" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.Twelve" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.TwentyFour" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.Auto" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.Twelve" />
+        <WaFormatDate Date="launch" TimeZone="UTC" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.Numeric" HourFormat="WaHourFormat.TwentyFour" />
         """;
 
     private const string TimeZoneExample = """
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="America/New_York" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Short" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="Europe/Prague" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Long" />
-        <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="Asia/Tokyo" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Short" />
+        <WaFormatDate Date="launch" TimeZone="America/New_York" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Short" />
+        <WaFormatDate Date="launch" TimeZone="Europe/Prague" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Long" />
+        <WaFormatDate Date="launch" TimeZone="Asia/Tokyo" Hour="WaDateTimeNumericStyle.Numeric" Minute="WaDateTimeNumericStyle.TwoDigit" TimeZoneName="WaTimeZoneNameStyle.Short" />
         """;
 
     private const string LocalizationExample = """
-        English: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="en" />
-        French: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="fr" />
-        Czech: <WaFormatDate Date="2026-09-25T14:30:00Z" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="cs" />
+        English: <WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="en" />
+        French: <WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="fr" />
+        Czech: <WaFormatDate Date="launch" TimeZone="UTC" Month="WaDateTimeStyle.Long" Day="WaDateTimeNumericStyle.Numeric" Year="WaDateTimeNumericStyle.Numeric" Lang="cs" />
         """;
 }

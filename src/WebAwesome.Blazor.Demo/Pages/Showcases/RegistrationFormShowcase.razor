@@ -205,14 +205,14 @@ else
         [Required(ErrorMessage = "Please choose your arrival date.")]
         public DateOnly? ArrivalDate { get; set; }
 
-        public string? SessionTime { get; set; }
+        public TimeOnly? SessionTime { get; set; }
 
         [Required(ErrorMessage = "Please enter the verification code we texted you.")]
         [StringLength(6, MinimumLength = 6, ErrorMessage = "The verification code is six digits long.")]
         public string? VerificationCode { get; set; }
 
         [Required(ErrorMessage = "Please provide your date of birth.")]
-        public string? DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
 
         public decimal? Workshops { get; set; } = 1;
 

@@ -30,7 +30,7 @@ public class WaTimeInputIntegrationTests : BunitContext
     {
         // an intentional C# naming choice: the CEM checks see that "12"/"24" are in the union, not that Twelve
         // renders "12" rather than "24"
-        string? value = null;
+        TimeOnly? value = null;
         var cut = Render<WaTimeInput>(parameters => parameters
             .Add(p => p.ValueExpression, () => value)
             .Add(p => p.HourFormat, hourFormat));
@@ -48,7 +48,7 @@ public class WaTimeInputIntegrationTests : BunitContext
     [InlineData(nameof(WaTimeInput.MarkupHint), "hint")]
     public void SlotContent_RendersIntoItsSlot(string parameterName, string slot)
     {
-        string? value = null;
+        TimeOnly? value = null;
         var cut = Render<WaTimeInput>(parameters => parameters
             .Add(p => p.ValueExpression, () => value)
             .TryAdd(parameterName, SlotProbe.Fragment));

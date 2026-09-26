@@ -72,7 +72,7 @@
                 <tr>
                     <td><code>WaKnownDate</code></td>
                     <td><WaKnownDate @ref="knownDate" Label="Birthday" Locale="en-US" data-testid="ev-known-date" @bind-Value="knownDateValue" @attributes="Common(nameof(WaKnownDate))" /></td>
-                    <td><code data-testid="ev-known-date-model">@knownDateValue</code></td>
+                    <td><code data-testid="ev-known-date-model">@DemoFormat.Iso(knownDateValue)</code></td>
                 </tr>
                 <tr>
                     <td><code>WaOtpInput</code></td>
@@ -85,7 +85,7 @@
                 <tr>
                     <td><code>WaTimeInput</code></td>
                     <td><WaTimeInput @ref="timeInput" Label="Time" WithClear="true" data-testid="ev-time-input" @bind-Value="timeValue" @attributes="Common(nameof(WaTimeInput))" OnClear="() => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnClear)))" OnShow="e => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnShow)), e)" OnAfterShow="e => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnAfterShow)), e)" OnHide="e => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnHide)), e)" OnAfterHide="e => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnAfterHide)), e)" /></td>
-                    <td><code data-testid="ev-time-input-model">@timeValue</code></td>
+                    <td><code data-testid="ev-time-input-model">@DemoFormat.Iso(timeValue)</code></td>
                 </tr>
                 <tr>
                     <td><code>WaSelect</code></td>
@@ -160,9 +160,9 @@
     private decimal rangeValue;
     private decimal ratingValue = 2;
     private string colorValue = "#336699";
-    private string? knownDateValue = "2000-01-15";
+    private DateOnly? knownDateValue = new(2000, 1, 15);
     private string? otpValue;
-    private string? timeValue = "09:30";
+    private TimeOnly? timeValue = new(9, 30);
     private string? selectValue = "apple";
     private string[]? selectedToppings;
     // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value

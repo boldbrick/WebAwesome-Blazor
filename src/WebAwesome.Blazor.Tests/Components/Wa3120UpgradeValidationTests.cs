@@ -38,7 +38,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
     public void WaRelativeTime_FormatAndNumeric_DefaultToNull_AndOmitAttributes()
     {
         // Arrange & Act
-        var cut = Render<WaRelativeTime>(p => p.Add(c => c.DateString, SampleDate));
+        var cut = Render<WaRelativeTime>(p => p.Add(c => c.Date, SampleDate));
 
         // Assert - unset means Web Awesome's defaults (long / auto)
         var element = cut.Find("wa-relative-time");
@@ -470,7 +470,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
         return data;
     }
 
-    private const string SampleDate = "2026-01-15T10:00:00Z";
+    private static readonly DateTimeOffset SampleDate = new(2026, 1, 15, 10, 0, 0, TimeSpan.Zero);
 
     private string? textAreaValue;
 

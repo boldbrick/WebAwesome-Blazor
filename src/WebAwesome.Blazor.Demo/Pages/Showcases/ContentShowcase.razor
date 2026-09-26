@@ -160,7 +160,7 @@
 </WaFlank>
 
 @code {
-    private readonly DateTime lastUpdated = DateTime.Now.AddHours(-3);
+    private readonly DateTimeOffset lastUpdated = DateTimeOffset.UtcNow.AddHours(-3);
     private string? selectedDocument;
     private decimal splitPosition = 55;
     private double? observedWidth;

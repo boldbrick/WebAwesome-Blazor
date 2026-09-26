@@ -49,10 +49,10 @@
             <tr>
                 <td><code>WaKnownDate</code></td>
                 <td><WaKnownDate Label="Birthday" Locale="en-US" data-testid="known-date" @bind-Value="knownDateValue" /></td>
-                <td><code data-testid="known-date-model">@knownDateValue</code></td>
+                <td><code data-testid="known-date-model">@DemoFormat.Iso(knownDateValue)</code></td>
                 <td>
                     <WaCluster Gap="GapSize.Gap_S">
-                        <WaButton Size="WaSize.Small" data-testid="known-date-set" OnClick="@(() => knownDateValue = SetKnownDate)">Set @SetKnownDate</WaButton>
+                        <WaButton Size="WaSize.Small" data-testid="known-date-set" OnClick="@(() => knownDateValue = SetKnownDate)">Set @DemoFormat.Iso(SetKnownDate)</WaButton>
                         <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="known-date-reset" OnClick="@(() => knownDateValue = InitialKnownDate)">Reset</WaButton>
                     </WaCluster>
                 </td>
@@ -99,10 +99,10 @@
             <tr>
                 <td><code>WaTimeInput</code></td>
                 <td><WaTimeInput Label="Time" data-testid="time-input" @bind-Value="timeValue" /></td>
-                <td><code data-testid="time-input-model">@timeValue</code></td>
+                <td><code data-testid="time-input-model">@DemoFormat.Iso(timeValue)</code></td>
                 <td>
                     <WaCluster Gap="GapSize.Gap_S">
-                        <WaButton Size="WaSize.Small" data-testid="time-input-set" OnClick="@(() => timeValue = SetTime)">Set @SetTime</WaButton>
+                        <WaButton Size="WaSize.Small" data-testid="time-input-set" OnClick="@(() => timeValue = SetTime)">Set @DemoFormat.Iso(SetTime)</WaButton>
                         <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="time-input-reset" OnClick="@(() => timeValue = InitialTime)">Reset</WaButton>
                     </WaCluster>
                 </td>
@@ -267,16 +267,16 @@
     private const string SetColor = "#00aa55";
     private static readonly DateOnly InitialDate = new(2024, 1, 15);
     private static readonly DateOnly SetDate = new(2025, 6, 30);
-    private const string InitialKnownDate = "2000-01-15";
-    private const string SetKnownDate = "1999-12-31";
+    private static readonly DateOnly InitialKnownDate = new(2000, 1, 15);
+    private static readonly DateOnly SetKnownDate = new(1999, 12, 31);
     private const string InitialOtp = "123456";
     private const string SetOtp = "111222";
     private const string InitialRadio = "alpha";
     private const string SetRadio = "gamma";
     private const decimal InitialSlider = 50;
     private const decimal SetSlider = 80;
-    private const string InitialTime = "09:30";
-    private const string SetTime = "14:45";
+    private static readonly TimeOnly InitialTime = new(9, 30);
+    private static readonly TimeOnly SetTime = new(14, 45);
     private const decimal InitialRange = 30;
     private const decimal SetRange = 70;
     private const decimal InitialRating = 2;
@@ -297,11 +297,11 @@
     private decimal? numberValue = InitialNumber;
     private string colorValue = InitialColor;
     private DateOnly? dateValue = InitialDate;
-    private string? knownDateValue = InitialKnownDate;
+    private DateOnly? knownDateValue = InitialKnownDate;
     private string? otpValue = InitialOtp;
     private string? radioValue = InitialRadio;
     private decimal? sliderValue = InitialSlider;
-    private string? timeValue = InitialTime;
+    private TimeOnly? timeValue = InitialTime;
     private bool switchValue;
     private decimal rangeValue = InitialRange;
     private decimal ratingValue = InitialRating;
@@ -315,14 +315,14 @@
 
     // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
     private string? unusedMultipleValue = null;
-    private DateTime threeHoursAgo;
-    private DateTime oneDayAgo;
+    private DateTimeOffset threeHoursAgo;
+    private DateTimeOffset oneDayAgo;
 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
         // computed once, so re-renders never shift the reference dates
-        var now = DateTime.UtcNow;
+        var now = DateTimeOffset.UtcNow;
         threeHoursAgo = now.AddHours(-RelativeHoursAgo);
         oneDayAgo = now.AddDays(-RelativeDaysAgo);
     }

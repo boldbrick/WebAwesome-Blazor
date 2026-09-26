@@ -2067,7 +2067,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Date { get; set; }
+        public System.DateTimeOffset? Date { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDateTimeNumericStyle? Day { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
@@ -2376,7 +2376,7 @@ namespace WebAwesome.Blazor.Components
         public string? Threshold { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
-    public class WaKnownDate : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
+    public class WaKnownDate : WebAwesome.Blazor.Base.WaLabeledInputBase<System.DateOnly?>
     {
         public WaKnownDate() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2387,9 +2387,9 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Locale { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Max { get; set; }
+        public System.DateOnly? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Min { get; set; }
+        public System.DateOnly? Min { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2401,7 +2401,8 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
-        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+        protected override string? FormatValueAsString(System.DateOnly? value) { }
+        protected override bool TryParseValueFromString(string? value, out System.DateOnly? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public class WaLineChart : WebAwesome.Blazor.Components.WaChartBase
     {
@@ -3148,9 +3149,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public System.DateTime? Date { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? DateString { get; set; }
+        public System.DateTimeOffset? Date { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaRelativeTimeFormat? Format { get; set; }
@@ -3656,7 +3655,7 @@ namespace WebAwesome.Blazor.Components
         Twelve = 1,
         TwentyFour = 2,
     }
-    public class WaTimeInput : WebAwesome.Blazor.Base.WaPopupInputBase<string?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaClearableControl
+    public class WaTimeInput : WebAwesome.Blazor.Base.WaPopupInputBase<System.TimeOnly?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaClearableControl
     {
         public WaTimeInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3677,9 +3676,9 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaTimeHourFormat? HourFormat { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Max { get; set; }
+        public System.TimeOnly? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Min { get; set; }
+        public System.TimeOnly? Min { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3703,7 +3702,8 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
-        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+        protected override string? FormatValueAsString(System.TimeOnly? value) { }
+        protected override bool TryParseValueFromString(string? value, out System.TimeOnly? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public enum WaTimeZoneNameStyle
     {

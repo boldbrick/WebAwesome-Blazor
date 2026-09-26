@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -41,10 +41,17 @@ public class WaFormatDate : ComponentBase
 
     // Date/time properties
     /// <summary>
-    /// The date/time to format. If not set, the current date and time is used. When passing a string, it's
-    /// strongly recommended to use the ISO 8601 format to ensure time zones are handled correctly.
+    /// The instant to format; when null, the attribute is omitted and Web Awesome formats the current date and time.
+    /// Rendered with its offset (ISO 8601, <c>2026-01-02T03:04:05.678+01:00</c>), so the browser reads the same instant
+    /// in every time zone and expresses it in <see cref="TimeZone"/> (or the browser's own).
     /// </summary>
-    [Parameter] public string? Date { get; set; }
+    /// <remarks>
+    /// A <see cref="DateTime"/> converts implicitly: a UTC one keeps its instant, an unspecified or local one takes the
+    /// offset of the server's time zone. For a calendar date, pass it at midnight with the offset of the time zone it is
+    /// shown in, e.g. <c>new DateTimeOffset(date.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero)</c> together with
+    /// <c>TimeZone="UTC"</c>.
+    /// </remarks>
+    [Parameter] public DateTimeOffset? Date { get; set; }
 
     /// <summary>
     /// The locale (BCP 47 language tag) to use when formatting the date. When unset, the browser's default locale is used.
@@ -122,7 +129,7 @@ public class WaFormatDate : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "date", Date);
+        builder.AddDateTimeOffsetAttribute(4, "date", Date);
         builder.AddAttributeIfNotNullOrEmpty(5, "lang", Lang);
         builder.AddAttributeIfNotNull(6, "hour-format", HourFormat?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(7, "time-zone", TimeZone);

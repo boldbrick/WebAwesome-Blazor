@@ -9,9 +9,14 @@ namespace WebAwesome.Blazor.Components;
 
 /// <summary>
 /// An experimental form control for entering a known calendar date as separate day, month, and year fields
-/// (e.g. a birthday). Corresponds to the wa-known-date Web Awesome component.
+/// (e.g. a birthday), bound to a date. Corresponds to the wa-known-date Web Awesome component.
 /// </summary>
-public class WaKnownDate : WaLabeledInputBase<string?>
+/// <remarks>
+/// The value travels as ISO <c>yyyy-MM-dd</c>, culture-free. While a field is only partly filled the element reports
+/// an empty value, which binds as null; a value that is not an ISO date adds the validation message
+/// "The {field} field must be a date." to the edit context.
+/// </remarks>
+public class WaKnownDate : WaLabeledInputBase<DateOnly?>
 {
     #region ------ Form Control Properties ------
 
@@ -45,14 +50,14 @@ public class WaKnownDate : WaLabeledInputBase<string?>
     [Parameter] public string? Locale { get; set; }
 
     /// <summary>
-    /// Earliest selectable date as <c>YYYY-MM-DD</c>.
+    /// The earliest valid date; null sets no bound.
     /// </summary>
-    [Parameter] public string? Min { get; set; }
+    [Parameter] public DateOnly? Min { get; set; }
 
     /// <summary>
-    /// Latest selectable date as <c>YYYY-MM-DD</c>.
+    /// The latest valid date; null sets no bound.
     /// </summary>
-    [Parameter] public string? Max { get; set; }
+    [Parameter] public DateOnly? Max { get; set; }
 
     /// <summary>
     /// Draws pill-style fields with rounded edges.
@@ -89,8 +94,8 @@ public class WaKnownDate : WaLabeledInputBase<string?>
         // Add known-date-specific attributes
         builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(21, "locale", Locale);
-        builder.AddAttributeIfNotNullOrEmpty(22, "min", Min);
-        builder.AddAttributeIfNotNullOrEmpty(23, "max", Max);
+        builder.AddDateAttribute(22, "min", Min);
+        builder.AddDateAttribute(23, "max", Max);
         builder.AddAttribute(24, "pill", Pill);
         AddWithHintAndLabelAttributes(builder, 14);
 
@@ -114,12 +119,34 @@ public class WaKnownDate : WaLabeledInputBase<string?>
         builder.CloseElement();
     }
 
+    /// <summary>
+    /// Formats the value as ISO <c>yyyy-MM-dd</c>, culture-free, the form the element reads; null renders no value.
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The wire string</returns>
+    protected override string? FormatValueAsString(DateOnly? value)
+        => value.HasValue ? WaWireFormat.FormatDate(value.Value) : null;
+
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, out DateOnly? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        result = value;
-        validationErrorMessage = null;
-        return true;
+        if (string.IsNullOrEmpty(value))
+        {
+            result = null;
+            validationErrorMessage = null;
+            return true;
+        }
+
+        if (WaWireFormat.TryParseDate(value, out var date))
+        {
+            result = date;
+            validationErrorMessage = null;
+            return true;
+        }
+
+        result = null;
+        validationErrorMessage = FormatValidationMessage(Constants.DateValidationMessageFormat);
+        return false;
     }
 
     /// <inheritdoc />

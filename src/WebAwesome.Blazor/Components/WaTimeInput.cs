@@ -8,10 +8,16 @@ using WebAwesome.Blazor.Base;
 namespace WebAwesome.Blazor.Components;
 
 /// <summary>
-/// An experimental time picker with segmented text entry and a column-based popup.
+/// An experimental time picker with segmented text entry and a column-based popup, bound to a time of day.
 /// Corresponds to the wa-time-input Web Awesome component.
 /// </summary>
-public class WaTimeInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAffixedControl
+/// <remarks>
+/// The value travels as 24-hour <c>HH:mm</c>, or <c>HH:mm:ss</c> when the <see cref="Step"/> shows seconds (below a
+/// minute, not a whole number of minutes, or "any"), exactly as the element emits it; formatting and parsing are
+/// culture-free, and fractions of a second are not sent. An empty element value binds as null; a value that is not a
+/// wire time adds the validation message "The {field} field must be a time." to the edit context.
+/// </remarks>
+public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWaAffixedControl
 {
     #region ------ Form Control Properties ------
 
@@ -45,14 +51,15 @@ public class WaTimeInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAf
     [Parameter] public WaTimeHourFormat? HourFormat { get; set; }
 
     /// <summary>
-    /// The earliest selectable time in wire format. May be later than <see cref="Max"/> to represent an overnight range.
+    /// The earliest selectable time; null sets no bound. May be later than <see cref="Max"/> to represent an overnight
+    /// range. Rendered as <c>HH:mm</c>, or <c>HH:mm:ss</c> when it has seconds.
     /// </summary>
-    [Parameter] public string? Min { get; set; }
+    [Parameter] public TimeOnly? Min { get; set; }
 
     /// <summary>
-    /// The latest selectable time in wire format.
+    /// The latest selectable time; null sets no bound. Rendered as <c>HH:mm</c>, or <c>HH:mm:ss</c> when it has seconds.
     /// </summary>
-    [Parameter] public string? Max { get; set; }
+    [Parameter] public TimeOnly? Max { get; set; }
 
     /// <summary>
     /// The granularity, in seconds, matching HTML <c>&lt;input type="time"&gt;</c>. The default <c>60</c> hides the
@@ -150,8 +157,8 @@ public class WaTimeInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAf
         // Add time-input-specific attributes
         builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttributeIfNotNull(21, "hour-format", HourFormat?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(22, "min", Min);
-        builder.AddAttributeIfNotNullOrEmpty(23, "max", Max);
+        builder.AddTimeAttribute(22, "min", Min);
+        builder.AddTimeAttribute(23, "max", Max);
         builder.AddAttributeIfNotNullOrEmpty(24, "step", Step);
         builder.AddAttributeIfNotNull(25, "placement", Placement?.ToHtmlValue());
         builder.AddAttributeIfNotNull(26, "distance", Distance);
@@ -207,12 +214,35 @@ public class WaTimeInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAf
         builder.CloseElement();
     }
 
+    /// <summary>
+    /// Formats the value as the element emits it: 24-hour <c>HH:mm</c>, or <c>HH:mm:ss</c> when the <see cref="Step"/>
+    /// shows seconds; culture-free. Null renders no value.
+    /// </summary>
+    /// <param name="value">The value</param>
+    /// <returns>The wire string</returns>
+    protected override string? FormatValueAsString(TimeOnly? value)
+        => value.HasValue ? WaWireFormat.FormatTime(value.Value, WaWireFormat.TimeStepShowsSeconds(Step)) : null;
+
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, out TimeOnly? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        result = value;
-        validationErrorMessage = null;
-        return true;
+        if (string.IsNullOrEmpty(value))
+        {
+            result = null;
+            validationErrorMessage = null;
+            return true;
+        }
+
+        if (WaWireFormat.TryParseTime(value, out var time))
+        {
+            result = time;
+            validationErrorMessage = null;
+            return true;
+        }
+
+        result = null;
+        validationErrorMessage = FormatValidationMessage(Constants.TimeValidationMessageFormat);
+        return false;
     }
 
     /// <inheritdoc />
