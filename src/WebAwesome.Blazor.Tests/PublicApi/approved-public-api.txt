@@ -15,6 +15,16 @@ namespace WebAwesome.Blazor.Base
         bool WithHint { get; }
         bool WithLabel { get; }
     }
+    public interface IWaPopupControl
+    {
+        Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; }
+        Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; }
+        Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; }
+        Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; }
+        bool Open { get; }
+        System.Threading.Tasks.Task HideAsync();
+        System.Threading.Tasks.Task ShowAsync();
+    }
     public abstract class WaInputBase<TValue> : Microsoft.AspNetCore.Components.Forms.InputBase<TValue>, WebAwesome.Blazor.Base.IFormValidation
     {
         protected WaInputBase() { }
@@ -92,6 +102,23 @@ namespace WebAwesome.Blazor.Base
         public string? Style { get; set; }
         protected int AddCommonLayoutAttributes(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string elementName, string baseLayoutClass) { }
         protected string GetCombinedCssClass(string baseLayoutClass) { }
+    }
+    public abstract class WaPopupInputBase<TValue> : WebAwesome.Blazor.Base.WaLabeledInputBase<TValue>, WebAwesome.Blazor.Base.IWaPopupControl
+    {
+        protected WaPopupInputBase() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Open { get; set; }
+        protected void AddPopupEventHandlers(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence) { }
+        public System.Threading.Tasks.Task HideAsync() { }
+        public System.Threading.Tasks.Task ShowAsync() { }
     }
     public class WebAwesomeJSInterop
     {
@@ -856,26 +883,16 @@ namespace WebAwesome.Blazor.Components
         Hsl = 2,
         Hsv = 3,
     }
-    public class WaColorPicker : WebAwesome.Blazor.Base.WaLabeledInputBase<string>
+    public class WaColorPicker : WebAwesome.Blazor.Base.WaPopupInputBase<string>
     {
         public WaColorPicker() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaColorFormat Format { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public bool Opacity { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Open { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaPlacement? Placement { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -891,13 +908,11 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task FocusAsync() { }
         public System.Threading.Tasks.Task<string> GetFormattedValueAsync(WebAwesome.Blazor.Components.WaColorFormat format) { }
         public System.Threading.Tasks.Task<string> GetHexStringAsync() { }
-        public System.Threading.Tasks.Task HideAsync() { }
         public System.Threading.Tasks.Task<bool> ReportValidityAsync() { }
         public System.Threading.Tasks.Task SetSwatchesAsync(string[] colors) { }
-        public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out string result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
-    public class WaCombobox : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
+    public class WaCombobox : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
     {
         public WaCombobox() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -930,21 +945,11 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Multiple { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaCreateEventArgs> OnCreate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Open { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Pill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -969,10 +974,8 @@ namespace WebAwesome.Blazor.Components
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
         protected override object? GetLiveValue() { }
-        public System.Threading.Tasks.Task HideAsync() { }
         protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
         protected override void OnParametersSet() { }
-        public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public class WaComparison : Microsoft.AspNetCore.Components.ComponentBase
@@ -1295,7 +1298,7 @@ namespace WebAwesome.Blazor.Components
         public WaDataGridSortChangeEventArgs() { }
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
     }
-    public class WaDateInput : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
+    public class WaDateInput : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
     {
         public WaDateInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1338,19 +1341,9 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? NextIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Open { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDatePageBy? PageBy { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1379,8 +1372,6 @@ namespace WebAwesome.Blazor.Components
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task ClearAsync() { }
         public System.Threading.Tasks.Task FocusAsync() { }
-        public System.Threading.Tasks.Task HideAsync() { }
-        public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public enum WaDatePageBy
@@ -3189,7 +3180,7 @@ namespace WebAwesome.Blazor.Components
         public bool WithoutShadow { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
-    public class WaSelect : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
+    public class WaSelect : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
     {
         public WaSelect() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3211,19 +3202,9 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Multiple { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Open { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Pill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3246,11 +3227,9 @@ namespace WebAwesome.Blazor.Components
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
         protected override object? GetLiveValue() { }
-        public System.Threading.Tasks.Task HideAsync() { }
         protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
         protected override void OnParametersSet() { }
         public System.Threading.Tasks.Task SetGetTagFunctionAsync(string jsFunction) { }
-        public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public enum WaSize
@@ -3659,7 +3638,7 @@ namespace WebAwesome.Blazor.Components
         Twelve = 1,
         TwentyFour = 2,
     }
-    public class WaTimeInput : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
+    public class WaTimeInput : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
     {
         public WaTimeInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3684,19 +3663,9 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Min { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnHide { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnShow { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Open { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Pill { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3716,8 +3685,6 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
-        public System.Threading.Tasks.Task HideAsync() { }
-        public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public enum WaTimeZoneNameStyle

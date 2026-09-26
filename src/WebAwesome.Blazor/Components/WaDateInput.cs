@@ -14,7 +14,7 @@ namespace WebAwesome.Blazor.Components;
 /// <remarks>
 /// This is a Pro component.
 /// </remarks>
-public class WaDateInput : WaLabeledInputBase<string?>
+public class WaDateInput : WaPopupInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -126,11 +126,6 @@ public class WaDateInput : WaLabeledInputBase<string?>
     [Parameter] public int? Distance { get; set; }
 
     /// <summary>
-    /// Whether the popup calendar is open.
-    /// </summary>
-    [Parameter] public bool Open { get; set; }
-
-    /// <summary>
     /// Draws a pill-style date input with rounded edges.
     /// </summary>
     [Parameter] public bool Pill { get; set; }
@@ -158,26 +153,6 @@ public class WaDateInput : WaLabeledInputBase<string?>
     /// Invoked when the clear button is activated.
     /// </summary>
     [Parameter] public EventCallback OnClear { get; set; }
-
-    /// <summary>
-    /// Invoked when the popup is about to open. Cancelable on the underlying element.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
-
-    /// <summary>
-    /// Invoked when the popup is about to close. Cancelable on the underlying element.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
-
-    /// <summary>
-    /// Invoked after the popup opens and animations complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
-
-    /// <summary>
-    /// Invoked after the popup closes and animations complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
     /// <summary>
     /// Invoked when the form control has been checked for validity and its constraints aren't satisfied.
@@ -277,10 +252,7 @@ public class WaDateInput : WaLabeledInputBase<string?>
 
         // Add date-input-specific event handlers
         builder.AddAttributeIfHasDelegate(60, "onwa-clear", OnClear);
-        builder.AddAttributeIfHasDelegate(61, "onwa-show", OnShow);
-        builder.AddAttributeIfHasDelegate(62, "onwa-hide", OnHide);
-        builder.AddAttributeIfHasDelegate(63, "onwa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(64, "onwa-after-hide", OnAfterHide);
+        AddPopupEventHandlers(builder, 61);
         builder.AddAttributeIfHasDelegate(65, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
@@ -407,32 +379,6 @@ public class WaDateInput : WaLabeledInputBase<string?>
             throw new InvalidOperationException("Cannot clear the date input before the component is rendered. Element reference is null.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "clear");
-    }
-
-    /// <summary>
-    /// Opens the popup calendar.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ShowAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot show the popup before the component is rendered. Element reference is null.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
-    }
-
-    /// <summary>
-    /// Closes the popup calendar.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task HideAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot hide the popup before the component is rendered. Element reference is null.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
     }
 
     #endregion

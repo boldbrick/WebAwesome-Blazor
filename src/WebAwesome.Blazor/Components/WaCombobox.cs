@@ -16,7 +16,7 @@ namespace WebAwesome.Blazor.Components;
 /// <remarks>
 /// This is a Pro component.
 /// </remarks>
-public class WaCombobox : WaLabeledInputBase<string?>
+public class WaCombobox : WaPopupInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -69,11 +69,6 @@ public class WaCombobox : WaLabeledInputBase<string?>
     /// keep the listbox inside the viewport. When null, the attribute is omitted and Web Awesome's default (bottom) applies.
     /// </summary>
     [Parameter] public WaListboxPlacement? Placement { get; set; }
-
-    /// <summary>
-    /// Indicates whether the combobox's listbox is open.
-    /// </summary>
-    [Parameter] public bool Open { get; set; }
 
     /// <summary>
     /// When true, if the user types text that does not match any existing option, a "Create [value]" option
@@ -130,26 +125,6 @@ public class WaCombobox : WaLabeledInputBase<string?>
     /// Invoked when the control's value is cleared.
     /// </summary>
     [Parameter] public EventCallback OnClear { get; set; }
-
-    /// <summary>
-    /// Invoked when the combobox's listbox opens.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
-
-    /// <summary>
-    /// Invoked when the combobox's listbox closes.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
-
-    /// <summary>
-    /// Invoked after the combobox's listbox opens and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
-
-    /// <summary>
-    /// Invoked after the combobox's listbox closes and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
     /// <summary>
     /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
@@ -257,10 +232,7 @@ public class WaCombobox : WaLabeledInputBase<string?>
         // Add combobox-specific event handlers
         builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
         builder.AddAttributeIfHasDelegate(51, "onwa-create", OnCreate);
-        builder.AddAttributeIfHasDelegate(52, "onwa-show", OnShow);
-        builder.AddAttributeIfHasDelegate(53, "onwa-hide", OnHide);
-        builder.AddAttributeIfHasDelegate(54, "onwa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(55, "onwa-after-hide", OnAfterHide);
+        AddPopupEventHandlers(builder, 52);
         builder.AddAttributeIfHasDelegate(56, "onwa-invalid", OnInvalid);
 
         // the keydown is relayed, because the element stops its propagation in the shadow root
@@ -431,32 +403,6 @@ public class WaCombobox : WaLabeledInputBase<string?>
             throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "focus");
-    }
-
-    /// <summary>
-    /// Hides the combobox's listbox.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task HideAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot hide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
-    }
-
-    /// <summary>
-    /// Shows the combobox's listbox.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ShowAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot show: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
     }
 
     #endregion

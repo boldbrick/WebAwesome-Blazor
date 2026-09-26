@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace WebAwesome.Blazor.Components;
 /// A color picker input component that allows users to select colors.
 /// Corresponds to the wa-color-picker Web Awesome component.
 /// </summary>
-public class WaColorPicker : WaLabeledInputBase<string>
+public class WaColorPicker : WaPopupInputBase<string>
 {
     #region ------ Form Control Properties ------
 
@@ -49,11 +49,6 @@ public class WaColorPicker : WaLabeledInputBase<string>
     [Parameter] public string? Swatches { get; set; }
 
     /// <summary>
-    /// Indicates whether the color picker's dropdown is open.
-    /// </summary>
-    [Parameter] public bool Open { get; set; }
-
-    /// <summary>
     /// Renders the color format toggle and hex input using uppercase letters.
     /// </summary>
     [Parameter] public bool Uppercase { get; set; }
@@ -67,26 +62,6 @@ public class WaColorPicker : WaLabeledInputBase<string>
     #endregion
 
     #region ------ Events ------
-
-    /// <summary>
-    /// Invoked when the color picker's dropdown opens.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
-
-    /// <summary>
-    /// Invoked when the color picker's dropdown closes.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
-
-    /// <summary>
-    /// Invoked after the color picker's dropdown opens and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
-
-    /// <summary>
-    /// Invoked after the color picker's dropdown closes and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
     /// <summary>
     /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
@@ -129,10 +104,7 @@ public class WaColorPicker : WaLabeledInputBase<string>
 
         // Add color picker-specific event handlers; the popup events are relayed, because the element dispatches
         // them as non-bubbling events, which Blazor never receives
-        builder.AddRelayedEventIfHasDelegate(56, Constants.RelayedShowEventAttribute, OnShow);
-        builder.AddRelayedEventIfHasDelegate(58, Constants.RelayedHideEventAttribute, OnHide);
-        builder.AddRelayedEventIfHasDelegate(60, Constants.RelayedAfterShowEventAttribute, OnAfterShow);
-        builder.AddRelayedEventIfHasDelegate(62, Constants.RelayedAfterHideEventAttribute, OnAfterHide);
+        AddPopupEventHandlers(builder, 56);
         builder.AddAttributeIfHasDelegate(64, "onwa-invalid", OnInvalid);
 
         // the keydown is relayed too, because the element stops the propagation of Escape while it is open
@@ -160,6 +132,12 @@ public class WaColorPicker : WaLabeledInputBase<string>
 
     /// <inheritdoc />
     internal override bool RelaysKeyDown => true;
+
+    /// <summary>
+    /// wa-color-picker dispatches its popup events as non-bubbling CustomEvents, which Blazor never receives, so
+    /// their relays are bound.
+    /// </summary>
+    internal override bool RelaysPopupEvents => true;
 
     #endregion
 
@@ -237,19 +215,6 @@ public class WaColorPicker : WaLabeledInputBase<string>
     }
 
     /// <summary>
-    /// Hides the color picker's dropdown.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task HideAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot hide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
-    }
-
-    /// <summary>
     /// Checks the validity of the color picker and shows the browser's validation message if it is invalid.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result is true if the value is valid</returns>
@@ -260,19 +225,6 @@ public class WaColorPicker : WaLabeledInputBase<string>
             throw new InvalidOperationException("Cannot report validity: component has not been rendered yet.");
 
         return await JSInterop.InvokeMethodAsync<bool>(Element.Value, "reportValidity");
-    }
-
-    /// <summary>
-    /// Shows the color picker's dropdown.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ShowAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot show: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
     }
 
     #endregion

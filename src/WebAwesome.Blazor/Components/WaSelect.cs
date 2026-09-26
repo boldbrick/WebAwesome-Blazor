@@ -13,7 +13,7 @@ namespace WebAwesome.Blazor.Components;
 /// A select component that allows choosing items from a menu of predefined options.
 /// Corresponds to the wa-select Web Awesome component.
 /// </summary>
-public class WaSelect : WaLabeledInputBase<string?>
+public class WaSelect : WaPopupInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -62,11 +62,6 @@ public class WaSelect : WaLabeledInputBase<string?>
     /// </summary>
     [Parameter] public WaListboxPlacement? Placement { get; set; }
 
-    /// <summary>
-    /// Indicates whether the select's dropdown is open.
-    /// </summary>
-    [Parameter] public bool Open { get; set; }
-
     #endregion
 
     #region ------ Multiple Selection Support ------
@@ -89,26 +84,6 @@ public class WaSelect : WaLabeledInputBase<string?>
     /// Invoked when the control's value is cleared.
     /// </summary>
     [Parameter] public EventCallback OnClear { get; set; }
-
-    /// <summary>
-    /// Invoked when the select's dropdown opens.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
-
-    /// <summary>
-    /// Invoked when the select's dropdown closes.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
-
-    /// <summary>
-    /// Invoked after the select's dropdown opens and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
-
-    /// <summary>
-    /// Invoked after the select's dropdown closes and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
     /// <summary>
     /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
@@ -216,10 +191,7 @@ public class WaSelect : WaLabeledInputBase<string?>
 
         // Add select-specific event handlers
         builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
-        builder.AddAttributeIfHasDelegate(52, "onwa-show", OnShow);
-        builder.AddAttributeIfHasDelegate(53, "onwa-hide", OnHide);
-        builder.AddAttributeIfHasDelegate(54, "onwa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(55, "onwa-after-hide", OnAfterHide);
+        AddPopupEventHandlers(builder, 52);
         builder.AddAttributeIfHasDelegate(56, "onwa-invalid", OnInvalid);
 
         // the keydown is relayed, because the element stops its propagation in the shadow root
@@ -409,32 +381,6 @@ public class WaSelect : WaLabeledInputBase<string?>
             throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "focus");
-    }
-
-    /// <summary>
-    /// Hides the select's dropdown.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task HideAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot hide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
-    }
-
-    /// <summary>
-    /// Shows the select's dropdown.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ShowAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot show: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
     }
 
     #endregion

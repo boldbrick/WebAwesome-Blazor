@@ -63,7 +63,39 @@ internal static class FormControlRendering
     public static int AddLabelAndHintSlots(RenderTreeBuilder builder, int sequence, IWaLabeledControl control)
         => AddLabelAndHintSlots(builder, sequence, control.MarkupLabel, control.MarkupHint);
 
+    /// <summary>
+    /// Adds the handlers of the popup events, each only when its callback is set, in the order show, hide,
+    /// after-show, after-hide: the wa-* events at sequence + 0..3, or, for an element that dispatches them as
+    /// non-bubbling events, their relays (with Blazor's stopPropagation, see
+    /// <see cref="RenderTreeBuilderExtensions.AddRelayedEventIfHasDelegate{T}"/>) at sequence + 0..7.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number</param>
+    /// <param name="control">The popup control</param>
+    /// <param name="relayed">Whether to bind the relayed events instead of the wa-* events</param>
+    public static void AddPopupEventHandlers(RenderTreeBuilder builder, int sequence, IWaPopupControl control, bool relayed)
+    {
+        if (relayed)
+        {
+            builder.AddRelayedEventIfHasDelegate(sequence + 0, Constants.RelayedShowEventAttribute, control.OnShow);
+            builder.AddRelayedEventIfHasDelegate(sequence + 2, Constants.RelayedHideEventAttribute, control.OnHide);
+            builder.AddRelayedEventIfHasDelegate(sequence + 4, Constants.RelayedAfterShowEventAttribute, control.OnAfterShow);
+            builder.AddRelayedEventIfHasDelegate(sequence + 6, Constants.RelayedAfterHideEventAttribute, control.OnAfterHide);
+            return;
+        }
+
+        builder.AddAttributeIfHasDelegate(sequence + 0, ShowEventAttribute, control.OnShow);
+        builder.AddAttributeIfHasDelegate(sequence + 1, HideEventAttribute, control.OnHide);
+        builder.AddAttributeIfHasDelegate(sequence + 2, AfterShowEventAttribute, control.OnAfterShow);
+        builder.AddAttributeIfHasDelegate(sequence + 3, AfterHideEventAttribute, control.OnAfterHide);
+    }
+
     #region ------ Internals ------
+
+    private const string ShowEventAttribute = "onwa-show";
+    private const string HideEventAttribute = "onwa-hide";
+    private const string AfterShowEventAttribute = "onwa-after-show";
+    private const string AfterHideEventAttribute = "onwa-after-hide";
 
     // the label and hint attributes share their names with their slots
     private const string LabelSlot = "label";
