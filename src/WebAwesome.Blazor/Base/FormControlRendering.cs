@@ -90,7 +90,67 @@ internal static class FormControlRendering
         builder.AddAttributeIfHasDelegate(sequence + 3, AfterHideEventAttribute, control.OnAfterHide);
     }
 
+    /// <summary>
+    /// Adds the "with-clear" flag (present when true).
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant sequence number</param>
+    /// <param name="control">The clearable control</param>
+    public static void AddWithClearAttribute(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
+        => builder.AddAttribute(sequence, WithClearAttribute, control.WithClear);
+
+    /// <summary>
+    /// Adds the wa-clear handler when <see cref="IWaClearableControl.OnClear"/> is set.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant sequence number</param>
+    /// <param name="control">The clearable control</param>
+    public static void AddClearEventHandler(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
+        => builder.AddAttributeIfHasDelegate(sequence, ClearEventAttribute, control.OnClear);
+
+    /// <summary>
+    /// Adds <see cref="IWaClearableControl.ClearIconContent"/> to the "clear-icon" slot when set, at sequence + 0..2.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number</param>
+    /// <param name="control">The clearable control</param>
+    public static void AddClearIconSlot(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
+        => builder.AddSlotContent(sequence, ClearIconSlot, control.ClearIconContent);
+
+    /// <summary>
+    /// Adds the "start" and "end" slot content: each fragment when set (start at sequence + 0..2, end at
+    /// sequence + 5..7), otherwise the icon of its icon-name shortcut when one is given (start at sequence + 40..42,
+    /// end at sequence + 45..47), so the fragment wins.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number</param>
+    /// <param name="control">The affixed control</param>
+    /// <param name="startIconName">The start icon-name shortcut, or null when the wrapper has none</param>
+    /// <param name="endIconName">The end icon-name shortcut, or null when the wrapper has none</param>
+    public static void AddAffixSlots(RenderTreeBuilder builder, int sequence, IWaAffixedControl control, string? startIconName = null,
+        string? endIconName = null)
+    {
+        if (control.StartContent is not null)
+            builder.AddSlotContent(sequence + 0, StartSlot, control.StartContent);
+        else
+            builder.AddIconSlot(sequence + AffixIconSequenceOffset, StartSlot, startIconName);
+
+        if (control.EndContent is not null)
+            builder.AddSlotContent(sequence + 5, EndSlot, control.EndContent);
+        else
+            builder.AddIconSlot(sequence + 5 + AffixIconSequenceOffset, EndSlot, endIconName);
+    }
+
     #region ------ Internals ------
+
+    private const string WithClearAttribute = "with-clear";
+    private const string ClearEventAttribute = "onwa-clear";
+    private const string ClearIconSlot = "clear-icon";
+    private const string StartSlot = "start";
+    private const string EndSlot = "end";
+
+    // the icon of an affix shortcut is numbered apart from the slot's fragment wrapper
+    private const int AffixIconSequenceOffset = 40;
 
     private const string ShowEventAttribute = "onwa-show";
     private const string HideEventAttribute = "onwa-hide";

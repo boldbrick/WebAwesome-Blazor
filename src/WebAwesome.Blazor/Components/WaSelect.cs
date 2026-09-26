@@ -13,7 +13,7 @@ namespace WebAwesome.Blazor.Components;
 /// A select component that allows choosing items from a menu of predefined options.
 /// Corresponds to the wa-select Web Awesome component.
 /// </summary>
-public class WaSelect : WaPopupInputBase<string?>
+public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffixedControl
 {
     #region ------ Form Control Properties ------
 
@@ -163,7 +163,7 @@ public class WaSelect : WaPopupInputBase<string?>
         builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
         builder.AddAttributeIfNotNull(21, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttribute(22, "pill", Pill);
-        builder.AddAttribute(23, "with-clear", WithClear);
+        FormControlRendering.AddWithClearAttribute(builder, 23, this);
         builder.AddAttribute(24, "multiple", Multiple);
         builder.AddAttributeIfNotNull(25, "max-options-visible", MaxOptionsVisible);
         builder.AddAttributeIfNotNull(26, "placement", Placement?.ToHtmlValue());
@@ -190,7 +190,7 @@ public class WaSelect : WaPopupInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add select-specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
+        FormControlRendering.AddClearEventHandler(builder, 50, this);
         AddPopupEventHandlers(builder, 52);
         builder.AddAttributeIfHasDelegate(56, "onwa-invalid", OnInvalid);
 
@@ -200,31 +200,8 @@ public class WaSelect : WaPopupInputBase<string?>
         // Add element reference capture
         builder.AddElementReferenceCapture(59, __selectReference => Element = __selectReference);
 
-        // Add start slot content
-        if (StartContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "start");
-            builder.AddContent(62, StartContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(100, "start", StartIconName);
-        }
-
-        // Add end slot content
-        if (EndContent is not null)
-        {
-            builder.OpenElement(65, "span");
-            builder.AddAttribute(66, "slot", "end");
-            builder.AddContent(67, EndContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(105, "end", EndIconName);
-        }
+        // Add start and end slot content (the fragment wins over the icon-name shortcut)
+        FormControlRendering.AddAffixSlots(builder, 60, this, StartIconName, EndIconName);
 
         // Add child content (options)
         if (ChildContent is not null)
@@ -233,13 +210,7 @@ public class WaSelect : WaPopupInputBase<string?>
         }
 
         // Add clear-icon slot content
-        if (ClearIconContent is not null)
-        {
-            builder.OpenElement(110, "span");
-            builder.AddAttribute(111, "slot", "clear-icon");
-            builder.AddContent(112, ClearIconContent);
-            builder.CloseElement();
-        }
+        FormControlRendering.AddClearIconSlot(builder, 110, this);
 
         // Add expand-icon slot content
         if (ExpandIconContent is not null)

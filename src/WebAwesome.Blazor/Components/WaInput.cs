@@ -11,7 +11,7 @@ namespace WebAwesome.Blazor.Components;
 /// A single-line input component for editing <see cref="string"/> values.
 /// Corresponds to the wa-input Web Awesome component.
 /// </summary>
-public class WaInput : WaLabeledInputBase<string?>
+public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffixedControl
 {
     #region ------ Form Control Properties ------
 
@@ -227,7 +227,7 @@ public class WaInput : WaLabeledInputBase<string?>
         builder.AddAttribute(21, "type", Type.ToHtmlValue());
         builder.AddAttributeIfNotNull(22, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttribute(23, "pill", Pill);
-        builder.AddAttribute(24, "with-clear", WithClear);
+        FormControlRendering.AddWithClearAttribute(builder, 24, this);
         builder.AddAttribute(25, "password-toggle", PasswordToggle);
         builder.AddTrueFalseAttribute(26, "spellcheck", Spellcheck);
         builder.AddAttributeIfNotNullOrEmpty(27, "pattern", Pattern);
@@ -254,46 +254,17 @@ public class WaInput : WaLabeledInputBase<string?>
             builder.AddAttribute(47, "oninput", CreateImmediateInputHandler());
 
         // Add input-specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
+        FormControlRendering.AddClearEventHandler(builder, 50, this);
         builder.AddAttributeIfHasDelegate(49, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(53, __inputReference => Element = __inputReference);
 
-        // Add start slot content
-        if (StartContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "start");
-            builder.AddContent(62, StartContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(100, "start", StartIconName);
-        }
-
-        // Add end slot content
-        if (EndContent is not null)
-        {
-            builder.OpenElement(65, "span");
-            builder.AddAttribute(66, "slot", "end");
-            builder.AddContent(67, EndContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(105, "end", EndIconName);
-        }
+        // Add start and end slot content (the fragment wins over the icon-name shortcut)
+        FormControlRendering.AddAffixSlots(builder, 60, this, StartIconName, EndIconName);
 
         // Add clear-icon slot content
-        if (ClearIconContent is not null)
-        {
-            builder.OpenElement(110, "span");
-            builder.AddAttribute(111, "slot", "clear-icon");
-            builder.AddContent(112, ClearIconContent);
-            builder.CloseElement();
-        }
+        FormControlRendering.AddClearIconSlot(builder, 110, this);
 
         // Add show-password-icon slot content
         if (ShowPasswordIconContent is not null)

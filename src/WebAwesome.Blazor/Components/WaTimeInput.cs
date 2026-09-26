@@ -11,7 +11,7 @@ namespace WebAwesome.Blazor.Components;
 /// An experimental time picker with segmented text entry and a column-based popup.
 /// Corresponds to the wa-time-input Web Awesome component.
 /// </summary>
-public class WaTimeInput : WaPopupInputBase<string?>
+public class WaTimeInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAffixedControl
 {
     #region ------ Form Control Properties ------
 
@@ -157,7 +157,7 @@ public class WaTimeInput : WaPopupInputBase<string?>
         builder.AddAttributeIfNotNull(26, "distance", Distance);
         builder.AddAttribute(27, "open", Open);
         builder.AddAttribute(28, "pill", Pill);
-        builder.AddAttribute(29, "with-clear", WithClear);
+        FormControlRendering.AddWithClearAttribute(builder, 29, this);
         builder.AddAttribute(30, "with-now", WithNow);
         AddWithHintAndLabelAttributes(builder, 14);
 
@@ -170,39 +170,18 @@ public class WaTimeInput : WaPopupInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add time-input-specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
+        FormControlRendering.AddClearEventHandler(builder, 50, this);
         AddPopupEventHandlers(builder, 51);
         builder.AddAttributeIfHasDelegate(55, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(56, __timeInputReference => Element = __timeInputReference);
 
-        // Add start slot content
-        if (StartContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "start");
-            builder.AddContent(62, StartContent);
-            builder.CloseElement();
-        }
-
-        // Add end slot content
-        if (EndContent is not null)
-        {
-            builder.OpenElement(65, "span");
-            builder.AddAttribute(66, "slot", "end");
-            builder.AddContent(67, EndContent);
-            builder.CloseElement();
-        }
+        // Add start and end slot content
+        FormControlRendering.AddAffixSlots(builder, 60, this);
 
         // Add clear-icon slot content
-        if (ClearIconContent is not null)
-        {
-            builder.OpenElement(70, "span");
-            builder.AddAttribute(71, "slot", "clear-icon");
-            builder.AddContent(72, ClearIconContent);
-            builder.CloseElement();
-        }
+        FormControlRendering.AddClearIconSlot(builder, 70, this);
 
         // Add expand-icon slot content
         if (ExpandIconContent is not null)

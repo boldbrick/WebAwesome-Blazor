@@ -6,6 +6,33 @@ namespace WebAwesome.Blazor.Base
         System.Threading.Tasks.Task ResetValidityAsync();
         System.Threading.Tasks.Task SetCustomValidityAsync(string message);
     }
+    public interface IWaAffixedControl
+    {
+        Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; }
+        Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; }
+    }
+    public interface IWaCalendarOptions
+    {
+        bool DisableFuture { get; }
+        bool DisablePast { get; }
+        string? DisabledDates { get; }
+        string? DisabledDaysOfWeek { get; }
+        WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; }
+        string? Max { get; }
+        string? Min { get; }
+        int? Months { get; }
+        WebAwesome.Blazor.Components.WaDatePageBy? PageBy { get; }
+        string? Today { get; }
+        WebAwesome.Blazor.Components.WaWeekdayFormat? WeekdayFormat { get; }
+        bool WithOutsideDays { get; }
+        bool WithWeekNumbers { get; }
+    }
+    public interface IWaClearableControl
+    {
+        Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; }
+        Microsoft.AspNetCore.Components.EventCallback OnClear { get; }
+        bool WithClear { get; }
+    }
     public interface IWaLabeledControl
     {
         string? Hint { get; }
@@ -953,7 +980,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task SetSwatchesAsync(string[] colors) { }
         protected override bool TryParseValueFromString(string? value, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out string result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
-    public class WaCombobox : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
+    public class WaCombobox : WebAwesome.Blazor.Base.WaPopupInputBase<string?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaClearableControl
     {
         public WaCombobox() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1339,7 +1366,7 @@ namespace WebAwesome.Blazor.Components
         public WaDataGridSortChangeEventArgs() { }
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
     }
-    public class WaDateInput : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
+    public class WaDateInput : WebAwesome.Blazor.Base.WaPopupInputBase<string?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaCalendarOptions, WebAwesome.Blazor.Base.IWaClearableControl
     {
         public WaDateInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1420,7 +1447,7 @@ namespace WebAwesome.Blazor.Components
         Months = 0,
         Single = 1,
     }
-    public class WaDatePicker : Microsoft.AspNetCore.Components.ComponentBase
+    public class WaDatePicker : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IWaCalendarOptions
     {
         public WaDatePicker() { }
         [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
@@ -2193,7 +2220,7 @@ namespace WebAwesome.Blazor.Components
         public string? Style { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
-    public class WaInput : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
+    public class WaInput : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaClearableControl
     {
         public WaInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2438,7 +2465,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task DisconnectAsync() { }
         public System.Threading.Tasks.Task ReconnectAsync() { }
     }
-    public class WaNumberInput : WebAwesome.Blazor.Base.WaLabeledInputBase<decimal?>
+    public class WaNumberInput : WebAwesome.Blazor.Base.WaLabeledInputBase<decimal?>, WebAwesome.Blazor.Base.IWaAffixedControl
     {
         public WaNumberInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3188,7 +3215,7 @@ namespace WebAwesome.Blazor.Components
         public bool WithoutShadow { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
-    public class WaSelect : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
+    public class WaSelect : WebAwesome.Blazor.Base.WaPopupInputBase<string?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaClearableControl
     {
         public WaSelect() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3609,7 +3636,7 @@ namespace WebAwesome.Blazor.Components
         Twelve = 1,
         TwentyFour = 2,
     }
-    public class WaTimeInput : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
+    public class WaTimeInput : WebAwesome.Blazor.Base.WaPopupInputBase<string?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaClearableControl
     {
         public WaTimeInput() { }
         [Microsoft.AspNetCore.Components.Parameter]

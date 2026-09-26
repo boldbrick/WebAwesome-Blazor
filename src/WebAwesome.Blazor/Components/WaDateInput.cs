@@ -14,7 +14,7 @@ namespace WebAwesome.Blazor.Components;
 /// <remarks>
 /// This is a Pro component.
 /// </remarks>
-public class WaDateInput : WaPopupInputBase<string?>
+public class WaDateInput : WaPopupInputBase<string?>, IWaClearableControl, IWaAffixedControl, IWaCalendarOptions
 {
     #region ------ Form Control Properties ------
 
@@ -237,7 +237,7 @@ public class WaDateInput : WaPopupInputBase<string?>
         builder.AddAttributeIfNotNull(36, "distance", Distance);
         builder.AddAttribute(37, "open", Open);
         builder.AddAttribute(38, "pill", Pill);
-        builder.AddAttribute(39, "with-clear", WithClear);
+        FormControlRendering.AddWithClearAttribute(builder, 39, this);
         builder.AddAttribute(40, "with-outside-days", WithOutsideDays);
         builder.AddAttribute(41, "with-week-numbers", WithWeekNumbers);
         AddWithHintAndLabelAttributes(builder, 14);
@@ -251,39 +251,18 @@ public class WaDateInput : WaPopupInputBase<string?>
         AddCommonEventHandlers(builder, 50);
 
         // Add date-input-specific event handlers
-        builder.AddAttributeIfHasDelegate(60, "onwa-clear", OnClear);
+        FormControlRendering.AddClearEventHandler(builder, 60, this);
         AddPopupEventHandlers(builder, 61);
         builder.AddAttributeIfHasDelegate(65, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(66, __dateInputReference => Element = __dateInputReference);
 
-        // Add start slot content
-        if (StartContent is not null)
-        {
-            builder.OpenElement(70, "span");
-            builder.AddAttribute(71, "slot", "start");
-            builder.AddContent(72, StartContent);
-            builder.CloseElement();
-        }
-
-        // Add end slot content
-        if (EndContent is not null)
-        {
-            builder.OpenElement(75, "span");
-            builder.AddAttribute(76, "slot", "end");
-            builder.AddContent(77, EndContent);
-            builder.CloseElement();
-        }
+        // Add start and end slot content
+        FormControlRendering.AddAffixSlots(builder, 70, this);
 
         // Add clear-icon slot content
-        if (ClearIconContent is not null)
-        {
-            builder.OpenElement(80, "span");
-            builder.AddAttribute(81, "slot", "clear-icon");
-            builder.AddContent(82, ClearIconContent);
-            builder.CloseElement();
-        }
+        FormControlRendering.AddClearIconSlot(builder, 80, this);
 
         // Add expand-icon slot content
         if (ExpandIconContent is not null)

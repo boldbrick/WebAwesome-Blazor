@@ -12,7 +12,7 @@ namespace WebAwesome.Blazor.Components;
 /// A numeric input component for editing <see cref="decimal"/> values, with optional increment/decrement steppers.
 /// Corresponds to the wa-number-input Web Awesome component.
 /// </summary>
-public class WaNumberInput : WaLabeledInputBase<decimal?>
+public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
 {
     #region ------ Form Control Properties ------
 
@@ -190,31 +190,8 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>
         // Add element reference capture
         builder.AddElementReferenceCapture(53, __numberInputReference => Element = __numberInputReference);
 
-        // Add start slot content
-        if (StartContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "start");
-            builder.AddContent(62, StartContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(100, "start", StartIconName);
-        }
-
-        // Add end slot content
-        if (EndContent is not null)
-        {
-            builder.OpenElement(65, "span");
-            builder.AddAttribute(66, "slot", "end");
-            builder.AddContent(67, EndContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(105, "end", EndIconName);
-        }
+        // Add start and end slot content (the fragment wins over the icon-name shortcut)
+        FormControlRendering.AddAffixSlots(builder, 60, this, StartIconName, EndIconName);
 
         // Add increment-icon slot content
         if (IncrementIconContent is not null)

@@ -13,7 +13,7 @@ namespace WebAwesome.Blazor.Components;
 /// it is not a form-associated control; bind its value with <c>@bind-Value</c>.
 /// Corresponds to the wa-date-picker Web Awesome component.
 /// </summary>
-public class WaDatePicker : ComponentBase
+public class WaDatePicker : ComponentBase, IWaCalendarOptions
 {
     #region ------ Dependency Injection ------
 
