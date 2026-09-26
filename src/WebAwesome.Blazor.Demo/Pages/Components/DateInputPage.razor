@@ -28,9 +28,70 @@
     <WaDateInput Label="Pill" Pill="true" @bind-Value="pillValue" />
 </ExampleSection>
 
+<ExampleSection Title="Per-day Content" Code="@DayContentExample">
+    <p><code>WaDayContent</code> children replace the label of their date's day cell in the popup calendar (the element forwards its <code>day-YYYY-MM-DD</code> slots to it); the cell stays clickable. Content added or removed later shows up too. Web Awesome's JavaScript-only <code>dayContent</code> callback isn't supported: render one <code>WaDayContent</code> per date instead.</p>
+    <WaDateInput Label="Holiday season" Today="SeasonToday" @bind-Value="seasonValue">
+        @foreach (var holiday in SeasonHolidays)
+        {
+            <WaDayContent Date="holiday.Date"><span title="@holiday.Name">@holiday.Emoji</span></WaDayContent>
+        }
+        @if (partyPlanned)
+        {
+            <WaDayContent Date="PartyDate"><WaBadge Variant="WaVariant.Success" Pill="true">@PartyDate.Day</WaBadge></WaDayContent>
+        }
+    </WaDateInput>
+    <p><WaButton Size="WaSize.Small" OnClick="ToggleParty">@(partyPlanned ? "Cancel the office party" : "Plan the office party")</WaButton></p>
+</ExampleSection>
+
 <ApiTable Tag="wa-date-input" />
 
 @code {
+    private static readonly DateOnly SeasonToday = new(2026, 12, 1);
+    private static readonly DateOnly PartyDate = new(2026, 12, 18);
+    private static readonly (DateOnly Date, string Name, string Emoji)[] SeasonHolidays =
+    [
+        (new(2026, 12, 24), "Christmas Eve", "🎁"),
+        (new(2026, 12, 25), "Christmas Day", "🎄"),
+        (new(2026, 12, 31), "New Year's Eve", "🎆"),
+    ];
+
+    private DateOnly? seasonValue;
+    private bool partyPlanned;
+
+    private void ToggleParty() => partyPlanned = !partyPlanned;
+
+    private const string DayContentExample = """
+        <WaDateInput Label="Holiday season" Today="SeasonToday" @bind-Value="seasonValue">
+            @foreach (var holiday in SeasonHolidays)
+            {
+                <WaDayContent Date="holiday.Date"><span title="@holiday.Name">@holiday.Emoji</span></WaDayContent>
+            }
+            @if (partyPlanned)
+            {
+                <WaDayContent Date="PartyDate"><WaBadge Variant="WaVariant.Success" Pill="true">@PartyDate.Day</WaBadge></WaDayContent>
+            }
+        </WaDateInput>
+        <WaButton Size="WaSize.Small" OnClick="ToggleParty">
+            @(partyPlanned ? "Cancel the office party" : "Plan the office party")
+        </WaButton>
+
+        @code {
+            private static readonly DateOnly SeasonToday = new(2026, 12, 1);
+            private static readonly DateOnly PartyDate = new(2026, 12, 18);
+            private static readonly (DateOnly Date, string Name, string Emoji)[] SeasonHolidays =
+            [
+                (new(2026, 12, 24), "Christmas Eve", "🎁"),
+                (new(2026, 12, 25), "Christmas Day", "🎄"),
+                (new(2026, 12, 31), "New Year's Eve", "🎆"),
+            ];
+
+            private DateOnly? seasonValue;
+            private bool partyPlanned;
+
+            private void ToggleParty() => partyPlanned = !partyPlanned;
+        }
+        """;
+
     private static readonly DateOnly YearStart = new(2026, 1, 1);
     private static readonly DateOnly YearEnd = new(2026, 12, 31);
     private static readonly DateOnly DeliveryToday = new(2026, 12, 21);

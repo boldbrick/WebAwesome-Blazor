@@ -38,6 +38,11 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   a half-filled range binds as `From` only, `DisabledDates`/`DisabledDaysOfWeek` disable exactly those calendar cells,
   and `WaRelativeTime` reads a UTC `DateTimeOffset` as that instant in a browser at `Asia/Tokyo`. Model to UI after a
   user edit for the range wrappers is in `value-sync-binding.spec.js`.
+- `tests\day-content.spec.js` — `WaDayContent` in all four date hosts (`/testing/day-content`): the initial content
+  shows in its own day cell, every content for one date shows, content added and removed by a page render and toggled
+  inside a component rendering on its own (no host render) is followed, and content of the next month shows after
+  navigating there. A cell is read through its day slot's flattened assigned nodes, so wa-date-input's forwarding slot
+  is followed. The add/remove/toggle rows prove the wrapper's forwarding nudge for wa-date-input (they fail without it).
 - `tests\event-payload.spec.js` — the payloads the JS initializer builds by hand (`specialArgs`):
   split panel, observers, random content, date picker, video playlist and data grid events, each
   with its non-default field values as .NET received them (`/testing/event-payloads`).

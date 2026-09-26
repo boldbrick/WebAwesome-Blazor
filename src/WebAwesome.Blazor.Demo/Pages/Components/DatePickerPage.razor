@@ -22,17 +22,44 @@
     <WaDatePicker Style="max-width: 320px;" WithWeekNumbers="true" WithOutsideDays="true" WeekdayFormat="WaWeekdayFormat.Narrow" @bind-Value="weekValue" />
 </ExampleSection>
 
+<ExampleSection Title="Per-day Content" Code="@DayContentExample">
+    <p><code>WaDayContent</code> children replace the label of their date's day cell (the element's <code>day-YYYY-MM-DD</code> slot); the cell stays clickable. Content added or removed later shows up too. Web Awesome's JavaScript-only <code>dayContent</code> callback isn't supported: render one <code>WaDayContent</code> per date instead.</p>
+    <WaDatePicker Style="max-width: 300px;" FocusedDate="HolidayMonth" @bind-Value="holidayValue">
+        @foreach (var holiday in SeasonHolidays)
+        {
+            <WaDayContent Date="holiday.Date"><span title="@holiday.Name">@holiday.Emoji</span></WaDayContent>
+        }
+        @if (partyPlanned)
+        {
+            <WaDayContent Date="PartyDate"><WaBadge Variant="WaVariant.Success" Pill="true">@PartyDate.Day</WaBadge></WaDayContent>
+        }
+    </WaDatePicker>
+    <p><WaButton Size="WaSize.Small" OnClick="ToggleParty">@(partyPlanned ? "Cancel the office party" : "Plan the office party")</WaButton></p>
+</ExampleSection>
+
 <ApiTable Tag="wa-date-picker" />
 
 @code {
     private static readonly DateOnly MeetingMonth = new(2026, 12, 1);
     private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
     private static readonly IReadOnlySet<DateOnly> Holidays = new HashSet<DateOnly> { new(2026, 12, 24), new(2026, 12, 25) };
+    private static readonly DateOnly HolidayMonth = new(2026, 12, 1);
+    private static readonly DateOnly PartyDate = new(2026, 12, 18);
+    private static readonly (DateOnly Date, string Name, string Emoji)[] SeasonHolidays =
+    [
+        (new(2026, 12, 24), "Christmas Eve", "🎁"),
+        (new(2026, 12, 25), "Christmas Day", "🎄"),
+        (new(2026, 12, 31), "New Year's Eve", "🎆"),
+    ];
 
     private DateOnly? defaultValue;
     private DateOnly? presetValue = new(2026, 5, 11);
     private DateOnly? meetingValue;
     private DateOnly? weekValue;
+    private DateOnly? holidayValue;
+    private bool partyPlanned;
+
+    private void ToggleParty() => partyPlanned = !partyPlanned;
 
     private const string DefaultExample = """
         <WaDatePicker Style="max-width: 300px;" @bind-Value="defaultValue" />
@@ -68,6 +95,38 @@
 
         @code {
             private DateOnly? weekValue;
+        }
+        """;
+
+    private const string DayContentExample = """
+        <WaDatePicker Style="max-width: 300px;" FocusedDate="HolidayMonth" @bind-Value="holidayValue">
+            @foreach (var holiday in SeasonHolidays)
+            {
+                <WaDayContent Date="holiday.Date"><span title="@holiday.Name">@holiday.Emoji</span></WaDayContent>
+            }
+            @if (partyPlanned)
+            {
+                <WaDayContent Date="PartyDate"><WaBadge Variant="WaVariant.Success" Pill="true">@PartyDate.Day</WaBadge></WaDayContent>
+            }
+        </WaDatePicker>
+        <WaButton Size="WaSize.Small" OnClick="ToggleParty">
+            @(partyPlanned ? "Cancel the office party" : "Plan the office party")
+        </WaButton>
+
+        @code {
+            private static readonly DateOnly HolidayMonth = new(2026, 12, 1);
+            private static readonly DateOnly PartyDate = new(2026, 12, 18);
+            private static readonly (DateOnly Date, string Name, string Emoji)[] SeasonHolidays =
+            [
+                (new(2026, 12, 24), "Christmas Eve", "🎁"),
+                (new(2026, 12, 25), "Christmas Day", "🎄"),
+                (new(2026, 12, 31), "New Year's Eve", "🎆"),
+            ];
+
+            private DateOnly? holidayValue;
+            private bool partyPlanned;
+
+            private void ToggleParty() => partyPlanned = !partyPlanned;
         }
         """;
 }
