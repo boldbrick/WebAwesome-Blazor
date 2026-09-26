@@ -157,6 +157,22 @@ internal static class WaWireFormat
     }
 
     /// <summary>
+    /// Formats a date and time of day as the HTML "valid normalized local date and time string" a native
+    /// <c>&lt;input type="datetime-local"&gt;</c> reads its min and max in: <c>yyyy-MM-ddTHH:mm</c>, with <c>:ss</c> when the
+    /// seconds are not zero and <c>.fff</c> when the milliseconds are not; no offset (the kind is ignored, the value is
+    /// the wall-clock reading).
+    /// </summary>
+    /// <param name="value">The date and time</param>
+    /// <returns>The wire string</returns>
+    public static string FormatLocalDateTime(DateTime value)
+    {
+        var pattern = value.Millisecond != 0 ? LocalDateTimeWithMillisecondsPattern
+            : value.Second != 0 ? LocalDateTimeWithSecondsPattern
+            : LocalDateTimePattern;
+        return value.ToString(pattern, CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>
     /// Formats an instant in the ECMAScript date-time string format <c>new Date(text)</c> reads unambiguously:
     /// <c>yyyy-MM-ddTHH:mm:ss.fff</c> with the offset (<c>+01:00</c>, <c>+00:00</c> for UTC).
     /// </summary>
@@ -261,6 +277,10 @@ internal static class WaWireFormat
 
         return token;
     }
+
+    private const string LocalDateTimePattern = "yyyy'-'MM'-'dd'T'HH':'mm";
+    private const string LocalDateTimeWithSecondsPattern = "yyyy'-'MM'-'dd'T'HH':'mm':'ss";
+    private const string LocalDateTimeWithMillisecondsPattern = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff";
 
     private const string DatePattern = "yyyy-MM-dd";
     private const string DaySlotPrefix = "day-";

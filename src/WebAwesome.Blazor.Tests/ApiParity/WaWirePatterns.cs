@@ -49,6 +49,13 @@ internal static class WaWirePatterns
     public static readonly Regex EcmaScriptInstant = new(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(Z|[+-]\d{2}:\d{2})$", RegexOptions.ECMAScript);
 
     /// <summary>
+    /// A local date and time, the HTML "valid normalized local date and time string" a native
+    /// <c>&lt;input type="datetime-local"&gt;</c> reads its min and max in (HTML Living Standard, dates and times): no offset,
+    /// the seconds and a fraction optional. wa-input passes min/max to its native input unchanged (chunk.3UR7XKQK.js:232-233).
+    /// </summary>
+    public static readonly Regex LocalDateTime = new(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?$", RegexOptions.ECMAScript);
+
+    /// <summary>
     /// The separator each list-valued attribute is split on by its element, keyed "tag:attribute", so the render check
     /// reads a rendered list the way the element reads it (3.12.0 dist chunks):
     /// - threshold: parseThreshold through parseSpaceDelimitedTokens, <c>input.split(" ")</c> (chunk.PVXOAR6W.js:58, chunk.TW3VXPTP.js:2)

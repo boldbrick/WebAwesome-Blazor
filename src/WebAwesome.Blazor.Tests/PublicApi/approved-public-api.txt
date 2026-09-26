@@ -2473,13 +2473,37 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaInputMode? InputMode { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? Max { get; set; }
+        public string? Max { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.DateOnly? MaxDate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.DateTime? MaxDateTime { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? MaxDecimal { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxLength { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? Min { get; set; }
+        public long? MaxLong { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.TimeOnly? MaxTime { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public ulong? MaxULong { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.DateOnly? MinDate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.DateTime? MinDateTime { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? MinDecimal { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MinLength { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public long? MinLong { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.TimeOnly? MinTime { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public ulong? MinULong { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2517,6 +2541,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override void OnParametersSet() { }
         public System.Threading.Tasks.Task SelectAsync() { }
         public System.Threading.Tasks.Task SetRangeTextAsync(string replacement, int? start = default, int? end = default, string selectMode = "preserve") { }
         public System.Threading.Tasks.Task SetSelectionRangeAsync(int selectionStart, int selectionEnd, string selectionDirection = "none") { }

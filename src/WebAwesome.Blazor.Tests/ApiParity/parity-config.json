@@ -70,6 +70,10 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-input": {
+      "additionalAttributeParameters": {
+        "min": [ "MinDecimal", "MinLong", "MinULong", "MinDate", "MinTime", "MinDateTime" ],
+        "max": [ "MaxDecimal", "MaxLong", "MaxULong", "MaxDate", "MaxTime", "MaxDateTime" ]
+      },
       "onOffAttributes": [ "autocorrect" ],
       "attributeOverrides": {
         "maxlength": "MaxLength",
@@ -315,6 +319,8 @@
     "wa-scatter-chart": { "ignoredAttributes": [ "plugins" ] }
   },
   "ignoreReasons": {
+    "additionalAttributeParameters:wa-input:min": "wa-input's min is typed number | string in the CEM and passed unchanged to its native input (3.12.0 chunk.3UR7XKQK.js:232-233): a number for type=number, an ISO date, time or local date-time for the date and time types. Until C# 15 union types (net11.0, a planned breaking change; docs\\technical.md, Multi-targeting) the raw string Min is joined by one strongly typed accessor per value type (MinDecimal, MinLong, MinULong, MinDate, MinTime, MinDateTime), at most one of which may be set; all of them feed the one attribute",
+    "additionalAttributeParameters:wa-input:max": "wa-input's max is typed number | string in the CEM and passed unchanged to its native input (3.12.0 chunk.3UR7XKQK.js:232-233): a number for type=number, an ISO date, time or local date-time for the date and time types. Until C# 15 union types (net11.0, a planned breaking change; docs\\technical.md, Multi-targeting) the raw string Max is joined by one strongly typed accessor per value type (MaxDecimal, MaxLong, MaxULong, MaxDate, MaxTime, MaxDateTime), at most one of which may be set; all of them feed the one attribute",
     "additionalAttributeParameters:wa-mutation-observer:attr": "wa-mutation-observer's attr is either '*' (all attributes, Attr = true) or a space-separated list of names (this.attr.split(' '), 3.12.0 chunk.KJH3JDJP.js:48), which AttributeFilter (IReadOnlySet<string>) renders instead when set; both parameters feed the one attribute",
     "extraRenderedAttributes:wa-page:disable-sticky": "wa-page's disable-sticky is a CSS-only attribute the CEM omits: the 3.12.0 page styles match it with :host([disable-sticky~='banner'|'header'|'subheader'|'aside'|'menu']) rules (chunk.NSKMM5IJ.js:86-116) and page.md (Sticky Sections) documents it; WaPage.DisableSticky renders the WaPageSections tokens, which FlagTokenTests pins - re-verify every upgrade",
     "onOffAttributes:wa-input:autocorrect": "wa-input's autocorrect converter is fromAttribute: (value) => !value || value === \"off\" ? false : true, toAttribute: value ? \"on\" : \"off\" (3.12.0 chunk.3UR7XKQK.js), so a present empty attribute (Blazor's true) reads false; AutoCorrect (bool?) must render exactly \"on\"/\"off\"",

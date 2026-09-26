@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -91,15 +93,95 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// </summary>
     [Parameter] public string? Pattern { get; set; }
 
-    /// <summary>
-    /// The input's minimum value. Only applies to date and number input types.
-    /// </summary>
-    [Parameter] public decimal? Min { get; set; }
+#if NET11_0_OR_GREATER
+#error Use a union type here
+#else
+    // The min and max of wa-input are typed number | string (a number for a number input, an ISO date, time or local
+    // date-time for the date and time types), which C# before 15 cannot express as one parameter type. Until then each
+    // bound is a raw string plus one strongly typed accessor per value type; at most one of them may be set per bound.
+    // On net11.0 this becomes a C# 15 union type, a deliberate breaking change (docs\technical.md, Multi-targeting).
 
     /// <summary>
-    /// The input's maximum value. Only applies to date and number input types.
+    /// The input's minimum value as the raw attribute text, for a format none of the typed accessors covers. Only
+    /// applies to date, time and number input types. Set at most one of <see cref="Min"/>, <see cref="MinDecimal"/>,
+    /// <see cref="MinLong"/>, <see cref="MinULong"/>, <see cref="MinDate"/>, <see cref="MinTime"/> and
+    /// <see cref="MinDateTime"/>; two throw <see cref="InvalidOperationException"/>.
     /// </summary>
-    [Parameter] public decimal? Max { get; set; }
+    [Parameter] public string? Min { get; set; }
+
+    /// <summary>
+    /// The minimum of a number input, rendered in the invariant culture (<c>2.5</c>). See <see cref="Min"/>.
+    /// </summary>
+    [Parameter] public decimal? MinDecimal { get; set; }
+
+    /// <summary>
+    /// The minimum of a number input as an integer. See <see cref="Min"/>.
+    /// </summary>
+    [Parameter] public long? MinLong { get; set; }
+
+    /// <summary>
+    /// The minimum of a number input as an unsigned integer. See <see cref="Min"/>.
+    /// </summary>
+    [Parameter] public ulong? MinULong { get; set; }
+
+    /// <summary>
+    /// The earliest date of a <see cref="WaInputType.Date"/> input, rendered ISO <c>yyyy-MM-dd</c>. See <see cref="Min"/>.
+    /// </summary>
+    [Parameter] public DateOnly? MinDate { get; set; }
+
+    /// <summary>
+    /// The earliest time of a <see cref="WaInputType.Time"/> input, rendered 24-hour <c>HH:mm</c>, or <c>HH:mm:ss</c> when
+    /// it has seconds. See <see cref="Min"/>.
+    /// </summary>
+    [Parameter] public TimeOnly? MinTime { get; set; }
+
+    /// <summary>
+    /// The earliest date and time of a <see cref="WaInputType.DateTimeLocal"/> input, rendered as the local date and time
+    /// the native input reads (<c>yyyy-MM-ddTHH:mm</c>, with seconds and milliseconds when not zero; the kind is ignored).
+    /// See <see cref="Min"/>.
+    /// </summary>
+    [Parameter] public DateTime? MinDateTime { get; set; }
+
+    /// <summary>
+    /// The input's maximum value as the raw attribute text, for a format none of the typed accessors covers. Only
+    /// applies to date, time and number input types. Set at most one of <see cref="Max"/>, <see cref="MaxDecimal"/>,
+    /// <see cref="MaxLong"/>, <see cref="MaxULong"/>, <see cref="MaxDate"/>, <see cref="MaxTime"/> and
+    /// <see cref="MaxDateTime"/>; two throw <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [Parameter] public string? Max { get; set; }
+
+    /// <summary>
+    /// The maximum of a number input, rendered in the invariant culture. See <see cref="Max"/>.
+    /// </summary>
+    [Parameter] public decimal? MaxDecimal { get; set; }
+
+    /// <summary>
+    /// The maximum of a number input as an integer. See <see cref="Max"/>.
+    /// </summary>
+    [Parameter] public long? MaxLong { get; set; }
+
+    /// <summary>
+    /// The maximum of a number input as an unsigned integer. See <see cref="Max"/>.
+    /// </summary>
+    [Parameter] public ulong? MaxULong { get; set; }
+
+    /// <summary>
+    /// The latest date of a <see cref="WaInputType.Date"/> input, rendered ISO <c>yyyy-MM-dd</c>. See <see cref="Max"/>.
+    /// </summary>
+    [Parameter] public DateOnly? MaxDate { get; set; }
+
+    /// <summary>
+    /// The latest time of a <see cref="WaInputType.Time"/> input, rendered 24-hour <c>HH:mm</c>, or <c>HH:mm:ss</c> when
+    /// it has seconds. See <see cref="Max"/>.
+    /// </summary>
+    [Parameter] public TimeOnly? MaxTime { get; set; }
+
+    /// <summary>
+    /// The latest date and time of a <see cref="WaInputType.DateTimeLocal"/> input, rendered as the local date and time
+    /// the native input reads. See <see cref="Max"/>.
+    /// </summary>
+    [Parameter] public DateTime? MaxDateTime { get; set; }
+#endif
 
     /// <summary>
     /// Specifies the granularity that the value must adhere to, or <see cref="WaStep.Any"/>. Only applies to date and
@@ -238,8 +320,8 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         builder.AddAttribute(25, "password-toggle", PasswordToggle);
         builder.AddTrueFalseAttribute(attributes, 26, "spellcheck", Spellcheck);
         builder.AddAttributeIfNotNullOrEmpty(attributes, 27, "pattern", Pattern);
-        builder.AddAttributeIfNotNull(attributes, 28, "min", Min);
-        builder.AddAttributeIfNotNull(attributes, 29, "max", Max);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 28, "min", MinAttributeValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 29, "max", MaxAttributeValue());
         builder.AddStepAttribute(attributes, 30, "step", Step);
         builder.AddAttributeIfNotNull(attributes, 33, "autocapitalize", AutoCapitalize?.ToHtmlValue());
         builder.AddOnOffAttribute(attributes, 34, "autocorrect", AutoCorrect);
@@ -305,6 +387,16 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         return true;
     }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">Thrown when more than one accessor of the same bound is set</exception>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        EnsureOneBound((nameof(Min), Min != null), (nameof(MinDecimal), MinDecimal.HasValue), (nameof(MinLong), MinLong.HasValue),
+            (nameof(MinULong), MinULong.HasValue), (nameof(MinDate), MinDate.HasValue), (nameof(MinTime), MinTime.HasValue), (nameof(MinDateTime), MinDateTime.HasValue));
+        EnsureOneBound((nameof(Max), Max != null), (nameof(MaxDecimal), MaxDecimal.HasValue), (nameof(MaxLong), MaxLong.HasValue),
+            (nameof(MaxULong), MaxULong.HasValue), (nameof(MaxDate), MaxDate.HasValue), (nameof(MaxTime), MaxTime.HasValue), (nameof(MaxDateTime), MaxDateTime.HasValue));
+    }
     /// <inheritdoc />
     protected override string? LiveValuePropertyName => "value";
 
@@ -434,6 +526,35 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
             throw new InvalidOperationException("Cannot step up before the component is rendered. Element reference is null.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "stepUp");
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // the min attribute text of whichever accessor is set, in the invariant or ISO form the native input reads
+    private string? MinAttributeValue() => BoundValue(Min, MinDecimal, MinLong, MinULong, MinDate, MinTime, MinDateTime);
+
+    // the max attribute text of whichever accessor is set
+    private string? MaxAttributeValue() => BoundValue(Max, MaxDecimal, MaxLong, MaxULong, MaxDate, MaxTime, MaxDateTime);
+
+    private static string? BoundValue(string? raw, decimal? number, long? integer, ulong? unsigned, DateOnly? date, TimeOnly? time, DateTime? dateTime)
+    {
+        if (raw != null) return raw;
+        if (number.HasValue) return number.Value.ToString(CultureInfo.InvariantCulture);
+        if (integer.HasValue) return integer.Value.ToString(CultureInfo.InvariantCulture);
+        if (unsigned.HasValue) return unsigned.Value.ToString(CultureInfo.InvariantCulture);
+        if (date.HasValue) return WaWireFormat.FormatDate(date.Value);
+        if (time.HasValue) return WaWireFormat.FormatTimeBound(time.Value);
+        return dateTime.HasValue ? WaWireFormat.FormatLocalDateTime(dateTime.Value) : null;
+    }
+
+    // throws when more than one accessor of a bound is set
+    private static void EnsureOneBound(params (string Name, bool IsSet)[] accessors)
+    {
+        var set = accessors.Where(a => a.IsSet).Select(a => a.Name).ToList();
+        if (set.Count > 1)
+            throw new InvalidOperationException($"WaInput: set at most one accessor of a bound, but {string.Join(" and ", set)} are all set.");
     }
 
     #endregion

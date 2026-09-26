@@ -427,7 +427,7 @@ public class RenderedAttributeParityTests
     private const string DateSetKind = "IReadOnlySet<DateOnly>";
     private const string WeekdaySetKind = "IReadOnlySet<DayOfWeek>";
 
-    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind, NumberListKind, StringListKind, StringSetKind, PlacementListKind];
+    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind, LocalDateTimeKind, NumberListKind, StringListKind, StringSetKind, PlacementListKind];
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
     private const string StringType = "string";
@@ -440,6 +440,7 @@ public class RenderedAttributeParityTests
     private const string AnyStepText = "any";
     private const string AnyStepLiteral = "'any'";
     private const string StepKind = "WaStep";
+    private const string LocalDateTimeKind = "DateTime";
     private const string NumberListKind = "IReadOnlyList<double>";
     private const string StringListKind = "IReadOnlyList<string>";
     private const string StringSetKind = "IReadOnlySet<string>";
@@ -932,8 +933,8 @@ public class RenderedAttributeParityTests
             }
             else if (sample.Value is DateTime date && mapped.TryGetValue(sample.Property, out var dateAttribute)
                 && render.Root.Attributes.TryGetValue(dateAttribute, out var renderedDate)
-                && !(DateTime.TryParse(renderedDate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsedDate)
-                    && parsedDate.ToUniversalTime() == date))
+                && !(DateTime.TryParse(renderedDate, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate)
+                    && parsedDate.Ticks == date.Ticks))
             {
                 yield return $"{label}: renders {dateAttribute}=\"{renderedDate}\", which does not parse back to {date:O} with the invariant culture";
             }
@@ -1007,6 +1008,13 @@ public class RenderedAttributeParityTests
                     checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
                     miss = ListMiss(element.Tag, attribute, present, value, placements.Select(p => EnumValueParityTests.HtmlValueOf(p) ?? string.Empty).ToList(),
                         string.Equals, rendered);
+                    break;
+                case DateTime dateTime:
+                    checkedKinds.Add(LocalDateTimeKind);
+                    miss = present && WaWirePatterns.LocalDateTime.IsMatch(value!)
+                        && DateTime.Parse(value!, CultureInfo.InvariantCulture).Ticks == dateTime.Ticks
+                        ? null
+                        : $"renders {rendered}, expected a local date and time (no offset) reading as {dateTime:yyyy-MM-ddTHH:mm:ss.fff}";
                     break;
                 case WaStep step:
                     checkedKinds.Add(StepKind);
