@@ -43,6 +43,10 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   inside a component rendering on its own (no host render) is followed, and content of the next month shows after
   navigating there. A cell is read through its day slot's flattened assigned nodes, so wa-date-input's forwarding slot
   is followed. The add/remove/toggle rows prove the wrapper's forwarding nudge for wa-date-input (they fail without it).
+- `tests\sticky-attributes.spec.js` — the sticky attribute rule (`/testing/sticky-attributes`): `WaSlider` Max 50 back
+  to its default 100, `WaInput` Type Password back to Text and a nullable `WaTooltip` Distance 20 back to null each leave
+  the element property at Web Awesome's default (100, `text`, 8). With the attribute removed instead, Lit sets the
+  slider max and the tooltip distance to null (both cases fail then).
 - `tests\event-payload.spec.js` — the payloads the JS initializer builds by hand (`specialArgs`):
   split panel, observers, random content, date picker, video playlist and data grid events, each
   with its non-default field values as .NET received them (`/testing/event-payloads`).

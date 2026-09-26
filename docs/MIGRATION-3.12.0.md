@@ -2,11 +2,13 @@
 
 This guide helps you migrate from Web Awesome Blazor 3.11.0 to 3.12.0.
 
-The Web Awesome 3.12.0 release itself is small and additive: `wa-dropdown-item` gained link attributes. This version of the bindings is still **breaking**, for two reasons:
+The Web Awesome 3.12.0 release itself is small and additive: `wa-dropdown-item` gained link attributes. This version of the bindings is still **breaking**, for these reasons:
 
 - It fixes the defects reported in [GitHub issue #1](https://github.com/boldbrick/WebAwesome-Blazor/issues/1).
 - It completes a correctness sweep that makes every enum match the value set Web Awesome accepts, and removes event callbacks that could never fire.
 - It types the date and time controls (`DateOnly`, `TimeOnly`, `DateTimeOffset`, `WaDateRange`, sets of dates and weekdays) instead of wire-format strings, and splits the range mode into wrappers of its own (section 10).
+- It types every other parameter whose value set or shape is known: closed value sets are enums, the `number | 'any'` step is `WaStep`, lists are collections, event payloads are records, and `WaInput`'s bounds get typed accessors (sections 11 to 14).
+- Parameters at Web Awesome's default no longer render, and a rendered attribute is never removed again (section 15).
 
 Most of the removed or renamed members never worked: they sent values Web Awesome rejects, or listened for events it never dispatches. Code that compiled against them was silently broken, and the compiler now points it out.
 
@@ -110,7 +112,7 @@ A render-based check now compares every attribute a wrapper renders with the att
 
 Two `WaMutationObserver` parameters are **kept and now work**:
 - `Attr="true"` rendered an empty `attr`, which watches no attributes. It now renders `attr="*"` (all attributes).
-- `AttributeFilter` rendered a nonexistent `attribute-filter`. It now sets `attr` to the list, e.g. `AttributeFilter="class id"`, and takes precedence over `Attr`.
+- `AttributeFilter` rendered a nonexistent `attribute-filter`. It now sets `attr` to the list, and takes precedence over `Attr`; it is a set of attribute names since this release (section 13).
 
 ### 6. Form control parameters the element doesn't have (BREAKING)
 
@@ -168,16 +170,17 @@ Every wrapper parameter now defaults to what the element itself does when the at
 | Wrapper | Parameter | Old default | New default (Web Awesome's) | To keep the old behaviour |
 |---|---|---|---|---|
 | `WaAnimation` | `Fill` | `WaAnimationFill.None`, rendered `fill="none"` | `null` (type `WaAnimationFill?`): the element's `auto` | `Fill="WaAnimationFill.None"` |
-| `WaAnimation` | `Iterations` | `1`, rendered (type `decimal`) | `null` (type `decimal?`): the element's `Infinity`, so an animation loops until stopped | `Iterations="1"` |
+| `WaAnimation` | `Iterations` | `1`, rendered (type `decimal`) | `null` (type `double?`, see section 13): the element's `Infinity`, so an animation loops until stopped | `Iterations="1"` |
 | `WaAnimatedImage` | `Play` | `true`, rendered `play` | `false`: the image starts paused, like the element, until the user plays it | `Play="true"` |
 | `WaQrCode` | `ErrorCorrection` | `WaErrorCorrection.M`, rendered (type `WaErrorCorrection`) | `null` (type `WaErrorCorrection?`): the element's `H` | `ErrorCorrection="WaErrorCorrection.M"` |
 | `WaCopyButton` | `CopyLabel`, `SuccessLabel`, `ErrorLabel` | the English `"Copy to clipboard"`, `"Copied!"`, `"Copy failed"`, rendered, which overrode the element's localized labels | `null`: the element's labels in the page's language | set the labels explicitly |
-| `WaPopup` | `FlipFallbackStrategy` | `"initial"`, rendered | `null`: the element's `best-fit` | `FlipFallbackStrategy="initial"` |
+| `WaPopup` | `FlipFallbackStrategy` | `"initial"`, rendered | `null` (type `WaFlipFallbackStrategy?`, see section 11): the element's `best-fit` | `FlipFallbackStrategy="WaFlipFallbackStrategy.Initial"` |
+| `WaPage` | `MobileBreakpoint` | `"768px"`, rendered | `null`: the element's own `768px` | nothing: the page behaves as before |
 | `WaCallout` | `Variant` | `WaVariant.Neutral`, not rendered (so the callout was `brand`, and an explicit `Neutral` could never be set) | `null` (type `WaVariant?`): `brand`, or the variant of an enclosing element | nothing: an unset callout looks as before, and `Variant="WaVariant.Neutral"` now renders neutral |
 | `WaCallout` | `Appearance` | `WaAppearance.OutlinedFilled`, not rendered (an explicit `OutlinedFilled` could never be set) | `null` (type `WaAppearance?`): the element's own styling | nothing; `Appearance="WaAppearance.OutlinedFilled"` now renders |
 | `WaDropdown` | `Distance` | `8`, not rendered (so the gap was the element's 0, and an explicit 8 could never be set) | `null` (type `int?`): the element's `0` | nothing: an unset dropdown looks as before, and `Distance="8"` now renders an 8px gap |
 
-The first six change what an unset parameter does; set the value shown to keep the previous look. C# that reads one of the parameters whose type became nullable must handle `null`.
+The first six change what an unset parameter does; set the value shown to keep the previous look. C# that reads one of the parameters whose type became nullable, or `WaPage.MobileBreakpoint`, must handle `null`.
 
 ### 9. Renamed parameters (BREAKING)
 
@@ -207,7 +210,7 @@ The date and time controls took their values, bounds and disabled days as the st
 | same | `DisabledDaysOfWeek` | `string?` (`"sat sun"`) | `IReadOnlySet<DayOfWeek>?` |
 | `WaDatePicker` | `FocusedDate` | `string?` | `DateOnly?` |
 | `WaDatePicker` | `GoToDateAsync(date)` | `string` | `DateOnly` |
-| `WaDatePickerFocusDayEventArgs`, `WaDatePickerViewChangeEventArgs` | `Date` | `string?` | `DateOnly?` |
+| `WaDatePickerFocusDayEventArgs`, `WaDatePickerViewChangeEventArgs` | `Date` | `string?` | `DateOnly?` (and `View` is `WaDatePickerView?`, section 11) |
 | `WaTimeInput` | `Value` (`@bind-Value`) | `string?` | `TimeOnly?` |
 | `WaTimeInput` | `Min`, `Max` | `string?` | `TimeOnly?` |
 | `WaKnownDate` | `Value` (`@bind-Value`), `Min`, `Max` | `string?` | `DateOnly?` |
@@ -272,7 +275,7 @@ Time:
 }
 ```
 
-The value is sent as `HH:mm`, or `HH:mm:ss` when the `Step` shows seconds (below 60, not a whole number of minutes, or `any`), which is the form the element emits itself; fractions of a second are not sent. A bound with seconds renders them (`06:30:45`).
+The value is sent as `HH:mm`, or `HH:mm:ss` when the `Step` shows seconds (below 60, not a whole number of minutes, or `WaStep.Any`; `Step` is a `WaStep?`, section 12), which is the form the element emits itself; fractions of a second are not sent. A bound with seconds renders them (`06:30:45`).
 
 Instants (`WaRelativeTime`, `WaFormatDate`):
 
@@ -293,6 +296,164 @@ Instants (`WaRelativeTime`, `WaFormatDate`):
 The instant renders with its offset (`2025-12-02T00:00:00.000-05:00`), so every browser reads the same instant, whatever its time zone; unset still means now. **Semantic change for `WaRelativeTime`:** code passing a `DateTime` still compiles through the implicit `DateTime` → `DateTimeOffset` conversion. A `DateTimeKind.Utc` value keeps its instant, but an unspecified one (what EF Core returns for a UTC column) now takes the **server's** offset instead of being read as browser-local time. Mark UTC values first: `DateTime.SpecifyKind(value, DateTimeKind.Utc)`, or keep them as `DateTimeOffset`.
 
 Web Awesome builds dates as local JS dates and rejects the years 0-99 in bounds and disabled dates; use the years 100-9999 there.
+
+### 11. Closed value sets are enums (BREAKING)
+
+Parameters whose Web Awesome attribute takes a fixed set of values were strings, so any typo went to the element unchecked. They are now nullable enums (unset still renders nothing); a Razor string literal no longer compiles.
+
+| Wrapper | Parameter | Old type | New type | Before → after |
+|---|---|---|---|---|
+| `WaInput`, `WaTextArea`, `WaCombobox` | `AutoCapitalize` | `string?` | `WaAutoCapitalize?` | `"sentences"` → `WaAutoCapitalize.Sentences` (also `Off`, `None`, `On`, `Words`, `Characters`) |
+| `WaInput`, `WaTextArea`, `WaCombobox` | `AutoCorrect` | `string?` (`"on"`/`"off"`) | `bool?` | `"on"` → `true`, `"off"` → `false` (rendered exactly `on`/`off`) |
+| `WaInput`, `WaTextArea`, `WaNumberInput`, `WaCombobox` | `EnterKeyHint` | `string?` | `WaEnterKeyHint?` | `"send"` → `WaEnterKeyHint.Send` |
+| `WaInput`, `WaTextArea`, `WaCombobox` | `InputMode` | `string?` | `WaInputMode?` | `"numeric"` → `WaInputMode.Numeric` |
+| `WaNumberInput` | `InputMode` | `string?` | `WaNumberInputMode?` | `"decimal"` → `WaNumberInputMode.Decimal` |
+| `WaButton`, `WaBreadcrumbItem`, `WaDropdownItem` | `Target` | `string?` | `WaLinkTarget?` | `"_blank"` → `WaLinkTarget.Blank` (also `Parent`, `Self`, `Top`) |
+| `WaButton` | `FormMethod` | `string?` | `WaFormMethod?` | `"post"` → `WaFormMethod.Post` |
+| `WaButton` | `FormEncType` | `string?` | `WaFormEncType?` | `"multipart/form-data"` → `WaFormEncType.MultipartFormData` (also `UrlEncoded`, `TextPlain`) |
+| `WaPopup` | `FlipFallbackStrategy` | `string?` | `WaFlipFallbackStrategy?` | `"initial"` → `WaFlipFallbackStrategy.Initial` |
+| `WaPopup` | `Boundary` | `string?` | `WaPopupBoundary?` | `"scroll"` → `WaPopupBoundary.Scroll` |
+| `WaAccordion` | `HeadingLevel` | `string?` | `WaHeadingLevel?` | `"2"` → `WaHeadingLevel.H2`, `"none"` → `WaHeadingLevel.None` |
+| `WaZoomableFrame` | `ReferrerPolicy` | `string?` | `WaReferrerPolicy?` | `"no-referrer"` → `WaReferrerPolicy.NoReferrer` |
+| `WaZoomableFrame` | `Sandbox` | `string?` | `WaIframeSandbox?` (`[Flags]`) | `"allow-scripts allow-forms"` → `WaIframeSandbox.AllowScripts \| WaIframeSandbox.AllowForms`; `""` → `WaIframeSandbox.None` |
+| `WaDataGridColumn` (model) | `Align`, `HeaderAlign` | `string?` | `WaDataGridAlign?` | `Align = "end"` → `Align = WaDataGridAlign.End` |
+| `WaDataGridColumn` | `SortFn` | `string?` | `WaDataGridSortFn?` | `"alphanumericCaseSensitive"` → `WaDataGridSortFn.AlphanumericCaseSensitive` |
+| `WaDataGridColumn` | `SortUndefined` | `string?` (`first`/`last`) | `WaDataGridSortUndefined?` | `"first"` → `First`, `"last"` → `Last`; new `Lower`/`Higher` send Web Awesome's `-1`/`1` |
+| `WaDataGridColumn` | `FilterType` | `string?` | `WaDataGridFilterType?` | `"number-range"` → `WaDataGridFilterType.NumberRange`, `"equals"` → `ExactMatch` |
+| `WaDataGridColumn` | `Pinned` | `string?` | `WaDataGridPinSide?` | `"left"` → `WaDataGridPinSide.Left` |
+| `WaDataGridColumn` | `Aggregation` | `string?` | `WaDataGridAggregation?` | `"sum"` → `WaDataGridAggregation.Sum` |
+| `WaDatePickerViewChangeEventArgs` | `View` | `string?` | `WaDatePickerView?` | `e.View == "months"` → `e.View == WaDatePickerView.Months` |
+| `WaRatingHoverEventArgs` | `Phase` | `string` | `WaRatingHoverPhase` | `e.Phase == "end"` → `e.Phase == WaRatingHoverPhase.End` |
+| `WaDataGridColumnPinEventArgs` | `Side` | `string?` | `WaDataGridPinSide?` | `e.Side == "left"` → `e.Side == WaDataGridPinSide.Left` |
+
+```razor
+@* before *@
+<WaTextArea AutoCorrect="off" AutoCapitalize="sentences" EnterKeyHint="send" InputMode="text" />
+<WaButton Href="https://example.com" Target="_blank">Site</WaButton>
+<WaZoomableFrame Src="/preview" Sandbox="allow-scripts" ReferrerPolicy="no-referrer" />
+
+@* after *@
+<WaTextArea AutoCorrect="false" AutoCapitalize="WaAutoCapitalize.Sentences" EnterKeyHint="WaEnterKeyHint.Send" InputMode="WaInputMode.Text" />
+<WaButton Href="https://example.com" Target="WaLinkTarget.Blank">Site</WaButton>
+<WaZoomableFrame Src="/preview" Sandbox="WaIframeSandbox.AllowScripts" ReferrerPolicy="WaReferrerPolicy.NoReferrer" />
+```
+
+`WaButton.FormTarget` stays a string: its union ends in `| string` (named browsing contexts). The event-args enums deserialize from exactly Web Awesome's strings; an unknown value fails the event instead of becoming a default member.
+
+### 12. `Step` is `WaStep` (BREAKING)
+
+`step` takes a number or `any`. `WaInput.Step` (`decimal?`) could not send `any`, and `WaNumberInput.Step`/`WaTimeInput.Step` (`string?`) took anything. All three are now `WaStep?`: a positive number, or `WaStep.Any`. Numbers convert implicitly, so numeric Razor values keep compiling (`0.5` now works without the `m` suffix); `"any"` becomes `WaStep.Any`, and zero or a negative step throws `ArgumentOutOfRangeException`.
+
+```razor
+@* before *@
+<WaNumberInput Step="any" @bind-Value="amount" />
+<WaInput Type="WaInputType.Number" Step="0.5m" @bind-Value="text" />
+
+@* after *@
+<WaNumberInput Step="WaStep.Any" @bind-Value="amount" />
+<WaInput Type="WaInputType.Number" Step="0.5" @bind-Value="text" />
+<WaTimeInput Step="1" @bind-Value="time" />   @* seconds, as before *@
+```
+
+`wa-slider`'s `step` is typed `number` only (no `any`), so `WaSlider.Step`/`WaRange.Step` stay `decimal`.
+
+### 13. Lists are collections, event payloads are records (BREAKING)
+
+List attributes took one string in the element's own list syntax; they now take typed collections, which the wrapper joins exactly as the element splits them. A null or empty collection renders nothing; an item the element would split in two (a swatch with `;`, a group-by id with a comma or space, an attribute name with a space) or a non-finite number throws.
+
+| Wrapper | Parameter | Old type | New type | Rendered as |
+|---|---|---|---|---|
+| `WaIntersectionObserver` | `Threshold` | `string?` (`"0 0.5 1"`) | `IReadOnlyList<double>?` | invariant numbers, space-separated |
+| `WaSparkline` | `Data` | `string?` (`"10 20 40"`) | `IReadOnlyList<double>?` | invariant numbers, space-separated |
+| `WaZoomableFrame` | `ZoomLevels` | `string?` (`"25% 50% 100%"`) | `IReadOnlyList<double>?`, as factors (`0.25`, `0.5`, `1`) | invariant numbers, space-separated |
+| `WaPopup` | `FlipFallbackPlacements` | `string?` (`"bottom top"`) | `IReadOnlyList<WaPlacement>?` | the placements in order, space-separated |
+| `WaDataGrid` | `GroupBy` | `string?` (`"region, country"`) | `IReadOnlyList<string>?` (outermost first) | space-separated |
+| `WaColorPicker` | `Swatches` | `string?` (`"#f00; #0f0"`) | `IReadOnlyList<string>?` | `;`-separated (a swatch may contain commas) |
+| `WaFileInput` | `Accept` | `string?` (`"image/*,.pdf"`) | `IReadOnlyList<string>?` | `,`-separated |
+| `WaMutationObserver` | `AttributeFilter` | `string?` (`"class id"`) | `IReadOnlySet<string>?` | ordinal order, space-separated; empty falls back to `Attr` |
+| `WaColorPicker` | `SetSwatchesAsync(colors)` | `string[]` | `IEnumerable<string>` | (source-compatible) |
+| `WaSelect`, `WaCombobox` | `SelectedValues` / `SelectedValuesChanged` | `string[]?` / `EventCallback<string[]?>` | `IReadOnlyList<string>?` / `EventCallback<IReadOnlyList<string>?>` | (bound selection) |
+| `WaColorPicker` | `Value` (`@bind-Value`) | `string` | `string?` | (the only non-nullable text value) |
+| `WaAnimation` | `Iterations` | `decimal?` (`decimal.MaxValue` for Infinity) | `double?` (`double.PositiveInfinity` renders `Infinity`) | invariant number |
+
+```razor
+@* before *@
+<WaSparkline Data="10 25 15 40" />
+<WaIntersectionObserver Threshold="0 0.5 1" />
+<WaColorPicker Swatches="#d0021b; #f5a623" @bind-Value="color" />
+<WaFileInput Accept="image/png,image/jpeg" />
+<WaMutationObserver AttributeFilter="class id" />
+<WaZoomableFrame ZoomLevels="25% 50% 100%" />
+<WaSelect Multiple="true" @bind-SelectedValues="toppings" />
+@code { private string[]? toppings; private string color = "#d0021b"; }
+
+@* after *@
+<WaSparkline Data="@(new double[] { 10, 25, 15, 40 })" />
+<WaIntersectionObserver Threshold="@(new double[] { 0, 0.5, 1 })" />
+<WaColorPicker Swatches="@(new[] { "#d0021b", "#f5a623" })" @bind-Value="color" />
+<WaFileInput Accept="@(new[] { "image/png", "image/jpeg" })" />
+<WaMutationObserver AttributeFilter="@(new HashSet<string> { "class", "id" })" />
+<WaZoomableFrame ZoomLevels="@(new double[] { 0.25, 0.5, 1 })" />
+<WaSelect Multiple="true" @bind-SelectedValues="toppings" />
+@code { private IReadOnlyList<string>? toppings; private string? color = "#d0021b"; }
+```
+
+Event payloads that were `object[]` of raw `JsonElement`s are records now:
+
+| Event args | Property | Old type | New type |
+|---|---|---|---|
+| `MutationEventArgs` | `MutationRecords` | `object[]?` | `IReadOnlyList<WaMutationRecord>?` (`Type` as `WaMutationType`, `AttributeName`, `OldValue`) |
+| `ResizeEventArgs` | `ResizeObserverEntries` | `object[]?` | `IReadOnlyList<WaResizeEntry>?` (`ContentRect` as `WaRect`: `X`, `Y`, `Width`, `Height`, `Top`, `Right`, `Bottom`, `Left`) |
+| `WaTreeSelectionChangeEventArgs` | `Selection` | `object[]?` | `IReadOnlyList<WaElementInfo>?` (`Id`, `TextContent`) |
+| `WaContentChangeEventArgs` | `Items` | `object[]?` | `IReadOnlyList<WaElementInfo>?` |
+
+```csharp
+// before
+if (args.ResizeObserverEntries is [JsonElement entry, ..] && entry.TryGetProperty("contentRect", out var rect))
+    width = rect.GetProperty("width").GetDouble();
+var count = args.MutationRecords?.Length ?? 0;
+
+// after
+if (args.ResizeObserverEntries is [{ ContentRect: { } rect }, ..])
+    width = rect.Width;
+var count = args.MutationRecords?.Count ?? 0;
+```
+
+### 14. `WaInput.Min` and `Max` take typed accessors (BREAKING)
+
+`wa-input`'s `min`/`max` are a number for `Type="WaInputType.Number"` and an ISO date, time or local date-time for the date and time types. `Min`/`Max` were `decimal?`, which could not express the date and time bounds. `Min`/`Max` are now the raw `string?` attribute text, joined by one typed accessor per value type, each converted culture-free into the form the native input reads:
+
+| Accessor (and its `Max` twin) | Type | Rendered as |
+|---|---|---|
+| `Min` | `string?` | as given |
+| `MinDecimal` | `decimal?` | invariant (`2.5`) |
+| `MinLong`, `MinULong` | `long?`, `ulong?` | invariant integer |
+| `MinDate` | `DateOnly?` | `yyyy-MM-dd` |
+| `MinTime` | `TimeOnly?` | `HH:mm`, or `HH:mm:ss` with seconds |
+| `MinDateTime` | `DateTime?` | `yyyy-MM-ddTHH:mm`, with `:ss` and `.fff` when not zero; the kind is ignored |
+
+Set at most one accessor per bound; two throw `InvalidOperationException` naming them.
+
+```razor
+@* before *@
+<WaInput Type="WaInputType.Number" Min="0" Max="10.5m" @bind-Value="quantity" />
+
+@* after *@
+<WaInput Type="WaInputType.Number" MinLong="0" MaxDecimal="10.5m" @bind-Value="quantity" />
+<WaInput Type="WaInputType.Date" MinDate="Opening" MaxDate="Closing" @bind-Value="day" />
+<WaInput Type="WaInputType.Number" Min="0" Max="10.5" @bind-Value="quantity" />   @* raw text also works *@
+```
+
+A number literal on `Min`/`Max` no longer compiles in C# (it is a string now); in Razor, `Min="0"` still compiles and renders `0`, but `Min="@count"` with a numeric variable does not: use the typed accessor. On a future net11.0 target this pair becomes a C# 15 union type (a planned breaking change there).
+
+### 15. Default values render nothing, and a rendered attribute stays (visible in the markup)
+
+Following the owner rule that an unset parameter emits nothing:
+
+- A non-nullable parameter holding Web Awesome's default no longer renders its attribute: `WaSlider` renders no `min`/`max`/`step` by default, `WaInput` no `type="text"`, `WaTooltip` no `placement="top"`, `WaCopyButton` no `feedback-duration="1000"` or `tooltip="full"`, and so on. The element's own default applies, so nothing changes in the browser. Each such default is a public constant on the wrapper, e.g. `WaSlider.DefaultMax`, `WaInput.DefaultType`, `WaCopyButton.DefaultFeedbackDuration`; use it instead of a copied literal.
+- Once a wrapper has rendered an attribute, it never removes it: returning a parameter to its default (or a nullable one to null) renders Web Awesome's default explicitly. Removing the attribute made Lit set the element property to null instead of back to its default: a `WaSlider` whose `Max` went from 50 back to 100 got `max = null` (0 in its arithmetic), a `WaTooltip` whose `Distance` went from 20 back to unset got `distance = null`. Boolean attributes are still removed (a removed boolean reads as false, its default), and so are attributes without a Web Awesome default (removal restores the unset state).
+
+Only CSS selectors or tests that match a default attribute in the rendered markup (for example `wa-slider[max="100"]` on first render) need a change.
 
 ## Behavioral Changes (non-breaking, but visible)
 
@@ -319,11 +480,19 @@ By default the bound value updates when the control commits (`change`, on blur).
 
 ```razor
 <WaDropdownItem Href="/docs">Documentation</WaDropdownItem>
-<WaDropdownItem Href="https://github.com/boldbrick/WebAwesome-Blazor" Target="_blank" Rel="noopener noreferrer">GitHub</WaDropdownItem>
+<WaDropdownItem Href="https://github.com/boldbrick/WebAwesome-Blazor" Target="WaLinkTarget.Blank" Rel="noopener noreferrer">GitHub</WaDropdownItem>
 <WaDropdownItem Href="/files/report.pdf" Download="report.pdf">Download report</WaDropdownItem>
 ```
 
 The item stays a menu item for assistive technology, so the label should describe where the link goes. `Href` is ignored on items with a submenu. `WaDropdownItem.OnBlur`/`OnFocus` now actually fire; they were previously bound under the wrong attribute names.
+
+### WaPage sticky sections — `DisableSticky`
+
+The page's banner, header, subheader, menu and aside stick while the page scrolls. The new `DisableSticky` (`WaPageSections?`, a `[Flags]` enum) turns that off per section, rendering Web Awesome's CSS-only `disable-sticky` attribute:
+
+```razor
+<WaPage DisableSticky="WaPageSections.Header | WaPageSections.Aside"> ... </WaPage>
+```
 
 ### A parameter for every slot
 
@@ -342,9 +511,19 @@ Every slot Web Awesome declares now has a `RenderFragment` parameter. New:
 | `WaTree` | `ExpandIconContent`, `CollapseIconContent` | `expand-icon`, `collapse-icon` |
 | `WaZoomableFrame` | `ZoomInIconContent`, `ZoomOutIconContent` | `zoom-in-icon`, `zoom-out-icon` |
 
-Where the wrapper already had an icon-name shortcut for the slot (`PlayIconName`, `NextIconName`, `ExpandIconName`, `ZoomInIconName`, ...), the fragment wins when both are set. The one slot without a parameter is `wa-date-input`'s per-day `day-YYYY-MM-DD` family, whose names are dates.
+Where the wrapper already had an icon-name shortcut for the slot (`PlayIconName`, `NextIconName`, `ExpandIconName`, `ZoomInIconName`, ...), the fragment wins when both are set. The per-day `day-YYYY-MM-DD` slots of the date controls, whose names are dates, take the new `WaDayContent` (next section).
 
 `WaSlider.ReferenceContent` and `WaRange.ReferenceContent` now spread the labels along the track: each element of the fragment is a label of its own, as with plain Web Awesome markup. Before, `WaRange` wrapped them all into a single label at the start of the track.
+
+### Per-day content for the date controls — `WaDayContent`
+
+Place a `WaDayContent` for a date in the `ChildContent` of `WaDatePicker`, `WaDateRangePicker`, `WaDateInput` or `WaDateRangeInput` to replace that day's number in the calendar (the cell stays a clickable day). Content added or removed later shows up too, also in the date inputs' popup calendar. A `WaDayContent` anywhere else throws `InvalidOperationException`.
+
+```razor
+<WaDatePicker @bind-Value="day">
+    <WaDayContent Date="new DateOnly(2026, 12, 25)"><strong>Xmas</strong></WaDayContent>
+</WaDatePicker>
+```
 
 ## Packaging
 
@@ -363,6 +542,11 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Rename `WaFileInput.LabelContent`/`HintContent` to `MarkupLabel`/`MarkupHint` (see section 9)
 - [ ] Retype the date and time models, bounds and disabled days (`DateOnly?`, `TimeOnly?`, `DateTimeOffset?`, `IReadOnlySet<DateOnly>`, `IReadOnlySet<DayOfWeek>`), replace `Mode="WaDateSelectionMode.Range"` with `WaDateRangeInput`/`WaDateRangePicker` bound to a `WaDateRange?`, and replace `WaRelativeTime.DateString` (see section 10)
 - [ ] Check every `DateTime` you pass to `WaRelativeTime.Date` or `WaFormatDate.Date`: an unspecified `Kind` now means server-local time (see section 10)
+- [ ] Replace the string values of the parameters in section 11 with their enum members (`Target="WaLinkTarget.Blank"`, `AutoCorrect="false"`, `EnterKeyHint="WaEnterKeyHint.Send"`, the data grid column model, the event-args comparisons)
+- [ ] Replace `Step="any"` with `Step="WaStep.Any"` (section 12)
+- [ ] Pass collections to the list parameters, retype `SelectedValues` fields to `IReadOnlyList<string>?`, `WaColorPicker` values to `string?` and `WaAnimation.Iterations` to `double?`, and read the typed event payloads (section 13)
+- [ ] Move numeric and date bounds of `WaInput` to the typed accessors (`MinDecimal`, `MinDate`, ...), one per bound (section 14)
+- [ ] Update CSS selectors or tests that match a default attribute (`max="100"`, `type="text"`, `placement="top"`) on first render (section 15)
 - [ ] If you compare `FocusEventArgs.Type` in an `OnFocus`/`OnBlur` handler of a form control, `WaButton` or `WaFileInput`, expect `"focusin"`/`"focusout"`
 - [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), remove the workaround
 - [ ] Update CSS selectors or tests that match `size="small|medium|large"` to `s|m|l`
@@ -373,5 +557,5 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 
 - **Minimum .NET**: .NET 9.0 (primary target .NET 10.0)
 - **Web Awesome Core**: 3.12.0+
-- **Breaking Changes**: Yes (sections 1–10)
+- **Breaking Changes**: Yes (sections 1–14; section 15 changes the rendered markup only)
 - **New Dependencies**: None

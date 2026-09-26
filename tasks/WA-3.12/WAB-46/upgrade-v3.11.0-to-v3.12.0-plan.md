@@ -384,6 +384,27 @@ These were found during this run. Items marked "fixed" were resolved under the o
   the pre-fix enum's failure (RangeError or wrong text) on the same spec rows. This is stated
   explicitly in the report.
 
+## Remediation after the review (cs:250 to the end of the branch)
+
+After the first delivery, an adversarial test-suite review and a strong-typing and hierarchy review drove an
+owner-approved remediation on this branch, grouped by sequential agents:
+
+- **Correctness fixes found by new checks** (cs:250-280): boolean emission (`"True"`/`"False"`), the icon library
+  interop, render-based event-binding, attribute and slot parity (numbers in the current culture, phantom and dead
+  parameters, dead slot content), event delivery (`focusin`/`focusout`, the relay of events Blazor never receives),
+  the multiple-selection binding, form control parameters moved to the elements that declare them, parameter
+  defaults equal to Web Awesome's, allowlist hygiene with a reason per entry, visible parity skips, hardened release
+  e2e (expected skips, the default Pro pass), bUnit tests that could not fail deleted or rewritten, and curated demo
+  pages with a strict console sweep.
+- **Form control hierarchy** (cs:281-286): `WaLabeledInputBase`, `WaPopupInputBase`, `WaSliderBase`, the capability
+  interfaces and their shared render helpers; `WaFileInput`'s markup label and hint renamed.
+- **Date and time typing** (cs:287-295): `DateOnly`, `TimeOnly`, `DateTimeOffset`, `WaDateRange` and typed sets,
+  the range wrappers, `WaWireFormat`/`WaWirePatterns`, and `WaDayContent` for the per-day slots.
+- **Remaining strong typing and defaults** (cs:296-301): closed value sets as enums (with a parity check against
+  string/decimal parameters on literal unions), `WaStep`, on/off `AutoCorrect`, typed lists and event payloads,
+  `WaInput` bound accessors (a planned C# 15 union type), `WaPage.DisableSticky`, the named default constants and
+  the sticky attribute rule, the shared `wa-slider` renderer, and the consolidated CHANGELOG and MIGRATION guide.
+
 ## Follow-ups
 
 - **Revisit: filter intra-component focus moves via the relay.** Since 3.12.0 `OnFocus`/`OnBlur` bind
@@ -392,7 +413,13 @@ These were found during this run. Items marked "fixed" were resolved under the o
   while a move inside one shadow root raises nothing. The owner kept this behaviour and had it documented
   (callback `<remarks>`, CHANGELOG, MIGRATION); a relay could drop a focusout/focusin pair whose
   `relatedTarget` stays inside the same host.
-- **`wa-date-input` per-day slots (owner decision).** `day-YYYY-MM-DD` (forwarded to `wa-date-picker`,
-  whose CEM omits the same family) is the only CEM slot without a `RenderFragment` parameter and is
-  allowlisted in `unreachableSlots`; exposing it needs a date-keyed API (e.g. a map of `DateOnly` to fragment).
+- **Drop the day-slot forwarding nudge once Web Awesome fixes it.** `wa-date-input` forwards its
+  `day-YYYY-MM-DD` slots (fed by `WaDayContent`) to its calendar only on its first update and on its default
+  slot's `slotchange`, so `WaDateInputBase` fires that `slotchange` after a change (`signalDefaultSlotChange`).
+  Re-verify `updateForwardedDaySlots` every upgrade and remove the nudge once the element follows day slot
+  changes by itself; `day-content.spec.js` shows when. Also drop the `wa-date-picker` `sourceVerifiedSlots`
+  entry once its CEM declares the day slots (upstream issue filed by the owner).
+- **net11 union types for `WaInput` `Min`/`Max`.** The raw string plus the typed accessors (`MinDecimal`,
+  `MinDate`, ...) sit behind `#if NET11_0_OR_GREATER` / `#error Use a union type here`; when net11.0 is
+  targeted, replace them with a C# 15 union type (a deliberate breaking change on that target).
 - `WaDataGrid`'s eight JS accessor-only properties, carried forward (see the next-release check items).
