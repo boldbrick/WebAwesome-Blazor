@@ -1,0 +1,52 @@
+@page "/components/date-range-picker"
+
+<PageTitle>Date Range Picker</PageTitle>
+
+<h1>Date Range Picker <ComponentBadges Tag="wa-date-picker" /></h1>
+<p>A date picker in range mode: the first click starts the range, the second completes it. <code>WaDateRangePicker</code> binds a <code>WaDateRange?</code> (<code>From</code> and <code>To</code>, both <code>DateOnly?</code>) with <code>@@bind-Value</code>; it is not form-associated. The element's wire value (<code>YYYY-MM-DD/YYYY-MM-DD</code>) is converted culture-free. For a single date, use <a href="/components/date-picker"><code>WaDatePicker</code></a>. <code>&lt;wa-date-picker mode="range"&gt;</code> wrapped by <code>WaDateRangePicker</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaDateRangePicker Style="max-width: 560px;" Months="2" @bind-Value="stay" />
+    <p>From: <code>@(stay?.From is null ? "(empty)" : DemoFormat.Iso(stay?.From))</code>, to: <code>@(stay?.To is null ? "(empty)" : DemoFormat.Iso(stay?.To))</code></p>
+</ExampleSection>
+
+<ExampleSection Title="Initial Value" Code="@ValueExample">
+    <WaDateRangePicker Style="max-width: 560px;" Months="2" @bind-Value="sprint" />
+</ExampleSection>
+
+<ExampleSection Title="Range Length" Code="@LengthExample">
+    <WaDateRangePicker Style="max-width: 300px;" MinRange="2" MaxRange="7" @bind-Value="trip" />
+</ExampleSection>
+
+<ApiTable Tag="wa-date-picker" />
+
+@code {
+    private WaDateRange? stay;
+    private WaDateRange? sprint = new(new DateOnly(2026, 5, 11), new DateOnly(2026, 5, 18));
+    private WaDateRange? trip;
+
+    private const string DefaultExample = """
+        <WaDateRangePicker Style="max-width: 560px;" Months="2" @bind-Value="stay" />
+        <p>From: @stay?.From, to: @stay?.To</p>
+
+        @code {
+            private WaDateRange? stay;
+        }
+        """;
+
+    private const string ValueExample = """
+        <WaDateRangePicker Style="max-width: 560px;" Months="2" @bind-Value="sprint" />
+
+        @code {
+            private WaDateRange? sprint = new(new DateOnly(2026, 5, 11), new DateOnly(2026, 5, 18));
+        }
+        """;
+
+    private const string LengthExample = """
+        <WaDateRangePicker Style="max-width: 300px;" MinRange="2" MaxRange="7" @bind-Value="trip" />
+
+        @code {
+            private WaDateRange? trip;
+        }
+        """;
+}

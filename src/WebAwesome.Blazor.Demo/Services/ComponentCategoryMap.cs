@@ -42,6 +42,25 @@ public static class ComponentCategoryMap
     /// <returns>The category name, or "Other" when the tag isn't in the map</returns>
     public static string GetCategory(string tag) => tagToCategory.TryGetValue(tag, out var category) ? category : "Other";
 
+    /// <summary>
+    /// The demo pages of wrappers that render the element of another wrapper in one of its modes (the range wrappers
+    /// render wa-date-input and wa-date-picker with mode="range"), keyed by the page's own name in tag form (the
+    /// route is "components/" plus the name without "wa-"), with the tag the wrapper renders. The navigation lists
+    /// them next to the element pages, which the API surface document drives.
+    /// </summary>
+    public static readonly IReadOnlyDictionary<string, string> WrapperPages = new Dictionary<string, string>
+    {
+        ["wa-date-range-input"] = "wa-date-input",
+        ["wa-date-range-picker"] = "wa-date-picker",
+    };
+
+    /// <summary>
+    /// Gets the tag an element page or wrapper page (<see cref="WrapperPages"/>) renders, for its status badges.
+    /// </summary>
+    /// <param name="pageTag">The element tag, or a wrapper page's name in tag form</param>
+    /// <returns>The rendered element tag</returns>
+    public static string RenderedTag(string pageTag) => WrapperPages.TryGetValue(pageTag, out var tag) ? tag : pageTag;
+
     #region ------ Internals ------
 
     private static readonly Dictionary<string, string> tagToCategory = new()
@@ -59,6 +78,8 @@ public static class ComponentCategoryMap
         ["wa-data-grid"] = "Forms",
         ["wa-date-input"] = "Forms",
         ["wa-date-picker"] = "Forms",
+        ["wa-date-range-input"] = "Forms",
+        ["wa-date-range-picker"] = "Forms",
         ["wa-file-input"] = "Forms",
         ["wa-input"] = "Forms",
         ["wa-known-date"] = "Forms",

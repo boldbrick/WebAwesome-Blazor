@@ -29,6 +29,8 @@ const EXTERNAL_COVERAGE = [
   // @bind-Value user edits reaching the model (step (a) of each value-sync row)
   ...['WaInput', 'WaTextArea', 'WaCheckbox', 'WaNumberInput', 'WaColorPicker', 'WaDateInput', 'WaKnownDate', 'WaOtpInput',
     'WaRadioGroup', 'WaSlider', 'WaTimeInput', 'WaSwitch', 'WaSelect'].map(valueSync),
+  // the range wrappers' value binding: user edits in value-sync-binding.spec.js, typed picks in date-typing.spec.js
+  ...['WaDateRangeInput', 'WaDateRangePicker'].map(valueSync),
   { callback: 'WaRange.ValueChanged', spec: 'number-value-binding.spec.js', evidence: 'WaRange user edit (ArrowRight) reaches the bound model' },
   { callback: 'WaRating.ValueChanged', spec: 'number-value-binding.spec.js', evidence: 'WaRating user edit (star click) reaches the bound model' },
   { callback: 'WaSlider.MinValueChanged', spec: 'number-value-binding.spec.js', evidence: 'user edit (min thumb) reaches the bound MinValue' },

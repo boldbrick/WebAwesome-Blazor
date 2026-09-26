@@ -206,6 +206,25 @@ const VALUE_SYNC_CASES = [
     action: 'set', expected: ['ham'], expectedModel: 'ham',
   },
   {
+    wrapper: 'WaDateRangeInput', route: HARNESS_ROUTE, tag: 'wa-date-input', id: 'date-range-input', property: 'value', pro: true,
+    initialModel: '2024-01-10 to 2024-01-12',
+    // ArrowUp on the start date's day segment commits the next start day, like a keyboard user would
+    userEdit: (/** @type {import('@playwright/test').Locator} */ el) => el.locator('[data-segment="day"][data-group="from"]').press('ArrowUp'),
+    userModel: '2024-01-11 to 2024-01-12',
+    action: 'set', expected: '2025-06-01/2025-06-07', expectedModel: '2025-06-01 to 2025-06-07',
+  },
+  {
+    wrapper: 'WaDateRangePicker', route: HARNESS_ROUTE, tag: 'wa-date-picker', id: 'date-range-picker', property: 'value', pro: true,
+    initialModel: '2024-03-11 to 2024-03-13',
+    // the range commits (change) on the second click
+    userEdit: async (/** @type {import('@playwright/test').Locator} */ el) => {
+      await el.locator('button[data-date="2024-03-18"]').click();
+      await el.locator('button[data-date="2024-03-20"]').click();
+    },
+    userModel: '2024-03-18 to 2024-03-20',
+    action: 'set', expected: '2024-03-25/2024-03-28', expectedModel: '2024-03-25 to 2024-03-28',
+  },
+  {
     wrapper: 'WaDatePicker', route: HARNESS_ROUTE, tag: 'wa-date-picker', id: 'date-picker', property: 'value', pro: true,
     initialModel: '2024-03-15',
     userEdit: (/** @type {import('@playwright/test').Locator} */ el) => el.getByRole('button', { name: 'Wednesday, March 20, 2024' }).click(),

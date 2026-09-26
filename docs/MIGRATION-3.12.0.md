@@ -6,6 +6,7 @@ The Web Awesome 3.12.0 release itself is small and additive: `wa-dropdown-item` 
 
 - It fixes the defects reported in [GitHub issue #1](https://github.com/boldbrick/WebAwesome-Blazor/issues/1).
 - It completes a correctness sweep that makes every enum match the value set Web Awesome accepts, and removes event callbacks that could never fire.
+- It types the date and time controls (`DateOnly`, `TimeOnly`, `DateTimeOffset`, `WaDateRange`, sets of dates and weekdays) instead of wire-format strings, and splits the range mode into wrappers of its own (section 10).
 
 Most of the removed or renamed members never worked: they sent values Web Awesome rejects, or listened for events it never dispatches. Code that compiled against them was silently broken, and the compiler now points it out.
 
@@ -191,9 +192,111 @@ Rename them; the type (`RenderFragment?`) and behaviour are unchanged. C# that s
 
 The other moves of the hierarchy (the label, popup and slider parameters now declared by `WaLabeledInputBase<TValue>`, `WaPopupInputBase<TValue>` and `WaSliderBase<TValue>`) keep every name, type and behaviour and need no change.
 
+### 10. Date and time values are strongly typed (BREAKING)
+
+The date and time controls took their values, bounds and disabled days as the strings Web Awesome parses. They now take .NET types, and the wrapper converts them culture-free into exactly the form the element reads: ISO `yyyy-MM-dd` dates, 24-hour `HH:mm`/`HH:mm:ss` times, `sun`..`sat` weekday tokens, and instants with their offset. Every change fails at compile time except the `WaRelativeTime.Date` one (see the note below the table).
+
+| Wrapper | Member | Old type | New type |
+|---|---|---|---|
+| `WaDateInput` | `Value` (`@bind-Value`) | `string?` | `DateOnly?` |
+| `WaDateInput`, `WaDatePicker` | `Mode`, `MinRange`, `MaxRange` | `WaDateSelectionMode` / `WaDateSelectionMode?`, `int?` | removed: use `WaDateRangeInput` / `WaDateRangePicker` (below); the `WaDateSelectionMode` enum is removed |
+| new `WaDateRangeInput`, `WaDateRangePicker` | `Value` (`@bind-Value`) | (the range mode of the above, `string?` `from/to`) | `WaDateRange?`, with `From`/`To` as `DateOnly?`; plus `MinRange`/`MaxRange` (`int?`) |
+| `WaDatePicker` | `Value` / `ValueChanged` (`@bind-Value`) | `string?` / `EventCallback<string?>` | `DateOnly?` / `EventCallback<DateOnly?>` |
+| `WaDateInput`, `WaDatePicker` (and the range wrappers) | `Min`, `Max`, `Today` | `string?` (`YYYY-MM-DD`) | `DateOnly?` |
+| same | `DisabledDates` | `string?` (space-separated ISO dates) | `IReadOnlySet<DateOnly>?` |
+| same | `DisabledDaysOfWeek` | `string?` (`"sat sun"`) | `IReadOnlySet<DayOfWeek>?` |
+| `WaDatePicker` | `FocusedDate` | `string?` | `DateOnly?` |
+| `WaDatePicker` | `GoToDateAsync(date)` | `string` | `DateOnly` |
+| `WaDatePickerFocusDayEventArgs`, `WaDatePickerViewChangeEventArgs` | `Date` | `string?` | `DateOnly?` |
+| `WaTimeInput` | `Value` (`@bind-Value`) | `string?` | `TimeOnly?` |
+| `WaTimeInput` | `Min`, `Max` | `string?` | `TimeOnly?` |
+| `WaKnownDate` | `Value` (`@bind-Value`), `Min`, `Max` | `string?` | `DateOnly?` |
+| `WaRelativeTime` | `Date` | `DateTime?` | `DateTimeOffset?` |
+| `WaRelativeTime` | `DateString` | `string?` | removed: pass a `DateTimeOffset` (e.g. `DateTimeOffset.Parse(text)`) |
+| `WaFormatDate` | `Date` | `string?` | `DateTimeOffset?` |
+
+An empty set (`DisabledDates`, `DisabledDaysOfWeek`) renders no attribute, like null. A value the element reports that isn't in the wire form (never the case for what Web Awesome emits) keeps the model and adds a validation message ("The Birthday field must be a date.", "... must be a date range.", "... must be a time.") to the `EditContext`, like Blazor's `InputDate`; an empty element value binds `null`.
+
+Single date:
+
+```razor
+@* before *@
+<WaDateInput Label="Arrival" Min="2026-03-12" Max="2026-03-14" DisabledDaysOfWeek="sat sun" @bind-Value="arrival" />
+@code { private string? arrival = "2026-03-12"; }
+
+@* after *@
+<WaDateInput Label="Arrival" Min="ConferenceStart" Max="ConferenceEnd" DisabledDaysOfWeek="Weekend" @bind-Value="arrival" />
+@code {
+    private static readonly DateOnly ConferenceStart = new(2026, 3, 12);
+    private static readonly DateOnly ConferenceEnd = new(2026, 3, 14);
+    private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+    private DateOnly? arrival = new(2026, 3, 12);
+}
+```
+
+Range mode is a wrapper of its own, split by value type (the `Mode` parameter is gone):
+
+```razor
+@* before *@
+<WaDateInput Label="Stay" Mode="WaDateSelectionMode.Range" MaxRange="14" @bind-Value="stay" />
+<WaDatePicker Mode="WaDateSelectionMode.Range" @bind-Value="sprint" />
+@code {
+    private string? stay;                              // "2026-05-01/2026-05-07"
+    private string? sprint = "2026-05-11/2026-05-18";
+}
+
+@* after *@
+<WaDateRangeInput Label="Stay" MaxRange="14" @bind-Value="stay" />
+<WaDateRangePicker @bind-Value="sprint" />
+@code {
+    private WaDateRange? stay;                         // stay?.From, stay?.To
+    private WaDateRange? sprint = new(new DateOnly(2026, 5, 11), new DateOnly(2026, 5, 18));
+}
+```
+
+`WaDateRange` is a value type with structural equality: `From` and `To` are `DateOnly?`, `IsComplete`/`IsEmpty` tell how far the user got, `ToString()` gives the wire form (`2026-05-11/2026-05-18`) and `WaDateRange.TryParse`/`Parse` read it. While only the first date is picked, Web Awesome reports that one date, so the range binds half-filled: `From` set, `To` null (`WaDateRangeInput` reports it as the user types; `WaDateRangePicker` commits on the second click, and its `OnInput` carries the first). The element orders a complete range, so the earlier date always binds as `From`, and a range with only `To` set reads back with that date as `From` once the element reports it.
+
+Time:
+
+```razor
+@* before *@
+<WaTimeInput Min="09:00" Max="17:00" @bind-Value="meeting" />
+@code { private string? meeting = "14:30"; }
+
+@* after *@
+<WaTimeInput Min="OfficeOpens" Max="OfficeCloses" @bind-Value="meeting" />
+@code {
+    private static readonly TimeOnly OfficeOpens = new(9, 0);
+    private static readonly TimeOnly OfficeCloses = new(17, 0);
+    private TimeOnly? meeting = new(14, 30);
+}
+```
+
+The value is sent as `HH:mm`, or `HH:mm:ss` when the `Step` shows seconds (below 60, not a whole number of minutes, or `any`), which is the form the element emits itself; fractions of a second are not sent. A bound with seconds renders them (`06:30:45`).
+
+Instants (`WaRelativeTime`, `WaFormatDate`):
+
+```razor
+@* before *@
+<WaRelativeTime DateString="2025-12-02T00:00:00-05:00" />
+<WaFormatDate Date="@deadline.ToString("o")" />
+
+@* after *@
+<WaRelativeTime Date="release" />
+<WaFormatDate Date="deadline" />
+@code {
+    private readonly DateTimeOffset release = new(2025, 12, 2, 0, 0, 0, TimeSpan.FromHours(-5));
+    private readonly DateTimeOffset deadline = DateTimeOffset.UtcNow.AddDays(3);
+}
+```
+
+The instant renders with its offset (`2025-12-02T00:00:00.000-05:00`), so every browser reads the same instant, whatever its time zone; unset still means now. **Semantic change for `WaRelativeTime`:** code passing a `DateTime` still compiles through the implicit `DateTime` → `DateTimeOffset` conversion. A `DateTimeKind.Utc` value keeps its instant, but an unspecified one (what EF Core returns for a UTC column) now takes the **server's** offset instead of being read as browser-local time. Mark UTC values first: `DateTime.SpecifyKind(value, DateTimeKind.Utc)`, or keep them as `DateTimeOffset`.
+
+Web Awesome builds dates as local JS dates and rejects the years 0-99 in bounds and disabled dates; use the years 100-9999 there.
+
 ## Behavioral Changes (non-breaking, but visible)
 
-- **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) and `WaRelativeTime.Date` now use the invariant culture.
+- **Numbers render in the invariant culture.** Blazor formats a number passed to an attribute with the current culture, so under a culture such as cs-CZ `Distance="0.5"` rendered `distance="0,5"` (and negative numbers could get a U+2212 minus), which Web Awesome can't parse. Every number attribute (`WaPopup.Distance`, `WaAnimation.PlaybackRate`, `WaSlider.Step`, `WaNumberInput`'s value, and about 40 more) now uses the invariant culture; the dates and times use their explicit wire formats (section 10).
 
 - **C# value changes reach the element after the user has edited it.** In Web Awesome 3 the `value`/`checked` attribute sets only the default, and the element ignores it once the user has interacted. The form controls now also assign the live property after a C#-side change. This makes reset-after-submit, normalizing setters, and "clear"/"select all" buttons work. Affected: `WaInput`, `WaTextArea`, `WaNumberInput`, `WaColorPicker`, `WaDateInput`, `WaKnownDate`, `WaOtpInput`, `WaRadioGroup`, `WaTimeInput`, `WaSlider`, `WaRange`, `WaCheckbox` and `WaSwitch`.
 - **`WaSlider`, `WaRange` and `WaRating` user edits now reach `@bind-Value`.** These elements report their value as a number, which Blazor's built-in change event can't carry. The server rejected every change event, so the bound model never updated. The wrappers now listen on a string-valued alias of the change event.
@@ -258,6 +361,8 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Move the slot content listed in section 7 (`MarkupLabel` on `WaCheckbox`/`WaSwitch`/`WaRating`, `WaRating.MarkupHint`, `WaComparison`/`WaSlider` child content) to the parameter the table names
 - [ ] Check the parameter defaults listed in section 8 (`WaAnimation` `Fill`/`Iterations`, `WaAnimatedImage.Play`, `WaQrCode.ErrorCorrection`, `WaCopyButton` labels, `WaPopup.FlipFallbackStrategy`) and set the old value where you relied on it
 - [ ] Rename `WaFileInput.LabelContent`/`HintContent` to `MarkupLabel`/`MarkupHint` (see section 9)
+- [ ] Retype the date and time models, bounds and disabled days (`DateOnly?`, `TimeOnly?`, `DateTimeOffset?`, `IReadOnlySet<DateOnly>`, `IReadOnlySet<DayOfWeek>`), replace `Mode="WaDateSelectionMode.Range"` with `WaDateRangeInput`/`WaDateRangePicker` bound to a `WaDateRange?`, and replace `WaRelativeTime.DateString` (see section 10)
+- [ ] Check every `DateTime` you pass to `WaRelativeTime.Date` or `WaFormatDate.Date`: an unspecified `Kind` now means server-local time (see section 10)
 - [ ] If you compare `FocusEventArgs.Type` in an `OnFocus`/`OnBlur` handler of a form control, `WaButton` or `WaFileInput`, expect `"focusin"`/`"focusout"`
 - [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), remove the workaround
 - [ ] Update CSS selectors or tests that match `size="small|medium|large"` to `s|m|l`
@@ -268,5 +373,5 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 
 - **Minimum .NET**: .NET 9.0 (primary target .NET 10.0)
 - **Web Awesome Core**: 3.12.0+
-- **Breaking Changes**: Yes (sections 1–9)
+- **Breaking Changes**: Yes (sections 1–10)
 - **New Dependencies**: None

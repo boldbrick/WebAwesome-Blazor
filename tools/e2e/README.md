@@ -33,6 +33,11 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   The list is empty since 3.12.0: the focus cases prove `OnFocus`/`OnBlur` through `focusin`/`focusout`,
   and the color picker, select, combobox and intersection observer cases prove the events the JS
   initializer relays (non-bubbling, or stopped in the shadow root).
+- `tests\date-typing.spec.js` — the strongly typed date and time wrappers (`/testing/date-typing`): a user picks a
+  date, a range and a time and the typed model (`DateOnly`, `WaDateRange`, `TimeOnly`) shows up in the Blazor echo,
+  a half-filled range binds as `From` only, `DisabledDates`/`DisabledDaysOfWeek` disable exactly those calendar cells,
+  and `WaRelativeTime` reads a UTC `DateTimeOffset` as that instant in a browser at `Asia/Tokyo`. Model to UI after a
+  user edit for the range wrappers is in `value-sync-binding.spec.js`.
 - `tests\event-payload.spec.js` — the payloads the JS initializer builds by hand (`specialArgs`):
   split panel, observers, random content, date picker, video playlist and data grid events, each
   with its non-default field values as .NET received them (`/testing/event-payloads`).
@@ -103,6 +108,8 @@ tests. So a self-skipping test (a Pro component on the free CDN) must be added t
 - New component demo pages are picked up automatically by `sweep.spec.js` (it reads routes
   straight from `api-surface.json`, the same document that drives the demo's own nav) — no
   maintenance needed there.
+- Wrapper pages that render another wrapper's element in one of its modes (the date range wrappers) are not in
+  `api-surface.json`; list them in `WRAPPER_ROUTES` in `tests\helpers\routes.js` and in `ComponentCategoryMap.WrapperPages`.
 - Layout routes (`LAYOUT_ROUTES` in `tests\helpers\routes.js`) are hand-authored components
   (`WaCluster`, `WaFlank`, ...) with no generated manifest; keep that list in sync with
   `MainLayout.razor`'s `LayoutLinks` array by hand if a layout component is added or removed.

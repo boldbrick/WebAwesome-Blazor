@@ -1,0 +1,73 @@
+@page "/components/date-range-input"
+
+<PageTitle>Date Range Input</PageTitle>
+
+<h1>Date Range Input <ComponentBadges Tag="wa-date-input" /></h1>
+<p>A date input in range mode: the user enters a start and an end date through two segmented groups or picks them in the popup calendar. <code>WaDateRangeInput</code> binds a <code>WaDateRange?</code> (<code>From</code> and <code>To</code>, both <code>DateOnly?</code>); the element's wire value (<code>YYYY-MM-DD/YYYY-MM-DD</code>) is converted culture-free, and while only the first date is picked the range is half-filled (<code>From</code> set, <code>To</code> null). For a single date, use <a href="/components/date-input"><code>WaDateInput</code></a>. <code>&lt;wa-date-input mode="range"&gt;</code> wrapped by <code>WaDateRangeInput</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaDateRangeInput Label="Stay" Months="2" @bind-Value="stay" />
+    <p>From: <code>@(stay?.From is null ? "(empty)" : DemoFormat.Iso(stay?.From))</code>, to: <code>@(stay?.To is null ? "(empty)" : DemoFormat.Iso(stay?.To))</code>, complete: <code>@(stay?.IsComplete ?? false)</code></p>
+</ExampleSection>
+
+<ExampleSection Title="Initial Value &amp; Clearable" Code="@ValueExample">
+    <WaDateRangeInput Label="Conference" WithClear="true" @bind-Value="conference" />
+</ExampleSection>
+
+<ExampleSection Title="Range Length &amp; Bounds" Code="@ConstraintsExample">
+    <WaDateRangeInput Label="Holiday (3 to 14 days, in 2026)" Min="YearStart" Max="YearEnd" MinRange="3" MaxRange="14" @bind-Value="holiday" />
+</ExampleSection>
+
+<ExampleSection Title="Disabled Weekdays" Code="@DisabledExample">
+    <WaDateRangeInput Label="Working days" DisabledDaysOfWeek="Weekend" @bind-Value="workingDays" />
+</ExampleSection>
+
+<ApiTable Tag="wa-date-input" />
+
+@code {
+    private static readonly DateOnly YearStart = new(2026, 1, 1);
+    private static readonly DateOnly YearEnd = new(2026, 12, 31);
+    private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+
+    private WaDateRange? stay;
+    private WaDateRange? conference = new(new DateOnly(2026, 3, 12), new DateOnly(2026, 3, 14));
+    private WaDateRange? holiday;
+    private WaDateRange? workingDays;
+
+    private const string DefaultExample = """
+        <WaDateRangeInput Label="Stay" Months="2" @bind-Value="stay" />
+        <p>From: @stay?.From, to: @stay?.To, complete: @(stay?.IsComplete ?? false)</p>
+
+        @code {
+            private WaDateRange? stay;
+        }
+        """;
+
+    private const string ValueExample = """
+        <WaDateRangeInput Label="Conference" WithClear="true" @bind-Value="conference" />
+
+        @code {
+            private WaDateRange? conference = new(new DateOnly(2026, 3, 12), new DateOnly(2026, 3, 14));
+        }
+        """;
+
+    private const string ConstraintsExample = """
+        <WaDateRangeInput Label="Holiday (3 to 14 days, in 2026)" Min="YearStart" Max="YearEnd"
+                          MinRange="3" MaxRange="14" @bind-Value="holiday" />
+
+        @code {
+            private static readonly DateOnly YearStart = new(2026, 1, 1);
+            private static readonly DateOnly YearEnd = new(2026, 12, 31);
+            private WaDateRange? holiday;
+        }
+        """;
+
+    private const string DisabledExample = """
+        <WaDateRangeInput Label="Working days" DisabledDaysOfWeek="Weekend" @bind-Value="workingDays" />
+
+        @code {
+            private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+            private WaDateRange? workingDays;
+        }
+        """;
+}

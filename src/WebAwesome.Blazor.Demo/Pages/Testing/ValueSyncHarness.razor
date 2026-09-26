@@ -220,6 +220,28 @@
                 </td>
             </tr>
             <tr>
+                <td><code>WaDateRangeInput</code> <ComponentBadges Tag="wa-date-input" /></td>
+                <td><WaDateRangeInput Label="Stay" data-testid="date-range-input" @bind-Value="dateRangeValue" /></td>
+                <td><code data-testid="date-range-input-model">@DemoFormat.Iso(dateRangeValue)</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="date-range-input-set" OnClick="@(() => dateRangeValue = SetDateRange)">Set @DemoFormat.Iso(SetDateRange)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-range-input-reset" OnClick="@(() => dateRangeValue = InitialDateRange)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateRangePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                <td><WaDateRangePicker data-testid="date-range-picker" FocusedDate="InitialPickerDate" @bind-Value="dateRangePickerValue" /></td>
+                <td><code data-testid="date-range-picker-model">@DemoFormat.Iso(dateRangePickerValue)</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="date-range-picker-set" OnClick="@(() => dateRangePickerValue = SetPickerRange)">Set @DemoFormat.Iso(SetPickerRange)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-range-picker-reset" OnClick="@(() => dateRangePickerValue = InitialPickerRange)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
                 <td><code>WaSlider</code> (range mode)</td>
                 <td><WaSlider Label="Price range" Range="true" data-testid="slider-range" @bind-MinValue="sliderRangeMin" @bind-MaxValue="sliderRangeMax" /></td>
                 <td><code data-testid="slider-range-model">@($"{sliderRangeMin}-{sliderRangeMax}")</code></td>
@@ -289,6 +311,10 @@
     private const string SetOption = "cherry";
     private static readonly DateOnly InitialPickerDate = new(2024, 3, 15);
     private static readonly DateOnly SetPickerDate = new(2024, 3, 25);
+    private static readonly WaDateRange InitialDateRange = new(new DateOnly(2024, 1, 10), new DateOnly(2024, 1, 12));
+    private static readonly WaDateRange SetDateRange = new(new DateOnly(2025, 6, 1), new DateOnly(2025, 6, 7));
+    private static readonly WaDateRange InitialPickerRange = new(new DateOnly(2024, 3, 11), new DateOnly(2024, 3, 13));
+    private static readonly WaDateRange SetPickerRange = new(new DateOnly(2024, 3, 25), new DateOnly(2024, 3, 28));
     private static readonly string[] InitialToppings = ["cheese"];
     private static readonly string[] SetToppings = ["ham"];
     private const int RelativeHoursAgo = 3;
@@ -310,6 +336,8 @@
     private string? selectValue = InitialOption;
     private string? comboboxValue = InitialOption;
     private DateOnly? datePickerValue = InitialPickerDate;
+    private WaDateRange? dateRangeValue = InitialDateRange;
+    private WaDateRange? dateRangePickerValue = InitialPickerRange;
     private string[]? selectedToppings = [.. InitialToppings];
     private string[]? comboboxToppings = [.. InitialToppings];
 

@@ -29,6 +29,14 @@ const SHOWCASE_ROUTES = [
   '/showcases/content',
 ];
 
+// Pages of wrappers rendering another wrapper's element in one of its modes (the range wrappers of wa-date-input
+// and wa-date-picker), which api-surface.json, keyed by element tag, cannot list; kept in sync manually with
+// ComponentCategoryMap.WrapperPages (src\WebAwesome.Blazor.Demo\Services\ComponentCategoryMap.cs).
+const WRAPPER_ROUTES = [
+  '/components/date-range-input',
+  '/components/date-range-picker',
+];
+
 // e2e harness pages (src\WebAwesome.Blazor.Demo\Pages\Testing): deliberately outside /components/,
 // so they are neither derived from api-surface.json nor linked from the sidebar - listed here so
 // the sweep still visits them
@@ -39,6 +47,7 @@ const HARNESS_ROUTES = [
   '/testing/events-content',
   '/testing/events-pro',
   '/testing/event-payloads',
+  '/testing/date-typing',
 ];
 
 function getComponentRoutes() {
@@ -53,7 +62,7 @@ function getComponentRoutes() {
 }
 
 function getAllRoutes() {
-  return ['/', ...getComponentRoutes(), ...LAYOUT_ROUTES, ...SHOWCASE_ROUTES, ...HARNESS_ROUTES];
+  return ['/', ...getComponentRoutes(), ...WRAPPER_ROUTES, ...LAYOUT_ROUTES, ...SHOWCASE_ROUTES, ...HARNESS_ROUTES];
 }
 
-module.exports = { getComponentRoutes, getAllRoutes, LAYOUT_ROUTES, SHOWCASE_ROUTES, HARNESS_ROUTES };
+module.exports = { getComponentRoutes, getAllRoutes, WRAPPER_ROUTES, LAYOUT_ROUTES, SHOWCASE_ROUTES, HARNESS_ROUTES };
