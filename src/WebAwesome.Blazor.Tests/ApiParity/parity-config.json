@@ -245,7 +245,8 @@
       "derivedEventCallbacks": { "OnTabChange": "wa-tab-show" }
     },
     "wa-carousel": {
-      "ignoredAttributes": [ "currentSlide", "slides" ]
+      "ignoredAttributes": [ "currentSlide", "slides" ],
+      "ignoredMethods": [ "addSlide", "removeSlide" ]
     },
     "wa-dropdown-item": {
       "ignoredAttributes": [ "submenuOpen" ]
@@ -474,6 +475,8 @@
     "ignoredEvents:wa-rating:change": "WaRating binds change through the numericchange alias (Constants.NumericChangeEventAttribute), whose handler raises ValueChanged, so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
     "unboundEventCallbacks:wa-rating:OnInput": "OnInput is inherited from WaInputBase; wa-rating dispatches no input event (the 3.12.0 source dispatches only change and wa-hover, and neither the @event JSDoc nor the CEM lists input), so the wrapper deliberately binds nothing for it",
     "ignoredMethods:wa-rating:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-rating to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredMethods:wa-carousel:addSlide": "imperative DOM mutation of slides; conflicts with Blazor ownership, slides are managed through the model",
+    "ignoredMethods:wa-carousel:removeSlide": "imperative DOM mutation of slides; conflicts with Blazor ownership, slides are managed through the model",
     "ignoredMethods:wa-markdown:getMarked": "static class method (WaMarkdown.getMarked() in markdown.d.ts) returning the shared Marked parser instance - a non-marshalable JS object, not a per-element instance method",
     "ignoredMethods:wa-markdown:updateAll": "static class method (WaMarkdown.updateAll() in markdown.d.ts) that re-renders all connected wa-markdown instances after the shared Marked config changes - class-level, not a per-element instance method addressable via ElementReference interop",
     "eventOverrides:wa-data-grid:wa-cell-contextmenu": "wa-data-grid cell context-menu event; exposed as the natural-PascalCase EventCallback OnCellContextMenu (mechanical conversion would yield 'OnCellContextmenu'), mapped via eventOverrides",

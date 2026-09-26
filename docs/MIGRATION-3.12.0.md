@@ -10,6 +10,7 @@ The Web Awesome 3.12.0 release itself is small and additive: `wa-dropdown-item` 
 - It types the date and time controls (`DateOnly`, `TimeOnly`, `DateTimeOffset`, `WaDateRange`, sets of dates and weekdays) instead of wire-format strings, and splits the range mode into wrappers of its own (section 10).
 - It types every other parameter whose value set or shape is known: closed value sets are enums, the `number | 'any'` step is `WaStep`, lists are collections, event payloads are records, and `WaInput`'s bounds get typed accessors (sections 11 to 14).
 - Parameters at Web Awesome's default no longer render, and a rendered attribute is never removed again (section 15).
+- It removes `WaCarousel.AddSlideAsync`/`RemoveSlideAsync`, which move or remove elements Blazor renders (section 16).
 
 Most of the removed or renamed members never worked: they sent values Web Awesome rejects, or listened for events it never dispatches. Code that compiled against them was silently broken, and the compiler now points it out.
 
@@ -464,6 +465,32 @@ An unset parameter renders nothing, so the element's own default applies:
 
 Only CSS selectors or tests that match a default attribute in the rendered markup (for example `wa-slider[max="100"]` on first render) need a change.
 
+### 16. `WaCarousel.AddSlideAsync` and `RemoveSlideAsync` removed (BREAKING)
+
+Both called Web Awesome's imperative slide methods: `addSlide()` moves an existing `wa-carousel-item` element into the carousel (`insertBefore`), and `removeSlide()` removes one from the DOM (`slide.remove()`). On slides Blazor renders, that detaches or moves nodes Blazor tracks, and Blazor fails on its next render around them (the same failure a closing toast item caused, "Cannot read properties of null (reading 'removeChild')"). `AddSlideAsync` took an `ElementReference`, which always points to a Blazor-rendered element, so it had no safe use.
+
+Manage the slides through the model instead: render the `WaCarouselItem`s from a collection with `@foreach` and `@key`, and change the collection. Web Awesome picks the change up by itself: the pagination, the navigation and, with `Loop`, its clones of the slides follow.
+
+```razor
+@* before *@
+<WaCarousel @ref="carousel">...</WaCarousel>
+await carousel.AddSlideAsync(newItem.Element!.Value);
+await carousel.RemoveSlideAsync(index);
+
+@* after *@
+<WaCarousel Pagination="true" Navigation="true">
+    @foreach (var photo in photos)
+    {
+        <WaCarouselItem @key="photo.Id"><img src="@photo.Url" alt="@photo.Title" /></WaCarouselItem>
+    }
+</WaCarousel>
+
+photos.Add(newPhoto);
+photos.RemoveAt(index);
+```
+
+Removing the active slide from the collection works as well: the carousel keeps the active index, so the slide after the removed one shows. When the removed slide was the last one, the new last slide shows, or the first one with `Loop`; `OnSlideChange` reports the new index.
+
 ## Behavioral Changes (no compile errors, but code may behave differently)
 
 These fixes need no change to compile, but code can now behave differently: a handler that never ran now runs, and a workaround for a defect fixed here may now get in the way.
@@ -475,6 +502,10 @@ These fixes need no change to compile, but code can now behave differently: a ha
 - **`WaCheckbox`/`WaSwitch.OnCheckedChange`, `WaRadioGroup.OnValueChange`, `WaSlider.OnValueChange` and `WaZoomableFrame.OnLoad`/`OnError`** (section 4), and **`WaDropdownItem.OnFocus`/`OnBlur`**.
 
 A handler you assigned to one of these never ran before. Check that it does what you want now that it runs.
+
+### Callbacks that no longer fire for nested components
+
+Web Awesome's `wa-*` events bubble, and Blazor calls every handler for an event on the way up. A wrapper's callback therefore also ran for the same event of a component nested in it. For example, a `WaSelect` inside a `WaDialog` raised `WaDialog.OnShow`/`OnHide` (a dialog that closes in `OnHide` closed as soon as the select's list closed), and a nested `WaTabGroup` raised the outer group's `OnTabShow`/`OnTabChange`. Each wrapper now consumes its own element's events, so a callback runs only for its own component. Remove workarounds that checked where an event came from. A `@onwa-*` handler you put on a plain element (a `div`) no longer receives the events of the wrappers inside it; bind the wrapper's callback instead.
 
 ### Workarounds you can remove
 
@@ -567,6 +598,8 @@ The package's license file is now resolved relative to `Directory.Build.props`. 
 - [ ] Pass collections to the list parameters, retype `SelectedValues` fields to `IReadOnlyList<string>?`, `WaColorPicker` values to `string?` and `WaAnimation.Iterations` to `double?`, and read the typed event payloads (section 13)
 - [ ] Move numeric and date bounds of `WaInput` to the typed accessors (`MinDecimal`, `MinDate`, ...), one per bound (section 14)
 - [ ] Update CSS selectors or tests that match a default attribute (`max="100"`, `type="text"`, `placement="top"`) on first render (section 15)
+- [ ] Replace `WaCarousel.AddSlideAsync`/`RemoveSlideAsync` with slides rendered from a collection with `@key` (section 16)
+- [ ] Move a `@onwa-*` handler on a plain element that listened to the wrappers inside it to the wrappers' callbacks (Behavioral Changes)
 - [ ] If you compare `FocusEventArgs.Type` in an `OnFocus`/`OnBlur` handler of a form control, `WaButton` or `WaFileInput`, expect `"focusin"`/`"focusout"`
 - [ ] If you worked around the value-sync bug (forcing a re-render with `@key`, JS interop to set `.value`), the slider and rating binding, or culture-formatted numbers, remove the workaround (Behavioral Changes)
 - [ ] Check the handlers of callbacks that never fired before and now do (Behavioral Changes, section 4)

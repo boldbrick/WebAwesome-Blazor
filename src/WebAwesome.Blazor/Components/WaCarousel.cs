@@ -13,6 +13,28 @@ namespace WebAwesome.Blazor.Components;
 /// A carousel component that displays content slides along a horizontal or vertical axis.
 /// Corresponds to the wa-carousel Web Awesome component.
 /// </summary>
+/// <remarks>
+/// <para>
+/// The slides are <see cref="WaCarouselItem"/> components in <see cref="ChildContent"/>. To add or remove slides
+/// dynamically, render them from a collection with <c>@foreach</c> and <c>@key</c> and change the collection; the
+/// element picks the change up by itself (pagination, navigation and, with <see cref="Loop"/>, its clones of the
+/// slides follow):
+/// </para>
+/// <code>
+/// &lt;WaCarousel Pagination="true" Navigation="true"&gt;
+///     @foreach (var photo in photos)
+///     {
+///         &lt;WaCarouselItem @key="photo.Id"&gt;&lt;img src="@photo.Url" alt="@photo.Title" /&gt;&lt;/WaCarouselItem&gt;
+///     }
+/// &lt;/WaCarousel&gt;
+/// </code>
+/// <para>
+/// Removing the active slide from the collection works as well: the carousel keeps the active index, so the slide
+/// after the removed one shows. When the removed slide was the last one, the new last slide shows, or the first one
+/// when <see cref="Loop"/> is set; <see cref="OnSlideChange"/> reports that change. Web Awesome's imperative
+/// <c>addSlide()</c> and <c>removeSlide()</c> are not wrapped: they move or remove elements Blazor renders.
+/// </para>
+/// </remarks>
 public class WaCarousel : ComponentBase
 {
     #region ------ Injected Services ------
@@ -254,46 +276,6 @@ public class WaCarousel : ComponentBase
             throw new InvalidOperationException("Cannot navigate to next slide: component has not been rendered yet.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "next");
-    }
-
-    /// <summary>
-    /// Adds a carousel item as the last real slide.
-    /// </summary>
-    /// <param name="slide">The element reference of the <see cref="WaCarouselItem"/> to add, e.g. its
-    /// <see cref="WaCarouselItem.Element"/>.</param>
-    /// <remarks>
-    /// In Blazor the normal way to add slides is declaratively, by including additional
-    /// <see cref="WaCarouselItem"/> components in <see cref="ChildContent"/>. This method is provided for
-    /// parity with the Web Awesome element API and imperative scenarios where a slide is created outside the
-    /// carousel's own render tree. Don't pass a slide that Blazor renders elsewhere: Web Awesome moves the element into
-    /// the carousel, and Blazor fails on its next render around the moved element.
-    /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task AddSlideAsync(ElementReference slide)
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot add slide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "addSlide", slide);
-    }
-
-    /// <summary>
-    /// Removes the real slide at the specified index.
-    /// </summary>
-    /// <remarks>
-    /// Web Awesome removes the slide's element from the DOM. Use this method only for slides that Blazor didn't
-    /// render, e.g. ones your own JavaScript created. For a <see cref="WaCarouselItem"/> in
-    /// <see cref="ChildContent"/>, remove the item from the model instead; Blazor fails when it later removes or
-    /// renders around an element that has already left the DOM.
-    /// </remarks>
-    /// <param name="index">The zero-based index of the slide to remove</param>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task RemoveSlideAsync(int index)
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot remove slide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "removeSlide", index);
     }
 
     #endregion

@@ -1011,12 +1011,10 @@ namespace WebAwesome.Blazor.Components
         public int SlidesPerPage { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
-        public System.Threading.Tasks.Task AddSlideAsync(Microsoft.AspNetCore.Components.ElementReference slide) { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task GoToSlideAsync(int index) { }
         public System.Threading.Tasks.Task NextAsync() { }
         public System.Threading.Tasks.Task PreviousAsync() { }
-        public System.Threading.Tasks.Task RemoveSlideAsync(int index) { }
     }
     public class WaCarouselItem : Microsoft.AspNetCore.Components.ComponentBase
     {
