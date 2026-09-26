@@ -79,4 +79,22 @@ public static class Constants
     /// then generates no box, so the fragment's own elements are laid out as the slot's items.
     /// </summary>
     internal const string TransparentSlotWrapperStyle = "display: contents";
+
+    /// <summary>
+    /// Validation message of a date control whose element value is not an ISO date; {0} is the field's display name.
+    /// Worded like Blazor's own InputDate.
+    /// </summary>
+    internal const string DateValidationMessageFormat = "The {0} field must be a date.";
+
+    /// <summary>
+    /// Validation message of a date-range control whose element value is not an ISO date or date range; {0} is the
+    /// field's display name.
+    /// </summary>
+    internal const string DateRangeValidationMessageFormat = "The {0} field must be a date range.";
+
+    /// <summary>
+    /// Validation message of a time control whose element value is not a wire time (<c>HH:mm</c>, <c>HH:mm:ss</c>);
+    /// {0} is the field's display name.
+    /// </summary>
+    internal const string TimeValidationMessageFormat = "The {0} field must be a time.";
 }

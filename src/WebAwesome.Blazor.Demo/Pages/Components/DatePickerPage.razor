@@ -3,19 +3,19 @@
 <PageTitle>Date Picker</PageTitle>
 
 <h1>Date Picker <ComponentBadges Tag="wa-date-picker" /></h1>
-<p>Date pickers display an inline month grid for choosing a single date or a range. Unlike <a href="/components/date-input"><code>WaDateInput</code></a> it is not form-associated — bind its value directly with <code>@@bind-Value</code>. <code>&lt;wa-date-picker&gt;</code> wrapped by <code>WaDatePicker</code>.</p>
+<p>Date pickers display an inline month grid for choosing a date. Unlike <a href="/components/date-input"><code>WaDateInput</code></a> it is not form-associated — bind its <code>DateOnly?</code> value directly with <code>@@bind-Value</code>. For a start and end date, use <a href="/components/date-range-picker"><code>WaDateRangePicker</code></a>. <code>&lt;wa-date-picker&gt;</code> wrapped by <code>WaDatePicker</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaDatePicker Style="max-width: 300px;" @bind-Value="defaultValue" />
-    <p>Value: <code>@(defaultValue ?? "(empty)")</code></p>
+    <p>Value: <code>@(defaultValue is null ? "(empty)" : DemoFormat.Iso(defaultValue))</code></p>
 </ExampleSection>
 
 <ExampleSection Title="Initial Value" Code="@ValueExample">
     <WaDatePicker Style="max-width: 300px;" @bind-Value="presetValue" />
 </ExampleSection>
 
-<ExampleSection Title="Range Mode" Code="@RangeExample">
-    <WaDatePicker Style="max-width: 560px;" Mode="WaDateSelectionMode.Range" Months="2" @bind-Value="rangeValue" />
+<ExampleSection Title="Disabled Dates &amp; Weekdays" Code="@DisabledExample">
+    <WaDatePicker Style="max-width: 300px;" FocusedDate="MeetingMonth" DisabledDaysOfWeek="Weekend" DisabledDates="Holidays" @bind-Value="meetingValue" />
 </ExampleSection>
 
 <ExampleSection Title="Week Numbers &amp; Outside Days" Code="@WeekNumbersExample">
@@ -25,16 +25,20 @@
 <ApiTable Tag="wa-date-picker" />
 
 @code {
-    private string? defaultValue;
-    private string? presetValue = "2026-05-11";
-    private string? rangeValue = "2026-05-11/2026-05-18";
-    private string? weekValue;
+    private static readonly DateOnly MeetingMonth = new(2026, 12, 1);
+    private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+    private static readonly IReadOnlySet<DateOnly> Holidays = new HashSet<DateOnly> { new(2026, 12, 24), new(2026, 12, 25) };
+
+    private DateOnly? defaultValue;
+    private DateOnly? presetValue = new(2026, 5, 11);
+    private DateOnly? meetingValue;
+    private DateOnly? weekValue;
 
     private const string DefaultExample = """
         <WaDatePicker Style="max-width: 300px;" @bind-Value="defaultValue" />
 
         @code {
-            private string? defaultValue;
+            private DateOnly? defaultValue;
         }
         """;
 
@@ -42,15 +46,19 @@
         <WaDatePicker Style="max-width: 300px;" @bind-Value="presetValue" />
 
         @code {
-            private string? presetValue = "2026-05-11";
+            private DateOnly? presetValue = new(2026, 5, 11);
         }
         """;
 
-    private const string RangeExample = """
-        <WaDatePicker Style="max-width: 560px;" Mode="WaDateSelectionMode.Range" Months="2" @bind-Value="rangeValue" />
+    private const string DisabledExample = """
+        <WaDatePicker Style="max-width: 300px;" FocusedDate="MeetingMonth" DisabledDaysOfWeek="Weekend"
+                      DisabledDates="Holidays" @bind-Value="meetingValue" />
 
         @code {
-            private string? rangeValue = "2026-05-11/2026-05-18";
+            private static readonly DateOnly MeetingMonth = new(2026, 12, 1);
+            private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+            private static readonly IReadOnlySet<DateOnly> Holidays = new HashSet<DateOnly> { new(2026, 12, 24), new(2026, 12, 25) };
+            private DateOnly? meetingValue;
         }
         """;
 
@@ -59,7 +67,7 @@
                       WeekdayFormat="WaWeekdayFormat.Narrow" @bind-Value="weekValue" />
 
         @code {
-            private string? weekValue;
+            private DateOnly? weekValue;
         }
         """;
 }

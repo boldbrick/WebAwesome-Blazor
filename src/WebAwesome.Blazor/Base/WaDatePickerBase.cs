@@ -72,14 +72,14 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     [Parameter] public WaDatePickerView? View { get; set; }
 
     /// <summary>
-    /// The earliest selectable date as <c>YYYY-MM-DD</c>.
+    /// The earliest selectable date; null leaves the calendar unbounded.
     /// </summary>
-    [Parameter] public string? Min { get; set; }
+    [Parameter] public DateOnly? Min { get; set; }
 
     /// <summary>
-    /// The latest selectable date as <c>YYYY-MM-DD</c>.
+    /// The latest selectable date; null leaves the calendar unbounded.
     /// </summary>
-    [Parameter] public string? Max { get; set; }
+    [Parameter] public DateOnly? Max { get; set; }
 
     /// <summary>
     /// Disable all dates strictly before <see cref="Today"/>.
@@ -102,14 +102,15 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     [Parameter] public bool Readonly { get; set; }
 
     /// <summary>
-    /// A whitespace-separated list of ISO dates that should be disabled.
+    /// Dates that cannot be selected; null or an empty set disables none. Rendered as a space-separated list of ISO
+    /// dates in ascending order.
     /// </summary>
-    [Parameter] public string? DisabledDates { get; set; }
+    [Parameter] public IReadOnlySet<DateOnly>? DisabledDates { get; set; }
 
     /// <summary>
-    /// Weekdays to disable. Accepts a space-separated list of three-letter weekday names.
+    /// Days of the week that cannot be selected (e.g. Saturday and Sunday); null or an empty set disables none.
     /// </summary>
-    [Parameter] public string? DisabledDaysOfWeek { get; set; }
+    [Parameter] public IReadOnlySet<DayOfWeek>? DisabledDaysOfWeek { get; set; }
 
     /// <summary>
     /// The first day of the week.
@@ -117,9 +118,10 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     [Parameter] public WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
 
     /// <summary>
-    /// The currently focused date as <c>YYYY-MM-DD</c>. Drives roving tabindex and the visible month.
+    /// The date the calendar focuses initially; drives the roving tabindex and the visible month. The element moves
+    /// its focus as the user navigates without updating this parameter (see <see cref="OnFocusDay"/>).
     /// </summary>
-    [Parameter] public string? FocusedDate { get; set; }
+    [Parameter] public DateOnly? FocusedDate { get; set; }
 
     /// <summary>
     /// BCP-47 locale override. When empty, the inherited <c>lang</c> attribute is used.
@@ -142,9 +144,9 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     [Parameter] public WaSize? Size { get; set; }
 
     /// <summary>
-    /// Overrides the date considered "today" as <c>YYYY-MM-DD</c>.
+    /// Overrides the date considered "today"; null uses the browser's current date.
     /// </summary>
-    [Parameter] public string? Today { get; set; }
+    [Parameter] public DateOnly? Today { get; set; }
 
     /// <summary>
     /// The weekday header format.
@@ -226,15 +228,15 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     /// <summary>
     /// Scrolls the view to show the given date and sets the focused day.
     /// </summary>
-    /// <param name="date">The target date as an ISO date string (<c>YYYY-MM-DD</c>)</param>
+    /// <param name="date">The target date</param>
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task GoToDateAsync(string date)
+    public async Task GoToDateAsync(DateOnly date)
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot navigate the date picker: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "goToDate", date);
+        await JSInterop.InvokeMethodAsync(Element.Value, "goToDate", WaWireFormat.FormatDate(date));
     }
 
     /// <summary>
@@ -268,7 +270,7 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
         FormControlRendering.AddCalendarAttributes(builder, 14, this);
         builder.AddAttribute(27, "disabled", Disabled);
         builder.AddAttribute(28, "readonly", Readonly);
-        builder.AddAttributeIfNotNullOrEmpty(29, "focused-date", FocusedDate);
+        builder.AddDateAttribute(29, "focused-date", FocusedDate);
         builder.AddAttributeIfNotNullOrEmpty(30, "locale", Locale);
         builder.AddAttributeIfNotNull(31, "size", Size?.ToHtmlValue());
 

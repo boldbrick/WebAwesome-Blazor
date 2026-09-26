@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
@@ -346,6 +347,15 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// <param name="sequence">The constant base sequence number</param>
     internal void AddRelayedKeyDownHandler(RenderTreeBuilder builder, int sequence)
         => builder.AddRelayedEventIfHasDelegate(sequence, Constants.RelayedKeyDownEventAttribute, OnKeyDown);
+
+    /// <summary>
+    /// Formats a parse-failure validation message for the bound field, naming it by <see cref="InputBase{TValue}.DisplayName"/>
+    /// or, when that is not set, by the field name, like Blazor's built-in inputs.
+    /// </summary>
+    /// <param name="format">A Constants.*ValidationMessageFormat, whose {0} is the field's name</param>
+    /// <returns>The validation message</returns>
+    private protected string FormatValidationMessage(string format)
+        => string.Format(CultureInfo.InvariantCulture, format, DisplayName ?? FieldIdentifier.FieldName);
 
     // the live value last pushed to or received from the element; only meaningful when hasSyncedLiveValue is set
     private object? lastSyncedLiveValue;

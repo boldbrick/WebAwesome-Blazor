@@ -54,14 +54,14 @@
                                      OnHide="e => log.Record(Id(nameof(WaDateInput), nameof(WaDateInput.OnHide)), e)"
                                      OnAfterHide="e => log.Record(Id(nameof(WaDateInput), nameof(WaDateInput.OnAfterHide)), e)" />
                     </td>
-                    <td><code data-testid="pro-date-input-model">@dateValue</code></td>
+                    <td><code data-testid="pro-date-input-model">@DemoFormat.Iso(dateValue)</code></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td><code>WaDatePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
-                    <td><WaDatePicker data-testid="pro-date-picker" FocusedDate="2024-03-15" @bind-Value="datePickerValue" OnInput="e => log.Record(Id(nameof(WaDatePicker), nameof(WaDatePicker.OnInput)), e)" /></td>
-                    <td><code data-testid="pro-date-picker-model">@datePickerValue</code></td>
-                    <td><WaButton Size="WaSize.Small" data-testid="pro-date-picker-set" OnClick="@(() => datePickerValue = SetDatePicker)">Set @SetDatePicker</WaButton></td>
+                    <td><WaDatePicker data-testid="pro-date-picker" FocusedDate="InitialDatePicker" @bind-Value="datePickerValue" OnInput="e => log.Record(Id(nameof(WaDatePicker), nameof(WaDatePicker.OnInput)), e)" /></td>
+                    <td><code data-testid="pro-date-picker-model">@DemoFormat.Iso(datePickerValue)</code></td>
+                    <td><WaButton Size="WaSize.Small" data-testid="pro-date-picker-set" OnClick="@(() => datePickerValue = SetDatePicker)">Set @DemoFormat.Iso(SetDatePicker)</WaButton></td>
                 </tr>
                 <tr>
                     <td><code>WaFileInput</code> <ComponentBadges Tag="wa-file-input" /></td>
@@ -103,7 +103,8 @@
 
 @code {
     private const string SetCombobox = "cherry";
-    private const string SetDatePicker = "2024-03-20";
+    private static readonly DateOnly InitialDatePicker = new(2024, 3, 15);
+    private static readonly DateOnly SetDatePicker = new(2024, 3, 20);
     private const string FormSubmitId = "form.submit";
     private const string InvalidMessage = "Rejected by the e2e harness";
 
@@ -119,8 +120,8 @@
 
     // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
     private string? comboboxToppingsValue = null;
-    private string? dateValue = "2024-01-15";
-    private string? datePickerValue = "2024-03-15";
+    private DateOnly? dateValue = new(2024, 1, 15);
+    private DateOnly? datePickerValue = InitialDatePicker;
 
     private const int ClipSampleRate = 8000;
     private const int ClipSamples = ClipSampleRate / 2;

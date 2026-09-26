@@ -3,23 +3,24 @@
 <PageTitle>Date Input</PageTitle>
 
 <h1>Date Input <ComponentBadges Tag="wa-date-input" /></h1>
-<p>Date inputs let users enter a date through a segmented field or select one from a popup calendar. The submitted value is always ISO 8601 (<code>YYYY-MM-DD</code>, or <code>YYYY-MM-DD/YYYY-MM-DD</code> for ranges). <code>&lt;wa-date-input&gt;</code> wrapped by <code>WaDateInput</code>.</p>
+<p>Date inputs let users enter a date through a segmented field or select one from a popup calendar. <code>WaDateInput</code> binds a <code>DateOnly?</code>; the element's ISO 8601 wire value (<code>YYYY-MM-DD</code>) is converted culture-free. For a start and end date, use <a href="/components/date-range-input"><code>WaDateRangeInput</code></a>. <code>&lt;wa-date-input&gt;</code> wrapped by <code>WaDateInput</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaDateInput Label="Pick a date" @bind-Value="defaultValue" />
-    <p>Value: <code>@(defaultValue ?? "(empty)")</code></p>
+    <p>Value: <code>@(defaultValue is null ? "(empty)" : DemoFormat.Iso(defaultValue))</code></p>
 </ExampleSection>
 
 <ExampleSection Title="Initial Value &amp; Clearable" Code="@ValueExample">
     <WaDateInput Label="Event date" Hint="Choose the day of the event." WithClear="true" @bind-Value="eventValue" />
 </ExampleSection>
 
-<ExampleSection Title="Range Mode" Code="@RangeExample">
-    <WaDateInput Label="Stay" Mode="WaDateSelectionMode.Range" Months="2" @bind-Value="rangeValue" />
+<ExampleSection Title="Min &amp; Max" Code="@ConstraintsExample">
+    <WaDateInput Label="Within 2026" Min="YearStart" Max="YearEnd" @bind-Value="constrainedValue" />
 </ExampleSection>
 
-<ExampleSection Title="Min, Max &amp; Constraints" Code="@ConstraintsExample">
-    <WaDateInput Label="Within 2026" Min="2026-01-01" Max="2026-12-31" DisableFuture="false" @bind-Value="constrainedValue" />
+<ExampleSection Title="Disabled Dates &amp; Weekdays" Code="@DisabledExample">
+    <WaDateInput Label="Delivery day" Hint="No deliveries on weekends or public holidays." Today="DeliveryToday"
+                 DisabledDaysOfWeek="Weekend" DisabledDates="Holidays" @bind-Value="deliveryValue" />
 </ExampleSection>
 
 <ExampleSection Title="Appearance &amp; Pill" Code="@AppearanceExample">
@@ -30,18 +31,24 @@
 <ApiTable Tag="wa-date-input" />
 
 @code {
-    private string? defaultValue;
-    private string? eventValue = "2026-05-20";
-    private string? rangeValue;
-    private string? constrainedValue;
-    private string? filledValue;
-    private string? pillValue;
+    private static readonly DateOnly YearStart = new(2026, 1, 1);
+    private static readonly DateOnly YearEnd = new(2026, 12, 31);
+    private static readonly DateOnly DeliveryToday = new(2026, 12, 21);
+    private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+    private static readonly IReadOnlySet<DateOnly> Holidays = new HashSet<DateOnly> { new(2026, 12, 24), new(2026, 12, 25) };
+
+    private DateOnly? defaultValue;
+    private DateOnly? eventValue = new(2026, 5, 20);
+    private DateOnly? constrainedValue;
+    private DateOnly? deliveryValue;
+    private DateOnly? filledValue;
+    private DateOnly? pillValue;
 
     private const string DefaultExample = """
         <WaDateInput Label="Pick a date" @bind-Value="defaultValue" />
 
         @code {
-            private string? defaultValue;
+            private DateOnly? defaultValue;
         }
         """;
 
@@ -49,23 +56,29 @@
         <WaDateInput Label="Event date" Hint="Choose the day of the event." WithClear="true" @bind-Value="eventValue" />
 
         @code {
-            private string? eventValue = "2026-05-20";
-        }
-        """;
-
-    private const string RangeExample = """
-        <WaDateInput Label="Stay" Mode="WaDateSelectionMode.Range" Months="2" @bind-Value="rangeValue" />
-
-        @code {
-            private string? rangeValue;
+            private DateOnly? eventValue = new(2026, 5, 20);
         }
         """;
 
     private const string ConstraintsExample = """
-        <WaDateInput Label="Within 2026" Min="2026-01-01" Max="2026-12-31" @bind-Value="constrainedValue" />
+        <WaDateInput Label="Within 2026" Min="YearStart" Max="YearEnd" @bind-Value="constrainedValue" />
 
         @code {
-            private string? constrainedValue;
+            private static readonly DateOnly YearStart = new(2026, 1, 1);
+            private static readonly DateOnly YearEnd = new(2026, 12, 31);
+            private DateOnly? constrainedValue;
+        }
+        """;
+
+    private const string DisabledExample = """
+        <WaDateInput Label="Delivery day" Hint="No deliveries on weekends or public holidays." Today="DeliveryToday"
+                     DisabledDaysOfWeek="Weekend" DisabledDates="Holidays" @bind-Value="deliveryValue" />
+
+        @code {
+            private static readonly DateOnly DeliveryToday = new(2026, 12, 21);
+            private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+            private static readonly IReadOnlySet<DateOnly> Holidays = new HashSet<DateOnly> { new(2026, 12, 24), new(2026, 12, 25) };
+            private DateOnly? deliveryValue;
         }
         """;
 
@@ -74,8 +87,8 @@
         <WaDateInput Label="Pill" Pill="true" @bind-Value="pillValue" />
 
         @code {
-            private string? filledValue;
-            private string? pillValue;
+            private DateOnly? filledValue;
+            private DateOnly? pillValue;
         }
         """;
 }

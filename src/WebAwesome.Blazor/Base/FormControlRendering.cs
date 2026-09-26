@@ -143,8 +143,8 @@ internal static class FormControlRendering
     }
 
     /// <summary>
-    /// Adds the calendar options wa-date-input and wa-date-picker share, each only when set (a flag when true), at
-    /// sequence + 0..12 in this order: min, max, today, disabled-dates, disabled-days-of-week, disable-past,
+    /// Adds the calendar options wa-date-input and wa-date-picker share, each only when set (a flag when true, a set when
+    /// not empty) and in Web Awesome's wire format, at sequence + 0..12 in this order: min, max, today, disabled-dates, disabled-days-of-week, disable-past,
     /// disable-future, first-day-of-week, months, page-by, weekday-format, with-outside-days, with-week-numbers.
     /// </summary>
     /// <param name="builder">The render tree builder</param>
@@ -152,11 +152,11 @@ internal static class FormControlRendering
     /// <param name="calendar">The calendar options</param>
     public static void AddCalendarAttributes(RenderTreeBuilder builder, int sequence, IWaCalendarOptions calendar)
     {
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 0, MinAttribute, calendar.Min);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 1, MaxAttribute, calendar.Max);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 2, TodayAttribute, calendar.Today);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 3, DisabledDatesAttribute, calendar.DisabledDates);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 4, DisabledDaysOfWeekAttribute, calendar.DisabledDaysOfWeek);
+        builder.AddDateAttribute(sequence + 0, MinAttribute, calendar.Min);
+        builder.AddDateAttribute(sequence + 1, MaxAttribute, calendar.Max);
+        builder.AddDateAttribute(sequence + 2, TodayAttribute, calendar.Today);
+        builder.AddDateSetAttribute(sequence + 3, DisabledDatesAttribute, calendar.DisabledDates);
+        builder.AddDaysOfWeekAttribute(sequence + 4, DisabledDaysOfWeekAttribute, calendar.DisabledDaysOfWeek);
         builder.AddAttribute(sequence + 5, DisablePastAttribute, calendar.DisablePast);
         builder.AddAttribute(sequence + 6, DisableFutureAttribute, calendar.DisableFuture);
         builder.AddAttributeIfNotNull(sequence + 7, FirstDayOfWeekAttribute, calendar.FirstDayOfWeek?.ToHtmlValue());

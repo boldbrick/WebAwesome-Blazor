@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using WebAwesome.Blazor.Components;
 
 namespace WebAwesome.Blazor.Base;
@@ -5,34 +7,35 @@ namespace WebAwesome.Blazor.Base;
 /// <summary>
 /// The calendar options wa-date-input and wa-date-picker share (the date input forwards them to its popup
 /// calendar): the selectable range, the disabled dates and the calendar's layout. Groups the members for consumers
-/// and tests; the [Parameter] properties are declared by the implementing wrapper.
+/// and tests; the [Parameter] properties are declared by the implementing wrapper, and one renderer emits them in
+/// Web Awesome's culture-free wire formats (ISO <c>yyyy-MM-dd</c> dates, <c>sun</c> … <c>sat</c> weekday tokens).
 /// </summary>
 public interface IWaCalendarOptions
 {
     /// <summary>
-    /// The earliest selectable date as <c>YYYY-MM-DD</c>.
+    /// The earliest selectable date; null leaves the calendar unbounded.
     /// </summary>
-    string? Min { get; }
+    DateOnly? Min { get; }
 
     /// <summary>
-    /// The latest selectable date as <c>YYYY-MM-DD</c>.
+    /// The latest selectable date; null leaves the calendar unbounded.
     /// </summary>
-    string? Max { get; }
+    DateOnly? Max { get; }
 
     /// <summary>
-    /// Overrides the date considered "today" as <c>YYYY-MM-DD</c> (defaults to the runtime date).
+    /// Overrides the date considered "today"; null uses the browser's current date.
     /// </summary>
-    string? Today { get; }
+    DateOnly? Today { get; }
 
     /// <summary>
-    /// Dates that cannot be selected, as a whitespace-separated list of ISO dates.
+    /// Dates that cannot be selected; null or an empty set disables none.
     /// </summary>
-    string? DisabledDates { get; }
+    IReadOnlySet<DateOnly>? DisabledDates { get; }
 
     /// <summary>
-    /// Days of the week that cannot be selected, as a space-separated list of three-letter weekday names.
+    /// Days of the week that cannot be selected; null or an empty set disables none.
     /// </summary>
-    string? DisabledDaysOfWeek { get; }
+    IReadOnlySet<DayOfWeek>? DisabledDaysOfWeek { get; }
 
     /// <summary>
     /// Disables all dates strictly before today.

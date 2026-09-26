@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -36,16 +37,16 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     [Parameter] public WaInputAppearance? Appearance { get; set; }
 
     /// <summary>
-    /// Earliest selectable date as <c>YYYY-MM-DD</c>. A committed value before <see cref="Min"/> fails
+    /// Earliest selectable date; null leaves the calendar unbounded. A committed value before <see cref="Min"/> fails
     /// constraint validation with <c>rangeUnderflow</c>.
     /// </summary>
-    [Parameter] public string? Min { get; set; }
+    [Parameter] public DateOnly? Min { get; set; }
 
     /// <summary>
-    /// Latest selectable date as <c>YYYY-MM-DD</c>. A committed value after <see cref="Max"/> fails
+    /// Latest selectable date; null leaves the calendar unbounded. A committed value after <see cref="Max"/> fails
     /// constraint validation with <c>rangeOverflow</c>.
     /// </summary>
-    [Parameter] public string? Max { get; set; }
+    [Parameter] public DateOnly? Max { get; set; }
 
     /// <summary>
     /// Disable all dates strictly before today.
@@ -58,14 +59,15 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     [Parameter] public bool DisableFuture { get; set; }
 
     /// <summary>
-    /// Dates that cannot be selected. Accepts a whitespace-separated list of ISO dates.
+    /// Dates that cannot be selected; null or an empty set disables none. Rendered as a space-separated list of ISO
+    /// dates in ascending order.
     /// </summary>
-    [Parameter] public string? DisabledDates { get; set; }
+    [Parameter] public IReadOnlySet<DateOnly>? DisabledDates { get; set; }
 
     /// <summary>
-    /// Days of the week that cannot be selected. Accepts a space-separated list of three-letter weekday names.
+    /// Days of the week that cannot be selected (e.g. Saturday and Sunday); null or an empty set disables none.
     /// </summary>
-    [Parameter] public string? DisabledDaysOfWeek { get; set; }
+    [Parameter] public IReadOnlySet<DayOfWeek>? DisabledDaysOfWeek { get; set; }
 
     /// <summary>
     /// The first day of the week in the popup calendar.
@@ -88,9 +90,9 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     [Parameter] public WaWeekdayFormat? WeekdayFormat { get; set; }
 
     /// <summary>
-    /// Override "today" as <c>YYYY-MM-DD</c> (defaults to the runtime date).
+    /// Overrides the date considered "today"; null uses the browser's current date.
     /// </summary>
-    [Parameter] public string? Today { get; set; }
+    [Parameter] public DateOnly? Today { get; set; }
 
     /// <summary>
     /// The preferred placement of the date picker popup, above or below the field. When null, the attribute is omitted and

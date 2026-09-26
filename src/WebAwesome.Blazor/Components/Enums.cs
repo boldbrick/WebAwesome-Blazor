@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace WebAwesome.Blazor.Components;
@@ -1034,17 +1034,6 @@ public enum WaAccordionMode
     SingleCollapsible,
     /// <summary>Any number of items may be open at once.</summary>
     Multiple
-}
-
-/// <summary>
-/// Selection mode for the date input and date picker.
-/// </summary>
-public enum WaDateSelectionMode
-{
-    /// <summary>Selects a single date.</summary>
-    Single,
-    /// <summary>Selects a start/end date range.</summary>
-    Range
 }
 
 /// <summary>
@@ -2502,22 +2491,6 @@ public static class WaEnumExtensions
             WaAccordionMode.Single => "single",
             WaAccordionMode.SingleCollapsible => "single-collapsible",
             WaAccordionMode.Multiple => "multiple",
-            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
-        };
-    }
-
-    /// <summary>
-    /// Converts the value to its Web Awesome attribute string.
-    /// </summary>
-    /// <param name="mode">The date selection mode value to convert</param>
-    /// <returns>The lowercase attribute string, "single" or "range"</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="mode"/> is not a defined enum value</exception>
-    public static string ToHtmlValue(this WaDateSelectionMode mode)
-    {
-        return mode switch
-        {
-            WaDateSelectionMode.Single => "single",
-            WaDateSelectionMode.Range => "range",
             _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
         };
     }

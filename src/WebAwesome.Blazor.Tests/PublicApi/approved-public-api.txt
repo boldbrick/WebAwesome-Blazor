@@ -15,14 +15,14 @@ namespace WebAwesome.Blazor.Base
     {
         bool DisableFuture { get; }
         bool DisablePast { get; }
-        string? DisabledDates { get; }
-        string? DisabledDaysOfWeek { get; }
+        System.Collections.Generic.IReadOnlySet<System.DateOnly>? DisabledDates { get; }
+        System.Collections.Generic.IReadOnlySet<System.DayOfWeek>? DisabledDaysOfWeek { get; }
         WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; }
-        string? Max { get; }
-        string? Min { get; }
+        System.DateOnly? Max { get; }
+        System.DateOnly? Min { get; }
         int? Months { get; }
         WebAwesome.Blazor.Components.WaDatePageBy? PageBy { get; }
-        string? Today { get; }
+        System.DateOnly? Today { get; }
         WebAwesome.Blazor.Components.WaWeekdayFormat? WeekdayFormat { get; }
         bool WithOutsideDays { get; }
         bool WithWeekNumbers { get; }
@@ -66,9 +66,9 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public bool DisablePast { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? DisabledDates { get; set; }
+        public System.Collections.Generic.IReadOnlySet<System.DateOnly>? DisabledDates { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? DisabledDaysOfWeek { get; set; }
+        public System.Collections.Generic.IReadOnlySet<System.DayOfWeek>? DisabledDaysOfWeek { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? Distance { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -81,9 +81,9 @@ namespace WebAwesome.Blazor.Base
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Max { get; set; }
+        public System.DateOnly? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Min { get; set; }
+        public System.DateOnly? Min { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? Months { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -107,7 +107,7 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Today { get; set; }
+        public System.DateOnly? Today { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaWeekdayFormat? WeekdayFormat { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -135,14 +135,14 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? DisabledDates { get; set; }
+        public System.Collections.Generic.IReadOnlySet<System.DateOnly>? DisabledDates { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? DisabledDaysOfWeek { get; set; }
+        public System.Collections.Generic.IReadOnlySet<System.DayOfWeek>? DisabledDaysOfWeek { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? FocusedDate { get; set; }
+        public System.DateOnly? FocusedDate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -152,9 +152,9 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Locale { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Max { get; set; }
+        public System.DateOnly? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Min { get; set; }
+        public System.DateOnly? Min { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? Months { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -176,7 +176,7 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Today { get; set; }
+        public System.DateOnly? Today { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public TValue Value { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -192,7 +192,7 @@ namespace WebAwesome.Blazor.Base
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task ClearAsync() { }
         public System.Threading.Tasks.Task FocusAsync() { }
-        public System.Threading.Tasks.Task GoToDateAsync(string date) { }
+        public System.Threading.Tasks.Task GoToDateAsync(System.DateOnly date) { }
         public System.Threading.Tasks.Task GoToTodayAsync() { }
     }
     public abstract class WaInputBase<TValue> : Microsoft.AspNetCore.Components.Forms.InputBase<TValue>, WebAwesome.Blazor.Base.IFormValidation
@@ -1509,36 +1509,25 @@ namespace WebAwesome.Blazor.Components
         public WaDataGridSortChangeEventArgs() { }
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
     }
-    public class WaDateInput : WebAwesome.Blazor.Base.WaDateInputBase<string?>
+    public class WaDateInput : WebAwesome.Blazor.Base.WaDateInputBase<System.DateOnly?>
     {
         public WaDateInput() { }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? MaxRange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? MinRange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaDateSelectionMode Mode { get; set; }
-        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+        protected override string? FormatValueAsString(System.DateOnly? value) { }
+        protected override bool TryParseValueFromString(string? value, out System.DateOnly? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public enum WaDatePageBy
     {
         Months = 0,
         Single = 1,
     }
-    public class WaDatePicker : WebAwesome.Blazor.Base.WaDatePickerBase<string?>
+    public class WaDatePicker : WebAwesome.Blazor.Base.WaDatePickerBase<System.DateOnly?>
     {
         public WaDatePicker() { }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? MaxRange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? MinRange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaDateSelectionMode? Mode { get; set; }
     }
     public class WaDatePickerFocusDayEventArgs : System.EventArgs
     {
         public WaDatePickerFocusDayEventArgs() { }
-        public string? Date { get; set; }
+        public System.DateOnly? Date { get; set; }
     }
     public enum WaDatePickerView
     {
@@ -1549,13 +1538,19 @@ namespace WebAwesome.Blazor.Components
     public class WaDatePickerViewChangeEventArgs : System.EventArgs
     {
         public WaDatePickerViewChangeEventArgs() { }
-        public string? Date { get; set; }
+        public System.DateOnly? Date { get; set; }
         public string? View { get; set; }
     }
-    public enum WaDateSelectionMode
+    public readonly struct WaDateRange : System.IEquatable<WebAwesome.Blazor.Components.WaDateRange>
     {
-        Single = 0,
-        Range = 1,
+        public WaDateRange(System.DateOnly? From, System.DateOnly? To) { }
+        public System.DateOnly? From { get; init; }
+        public bool IsComplete { get; }
+        public bool IsEmpty { get; }
+        public System.DateOnly? To { get; init; }
+        public override string ToString() { }
+        public static WebAwesome.Blazor.Components.WaDateRange Parse(string value) { }
+        public static bool TryParse([System.Diagnostics.CodeAnalysis.NotNullWhen(true)] string? value, out WebAwesome.Blazor.Components.WaDateRange result) { }
     }
     public enum WaDateTimeNumericStyle
     {
@@ -1885,7 +1880,6 @@ namespace WebAwesome.Blazor.Components
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDataGridSelectable selectable) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDatePageBy pageBy) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDatePickerView view) { }
-        public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDateSelectionMode mode) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDateTimeNumericStyle style) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDateTimeStyle style) { }
         public static string ToHtmlValue(this WebAwesome.Blazor.Components.WaDateTimeTextStyle style) { }

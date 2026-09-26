@@ -44,7 +44,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Pro: date picker, video playlist, data grid">
-    <WaDatePicker data-testid="pl-date-picker" FocusedDate="2024-03-15" Value="2024-03-15"
+    <WaDatePicker data-testid="pl-date-picker" FocusedDate="PayloadPickerDate" Value="PayloadPickerDate"
                   OnFocusDay="e => log.Record(Id(nameof(WaDatePicker), nameof(WaDatePicker.OnFocusDay)), e)"
                   OnViewChange="e => log.Record(Id(nameof(WaDatePicker), nameof(WaDatePicker.OnViewChange)), e)" />
 
@@ -84,6 +84,7 @@
 </ExampleSection>
 
 @code {
+    private static readonly DateOnly PayloadPickerDate = new(2024, 3, 15);
     private const string InitialState = "off";
     private const string MutatedState = "on";
     private const int InitialWidth = 100;

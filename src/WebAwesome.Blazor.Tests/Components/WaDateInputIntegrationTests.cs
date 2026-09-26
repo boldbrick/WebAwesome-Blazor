@@ -33,7 +33,7 @@ public class WaDateInputIntegrationTests : BunitContext
     [InlineData(nameof(WaDateInput.MarkupHint), "hint")]
     public void SlotContent_RendersIntoItsSlot(string parameterName, string slot)
     {
-        string? value = null;
+        DateOnly? value = null;
         var cut = Render<WaDateInput>(parameters => parameters
             .Add(p => p.ValueExpression, () => value)
             .TryAdd(parameterName, SlotProbe.Fragment));

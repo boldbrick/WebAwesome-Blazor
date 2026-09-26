@@ -234,13 +234,14 @@ public class WaCreateEventArgs : EventArgs
 public class WaDatePickerFocusDayEventArgs : EventArgs
 {
     /// <summary>
-    /// The newly focused day as an ISO date string (<c>YYYY-MM-DD</c>).
+    /// The newly focused day, or null when the event carries no valid date.
     /// </summary>
     /// <remarks>
-    /// The wa-focus-day event's detail carries a live JavaScript <c>Date</c>; it is projected to an
-    /// ISO date string by the interop module, since <c>Date</c> objects do not marshal into Blazor.
+    /// The wa-focus-day event's detail carries a live JavaScript <c>Date</c>; the interop module projects it to an
+    /// ISO <c>yyyy-MM-dd</c> string (<c>Date</c> objects do not marshal into Blazor), which deserializes into the
+    /// <see cref="DateOnly"/>.
     /// </remarks>
-    public string? Date { get; set; }
+    public DateOnly? Date { get; set; }
 }
 
 /// <summary>
@@ -254,9 +255,10 @@ public class WaDatePickerViewChangeEventArgs : EventArgs
     public string? View { get; set; }
 
     /// <summary>
-    /// The anchor date of the new view as an ISO date string (<c>YYYY-MM-DD</c>).
+    /// The anchor date of the new view, or null when the event carries no valid date (projected from the detail's
+    /// JavaScript <c>Date</c> like <see cref="WaDatePickerFocusDayEventArgs.Date"/>).
     /// </summary>
-    public string? Date { get; set; }
+    public DateOnly? Date { get; set; }
 }
 
 #endregion

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
+using WebAwesome.Blazor.Components;
 using Xunit;
 using static WebAwesome.Blazor.Tests.ApiParity.ApiParityData;
 
@@ -331,6 +332,7 @@ public class RenderedAttributeParityTests
     private const string WrapperDefaultAttributesKey = "wrapperDefaultAttributes";
     private const string DivergentParameterDefaultsKey = "divergentParameterDefaults";
     private const string StringSample = "x-sample-value";
+    private const string IsoDatePattern = "yyyy-MM-dd";
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
     private const string StringType = "string";
@@ -357,6 +359,12 @@ public class RenderedAttributeParityTests
     private static readonly char[] DefaultQuotes = { '\'', '"', '`' };
 
     private static readonly DateTime DateSample = new(2026, 1, 2, 3, 4, 5, 678, DateTimeKind.Utc);
+    private static readonly DateOnly DateOnlySample = new(2026, 1, 2);
+    private static readonly DateOnly RangeEndSample = new(2026, 11, 30);
+    private static readonly TimeOnly TimeWithSecondsSample = new(3, 4, 5);
+    private static readonly TimeOnly TimeSample = new(13, 4);
+    private static readonly DateTimeOffset InstantSample = new(2026, 1, 2, 3, 4, 5, 678, TimeSpan.FromHours(-5));
+    private static readonly DateTimeOffset UtcInstantSample = new(2026, 1, 2, 3, 4, 5, 678, TimeSpan.Zero);
 
     // capitalized .NET boolean text, which no Web Awesome attribute reads as intended
     private static readonly HashSet<string> DotNetBooleanTexts = new(StringComparer.Ordinal) { bool.TrueString, bool.FalseString };
@@ -542,6 +550,36 @@ public class RenderedAttributeParityTests
         {
             yield return DateSample;
         }
+        else if (type == typeof(DateOnly))
+        {
+            yield return DateOnlySample;
+        }
+        else if (type == typeof(TimeOnly))
+        {
+            yield return TimeWithSecondsSample;
+            yield return TimeSample;
+        }
+        else if (type == typeof(DateTimeOffset))
+        {
+            yield return InstantSample;
+            yield return UtcInstantSample;
+        }
+        else if (type == typeof(WaDateRange))
+        {
+            yield return new WaDateRange(DateOnlySample, RangeEndSample);
+            yield return new WaDateRange(DateOnlySample, null);
+        }
+        else if (type == typeof(IReadOnlySet<DateOnly>))
+        {
+            // listed out of order, so an unsorted rendering shows
+            yield return new HashSet<DateOnly> { RangeEndSample, DateOnlySample };
+            yield return new HashSet<DateOnly>();
+        }
+        else if (type == typeof(IReadOnlySet<DayOfWeek>))
+        {
+            yield return new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+            yield return new HashSet<DayOfWeek>();
+        }
     }
 
     private static bool IsNumber(object value) => FloatingTypes.Contains(value.GetType())
@@ -553,7 +591,9 @@ public class RenderedAttributeParityTests
         string text => $"\"{text}\"",
         bool flag => flag ? TrueText : FalseText,
         Enum member => member.ToString(),
+        DateOnly date => date.ToString(IsoDatePattern, CultureInfo.InvariantCulture),
         IFormattable formattable => formattable.ToString(null, CultureInfo.InvariantCulture),
+        System.Collections.IEnumerable items => $"{{{string.Join(", ", items.Cast<object>().Select(Describe))}}}",
         _ => value.ToString() ?? string.Empty
     };
 

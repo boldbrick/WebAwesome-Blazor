@@ -87,7 +87,7 @@ else
 
                     <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
                         <WaDateInput Label="Arrival date" Hint="When will you arrive on-site?"
-                                     Min="2026-03-12" Max="2026-03-14" WithClear="true" @bind-Value="model.ArrivalDate" />
+                                     Min="ConferenceStart" Max="ConferenceEnd" WithClear="true" @bind-Value="model.ArrivalDate" />
                         <WaTimeInput Label="Preferred session time" Hint="We'll prioritize workshops around this time"
                                      WithNow="true" @bind-Value="model.SessionTime" />
                     </WaGrid>
@@ -145,6 +145,10 @@ else
 }
 
 @code {
+    // the conference days, the selectable range of the arrival date
+    private static readonly DateOnly ConferenceStart = new(2026, 3, 12);
+    private static readonly DateOnly ConferenceEnd = new(2026, 3, 14);
+
     private RegistrationModel model = new();
     private EditContext editContext = null!;
     private bool submitted;
@@ -199,7 +203,7 @@ else
         public decimal? GuestPasses { get; set; } = 0;
 
         [Required(ErrorMessage = "Please choose your arrival date.")]
-        public string? ArrivalDate { get; set; }
+        public DateOnly? ArrivalDate { get; set; }
 
         public string? SessionTime { get; set; }
 

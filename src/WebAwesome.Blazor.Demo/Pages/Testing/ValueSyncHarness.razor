@@ -38,10 +38,10 @@
             <tr>
                 <td><code>WaDateInput</code> <ComponentBadges Tag="wa-date-input" /></td>
                 <td><WaDateInput Label="Date" data-testid="date-input" @bind-Value="dateValue" /></td>
-                <td><code data-testid="date-input-model">@dateValue</code></td>
+                <td><code data-testid="date-input-model">@DemoFormat.Iso(dateValue)</code></td>
                 <td>
                     <WaCluster Gap="GapSize.Gap_S">
-                        <WaButton Size="WaSize.Small" data-testid="date-input-set" OnClick="@(() => dateValue = SetDate)">Set @SetDate</WaButton>
+                        <WaButton Size="WaSize.Small" data-testid="date-input-set" OnClick="@(() => dateValue = SetDate)">Set @DemoFormat.Iso(SetDate)</WaButton>
                         <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-input-reset" OnClick="@(() => dateValue = InitialDate)">Reset</WaButton>
                     </WaCluster>
                 </td>
@@ -210,11 +210,11 @@
             </tr>
             <tr>
                 <td><code>WaDatePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
-                <td><WaDatePicker data-testid="date-picker" FocusedDate="@InitialPickerDate" @bind-Value="datePickerValue" /></td>
-                <td><code data-testid="date-picker-model">@datePickerValue</code></td>
+                <td><WaDatePicker data-testid="date-picker" FocusedDate="InitialPickerDate" @bind-Value="datePickerValue" /></td>
+                <td><code data-testid="date-picker-model">@DemoFormat.Iso(datePickerValue)</code></td>
                 <td>
                     <WaCluster Gap="GapSize.Gap_S">
-                        <WaButton Size="WaSize.Small" data-testid="date-picker-set" OnClick="@(() => datePickerValue = SetPickerDate)">Set @SetPickerDate</WaButton>
+                        <WaButton Size="WaSize.Small" data-testid="date-picker-set" OnClick="@(() => datePickerValue = SetPickerDate)">Set @DemoFormat.Iso(SetPickerDate)</WaButton>
                         <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-picker-reset" OnClick="@(() => datePickerValue = InitialPickerDate)">Reset</WaButton>
                     </WaCluster>
                 </td>
@@ -265,8 +265,8 @@
     private const decimal SetNumber = 42;
     private const string InitialColor = "#336699";
     private const string SetColor = "#00aa55";
-    private const string InitialDate = "2024-01-15";
-    private const string SetDate = "2025-06-30";
+    private static readonly DateOnly InitialDate = new(2024, 1, 15);
+    private static readonly DateOnly SetDate = new(2025, 6, 30);
     private const string InitialKnownDate = "2000-01-15";
     private const string SetKnownDate = "1999-12-31";
     private const string InitialOtp = "123456";
@@ -287,8 +287,8 @@
     private const decimal SetSliderRangeMax = 60;
     private const string InitialOption = "apple";
     private const string SetOption = "cherry";
-    private const string InitialPickerDate = "2024-03-15";
-    private const string SetPickerDate = "2024-03-25";
+    private static readonly DateOnly InitialPickerDate = new(2024, 3, 15);
+    private static readonly DateOnly SetPickerDate = new(2024, 3, 25);
     private static readonly string[] InitialToppings = ["cheese"];
     private static readonly string[] SetToppings = ["ham"];
     private const int RelativeHoursAgo = 3;
@@ -296,7 +296,7 @@
 
     private decimal? numberValue = InitialNumber;
     private string colorValue = InitialColor;
-    private string? dateValue = InitialDate;
+    private DateOnly? dateValue = InitialDate;
     private string? knownDateValue = InitialKnownDate;
     private string? otpValue = InitialOtp;
     private string? radioValue = InitialRadio;
@@ -309,7 +309,7 @@
     private decimal? sliderRangeMax = InitialSliderRangeMax;
     private string? selectValue = InitialOption;
     private string? comboboxValue = InitialOption;
-    private string? datePickerValue = InitialPickerDate;
+    private DateOnly? datePickerValue = InitialPickerDate;
     private string[]? selectedToppings = [.. InitialToppings];
     private string[]? comboboxToppings = [.. InitialToppings];
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
@@ -140,6 +141,88 @@ internal static class RenderTreeBuilderExtensions
         if (value.HasValue)
         {
             builder.AddAttribute(sequence, name, value.Value ? Constants.TrueAttributeValue : Constants.FalseAttributeValue);
+        }
+    }
+
+    /// <summary>
+    /// Adds a date attribute as ISO <c>yyyy-MM-dd</c> (<see cref="WaWireFormat.FormatDate"/>), the only date form
+    /// Web Awesome parses; nothing when null.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null</param>
+    public static void AddDateAttribute(this RenderTreeBuilder builder, int sequence, string name, DateOnly? value)
+    {
+        if (value.HasValue)
+        {
+            builder.AddAttribute(sequence, name, WaWireFormat.FormatDate(value.Value));
+        }
+    }
+
+    /// <summary>
+    /// Adds a time bound attribute (a min or max) as 24-hour <c>HH:mm</c>, or <c>HH:mm:ss</c> when the time has
+    /// seconds (<see cref="WaWireFormat.FormatTimeBound"/>); nothing when null.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null</param>
+    public static void AddTimeAttribute(this RenderTreeBuilder builder, int sequence, string name, TimeOnly? value)
+    {
+        if (value.HasValue)
+        {
+            builder.AddAttribute(sequence, name, WaWireFormat.FormatTimeBound(value.Value));
+        }
+    }
+
+    /// <summary>
+    /// Adds a date-list attribute as ascending ISO dates separated by a space (<see cref="WaWireFormat.FormatDates"/>);
+    /// nothing when the set is null or empty.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null or empty</param>
+    public static void AddDateSetAttribute(this RenderTreeBuilder builder, int sequence, string name, IReadOnlySet<DateOnly>? value)
+    {
+        if (value is { Count: > 0 })
+        {
+            builder.AddAttribute(sequence, name, WaWireFormat.FormatDates(value));
+        }
+    }
+
+    /// <summary>
+    /// Adds a weekday-list attribute as the lower-case three-letter tokens Web Awesome reads (<c>sun</c> … <c>sat</c>),
+    /// Sunday first, separated by a space (<see cref="WaWireFormat.FormatDaysOfWeek"/>); nothing when the set is null
+    /// or empty.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null or empty</param>
+    public static void AddDaysOfWeekAttribute(this RenderTreeBuilder builder, int sequence, string name, IReadOnlySet<DayOfWeek>? value)
+    {
+        if (value is { Count: > 0 })
+        {
+            builder.AddAttribute(sequence, name, WaWireFormat.FormatDaysOfWeek(value));
+        }
+    }
+
+    /// <summary>
+    /// Adds an instant attribute in the ECMAScript date-time string format with its offset,
+    /// <c>yyyy-MM-ddTHH:mm:ss.fff+01:00</c> (<see cref="WaWireFormat.FormatInstant"/>), which <c>new Date(text)</c>
+    /// reads as that instant in every browser time zone; nothing when null.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null</param>
+    public static void AddDateTimeOffsetAttribute(this RenderTreeBuilder builder, int sequence, string name, DateTimeOffset? value)
+    {
+        if (value.HasValue)
+        {
+            builder.AddAttribute(sequence, name, WaWireFormat.FormatInstant(value.Value));
         }
     }
 
