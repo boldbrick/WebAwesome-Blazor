@@ -56,7 +56,7 @@
     private string? shipping = "standard";
     private string? share = "email";
     private string? plan = "free";
-    private string[]? toppings = ["cheese"];
+    private IReadOnlyList<string>? toppings = ["cheese"];
     // multiple mode binds SelectedValues; InputBase still needs a ValueExpression
     private string? toppingsValue = null;
 
@@ -107,7 +107,7 @@
         </WaSelect>
 
         @code {
-            private string[]? toppings = ["cheese"];
+            private IReadOnlyList<string>? toppings = ["cheese"];
 
             // multiple mode binds SelectedValues; InputBase still needs a ValueExpression
             private string? toppingsValue;

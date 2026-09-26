@@ -164,7 +164,7 @@
     private string? otpValue;
     private TimeOnly? timeValue = new(9, 30);
     private string? selectValue = "apple";
-    private string[]? selectedToppings;
+    private IReadOnlyList<string>? selectedToppings;
     // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
     private string? toppingsValue = null;
     private bool invalidMarked;

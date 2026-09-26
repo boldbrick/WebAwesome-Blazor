@@ -366,12 +366,12 @@ namespace WebAwesome.Blazor.Components
     public class MutationEventArgs : System.EventArgs
     {
         public MutationEventArgs() { }
-        public object[]? MutationRecords { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Components.WaMutationRecord>? MutationRecords { get; set; }
     }
     public class ResizeEventArgs : System.EventArgs
     {
         public ResizeEventArgs() { }
-        public object[]? ResizeObserverEntries { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Components.WaResizeEntry>? ResizeObserverEntries { get; set; }
     }
     public class WaAccordion : Microsoft.AspNetCore.Components.ComponentBase
     {
@@ -505,7 +505,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public double? IterationStart { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? Iterations { get; set; }
+        public double? Iterations { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Name { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1109,7 +1109,7 @@ namespace WebAwesome.Blazor.Components
         Hsl = 2,
         Hsv = 3,
     }
-    public class WaColorPicker : WebAwesome.Blazor.Base.WaPopupInputBase<string>
+    public class WaColorPicker : WebAwesome.Blazor.Base.WaPopupInputBase<string?>
     {
         public WaColorPicker() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1124,7 +1124,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Swatches { get; set; }
+        public System.Collections.Generic.IReadOnlyList<string>? Swatches { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Uppercase { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1135,8 +1135,8 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task<string> GetFormattedValueAsync(WebAwesome.Blazor.Components.WaColorFormat format) { }
         public System.Threading.Tasks.Task<string> GetHexStringAsync() { }
         public System.Threading.Tasks.Task<bool> ReportValidityAsync() { }
-        public System.Threading.Tasks.Task SetSwatchesAsync(string[] colors) { }
-        protected override bool TryParseValueFromString(string? value, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out string result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+        public System.Threading.Tasks.Task SetSwatchesAsync(System.Collections.Generic.IEnumerable<string> colors) { }
+        protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public class WaCombobox : WebAwesome.Blazor.Base.WaPopupInputBase<string?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaClearableControl
     {
@@ -1185,9 +1185,9 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string[]? SelectedValues { get; set; }
+        public System.Collections.Generic.IReadOnlyList<string>? SelectedValues { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<string[]?> SelectedValuesChanged { get; set; }
+        public Microsoft.AspNetCore.Components.EventCallback<System.Collections.Generic.IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool? Spellcheck { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1230,7 +1230,7 @@ namespace WebAwesome.Blazor.Components
     {
         public WaContentChangeEventArgs() { }
         public int Count { get; set; }
-        public object[]? Items { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Components.WaElementInfo>? Items { get; set; }
     }
     public class WaCopyButton : Microsoft.AspNetCore.Components.ComponentBase
     {
@@ -1324,7 +1324,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool FilterFromLeafRows { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? GroupBy { get; set; }
+        public System.Collections.Generic.IReadOnlyList<string>? GroupBy { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1954,6 +1954,12 @@ namespace WebAwesome.Blazor.Components
         Pulse = 1,
         None = 2,
     }
+    public sealed class WaElementInfo : System.IEquatable<WebAwesome.Blazor.Components.WaElementInfo>
+    {
+        public WaElementInfo() { }
+        public string? Id { get; init; }
+        public string TextContent { get; init; }
+    }
     public enum WaEnterKeyHint
     {
         Enter = 0,
@@ -2080,7 +2086,7 @@ namespace WebAwesome.Blazor.Components
     {
         public WaFileInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Accept { get; set; }
+        public System.Collections.Generic.IReadOnlyList<string>? Accept { get; set; }
         [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
         public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2542,7 +2548,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Threshold { get; set; }
+        public System.Collections.Generic.IReadOnlyList<double>? Threshold { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
     public class WaKnownDate : WebAwesome.Blazor.Base.WaLabeledInputBase<System.DateOnly?>
@@ -2638,7 +2644,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AttrOldValue { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? AttributeFilter { get; set; }
+        public System.Collections.Generic.IReadOnlySet<string>? AttributeFilter { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool CharData { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2661,6 +2667,13 @@ namespace WebAwesome.Blazor.Components
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task DisconnectAsync() { }
         public System.Threading.Tasks.Task ReconnectAsync() { }
+    }
+    public sealed class WaMutationRecord : System.IEquatable<WebAwesome.Blazor.Components.WaMutationRecord>
+    {
+        public WaMutationRecord() { }
+        public string? AttributeName { get; init; }
+        public string? OldValue { get; init; }
+        public WebAwesome.Blazor.Components.WaMutationType Type { get; init; }
     }
     [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaMutationTypeJsonConverter))]
     public enum WaMutationType
@@ -3094,7 +3107,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Flip { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? FlipFallbackPlacements { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Components.WaPlacement>? FlipFallbackPlacements { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaFlipFallbackStrategy? FlipFallbackStrategy { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3352,6 +3365,18 @@ namespace WebAwesome.Blazor.Components
         Move = 1,
         End = 2,
     }
+    public sealed class WaRect : System.IEquatable<WebAwesome.Blazor.Components.WaRect>
+    {
+        public WaRect() { }
+        public double Bottom { get; init; }
+        public double Height { get; init; }
+        public double Left { get; init; }
+        public double Right { get; init; }
+        public double Top { get; init; }
+        public double Width { get; init; }
+        public double X { get; init; }
+        public double Y { get; init; }
+    }
     public enum WaReferrerPolicy
     {
         NoReferrer = 0,
@@ -3407,6 +3432,11 @@ namespace WebAwesome.Blazor.Components
         Horizontal = 2,
         Both = 3,
         Auto = 4,
+    }
+    public sealed class WaResizeEntry : System.IEquatable<WebAwesome.Blazor.Components.WaResizeEntry>
+    {
+        public WaResizeEntry() { }
+        public WebAwesome.Blazor.Components.WaRect? ContentRect { get; init; }
     }
     public class WaResizeObserver : Microsoft.AspNetCore.Components.ComponentBase
     {
@@ -3490,9 +3520,9 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string[]? SelectedValues { get; set; }
+        public System.Collections.Generic.IReadOnlyList<string>? SelectedValues { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<string[]?> SelectedValuesChanged { get; set; }
+        public Microsoft.AspNetCore.Components.EventCallback<System.Collections.Generic.IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3564,7 +3594,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaSparklineCurve? Curve { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Data { get; set; }
+        public System.Collections.Generic.IReadOnlyList<double>? Data { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
@@ -4135,7 +4165,7 @@ namespace WebAwesome.Blazor.Components
     public class WaTreeSelectionChangeEventArgs : System.EventArgs
     {
         public WaTreeSelectionChangeEventArgs() { }
-        public object[]? Selection { get; set; }
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Components.WaElementInfo>? Selection { get; set; }
     }
     [System.Flags]
     public enum WaTrigger
@@ -4348,7 +4378,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? ZoomInIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? ZoomLevels { get; set; }
+        public System.Collections.Generic.IReadOnlyList<double>? ZoomLevels { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ZoomOutIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]

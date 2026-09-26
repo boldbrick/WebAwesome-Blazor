@@ -281,6 +281,9 @@
       "unresolvedEnumAttributes": [ "easing" ]
     },
     "wa-mutation-observer": {
+      "additionalAttributeParameters": {
+        "attr": [ "AttributeFilter" ]
+      },
       "extraElementMethods": [ "stopObserver", "startObserver" ]
     },
     "wa-resize-observer": {
@@ -312,6 +315,7 @@
     "wa-scatter-chart": { "ignoredAttributes": [ "plugins" ] }
   },
   "ignoreReasons": {
+    "additionalAttributeParameters:wa-mutation-observer:attr": "wa-mutation-observer's attr is either '*' (all attributes, Attr = true) or a space-separated list of names (this.attr.split(' '), 3.12.0 chunk.KJH3JDJP.js:48), which AttributeFilter (IReadOnlySet<string>) renders instead when set; both parameters feed the one attribute",
     "extraRenderedAttributes:wa-page:disable-sticky": "wa-page's disable-sticky is a CSS-only attribute the CEM omits: the 3.12.0 page styles match it with :host([disable-sticky~='banner'|'header'|'subheader'|'aside'|'menu']) rules (chunk.NSKMM5IJ.js:86-116) and page.md (Sticky Sections) documents it; WaPage.DisableSticky renders the WaPageSections tokens, which FlagTokenTests pins - re-verify every upgrade",
     "onOffAttributes:wa-input:autocorrect": "wa-input's autocorrect converter is fromAttribute: (value) => !value || value === \"off\" ? false : true, toAttribute: value ? \"on\" : \"off\" (3.12.0 chunk.3UR7XKQK.js), so a present empty attribute (Blazor's true) reads false; AutoCorrect (bool?) must render exactly \"on\"/\"off\"",
     "onOffAttributes:wa-textarea:autocorrect": "wa-textarea's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.YIEXWZ6G.js), so AutoCorrect must render exactly \"on\"/\"off\"",

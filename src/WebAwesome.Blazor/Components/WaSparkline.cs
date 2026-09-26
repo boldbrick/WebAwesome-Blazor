@@ -54,9 +54,9 @@ public class WaSparkline : ComponentBase
     [Parameter] public WaSparklineCurve? Curve { get; set; }
 
     /// <summary>
-    /// The sparkline's data, expressed as a space-separated list of numbers (e.g. "10 20 40 25 35").
+    /// The sparkline's data points, in order (e.g. <c>new[] { 10.0, 20, 40, 25, 35 }</c>), rendered in the invariant`n    /// culture and separated by a space; null or empty draws nothing.
     /// </summary>
-    [Parameter] public string? Data { get; set; }
+    [Parameter] public IReadOnlyList<double>? Data { get; set; }
 
     /// <summary>
     /// The label for assistive devices to announce.
@@ -85,7 +85,7 @@ public class WaSparkline : ComponentBase
         // Add sparkline-specific attributes
         builder.AddAttributeIfNotNull(4, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttributeIfNotNull(5, "curve", Curve?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(6, "data", Data);
+        builder.AddNumberListAttribute(6, "data", Data);
         builder.AddAttributeIfNotNullOrEmpty(7, "label", Label);
         builder.AddAttributeIfNotNull(8, "trend", Trend?.ToHtmlValue());
 

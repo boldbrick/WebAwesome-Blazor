@@ -18,7 +18,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Observers">
-    <WaMutationObserver Attr="true" AttrOldValue="true" AttributeFilter="data-state" data-testid="pl-mutation-observer"
+    <WaMutationObserver Attr="true" AttrOldValue="true" AttributeFilter="@(new HashSet<string> { "data-state" })" data-testid="pl-mutation-observer"
                         OnMutation="e => log.Record(Id(nameof(WaMutationObserver), nameof(WaMutationObserver.OnMutation)), e)">
         <div data-state="@mutationState" data-testid="pl-mutation-target">State: @mutationState</div>
     </WaMutationObserver>

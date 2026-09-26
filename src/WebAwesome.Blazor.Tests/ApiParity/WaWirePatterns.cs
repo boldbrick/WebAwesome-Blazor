@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace WebAwesome.Blazor.Tests.ApiParity;
@@ -45,4 +47,36 @@ internal static class WaWirePatterns
     /// read as browser-local time.
     /// </summary>
     public static readonly Regex EcmaScriptInstant = new(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(Z|[+-]\d{2}:\d{2})$", RegexOptions.ECMAScript);
+
+    /// <summary>
+    /// The separator each list-valued attribute is split on by its element, keyed "tag:attribute", so the render check
+    /// reads a rendered list the way the element reads it (3.12.0 dist chunks):
+    /// - threshold: parseThreshold through parseSpaceDelimitedTokens, <c>input.split(" ")</c> (chunk.PVXOAR6W.js:58, chunk.TW3VXPTP.js:2)
+    /// - zoom-levels: parseZoomLevels through parseSpaceDelimitedTokens (chunk.PJARYDTD.js:87)
+    /// - attr: <c>this.attr.split(" ")</c> (chunk.KJH3JDJP.js:48)
+    /// - data: <c>this.data.trim().split(/\s+/)</c> (chunk.7K4I5LYJ.js:26)
+    /// - flip-fallback-placements: the converter's <c>value.split(" ")</c> (chunk.2YFBUTFX.js:396)
+    /// - group-by: <c>this.groupBy.split(/[\s,]+/)</c> (chunk.545TV6Q6.js:330)
+    /// - swatches: <c>this.swatches.split(";")</c> (chunk.6O6PWE4O.js:785)
+    /// - accept: <c>this.accept.split(",")</c> (chunk.D5HSK7BD.js:230)
+    /// A list parameter mapped to an attribute without an entry fails the check, so a new one needs its source cited here.
+    /// </summary>
+    public static readonly IReadOnlyDictionary<string, Regex> ListSeparators = new Dictionary<string, Regex>(StringComparer.Ordinal)
+    {
+        ["wa-intersection-observer:threshold"] = SingleSpace,
+        ["wa-zoomable-frame:zoom-levels"] = SingleSpace,
+        ["wa-mutation-observer:attr"] = SingleSpace,
+        ["wa-sparkline:data"] = ListSeparator,
+        ["wa-popup:flip-fallback-placements"] = SingleSpace,
+        ["wa-data-grid:group-by"] = new Regex(@"[\s,]+", RegexOptions.ECMAScript),
+        ["wa-color-picker:swatches"] = new Regex(";", RegexOptions.ECMAScript),
+        ["wa-file-input:accept"] = new Regex(",", RegexOptions.ECMAScript),
+    };
+
+    #region ------ Internals ------
+
+    // a single space, the separator of split(" ")
+    private static Regex SingleSpace => new(" ", RegexOptions.ECMAScript);
+
+    #endregion
 }

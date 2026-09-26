@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -12,7 +13,7 @@ namespace WebAwesome.Blazor.Components;
 /// A color picker input component that allows users to select colors.
 /// Corresponds to the wa-color-picker Web Awesome component.
 /// </summary>
-public class WaColorPicker : WaPopupInputBase<string>
+public class WaColorPicker : WaPopupInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -43,10 +44,11 @@ public class WaColorPicker : WaPopupInputBase<string>
     [Parameter] public bool WithoutFormatToggle { get; set; }
 
     /// <summary>
-    /// One or more predefined color swatches to display as presets, separated by a semicolon (<c>;</c>). Can include
+    /// Predefined color swatches to display as presets, in list order (rendered separated by a semicolon, so a swatch
+    /// cannot contain one; null or empty shows none). Can include
     /// any format the color picker can parse, such as HEX(A), RGB(A), HSL(A), HSV(A), or CSS color names.
     /// </summary>
-    [Parameter] public string? Swatches { get; set; }
+    [Parameter] public IReadOnlyList<string>? Swatches { get; set; }
 
     /// <summary>
     /// Renders the color format toggle and hex input using uppercase letters.
@@ -88,7 +90,7 @@ public class WaColorPicker : WaPopupInputBase<string>
         builder.AddAttribute(20, "opacity", Opacity);
         builder.AddAttribute(21, "format", Format.ToHtmlValue());
         builder.AddAttribute(22, "without-format-toggle", WithoutFormatToggle);
-        builder.AddAttributeIfNotNullOrEmpty(23, "swatches", Swatches);
+        builder.AddTokenListAttribute(23, "swatches", Swatches, WaWireFormat.SemicolonSeparator, WaWireFormat.SemicolonSeparators);
         builder.AddAttribute(24, "value", CurrentValueAsString);
         builder.AddAttribute(25, "open", Open);
         builder.AddAttribute(26, "uppercase", Uppercase);
@@ -120,9 +122,9 @@ public class WaColorPicker : WaPopupInputBase<string>
     }
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out string result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        result = value!;
+        result = value;
         validationErrorMessage = null;
         return true;
     }
@@ -150,7 +152,7 @@ public class WaColorPicker : WaPopupInputBase<string>
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
     /// <exception cref="ArgumentNullException">Thrown when colors is null</exception>
-    public async Task SetSwatchesAsync(string[] colors)
+    public async Task SetSwatchesAsync(IEnumerable<string> colors)
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot set swatches: component has not been rendered yet.");
@@ -158,7 +160,7 @@ public class WaColorPicker : WaPopupInputBase<string>
         if (colors == null)
             throw new ArgumentNullException(nameof(colors));
 
-        await JSInterop.SetPropertyAsync(Element.Value, "swatches", colors);
+        await JSInterop.SetPropertyAsync(Element.Value, "swatches", colors.ToArray());
     }
 
     /// <summary>

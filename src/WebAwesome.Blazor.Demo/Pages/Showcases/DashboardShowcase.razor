@@ -22,7 +22,7 @@
             <WaFormatNumber Value="128450" Type="WaFormatNumberType.Currency" Currency="EUR" MaximumFractionDigits="0" />
         </WaText>
         <WaBadge Variant="WaVariant.Success" Appearance="WaBadgeAppearance.FilledOutlined">+8.2% vs. last month</WaBadge>
-        <WaSparkline Data="96.2 101.5 99.8 104.9 110.3 118.7 128.45" Trend="WaSparklineTrend.Positive"
+        <WaSparkline Data="@(new double[] { 96.2, 101.5, 99.8, 104.9, 110.3, 118.7, 128.45 })" Trend="WaSparklineTrend.Positive"
                      Curve="WaSparklineCurve.Natural" Appearance="WaSparklineAppearance.Gradient"
                      Label="Monthly recurring revenue over the last seven months"
                      Style="width: 100%; height: 2.5rem; margin-block-start: var(--wa-space-xs);" />

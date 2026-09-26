@@ -76,7 +76,7 @@
         <WaButton Size="WaSize.Small" OnClick="@(() => groupedGrid!.ExpandAllRowsAsync())">Expand all groups</WaButton>
         <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => groupedGrid!.CollapseAllRowsAsync())">Collapse all</WaButton>
     </WaCluster>
-    <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="department"
+    <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="@(new[] { "department" })"
                 Data="compensation" Columns="groupedColumns" />
 </ExampleSection>
 
@@ -681,7 +681,7 @@
             <WaButton Size="WaSize.Small" OnClick="@(() => groupedGrid!.ExpandAllRowsAsync())">Expand all groups</WaButton>
             <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => groupedGrid!.CollapseAllRowsAsync())">Collapse all</WaButton>
         </WaCluster>
-        <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="department"
+        <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="@(new[] { "department" })"
                     Data="compensation" Columns="groupedColumns" />
 
         @code {

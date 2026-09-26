@@ -29,7 +29,7 @@
         <WaOption Value="@nameof(WaTreeSelection.Leaf)">Leaf</WaOption>
         <WaOption Value="@nameof(WaTreeSelection.LeafMultiple)">Leaf multiple</WaOption>
     </WaSelect>
-    <WaTree Selection="selection" OnSelectionChange="e => selectedCount = e.Selection?.Length ?? 0">
+    <WaTree Selection="selection" OnSelectionChange="e => selectedCount = e.Selection?.Count ?? 0">
         <WaTreeItem Expanded="true">
             Deciduous
             <WaTreeItem>Birch</WaTreeItem>
@@ -143,7 +143,7 @@
             <WaOption Value="@nameof(WaTreeSelection.Leaf)">Leaf</WaOption>
             <WaOption Value="@nameof(WaTreeSelection.LeafMultiple)">Leaf multiple</WaOption>
         </WaSelect>
-        <WaTree Selection="selection" OnSelectionChange="e => selectedCount = e.Selection?.Length ?? 0">
+        <WaTree Selection="selection" OnSelectionChange="e => selectedCount = e.Selection?.Count ?? 0">
             <WaTreeItem Expanded="true">
                 Deciduous
                 <WaTreeItem>Birch</WaTreeItem>

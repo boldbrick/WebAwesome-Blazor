@@ -320,6 +320,17 @@ public class ComponentParityConfig
     public List<string> UnresolvedEnumAttributes { get; set; } = new();
 
     /// <summary>
+    /// CEM attributes that further [Parameter] properties render besides the one the naming convention (or
+    /// attributeOverrides) maps, keyed by attribute (e.g. wa-mutation-observer attr: Attr for "*" and AttributeFilter
+    /// for a set of names; wa-input min: one typed accessor per value type). The render checks sample and check
+    /// each listed parameter against the attribute too. Every entry needs an ignoreReasons entry keyed
+    /// "additionalAttributeParameters:&lt;tag&gt;:&lt;attribute&gt;"; an entry naming a parameter no wrapper of the
+    /// element has is stale.
+    /// </summary>
+    [JsonPropertyName("additionalAttributeParameters")]
+    public Dictionary<string, List<string>> AdditionalAttributeParameters { get; set; } = new();
+
+    /// <summary>
     /// CEM attributes typed as a pure literal union that are deliberately bound to a string or decimal parameter
     /// instead of an enum. Every entry needs an ignoreReasons entry keyed
     /// "untypedLiteralUnionAttributes:&lt;tag&gt;:&lt;attribute&gt;".

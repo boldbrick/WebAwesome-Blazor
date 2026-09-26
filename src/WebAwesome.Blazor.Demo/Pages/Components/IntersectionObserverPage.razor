@@ -6,7 +6,7 @@
 <p>Intersection observers report when their content enters or leaves the viewport (or another root element). <code>&lt;wa-intersection-observer&gt;</code> wrapped by <code>WaIntersectionObserver</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaIntersectionObserver Threshold="1" OnIntersect="HandleIntersect">
+    <WaIntersectionObserver Threshold="@(new double[] { 1 })" OnIntersect="HandleIntersect">
         <div style="border: solid 2px var(--wa-color-surface-border); padding: 4rem 2rem; text-align: center;">
             Scroll and watch the message below.
         </div>
@@ -18,7 +18,7 @@
     <p>The box is observed against the scrollable container, with a 20px margin, and reports at 0%, 50% and 100% visibility.</p>
     <div id="observer-root" style="height: 160px; overflow: auto; border: 1px dashed var(--wa-color-surface-border);">
         <div style="height: 200px;"></div>
-        <WaIntersectionObserver Root="observer-root" RootMargin="20px" Threshold="0 0.5 1" OnIntersect="e => rootVisible = e.IsIntersecting">
+        <WaIntersectionObserver Root="observer-root" RootMargin="20px" Threshold="@(new double[] { 0, 0.5, 1 })" OnIntersect="e => rootVisible = e.IsIntersecting">
             <div class="demo-box" style="margin: auto;"></div>
         </WaIntersectionObserver>
         <div style="height: 200px;"></div>
@@ -29,7 +29,7 @@
 <ExampleSection Title="Intersect Class" Code="@ClassExample">
     <p>While the box intersects, the observer adds <code>IntersectClass</code> to it; <code>Once</code> stops after the first time it becomes visible.</p>
     <WaStack Gap="GapSize.Gap_M">
-        <WaIntersectionObserver IntersectClass="demo-intersecting" Threshold="0.5">
+        <WaIntersectionObserver IntersectClass="demo-intersecting" Threshold="@(new double[] { 0.5 })">
             <div class="demo-box"></div>
         </WaIntersectionObserver>
         <WaIntersectionObserver Once="true" OnIntersect="() => onceCount++">
@@ -64,7 +64,7 @@
     }
 
     private const string DefaultExample = """
-        <WaIntersectionObserver Threshold="1" OnIntersect="HandleIntersect">
+        <WaIntersectionObserver Threshold="@(new double[] { 1 })" OnIntersect="HandleIntersect">
             <div style="border: solid 2px var(--wa-color-surface-border); padding: 4rem 2rem; text-align: center;">
                 Scroll and watch the message below.
             </div>
@@ -84,7 +84,7 @@
     private const string RootExample = """
         <div id="observer-root" style="height: 160px; overflow: auto;">
             <div style="height: 200px;"></div>
-            <WaIntersectionObserver Root="observer-root" RootMargin="20px" Threshold="0 0.5 1" OnIntersect="e => rootVisible = e.IsIntersecting">
+            <WaIntersectionObserver Root="observer-root" RootMargin="20px" Threshold="@(new double[] { 0, 0.5, 1 })" OnIntersect="e => rootVisible = e.IsIntersecting">
                 <div class="demo-box"></div>
             </WaIntersectionObserver>
             <div style="height: 200px;"></div>
@@ -97,7 +97,7 @@
         """;
 
     private const string ClassExample = """
-        <WaIntersectionObserver IntersectClass="demo-intersecting" Threshold="0.5">
+        <WaIntersectionObserver IntersectClass="demo-intersecting" Threshold="@(new double[] { 0.5 })">
             <div class="demo-box"></div>
         </WaIntersectionObserver>
         <WaIntersectionObserver Once="true" OnIntersect="() => onceCount++">

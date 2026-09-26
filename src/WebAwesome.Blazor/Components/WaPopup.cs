@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
@@ -107,9 +108,9 @@ public class WaPopup : ComponentBase
 
     /// <summary>
     /// If the preferred placement doesn't fit, the popup is tested in these fallback placements until one
-    /// fits. Must be a string of any number of placements separated by a space, e.g. <c>top bottom left</c>.
+    /// fits, in list order (rendered separated by a space); null or empty tries the opposite side only.
     /// </summary>
-    [Parameter] public string? FlipFallbackPlacements { get; set; }
+    [Parameter] public IReadOnlyList<WaPlacement>? FlipFallbackPlacements { get; set; }
 
     /// <summary>
     /// When neither the preferred placement nor the fallback placements fit, this value determines whether
@@ -229,7 +230,7 @@ public class WaPopup : ComponentBase
         if (Flip)
         {
             builder.AddAttribute(30, "flip", true);
-            builder.AddAttributeIfNotNullOrEmpty(31, "flip-fallback-placements", FlipFallbackPlacements);
+            builder.AddTokenListAttribute(31, "flip-fallback-placements", FlipFallbackPlacements?.Select(p => p.ToHtmlValue()).ToList(), WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceSeparators);
             builder.AddAttributeIfNotNull(32, "flip-fallback-strategy", FlipFallbackStrategy?.ToHtmlValue());
             if (FlipPadding != 0)
                 builder.AddNumberAttribute(34, "flip-padding", FlipPadding);

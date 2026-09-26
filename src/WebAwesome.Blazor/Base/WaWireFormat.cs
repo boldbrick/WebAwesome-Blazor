@@ -183,7 +183,84 @@ internal static class WaWireFormat
     public static string FormatDaysOfWeek(IEnumerable<DayOfWeek> days)
         => string.Join(ListSeparator, days.Distinct().Order().Select(DayOfWeekToken));
 
+    /// <summary>
+    /// Formats numbers as a list Web Awesome splits and reads with parseFloat: each number in the invariant culture's
+    /// round-trip form (<c>0.25</c>, <c>1E-07</c>), in the given order, joined by the separator.
+    /// </summary>
+    /// <param name="numbers">The numbers</param>
+    /// <param name="separator">The separator the element splits on</param>
+    /// <returns>The wire string, empty for no numbers</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown for a number that is not finite</exception>
+    public static string FormatNumbers(IEnumerable<double> numbers, string separator)
+        => string.Join(separator, numbers.Select(FormatFiniteNumber));
+
+    /// <summary>
+    /// Formats tokens as a list the element splits on the separator, in the given order.
+    /// </summary>
+    /// <param name="tokens">The tokens</param>
+    /// <param name="separator">The separator the element splits on</param>
+    /// <param name="forbidden">The characters a token must not contain, because the element splits on them too</param>
+    /// <returns>The wire string, empty for no tokens</returns>
+    /// <exception cref="ArgumentException">Thrown for an empty or whitespace token, or one containing a forbidden character</exception>
+    public static string FormatTokens(IEnumerable<string> tokens, string separator, char[] forbidden)
+        => string.Join(separator, tokens.Select(t => CheckedToken(t, forbidden)));
+
+    /// <summary>
+    /// The characters of an ASCII whitespace-separated token list, which every space-separated list splits on
+    /// (<c>/\s+/</c>, or a single space, which a token must not contain either).
+    /// </summary>
+    public static readonly char[] WhitespaceSeparators = [' ', '\t', '\n', '\r', '\f'];
+
+    /// <summary>
+    /// The separator of a space-separated list.
+    /// </summary>
+    public const string SpaceSeparator = " ";
+
+    /// <summary>
+    /// The separator of wa-color-picker's swatches, which the element splits on ';' (a colour such as rgb(1, 2, 3)
+    /// contains commas and spaces).
+    /// </summary>
+    public const string SemicolonSeparator = ";";
+
+    /// <summary>
+    /// The characters a swatch must not contain.
+    /// </summary>
+    public static readonly char[] SemicolonSeparators = [';'];
+
+    /// <summary>
+    /// The separator of wa-file-input's accept, which the element splits on ',' (like the native accept).
+    /// </summary>
+    public const string CommaSeparator = ",";
+
+    /// <summary>
+    /// The characters an accepted file type must not contain.
+    /// </summary>
+    public static readonly char[] CommaSeparators = [','];
+
+    /// <summary>
+    /// The characters wa-data-grid splits group-by on (<c>/[\s,]+/</c>), which a field must not contain.
+    /// </summary>
+    public static readonly char[] WhitespaceAndCommaSeparators = [' ', '\t', '\n', '\r', '\f', ','];
+
     #region ------ Internals ------
+
+    private const string RoundTripNumberFormat = "R";
+
+    private static string FormatFiniteNumber(double number)
+    {
+        if (!double.IsFinite(number))
+            throw new ArgumentOutOfRangeException(nameof(number), number, "A list item must be a finite number.");
+
+        return number.ToString(RoundTripNumberFormat, CultureInfo.InvariantCulture);
+    }
+
+    private static string CheckedToken(string token, char[] forbidden)
+    {
+        if (string.IsNullOrWhiteSpace(token) || token.IndexOfAny(forbidden) >= 0)
+            throw new ArgumentException($"'{token}' is not a valid list item: it is empty or contains a separator the element splits on.", nameof(token));
+
+        return token;
+    }
 
     private const string DatePattern = "yyyy-MM-dd";
     private const string DaySlotPrefix = "day-";

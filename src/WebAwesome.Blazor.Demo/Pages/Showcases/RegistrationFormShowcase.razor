@@ -100,7 +100,7 @@ else
                                 Placeholder="e.g. vegetarian, step-free access" @bind-Value="model.Notes" />
 
                     <WaFileInput Label="Badge photo" Hint="Optional — a square PNG or JPG up to 5 MB, printed on your badge"
-                                 Accept="image/png,image/jpeg" OnChange="@(() => model.BadgePhotoSelected = true)" />
+                                 Accept="@(new[] { "image/png", "image/jpeg" })" OnChange="@(() => model.BadgePhotoSelected = true)" />
 
                     <WaOtpInput Label="Phone verification code" Hint="Enter the six-digit code we texted you — it confirms the number we'll use for on-site check-in"
                                 Format="### ###" Required="true" @bind-Value="model.VerificationCode" />
@@ -117,7 +117,7 @@ else
                     <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
                         <WaRating Label="How excited are you about Nova Summit?" Precision="0.5m" @bind-Value="model.Excitement" />
                         <WaColorPicker Label="Badge accent color" Hint="Printed on the lanyard edge of your badge"
-                                       Swatches="#4a7dff; #16a34a; #d97706; #dc2626; #7c3aed" @bind-Value="model.BadgeColor" />
+                                       Swatches="@(new[] { "#4a7dff", "#16a34a", "#d97706", "#dc2626", "#7c3aed" })" @bind-Value="model.BadgeColor" />
                     </WaGrid>
 
                     <WaDivider />

@@ -55,9 +55,10 @@ public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
 
     // File input properties
     /// <summary>
-    /// One or more comma-separated file types the input should accept.
+    /// The file types the input accepts, each an extension (<c>.pdf</c>), a MIME type (<c>image/png</c>) or a wildcard
+    /// MIME type (<c>image/*</c>), rendered separated by a comma like the native accept; null or empty accepts any file.
     /// </summary>
-    [Parameter] public string? Accept { get; set; }
+    [Parameter] public IReadOnlyList<string>? Accept { get; set; }
 
     /// <summary>
     /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes precedence when set.
@@ -181,7 +182,7 @@ public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add file-input-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "accept", Accept);
+        builder.AddTokenListAttribute(10, "accept", Accept, WaWireFormat.CommaSeparator, WaWireFormat.CommaSeparators);
 
         // hint before label, unlike the shared label cluster renderer, so the attribute order stays as it was
         builder.AddAttributeIfNotNullOrEmpty(11, "hint", Hint);

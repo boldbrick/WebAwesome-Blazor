@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Bunit;
@@ -160,7 +161,7 @@ public class MultipleSelectionBindingTests : FormControlTestBase
     // holds the bound selection the way a parent's @bind-SelectedValues field would
     private sealed class Selection(string[] values)
     {
-        public string[] Values { get; set; } = values;
+        public IReadOnlyList<string> Values { get; set; } = values;
 
         public int Changes { get; set; }
 
@@ -177,7 +178,7 @@ public class MultipleSelectionBindingTests : FormControlTestBase
         => Render(ParametersFor(componentType, selection));
 
     // re-renders the wrapper with new SelectedValues, as the parent's @bind-SelectedValues would
-    private static void SetSelectedValues(IRenderedComponent<ContainerFragment> cut, Type componentType, string[] values)
+    private static void SetSelectedValues(IRenderedComponent<ContainerFragment> cut, Type componentType, IReadOnlyList<string> values)
     {
         if (componentType == typeof(WaSelect)) cut.FindComponent<WaSelect>().Render(p => p.Add(c => c.SelectedValues, values));
         else cut.FindComponent<WaCombobox>().Render(p => p.Add(c => c.SelectedValues, values));
@@ -188,7 +189,7 @@ public class MultipleSelectionBindingTests : FormControlTestBase
         builder.OpenComponent(0, componentType);
         builder.AddComponentParameter(1, nameof(WaSelect.Multiple), true);
         builder.AddComponentParameter(2, nameof(WaSelect.SelectedValues), selection.Values);
-        builder.AddComponentParameter(3, nameof(WaSelect.SelectedValuesChanged), EventCallback.Factory.Create<string[]?>(this, values =>
+        builder.AddComponentParameter(3, nameof(WaSelect.SelectedValuesChanged), EventCallback.Factory.Create<IReadOnlyList<string>?>(this, values =>
         {
             selection.Values = values ?? [];
             selection.Changes++;

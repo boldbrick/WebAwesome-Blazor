@@ -282,7 +282,7 @@ public class LiveValueSyncTests : FormControlTestBase
         new LiveSyncCase<WaInput, string?>("wa-input", ValueProperty, "Ada", "Grace", "Grace", e => e.Change("Linus"), "Linus"),
         new LiveSyncCase<WaTextArea, string?>("wa-textarea", ValueProperty, "Ada", "Grace", "Grace", e => e.Change("Linus"), "Linus"),
         new LiveSyncCase<WaNumberInput, decimal?>("wa-number-input", ValueProperty, 1.5m, 2.5m, "2.5", e => e.Change("3.5"), 3.5m),
-        new LiveSyncCase<WaColorPicker, string>("wa-color-picker", ValueProperty, "#ff0000", "#00ff00", "#00ff00", e => e.Change("#0000ff"), "#0000ff"),
+        new LiveSyncCase<WaColorPicker, string?>("wa-color-picker", ValueProperty, "#ff0000", "#00ff00", "#00ff00", e => e.Change("#0000ff"), "#0000ff"),
         new LiveSyncCase<WaDateInput, DateOnly?>("wa-date-input", ValueProperty, new DateOnly(2026, 1, 1), new DateOnly(2026, 2, 2), "2026-02-02", e => e.Change("2026-03-03"), new DateOnly(2026, 3, 3)),
         new LiveSyncCase<WaDateRangeInput, WaDateRange?>("wa-date-input", ValueProperty, new WaDateRange(new DateOnly(2026, 1, 1), new DateOnly(2026, 1, 5)),
             new WaDateRange(new DateOnly(2026, 2, 2), null), "2026-02-02", e => e.Change("2026-03-03/2026-03-09"), new WaDateRange(new DateOnly(2026, 3, 3), new DateOnly(2026, 3, 9))),

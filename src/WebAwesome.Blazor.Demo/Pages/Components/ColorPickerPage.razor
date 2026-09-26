@@ -32,7 +32,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Swatches" Code="@SwatchesExample">
-    <WaColorPicker Label="Pick a swatch" Swatches="#d0021b; #f5a623; #f8e71c; #8b572a; #7ed321; #417505; #bd10e0; #9013fe; #4a90e2; #50e3c2" @bind-Value="swatch" />
+    <WaColorPicker Label="Pick a swatch" Swatches="@(new[] { "#d0021b", "#f5a623", "#f8e71c", "#8b572a", "#7ed321", "#417505", "#bd10e0", "#9013fe", "#4a90e2", "#50e3c2" })" @bind-Value="swatch" />
 </ExampleSection>
 
 <ExampleSection Title="Sizes" Code="@SizesExample">
@@ -101,7 +101,7 @@
         """;
 
     private const string SwatchesExample = """
-        <WaColorPicker Label="Pick a swatch" Swatches="#d0021b; #f5a623; #f8e71c; #8b572a; #7ed321; #417505; #bd10e0; #9013fe; #4a90e2; #50e3c2" @bind-Value="swatch" />
+        <WaColorPicker Label="Pick a swatch" Swatches="@(new[] { "#d0021b", "#f5a623", "#f8e71c", "#8b572a", "#7ed321", "#417505", "#bd10e0", "#9013fe", "#4a90e2", "#50e3c2" })" @bind-Value="swatch" />
         """;
 
     private const string SizesExample = """

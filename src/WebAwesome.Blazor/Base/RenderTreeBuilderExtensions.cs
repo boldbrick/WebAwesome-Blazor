@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -405,6 +406,61 @@ internal static class RenderTreeBuilderExtensions
         if (value is { Count: > 0 })
         {
             builder.AddAttribute(sequence, name, WaWireFormat.FormatDaysOfWeek(value));
+        }
+    }
+
+    /// <summary>
+    /// Adds a number-list attribute: each number in the invariant round-trip form, in list order, separated by a
+    /// space (<see cref="WaWireFormat.FormatNumbers"/>); nothing when the list is null or empty.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null or empty</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown for a number that is not finite</exception>
+    public static void AddNumberListAttribute(this RenderTreeBuilder builder, int sequence, string name, IReadOnlyList<double>? value)
+    {
+        if (value is { Count: > 0 })
+        {
+            builder.AddAttribute(sequence, name, WaWireFormat.FormatNumbers(value, WaWireFormat.SpaceSeparator));
+        }
+    }
+
+    /// <summary>
+    /// Adds a token-list attribute: the tokens in list order, joined by the separator the element splits on
+    /// (<see cref="WaWireFormat.FormatTokens"/>); nothing when the list is null or empty.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null or empty</param>
+    /// <param name="separator">The separator the element splits the attribute on</param>
+    /// <param name="forbidden">The characters the element also splits on, which a token must not contain</param>
+    /// <exception cref="ArgumentException">Thrown for an empty token or one containing a forbidden character</exception>
+    public static void AddTokenListAttribute(this RenderTreeBuilder builder, int sequence, string name, IReadOnlyCollection<string>? value,
+        string separator, char[] forbidden)
+    {
+        if (value is { Count: > 0 })
+        {
+            builder.AddAttribute(sequence, name, WaWireFormat.FormatTokens(value, separator, forbidden));
+        }
+    }
+
+    /// <summary>
+    /// Adds a token-set attribute: the tokens in ordinal order (so an equal set always renders the same text),
+    /// separated by a space; nothing when the set is null or empty.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value; nothing is emitted when null or empty</param>
+    /// <exception cref="ArgumentException">Thrown for an empty token or one containing whitespace</exception>
+    public static void AddTokenSetAttribute(this RenderTreeBuilder builder, int sequence, string name, IReadOnlySet<string>? value)
+    {
+        if (value is { Count: > 0 })
+        {
+            builder.AddAttribute(sequence, name,
+                WaWireFormat.FormatTokens(value.Order(StringComparer.Ordinal), WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceSeparators));
         }
     }
 

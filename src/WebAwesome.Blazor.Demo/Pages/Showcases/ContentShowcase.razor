@@ -1,5 +1,4 @@
 @page "/showcases/content"
-@using System.Text.Json
 
 <PageTitle>Showcase: Content &amp; Observers</PageTitle>
 
@@ -145,7 +144,7 @@
             <WaText Element="p">3.2.0-beta.3 — co-editing presence indicators</WaText>
             <WaText Element="p">3.2.0-beta.2 — command palette shortcuts</WaText>
             <WaText Element="p">3.2.0-beta.1 — first public beta</WaText>
-            <WaIntersectionObserver Threshold="0.5" OnIntersect="HandleIntersect">
+            <WaIntersectionObserver Threshold="@(new double[] { 0.5 })" OnIntersect="HandleIntersect">
                 <WaCard Appearance="WaAppearance.OutlinedFilled">
                     <strong>Release sign-off</strong>
                     <p>QA, security and docs have approved 3.2 for general availability.</p>
@@ -185,29 +184,22 @@
 
     private void HandleTreeSelection(WaTreeSelectionChangeEventArgs args)
     {
-        // the initializer projects each selected wa-tree-item to { id, textContent }
-        if (args.Selection is [JsonElement item, ..] && item.TryGetProperty("textContent", out var text))
-        {
-            // nested items report their whole subtree text; keep the first line only
-            selectedDocument = text.GetString()?.Split('\n')[0].Trim();
-        }
+        // each selected wa-tree-item arrives as its id and text; nested items report their whole subtree text, so
+        // keep the first line only
+        if (args.Selection is [var item, ..])
+            selectedDocument = item.TextContent.Split('\n')[0].Trim();
     }
 
     private void HandleResize(ResizeEventArgs args)
     {
-        // the payload mirrors ResizeObserverEntry.contentRect, serialized by the JS initializer
-        if (args.ResizeObserverEntries is [JsonElement entry, ..]
-            && entry.TryGetProperty("contentRect", out var rect)
-            && rect.ValueKind == JsonValueKind.Object
-            && rect.TryGetProperty("width", out var width))
-        {
-            observedWidth = width.GetDouble();
-        }
+        // each entry carries ResizeObserverEntry.contentRect
+        if (args.ResizeObserverEntries is [{ ContentRect: { } rect }, ..])
+            observedWidth = rect.Width;
     }
 
     private void HandleMutation(MutationEventArgs args)
     {
-        var count = args.MutationRecords?.Length ?? 0;
+        var count = args.MutationRecords?.Count ?? 0;
         mutationMessage = $"Observed {count} mutation record(s) at {DateTime.Now:T}";
     }
 
@@ -219,10 +211,8 @@
 
     private void HandleContentChange(WaContentChangeEventArgs args)
     {
-        // the initializer projects the shown children to { id, textContent } and a count
-        var shown = args.Items is [JsonElement item, ..] && item.TryGetProperty("textContent", out var text)
-            ? text.GetString()?.Trim()
-            : null;
+        // the shown children arrive as their id and text, with a count
+        var shown = args.Items is [var item, ..] ? item.TextContent.Trim() : null;
         tipMessage = shown is null ? $"Showing {args.Count} tip(s)" : $"Now showing: {shown}";
     }
 

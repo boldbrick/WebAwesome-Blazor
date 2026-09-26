@@ -46,7 +46,7 @@ public class WaFileInputIntegrationTests : BunitContext
     {
         // Arrange & Act
         var cut = Render<WaFileInput>(parameters => parameters
-            .Add(p => p.Accept, "image/*")
+            .Add(p => p.Accept, new[] { "image/*", ".pdf" })
             .Add(p => p.Hint, "Max 5 MB")
             .Add(p => p.Label, "Attachment")
             .Add(p => p.Multiple, true)
@@ -57,7 +57,7 @@ public class WaFileInputIntegrationTests : BunitContext
 
         // Assert
         var element = cut.Find("wa-file-input");
-        Assert.Equal("image/*", element.GetAttribute("accept"));
+        Assert.Equal("image/*,.pdf", element.GetAttribute("accept"));
         Assert.Equal("Max 5 MB", element.GetAttribute("hint"));
         Assert.Equal("Attachment", element.GetAttribute("label"));
         Assert.True(element.HasAttribute("multiple"));

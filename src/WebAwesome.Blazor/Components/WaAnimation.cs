@@ -78,10 +78,10 @@ public class WaAnimation : ComponentBase
     [Parameter] public WaAnimationEasing Easing { get; set; } = WaAnimationEasing.Linear;
 
     /// <summary>
-    /// The number of iterations to run before the animation completes; <see cref="decimal.MaxValue"/> renders
+    /// The number of iterations to run before the animation completes; <see cref="double.PositiveInfinity"/> renders
     /// Infinity. Null (the default) leaves the element's default, Infinity, so the animation loops until stopped.
     /// </summary>
-    [Parameter] public decimal? Iterations { get; set; }
+    [Parameter] public double? Iterations { get; set; }
 
     /// <summary>
     /// Sets how the animation applies styles to its target before and after its execution. Null (the default)
@@ -152,7 +152,7 @@ public class WaAnimation : ComponentBase
         builder.AddNumberAttribute(7, "delay", Delay);
         builder.AddAttribute(8, "direction", Direction.ToHtmlValue());
         builder.AddAttribute(9, "easing", Easing.ToHtmlValue());
-        builder.AddAttributeIfNotNull(10, "iterations", Iterations == decimal.MaxValue ? InfiniteIterations : RenderTreeBuilderExtensions.FormatInvariant(Iterations));
+        builder.AddAttributeIfNotNull(10, "iterations", Iterations is double.PositiveInfinity ? InfiniteIterations : RenderTreeBuilderExtensions.FormatInvariant(Iterations));
         builder.AddAttributeIfNotNull(11, "fill", Fill?.ToHtmlValue());
         builder.AddNumberAttribute(12, "playback-rate", PlaybackRate);
         builder.AddAttributeIfNotNull(13, "end-delay", EndDelay);
@@ -249,7 +249,7 @@ public class WaAnimation : ComponentBase
 
     #region ------ Private Methods ------
 
-    // the iterations value of an endless animation, rendered for decimal.MaxValue
+    // the iterations value of an endless animation, rendered for double.PositiveInfinity
     private const string InfiniteIterations = "Infinity";
 
     /// <summary>

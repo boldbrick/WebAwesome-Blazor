@@ -188,10 +188,11 @@ public class WaDataGrid : ComponentBase
     [Parameter] public bool FilterFromLeafRows { get; set; }
 
     /// <summary>
-    /// Groups rows by column id: a single id, or a space/comma-separated list for multi-level grouping.
+    /// Groups rows by column id: one id, or several for multi-level grouping, outermost first (rendered separated by a
+    /// space; an id cannot contain whitespace or a comma, which the element splits on); null or empty groups nothing.
     /// Ignored for tree data and in server mode.
     /// </summary>
-    [Parameter] public string? GroupBy { get; set; }
+    [Parameter] public IReadOnlyList<string>? GroupBy { get; set; }
 
     /// <summary>
     /// Provides each row's child rows for tree data, as a field name (dot paths allowed). Rows with
@@ -363,7 +364,7 @@ public class WaDataGrid : ComponentBase
         builder.AddAttribute(25, "server", Server);
         builder.AddAttributeIfNotNull(26, "filter-debounce", FilterDebounce);
         builder.AddAttribute(27, "filter-from-leaf-rows", FilterFromLeafRows);
-        builder.AddAttributeIfNotNullOrEmpty(28, "group-by", GroupBy);
+        builder.AddTokenListAttribute(28, "group-by", GroupBy, WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceAndCommaSeparators);
         builder.AddAttributeIfNotNullOrEmpty(29, "child-rows", ChildRows);
         builder.AddAttribute(30, "resizable", Resizable);
         builder.AddAttribute(31, "reorderable", Reorderable);

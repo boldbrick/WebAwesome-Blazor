@@ -71,10 +71,11 @@ public class WaMutationObserver : ComponentBase
     [Parameter] public bool CharData { get; set; }
 
     /// <summary>
-    /// Watches for changes to the attributes in this space-separated list of names, e.g. <c>class id title</c>
-    /// (the element's attr attribute); <c>*</c> watches all attributes. Takes precedence over <see cref="Attr"/>.
+    /// Watches for changes to these attributes, e.g. <c>new HashSet&lt;string&gt; { "class", "id" }</c> (the element's attr
+    /// attribute, the names in ordinal order separated by a space); <c>*</c> watches all attributes. Takes precedence
+    /// over <see cref="Attr"/> unless empty.
     /// </summary>
-    [Parameter] public string? AttributeFilter { get; set; }
+    [Parameter] public IReadOnlySet<string>? AttributeFilter { get; set; }
 
     /// <summary>
     /// Indicates whether the attribute's previous value should be recorded when monitoring changes.
@@ -125,7 +126,10 @@ public class WaMutationObserver : ComponentBase
 
         // Add mutation observer attributes
         // attr lists the attributes to watch; the element watches none for an empty value, so it cannot be a bare attribute
-        builder.AddAttributeIfNotNullOrEmpty(10, "attr", string.IsNullOrEmpty(AttributeFilter) ? (Attr ? AllAttributesFilter : null) : AttributeFilter);
+        if (AttributeFilter is { Count: > 0 })
+            builder.AddTokenSetAttribute(10, "attr", AttributeFilter);
+        else
+            builder.AddAttributeIfNotNull(10, "attr", Attr ? AllAttributesFilter : null);
         builder.AddAttribute(11, "child-list", ChildList);
         builder.AddAttribute(12, "char-data", CharData);
         builder.AddAttribute(17, "attr-old-value", AttrOldValue);

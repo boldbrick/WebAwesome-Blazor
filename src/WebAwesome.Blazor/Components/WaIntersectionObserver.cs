@@ -55,9 +55,9 @@ public class WaIntersectionObserver : ComponentBase
 
     // IntersectionObserver options
     /// <summary>
-    /// Space-separated threshold values for intersection detection (0.0 to 1.0)
+    /// The intersection ratios (0.0 to 1.0) at which the observer reports, rendered in the invariant culture and`n    /// separated by a space; null or empty leaves the element's default, 0.
     /// </summary>
-    [Parameter] public string? Threshold { get; set; }
+    [Parameter] public IReadOnlyList<double>? Threshold { get; set; }
 
     /// <summary>
     /// ID of the root element to use as the viewport for intersection calculations
@@ -117,7 +117,7 @@ public class WaIntersectionObserver : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add intersection observer specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "threshold", Threshold);
+        builder.AddNumberListAttribute(10, "threshold", Threshold);
         builder.AddAttributeIfNotNullOrEmpty(11, "root", Root);
         builder.AddAttributeIfNotNullOrEmpty(12, "root-margin", RootMargin);
         builder.AddAttributeIfNotNullOrEmpty(13, "intersect-class", IntersectClass);

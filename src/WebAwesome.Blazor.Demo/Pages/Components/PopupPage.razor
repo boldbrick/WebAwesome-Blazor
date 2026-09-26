@@ -64,7 +64,7 @@
     <p>Scroll the box: the popup flips to the other side, shifts to stay inside it, and shrinks when neither helps.</p>
     <div style="height: 160px; overflow: auto; border: 1px dashed var(--wa-color-surface-border); position: relative;">
         <div style="height: 480px; width: 150%; padding: 180px 60px;">
-            <WaPopup Active="true" Placement="WaPlacement.Top" Flip="true" FlipPadding="4" FlipFallbackPlacements="bottom top"
+            <WaPopup Active="true" Placement="WaPlacement.Top" Flip="true" FlipPadding="4" FlipFallbackPlacements="@(new[] { WaPlacement.Bottom, WaPlacement.Top })"
                      FlipFallbackStrategy="WaFlipFallbackStrategy.BestFit" Shift="true" ShiftPadding="4" AutoSize="WaAutoSize.Vertical" AutoSizePadding="8" HoverBridge="false">
                 <AnchorContent><WaButton>Scroll me</WaButton></AnchorContent>
                 <ChildContent><div style="background: var(--wa-color-warning-fill-loud); padding: var(--wa-space-s); width: 180px; height: 120px; overflow: auto;">Flips, shifts and auto-sizes</div></ChildContent>
@@ -168,7 +168,7 @@
     private const string FlipExample = """
         <div style="height: 160px; overflow: auto; position: relative;">
             <div style="height: 480px; width: 150%; padding: 180px 60px;">
-                <WaPopup Active="true" Placement="WaPlacement.Top" Flip="true" FlipPadding="4" FlipFallbackPlacements="bottom top"
+                <WaPopup Active="true" Placement="WaPlacement.Top" Flip="true" FlipPadding="4" FlipFallbackPlacements="@(new[] { WaPlacement.Bottom, WaPlacement.Top })"
                          FlipFallbackStrategy="WaFlipFallbackStrategy.BestFit" Shift="true" ShiftPadding="4" AutoSize="WaAutoSize.Vertical" AutoSizePadding="8" HoverBridge="false">
                     <AnchorContent><WaButton>Scroll me</WaButton></AnchorContent>
                     <ChildContent><div style="width: 180px; height: 120px; overflow: auto;">Flips, shifts and auto-sizes</div></ChildContent>

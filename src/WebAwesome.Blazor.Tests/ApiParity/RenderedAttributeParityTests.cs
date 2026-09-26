@@ -199,6 +199,10 @@ public class RenderedAttributeParityTests
         foreach (var kind in WireFormatKinds.Where(k => !checkedKinds.Contains(k)))
             misses.Add($"no {kind} sample was rendered into a mapped attribute, so its wire format went unchecked");
 
+        // and every cited list separator must still belong to a list parameter the check reads
+        foreach (var key in WaWirePatterns.ListSeparators.Keys.Where(k => !checkedKinds.Contains(ListKeyPrefix + k)))
+            misses.Add($"WaWirePatterns.ListSeparators entry '{key}' belongs to no rendered list parameter and must be removed");
+
         AssertNoMisses(misses, "Date and time attributes not in the form Web Awesome parses");
     }
 
@@ -234,6 +238,9 @@ public class RenderedAttributeParityTests
 
             foreach (var attribute in componentConfig.DivergentParameterDefaults)
                 AddMissingReason(misses, $"{DivergentParameterDefaultsKey}:{tag}:{attribute}");
+
+            foreach (var attribute in componentConfig.AdditionalAttributeParameters.Keys)
+                AddMissingReason(misses, $"{AdditionalAttributeParametersKey}:{tag}:{attribute}");
         }
 
         AssertNoMisses(misses, "Rendered-attribute allowlist entries without a reason");
@@ -313,6 +320,14 @@ public class RenderedAttributeParityTests
                     misses.Add($"{tag}: wrapperDefaultAttributes entry '{attribute}' is not rendered with a non-default value without parameters and must be removed");
             }
 
+            foreach (var (attribute, parameters) in componentConfig.AdditionalAttributeParameters)
+            {
+                var valid = parameters.Count > 0 && ofTag.Any(e => e.Component.Attributes.ContainsKey(attribute)
+                    && parameters.All(p => FindParameter(e.Renders.ComponentType, p) != null));
+                if (!valid)
+                    misses.Add($"{tag}: additionalAttributeParameters entry '{attribute}' names no CEM attribute, or a parameter no wrapper of the element has, and must be removed");
+            }
+
             foreach (var attribute in componentConfig.DivergentParameterDefaults)
             {
                 if (!ofTag.Any(e => ParameterDefaultMisses(e).Any(m => m.Attribute == attribute)))
@@ -373,6 +388,7 @@ public class RenderedAttributeParityTests
     private const string TrueFalseAttributesKey = "trueFalseAttributes";
     private const string WrapperDefaultAttributesKey = "wrapperDefaultAttributes";
     private const string DivergentParameterDefaultsKey = "divergentParameterDefaults";
+    private const string AdditionalAttributeParametersKey = "additionalAttributeParameters";
     private const string StringSample = "x-sample-value";
     private const string IsoDatePattern = "yyyy-MM-dd";
     private const string DateKind = "DateOnly";
@@ -382,7 +398,7 @@ public class RenderedAttributeParityTests
     private const string DateSetKind = "IReadOnlySet<DateOnly>";
     private const string WeekdaySetKind = "IReadOnlySet<DayOfWeek>";
 
-    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind];
+    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind, NumberListKind, StringListKind, StringSetKind, PlacementListKind];
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
     private const string StringType = "string";
@@ -395,6 +411,13 @@ public class RenderedAttributeParityTests
     private const string AnyStepText = "any";
     private const string AnyStepLiteral = "'any'";
     private const string StepKind = "WaStep";
+    private const string NumberListKind = "IReadOnlyList<double>";
+    private const string StringListKind = "IReadOnlyList<string>";
+    private const string StringSetKind = "IReadOnlySet<string>";
+    private const string PlacementListKind = "IReadOnlyList<WaPlacement>";
+    private const string ListKeyPrefix = "list:";
+    private const string ListItemSampleA = "x-item-a";
+    private const string ListItemSampleB = "x-item-b";
     private const string AriaPrefix = "aria-";
     private const string DataPrefix = "data-";
     private const string MinusSign = "−";
@@ -640,6 +663,27 @@ public class RenderedAttributeParityTests
         {
             yield return (WaStep)(decimal)FractionalSample;
             yield return WaStep.Any;
+        }
+        else if (type == typeof(IReadOnlyList<double>))
+        {
+            // descending and fractional, so a sorted or culture-formatted rendering shows
+            yield return new[] { 0.75, 0.25, 1 };
+            yield return Array.Empty<double>();
+        }
+        else if (type == typeof(IReadOnlyList<string>))
+        {
+            yield return new[] { ListItemSampleB, ListItemSampleA };
+            yield return Array.Empty<string>();
+        }
+        else if (type == typeof(IReadOnlySet<string>))
+        {
+            yield return new HashSet<string>(StringComparer.Ordinal) { ListItemSampleB, ListItemSampleA };
+            yield return new HashSet<string>(StringComparer.Ordinal);
+        }
+        else if (type == typeof(IReadOnlyList<WaPlacement>))
+        {
+            yield return new[] { WaPlacement.RightEnd, WaPlacement.Bottom };
+            yield return Array.Empty<WaPlacement>();
         }
     }
 
@@ -911,6 +955,29 @@ public class RenderedAttributeParityTests
                     checkedKinds.Add(WeekdaySetKind);
                     miss = SetMiss(present, value, days.Order().ToList(), ReadsAsWeekday, rendered);
                     break;
+                case IReadOnlyList<double> numbers:
+                    checkedKinds.Add(NumberListKind);
+                    checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
+                    miss = ListMiss(element.Tag, attribute, present, value, numbers.Select(n => n.ToString(CultureInfo.InvariantCulture)).ToList(),
+                        (item, expected) => double.TryParse(item, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
+                            && parsed == double.Parse(expected, CultureInfo.InvariantCulture), rendered);
+                    break;
+                case IReadOnlySet<string> tokenSet:
+                    checkedKinds.Add(StringSetKind);
+                    checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
+                    miss = ListMiss(element.Tag, attribute, present, value, tokenSet.Order(StringComparer.Ordinal).ToList(), string.Equals, rendered);
+                    break;
+                case IReadOnlyList<string> tokens:
+                    checkedKinds.Add(StringListKind);
+                    checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
+                    miss = ListMiss(element.Tag, attribute, present, value, tokens.ToList(), string.Equals, rendered);
+                    break;
+                case IReadOnlyList<WaPlacement> placements:
+                    checkedKinds.Add(PlacementListKind);
+                    checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
+                    miss = ListMiss(element.Tag, attribute, present, value, placements.Select(p => EnumValueParityTests.HtmlValueOf(p) ?? string.Empty).ToList(),
+                        string.Equals, rendered);
+                    break;
                 case WaStep step:
                     checkedKinds.Add(StepKind);
                     miss = present && (step.IsAny
@@ -938,6 +1005,23 @@ public class RenderedAttributeParityTests
         return readItems.Count == expected.Count && readItems.Zip(expected).All(p => p.First.HasValue && EqualityComparer<T>.Default.Equals(p.First.Value, p.Second))
             ? null
             : $"renders {rendered}, expected {string.Join(" ", expected)} in that order, each in the form Web Awesome parses";
+    }
+
+    // null when an empty list renders nothing and a non-empty one renders exactly its items, in the expected order,
+    // separated as the element splits the attribute (WaWirePatterns.ListSeparators)
+    private static string? ListMiss(string tag, string attribute, bool present, string? value, IReadOnlyList<string> expected,
+        Func<string, string, bool> itemEquals, string rendered)
+    {
+        if (expected.Count == 0)
+            return present ? $"renders {rendered} for an empty list; an empty collection must render no attribute" : null;
+
+        if (!WaWirePatterns.ListSeparators.TryGetValue(EnumValueParityTests.AttributeKey(tag, attribute), out var separator))
+            return $"'{attribute}' is list-valued, but WaWirePatterns.ListSeparators cites no separator the element splits it on";
+
+        var items = present ? separator.Split(value!) : [];
+        return items.Length == expected.Count && items.Zip(expected).All(p => itemEquals(p.First, p.Second))
+            ? null
+            : $"renders {rendered}, expected the items {string.Join(", ", expected)} in that order, split on /{separator}/ as the element splits them";
     }
 
     // the date an ISO_DATE text stands for, or null when it does not match or is no calendar day
@@ -1073,6 +1157,14 @@ public class RenderedAttributeParityTests
         {
             if (IsIgnoredAttribute(element.Config, attribute)) continue;
             yield return (attribute, surface, FindParameter(element.Renders.ComponentType, ExpectedParameterName(element.Config, attribute)));
+
+            // further parameters rendering the same attribute ("additionalAttributeParameters")
+            if (!element.Config.AdditionalAttributeParameters.TryGetValue(attribute, out var others)) continue;
+            foreach (var other in others)
+            {
+                var property = FindParameter(element.Renders.ComponentType, other);
+                if (property != null) yield return (attribute, surface, property);
+            }
         }
     }
 

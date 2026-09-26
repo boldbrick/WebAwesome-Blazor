@@ -338,8 +338,8 @@
     private DateOnly? datePickerValue = InitialPickerDate;
     private WaDateRange? dateRangeValue = InitialDateRange;
     private WaDateRange? dateRangePickerValue = InitialPickerRange;
-    private string[]? selectedToppings = [.. InitialToppings];
-    private string[]? comboboxToppings = [.. InitialToppings];
+    private IReadOnlyList<string>? selectedToppings = [.. InitialToppings];
+    private IReadOnlyList<string>? comboboxToppings = [.. InitialToppings];
 
     // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
     private string? unusedMultipleValue = null;

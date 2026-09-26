@@ -88,7 +88,7 @@ public class WaDataGridIntegrationTests : BunitContext
             .Add(p => p.Server, true)
             .Add(p => p.FilterDebounce, 300)
             .Add(p => p.FilterFromLeafRows, true)
-            .Add(p => p.GroupBy, "category")
+            .Add(p => p.GroupBy, new[] { "category", "region" })
             .Add(p => p.ChildRows, "children")
             .Add(p => p.Resizable, true)
             .Add(p => p.Reorderable, true)
@@ -115,7 +115,7 @@ public class WaDataGridIntegrationTests : BunitContext
         Assert.True(element.HasAttribute("server"));
         Assert.Equal("300", element.GetAttribute("filter-debounce"));
         Assert.True(element.HasAttribute("filter-from-leaf-rows"));
-        Assert.Equal("category", element.GetAttribute("group-by"));
+        Assert.Equal("category region", element.GetAttribute("group-by"));
         Assert.Equal("children", element.GetAttribute("child-rows"));
         Assert.True(element.HasAttribute("resizable"));
         Assert.True(element.HasAttribute("reorderable"));

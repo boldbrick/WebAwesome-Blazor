@@ -44,7 +44,7 @@ public class WaColorPickerIntegrationTests : IDisposable
 
         await runtime.CreateRendered<WaColorPicker>().SetSwatchesAsync(colors);
 
-        Assert.Same(colors, runtime.Module.AssertSetProperty("swatches"));
+        Assert.Equal(colors, Assert.IsType<string[]>(runtime.Module.AssertSetProperty("swatches")));
     }
 
     [Theory]

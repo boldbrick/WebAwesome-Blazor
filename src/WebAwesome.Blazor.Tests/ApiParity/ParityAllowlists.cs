@@ -76,6 +76,7 @@ internal static class ParityAllowlists
         ("tokenListAttributes", c => c.TokenListAttributes.Keys),
         ("unresolvedEnumAttributes", c => c.UnresolvedEnumAttributes),
         ("untypedLiteralUnionAttributes", c => c.UntypedLiteralUnionAttributes),
+        ("additionalAttributeParameters", c => c.AdditionalAttributeParameters.Keys),
         ("extraRenderedAttributes", c => c.ExtraRenderedAttributes),
         ("unrenderedAttributes", c => c.UnrenderedAttributes),
         ("attributePrerequisites", c => c.AttributePrerequisites.Keys),

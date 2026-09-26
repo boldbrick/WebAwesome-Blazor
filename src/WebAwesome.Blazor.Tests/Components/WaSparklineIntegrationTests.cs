@@ -29,12 +29,12 @@ public class WaSparklineIntegrationTests : BunitContext
     {
         // Arrange & Act
         var cut = Render<WaSparkline>(parameters => parameters
-            .Add(p => p.Data, "10 20 40 25 35")
+            .Add(p => p.Data, new[] { 10, 20, 40.5, 25, -35 })
             .Add(p => p.Label, "Weekly sales"));
 
         // Assert
         var element = cut.Find("wa-sparkline");
-        Assert.Equal("10 20 40 25 35", element.GetAttribute("data"));
+        Assert.Equal("10 20 40.5 25 -35", element.GetAttribute("data"));
         Assert.Equal("Weekly sales", element.GetAttribute("label"));
     }
 

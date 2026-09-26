@@ -70,7 +70,7 @@
     private string? disabledValue;
     private string? customValue;
     private string? multipleValue;
-    private string[]? selectedValues = ["option-1", "option-2"];
+    private IReadOnlyList<string>? selectedValues = ["option-1", "option-2"];
     private string? filledValue = "option-1";
     private string? pillValue = "option-1";
     private string? destinationValue;
@@ -129,7 +129,7 @@
 
         @code {
             private string? multipleValue;
-            private string[]? selectedValues = ["option-1", "option-2"];
+            private IReadOnlyList<string>? selectedValues = ["option-1", "option-2"];
         }
         """;
 

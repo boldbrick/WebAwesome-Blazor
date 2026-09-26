@@ -14,7 +14,7 @@
 
 <ExampleSection Title="Attribute Filter and Old Values" Code="@FilterExample">
     <p>Only changes to <code>variant</code> are reported, with the previous value recorded; <code>size</code> changes are ignored.</p>
-    <WaMutationObserver AttributeFilter="variant" AttrOldValue="true" OnMutation="() => filteredCount++">
+    <WaMutationObserver AttributeFilter="@(new HashSet<string> { "variant" })" AttrOldValue="true" OnMutation="() => filteredCount++">
         <WaButton Variant="filteredVariant" Size="filteredSize">Observed button</WaButton>
     </WaMutationObserver>
     <WaCluster Gap="GapSize.Gap_S" Style="margin-top: var(--wa-space-s);">
@@ -121,7 +121,7 @@
         """;
 
     private const string FilterExample = """
-        <WaMutationObserver AttributeFilter="variant" AttrOldValue="true" OnMutation="() => filteredCount++">
+        <WaMutationObserver AttributeFilter="@(new HashSet<string> { "variant" })" AttrOldValue="true" OnMutation="() => filteredCount++">
             <WaButton Variant="filteredVariant" Size="filteredSize">Observed button</WaButton>
         </WaMutationObserver>
         <WaButton Size="WaSize.Small" OnClick="ToggleVariant">Change variant</WaButton>

@@ -12,7 +12,7 @@
 
 <ExampleSection Title="Zoom and Zoom Levels" Code="@ZoomExample">
     <p>Starts at 50%; the controls step through the listed levels only.</p>
-    <WaZoomableFrame SrcDoc="@FrameContent" Zoom="0.5" ZoomLevels="25% 50% 100% 150%" Style="height: 200px;" />
+    <WaZoomableFrame SrcDoc="@FrameContent" Zoom="0.5" ZoomLevels="@(new double[] { 0.25, 0.5, 1, 1.5 })" Style="height: 200px;" />
 </ExampleSection>
 
 <ExampleSection Title="Without Controls or Interaction" Code="@ControlsExample">
@@ -63,7 +63,7 @@
         """;
 
     private const string ZoomExample = """
-        <WaZoomableFrame SrcDoc="@FrameContent" Zoom="0.5" ZoomLevels="25% 50% 100% 150%" Style="height: 200px;" />
+        <WaZoomableFrame SrcDoc="@FrameContent" Zoom="0.5" ZoomLevels="@(new double[] { 0.25, 0.5, 1, 1.5 })" Style="height: 200px;" />
         """;
 
     private const string ControlsExample = """

@@ -69,12 +69,12 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
     /// <summary>
     /// The selected values when Multiple is true. Use this for two-way binding in multiple selection mode.
     /// </summary>
-    [Parameter] public string[]? SelectedValues { get; set; }
+    [Parameter] public IReadOnlyList<string>? SelectedValues { get; set; }
 
     /// <summary>
     /// Callback for when SelectedValues changes in multiple selection mode.
     /// </summary>
-    [Parameter] public EventCallback<string[]?> SelectedValuesChanged { get; set; }
+    [Parameter] public EventCallback<IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
 
     #endregion
 

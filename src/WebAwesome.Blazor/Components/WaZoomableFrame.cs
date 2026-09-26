@@ -71,9 +71,10 @@ public class WaZoomableFrame : ComponentBase
     [Parameter] public double Zoom { get; set; } = 1.0;
 
     /// <summary>
-    /// The zoom levels to step through when using the zoom controls. Does not restrict programmatic changes to the zoom.
+    /// The zoom levels to step through when using the zoom controls, as factors (<c>1</c> is 100%), in order; null or
+    /// empty leaves the element's default, 25% to 200% in steps of 25%. Does not restrict programmatic changes to the zoom.
     /// </summary>
-    [Parameter] public string? ZoomLevels { get; set; }
+    [Parameter] public IReadOnlyList<double>? ZoomLevels { get; set; }
 
     // Control properties
     /// <summary>
@@ -179,7 +180,7 @@ public class WaZoomableFrame : ComponentBase
         // Add zoom attributes
         if (Zoom != 1.0)
             builder.AddNumberAttribute(20, "zoom", Zoom);
-        builder.AddAttributeIfNotNullOrEmpty(21, "zoom-levels", ZoomLevels);
+        builder.AddNumberListAttribute(21, "zoom-levels", ZoomLevels);
 
         // Add control attributes
         builder.AddAttribute(30, "without-controls", WithoutControls);
