@@ -14,7 +14,9 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// <summary>
 /// Render-based attribute parity: every wrapper component is rendered with bUnit (RenderedWrapperCatalog), once
 /// plain and once per sample value of each [Parameter] - every member (and [Flags] combination) of an enum, true
-/// and false for a bool, a marker string, a fractional and a negative number, a date - set on its own, and the
+/// and false for a bool, a marker string, a fractional and a negative number, a DateTime, a DateOnly, a TimeOnly with
+/// and without seconds, a DateTimeOffset with an offset and in UTC, a complete and a half-filled WaDateRange, and a
+/// non-empty (listed out of order) and an empty IReadOnlySet of DateOnly or DayOfWeek - set on its own, and the
 /// attributes of the root element are compared with the Custom Elements Manifest of the tag the wrapper actually
 /// renders (WaRange renders wa-slider). The renders run under a hostile culture (cs-CZ with its decimal comma, plus
 /// the U+2212 minus sign and a '.' time separator some cultures use), because Blazor formats every non-string
@@ -26,7 +28,9 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// set to a non-default value (allowlist "unrenderedAttributes"); (e) numbers and dates render in the invariant
 /// culture; (f) with no parameter set, every rendered CEM attribute carries the element's own default (allowlist
 /// "wrapperDefaultAttributes"), so a wrong wrapper default shows; (g) every parameter's C# default is the element's CEM default,
-/// or null (allowlist "divergentParameterDefaults"). Parameters of other types (collections, objects, fragments, callbacks) are not sampled. Every allowlist
+/// or null (allowlist "divergentParameterDefaults"); (h) every date, time, instant, range and set renders in the form the
+/// element parses, checked with Web Awesome's own patterns (WaWirePatterns), and an empty set renders nothing. Parameters of
+/// other types (other collections, objects, fragments, callbacks) are not sampled. Every allowlist
 /// entry needs a reason, and stale entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
 public class RenderedAttributeParityTests
@@ -172,6 +176,30 @@ public class RenderedAttributeParityTests
             .ToList();
 
         AssertNoMisses(misses, "Parameter defaults that differ from the element default");
+    }
+
+    /// <summary>
+    /// (h) Every date, time, instant, date-range and set parameter renders its attribute in the form Web Awesome
+    /// parses, checked with the element's own patterns (WaWirePatterns, copied from the 3.12.0 sources): a date
+    /// matches ISO_DATE and reads back as the sample, a time matches the time-input wire pattern, an instant is an
+    /// ECMAScript date-time with its offset and reads back as the same instant, a range is one or two ISO dates split
+    /// on '/', a date set is ascending ISO dates and a weekday set sun..sat tokens (split on whitespace) in DayOfWeek
+    /// order, and an empty set renders no attribute at all (owner rule). Rendered under the hostile culture, like
+    /// every sample, so a culture-formatted value fails here too.
+    /// </summary>
+    [Fact]
+    public void DateAndTimeAttributes_MatchWebAwesomeParsePatterns()
+    {
+        SkipUnlessParityEnabled();
+
+        var checkedKinds = new HashSet<string>(StringComparer.Ordinal);
+        var misses = RenderedElements().SelectMany(e => WireFormatMisses(e, checkedKinds)).Distinct(StringComparer.Ordinal).ToList();
+
+        // guard the check itself: every kind of value must have been rendered and checked at least once
+        foreach (var kind in WireFormatKinds.Where(k => !checkedKinds.Contains(k)))
+            misses.Add($"no {kind} sample was rendered into a mapped attribute, so its wire format went unchecked");
+
+        AssertNoMisses(misses, "Date and time attributes not in the form Web Awesome parses");
     }
 
     /// <summary>
@@ -333,6 +361,14 @@ public class RenderedAttributeParityTests
     private const string DivergentParameterDefaultsKey = "divergentParameterDefaults";
     private const string StringSample = "x-sample-value";
     private const string IsoDatePattern = "yyyy-MM-dd";
+    private const string DateKind = "DateOnly";
+    private const string TimeKind = "TimeOnly";
+    private const string InstantKind = "DateTimeOffset";
+    private const string RangeKind = "WaDateRange";
+    private const string DateSetKind = "IReadOnlySet<DateOnly>";
+    private const string WeekdaySetKind = "IReadOnlySet<DayOfWeek>";
+
+    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind];
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
     private const string StringType = "string";
@@ -793,6 +829,111 @@ public class RenderedAttributeParityTests
                 yield return $"{label}: renders {dateAttribute}=\"{renderedDate}\", which does not parse back to {date:O} with the invariant culture";
             }
         }
+    }
+
+    // the (h) misses of one element; records in checkedKinds which kinds of value it checked
+    private static IEnumerable<string> WireFormatMisses(RenderedElement element, HashSet<string> checkedKinds)
+    {
+        var mapped = MappedAttributes(element).Where(m => m.Property != null).ToDictionary(m => m.Property!, m => m.Attribute);
+
+        foreach (var render in element.Renders.Samples.Where(s => s.Root.Error == null))
+        {
+            var sample = render.Sample;
+            if (!mapped.TryGetValue(sample.Property, out var attribute)) continue;
+
+            var present = render.Root.Attributes.TryGetValue(attribute, out var value);
+            var label = $"{element.Tag} ({element.Name}.{sample.Label})";
+            var rendered = present ? $"{attribute}=\"{value}\"" : $"no '{attribute}'";
+
+            string? miss;
+            switch (sample.Value)
+            {
+                case DateOnly date:
+                    checkedKinds.Add(DateKind);
+                    miss = present && ReadsAsDate(value!) == date ? null : $"renders {rendered}, expected ISO_DATE reading as {Describe(date)}";
+                    break;
+                case TimeOnly time:
+                    checkedKinds.Add(TimeKind);
+                    miss = present && ReadsAsTime(value!, time) ? null : $"renders {rendered}, expected the time-input wire pattern reading as {time:HH:mm:ss}";
+                    break;
+                case DateTimeOffset instant:
+                    checkedKinds.Add(InstantKind);
+                    miss = present && WaWirePatterns.EcmaScriptInstant.IsMatch(value!)
+                        && DateTimeOffset.Parse(value!, CultureInfo.InvariantCulture) is var parsed
+                        && parsed == instant && parsed.Offset == instant.Offset
+                        ? null
+                        : $"renders {rendered}, expected an ECMAScript date-time with offset reading as {instant:O}";
+                    break;
+                case WaDateRange range:
+                    checkedKinds.Add(RangeKind);
+                    miss = present && ReadsAsRange(value!, range) ? null : $"renders {rendered}, expected one or two ISO dates split on '{WaWirePatterns.RangeSeparator}' reading as {range}";
+                    break;
+                case IReadOnlySet<DateOnly> dates:
+                    checkedKinds.Add(DateSetKind);
+                    miss = SetMiss(present, value, dates.Order().ToList(), ReadsAsDate, rendered);
+                    break;
+                case IReadOnlySet<DayOfWeek> days:
+                    checkedKinds.Add(WeekdaySetKind);
+                    miss = SetMiss(present, value, days.Order().ToList(), ReadsAsWeekday, rendered);
+                    break;
+                default:
+                    continue;
+            }
+
+            if (miss != null) yield return $"{label}: {miss}";
+        }
+    }
+
+    // null when an empty set renders nothing and a non-empty one renders exactly its items, in order, split on whitespace
+    private static string? SetMiss<T>(bool present, string? value, List<T> expected, Func<string, T?> read, string rendered) where T : struct
+    {
+        if (expected.Count == 0)
+            return present ? $"renders {rendered} for an empty set; an empty collection must render no attribute" : null;
+
+        var items = present ? WaWirePatterns.ListSeparator.Split(value!) : [];
+        var readItems = items.Select(read).ToList();
+        return readItems.Count == expected.Count && readItems.Zip(expected).All(p => p.First.HasValue && EqualityComparer<T>.Default.Equals(p.First.Value, p.Second))
+            ? null
+            : $"renders {rendered}, expected {string.Join(" ", expected)} in that order, each in the form Web Awesome parses";
+    }
+
+    // the date an ISO_DATE text stands for, or null when it does not match or is no calendar day
+    private static DateOnly? ReadsAsDate(string text)
+    {
+        var match = WaWirePatterns.IsoDate.Match(text);
+        if (!match.Success) return null;
+
+        var (year, month, day) = (int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture),
+            int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture), int.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture));
+        return month is >= 1 and <= 12 && day >= 1 && day <= DateTime.DaysInMonth(year, month) ? new DateOnly(year, month, day) : null;
+    }
+
+    // whether a wire time reads as the sample: to the second, or to the minute when the seconds were left out
+    private static bool ReadsAsTime(string text, TimeOnly expected)
+    {
+        var match = WaWirePatterns.WireTime.Match(text);
+        if (!match.Success) return false;
+
+        var hour = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+        var minute = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+        if (hour != expected.Hour || minute != expected.Minute) return false;
+
+        return !match.Groups[3].Success
+            || (int)double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture) == expected.Second;
+    }
+
+    // whether a range text is its one or two ISO dates, the From first
+    private static bool ReadsAsRange(string text, WaDateRange range)
+    {
+        var parts = text.Split(WaWirePatterns.RangeSeparator).Select(ReadsAsDate).ToList();
+        var expected = new[] { range.From, range.To }.Where(d => d.HasValue).ToList();
+        return parts.Count == expected.Count && parts.SequenceEqual(expected);
+    }
+
+    private static DayOfWeek? ReadsAsWeekday(string token)
+    {
+        var index = Array.IndexOf(WaWirePatterns.WeekdayTokens, token);
+        return index >= 0 ? (DayOfWeek)index : null;
     }
 
     // the CEM attributes the baseline render (no parameter set) emits with a value other than the element default

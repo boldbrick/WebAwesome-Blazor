@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -68,17 +68,177 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
-    /// Converts an attribute value to its string form with the invariant culture.
+    /// Converts an attribute value to its string form with the invariant culture. Refuses the date and time types
+    /// (<see cref="DateOnly"/>, <see cref="TimeOnly"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>): their
+    /// invariant default forms (<c>01/02/2026</c>, <c>13:04</c>) are not what Web Awesome parses, so each needs its
+    /// explicit wire-format helper (<see cref="AddDateAttribute"/>, <see cref="AddTimeAttribute"/>,
+    /// <see cref="AddDateTimeOffsetAttribute"/>). The compile-time guards below catch the direct calls; this catches a
+    /// value reaching the generic path in another way (boxed, or through generic code).
     /// </summary>
     /// <typeparam name="T">Type of the value</typeparam>
     /// <param name="value">The value</param>
     /// <returns>The invariant-culture string form</returns>
+    /// <exception cref="NotSupportedException">Thrown for a date or time value</exception>
     public static string? FormatInvariant<T>(T value)
     {
+        if (value is DateOnly or TimeOnly or DateTime or DateTimeOffset)
+            throw new NotSupportedException(TemporalToStringMessage);
+
         return value is IFormattable formattable
             ? formattable.ToString(null, CultureInfo.InvariantCulture)
             : value?.ToString();
     }
+
+    /// <summary>
+    /// Blocks dates from the generic invariant-culture path, which would emit <c>01/02/2026</c>; use
+    /// <see cref="AddDateAttribute"/>.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, DateOnly? value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks times from the generic invariant-culture path, which would drop the seconds (<c>13:04</c>); use
+    /// <see cref="AddTimeAttribute"/> or the wrapper's own value formatting.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, TimeOnly? value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks <see cref="DateTime"/> values from the generic invariant-culture path, which would emit
+    /// <c>01/02/2026 03:04:05</c> without an offset; use <see cref="AddDateTimeOffsetAttribute"/> for an instant or
+    /// <see cref="AddDateAttribute"/> for a date.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, DateTime? value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks instants from the generic invariant-culture path, which would emit <c>01/02/2026 03:04:05 +01:00</c>;
+    /// use <see cref="AddDateTimeOffsetAttribute"/>.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, DateTimeOffset? value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks non-nullable dates from the generic invariant-culture path; see the nullable overload.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, DateOnly value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks non-nullable times from the generic invariant-culture path; see the nullable overload.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, TimeOnly value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks non-nullable DateTime values from the generic invariant-culture path; see the nullable overload.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, DateTime value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks non-nullable instants from the generic invariant-culture path; see the nullable overload.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, int sequence, string name, DateTimeOffset value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks dates from <see cref="AddNumberAttribute{T}"/>, whose <see cref="IFormattable"/> constraint admits them;
+    /// use <see cref="AddDateAttribute"/>.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddNumberAttribute(this RenderTreeBuilder builder, int sequence, string name, DateOnly value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks times from <see cref="AddNumberAttribute{T}"/>; use <see cref="AddTimeAttribute"/>.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddNumberAttribute(this RenderTreeBuilder builder, int sequence, string name, TimeOnly value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks <see cref="DateTime"/> values from <see cref="AddNumberAttribute{T}"/>; use
+    /// <see cref="AddDateTimeOffsetAttribute"/> or <see cref="AddDateAttribute"/>.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddNumberAttribute(this RenderTreeBuilder builder, int sequence, string name, DateTime value)
+        => throw new NotSupportedException(TemporalToStringMessage);
+
+    /// <summary>
+    /// Blocks instants from <see cref="AddNumberAttribute{T}"/>; use <see cref="AddDateTimeOffsetAttribute"/>.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frame</param>
+    /// <param name="name">Attribute name</param>
+    /// <param name="value">Attribute value</param>
+    /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
+    [Obsolete(TemporalToStringMessage, error: true)]
+    public static void AddNumberAttribute(this RenderTreeBuilder builder, int sequence, string name, DateTimeOffset value)
+        => throw new NotSupportedException(TemporalToStringMessage);
 
     /// <summary>
     /// Blocks boolean values from the <see cref="object.ToString"/> path: it would emit "True"/"False", which no
@@ -326,6 +486,10 @@ internal static class RenderTreeBuilderExtensions
 
     private const string BooleanToStringMessage =
         "A bool would be emitted as \"True\"/\"False\"; use AddBooleanAttribute or AddTrueFalseAttribute";
+
+    private const string TemporalToStringMessage =
+        "A date or time would be emitted in a form Web Awesome does not parse; use AddDateAttribute, AddTimeAttribute, " +
+        "AddDateSetAttribute or AddDateTimeOffsetAttribute (WaWireFormat)";
 
     #endregion
 }
