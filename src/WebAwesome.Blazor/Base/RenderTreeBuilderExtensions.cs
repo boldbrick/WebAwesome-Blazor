@@ -218,7 +218,28 @@ internal static class RenderTreeBuilderExtensions
         builder.CloseElement();
     }
 
+    /// <summary>
+    /// Renders a fragment into a named slot, wrapped in a span carrying the slot attribute, when the fragment is set.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Constant base sequence number; uses sequence + 0..2</param>
+    /// <param name="slotName">Target slot name</param>
+    /// <param name="content">Slot content; nothing is rendered when null</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddSlotContent(this RenderTreeBuilder builder, int sequence, string slotName, RenderFragment? content)
+    {
+        if (content is null) return;
+
+        builder.OpenElement(sequence + 0, SlotWrapperElement);
+        builder.AddAttribute(sequence + 1, SlotAttribute, slotName);
+        builder.AddContent(sequence + 2, content);
+        builder.CloseElement();
+    }
+
     #region ------ Internals ------
+
+    private const string SlotWrapperElement = "span";
+    private const string SlotAttribute = "slot";
 
     private const string BooleanToStringMessage =
         "A bool would be emitted as \"True\"/\"False\"; use AddBooleanAttribute or AddTrueFalseAttribute";

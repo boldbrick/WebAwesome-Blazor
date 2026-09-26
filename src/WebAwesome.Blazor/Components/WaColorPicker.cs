@@ -12,7 +12,7 @@ namespace WebAwesome.Blazor.Components;
 /// A color picker input component that allows users to select colors.
 /// Corresponds to the wa-color-picker Web Awesome component.
 /// </summary>
-public class WaColorPicker : WaInputBase<string>
+public class WaColorPicker : WaLabeledInputBase<string>
 {
     #region ------ Form Control Properties ------
 
@@ -20,28 +20,6 @@ public class WaColorPicker : WaInputBase<string>
     /// Marks the input as required for form validation.
     /// </summary>
     [Parameter] public bool Required { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -79,16 +57,6 @@ public class WaColorPicker : WaInputBase<string>
     /// Renders the color format toggle and hex input using uppercase letters.
     /// </summary>
     [Parameter] public bool Uppercase { get; set; }
-
-    /// <summary>
-    /// Reserves space for the hint even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Reserves space for the label even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
 
     /// <summary>
     /// The preferred placement of the color picker's popup. The actual placement may vary to keep the panel
@@ -139,8 +107,7 @@ public class WaColorPicker : WaInputBase<string>
 
         // Add the form control attributes the element declares
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add color picker-specific attributes
         builder.AddAttribute(20, "opacity", Opacity);
@@ -150,8 +117,7 @@ public class WaColorPicker : WaInputBase<string>
         builder.AddAttribute(24, "value", CurrentValueAsString);
         builder.AddAttribute(25, "open", Open);
         builder.AddAttribute(26, "uppercase", Uppercase);
-        builder.AddAttribute(27, "with-hint", WithHint);
-        builder.AddAttribute(28, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttributeIfNotNull(29, "placement", Placement?.ToHtmlValue());
 
         // Add value binding
@@ -176,7 +142,7 @@ public class WaColorPicker : WaInputBase<string>
         builder.AddElementReferenceCapture(67, __colorPickerReference => Element = __colorPickerReference);
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 70);
 
         builder.CloseElement();
     }

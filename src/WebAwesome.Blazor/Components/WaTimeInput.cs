@@ -11,7 +11,7 @@ namespace WebAwesome.Blazor.Components;
 /// An experimental time picker with segmented text entry and a column-based popup.
 /// Corresponds to the wa-time-input Web Awesome component.
 /// </summary>
-public class WaTimeInput : WaInputBase<string?>
+public class WaTimeInput : WaLabeledInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -29,28 +29,6 @@ public class WaTimeInput : WaInputBase<string?>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -112,16 +90,6 @@ public class WaTimeInput : WaInputBase<string?>
     /// Renders a "Now" button in the popup footer.
     /// </summary>
     [Parameter] public bool WithNow { get; set; }
-
-    /// <summary>
-    /// Only required for SSR. Set to true if you're slotting in a hint element.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Only required for SSR. Set to true if you're slotting in a label element.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
 
     #endregion
 
@@ -202,8 +170,7 @@ public class WaTimeInput : WaInputBase<string?>
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
         builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add time-input-specific attributes
         builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
@@ -217,8 +184,7 @@ public class WaTimeInput : WaInputBase<string?>
         builder.AddAttribute(28, "pill", Pill);
         builder.AddAttribute(29, "with-clear", WithClear);
         builder.AddAttribute(30, "with-now", WithNow);
-        builder.AddAttribute(31, "with-hint", WithHint);
-        builder.AddAttribute(32, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding
         builder.AddAttribute(35, "value", CurrentValueAsString);
@@ -285,7 +251,7 @@ public class WaTimeInput : WaInputBase<string?>
         }
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 90, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 90);
 
         builder.CloseElement();
     }

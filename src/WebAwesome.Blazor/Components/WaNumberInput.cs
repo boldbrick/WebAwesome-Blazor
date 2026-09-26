@@ -12,7 +12,7 @@ namespace WebAwesome.Blazor.Components;
 /// A numeric input component for editing <see cref="decimal"/> values, with optional increment/decrement steppers.
 /// Corresponds to the wa-number-input Web Awesome component.
 /// </summary>
-public class WaNumberInput : WaInputBase<decimal?>
+public class WaNumberInput : WaLabeledInputBase<decimal?>
 {
     #region ------ Form Control Properties ------
 
@@ -30,28 +30,6 @@ public class WaNumberInput : WaInputBase<decimal?>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -107,16 +85,6 @@ public class WaNumberInput : WaInputBase<decimal?>
     /// Hides the increment and decrement stepper buttons.
     /// </summary>
     [Parameter] public bool WithoutSteppers { get; set; }
-
-    /// <summary>
-    /// Used for SSR. Determines whether the SSRed component has the hint slot rendered on initial paint.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Used for SSR. Determines whether the SSRed component has the label slot rendered on initial paint.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
 
     /// <summary>
     /// Binds the value on every keystroke (the "input" event) instead of only when the change is committed (the
@@ -190,8 +158,7 @@ public class WaNumberInput : WaInputBase<decimal?>
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
         builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add number-input-specific attributes
         builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
@@ -204,8 +171,7 @@ public class WaNumberInput : WaInputBase<decimal?>
         builder.AddAttributeIfNotNullOrEmpty(27, "placeholder", Placeholder);
         builder.AddAttributeIfNotNullOrEmpty(28, "step", Step);
         builder.AddAttribute(29, "without-steppers", WithoutSteppers);
-        builder.AddAttribute(39, "with-hint", WithHint);
-        builder.AddAttribute(46, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding
         builder.AddAttribute(31, "value", CurrentValueAsString);
@@ -269,7 +235,7 @@ public class WaNumberInput : WaInputBase<decimal?>
         }
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 70);
 
         builder.CloseElement();
     }

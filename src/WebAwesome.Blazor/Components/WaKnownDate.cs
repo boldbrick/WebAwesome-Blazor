@@ -11,7 +11,7 @@ namespace WebAwesome.Blazor.Components;
 /// An experimental form control for entering a known calendar date as separate day, month, and year fields
 /// (e.g. a birthday). Corresponds to the wa-known-date Web Awesome component.
 /// </summary>
-public class WaKnownDate : WaInputBase<string?>
+public class WaKnownDate : WaLabeledInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -29,28 +29,6 @@ public class WaKnownDate : WaInputBase<string?>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -81,16 +59,6 @@ public class WaKnownDate : WaInputBase<string?>
     /// </summary>
     [Parameter] public bool Pill { get; set; }
 
-    /// <summary>
-    /// Only required for SSR. Set to true if you're slotting in a hint element.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Only required for SSR. Set to true if you're slotting in a label element.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
-
     #endregion
 
     #region ------ Events ------
@@ -116,8 +84,7 @@ public class WaKnownDate : WaInputBase<string?>
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
         builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add known-date-specific attributes
         builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
@@ -125,8 +92,7 @@ public class WaKnownDate : WaInputBase<string?>
         builder.AddAttributeIfNotNullOrEmpty(22, "min", Min);
         builder.AddAttributeIfNotNullOrEmpty(23, "max", Max);
         builder.AddAttribute(24, "pill", Pill);
-        builder.AddAttribute(25, "with-hint", WithHint);
-        builder.AddAttribute(26, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding
         builder.AddAttribute(30, "value", CurrentValueAsString);
@@ -143,7 +109,7 @@ public class WaKnownDate : WaInputBase<string?>
         builder.AddElementReferenceCapture(51, __knownDateReference => Element = __knownDateReference);
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 60, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 60);
 
         builder.CloseElement();
     }

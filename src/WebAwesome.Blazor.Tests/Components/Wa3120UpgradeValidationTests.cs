@@ -324,9 +324,10 @@ public class Wa3120UpgradeValidationTests : BunitContext
         var property = wrapper.GetProperty(parameterName);
 
         // Assert - same name, type and [Parameter] as the WaInputBase member they replace, now declared by the wrapper
+        // or by the intermediate base of the capability cluster every element under it declares, never WaInputBase
         Assert.NotNull(property);
         Assert.Equal(FormControlParameterTypes[parameterName], property!.PropertyType);
-        Assert.Equal(wrapper, property.DeclaringType);
+        Assert.Equal(ExpectedDeclaringType(wrapper, parameterName), property.DeclaringType);
         Assert.True(property.IsDefined(typeof(ParameterAttribute), inherit: false));
     }
 
@@ -422,6 +423,26 @@ public class Wa3120UpgradeValidationTests : BunitContext
         [typeof(WaCombobox)] = ["Required", "Label", "Hint", "MarkupLabel", "MarkupHint"],
         [typeof(WaDateInput)] = ["Readonly", "Required", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],
     };
+
+    // the intermediate bases declaring a cluster's parameters for every wrapper under them
+    private static readonly (Type GenericBase, string[] Parameters)[] ClusterBases =
+    [
+        (typeof(WaLabeledInputBase<>), ["Label", "Hint", "MarkupLabel", "MarkupHint"]),
+    ];
+
+    // the closed cluster base of the wrapper declaring the parameter, or the wrapper itself
+    private static Type ExpectedDeclaringType(Type wrapper, string parameterName)
+    {
+        foreach (var (genericBase, parameters) in ClusterBases.Where(c => c.Parameters.Contains(parameterName)))
+        {
+            for (var current = wrapper.BaseType; current != null; current = current.BaseType)
+            {
+                if (current.IsGenericType && current.GetGenericTypeDefinition() == genericBase) return current;
+            }
+        }
+
+        return wrapper;
+    }
 
     private static TheoryData<Type, string> FormControlParameterPairs(bool kept)
     {

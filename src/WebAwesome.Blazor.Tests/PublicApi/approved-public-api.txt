@@ -6,6 +6,15 @@ namespace WebAwesome.Blazor.Base
         System.Threading.Tasks.Task ResetValidityAsync();
         System.Threading.Tasks.Task SetCustomValidityAsync(string message);
     }
+    public interface IWaLabeledControl
+    {
+        string? Hint { get; }
+        string? Label { get; }
+        Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; }
+        Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; }
+        bool WithHint { get; }
+        bool WithLabel { get; }
+    }
     public abstract class WaInputBase<TValue> : Microsoft.AspNetCore.Components.Forms.InputBase<TValue>, WebAwesome.Blazor.Base.IFormValidation
     {
         protected WaInputBase() { }
@@ -45,6 +54,25 @@ namespace WebAwesome.Blazor.Base
         public virtual System.Threading.Tasks.Task ResetValidityAsync() { }
         protected void SetCurrentValueAsStringFromElement(string? value) { }
         public virtual System.Threading.Tasks.Task SetCustomValidityAsync(string message) { }
+    }
+    public abstract class WaLabeledInputBase<TValue> : WebAwesome.Blazor.Base.WaInputBase<TValue>, WebAwesome.Blazor.Base.IWaLabeledControl
+    {
+        protected WaLabeledInputBase() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Hint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Label { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithLabel { get; set; }
+        protected void AddLabelAndHintAttributes(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence) { }
+        protected int AddLabelAndHintSlots(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence) { }
+        protected void AddWithHintAndLabelAttributes(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence) { }
     }
     public abstract class WaLayoutBase : Microsoft.AspNetCore.Components.ComponentBase
     {
@@ -789,7 +817,7 @@ namespace WebAwesome.Blazor.Components
         protected override object? GetLiveValue() { }
         protected override bool TryParseValueFromString(string? value, out bool result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
-    public class WaCheckboxGroup : Microsoft.AspNetCore.Components.ComponentBase
+    public class WaCheckboxGroup : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IWaLabeledControl
     {
         public WaCheckboxGroup() { }
         [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
@@ -828,20 +856,12 @@ namespace WebAwesome.Blazor.Components
         Hsl = 2,
         Hsv = 3,
     }
-    public class WaColorPicker : WebAwesome.Blazor.Base.WaInputBase<string>
+    public class WaColorPicker : WebAwesome.Blazor.Base.WaLabeledInputBase<string>
     {
         public WaColorPicker() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaColorFormat Format { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnAfterHide { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -865,10 +885,6 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Uppercase { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public bool WithoutFormatToggle { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
@@ -881,7 +897,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task ShowAsync() { }
         protected override bool TryParseValueFromString(string? value, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out string result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
-    public class WaCombobox : WebAwesome.Blazor.Base.WaInputBase<string?>
+    public class WaCombobox : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public WaCombobox() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -907,16 +923,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -957,10 +965,6 @@ namespace WebAwesome.Blazor.Components
         public string? StartIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithClear { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
@@ -1291,7 +1295,7 @@ namespace WebAwesome.Blazor.Components
         public WaDataGridSortChangeEventArgs() { }
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
     }
-    public class WaDateInput : WebAwesome.Blazor.Base.WaInputBase<string?>
+    public class WaDateInput : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public WaDateInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1318,15 +1322,7 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1375,10 +1371,6 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaWeekdayFormat? WeekdayFormat { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithClear { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithOutsideDays { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2169,7 +2161,7 @@ namespace WebAwesome.Blazor.Components
         public string? Style { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
-    public class WaInput : WebAwesome.Blazor.Base.WaInputBase<string?>
+    public class WaInput : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public WaInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2193,18 +2185,10 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? HidePasswordIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public bool Immediate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2245,10 +2229,6 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaInputType Type { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithClear { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithoutSpinButtons { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
@@ -2317,24 +2297,16 @@ namespace WebAwesome.Blazor.Components
         public string? Threshold { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
-    public class WaKnownDate : WebAwesome.Blazor.Base.WaInputBase<string?>
+    public class WaKnownDate : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public WaKnownDate() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Autocomplete { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Locale { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2347,10 +2319,6 @@ namespace WebAwesome.Blazor.Components
         public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
@@ -2438,7 +2406,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task DisconnectAsync() { }
         public System.Threading.Tasks.Task ReconnectAsync() { }
     }
-    public class WaNumberInput : WebAwesome.Blazor.Base.WaInputBase<decimal?>
+    public class WaNumberInput : WebAwesome.Blazor.Base.WaLabeledInputBase<decimal?>
     {
         public WaNumberInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2456,20 +2424,12 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EnterKeyHint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public bool Immediate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? IncrementIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2492,10 +2452,6 @@ namespace WebAwesome.Blazor.Components
         public string? StartIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Step { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithoutSteppers { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
@@ -2998,20 +2954,12 @@ namespace WebAwesome.Blazor.Components
         Default = 0,
         Button = 1,
     }
-    public class WaRadioGroup : WebAwesome.Blazor.Base.WaInputBase<string?>
+    public class WaRadioGroup : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public WaRadioGroup() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Name { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3022,10 +2970,6 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
@@ -3072,22 +3016,14 @@ namespace WebAwesome.Blazor.Components
         Unique = 1,
         Sequence = 2,
     }
-    public class WaRange : WebAwesome.Blazor.Base.WaInputBase<decimal>
+    public class WaRange : WebAwesome.Blazor.Base.WaLabeledInputBase<decimal>
     {
         public WaRange() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AutoFocus { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public decimal? IndicatorOffset { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3116,10 +3052,6 @@ namespace WebAwesome.Blazor.Components
         public int? TooltipDistance { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaTooltipSide? TooltipPlacement { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithMarkers { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3257,7 +3189,7 @@ namespace WebAwesome.Blazor.Components
         public bool WithoutShadow { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
-    public class WaSelect : WebAwesome.Blazor.Base.WaInputBase<string?>
+    public class WaSelect : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public WaSelect() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3273,15 +3205,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
         public System.Func<WebAwesome.Blazor.Components.WaOption, int, string>? GetTag { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3318,10 +3242,6 @@ namespace WebAwesome.Blazor.Components
         public string? StartIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithClear { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
@@ -3360,22 +3280,14 @@ namespace WebAwesome.Blazor.Components
         public WaSlideChangeEventArgs() { }
         public int Index { get; set; }
     }
-    public class WaSlider : WebAwesome.Blazor.Base.WaInputBase<decimal?>
+    public class WaSlider : WebAwesome.Blazor.Base.WaLabeledInputBase<decimal?>
     {
         public WaSlider() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool AutoFocus { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public decimal? IndicatorOffset { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3407,10 +3319,6 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaTooltipSide? TooltipPlacement { get; set; }
         public System.Func<decimal, string>? ValueFormatter { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithMarkers { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3672,7 +3580,7 @@ namespace WebAwesome.Blazor.Components
         public bool WithRemove { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
-    public class WaTextArea : WebAwesome.Blazor.Base.WaInputBase<string?>
+    public class WaTextArea : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public WaTextArea() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3688,18 +3596,10 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? EnterKeyHint { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public bool Immediate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? InputMode { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxLength { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3720,10 +3620,6 @@ namespace WebAwesome.Blazor.Components
         public bool? Spellcheck { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithCount { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
@@ -3763,7 +3659,7 @@ namespace WebAwesome.Blazor.Components
         Twelve = 1,
         TwentyFour = 2,
     }
-    public class WaTimeInput : WebAwesome.Blazor.Base.WaInputBase<string?>
+    public class WaTimeInput : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public WaTimeInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3781,16 +3677,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public string? Hint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaTimeHourFormat? HourFormat { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Label { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? MarkupLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Max { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3823,10 +3711,6 @@ namespace WebAwesome.Blazor.Components
         public string? Step { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithClear { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithHint { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithLabel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithNow { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }

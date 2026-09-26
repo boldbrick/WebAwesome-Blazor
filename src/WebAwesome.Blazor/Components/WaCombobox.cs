@@ -16,7 +16,7 @@ namespace WebAwesome.Blazor.Components;
 /// <remarks>
 /// This is a Pro component.
 /// </remarks>
-public class WaCombobox : WaInputBase<string?>
+public class WaCombobox : WaLabeledInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -24,28 +24,6 @@ public class WaCombobox : WaInputBase<string?>
     /// Marks the input as required for form validation.
     /// </summary>
     [Parameter] public bool Required { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -96,16 +74,6 @@ public class WaCombobox : WaInputBase<string?>
     /// Indicates whether the combobox's listbox is open.
     /// </summary>
     [Parameter] public bool Open { get; set; }
-
-    /// <summary>
-    /// Reserves space for the hint even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Reserves space for the label even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
 
     /// <summary>
     /// When true, if the user types text that does not match any existing option, a "Create [value]" option
@@ -247,8 +215,7 @@ public class WaCombobox : WaInputBase<string?>
 
         // Add the form control attributes the element declares
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add combobox-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
@@ -260,8 +227,7 @@ public class WaCombobox : WaInputBase<string?>
         builder.AddAttributeIfNotNull(26, "max-options-visible", MaxOptionsVisible);
         builder.AddAttributeIfNotNull(27, "placement", Placement?.ToHtmlValue());
         builder.AddAttribute(28, "open", Open);
-        builder.AddAttribute(29, "with-hint", WithHint);
-        builder.AddAttribute(30, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(33, "allow-create", AllowCreate);
         builder.AddAttributeIfNotNullOrEmpty(34, "autocapitalize", AutoCapitalize);
         builder.AddAttributeIfNotNullOrEmpty(35, "autocorrect", AutoCorrect);
@@ -354,7 +320,7 @@ public class WaCombobox : WaInputBase<string?>
         }
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 80, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 80);
 
         builder.CloseElement();
     }

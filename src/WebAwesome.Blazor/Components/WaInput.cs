@@ -11,7 +11,7 @@ namespace WebAwesome.Blazor.Components;
 /// A single-line input component for editing <see cref="string"/> values.
 /// Corresponds to the wa-input Web Awesome component.
 /// </summary>
-public class WaInput : WaInputBase<string?>
+public class WaInput : WaLabeledInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -39,28 +39,6 @@ public class WaInput : WaInputBase<string?>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -159,16 +137,6 @@ public class WaInput : WaInputBase<string?>
     [Parameter] public bool PasswordVisible { get; set; }
 
     /// <summary>
-    /// Used for SSR. Determines whether the SSRed component has the hint slot rendered on initial paint.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Used for SSR. Determines whether the SSRed component has the label slot rendered on initial paint.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
-
-    /// <summary>
     /// Hides the browser's built-in increment/decrement spin buttons for number inputs.
     /// </summary>
     [Parameter] public bool WithoutSpinButtons { get; set; }
@@ -252,8 +220,7 @@ public class WaInput : WaInputBase<string?>
         builder.AddAttributeIfNotNull(9, "minlength", MinLength);
         builder.AddAttributeIfNotNull(10, "maxlength", MaxLength);
         builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add input-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
@@ -273,8 +240,7 @@ public class WaInput : WaInputBase<string?>
         builder.AddAttributeIfNotNullOrEmpty(36, "enterkeyhint", EnterKeyHint);
         builder.AddAttributeIfNotNullOrEmpty(37, "inputmode", InputMode);
         builder.AddAttribute(38, "password-visible", PasswordVisible);
-        builder.AddAttribute(39, "with-hint", WithHint);
-        builder.AddAttribute(46, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(48, "without-spin-buttons", WithoutSpinButtons);
 
         // Add value binding
@@ -348,7 +314,7 @@ public class WaInput : WaInputBase<string?>
         }
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 70);
 
         builder.CloseElement();
     }

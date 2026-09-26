@@ -230,25 +230,7 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// <param name="markupHint">Content of the "hint" slot, or null</param>
     /// <returns>The next available sequence number (sequence + 6)</returns>
     protected int AddLabelAndHintSlots(RenderTreeBuilder builder, int sequence, RenderFragment? markupLabel, RenderFragment? markupHint)
-    {
-        if (markupLabel is not null)
-        {
-            builder.OpenElement(sequence + 0, "span");
-            builder.AddAttribute(sequence + 1, "slot", "label");
-            builder.AddContent(sequence + 2, markupLabel);
-            builder.CloseElement();
-        }
-
-        if (markupHint is not null)
-        {
-            builder.OpenElement(sequence + 3, "span");
-            builder.AddAttribute(sequence + 4, "slot", "hint");
-            builder.AddContent(sequence + 5, markupHint);
-            builder.CloseElement();
-        }
-
-        return sequence + 6;
-    }
+        => FormControlRendering.AddLabelAndHintSlots(builder, sequence, markupLabel, markupHint);
 
     #endregion
 

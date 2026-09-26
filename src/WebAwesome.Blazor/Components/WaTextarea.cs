@@ -11,7 +11,7 @@ namespace WebAwesome.Blazor.Components;
 /// A multiline input component for editing <see cref="string"/> values.
 /// Corresponds to the wa-textarea Web Awesome component.
 /// </summary>
-public class WaTextArea : WaInputBase<string?>
+public class WaTextArea : WaLabeledInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -39,28 +39,6 @@ public class WaTextArea : WaInputBase<string?>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -118,18 +96,6 @@ public class WaTextArea : WaInputBase<string?>
     [Parameter] public string? InputMode { get; set; }
 
     /// <summary>
-    /// Used for SSR. If you're slotting in a hint element via <see cref="MarkupHint"/>, make sure
-    /// to set this to true.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Used for SSR. If you're slotting in a label element via <see cref="MarkupLabel"/>, make
-    /// sure to set this to true.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
-
-    /// <summary>
     /// Shows a character count below the textarea. When <see cref="MaxLength"/> is set, shows
     /// the remaining characters instead.
     /// </summary>
@@ -170,8 +136,7 @@ public class WaTextArea : WaInputBase<string?>
         builder.AddAttributeIfNotNull(9, "minlength", MinLength);
         builder.AddAttributeIfNotNull(10, "maxlength", MaxLength);
         builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add textarea-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
@@ -184,8 +149,7 @@ public class WaTextArea : WaInputBase<string?>
         builder.AddAttribute(32, "autofocus", AutoFocus);
         builder.AddAttributeIfNotNullOrEmpty(33, "enterkeyhint", EnterKeyHint);
         builder.AddAttributeIfNotNullOrEmpty(34, "inputmode", InputMode);
-        builder.AddAttribute(35, "with-hint", WithHint);
-        builder.AddAttribute(36, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(37, "with-count", WithCount);
 
         // Add value binding
@@ -205,7 +169,7 @@ public class WaTextArea : WaInputBase<string?>
         builder.AddElementReferenceCapture(50, __textAreaReference => Element = __textAreaReference);
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 60, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 60);
 
         builder.CloseElement();
     }

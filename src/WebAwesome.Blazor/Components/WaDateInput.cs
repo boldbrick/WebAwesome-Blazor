@@ -14,7 +14,7 @@ namespace WebAwesome.Blazor.Components;
 /// <remarks>
 /// This is a Pro component.
 /// </remarks>
-public class WaDateInput : WaInputBase<string?>
+public class WaDateInput : WaLabeledInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -32,28 +32,6 @@ public class WaDateInput : WaInputBase<string?>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -172,16 +150,6 @@ public class WaDateInput : WaInputBase<string?>
     /// </summary>
     [Parameter] public bool WithWeekNumbers { get; set; }
 
-    /// <summary>
-    /// Only required for SSR. Set to true if you're slotting in a hint element.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Only required for SSR. Set to true if you're slotting in a label element.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
-
     #endregion
 
     #region ------ Events ------
@@ -271,8 +239,7 @@ public class WaDateInput : WaInputBase<string?>
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
         builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add date-input-specific attributes
         builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
@@ -298,8 +265,7 @@ public class WaDateInput : WaInputBase<string?>
         builder.AddAttribute(39, "with-clear", WithClear);
         builder.AddAttribute(40, "with-outside-days", WithOutsideDays);
         builder.AddAttribute(41, "with-week-numbers", WithWeekNumbers);
-        builder.AddAttribute(42, "with-hint", WithHint);
-        builder.AddAttribute(43, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding
         builder.AddAttribute(45, "value", CurrentValueAsString);
@@ -384,7 +350,7 @@ public class WaDateInput : WaInputBase<string?>
         }
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 110, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 110);
 
         builder.CloseElement();
     }

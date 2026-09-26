@@ -13,7 +13,7 @@ namespace WebAwesome.Blazor.Components;
 /// A range/slider input component for selecting numeric values within a specified range.
 /// Corresponds to the wa-slider Web Awesome component.
 /// </summary>
-public class WaRange : WaInputBase<decimal>
+public class WaRange : WaLabeledInputBase<decimal>
 {
     #region ------ Form Control Properties ------
 
@@ -21,28 +21,6 @@ public class WaRange : WaInputBase<decimal>
     /// Makes the input read-only, allowing its value to be seen but not edited.
     /// </summary>
     [Parameter] public bool Readonly { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -97,18 +75,6 @@ public class WaRange : WaInputBase<decimal>
     /// Automatically focuses the slider when the page loads.
     /// </summary>
     [Parameter] public bool AutoFocus { get; set; }
-
-    /// <summary>
-    /// Only required for SSR. Set to true when slotting in a hint element so the server-rendered markup includes
-    /// the hint before the component hydrates on the client.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Only required for SSR. Set to true when slotting in a label element so the server-rendered markup includes
-    /// the label before the component hydrates on the client.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
 
     // Range selection (dual thumb)
     /// <summary>
@@ -171,8 +137,7 @@ public class WaRange : WaInputBase<decimal>
 
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add slider-specific attributes
         builder.AddNumberAttribute(20, "min", Min);
@@ -199,8 +164,7 @@ public class WaRange : WaInputBase<decimal>
         }
 
         // SSR hints for slotted label and hint content
-        builder.AddAttribute(36, "with-hint", WithHint);
-        builder.AddAttribute(37, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding; the element's live value is a JS number, which Blazor's built-in change reader cannot
         // carry, so the handlers listen to the "numericchange" alias of the change event that delivers it as an
@@ -226,7 +190,7 @@ public class WaRange : WaInputBase<decimal>
         builder.AddElementReferenceCapture(60, __sliderReference => Element = __sliderReference);
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 70);
 
         // Add reference labels; the wrapper takes no box of its own, so each label is an item of the slot's flex row
         if (ReferenceContent is not null)

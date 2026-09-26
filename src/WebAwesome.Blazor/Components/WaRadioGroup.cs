@@ -11,7 +11,7 @@ namespace WebAwesome.Blazor.Components;
 /// A radio group component that contains multiple radio buttons and functions as a single form control.
 /// Corresponds to the wa-radio-group Web Awesome component.
 /// </summary>
-public class WaRadioGroup : WaInputBase<string?>
+public class WaRadioGroup : WaLabeledInputBase<string?>
 {
     #region ------ Form Control Properties ------
 
@@ -19,28 +19,6 @@ public class WaRadioGroup : WaInputBase<string?>
     /// Marks the input as required for form validation.
     /// </summary>
     [Parameter] public bool Required { get; set; }
-
-    /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Label { get; set; }
-
-    /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
-    /// precedence when set.
-    /// </summary>
-    [Parameter] public string? Hint { get; set; }
-
-    /// <summary>
-    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupLabel { get; set; }
-
-    /// <summary>
-    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
-    /// </summary>
-    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -55,16 +33,6 @@ public class WaRadioGroup : WaInputBase<string?>
     /// The orientation in which to show radio items.
     /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
-
-    /// <summary>
-    /// Reserves space for the hint even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Reserves space for the label even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
 
     #endregion
 
@@ -104,14 +72,12 @@ public class WaRadioGroup : WaInputBase<string?>
 
         // Add the form control attributes the element declares
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        AddLabelAndHintAttributes(builder, 12);
 
         // Add radio group specific attributes
         builder.AddAttributeIfNotNullOrEmpty(20, "name", Name);
         builder.AddAttributeIfNotNull(21, "orientation", Orientation?.ToHtmlValue());
-        builder.AddAttribute(22, "with-hint", WithHint);
-        builder.AddAttribute(23, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding; an explicit handler rather than a binder, so it can invoke OnValueChange after the
         // value has been updated
@@ -135,7 +101,7 @@ public class WaRadioGroup : WaInputBase<string?>
         }
 
         // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70, MarkupLabel, MarkupHint);
+        AddLabelAndHintSlots(builder, 70);
 
         builder.CloseElement();
     }
