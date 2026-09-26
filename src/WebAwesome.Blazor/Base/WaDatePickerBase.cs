@@ -21,9 +21,16 @@ namespace WebAwesome.Blazor.Base;
 /// <see cref="Microsoft.AspNetCore.Components.Forms.InputBase{TValue}"/>. What it shares with the date input are the
 /// calendar options, declared through <see cref="IWaCalendarOptions"/> and rendered by one static renderer, so the
 /// two element wrappers need no common base class.
+/// <para>
+/// Custom day content goes in <see cref="ChildContent"/> as <see cref="WaDayContent"/> children. Web Awesome's
+/// JS-only <c>dayContent</c> and <c>isDateDisabled</c> callbacks are not supported: the element calls them for every
+/// rendered day cell, which would need a JS round-trip per cell. Use <see cref="WaDayContent"/> for day content and
+/// <see cref="DisabledDates"/> (with <see cref="DisabledDaysOfWeek"/>, <see cref="DisablePast"/>,
+/// <see cref="DisableFuture"/>, <see cref="Min"/> and <see cref="Max"/>) for disabled days.
+/// </para>
 /// </remarks>
 /// <typeparam name="TValue">The type of value bound to the date picker</typeparam>
-public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptions
+public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptions, IWaDayContentHost
 {
     #region ------ Dependency Injection ------
 
@@ -185,6 +192,12 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     [Parameter] public RenderFragment? NextIconContent { get; set; }
 
     /// <summary>
+    /// Custom day content: <see cref="WaDayContent"/> children, each shown in the day cell of its date (the element's
+    /// <c>day-YYYY-MM-DD</c> slots). wa-date-picker has no default slot, so any other content is not shown.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
     /// Invoked when the value changes during interaction. In range mode, this fires after the first click of a new
     /// range. The event's value is the element's wire string (ISO <c>YYYY-MM-DD</c>, or <c>from/to</c> for a range).
     /// </summary>
@@ -289,13 +302,26 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
         // add element reference capture
         builder.AddElementReferenceCapture(50, __datePickerReference => Element = __datePickerReference);
 
-        // add slot content; 80 onwards stays free for the day slots
+        // add slot content, then the day content with this picker cascaded as its host
         builder.AddSlotContent(60, "header", HeaderContent);
         builder.AddSlotContent(65, "footer", FooterContent);
         builder.AddSlotContent(70, "previous-icon", PreviousIconContent);
         builder.AddSlotContent(75, "next-icon", NextIconContent);
+        FormControlRendering.AddDayContent(builder, 80, this, ChildContent);
 
         builder.CloseElement();
+    }
+
+    #endregion
+
+    #region ------ Implementation of IWaDayContentHost ------
+
+    /// <summary>
+    /// Nothing to do: wa-date-picker renders a day-YYYY-MM-DD slot in every day cell, so the browser assigns day
+    /// content added or removed at any time.
+    /// </summary>
+    void IWaDayContentHost.DayContentChanged()
+    {
     }
 
     #endregion

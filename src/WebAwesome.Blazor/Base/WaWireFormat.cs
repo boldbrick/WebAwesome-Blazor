@@ -27,6 +27,15 @@ internal static class WaWireFormat
     public static string FormatDate(DateOnly date) => date.ToString(DatePattern, CultureInfo.InvariantCulture);
 
     /// <summary>
+    /// Formats the name of a date's day slot as the date picker names the slot of each day cell
+    /// (<c>`day-${formatIsoDate(date)}`</c> in renderDay): <c>day-yyyy-MM-dd</c>, e.g. <c>day-2026-12-25</c>. This is
+    /// also the form wa-date-input forwards to its popup calendar (<c>/^day-\d{4}-\d{2}-\d{2}$/</c>).
+    /// </summary>
+    /// <param name="date">The date</param>
+    /// <returns>The slot name</returns>
+    public static string FormatDaySlotName(DateOnly date) => DaySlotPrefix + FormatDate(date);
+
+    /// <summary>
     /// Parses a date the way parseIsoDate does: the trimmed text must be exactly four, two and two ASCII digits
     /// separated by '-' and name a real calendar day.
     /// </summary>
@@ -198,6 +207,7 @@ internal static class WaWireFormat
     #region ------ Internals ------
 
     private const string DatePattern = "yyyy-MM-dd";
+    private const string DaySlotPrefix = "day-";
     private const char DateSeparator = '-';
     private const int FirstDateSeparatorIndex = 4;
     private const int SecondDateSeparatorIndex = 7;

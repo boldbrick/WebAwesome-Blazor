@@ -60,6 +60,8 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Autocomplete { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool DisableFuture { get; set; }
@@ -119,13 +121,17 @@ namespace WebAwesome.Blazor.Base
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task ClearAsync() { }
+        protected override void Dispose(bool disposing) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
     }
     public abstract class WaDatePickerBase<TValue> : Microsoft.AspNetCore.Components.ComponentBase, WebAwesome.Blazor.Base.IWaCalendarOptions
     {
         protected WaDatePickerBase() { }
         [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
         public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1588,6 +1594,18 @@ namespace WebAwesome.Blazor.Components
         Narrow = 0,
         Short = 1,
         Long = 2,
+    }
+    public class WaDayContent : Microsoft.AspNetCore.Components.ComponentBase, System.IDisposable
+    {
+        public WaDayContent() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.EditorRequired]
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.DateOnly Date { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public void Dispose() { }
+        protected override void OnParametersSet() { }
     }
     public class WaDetails : Microsoft.AspNetCore.Components.ComponentBase
     {

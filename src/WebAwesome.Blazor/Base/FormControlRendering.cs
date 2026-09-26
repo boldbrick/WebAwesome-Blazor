@@ -167,6 +167,27 @@ internal static class FormControlRendering
         builder.AddAttribute(sequence + 12, WithWeekNumbersAttribute, calendar.WithWeekNumbers);
     }
 
+    /// <summary>
+    /// Adds the day content (the host's ChildContent, meant for <see cref="WaDayContent"/> children) directly inside
+    /// the element, with the host cascaded to it as a fixed <see cref="IWaDayContentHost"/>, at sequence + 0..3;
+    /// nothing when the content is null. The cascading value renders no DOM of its own, so each day content's slot
+    /// element is a direct child of the element, as a slot assignment requires.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number</param>
+    /// <param name="host">The date input or date picker</param>
+    /// <param name="content">The day content, or null</param>
+    public static void AddDayContent(RenderTreeBuilder builder, int sequence, IWaDayContentHost host, RenderFragment? content)
+    {
+        if (content is null) return;
+
+        builder.OpenComponent<CascadingValue<IWaDayContentHost>>(sequence + 0);
+        builder.AddComponentParameter(sequence + 1, nameof(CascadingValue<IWaDayContentHost>.Value), host);
+        builder.AddComponentParameter(sequence + 2, nameof(CascadingValue<IWaDayContentHost>.IsFixed), true);
+        builder.AddComponentParameter(sequence + 3, nameof(CascadingValue<IWaDayContentHost>.ChildContent), content);
+        builder.CloseComponent();
+    }
+
     #region ------ Internals ------
 
     private const string MinAttribute = "min";

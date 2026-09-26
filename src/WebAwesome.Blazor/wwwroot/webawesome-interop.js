@@ -136,6 +136,24 @@ export function getProperty(element, propertyName) {
     }
 }
 
+/**
+ * Fires the slotchange event of an element's default slot, so the element re-reads its light-DOM children in its own
+ * slotchange handler. A text node always goes to the default slot, so appending one and removing it at once changes
+ * the slot's assigned nodes twice (the event fires once, after this task), and leaves the DOM as Blazor rendered it.
+ * wa-date-input forwards its day-YYYY-MM-DD children to its popup calendar only on its first update and on this
+ * slotchange, which a day-slotted child, assigned to no default slot, never causes when it is added or removed later.
+ * @param {HTMLElement} element - The Web Awesome element
+ */
+export function signalDefaultSlotChange(element) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    const probe = document.createTextNode('');
+    element.appendChild(probe);
+    probe.remove();
+}
+
 /*
  * Icon library registry
  *

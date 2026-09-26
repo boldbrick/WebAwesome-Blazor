@@ -48,6 +48,7 @@ const HARNESS_ROUTES = [
   '/testing/events-pro',
   '/testing/event-payloads',
   '/testing/date-typing',
+  '/testing/day-content',
 ];
 
 function getComponentRoutes() {

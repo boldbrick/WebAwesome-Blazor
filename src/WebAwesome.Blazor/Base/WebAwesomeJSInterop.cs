@@ -353,6 +353,35 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
+    /// Fires the slotchange of an element's default slot, so the element re-reads its light-DOM children through its
+    /// own slotchange handler; used to make wa-date-input forward day slots added or removed after its first update
+    /// (see <see cref="WaDateInputBase{TValue}"/>)
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SignalDefaultSlotChangeAsync(ElementReference elementReference)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("signalDefaultSlotChange", elementReference);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to signal a default slot change: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
     /// Disposes the JavaScript module reference
     /// </summary>
     public async ValueTask DisposeAsync()

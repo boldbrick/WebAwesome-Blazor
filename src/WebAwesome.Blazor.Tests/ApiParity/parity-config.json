@@ -186,8 +186,7 @@
       "wrapperDefaultAttributes": [ "mode" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
-      "ignoredMethods": [ "formStateRestoreCallback" ],
-      "unreachableSlots": [ "day-YYYY-MM-DD" ]
+      "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-time-input": {
       "ignoredAttributes": [ "name", "custom-error" ],
@@ -202,7 +201,8 @@
     "wa-date-picker": {
       "unrenderedAttributes": [ "mode", "min-range", "max-range" ],
       "wrapperDefaultAttributes": [ "mode" ],
-      "ignoredEvents": [ "change" ]
+      "ignoredEvents": [ "change" ],
+      "sourceVerifiedSlots": [ "day-YYYY-MM-DD" ]
     },
     "wa-rating": {
       "ignoredAttributes": [ "getSymbol", "name", "custom-error" ],
@@ -338,7 +338,6 @@
     "ignoredAttributes:wa-color-picker:custom-error": "WaColorPicker sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
     "ignoredEvents:wa-color-picker:change": "WaColorPicker binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
     "ignoredMethods:wa-color-picker:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-color-picker to restore or autofill its state; not consumer API and not callable from Blazor",
-    "unreachableSlots:wa-date-input:day-YYYY-MM-DD": "the CEM entry stands for a family of slots whose names are dates (day-2026-05-25, forwarded to the inner wa-date-picker), which no fixed RenderFragment parameter can name; exposing it needs a date-keyed API of its own (e.g. a map of DateOnly to fragment, also for wa-date-picker, whose CEM omits the same slots) - an owner decision, recorded as a follow-up",
     "sourceVerifiedEvents:wa-color-picker:wa-after-hide": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
     "sourceVerifiedEvents:wa-color-picker:wa-after-show": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
     "sourceVerifiedEvents:wa-color-picker:wa-hide": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
@@ -444,6 +443,7 @@
     "unrenderedAttributes:wa-date-picker:min-range": "a range-mode-only option (CEM: range mode only), exposed as MinRange on WaDateRangePicker only; WaDatePicker, the single-date wrapper, has no range to constrain",
     "unrenderedAttributes:wa-date-picker:max-range": "a range-mode-only option (CEM: range mode only), exposed as MaxRange on WaDateRangePicker only; WaDatePicker, the single-date wrapper, has no range to constrain",
     "ignoredEvents:wa-date-picker:change": "WaDatePicker binds change as its @bind-Value binder (SetValueAsync), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "sourceVerifiedSlots:wa-date-picker:day-YYYY-MM-DD": "wa-date-picker's CEM and @slot JSDoc omit its per-day slots, but the compiled 3.12.0 source renders one in every day cell (verified 2026-09-26 in chunk.YRRAFIFT.js renderDay, line 864: const slotName = `day-${iso}`, rendered as <slot name=${slotName}> with the day number as fallback) and its documentation describes them (inputs\\WebAwesome\\components\\date-picker.md:427-444, Custom Day Content); wa-date-input declares the same slot family and forwards it here. WaDayContent in the ChildContent of WaDatePicker/WaDateRangePicker feeds it. Upstream issue filed by the owner - once a CEM declares the slot this entry is stale and must be removed (SourceVerifiedSlots_AreNotStale); re-verify against the source every upgrade",
     "ignoredAttributes:wa-rating:getSymbol": "function-valued property (custom symbol renderer callback), not an authorable HTML attribute",
     "ignoredAttributes:wa-rating:name": "WaRating renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
     "ignoredAttributes:wa-rating:custom-error": "WaRating sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",

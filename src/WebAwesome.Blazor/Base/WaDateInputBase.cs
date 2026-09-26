@@ -14,8 +14,16 @@ namespace WebAwesome.Blazor.Base;
 /// popup calendar (<see cref="IWaCalendarOptions"/>, rendered by the renderer the date picker shares). Each wrapper
 /// declares the value conversion of its value type and the selection-mode attributes that go with it.
 /// </summary>
+/// <remarks>
+/// Custom day content goes in <see cref="ChildContent"/> as <see cref="WaDayContent"/> children, which the element
+/// forwards to its popup calendar. Web Awesome's JS-only <c>dayContent</c> and <c>isDateDisabled</c> callbacks are
+/// not supported: the calendar calls them for every rendered day cell, which would need a JS round-trip per cell. Use
+/// <see cref="WaDayContent"/> for day content and <see cref="DisabledDates"/> (with <see cref="DisabledDaysOfWeek"/>,
+/// <see cref="DisablePast"/>, <see cref="DisableFuture"/>, <see cref="Min"/> and <see cref="Max"/>) for disabled days.
+/// </remarks>
 /// <typeparam name="TValue">The type of value bound to the date input</typeparam>
-public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaClearableControl, IWaAffixedControl, IWaCalendarOptions
+public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaClearableControl, IWaAffixedControl, IWaCalendarOptions,
+    IWaDayContentHost
 {
     /// <summary>
     /// Makes the input read-only, allowing its value to be seen but not edited.
@@ -172,6 +180,13 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     [Parameter] public RenderFragment? NextIconContent { get; set; }
 
     /// <summary>
+    /// Custom day content for the popup calendar: <see cref="WaDayContent"/> children, each shown in the day cell of its
+    /// date (the element's <c>day-YYYY-MM-DD</c> slots, which it forwards to the calendar). wa-date-input has no default
+    /// slot, so any other content is not shown.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
     /// Sets focus on the first empty (else first) segment.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
@@ -263,18 +278,76 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
         builder.AddSlotContent(95, "previous-icon", PreviousIconContent);
         builder.AddSlotContent(100, "next-icon", NextIconContent);
 
-        // add label and hint slots; 120 onwards stays free for the day slots
+        // add label and hint slots, then the day content with this input cascaded as its host
         AddLabelAndHintSlots(builder, 110);
+        FormControlRendering.AddDayContent(builder, 120, this, ChildContent);
 
         builder.CloseElement();
+
+        // a day content changing its slot from here on is forwarded after this render
+        afterRenderPending = true;
     }
 
     /// <inheritdoc />
     protected override string? LiveValuePropertyName => "value";
 
+    /// <summary>
+    /// Syncs the live value (see the base class), then has the element forward its day slots to the popup calendar
+    /// again when a <see cref="WaDayContent"/> was added, removed or moved to another date.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first time the component has rendered</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        afterRenderPending = false;
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (!daySlotsChanged || Element is null) return;
+
+        daySlotsChanged = false;
+        await JSInterop.SignalDefaultSlotChangeAsync(Element.Value);
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        disposed = true;
+        base.Dispose(disposing);
+    }
+
+    #endregion
+
+    #region ------ Implementation of IWaDayContentHost ------
+
+    /// <summary>
+    /// Records that the day slots changed, to be forwarded after the current render (see
+    /// <see cref="OnAfterRenderAsync"/>), or after a render started here when the change did not come from one of this
+    /// input's renders (e.g. a day content inside a child component that re-rendered on its own).
+    /// </summary>
+    void IWaDayContentHost.DayContentChanged()
+    {
+        if (disposed) return;
+
+        daySlotsChanged = true;
+        if (!afterRenderPending) StateHasChanged();
+    }
+
     #endregion
 
     #region ------ Internals ------
+
+    // wa-date-input forwards its day-YYYY-MM-DD children to the popup calendar only on its first update and on the
+    // slotchange of its default slot (updateForwardedDaySlots, 3.12.0). A day-slotted child is assigned to no default
+    // slot, so adding or removing one later forwards nothing: an added day's content never shows, and a removed day
+    // shows an empty cell (its forwarded slot stays, without content or fallback). The interop call fires that
+    // slotchange, so the element runs its own forwarding again
+    private bool daySlotsChanged;
+
+    // set by BuildRenderTree, cleared by OnAfterRenderAsync: a day slot change in between is forwarded by that
+    // after-render without a render of its own
+    private bool afterRenderPending;
+
+    private bool disposed;
 
     /// <summary>
     /// Adds the attributes of the wrapper's selection mode ("mode", "min-range", "max-range") at sequence + 0..2;

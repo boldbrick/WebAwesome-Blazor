@@ -10,6 +10,7 @@ using Bunit.Rendering;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.RenderTree;
+using WebAwesome.Blazor.Components;
 using WebAwesome.Blazor.Extensions;
 using WebAwesome.Blazor.Tests.Components;
 
@@ -273,13 +274,19 @@ internal static class RenderedWrapperCatalog
         return new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), null);
     }
 
+    // sub-components rendering content into a slot of the element wrapper hosting them, not an element of their own
+    // (docs\technical.md, "Dynamic slots"); they throw outside their host, so the catalog renders none of them on its
+    // own: SlotParityTests renders each through its hosts' ChildContent, and their own tests cover the rest
+    private static readonly IReadOnlySet<Type> HostedSlotContentComponents = new HashSet<Type> { typeof(WaDayContent) };
+
     private static bool IsWrapperComponent(Type type)
     {
         return type.IsPublic
             && type.IsClass
             && !type.IsAbstract
             && !type.ContainsGenericParameters
-            && typeof(IComponent).IsAssignableFrom(type);
+            && typeof(IComponent).IsAssignableFrom(type)
+            && !HostedSlotContentComponents.Contains(type);
     }
 
     private static bool IsEventCallbackType(Type type)

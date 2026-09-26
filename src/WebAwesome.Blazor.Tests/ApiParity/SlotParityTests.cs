@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components;
+using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Components;
 using WebAwesome.Blazor.Tests.Components;
 using Xunit;
 using static WebAwesome.Blazor.Tests.ApiParity.ApiParityData;
@@ -19,9 +22,12 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// slot is fed by a RenderFragment parameter of each wrapper of the element (ChildContent for the default slot),
 /// unless allowlisted in "unreachableSlots"; (c) every RenderFragment parameter renders its content into the
 /// element; (d) every icon convenience parameter renders a wa-icon into a slot a RenderFragment parameter also
-/// feeds, and yields to that fragment when both are set (docs\technical.md, "Icon slot convenience"). Every
-/// allowlist entry needs a reason (AllowlistHygieneTests), and stale entries fail. Skipped until parity-config.json
-/// sets "enabled": true.
+/// feeds, and yields to that fragment when both are set (docs\technical.md, "Icon slot convenience"). A patterned CEM
+/// slot name (wa-date-input's day-YYYY-MM-DD) stands for the slots of its pattern (day-2026-12-25), a
+/// "sourceVerifiedSlots" entry counts as declared where the CEM omits a slot the source renders (wa-date-picker's day
+/// slots), and the ChildContent of a day content host is sampled as a WaDayContent holding the marker
+/// (docs\technical.md, "Dynamic slots"). Every allowlist entry needs a reason (AllowlistHygieneTests), and stale
+/// entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
 public class SlotParityTests
 {
@@ -65,10 +71,10 @@ public class SlotParityTests
 
                 foreach (var slot in slots.Distinct(StringComparer.Ordinal))
                 {
-                    if (element.Component.Slots.ContainsKey(CemSlotName(slot)) || !reported.Add(slot)) continue;
+                    if (element.ResolveSlot(slot) != null || !reported.Add(slot)) continue;
 
                     misses.Add($"{element.Tag} ({element.Name}): renders content into the {DescribeSlot(slot)} ({render.Label}), " +
-                        $"which the element does not declare (declared: {string.Join(", ", element.Component.Slots.Keys.OrderBy(s => s, StringComparer.Ordinal))})");
+                        $"which the element does not declare (declared: {string.Join(", ", element.DeclaredSlots.OrderBy(s => s, StringComparer.Ordinal))})");
                 }
             }
         }
@@ -77,8 +83,9 @@ public class SlotParityTests
     }
 
     /// <summary>
-    /// (b) Every CEM slot of a rendered element must be fed by a RenderFragment parameter of each wrapper rendering
-    /// the element (ChildContent for the default slot), or be allowlisted in "unreachableSlots".
+    /// (b) Every CEM slot (and "sourceVerifiedSlots" entry) of a rendered element must be fed by a RenderFragment
+    /// parameter of each wrapper rendering the element (ChildContent for the default slot; a patterned slot such as
+    /// day-YYYY-MM-DD by a fragment rendering one slot of the pattern), or be allowlisted in "unreachableSlots".
     /// </summary>
     [Fact]
     public void AllCemSlots_AreFedByAFragmentParameter()
@@ -89,14 +96,15 @@ public class SlotParityTests
 
         foreach (var element in RenderedElements())
         {
-            var reached = element.Wrapper.FragmentSlots();
+            var reached = element.ReachedSlots();
 
-            foreach (var slot in element.Component.Slots.Keys.OrderBy(s => s, StringComparer.Ordinal))
+            foreach (var slot in element.DeclaredSlots.OrderBy(s => s, StringComparer.Ordinal))
             {
                 if (reached.ContainsKey(slot) || element.Config.UnreachableSlots.Contains(slot)) continue;
 
+                var description = element.Component.Slots.TryGetValue(slot, out var text) ? text : SourceVerifiedSlotsKey;
                 misses.Add($"{element.Tag} ({element.Name}): no RenderFragment parameter renders into the {DescribeSlot(WrapperSlotName(slot))} " +
-                    $"(\"{element.Component.Slots[slot]}\")");
+                    $"(\"{description}\")");
             }
         }
 
@@ -134,7 +142,7 @@ public class SlotParityTests
 
         foreach (var element in RenderedElements())
         {
-            var fragments = element.Wrapper.FragmentSlots();
+            var fragments = element.ReachedSlots();
 
             foreach (var render in element.Wrapper.Renders.Where(r => r.Kind == SampleKind.IconName && r.Slots.Error == null))
             {
@@ -147,7 +155,7 @@ public class SlotParityTests
                     continue;
                 }
 
-                var slot = CemSlotName(icons[0].Slot);
+                var slot = element.ResolveSlot(icons[0].Slot) ?? CemSlotName(icons[0].Slot);
                 if (!fragments.TryGetValue(slot, out var fragment))
                 {
                     misses.Add($"{label}: renders its wa-icon into the {DescribeSlot(icons[0].Slot)}, which no RenderFragment parameter feeds");
@@ -183,12 +191,57 @@ public class SlotParityTests
 
             foreach (var slot in componentConfig.UnreachableSlots)
             {
-                if (!ofTag.Any(e => e.Component.Slots.ContainsKey(slot) && !e.Wrapper.FragmentSlots().ContainsKey(slot)))
+                if (!ofTag.Any(e => e.DeclaredSlots.Contains(slot) && !e.ReachedSlots().ContainsKey(slot)))
                     misses.Add($"{tag}: unreachableSlots entry '{slot}' is no CEM slot of the element, or every wrapper of the element feeds it, and must be removed");
             }
         }
 
         AssertNoMisses(misses, "Stale unreachableSlots entries");
+    }
+
+    /// <summary>
+    /// Every "sourceVerifiedSlots" entry must name a slot the element's CEM entry still omits, of an element some
+    /// wrapper renders: once a CEM declares the slot (the upstream fix), the entry is redundant and must be removed.
+    /// </summary>
+    [Fact]
+    public void SourceVerifiedSlots_AreNotStale()
+    {
+        SkipUnlessParityEnabled();
+
+        var rendered = RenderedElements().Select(e => e.Tag).ToHashSet(StringComparer.Ordinal);
+        var misses = new List<string>();
+
+        foreach (var (tag, componentConfig) in Config.Components)
+        {
+            foreach (var slot in componentConfig.SourceVerifiedSlots)
+            {
+                if (!rendered.Contains(tag) || !Surface.Components.TryGetValue(tag, out var component))
+                    misses.Add($"{tag}: {SourceVerifiedSlotsKey} entry '{slot}' belongs to an element no wrapper renders, and must be removed");
+                else if (component.Slots.ContainsKey(slot))
+                    misses.Add($"{tag}: {SourceVerifiedSlotsKey} entry '{slot}' is declared by the element's CEM now, and must be removed");
+            }
+        }
+
+        AssertNoMisses(misses, "Stale sourceVerifiedSlots entries");
+    }
+
+    /// <summary>
+    /// Guards the patterned-slot matching the checks rely on: a CEM slot name with date placeholders stands for the
+    /// slot names Web Awesome renders for real dates, and for nothing else.
+    /// </summary>
+    [Theory]
+    [InlineData("day-YYYY-MM-DD", "day-2026-12-25", true)]
+    [InlineData("day-YYYY-MM-DD", "day-0999-01-01", true)]
+    [InlineData("day-YYYY-MM-DD", "day-2026-1-5", false)]
+    [InlineData("day-YYYY-MM-DD", "day-12/25/2026", false)]
+    [InlineData("day-YYYY-MM-DD", "day-YYYY-MM-DD", false)]
+    [InlineData("day-YYYY-MM-DD", "xday-2026-12-25", false)]
+    [InlineData("footer", "footer", false)]
+    public void SlotNamePattern_MatchesOnlyConcreteNamesOfThePattern(string cemSlot, string renderedSlot, bool expected)
+    {
+        var pattern = SlotNamePattern(cemSlot);
+
+        Assert.Equal(expected, pattern != null && pattern.IsMatch(renderedSlot));
     }
 
     #region ------ Internals ------
@@ -198,6 +251,32 @@ public class SlotParityTests
     private const string IconNameSuffix = "IconName";
     private const string IconSample = "x-sample-icon";
     private const string ScriptTag = "script";
+    private const string ChildContentParameter = "ChildContent";
+    private const string SourceVerifiedSlotsKey = "sourceVerifiedSlots";
+    private const char SlotNameSeparator = '-';
+
+    // the placeholders a CEM slot name uses for the parts of a date (wa-date-input's day-YYYY-MM-DD), each a whole
+    // '-'-separated segment, with the digits Web Awesome renders for it (formatIsoDate: a four-digit year, two-digit
+    // month and day)
+    private static readonly IReadOnlyDictionary<string, string> SlotNamePlaceholders = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["YYYY"] = @"\d{4}",
+        ["MM"] = @"\d{2}",
+        ["DD"] = @"\d{2}",
+    };
+
+    // the date a WaDayContent sample renders its day slot for
+    private static readonly DateOnly DayContentSampleDate = new(2026, 12, 25);
+
+    // the ChildContent sample of a day content host: the marker inside a WaDayContent, which is what the host's
+    // ChildContent is for (the elements have no default slot)
+    private static readonly RenderFragment DayContentProbe = builder =>
+    {
+        builder.OpenComponent<WaDayContent>(0);
+        builder.AddComponentParameter(1, nameof(WaDayContent.Date), DayContentSampleDate);
+        builder.AddComponentParameter(2, nameof(WaDayContent.ChildContent), SlotProbe.Fragment);
+        builder.CloseComponent();
+    };
 
     private static readonly Lazy<IReadOnlyList<WrapperSlotRenders>> AllRenders = new(() =>
         RenderedWrapperCatalog.WrapperTypes.Select(RenderWrapper).ToList());
@@ -240,12 +319,16 @@ public class SlotParityTests
     /// <param name="Renders">The renders</param>
     private sealed record WrapperSlotRenders(Type ComponentType, string? Tag, IReadOnlyList<SlotRender> Renders)
     {
-        // the CEM slot names the RenderFragment parameters render into, mapped to the (first) parameter feeding each
-        public IReadOnlyDictionary<string, string> FragmentSlots()
+        // the slot keys the RenderFragment parameters render into (the rendered name mapped by resolveSlot, else its
+        // CEM key), mapped to the (first) parameter feeding each
+        public IReadOnlyDictionary<string, string> FragmentSlots(Func<string, string?>? resolveSlot = null)
         {
             var result = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (var render in Renders.Where(r => r.Kind == SampleKind.Fragment && r.Slots.ProbeSlot != null))
-                result.TryAdd(CemSlotName(render.Slots.ProbeSlot!), render.Parameter!.Name);
+            {
+                var slot = render.Slots.ProbeSlot!;
+                result.TryAdd(resolveSlot?.Invoke(slot) ?? CemSlotName(slot), render.Parameter!.Name);
+            }
             return result;
         }
     }
@@ -256,6 +339,23 @@ public class SlotParityTests
     private sealed record SlotElement(string Tag, ComponentSurface Component, ComponentParityConfig Config, WrapperSlotRenders Wrapper)
     {
         public string Name => Wrapper.ComponentType.Name;
+
+        // the element's slots: the CEM's, and those its source renders while the CEM omits them (sourceVerifiedSlots)
+        public IReadOnlyCollection<string> DeclaredSlots =>
+            Component.Slots.Keys.Union(Config.SourceVerifiedSlots, StringComparer.Ordinal).ToList();
+
+        // the declared slot a rendered slot name is assigned to (the name itself, or the patterned slot it is one
+        // of, e.g. day-2026-12-25 of day-YYYY-MM-DD), or null when the element declares none
+        public string? ResolveSlot(string renderedSlot)
+        {
+            var key = CemSlotName(renderedSlot);
+            if (DeclaredSlots.Contains(key, StringComparer.Ordinal)) return key;
+
+            return DeclaredSlots.FirstOrDefault(slot => SlotNamePattern(slot)?.IsMatch(renderedSlot) == true);
+        }
+
+        // the declared slots the wrapper's RenderFragment parameters feed, mapped to the (first) parameter feeding each
+        public IReadOnlyDictionary<string, string> ReachedSlots() => Wrapper.FragmentSlots(ResolveSlot);
     }
 
     private static WrapperSlotRenders RenderWrapper(Type componentType)
@@ -273,8 +373,8 @@ public class SlotParityTests
             (SampleKind.Baseline, null, "no parameter set", Array.Empty<(string, object?)>())
         };
 
-        samples.AddRange(fragments.Select(p => (SampleKind.Fragment, (PropertyInfo?)p, $"{p.Name}=<{SlotProbe.Tag}>",
-            (IReadOnlyList<(string, object?)>)new[] { (p.Name, (object?)SlotProbe.Fragment) })));
+        samples.AddRange(fragments.Select(p => (SampleKind.Fragment, (PropertyInfo?)p, FragmentSampleLabel(componentType, p),
+            (IReadOnlyList<(string, object?)>)new[] { (p.Name, (object?)FragmentSample(componentType, p)) })));
         samples.AddRange(iconNames.Select(p => (SampleKind.IconName, (PropertyInfo?)p, $"{p.Name}=\"{IconSample}\"",
             (IReadOnlyList<(string, object?)>)new[] { (p.Name, (object?)IconSample) })));
         samples.AddRange(RenderedAttributeParityTests.SampleValues(componentType)
@@ -312,6 +412,37 @@ public class SlotParityTests
 
             yield return new SlotElement(tag, component, GetComponentConfig(tag), wrapper);
         }
+    }
+
+    // whether a fragment parameter is the ChildContent of a day content host, meant for WaDayContent children
+    private static bool IsDayContent(Type componentType, PropertyInfo parameter)
+        => parameter.Name == ChildContentParameter && typeof(IWaDayContentHost).IsAssignableFrom(componentType);
+
+    // the sample of a fragment parameter: the marker, or for a day content host's ChildContent the marker inside a
+    // WaDayContent (docs\technical.md, "Dynamic slots")
+    private static RenderFragment FragmentSample(Type componentType, PropertyInfo parameter)
+        => IsDayContent(componentType, parameter) ? DayContentProbe : SlotProbe.Fragment;
+
+    private static string FragmentSampleLabel(Type componentType, PropertyInfo parameter)
+        => IsDayContent(componentType, parameter)
+            ? $"{parameter.Name}=<{nameof(WaDayContent)} {nameof(WaDayContent.Date)}={DayContentSampleDate:O}><{SlotProbe.Tag}>"
+            : $"{parameter.Name}=<{SlotProbe.Tag}>";
+
+    /// <summary>
+    /// The pattern of a patterned CEM slot name, which stands for a family of slots: each '-'-separated segment
+    /// that is a placeholder (YYYY, MM, DD) matches the digits Web Awesome renders for it, e.g. day-YYYY-MM-DD matches
+    /// day-2026-12-25. Null for a plain slot name.
+    /// </summary>
+    /// <param name="cemSlot">The CEM slot name</param>
+    /// <returns>The anchored pattern, or null</returns>
+    internal static Regex? SlotNamePattern(string cemSlot)
+    {
+        var segments = cemSlot.Split(SlotNameSeparator);
+        if (!segments.Any(SlotNamePlaceholders.ContainsKey)) return null;
+
+        var pattern = string.Join(Regex.Escape(SlotNameSeparator.ToString()),
+            segments.Select(s => SlotNamePlaceholders.TryGetValue(s, out var digits) ? digits : Regex.Escape(s)));
+        return new Regex($"^{pattern}$", RegexOptions.CultureInvariant);
     }
 
     // the CEM key of a rendered slot name (empty for the default slot)

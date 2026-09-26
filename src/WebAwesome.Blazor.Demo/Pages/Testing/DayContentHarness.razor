@@ -1,0 +1,118 @@
+@page "/testing/day-content"
+
+@* e2e harness for tools\e2e\tests\day-content.spec.js - deliberately outside /components/, so it is neither derived
+   from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. The date inputs and pickers are Pro components: they upgrade only with a Pro
+   asset override (tools\demo\Set-WaProAssets.ps1), and their tests skip visibly otherwise. All four hosts show the
+   same day content: two holidays at first (one in the next month), one added and one removed by a button of this
+   page (a render of the hosts), one toggled inside a component of its own (no render of the hosts) and two contents
+   for one date *@
+
+<PageTitle>Testing: Day Content</PageTitle>
+
+<h1>Day Content Harness</h1>
+<p>This page is an end-to-end test harness for <code>WaDayContent</code>: every date input and date picker below shows the same per-day content, which the buttons change.</p>
+
+<ExampleSection Title="Changes">
+    <button type="button" data-testid="dc-add" @onclick="AddHoliday">Add 20 March</button>
+    <button type="button" data-testid="dc-remove" @onclick="RemoveHoliday">Remove 17 March</button>
+    @* the callback's receiver is the switch, not this page, so the click re-renders no host (see SelfRenderingDayContent) *@
+    <button type="button" data-testid="dc-toggle" @onclick="@(EventCallback.Factory.Create(daySwitch, daySwitch.Toggle))">Toggle 22 March</button>
+</ExampleSection>
+
+<ExampleSection Title="Hosts">
+    <table>
+        <thead><tr><th>Wrapper</th><th>Control</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><code>WaDatePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                <td>
+                    <WaDatePicker data-testid="dc-picker" Today="Today" FocusedDate="Today" @bind-Value="pickerValue">
+                        @foreach (var holiday in holidays)
+                        {
+                            <WaDayContent Date="holiday.Date"><span class="dc-holiday">@holiday.Text</span></WaDayContent>
+                        }
+                        <SelfRenderingDayContent Date="SwitchDate" Text="@SwitchText" Switch="daySwitch" />
+                        <WaDayContent Date="SharedDate"><span class="dc-holiday">@FirstSharedText</span></WaDayContent>
+                        <WaDayContent Date="SharedDate"><span class="dc-holiday">@SecondSharedText</span></WaDayContent>
+                    </WaDatePicker>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateRangePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                <td>
+                    <WaDateRangePicker data-testid="dc-range-picker" Today="Today" FocusedDate="Today" @bind-Value="rangePickerValue">
+                        @foreach (var holiday in holidays)
+                        {
+                            <WaDayContent Date="holiday.Date"><span class="dc-holiday">@holiday.Text</span></WaDayContent>
+                        }
+                        <SelfRenderingDayContent Date="SwitchDate" Text="@SwitchText" Switch="daySwitch" />
+                        <WaDayContent Date="SharedDate"><span class="dc-holiday">@FirstSharedText</span></WaDayContent>
+                        <WaDayContent Date="SharedDate"><span class="dc-holiday">@SecondSharedText</span></WaDayContent>
+                    </WaDateRangePicker>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateInput</code> <ComponentBadges Tag="wa-date-input" /></td>
+                <td>
+                    <WaDateInput Label="Date" data-testid="dc-input" Today="Today" @bind-Value="inputValue">
+                        @foreach (var holiday in holidays)
+                        {
+                            <WaDayContent Date="holiday.Date"><span class="dc-holiday">@holiday.Text</span></WaDayContent>
+                        }
+                        <SelfRenderingDayContent Date="SwitchDate" Text="@SwitchText" Switch="daySwitch" />
+                        <WaDayContent Date="SharedDate"><span class="dc-holiday">@FirstSharedText</span></WaDayContent>
+                        <WaDayContent Date="SharedDate"><span class="dc-holiday">@SecondSharedText</span></WaDayContent>
+                    </WaDateInput>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateRangeInput</code> <ComponentBadges Tag="wa-date-input" /></td>
+                <td>
+                    <WaDateRangeInput Label="Stay" data-testid="dc-range-input" Today="Today" @bind-Value="rangeInputValue">
+                        @foreach (var holiday in holidays)
+                        {
+                            <WaDayContent Date="holiday.Date"><span class="dc-holiday">@holiday.Text</span></WaDayContent>
+                        }
+                        <SelfRenderingDayContent Date="SwitchDate" Text="@SwitchText" Switch="daySwitch" />
+                        <WaDayContent Date="SharedDate"><span class="dc-holiday">@FirstSharedText</span></WaDayContent>
+                        <WaDayContent Date="SharedDate"><span class="dc-holiday">@SecondSharedText</span></WaDayContent>
+                    </WaDateRangeInput>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</ExampleSection>
+
+@code {
+    // a fixed "today" (a Friday), so the calendars show March 2024 on every run
+    private static readonly DateOnly Today = new(2024, 3, 15);
+    private static readonly DateOnly StPatricksDay = new(2024, 3, 17);
+    private static readonly DateOnly SpringDay = new(2024, 3, 20);
+    private static readonly DateOnly SwitchDate = new(2024, 3, 22);
+    private static readonly DateOnly SharedDate = new(2024, 3, 28);
+    private static readonly DateOnly AprilFools = new(2024, 4, 1);
+    private const string SwitchText = "⭐22";
+    private const string FirstSharedText = "🎂";
+    private const string SecondSharedText = "🎉";
+
+    private readonly List<Holiday> holidays = [new(StPatricksDay, "🍀17"), new(AprilFools, "🐟1")];
+    private readonly SelfRenderingDayContent.DaySwitch daySwitch = new();
+
+    private DateOnly? pickerValue;
+    private WaDateRange? rangePickerValue;
+    private DateOnly? inputValue;
+    private WaDateRange? rangeInputValue;
+
+    private void AddHoliday()
+    {
+        if (holidays.All(h => h.Date != SpringDay))
+            holidays.Add(new Holiday(SpringDay, "🌸20"));
+    }
+
+    // removes the first holiday, so the day content that showed it moves to the next one (a date change) and the
+    // last one is disposed
+    private void RemoveHoliday() => holidays.RemoveAll(h => h.Date == StPatricksDay);
+
+    private sealed record Holiday(DateOnly Date, string Text);
+}
