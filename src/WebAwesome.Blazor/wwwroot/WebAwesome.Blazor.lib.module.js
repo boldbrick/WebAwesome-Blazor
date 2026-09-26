@@ -7,7 +7,8 @@
 // .NET handlers. The createEventArgs result is deserialized case-insensitively into the
 // wrapper's typed event args (extra properties are ignored), so payload shapes here must
 // stay in sync with Components\EventArgs.cs. It also relays the events Blazor cannot receive
-// where Web Awesome dispatches them (relayedEvents below).
+// where Web Awesome dispatches them (relayedEvents below), and keeps the toast items Blazor renders
+// in the DOM until Blazor removes them (installOwnershipGuard below).
 
 // events whose detail (when present) is JSON-safe and maps 1:1 onto the typed args
 const eventNames = [
@@ -351,6 +352,55 @@ function installEventRelay() {
   }
 }
 
+// Blazor is the only owner of the elements it renders: it removes one with parentNode.removeChild and inserts new
+// nodes next to the ones it tracks, so an element that left the DOM behind its back fails the next render ("Cannot
+// read properties of null (reading 'removeChild')"). Web Awesome removes a toast item once it has hidden: wa-toast
+// in its wa-after-hide handler and wa-toast-item itself right after dispatching wa-after-hide. For an element the
+// wrapper marks as Blazor-owned (Constants.BlazorOwnedAttribute), a capture-phase listener on the document, which
+// runs before both, turns those removals into hiding the element in place (the hidden attribute); Blazor removes it
+// when the model drops the item, in the wrapper's OnAfterHide. A toast item Web Awesome creates itself (create())
+// carries no marker and is removed as before.
+const blazorOwnedAttribute = 'data-wablazor-owned';
+
+// Blazor-owned toast items Web Awesome has removed, from its point of view: hidden in place until Blazor removes them
+const retainedToastItems = new WeakSet();
+
+// closes a toast stack whose items have all been retained, as wa-toast does once it has removed its last item
+function closeEmptyToastStack(toast) {
+  const showing = [...toast.children].some(child => child.localName === 'wa-toast-item' && !retainedToastItems.has(child));
+  if (showing || !toast.matches(':popover-open')) return;
+
+  // wa-toast's own hideStack also clears its visible custom state
+  if (typeof toast.hideStack === 'function') toast.hideStack();
+  else toast.hidePopover();
+}
+
+// what a Web Awesome remove() of a Blazor-owned toast item does instead
+function retainToastItem(item) {
+  item.hidden = true;
+  retainedToastItems.add(item);
+
+  const toast = item.parentElement;
+  if (toast && toast.localName === 'wa-toast') closeEmptyToastStack(toast);
+}
+
+// symbol marking the document once the ownership listener is installed, shared by every copy of this module
+const ownershipGuardInstalledKey = Symbol.for('WebAwesome.Blazor.ownershipGuard');
+
+function installOwnershipGuard() {
+  if (typeof document === 'undefined' || document[ownershipGuardInstalledKey]) return;
+  document[ownershipGuardInstalledKey] = true;
+
+  document.addEventListener('wa-after-hide', event => {
+    const item = event.composedPath()[0];
+    if (!(item instanceof Element) || item.localName !== 'wa-toast-item' || !item.hasAttribute(blazorOwnedAttribute)) return;
+
+    // an own property shadows Element.prototype.remove for this element only; Blazor itself removes it through
+    // its parent's removeChild
+    item.remove = () => retainToastItem(item);
+  }, true);
+}
+
 let eventTypesRegistered = false;
 
 function registerEventTypes(blazor) {
@@ -388,9 +438,11 @@ function registerEventTypes(blazor) {
 // Blazor Web (blazor.web.js, .NET 8+)
 export function afterWebStarted(blazor) {
   registerEventTypes(blazor);
+  installOwnershipGuard();
 }
 
 // classic hosts (blazor.webassembly.js / blazor.server.js)
 export function afterStarted(blazor) {
   registerEventTypes(blazor);
+  installOwnershipGuard();
 }

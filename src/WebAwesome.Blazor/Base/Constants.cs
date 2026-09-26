@@ -22,6 +22,14 @@ public static class Constants
     internal const string NumericInputEventAttribute = "onnumericinput";
 
     /// <summary>
+    /// Marker attribute of an element that Blazor renders and Web Awesome would remove from the DOM on its own
+    /// (wa-toast-item once it has hidden). Blazor removes the elements it renders itself and fails on one that has
+    /// already left the DOM, so the JS initializer (WebAwesome.Blazor.lib.module.js, installOwnershipGuard) hides a
+    /// marked element in place instead; Blazor removes it when the model drops it.
+    /// </summary>
+    internal const string BlazorOwnedAttribute = "data-wablazor-owned";
+
+    /// <summary>
     /// Render-tree attribute name of the "wablazor-show" event, the relay of wa-color-picker's wa-show. The JS
     /// initializer (WebAwesome.Blazor.lib.module.js, relayedEvents) re-dispatches an event Blazor cannot receive
     /// where Web Awesome dispatches it (non-bubbling, or with its propagation stopped in the shadow root) as a

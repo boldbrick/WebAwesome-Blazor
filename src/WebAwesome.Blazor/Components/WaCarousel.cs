@@ -265,7 +265,8 @@ public class WaCarousel : ComponentBase
     /// In Blazor the normal way to add slides is declaratively, by including additional
     /// <see cref="WaCarouselItem"/> components in <see cref="ChildContent"/>. This method is provided for
     /// parity with the Web Awesome element API and imperative scenarios where a slide is created outside the
-    /// carousel's own render tree.
+    /// carousel's own render tree. Don't pass a slide that Blazor renders elsewhere: Web Awesome moves the element into
+    /// the carousel, and Blazor fails on its next render around the moved element.
     /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task AddSlideAsync(ElementReference slide)
@@ -279,6 +280,12 @@ public class WaCarousel : ComponentBase
     /// <summary>
     /// Removes the real slide at the specified index.
     /// </summary>
+    /// <remarks>
+    /// Web Awesome removes the slide's element from the DOM. Use this method only for slides that Blazor didn't
+    /// render, e.g. ones your own JavaScript created. For a <see cref="WaCarouselItem"/> in
+    /// <see cref="ChildContent"/>, remove the item from the model instead; Blazor fails when it later removes or
+    /// renders around an element that has already left the DOM.
+    /// </remarks>
     /// <param name="index">The zero-based index of the slide to remove</param>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task RemoveSlideAsync(int index)

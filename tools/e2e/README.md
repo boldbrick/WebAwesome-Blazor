@@ -48,6 +48,11 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   the element property at Web Awesome's default (100, `text`, 8). With the attribute removed instead, Lit sets the
   slider max and the tooltip distance to null (both cases fail then). A WaRelativeTime and a WaFormatDate Date set to 2020
   and back to null show the current time again, not the 1970 epoch a removed date attribute reads as.
+- `tests\toast-items.spec.js` — declarative `WaToastItem`s removed from the model in `OnAfterHide` (`/testing/toast-items`
+  and the Overlays showcase): closed by the close button, by `Duration` and by `HideAsync`, each leaves no Blazor error,
+  its element is gone, the empty stack closes and a toast added afterwards shows. An item the model keeps stays hidden in
+  place and its stack still closes. Without the JS initializer's ownership guard every case fails with
+  `Cannot read properties of null (reading 'removeChild')`.
 - `tests\event-payload.spec.js` — the payloads the JS initializer builds by hand (`specialArgs`):
   split panel, observers, random content, date picker, video playlist and data grid events, each
   with its non-default field values as .NET received them (`/testing/event-payloads`).

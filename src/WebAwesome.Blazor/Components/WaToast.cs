@@ -13,9 +13,6 @@ namespace WebAwesome.Blazor.Components;
 /// A single instance manages multiple <see cref="WaToastItem"/> notifications.
 /// Corresponds to the wa-toast Web Awesome component.
 /// </summary>
-/// <remarks>
-/// This is a Pro component.
-/// </remarks>
 public class WaToast : ComponentBase
 {
     #region ------ Dependency Injection ------
@@ -65,7 +62,8 @@ public class WaToast : ComponentBase
     #region ------ Content ------
 
     /// <summary>
-    /// The toast stack's content; place <see cref="WaToastItem"/> elements here to show them as notifications.
+    /// The toast stack's content; place <see cref="WaToastItem"/> elements here to show them as notifications, and
+    /// remove each one from the model in its <see cref="WaToastItem.OnAfterHide"/>.
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 

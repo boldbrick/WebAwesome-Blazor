@@ -1,9 +1,12 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Tests.ApiParity;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
@@ -28,6 +31,32 @@ public class WaToastItemIntegrationTests : BunitContext
         Assert.False(element.HasAttribute("duration"));
         Assert.False(element.HasAttribute("size"));
         Assert.False(element.HasAttribute("variant"));
+    }
+
+    /// <summary>
+    /// The element carries the Blazor-owned marker, so the JS initializer hides it in place once it has hidden
+    /// instead of letting Web Awesome remove a node that Blazor still tracks; the browser half is toast-items.spec.js.
+    /// </summary>
+    [Fact]
+    public void Render_MarksElementAsBlazorOwned()
+    {
+        var cut = Render<WaToastItem>();
+
+        Assert.True(cut.Find("wa-toast-item").HasAttribute(BlazorOwnedAttribute));
+    }
+
+    /// <summary>
+    /// The marker the wrapper renders is the one the JS initializer looks for.
+    /// </summary>
+    [Fact]
+    public void BlazorOwnedAttribute_MatchesLibraryConstantAndJsInitializer()
+    {
+        var constant = typeof(Constants).GetField(BlazorOwnedConstantName, BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.NotNull(constant);
+        Assert.Equal(BlazorOwnedAttribute, (string?)constant.GetRawConstantValue());
+
+        var source = File.ReadAllText(Path.Combine(ApiParityData.WrapperProjectDirectory(), "wwwroot", JsInitializerEventRegistrations.FileName));
+        Assert.Contains($"const blazorOwnedAttribute = '{BlazorOwnedAttribute}';", source);
     }
 
     [Fact]
@@ -86,4 +115,9 @@ public class WaToastItemIntegrationTests : BunitContext
     }
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+
+    // mirrors Constants.BlazorOwnedAttribute in the library (internal there, and InternalsVisibleTo applies to Debug
+    // builds only)
+    private const string BlazorOwnedAttribute = "data-wablazor-owned";
+    private const string BlazorOwnedConstantName = "BlazorOwnedAttribute";
 }

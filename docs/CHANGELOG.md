@@ -65,6 +65,7 @@ Most removed or renamed members never worked, so the compiler now points out cod
 - `WaRelativeTime`/`WaFormatDate` with `Date` set back to null show the current time instead of 1 January 1970. "Now" comes from the registered `TimeProvider`; `AddWebAwesome` registers the system clock unless you register your own.
 - `WaRelativeTime` no longer fails when its parameters change before the element has loaded.
 - `WaTextArea` renders the correct `Size`, `Appearance` and `Resize` values (`xs`/`xl`, `filled-outlined`).
+- A declarative `WaToastItem` no longer crashes Blazor when it closes; remove it from the model in `OnAfterHide`.
 
 ### Library
 - Versioned reference docs refreshed to the `v3.12.0` tag. Test, parity and browser coverage now check the rendered attributes, slots and defaults of every wrapper and the delivery of every event callback; this found most of the fixes above.

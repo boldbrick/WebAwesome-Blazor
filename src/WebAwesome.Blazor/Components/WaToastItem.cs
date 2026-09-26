@@ -13,7 +13,21 @@ namespace WebAwesome.Blazor.Components;
 /// Corresponds to the wa-toast-item Web Awesome component.
 /// </summary>
 /// <remarks>
-/// This is a Pro component.
+/// <para>
+/// The model owns the item's lifetime. A toast item shows as soon as it is rendered into a <see cref="WaToast"/>.
+/// Once it has hidden (closed by the user, dismissed after <see cref="Duration"/>, or hidden by
+/// <see cref="HideAsync"/>), the element stays in place, hidden, until the item leaves the render tree. Remove it
+/// from the model in <see cref="OnAfterHide"/>. A hidden item does not show again; to show the notification again,
+/// add a new item with a new key.
+/// </para>
+/// <code>
+/// &lt;WaToast&gt;
+///     @foreach (var message in messages)
+///     {
+///         &lt;WaToastItem @key="message" OnAfterHide="@(() =&gt; messages.Remove(message))"&gt;@message.Text&lt;/WaToastItem&gt;
+///     }
+/// &lt;/WaToast&gt;
+/// </code>
 /// </remarks>
 public class WaToastItem : ComponentBase
 {
@@ -109,7 +123,8 @@ public class WaToastItem : ComponentBase
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
 
     /// <summary>
-    /// Invoked after the toast item has finished hiding.
+    /// Invoked after the toast item has finished hiding. Remove the item from the model here: the hidden element
+    /// stays in place until the item leaves the render tree.
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
@@ -149,6 +164,9 @@ public class WaToastItem : ComponentBase
         builder.AddAttributeIfNotNull(attributes, 6, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
         builder.AddAttribute(7, "with-icon", WithIcon);
 
+        // Blazor owns this element: the JS initializer hides it in place where Web Awesome would remove it
+        builder.AddAttribute(8, Constants.BlazorOwnedAttribute, true);
+
         // event handlers (onwa- prefix; all four events are registered in the JS initializer)
         builder.AddAttributeIfHasDelegate(10, "onwa-show", OnShow);
         builder.AddAttributeIfHasDelegate(11, "onwa-after-show", OnAfterShow);
@@ -183,7 +201,8 @@ public class WaToastItem : ComponentBase
     #region ------ Public Methods ------
 
     /// <summary>
-    /// Hides the toast item with animation and removes it from the DOM.
+    /// Hides the toast item with animation. The hidden element stays in place until the item leaves the render tree;
+    /// remove it from the model in <see cref="OnAfterHide"/>.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
