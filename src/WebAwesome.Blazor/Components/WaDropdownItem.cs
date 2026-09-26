@@ -58,9 +58,14 @@ public class WaDropdownItem : ComponentBase
     [Parameter] public string? Value { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Type"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaDropdownItemType DefaultType = WaDropdownItemType.Normal;
+
+    /// <summary>
     /// Set to <see cref="WaDropdownItemType.Checkbox"/> to make the item a checkbox.
     /// </summary>
-    [Parameter] public WaDropdownItemType Type { get; set; } = WaDropdownItemType.Normal;
+    [Parameter] public WaDropdownItemType Type { get; set; } = DefaultType;
 
     /// <summary>
     /// Checks the dropdown item. Only valid when <see cref="Type"/> is <see cref="WaDropdownItemType.Checkbox"/>.
@@ -150,7 +155,7 @@ public class WaDropdownItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-dropdown-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-dropdown-item");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -158,18 +163,17 @@ public class WaDropdownItem : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add link attributes
-        builder.AddAttributeIfNotNullOrEmpty(5, "href", Href);
-        builder.AddAttributeIfNotNull(6, "target", Target?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(7, "rel", Rel);
-        builder.AddAttributeIfNotNullOrEmpty(8, "download", Download);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "href", Href);
+        builder.AddAttributeIfNotNull(attributes, 6, "target", Target?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "rel", Rel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 8, "download", Download);
 
         // Add dropdown item-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "value", Value);
-        if (Type != WaDropdownItemType.Normal)
-            builder.AddAttribute(11, "type", Type.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "value", Value);
+        builder.AddDefaultedAttribute(attributes, 11, "type", Type.ToHtmlValue());
         builder.AddAttribute(12, "checked", Checked);
         builder.AddAttribute(13, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(14, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 14, "variant", Variant?.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(16, "onblur", OnBlur);

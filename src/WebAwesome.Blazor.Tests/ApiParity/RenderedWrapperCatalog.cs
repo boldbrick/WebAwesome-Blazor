@@ -96,6 +96,62 @@ internal static class RenderedWrapperCatalog
     }
 
     /// <summary>
+    /// Renders one instance of a component type with each parameter set in turn (a first render, then re-renders of
+    /// the same instance, as a parent re-rendering with new values would), under the given culture, and records the
+    /// root element's attributes after each render. A parameter keeps its value until a later set assigns it, as in
+    /// Blazor, so a set resets a parameter by assigning its default explicitly.
+    /// </summary>
+    /// <param name="componentType">Concrete component type</param>
+    /// <param name="parameterSets">Parameters to set in each render, in addition to the required ones</param>
+    /// <param name="culture">Current culture and UI culture during the renders</param>
+    /// <returns>One observation per render, in order</returns>
+    public static IReadOnlyList<RenderedRoot> RenderSequence(Type componentType, IReadOnlyList<IReadOnlyList<(string Name, object? Value)>> parameterSets,
+        CultureInfo culture)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        var previousUiCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentCulture = culture;
+        CultureInfo.CurrentUICulture = culture;
+
+        try
+        {
+            using var context = CreateContext();
+            var required = RequiredParameters(componentType).Select(p => (p.Name, (object?)p.Value)).ToList();
+            var names = required.Select(p => p.Name).Concat(ParameterNamesOf(parameterSets)).Distinct(StringComparer.Ordinal).ToList();
+            var results = new List<RenderedRoot>();
+
+            var rendered = context.Render<RenderSequenceHost>(p => p
+                .Add(h => h.ChildType, componentType)
+                .Add(h => h.ParameterNames, names)
+                .Add(h => h.ChildParameters, required.Concat(parameterSets[0]).ToList()));
+
+            for (var i = 0; i < parameterSets.Count; i++)
+            {
+                if (i > 0)
+                {
+                    var set = parameterSets[i];
+                    rendered.Render(p => p.Add(h => h.ChildParameters, required.Concat(set).ToList()));
+                }
+
+                var wrapperId = FirstComponentId(CurrentFrames(context.Renderer, rendered.ComponentId));
+                results.Add(wrapperId == null
+                    ? new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), null)
+                    : ReadRootAttributes(context.Renderer, wrapperId.Value));
+            }
+            return results;
+        }
+        catch (Exception ex)
+        {
+            return parameterSets.Select(_ => new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), $"{ex.GetType().Name}: {ex.Message}")).ToList();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+            CultureInfo.CurrentUICulture = previousUiCulture;
+        }
+    }
+
+    /// <summary>
     /// Renders one component type once per parameter set and records, from the rendered markup, the root element's
     /// direct children with the slot each one is assigned to, and the slot a SlotProbe marker rendered into.
     /// </summary>
@@ -338,6 +394,10 @@ internal static class RenderedWrapperCatalog
             return new RootObservation(null, new HashSet<string>(StringComparer.Ordinal), $"{ex.GetType().Name}: {ex.Message}");
         }
     }
+
+    // every parameter name the sets of a sequence assign, in first-seen order
+    private static string[] ParameterNamesOf(IReadOnlyList<IReadOnlyList<(string Name, object? Value)>> parameterSets)
+        => parameterSets.SelectMany(s => s.Select(p => p.Name)).Distinct(StringComparer.Ordinal).ToArray();
 
     private static int? FirstComponentId(ArrayRange<RenderTreeFrame> frames)
     {

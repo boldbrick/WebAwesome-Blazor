@@ -39,9 +39,14 @@ public class WaDivider : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Horizontal;
+
+    /// <summary>
     /// The divider's orientation.
     /// </summary>
-    [Parameter] public WaOrientation Orientation { get; set; } = WaOrientation.Horizontal;
+    [Parameter] public WaOrientation Orientation { get; set; } = DefaultOrientation;
 
     #endregion
 
@@ -50,7 +55,7 @@ public class WaDivider : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-divider");
+        var attributes = builder.OpenWaElement(this, 0, "wa-divider");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -58,8 +63,7 @@ public class WaDivider : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add divider-specific attributes
-        if (Orientation != WaOrientation.Horizontal)
-            builder.AddAttribute(10, "orientation", Orientation.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "orientation", Orientation.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __dividerReference => Element = __dividerReference);

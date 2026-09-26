@@ -109,14 +109,14 @@ public class WaAnimatedImage : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-animated-image");
+        var attributes = builder.OpenWaElement(this, 0, "wa-animated-image");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "src", Src);
-        builder.AddAttributeIfNotNullOrEmpty(5, "alt", Alt);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "src", Src);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "alt", Alt);
         builder.AddAttribute(6, "play", Play);
 
         // Add event handlers; wa-animated-image dispatches wa-load/wa-error, not the native load/error

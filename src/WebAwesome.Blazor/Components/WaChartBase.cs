@@ -126,7 +126,7 @@ public abstract class WaChartBase : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, TagName);
+        var attributes = builder.OpenWaElement(this, 0, TagName);
 
         // common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -134,20 +134,20 @@ public abstract class WaChartBase : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // chart configuration attributes
-        builder.AddAttributeIfNotNullOrEmpty(4, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(5, "description", Description);
-        builder.AddAttributeIfNotNull(6, "type", Type?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(7, "grid", Grid?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(8, "index-axis", IndexAxis?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(9, "legend-position", LegendPosition?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(10, "min", Min?.ToString(CultureInfo.InvariantCulture));
-        builder.AddAttributeIfNotNullOrEmpty(11, "max", Max?.ToString(CultureInfo.InvariantCulture));
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "description", Description);
+        builder.AddAttributeIfNotNull(attributes, 6, "type", Type?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 7, "grid", Grid?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 8, "index-axis", IndexAxis?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 9, "legend-position", LegendPosition?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "min", Min?.ToString(CultureInfo.InvariantCulture));
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "max", Max?.ToString(CultureInfo.InvariantCulture));
         builder.AddAttribute(12, "stacked", Stacked);
         builder.AddAttribute(13, "without-animation", WithoutAnimation);
         builder.AddAttribute(14, "without-legend", WithoutLegend);
         builder.AddAttribute(15, "without-tooltip", WithoutTooltip);
-        builder.AddAttributeIfNotNullOrEmpty(16, "x-label", XLabel);
-        builder.AddAttributeIfNotNullOrEmpty(17, "y-label", YLabel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 16, "x-label", XLabel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 17, "y-label", YLabel);
 
         // chart-specific attributes contributed by derived components
         AddExtraAttributes(builder, 18);

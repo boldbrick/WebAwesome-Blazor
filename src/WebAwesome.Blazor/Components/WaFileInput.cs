@@ -174,7 +174,7 @@ public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-file-input");
+        var attributes = builder.OpenWaElement(this, 0, "wa-file-input");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -182,16 +182,16 @@ public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add file-input-specific attributes
-        builder.AddTokenListAttribute(10, "accept", Accept, WaWireFormat.CommaSeparator, WaWireFormat.CommaSeparators);
+        builder.AddTokenListAttribute(attributes, 10, "accept", Accept, WaWireFormat.CommaSeparator, WaWireFormat.CommaSeparators);
 
         // hint before label, unlike the shared label cluster renderer, so the attribute order stays as it was
-        builder.AddAttributeIfNotNullOrEmpty(11, "hint", Hint);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "hint", Hint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label);
         builder.AddAttribute(13, "multiple", Multiple);
         builder.AddAttribute(14, "required", Required);
         builder.AddAttribute(18, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(15, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(19, "capture", Capture?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 15, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 19, "capture", Capture?.ToHtmlValue());
         FormControlRendering.AddWithHintAndLabelAttributes(builder, 16, this);
 
         // Add event handlers

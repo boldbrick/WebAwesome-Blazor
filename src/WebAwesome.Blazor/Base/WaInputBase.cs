@@ -140,11 +140,12 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// <returns>The next available sequence number (sequence + 13)</returns>
     protected int AddCommonAttributes(RenderTreeBuilder builder, int sequence)
     {
+        var attributes = WaAttributeMemory.Of(this);
         builder.AddMultipleAttributes(sequence + 0, AdditionalAttributes);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 1, "name", NameAttributeValue);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, sequence + 1, "name", NameAttributeValue);
         builder.AddAttributeIfNotNullOrEmpty(sequence + 2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(sequence + 3, "style", Style);
-        builder.AddAttributeIfNotNull(sequence + 4, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, sequence + 4, "size", Size?.ToHtmlValue());
         builder.AddAttribute(sequence + 5, "disabled", Disabled);
 
         return sequence + 13;

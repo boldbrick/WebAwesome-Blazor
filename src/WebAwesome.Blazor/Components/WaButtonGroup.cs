@@ -70,14 +70,14 @@ public class WaButtonGroup : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-button-group");
+        var attributes = builder.OpenWaElement(this, 0, "wa-button-group");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "label", Label);
-        builder.AddAttributeIfNotNull(5, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "label", Label);
+        builder.AddAttributeIfNotNull(attributes, 5, "orientation", Orientation?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __buttonGroupReference => Element = __buttonGroupReference);

@@ -32,11 +32,16 @@ public class WaColorPicker : WaPopupInputBase<string?>
     [Parameter] public bool Opacity { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Format"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaColorFormat DefaultFormat = WaColorFormat.Hex;
+
+    /// <summary>
     /// The color format to use. If <see cref="Opacity"/> is enabled, formats translate to their alpha-channel
     /// equivalent (HEXA, RGBA, HSLA, or HSVA). The color picker accepts user input in any format, including CSS
     /// color names, and converts it to the desired format.
     /// </summary>
-    [Parameter] public WaColorFormat Format { get; set; } = WaColorFormat.Hex;
+    [Parameter] public WaColorFormat Format { get; set; } = DefaultFormat;
 
     /// <summary>
     /// Removes the button that lets users toggle between formats.
@@ -77,7 +82,7 @@ public class WaColorPicker : WaPopupInputBase<string?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-color-picker");
+        var attributes = builder.OpenWaElement(this, 0, "wa-color-picker");
 
         // Add common attributes from base
         AddCommonAttributes(builder, 1);
@@ -88,14 +93,14 @@ public class WaColorPicker : WaPopupInputBase<string?>
 
         // Add color picker-specific attributes
         builder.AddAttribute(20, "opacity", Opacity);
-        builder.AddAttribute(21, "format", Format.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 21, "format", Format.ToHtmlValue());
         builder.AddAttribute(22, "without-format-toggle", WithoutFormatToggle);
-        builder.AddTokenListAttribute(23, "swatches", Swatches, WaWireFormat.SemicolonSeparator, WaWireFormat.SemicolonSeparators);
+        builder.AddTokenListAttribute(attributes, 23, "swatches", Swatches, WaWireFormat.SemicolonSeparator, WaWireFormat.SemicolonSeparators);
         builder.AddAttribute(24, "value", CurrentValueAsString);
         builder.AddAttribute(25, "open", Open);
         builder.AddAttribute(26, "uppercase", Uppercase);
         AddWithHintAndLabelAttributes(builder, 14);
-        builder.AddAttributeIfNotNull(29, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 29, "placement", Placement?.ToHtmlValue());
 
         // Add value binding
         builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));

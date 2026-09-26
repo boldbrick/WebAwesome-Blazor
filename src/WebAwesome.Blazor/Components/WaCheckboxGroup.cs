@@ -111,7 +111,7 @@ public class WaCheckboxGroup : ComponentBase, IWaLabeledControl
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-checkbox-group");
+        var attributes = builder.OpenWaElement(this, 0, "wa-checkbox-group");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -120,8 +120,8 @@ public class WaCheckboxGroup : ComponentBase, IWaLabeledControl
 
         // Add checkbox group specific attributes
         FormControlRendering.AddLabelAndHintAttributes(builder, 10, this);
-        builder.AddAttributeIfNotNull(12, "orientation", Orientation?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(13, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 13, "size", Size?.ToHtmlValue());
         builder.AddAttribute(14, "required", Required);
         FormControlRendering.AddWithHintAndLabelAttributes(builder, 15, this);
 

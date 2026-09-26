@@ -133,7 +133,7 @@ public class WaDialog : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-dialog");
+        var attributes = builder.OpenWaElement(this, 0, "wa-dialog");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -141,7 +141,7 @@ public class WaDialog : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add dialog-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label);
         builder.AddAttribute(11, "open", Open);
         builder.AddAttribute(12, "without-header", WithoutHeader);
         builder.AddAttribute(13, "light-dismiss", LightDismiss);

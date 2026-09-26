@@ -51,9 +51,14 @@ public class WaSplitPanel : ComponentBase
 
     // Split panel properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Horizontal;
+
+    /// <summary>
     /// Sets the split panel's orientation.
     /// </summary>
-    [Parameter] public WaOrientation Orientation { get; set; } = WaOrientation.Horizontal;
+    [Parameter] public WaOrientation Orientation { get; set; } = DefaultOrientation;
 
     /// <summary>
     /// The current position of the divider from the primary panel's edge as a percentage between 0 and 100. Defaults to 50% of the container's initial size.
@@ -81,9 +86,14 @@ public class WaSplitPanel : ComponentBase
     [Parameter] public string? Snap { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="SnapThreshold"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultSnapThreshold = 12;
+
+    /// <summary>
     /// How close the divider must be to a snap point, in pixels, before snapping occurs.
     /// </summary>
-    [Parameter] public int SnapThreshold { get; set; } = 12;
+    [Parameter] public int SnapThreshold { get; set; } = DefaultSnapThreshold;
 
     #endregion
 
@@ -120,19 +130,19 @@ public class WaSplitPanel : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-split-panel");
+        var attributes = builder.OpenWaElement(this, 0, "wa-split-panel");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttribute(4, "orientation", Orientation.ToHtmlValue());
-        builder.AddAttributeIfNotNull(5, "position", Position);
-        builder.AddAttributeIfNotNull(6, "position-in-pixels", PositionInPixels);
-        builder.AddAttributeIfNotNull(7, "primary", Primary?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "position", Position);
+        builder.AddAttributeIfNotNull(attributes, 6, "position-in-pixels", PositionInPixels);
+        builder.AddAttributeIfNotNull(attributes, 7, "primary", Primary?.ToHtmlValue());
         builder.AddAttribute(8, "disabled", Disabled);
-        builder.AddAttributeIfNotNullOrEmpty(9, "snap", Snap);
-        builder.AddNumberAttribute(10, "snap-threshold", SnapThreshold);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 9, "snap", Snap);
+        builder.AddNumberAttribute(attributes, 10, "snap-threshold", SnapThreshold);
 
         // Add event handlers; the interop module's createEventArgs reads position and
         // position-in-pixels from the element, as the wa-reposition event carries no detail

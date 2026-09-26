@@ -56,10 +56,15 @@ public class WaPopover : ComponentBase
     [Parameter] public string? For { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaPlacement DefaultPlacement = WaPlacement.Top;
+
+    /// <summary>
     /// The preferred placement of the popover. Note that the actual placement may vary as needed to keep the
     /// popover inside of the viewport.
     /// </summary>
-    [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
+    [Parameter] public WaPlacement Placement { get; set; } = DefaultPlacement;
 
     /// <summary>
     /// Shows or hides the popover.
@@ -67,9 +72,14 @@ public class WaPopover : ComponentBase
     [Parameter] public bool Open { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Distance"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultDistance = 8;
+
+    /// <summary>
     /// The distance in pixels from which to offset the popover away from its target.
     /// </summary>
-    [Parameter] public int Distance { get; set; } = 8;
+    [Parameter] public int Distance { get; set; } = DefaultDistance;
 
     /// <summary>
     /// The distance in pixels from which to offset the popover along its target.
@@ -121,7 +131,7 @@ public class WaPopover : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-popover");
+        var attributes = builder.OpenWaElement(this, 0, "wa-popover");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -129,14 +139,12 @@ public class WaPopover : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add popover-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "for", For);
-        if (Placement != WaPlacement.Top)
-            builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "for", For);
+        builder.AddDefaultedAttribute(attributes, 11, "placement", Placement.ToHtmlValue());
         builder.AddAttribute(12, "open", Open);
-        if (Distance != 8)
-            builder.AddNumberAttribute(13, "distance", Distance);
+        builder.AddNumberAttribute(attributes, 13, "distance", Distance);
         builder.AddAttribute(14, "without-arrow", WithoutArrow);
-        builder.AddAttributeIfNotNull(15, "skidding", Skidding);
+        builder.AddAttributeIfNotNull(attributes, 15, "skidding", Skidding);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);

@@ -90,7 +90,7 @@ public class WaAccordionItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-accordion-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-accordion-item");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -98,7 +98,7 @@ public class WaAccordionItem : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add accordion-item-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label);
         builder.AddAttribute(11, "expanded", Expanded);
         builder.AddAttribute(12, "disabled", Disabled);
 

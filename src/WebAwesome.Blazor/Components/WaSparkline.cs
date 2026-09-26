@@ -75,7 +75,7 @@ public class WaSparkline : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-sparkline");
+        var attributes = builder.OpenWaElement(this, 0, "wa-sparkline");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -83,11 +83,11 @@ public class WaSparkline : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add sparkline-specific attributes
-        builder.AddAttributeIfNotNull(4, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(5, "curve", Curve?.ToHtmlValue());
-        builder.AddNumberListAttribute(6, "data", Data);
-        builder.AddAttributeIfNotNullOrEmpty(7, "label", Label);
-        builder.AddAttributeIfNotNull(8, "trend", Trend?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "curve", Curve?.ToHtmlValue());
+        builder.AddNumberListAttribute(attributes, 6, "data", Data);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "label", Label);
+        builder.AddAttributeIfNotNull(attributes, 8, "trend", Trend?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __sparklineReference => Element = __sparklineReference);

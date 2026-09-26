@@ -189,23 +189,23 @@ public class WaPagination : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-pagination");
+        var attributes = builder.OpenWaElement(this, 0, "wa-pagination");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(5, "format", Format?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "format", Format?.ToHtmlValue());
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(7, "boundary-count", BoundaryCount);
-        builder.AddAttributeIfNotNull(8, "sibling-count", SiblingCount);
+        builder.AddAttributeIfNotNull(attributes, 7, "boundary-count", BoundaryCount);
+        builder.AddAttributeIfNotNull(attributes, 8, "sibling-count", SiblingCount);
         builder.AddAttribute(9, "hide-single-page", HideSinglePage);
-        builder.AddAttributeIfNotNullOrEmpty(10, "href-template", HrefTemplate);
-        builder.AddAttributeIfNotNullOrEmpty(11, "label", Label);
-        builder.AddAttributeIfNotNull(12, "page", Page);
-        builder.AddAttributeIfNotNull(13, "page-size", PageSize);
-        builder.AddAttributeIfNotNull(14, "total", Total);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "href-template", HrefTemplate);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "label", Label);
+        builder.AddAttributeIfNotNull(attributes, 12, "page", Page);
+        builder.AddAttributeIfNotNull(attributes, 13, "page-size", PageSize);
+        builder.AddAttributeIfNotNull(attributes, 14, "total", Total);
         builder.AddAttribute(15, "with-edges", WithEdges);
         builder.AddAttribute(16, "with-summary", WithSummary);
         builder.AddAttribute(17, "without-nav", WithoutNav);

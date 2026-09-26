@@ -265,31 +265,28 @@ public class WaVideo : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-video");
+        var attributes = builder.OpenWaElement(this, 0, "wa-video");
 
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", Class);
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
-        builder.AddAttributeIfNotNull(10, "controls", Controls?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(11, "preload", Preload?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(12, "src", Src);
-        builder.AddAttributeIfNotNullOrEmpty(13, "poster", Poster);
-        builder.AddAttributeIfNotNullOrEmpty(14, "thumbnails", Thumbnails);
-        builder.AddAttributeIfNotNullOrEmpty(15, "title", Title);
-        builder.AddAttributeIfNotNullOrEmpty(16, "icon-library", IconLibrary);
+        builder.AddAttributeIfNotNull(attributes, 10, "controls", Controls?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "preload", Preload?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "src", Src);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "poster", Poster);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 14, "thumbnails", Thumbnails);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 15, "title", Title);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 16, "icon-library", IconLibrary);
         builder.AddAttribute(17, "playing", Playing);
         builder.AddAttribute(18, "muted", Muted);
         builder.AddAttribute(19, "autoplay", Autoplay);
         builder.AddAttribute(20, "loop", Loop);
         builder.AddAttribute(21, "autoplay-muted", AutoplayMuted);
         builder.AddAttribute(22, "autoplay-on-visible", AutoplayOnVisible);
-        if (Volume.HasValue)
-            builder.AddAttribute(23, "volume", Volume.Value.ToString(CultureInfo.InvariantCulture));
-        if (Duration.HasValue)
-            builder.AddAttribute(24, "duration", Duration.Value.ToString(CultureInfo.InvariantCulture));
-        if (CurrentTime.HasValue)
-            builder.AddAttribute(25, "currentTime", CurrentTime.Value.ToString(CultureInfo.InvariantCulture));
+        builder.AddAttributeIfNotNull(attributes, 23, "volume", Volume);
+        builder.AddAttributeIfNotNull(attributes, 24, "duration", Duration);
+        builder.AddAttributeIfNotNull(attributes, 25, "currentTime", CurrentTime);
 
         // native media events re-dispatched by wa-video on the host element; delivered through
         // Blazor's built-in non-bubbling event registration (no registerCustomEventType needed)

@@ -76,8 +76,8 @@ public class WaDateRangeInput : WaDateInputBase<WaDateRange?>
     private protected override void AddSelectionModeAttributes(RenderTreeBuilder builder, int sequence)
     {
         builder.AddAttribute(sequence + 0, Constants.ModeAttribute, Constants.RangeModeValue);
-        builder.AddAttributeIfNotNull(sequence + 1, Constants.MinRangeAttribute, MinRange);
-        builder.AddAttributeIfNotNull(sequence + 2, Constants.MaxRangeAttribute, MaxRange);
+        builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence + 1, Constants.MinRangeAttribute, MinRange);
+        builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence + 2, Constants.MaxRangeAttribute, MaxRange);
     }
 
     #endregion

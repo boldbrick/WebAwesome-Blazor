@@ -150,7 +150,7 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-number-input");
+        var attributes = builder.OpenWaElement(this, 0, "wa-number-input");
 
         // Add common attributes
         var sequence = AddCommonAttributes(builder, 1);
@@ -158,19 +158,19 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add number-input-specific attributes
-        builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttribute(21, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNull(22, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(23, "inputmode", InputMode?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(24, "max", Max);
-        builder.AddAttributeIfNotNull(25, "min", Min);
+        builder.AddAttributeIfNotNull(attributes, 22, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 23, "inputmode", InputMode?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 24, "max", Max);
+        builder.AddAttributeIfNotNull(attributes, 25, "min", Min);
         builder.AddAttribute(26, "pill", Pill);
-        builder.AddAttributeIfNotNullOrEmpty(27, "placeholder", Placeholder);
-        builder.AddStepAttribute(28, "step", Step);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 27, "placeholder", Placeholder);
+        builder.AddStepAttribute(attributes, 28, "step", Step);
         builder.AddAttribute(29, "without-steppers", WithoutSteppers);
         AddWithHintAndLabelAttributes(builder, 14);
 

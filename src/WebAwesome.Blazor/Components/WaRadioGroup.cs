@@ -65,7 +65,7 @@ public class WaRadioGroup : WaLabeledInputBase<string?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-radio-group");
+        var attributes = builder.OpenWaElement(this, 0, "wa-radio-group");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
@@ -75,8 +75,8 @@ public class WaRadioGroup : WaLabeledInputBase<string?>
         AddLabelAndHintAttributes(builder, 12);
 
         // Add radio group specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(20, "name", Name);
-        builder.AddAttributeIfNotNull(21, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "name", Name);
+        builder.AddAttributeIfNotNull(attributes, 21, "orientation", Orientation?.ToHtmlValue());
         AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding; an explicit handler rather than a binder, so it can invoke OnValueChange after the

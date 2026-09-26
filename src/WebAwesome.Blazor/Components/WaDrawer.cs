@@ -61,9 +61,14 @@ public class WaDrawer : ComponentBase
     [Parameter] public bool Open { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaDrawerPlacement DefaultPlacement = WaDrawerPlacement.End;
+
+    /// <summary>
     /// The direction from which the drawer opens.
     /// </summary>
-    [Parameter] public WaDrawerPlacement Placement { get; set; } = WaDrawerPlacement.End;
+    [Parameter] public WaDrawerPlacement Placement { get; set; } = DefaultPlacement;
 
     /// <summary>
     /// Disables the header. This also removes the default close button.
@@ -138,7 +143,7 @@ public class WaDrawer : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-drawer");
+        var attributes = builder.OpenWaElement(this, 0, "wa-drawer");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -146,10 +151,9 @@ public class WaDrawer : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add drawer-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label);
         builder.AddAttribute(11, "open", Open);
-        if (Placement != WaDrawerPlacement.End)
-            builder.AddAttribute(12, "placement", Placement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "placement", Placement.ToHtmlValue());
         builder.AddAttribute(13, "without-header", WithoutHeader);
         builder.AddAttribute(14, "light-dismiss", LightDismiss);
         builder.AddAttribute(15, "with-footer", WithFooter);

@@ -51,9 +51,14 @@ public class WaCallout : ComponentBase
     [Parameter] public WaAppearance? Appearance { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
+
+    /// <summary>
     /// The callout's size.
     /// </summary>
-    [Parameter] public WaSize Size { get; set; } = WaSize.Medium;
+    [Parameter] public WaSize Size { get; set; } = DefaultSize;
 
     #endregion
 
@@ -81,7 +86,7 @@ public class WaCallout : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-callout");
+        var attributes = builder.OpenWaElement(this, 0, "wa-callout");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -89,10 +94,9 @@ public class WaCallout : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add callout-specific attributes
-        builder.AddAttributeIfNotNull(10, "variant", Variant?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(11, "appearance", Appearance?.ToHtmlValue());
-        if (Size != WaSize.Medium)
-            builder.AddAttribute(12, "size", Size.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 10, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "appearance", Appearance?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "size", Size.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(13, __calloutReference => Element = __calloutReference);

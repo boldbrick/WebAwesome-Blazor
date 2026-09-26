@@ -70,9 +70,9 @@ public class WaPage : ComponentBase
 
     /// <summary>
     /// At what page width to hide the "navigation" slot and collapse into a hamburger button. Accepts both numbers
-    /// (interpreted as px) and CSS lengths (e.g. <c>50em</c>), which are resolved based on the root element.
+    /// (interpreted as px) and CSS lengths (e.g. <c>50em</c>), which are resolved based on the root element. Null leaves the element's default, 768px.
     /// </summary>
-    [Parameter] public string? MobileBreakpoint { get; set; } = "768px";
+    [Parameter] public string? MobileBreakpoint { get; set; }
 
     /// <summary>
     /// Where to place the navigation when in the mobile viewport.
@@ -187,7 +187,7 @@ public class WaPage : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-page");
+        var attributes = builder.OpenWaElement(this, 0, "wa-page");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -196,11 +196,11 @@ public class WaPage : ComponentBase
 
         // Add page-specific attributes
         builder.AddAttribute(10, "disable-navigation-toggle", DisableNavigationToggle);
-        builder.AddAttributeIfNotNull(15, "disable-sticky", DisableSticky?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(11, "mobile-breakpoint", MobileBreakpoint);
-        builder.AddAttributeIfNotNull(12, "navigation-placement", NavigationPlacement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 15, "disable-sticky", DisableSticky?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "mobile-breakpoint", MobileBreakpoint);
+        builder.AddAttributeIfNotNull(attributes, 12, "navigation-placement", NavigationPlacement?.ToHtmlValue());
         builder.AddAttribute(13, "nav-open", NavOpen);
-        builder.AddAttributeIfNotNull(14, "view", View?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 14, "view", View?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __pageReference => Element = __pageReference);

@@ -100,16 +100,16 @@ public class WaOption : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-option");
+        var attributes = builder.OpenWaElement(this, 0, "wa-option");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value);
         builder.AddAttribute(5, "selected", Selected);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNullOrEmpty(7, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "label", Label);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __optionReference => Element = __optionReference);

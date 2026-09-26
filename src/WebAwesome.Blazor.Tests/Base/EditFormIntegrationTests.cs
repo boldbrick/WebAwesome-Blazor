@@ -154,8 +154,8 @@ public class EditFormIntegrationTests : BunitContext
 
         var rating = cut.Find("wa-rating");
         Assert.Equal("3", rating.GetAttribute("value"));
-        // DefaultValue (new in 3.5.0) always renders; defaults to 0
-        Assert.Equal("0", rating.GetAttribute("default-value"));
+        // DefaultValue (new in 3.5.0) holds the element default 0, which renders nothing
+        Assert.False(rating.HasAttribute("default-value"));
     }
 
     [Fact]

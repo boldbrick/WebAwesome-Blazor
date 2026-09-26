@@ -121,14 +121,14 @@ public class WaToastItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-toast-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-toast-item");
 
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "duration", Duration);
-        builder.AddAttributeIfNotNull(5, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(6, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "duration", Duration);
+        builder.AddAttributeIfNotNull(attributes, 5, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 6, "variant", Variant?.ToHtmlValue());
         builder.AddAttribute(7, "with-icon", WithIcon);
 
         // event handlers (onwa- prefix; all four events are registered in the JS initializer)

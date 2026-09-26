@@ -126,7 +126,7 @@ public class WaTextArea : WaLabeledInputBase<string?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-textarea");
+        var attributes = builder.OpenWaElement(this, 0, "wa-textarea");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
@@ -134,22 +134,22 @@ public class WaTextArea : WaLabeledInputBase<string?>
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNull(9, "minlength", MinLength);
-        builder.AddAttributeIfNotNull(10, "maxlength", MaxLength);
-        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNull(attributes, 9, "minlength", MinLength);
+        builder.AddAttributeIfNotNull(attributes, 10, "maxlength", MaxLength);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add textarea-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNull(21, "rows", Rows);
-        builder.AddAttributeIfNotNull(22, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(23, "resize", Resize?.ToHtmlValue());
-        builder.AddTrueFalseAttribute(24, "spellcheck", Spellcheck);
-        builder.AddAttributeIfNotNull(30, "autocapitalize", AutoCapitalize?.ToHtmlValue());
-        builder.AddOnOffAttribute(31, "autocorrect", AutoCorrect);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder);
+        builder.AddAttributeIfNotNull(attributes, 21, "rows", Rows);
+        builder.AddAttributeIfNotNull(attributes, 22, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 23, "resize", Resize?.ToHtmlValue());
+        builder.AddTrueFalseAttribute(attributes, 24, "spellcheck", Spellcheck);
+        builder.AddAttributeIfNotNull(attributes, 30, "autocapitalize", AutoCapitalize?.ToHtmlValue());
+        builder.AddOnOffAttribute(attributes, 31, "autocorrect", AutoCorrect);
         builder.AddAttribute(32, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNull(33, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(34, "inputmode", InputMode?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 33, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 34, "inputmode", InputMode?.ToHtmlValue());
         AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(37, "with-count", WithCount);
 

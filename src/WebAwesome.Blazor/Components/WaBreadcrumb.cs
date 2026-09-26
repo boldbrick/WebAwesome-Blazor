@@ -64,13 +64,13 @@ public class WaBreadcrumb : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-breadcrumb");
+        var attributes = builder.OpenWaElement(this, 0, "wa-breadcrumb");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "label", Label);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __breadcrumbReference => Element = __breadcrumbReference);

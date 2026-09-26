@@ -271,7 +271,7 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-date-picker");
+        var attributes = builder.OpenWaElement(this, 0, "wa-date-picker");
 
         // add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -280,17 +280,17 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
 
         // add date-picker-specific attributes: the selection mode of the wrapper, then the calendar options
         AddSelectionModeAttributes(builder, 10);
-        builder.AddAttributeIfNotNull(13, "view", View?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 13, "view", View?.ToHtmlValue());
         FormControlRendering.AddCalendarAttributes(builder, 14, this);
         builder.AddAttribute(27, "disabled", Disabled);
         builder.AddAttribute(28, "readonly", Readonly);
-        builder.AddDateAttribute(29, "focused-date", FocusedDate);
-        builder.AddAttributeIfNotNullOrEmpty(30, "locale", Locale);
-        builder.AddAttributeIfNotNull(31, "size", Size?.ToHtmlValue());
+        builder.AddDateAttribute(attributes, 29, "focused-date", FocusedDate);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 30, "locale", Locale);
+        builder.AddAttributeIfNotNull(attributes, 31, "size", Size?.ToHtmlValue());
 
         // add value binding (the native change event drives ValueChanged); the value attribute is the live value
         var wireValue = FormatValue(Value);
-        builder.AddAttributeIfNotNullOrEmpty(35, "value", wireValue);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 35, "value", wireValue);
         builder.AddAttribute(36, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => SetValueAsync(ParseValue(__value)), wireValue));
         builder.SetUpdatesAttributeName("value");
 

@@ -48,9 +48,14 @@ public class WaCarousel : ComponentBase
 
     // Carousel properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Horizontal;
+
+    /// <summary>
     /// The orientation in which the carousel lays out its slides.
     /// </summary>
-    [Parameter] public WaOrientation Orientation { get; set; } = WaOrientation.Horizontal;
+    [Parameter] public WaOrientation Orientation { get; set; } = DefaultOrientation;
 
     /// <summary>
     /// Shows the carousel's pagination indicators.
@@ -78,20 +83,35 @@ public class WaCarousel : ComponentBase
     [Parameter] public bool Autoplay { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="AutoplayInterval"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultAutoplayInterval = 3000;
+
+    /// <summary>
     /// The amount of time, in milliseconds, between each automatic scroll.
     /// </summary>
-    [Parameter] public int AutoplayInterval { get; set; } = 3000;
+    [Parameter] public int AutoplayInterval { get; set; } = DefaultAutoplayInterval;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="SlidesPerPage"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultSlidesPerPage = 1;
 
     /// <summary>
     /// How many slides are shown at a given time.
     /// </summary>
-    [Parameter] public int SlidesPerPage { get; set; } = 1;
+    [Parameter] public int SlidesPerPage { get; set; } = DefaultSlidesPerPage;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="SlidesPerMove"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultSlidesPerMove = 1;
 
     /// <summary>
     /// The number of slides the carousel advances when scrolling. Useful when <see cref="SlidesPerPage"/> is greater
     /// than one. It cannot be higher than <see cref="SlidesPerPage"/>.
     /// </summary>
-    [Parameter] public int SlidesPerMove { get; set; } = 1;
+    [Parameter] public int SlidesPerMove { get; set; } = DefaultSlidesPerMove;
 
     #endregion
 
@@ -138,21 +158,21 @@ public class WaCarousel : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-carousel");
+        var attributes = builder.OpenWaElement(this, 0, "wa-carousel");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttribute(4, "orientation", Orientation.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue());
         builder.AddAttribute(5, "pagination", Pagination);
         builder.AddAttribute(6, "navigation", Navigation);
         builder.AddAttribute(7, "mouse-dragging", MouseDragging);
         builder.AddAttribute(8, "loop", Loop);
         builder.AddAttribute(9, "autoplay", Autoplay);
-        builder.AddNumberAttribute(10, "autoplay-interval", AutoplayInterval);
-        builder.AddNumberAttribute(11, "slides-per-page", SlidesPerPage);
-        builder.AddNumberAttribute(12, "slides-per-move", SlidesPerMove);
+        builder.AddNumberAttribute(attributes, 10, "autoplay-interval", AutoplayInterval);
+        builder.AddNumberAttribute(attributes, 11, "slides-per-page", SlidesPerPage);
+        builder.AddNumberAttribute(attributes, 12, "slides-per-move", SlidesPerMove);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(15, "onwa-slide-change", OnSlideChange);

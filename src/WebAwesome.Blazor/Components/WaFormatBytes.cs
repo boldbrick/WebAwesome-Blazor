@@ -41,14 +41,24 @@ public class WaFormatBytes : ComponentBase
 
     // Format properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Value"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const long DefaultValue = 0;
+
+    /// <summary>
     /// The number to format in bytes.
     /// </summary>
-    [Parameter] public long Value { get; set; }
+    [Parameter] public long Value { get; set; } = DefaultValue;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Unit"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaByteUnit DefaultUnit = WaByteUnit.Byte;
 
     /// <summary>
     /// The type of unit to display.
     /// </summary>
-    [Parameter] public WaByteUnit Unit { get; set; } = WaByteUnit.Byte;
+    [Parameter] public WaByteUnit Unit { get; set; } = DefaultUnit;
 
     /// <summary>
     /// The locale (BCP 47 language tag) to use when formatting the value. When unset, the browser's default locale is used.
@@ -67,16 +77,16 @@ public class WaFormatBytes : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-format-bytes");
+        var attributes = builder.OpenWaElement(this, 0, "wa-format-bytes");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddNumberAttribute(4, "value", Value);
-        builder.AddAttribute(5, "unit", Unit.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(6, "lang", Lang);
-        builder.AddAttributeIfNotNull(7, "display", Display?.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 4, "value", Value);
+        builder.AddDefaultedAttribute(attributes, 5, "unit", Unit.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 6, "lang", Lang);
+        builder.AddAttributeIfNotNull(attributes, 7, "display", Display?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __formatBytesReference => Element = __formatBytesReference);

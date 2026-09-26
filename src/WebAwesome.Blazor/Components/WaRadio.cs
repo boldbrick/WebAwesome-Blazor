@@ -100,16 +100,16 @@ public class WaRadio : ComponentBase, IFormValidation
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-radio");
+        var attributes = builder.OpenWaElement(this, 0, "wa-radio");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(7, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(8, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 7, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 8, "appearance", Appearance?.ToHtmlValue());
 
         // Add event handlers; wa-radio dispatches no change event of its own (selection changes are
         // reported by the parent radio group)

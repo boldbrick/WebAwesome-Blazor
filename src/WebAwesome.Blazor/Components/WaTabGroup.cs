@@ -54,14 +54,24 @@ public class WaTabGroup : ComponentBase
     [Parameter] public string? Active { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaTabPlacement DefaultPlacement = WaTabPlacement.Top;
+
+    /// <summary>
     /// The placement of the tabs.
     /// </summary>
-    [Parameter] public WaTabPlacement Placement { get; set; } = WaTabPlacement.Top;
+    [Parameter] public WaTabPlacement Placement { get; set; } = DefaultPlacement;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Activation"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaActivation DefaultActivation = WaActivation.Auto;
 
     /// <summary>
     /// When <see cref="WaActivation.Auto"/>, navigating tabs with the arrow keys instantly shows the corresponding panel. When <see cref="WaActivation.Manual"/>, the tab receives focus but is not shown until the user presses spacebar or enter.
     /// </summary>
-    [Parameter] public WaActivation Activation { get; set; } = WaActivation.Auto;
+    [Parameter] public WaActivation Activation { get; set; } = DefaultActivation;
 
     /// <summary>
     /// Disables the scroll arrows that appear when tabs overflow the tab group's width.
@@ -108,15 +118,15 @@ public class WaTabGroup : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tab-group");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tab-group");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "active", Active);
-        builder.AddAttribute(5, "placement", Placement.ToHtmlValue());
-        builder.AddAttribute(6, "activation", Activation.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "active", Active);
+        builder.AddDefaultedAttribute(attributes, 5, "placement", Placement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 6, "activation", Activation.ToHtmlValue());
         builder.AddAttribute(9, "without-scroll-controls", WithoutScrollControls);
 
         // Add event handlers; the element emits wa-tab-show/wa-tab-hide only (there is no

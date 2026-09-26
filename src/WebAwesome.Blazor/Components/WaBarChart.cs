@@ -24,6 +24,6 @@ public class WaBarChart : WaChartBase
     /// <inheritdoc />
     protected override void AddExtraAttributes(RenderTreeBuilder builder, int sequence)
     {
-        builder.AddAttributeIfNotNull(sequence, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence, "orientation", Orientation?.ToHtmlValue());
     }
 }

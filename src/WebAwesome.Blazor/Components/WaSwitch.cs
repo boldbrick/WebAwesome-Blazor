@@ -81,14 +81,14 @@ public class WaSwitch : WaInputBase<bool>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-switch");
+        var attributes = builder.OpenWaElement(this, 0, "wa-switch");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
 
         // Add the form control attributes the element declares
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "hint", Hint);
 
         // Add switch-specific attributes
         builder.AddAttribute(20, "checked", BindConverter.FormatValue(CurrentValue));

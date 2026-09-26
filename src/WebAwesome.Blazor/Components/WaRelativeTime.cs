@@ -96,7 +96,7 @@ public class WaRelativeTime : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-relative-time");
+        var attributes = builder.OpenWaElement(this, 0, "wa-relative-time");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -104,11 +104,11 @@ public class WaRelativeTime : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add relative time attributes
-        builder.AddDateTimeOffsetAttribute(10, "date", Date);
+        builder.AddDateTimeOffsetAttribute(attributes, 10, "date", Date);
         builder.AddAttribute(11, "sync", Sync);
-        builder.AddAttributeIfNotNull(12, "format", Format?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(13, "lang", Lang);
-        builder.AddAttributeIfNotNull(14, "numeric", Numeric?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "format", Format?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "lang", Lang);
+        builder.AddAttributeIfNotNull(attributes, 14, "numeric", Numeric?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __relativeTimeReference => Element = __relativeTimeReference);

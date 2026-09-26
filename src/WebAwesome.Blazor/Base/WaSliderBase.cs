@@ -19,19 +19,34 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
     [Parameter] public bool Readonly { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Min"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultMin = 0m;
+
+    /// <summary>
     /// The minimum value allowed.
     /// </summary>
-    [Parameter] public decimal Min { get; set; } = 0;
+    [Parameter] public decimal Min { get; set; } = DefaultMin;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Max"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultMax = 100m;
 
     /// <summary>
     /// The maximum value allowed.
     /// </summary>
-    [Parameter] public decimal Max { get; set; } = 100;
+    [Parameter] public decimal Max { get; set; } = DefaultMax;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Step"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultStep = 1m;
 
     /// <summary>
     /// The granularity the value must adhere to when incrementing and decrementing.
     /// </summary>
-    [Parameter] public decimal Step { get; set; } = 1;
+    [Parameter] public decimal Step { get; set; } = DefaultStep;
 
     /// <summary>
     /// The starting value from which to draw the slider's fill, which is based on its current value.

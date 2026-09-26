@@ -34,7 +34,7 @@ public class WaRange : WaSliderBase<decimal>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-slider");
+        var attributes = builder.OpenWaElement(this, 0, "wa-slider");
 
         // Add common attributes from base
         AddCommonAttributes(builder, 1);
@@ -44,27 +44,27 @@ public class WaRange : WaSliderBase<decimal>
         AddLabelAndHintAttributes(builder, 12);
 
         // Add slider-specific attributes
-        builder.AddNumberAttribute(20, "min", Min);
-        builder.AddNumberAttribute(21, "max", Max);
-        builder.AddNumberAttribute(22, "step", Step);
-        builder.AddAttributeIfNotNull(23, "orientation", Orientation?.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 20, "min", Min);
+        builder.AddNumberAttribute(attributes, 21, "max", Max);
+        builder.AddNumberAttribute(attributes, 22, "step", Step);
+        builder.AddAttributeIfNotNull(attributes, 23, "orientation", Orientation?.ToHtmlValue());
         builder.AddAttribute(24, "with-tooltip", WithTooltip);
         builder.AddAttribute(25, "with-markers", WithMarkers);
-        builder.AddAttributeIfNotNull(26, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(27, "indicator-offset", IndicatorOffset);
-        builder.AddAttributeIfNotNull(28, "tooltip-distance", TooltipDistance);
+        builder.AddAttributeIfNotNull(attributes, 26, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 27, "indicator-offset", IndicatorOffset);
+        builder.AddAttributeIfNotNull(attributes, 28, "tooltip-distance", TooltipDistance);
         builder.AddAttribute(29, "autofocus", AutoFocus);
 
         // Range selection attributes
         builder.AddAttribute(30, "range", Range);
         if (Range)
         {
-            builder.AddAttributeIfNotNull(31, "min-value", MinValue);
-            builder.AddAttributeIfNotNull(32, "max-value", MaxValue);
+            builder.AddAttributeIfNotNull(attributes, 31, "min-value", MinValue);
+            builder.AddAttributeIfNotNull(attributes, 32, "max-value", MaxValue);
         }
         else
         {
-            builder.AddNumberAttribute(33, "value", CurrentValue);
+            builder.AddNumberAttribute(attributes, 33, "value", CurrentValue);
         }
 
         // SSR hints for slotted label and hint content

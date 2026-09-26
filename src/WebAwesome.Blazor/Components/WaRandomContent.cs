@@ -48,14 +48,24 @@ public class WaRandomContent : ComponentBase
 
     // Random content properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Items"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultItems = 1;
+
+    /// <summary>
     /// Number of children to show simultaneously. Clamped to the range [1, child count].
     /// </summary>
-    [Parameter] public int Items { get; set; } = 1;
+    [Parameter] public int Items { get; set; } = DefaultItems;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Mode"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaRandomContentMode DefaultMode = WaRandomContentMode.Unique;
 
     /// <summary>
     /// Selection strategy used when choosing which children to show.
     /// </summary>
-    [Parameter] public WaRandomContentMode Mode { get; set; } = WaRandomContentMode.Unique;
+    [Parameter] public WaRandomContentMode Mode { get; set; } = DefaultMode;
 
     /// <summary>
     /// Rotate the content automatically. Set the cadence with <see cref="AutoplayInterval"/>.
@@ -63,14 +73,24 @@ public class WaRandomContent : ComponentBase
     [Parameter] public bool Autoplay { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="AutoplayInterval"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultAutoplayInterval = 3000;
+
+    /// <summary>
     /// Autoplay cadence in milliseconds.
     /// </summary>
-    [Parameter] public int AutoplayInterval { get; set; } = 3000;
+    [Parameter] public int AutoplayInterval { get; set; } = DefaultAutoplayInterval;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Animation"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaRandomContentAnimation DefaultAnimation = WaRandomContentAnimation.None;
 
     /// <summary>
     /// Entrance animation for newly shown children.
     /// </summary>
-    [Parameter] public WaRandomContentAnimation Animation { get; set; } = WaRandomContentAnimation.None;
+    [Parameter] public WaRandomContentAnimation Animation { get; set; } = DefaultAnimation;
 
     #endregion
 
@@ -99,17 +119,17 @@ public class WaRandomContent : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-random-content");
+        var attributes = builder.OpenWaElement(this, 0, "wa-random-content");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddNumberAttribute(4, "items", Items);
-        builder.AddAttribute(5, "mode", Mode.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 4, "items", Items);
+        builder.AddDefaultedAttribute(attributes, 5, "mode", Mode.ToHtmlValue());
         builder.AddAttribute(6, "autoplay", Autoplay);
-        builder.AddNumberAttribute(7, "autoplay-interval", AutoplayInterval);
-        builder.AddAttribute(8, "animation", Animation.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 7, "autoplay-interval", AutoplayInterval);
+        builder.AddDefaultedAttribute(attributes, 8, "animation", Animation.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(15, "onwa-content-change", OnContentChange);

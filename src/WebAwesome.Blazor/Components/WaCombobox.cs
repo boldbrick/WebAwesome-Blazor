@@ -184,7 +184,7 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-combobox");
+        var attributes = builder.OpenWaElement(this, 0, "wa-combobox");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
@@ -194,22 +194,22 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
         AddLabelAndHintAttributes(builder, 12);
 
         // Add combobox-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNull(21, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder);
+        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttribute(22, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 23, this);
         builder.AddAttribute(24, "multiple", Multiple);
         builder.AddAttribute(25, "allow-custom-value", AllowCustomValue);
-        builder.AddAttributeIfNotNull(26, "max-options-visible", MaxOptionsVisible);
-        builder.AddAttributeIfNotNull(27, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 26, "max-options-visible", MaxOptionsVisible);
+        builder.AddAttributeIfNotNull(attributes, 27, "placement", Placement?.ToHtmlValue());
         builder.AddAttribute(28, "open", Open);
         AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(33, "allow-create", AllowCreate);
-        builder.AddAttributeIfNotNull(34, "autocapitalize", AutoCapitalize?.ToHtmlValue());
-        builder.AddOnOffAttribute(35, "autocorrect", AutoCorrect);
-        builder.AddAttributeIfNotNull(36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(37, "inputmode", InputMode?.ToHtmlValue());
-        builder.AddTrueFalseAttribute(38, "spellcheck", Spellcheck);
+        builder.AddAttributeIfNotNull(attributes, 34, "autocapitalize", AutoCapitalize?.ToHtmlValue());
+        builder.AddOnOffAttribute(attributes, 35, "autocorrect", AutoCorrect);
+        builder.AddAttributeIfNotNull(attributes, 36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 37, "inputmode", InputMode?.ToHtmlValue());
+        builder.AddTrueFalseAttribute(attributes, 38, "spellcheck", Spellcheck);
 
         // Add value binding - handle both single and multiple selection
         if (Multiple)

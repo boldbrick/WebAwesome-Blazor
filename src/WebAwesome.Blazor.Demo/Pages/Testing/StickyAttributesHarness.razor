@@ -1,0 +1,58 @@
+@page "/testing/sticky-attributes"
+
+@* e2e harness for tools\e2e\tests\sticky-attributes.spec.js - deliberately outside /components/, so it is neither
+   derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. Each row sets a parameter away from its default and back again with a button, so
+   the spec can check that the element's own property returns to Web Awesome's default instead of null, which Lit
+   assigns when an attribute is removed (the sticky attribute rule, docs\technical.md) *@
+
+<PageTitle>Testing: Sticky Attributes</PageTitle>
+
+<h1>Sticky Attributes Harness</h1>
+<p>This page is an end-to-end test harness for the sticky attribute rule: once a wrapper has rendered an attribute, returning the parameter to its default renders the element default instead of removing the attribute.</p>
+
+<ExampleSection Title="Back to the default">
+    <table>
+        <thead><tr><th>Parameter</th><th>Control</th><th>Set</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><code>WaSlider.Max</code> (non-nullable, default 100)</td>
+                <td><WaSlider Label="Volume" data-testid="sa-slider" Max="sliderMax" @bind-Value="sliderValue" /></td>
+                <td>
+                    <WaButton data-testid="sa-slider-max-50" OnClick="() => sliderMax = LowMax">Max 50</WaButton>
+                    <WaButton data-testid="sa-slider-max-default" OnClick="() => sliderMax = WaSlider.DefaultMax">Max 100</WaButton>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaInput.Type</code> (non-nullable, default Text)</td>
+                <td><WaInput Label="Secret" data-testid="sa-input" Type="inputType" @bind-Value="inputValue" /></td>
+                <td>
+                    <WaButton data-testid="sa-input-password" OnClick="() => inputType = WaInputType.Password">Password</WaButton>
+                    <WaButton data-testid="sa-input-text" OnClick="() => inputType = WaInput.DefaultType">Text</WaButton>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaTooltip.Distance</code> (nullable, element default 8)</td>
+                <td>
+                    <WaButton id="sa-tooltip-anchor">Anchor</WaButton>
+                    <WaTooltip For="sa-tooltip-anchor" data-testid="sa-tooltip" Distance="tooltipDistance">A tooltip</WaTooltip>
+                </td>
+                <td>
+                    <WaButton data-testid="sa-tooltip-distance-20" OnClick="() => tooltipDistance = FarDistance">Distance 20</WaButton>
+                    <WaButton data-testid="sa-tooltip-distance-unset" OnClick="() => tooltipDistance = null">Unset</WaButton>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</ExampleSection>
+
+@code {
+    private const decimal LowMax = 50;
+    private const int FarDistance = 20;
+
+    private decimal sliderMax = WaSlider.DefaultMax;
+    private decimal? sliderValue = 30;
+    private WaInputType inputType = WaInput.DefaultType;
+    private string? inputValue = "hunter2";
+    private int? tooltipDistance;
+}

@@ -85,7 +85,7 @@ public class WaSlider : WaSliderBase<decimal?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-slider");
+        var attributes = builder.OpenWaElement(this, 0, "wa-slider");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
@@ -95,16 +95,16 @@ public class WaSlider : WaSliderBase<decimal?>
         AddLabelAndHintAttributes(builder, 12);
 
         // Add slider-specific attributes
-        builder.AddNumberAttribute(20, "min", Min);
-        builder.AddNumberAttribute(21, "max", Max);
-        builder.AddNumberAttribute(22, "step", Step);
-        builder.AddAttributeIfNotNull(23, "indicator-offset", IndicatorOffset);
+        builder.AddNumberAttribute(attributes, 20, "min", Min);
+        builder.AddNumberAttribute(attributes, 21, "max", Max);
+        builder.AddNumberAttribute(attributes, 22, "step", Step);
+        builder.AddAttributeIfNotNull(attributes, 23, "indicator-offset", IndicatorOffset);
         builder.AddAttribute(24, "range", Range);
-        builder.AddAttributeIfNotNull(25, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 25, "orientation", Orientation?.ToHtmlValue());
         builder.AddAttribute(26, "with-tooltip", WithTooltip);
         builder.AddAttribute(27, "with-markers", WithMarkers);
-        builder.AddAttributeIfNotNull(28, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(29, "tooltip-distance", TooltipDistance);
+        builder.AddAttributeIfNotNull(attributes, 28, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 29, "tooltip-distance", TooltipDistance);
         builder.AddAttribute(33, "autofocus", AutoFocus);
         AddWithHintAndLabelAttributes(builder, 14);
 
@@ -114,14 +114,14 @@ public class WaSlider : WaSliderBase<decimal?>
         if (Range)
         {
             // For range mode, set min-value and max-value
-            builder.AddAttributeIfNotNull(30, "min-value", MinValue);
-            builder.AddAttributeIfNotNull(31, "max-value", MaxValue);
+            builder.AddAttributeIfNotNull(attributes, 30, "min-value", MinValue);
+            builder.AddAttributeIfNotNull(attributes, 31, "max-value", MaxValue);
             builder.AddAttribute(32, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleRangeValueChange));
         }
         else
         {
             // For single value mode, bind the value
-            builder.AddAttributeIfNotNull(30, "value", CurrentValue);
+            builder.AddAttributeIfNotNull(attributes, 30, "value", CurrentValue);
             builder.AddAttribute(31, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChangeAsync));
         }
 

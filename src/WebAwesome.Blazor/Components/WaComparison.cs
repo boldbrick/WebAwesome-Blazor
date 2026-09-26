@@ -79,7 +79,7 @@ public class WaComparison : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-comparison");
+        var attributes = builder.OpenWaElement(this, 0, "wa-comparison");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -87,7 +87,7 @@ public class WaComparison : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add comparison-specific attributes
-        builder.AddAttributeIfNotNull(10, "position", Position);
+        builder.AddAttributeIfNotNull(attributes, 10, "position", Position);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onchange", OnChange);

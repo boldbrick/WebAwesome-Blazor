@@ -66,9 +66,14 @@ public class WaZoomableFrame : ComponentBase
 
     // Zoom properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Zoom"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const double DefaultZoom = 1.0;
+
+    /// <summary>
     /// The current zoom of the frame, e.g. 0 = 0% and 1 = 100%.
     /// </summary>
-    [Parameter] public double Zoom { get; set; } = 1.0;
+    [Parameter] public double Zoom { get; set; } = DefaultZoom;
 
     /// <summary>
     /// The zoom levels to step through when using the zoom controls, as factors (<c>1</c> is 100%), in order; null or
@@ -160,7 +165,7 @@ public class WaZoomableFrame : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-zoomable-frame");
+        var attributes = builder.OpenWaElement(this, 0, "wa-zoomable-frame");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -174,13 +179,12 @@ public class WaZoomableFrame : ComponentBase
         }
         else
         {
-            builder.AddAttributeIfNotNullOrEmpty(10, "src", Src);
+            builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "src", Src);
         }
 
         // Add zoom attributes
-        if (Zoom != 1.0)
-            builder.AddNumberAttribute(20, "zoom", Zoom);
-        builder.AddNumberListAttribute(21, "zoom-levels", ZoomLevels);
+        builder.AddNumberAttribute(attributes, 20, "zoom", Zoom);
+        builder.AddNumberListAttribute(attributes, 21, "zoom-levels", ZoomLevels);
 
         // Add control attributes
         builder.AddAttribute(30, "without-controls", WithoutControls);
@@ -189,9 +193,9 @@ public class WaZoomableFrame : ComponentBase
 
         // Add remaining iframe passthrough attributes
         builder.AddAttribute(32, "allowfullscreen", AllowFullScreen);
-        builder.AddAttributeIfNotNull(33, "loading", Loading?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(34, "referrerpolicy", ReferrerPolicy?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(35, "sandbox", Sandbox?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 33, "loading", Loading?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 34, "referrerpolicy", ReferrerPolicy?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 35, "sandbox", Sandbox?.ToHtmlValue());
 
         // native load/error events re-dispatched by wa-zoomable-frame on the host element (non-bubbling,
         // composed); delivered through Blazor's built-in non-bubbling event registration (no

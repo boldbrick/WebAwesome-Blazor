@@ -46,7 +46,7 @@ public class WaSpinner : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-spinner");
+        var attributes = builder.OpenWaElement(this, 0, "wa-spinner");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);

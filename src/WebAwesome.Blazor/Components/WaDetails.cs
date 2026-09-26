@@ -71,9 +71,14 @@ public class WaDetails : ComponentBase
     [Parameter] public WaDetailsAppearance? Appearance { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="IconPlacement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaIconPlacement DefaultIconPlacement = WaIconPlacement.End;
+
+    /// <summary>
     /// The location of the expand/collapse icon.
     /// </summary>
-    [Parameter] public WaIconPlacement IconPlacement { get; set; } = WaIconPlacement.End;
+    [Parameter] public WaIconPlacement IconPlacement { get; set; } = DefaultIconPlacement;
 
     /// <summary>
     /// Groups related details elements. When one opens, others with the same name will close.
@@ -140,18 +145,18 @@ public class WaDetails : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-details");
+        var attributes = builder.OpenWaElement(this, 0, "wa-details");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "summary", Summary);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "summary", Summary);
         builder.AddAttribute(5, "open", Open);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(7, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttribute(8, "icon-placement", IconPlacement.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(9, "name", Name);
+        builder.AddAttributeIfNotNull(attributes, 7, "appearance", Appearance?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 8, "icon-placement", IconPlacement.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 9, "name", Name);
 
         // Add event handlers; the interop module's createEventArgs derives IsOpen from the
         // event type (wa-show -> true, wa-hide -> false), so both events share OnToggle

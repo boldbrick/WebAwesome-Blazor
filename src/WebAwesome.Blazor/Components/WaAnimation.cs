@@ -58,24 +58,44 @@ public class WaAnimation : ComponentBase
     [Parameter] public bool Play { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Duration"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultDuration = 1000;
+
+    /// <summary>
     /// The number of milliseconds each iteration of the animation takes to complete.
     /// </summary>
-    [Parameter] public int Duration { get; set; } = 1000;
+    [Parameter] public int Duration { get; set; } = DefaultDuration;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Delay"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultDelay = 0;
 
     /// <summary>
     /// The number of milliseconds to delay the start of the animation.
     /// </summary>
-    [Parameter] public int Delay { get; set; } = 0;
+    [Parameter] public int Delay { get; set; } = DefaultDelay;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Direction"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaAnimationDirection DefaultDirection = WaAnimationDirection.Normal;
 
     /// <summary>
     /// Determines the direction of playback as well as the behavior when reaching the end of an iteration.
     /// </summary>
-    [Parameter] public WaAnimationDirection Direction { get; set; } = WaAnimationDirection.Normal;
+    [Parameter] public WaAnimationDirection Direction { get; set; } = DefaultDirection;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Easing"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaAnimationEasing DefaultEasing = WaAnimationEasing.Linear;
 
     /// <summary>
     /// The easing function to use for the animation.
     /// </summary>
-    [Parameter] public WaAnimationEasing Easing { get; set; } = WaAnimationEasing.Linear;
+    [Parameter] public WaAnimationEasing Easing { get; set; } = DefaultEasing;
 
     /// <summary>
     /// The number of iterations to run before the animation completes; <see cref="double.PositiveInfinity"/> renders
@@ -90,10 +110,15 @@ public class WaAnimation : ComponentBase
     [Parameter] public WaAnimationFill? Fill { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="PlaybackRate"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultPlaybackRate = 1m;
+
+    /// <summary>
     /// The animation's playback rate. A value of <c>1</c> plays the animation at normal speed; a negative value
     /// reverses the animation.
     /// </summary>
-    [Parameter] public decimal PlaybackRate { get; set; } = 1;
+    [Parameter] public decimal PlaybackRate { get; set; } = DefaultPlaybackRate;
 
     /// <summary>
     /// The number of milliseconds to delay after the end of the animation.
@@ -140,23 +165,23 @@ public class WaAnimation : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-animation");
+        var attributes = builder.OpenWaElement(this, 0, "wa-animation");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "name", Name);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "name", Name);
         builder.AddAttribute(5, "play", Play);
-        builder.AddNumberAttribute(6, "duration", Duration);
-        builder.AddNumberAttribute(7, "delay", Delay);
-        builder.AddAttribute(8, "direction", Direction.ToHtmlValue());
-        builder.AddAttribute(9, "easing", Easing.ToHtmlValue());
-        builder.AddAttributeIfNotNull(10, "iterations", Iterations is double.PositiveInfinity ? InfiniteIterations : RenderTreeBuilderExtensions.FormatInvariant(Iterations));
-        builder.AddAttributeIfNotNull(11, "fill", Fill?.ToHtmlValue());
-        builder.AddNumberAttribute(12, "playback-rate", PlaybackRate);
-        builder.AddAttributeIfNotNull(13, "end-delay", EndDelay);
-        builder.AddAttributeIfNotNull(14, "iteration-start", IterationStart);
+        builder.AddNumberAttribute(attributes, 6, "duration", Duration);
+        builder.AddNumberAttribute(attributes, 7, "delay", Delay);
+        builder.AddDefaultedAttribute(attributes, 8, "direction", Direction.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 9, "easing", Easing.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 10, "iterations", Iterations is double.PositiveInfinity ? InfiniteIterations : RenderTreeBuilderExtensions.FormatInvariant(Iterations));
+        builder.AddAttributeIfNotNull(attributes, 11, "fill", Fill?.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 12, "playback-rate", PlaybackRate);
+        builder.AddAttributeIfNotNull(attributes, 13, "end-delay", EndDelay);
+        builder.AddAttributeIfNotNull(attributes, 14, "iteration-start", IterationStart);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-cancel", OnCancel);

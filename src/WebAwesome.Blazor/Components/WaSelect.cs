@@ -150,7 +150,7 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-select");
+        var attributes = builder.OpenWaElement(this, 0, "wa-select");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
@@ -160,13 +160,13 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
         AddLabelAndHintAttributes(builder, 12);
 
         // Add select-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNull(21, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder);
+        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttribute(22, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 23, this);
         builder.AddAttribute(24, "multiple", Multiple);
-        builder.AddAttributeIfNotNull(25, "max-options-visible", MaxOptionsVisible);
-        builder.AddAttributeIfNotNull(26, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 25, "max-options-visible", MaxOptionsVisible);
+        builder.AddAttributeIfNotNull(attributes, 26, "placement", Placement?.ToHtmlValue());
         builder.AddAttribute(27, "open", Open);
         AddWithHintAndLabelAttributes(builder, 14);
 

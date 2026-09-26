@@ -107,7 +107,7 @@ public class WaBreadcrumbItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-breadcrumb-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-breadcrumb-item");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -115,9 +115,9 @@ public class WaBreadcrumbItem : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add breadcrumb item-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "href", Href);
-        builder.AddAttributeIfNotNullOrEmpty(11, "rel", Rel);
-        builder.AddAttributeIfNotNull(12, "target", Target?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "href", Href);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "rel", Rel);
+        builder.AddAttributeIfNotNull(attributes, 12, "target", Target?.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);

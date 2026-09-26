@@ -49,6 +49,7 @@ const HARNESS_ROUTES = [
   '/testing/event-payloads',
   '/testing/date-typing',
   '/testing/day-content',
+  '/testing/sticky-attributes',
 ];
 
 function getComponentRoutes() {

@@ -88,9 +88,14 @@ public class WaCopyButton : ComponentBase
 
     // Feedback duration in milliseconds
     /// <summary>
+    /// The Web Awesome default of <see cref="FeedbackDuration"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultFeedbackDuration = 1000;
+
+    /// <summary>
     /// The length of time, in milliseconds, to show feedback before restoring the default trigger.
     /// </summary>
-    [Parameter] public int FeedbackDuration { get; set; } = 1000;
+    [Parameter] public int FeedbackDuration { get; set; } = DefaultFeedbackDuration;
 
     /// <summary>
     /// The side of the button on which the tooltip for the copy, success, and error labels is shown. When null, the attribute
@@ -99,11 +104,16 @@ public class WaCopyButton : ComponentBase
     [Parameter] public WaTooltipSide? TooltipPlacement { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Tooltip"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaCopyButtonTooltip DefaultTooltip = WaCopyButtonTooltip.Full;
+
+    /// <summary>
     /// Controls the built-in tooltip. <see cref="WaCopyButtonTooltip.Full"/> (default) shows the tooltip on hover
     /// and focus and during copy feedback; <see cref="WaCopyButtonTooltip.Copy"/> keeps it silent on hover/focus and
     /// only shows it briefly to confirm a copy; <see cref="WaCopyButtonTooltip.None"/> disables it entirely.
     /// </summary>
-    [Parameter] public WaCopyButtonTooltip Tooltip { get; set; } = WaCopyButtonTooltip.Full;
+    [Parameter] public WaCopyButtonTooltip Tooltip { get; set; } = DefaultTooltip;
 
     #endregion
 
@@ -167,21 +177,21 @@ public class WaCopyButton : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-copy-button");
+        var attributes = builder.OpenWaElement(this, 0, "wa-copy-button");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
-        builder.AddAttributeIfNotNullOrEmpty(5, "from", From);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "from", From);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNullOrEmpty(7, "copy-label", CopyLabel);
-        builder.AddAttributeIfNotNullOrEmpty(8, "success-label", SuccessLabel);
-        builder.AddAttributeIfNotNullOrEmpty(9, "error-label", ErrorLabel);
-        builder.AddNumberAttribute(10, "feedback-duration", FeedbackDuration);
-        builder.AddAttributeIfNotNull(11, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
-        builder.AddAttribute(12, "tooltip", Tooltip.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "copy-label", CopyLabel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 8, "success-label", SuccessLabel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 9, "error-label", ErrorLabel);
+        builder.AddNumberAttribute(attributes, 10, "feedback-duration", FeedbackDuration);
+        builder.AddAttributeIfNotNull(attributes, 11, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "tooltip", Tooltip.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-copy", OnCopy);

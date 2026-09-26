@@ -139,7 +139,7 @@ public class WaOtpInput : WaInputBase<string?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-otp-input");
+        var attributes = builder.OpenWaElement(this, 0, "wa-otp-input");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
@@ -147,16 +147,16 @@ public class WaOtpInput : WaInputBase<string?>
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "hint", Hint);
 
         // Add otp-input-specific attributes
-        builder.AddAttributeIfNotNull(20, "length", Length);
-        builder.AddAttributeIfNotNull(21, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(22, "type", Type?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(23, "case", Case?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(24, "format", Format);
+        builder.AddAttributeIfNotNull(attributes, 20, "length", Length);
+        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 22, "type", Type?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 23, "case", Case?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 24, "format", Format);
         builder.AddAttribute(25, "autosubmit", AutoSubmit);
         builder.AddAttribute(26, "autofocus", AutoFocus);
         builder.AddAttribute(27, "mask", Mask);

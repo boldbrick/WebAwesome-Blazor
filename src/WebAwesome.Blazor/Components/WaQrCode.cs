@@ -51,9 +51,14 @@ public class WaQrCode : ComponentBase
     [Parameter] public string? Label { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultSize = 128;
+
+    /// <summary>
     /// The size of the QR code, in pixels.
     /// </summary>
-    [Parameter] public int Size { get; set; } = 128;
+    [Parameter] public int Size { get; set; } = DefaultSize;
 
     /// <summary>
     /// The fill color. This can be any valid CSS color, but not a CSS custom property. When unset, the
@@ -68,9 +73,14 @@ public class WaQrCode : ComponentBase
     [Parameter] public string? Background { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Radius"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultRadius = 0m;
+
+    /// <summary>
     /// The edge radius of each module. Must be between 0 and 0.5.
     /// </summary>
-    [Parameter] public decimal Radius { get; set; } = 0;
+    [Parameter] public decimal Radius { get; set; } = DefaultRadius;
 
     /// <summary>
     /// The level of error correction to use. Null (the default) leaves the element's default, H.
@@ -106,23 +116,23 @@ public class WaQrCode : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-qr-code");
+        var attributes = builder.OpenWaElement(this, 0, "wa-qr-code");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
-        builder.AddAttributeIfNotNullOrEmpty(5, "label", Label);
-        builder.AddNumberAttribute(6, "size", Size);
-        builder.AddAttributeIfNotNullOrEmpty(7, "fill", Fill);
-        builder.AddAttributeIfNotNullOrEmpty(8, "background", Background);
-        builder.AddNumberAttribute(9, "radius", Radius);
-        builder.AddAttributeIfNotNull(10, "error-correction", ErrorCorrection?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(11, "image", Image);
-        builder.AddAttributeIfNotNullOrEmpty(12, "image-background", ImageBackground);
-        builder.AddAttributeIfNotNull(13, "image-coverage", ImageCoverage);
-        builder.AddAttributeIfNotNull(14, "image-padding", ImagePadding);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "label", Label);
+        builder.AddNumberAttribute(attributes, 6, "size", Size);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "fill", Fill);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 8, "background", Background);
+        builder.AddNumberAttribute(attributes, 9, "radius", Radius);
+        builder.AddAttributeIfNotNull(attributes, 10, "error-correction", ErrorCorrection?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "image", Image);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "image-background", ImageBackground);
+        builder.AddAttributeIfNotNull(attributes, 13, "image-coverage", ImageCoverage);
+        builder.AddAttributeIfNotNull(attributes, 14, "image-padding", ImagePadding);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __qrCodeReference => Element = __qrCodeReference);

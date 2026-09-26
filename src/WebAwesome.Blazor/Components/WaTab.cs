@@ -99,13 +99,13 @@ public class WaTab : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tab");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tab");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "panel", Panel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "panel", Panel);
         builder.AddAttribute(5, "active", Active);
         builder.AddAttribute(6, "disabled", Disabled);
 

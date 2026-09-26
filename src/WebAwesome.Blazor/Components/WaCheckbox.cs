@@ -72,14 +72,14 @@ public class WaCheckbox : WaInputBase<bool>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-checkbox");
+        var attributes = builder.OpenWaElement(this, 0, "wa-checkbox");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
 
         // Add the form control attributes the element declares
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(13, "hint", Hint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "hint", Hint);
 
         // Add checkbox-specific attributes
         builder.AddAttribute(20, "checked", BindConverter.FormatValue(CurrentValue));

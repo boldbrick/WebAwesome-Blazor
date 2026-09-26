@@ -79,13 +79,13 @@ public class WaMarkdown : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-markdown");
+        var attributes = builder.OpenWaElement(this, 0, "wa-markdown");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "tab-size", TabSize);
+        builder.AddAttributeIfNotNull(attributes, 4, "tab-size", TabSize);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __markdownReference => Element = __markdownReference);

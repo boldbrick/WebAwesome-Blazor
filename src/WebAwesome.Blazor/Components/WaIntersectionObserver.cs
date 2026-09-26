@@ -109,7 +109,7 @@ public class WaIntersectionObserver : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-intersection-observer");
+        var attributes = builder.OpenWaElement(this, 0, "wa-intersection-observer");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -117,10 +117,10 @@ public class WaIntersectionObserver : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add intersection observer specific attributes
-        builder.AddNumberListAttribute(10, "threshold", Threshold);
-        builder.AddAttributeIfNotNullOrEmpty(11, "root", Root);
-        builder.AddAttributeIfNotNullOrEmpty(12, "root-margin", RootMargin);
-        builder.AddAttributeIfNotNullOrEmpty(13, "intersect-class", IntersectClass);
+        builder.AddNumberListAttribute(attributes, 10, "threshold", Threshold);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "root", Root);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "root-margin", RootMargin);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "intersect-class", IntersectClass);
         builder.AddAttribute(14, "disabled", Disabled);
         builder.AddAttribute(15, "once", Once);
 

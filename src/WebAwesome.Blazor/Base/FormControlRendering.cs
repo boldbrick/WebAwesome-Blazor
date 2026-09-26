@@ -20,8 +20,9 @@ internal static class FormControlRendering
     /// <param name="control">The labeled control</param>
     public static void AddLabelAndHintAttributes(RenderTreeBuilder builder, int sequence, IWaLabeledControl control)
     {
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 0, LabelSlot, control.Label);
-        builder.AddAttributeIfNotNullOrEmpty(sequence + 1, HintSlot, control.Hint);
+        var attributes = WaAttributeMemory.Of(control);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, sequence + 0, LabelSlot, control.Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, sequence + 1, HintSlot, control.Hint);
     }
 
     /// <summary>
@@ -152,17 +153,18 @@ internal static class FormControlRendering
     /// <param name="calendar">The calendar options</param>
     public static void AddCalendarAttributes(RenderTreeBuilder builder, int sequence, IWaCalendarOptions calendar)
     {
-        builder.AddDateAttribute(sequence + 0, MinAttribute, calendar.Min);
-        builder.AddDateAttribute(sequence + 1, MaxAttribute, calendar.Max);
-        builder.AddDateAttribute(sequence + 2, TodayAttribute, calendar.Today);
-        builder.AddDateSetAttribute(sequence + 3, DisabledDatesAttribute, calendar.DisabledDates);
-        builder.AddDaysOfWeekAttribute(sequence + 4, DisabledDaysOfWeekAttribute, calendar.DisabledDaysOfWeek);
+        var attributes = WaAttributeMemory.Of(calendar);
+        builder.AddDateAttribute(attributes, sequence + 0, MinAttribute, calendar.Min);
+        builder.AddDateAttribute(attributes, sequence + 1, MaxAttribute, calendar.Max);
+        builder.AddDateAttribute(attributes, sequence + 2, TodayAttribute, calendar.Today);
+        builder.AddDateSetAttribute(attributes, sequence + 3, DisabledDatesAttribute, calendar.DisabledDates);
+        builder.AddDaysOfWeekAttribute(attributes, sequence + 4, DisabledDaysOfWeekAttribute, calendar.DisabledDaysOfWeek);
         builder.AddAttribute(sequence + 5, DisablePastAttribute, calendar.DisablePast);
         builder.AddAttribute(sequence + 6, DisableFutureAttribute, calendar.DisableFuture);
-        builder.AddAttributeIfNotNull(sequence + 7, FirstDayOfWeekAttribute, calendar.FirstDayOfWeek?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(sequence + 8, MonthsAttribute, calendar.Months);
-        builder.AddAttributeIfNotNull(sequence + 9, PageByAttribute, calendar.PageBy?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(sequence + 10, WeekdayFormatAttribute, calendar.WeekdayFormat?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, sequence + 7, FirstDayOfWeekAttribute, calendar.FirstDayOfWeek?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, sequence + 8, MonthsAttribute, calendar.Months);
+        builder.AddAttributeIfNotNull(attributes, sequence + 9, PageByAttribute, calendar.PageBy?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, sequence + 10, WeekdayFormatAttribute, calendar.WeekdayFormat?.ToHtmlValue());
         builder.AddAttribute(sequence + 11, WithOutsideDaysAttribute, calendar.WithOutsideDays);
         builder.AddAttribute(sequence + 12, WithWeekNumbersAttribute, calendar.WithWeekNumbers);
     }

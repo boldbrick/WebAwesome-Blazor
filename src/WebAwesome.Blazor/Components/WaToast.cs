@@ -70,12 +70,12 @@ public class WaToast : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-toast");
+        var attributes = builder.OpenWaElement(this, 0, "wa-toast");
 
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "placement", Placement?.ToHtmlValue());
 
         builder.AddElementReferenceCapture(10, __toastReference => Element = __toastReference);
 

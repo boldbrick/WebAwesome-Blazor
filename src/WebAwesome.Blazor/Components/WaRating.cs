@@ -41,19 +41,34 @@ public class WaRating : WaInputBase<decimal>
     #region ------ Rating Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Max"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultMax = 5;
+
+    /// <summary>
     /// The highest rating to show.
     /// </summary>
-    [Parameter] public int Max { get; set; } = 5;
+    [Parameter] public int Max { get; set; } = DefaultMax;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Precision"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultPrecision = 1m;
 
     /// <summary>
     /// The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this to 0.5.
     /// </summary>
-    [Parameter] public decimal Precision { get; set; } = 1;
+    [Parameter] public decimal Precision { get; set; } = DefaultPrecision;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="DefaultValue"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultDefaultValue = 0m;
 
     /// <summary>
     /// The default value of the form control. Used to reset the rating to its initial value.
     /// </summary>
-    [Parameter] public decimal DefaultValue { get; set; }
+    [Parameter] public decimal DefaultValue { get; set; } = DefaultDefaultValue;
 
     #endregion
 
@@ -76,21 +91,21 @@ public class WaRating : WaInputBase<decimal>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-rating");
+        var attributes = builder.OpenWaElement(this, 0, "wa-rating");
 
         // Add common attributes from base
         AddCommonAttributes(builder, 1);
 
         // Add the form control attributes the element declares
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label);
 
         // Add rating-specific attributes
-        builder.AddNumberAttribute(20, "max", Max);
-        builder.AddNumberAttribute(21, "precision", Precision);
+        builder.AddNumberAttribute(attributes, 20, "max", Max);
+        builder.AddNumberAttribute(attributes, 21, "precision", Precision);
         builder.AddAttribute(22, "readonly", Readonly);
-        builder.AddNumberAttribute(23, "value", CurrentValue);
-        builder.AddNumberAttribute(24, "default-value", DefaultValue);
+        builder.AddNumberAttribute(attributes, 23, "value", CurrentValue);
+        builder.AddNumberAttribute(attributes, 24, "default-value", DefaultValue);
 
         // Add value binding; the element's live value is a JS number, which Blazor's built-in change reader cannot
         // carry, so the handler listens to the "numericchange" alias of the change event that delivers it as an

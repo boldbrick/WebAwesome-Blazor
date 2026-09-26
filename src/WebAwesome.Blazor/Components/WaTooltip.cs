@@ -56,9 +56,14 @@ public class WaTooltip : ComponentBase
     [Parameter] public string? For { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaPlacement DefaultPlacement = WaPlacement.Top;
+
+    /// <summary>
     /// The preferred placement of the tooltip. The actual placement may vary as needed to keep the tooltip inside the viewport.
     /// </summary>
-    [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
+    [Parameter] public WaPlacement Placement { get; set; } = DefaultPlacement;
 
     /// <summary>
     /// Controls how the tooltip is activated. Flags can be combined, e.g. <c>WaTrigger.Hover | WaTrigger.Click</c>,
@@ -143,7 +148,7 @@ public class WaTooltip : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tooltip");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tooltip");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -151,17 +156,16 @@ public class WaTooltip : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add tooltip-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "for", For);
-        if (Placement != WaPlacement.Top)
-            builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
-        builder.AddAttributeIfNotNull(12, "trigger", Trigger?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "for", For);
+        builder.AddDefaultedAttribute(attributes, 11, "placement", Placement.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "trigger", Trigger?.ToHtmlValue());
         builder.AddAttribute(13, "open", Open);
         builder.AddAttribute(14, "without-arrow", WithoutArrow);
         builder.AddAttribute(15, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(16, "distance", Distance);
-        builder.AddAttributeIfNotNull(17, "hide-delay", HideDelay);
-        builder.AddAttributeIfNotNull(18, "show-delay", ShowDelay);
-        builder.AddAttributeIfNotNull(19, "skidding", Skidding);
+        builder.AddAttributeIfNotNull(attributes, 16, "distance", Distance);
+        builder.AddAttributeIfNotNull(attributes, 17, "hide-delay", HideDelay);
+        builder.AddAttributeIfNotNull(attributes, 18, "show-delay", ShowDelay);
+        builder.AddAttributeIfNotNull(attributes, 19, "skidding", Skidding);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);

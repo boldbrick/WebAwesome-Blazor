@@ -50,9 +50,14 @@ public class WaAccordion : ComponentBase
 
     // Accordion properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaDetailsAppearance DefaultAppearance = WaDetailsAppearance.Outlined;
+
+    /// <summary>
     /// The accordion's visual appearance.
     /// </summary>
-    [Parameter] public WaDetailsAppearance Appearance { get; set; } = WaDetailsAppearance.Outlined;
+    [Parameter] public WaDetailsAppearance Appearance { get; set; } = DefaultAppearance;
 
     /// <summary>
     /// The heading level for child item triggers, or <see cref="WaHeadingLevel.None"/> to omit the heading wrapper. Null leaves the element's default, <see cref="WaHeadingLevel.H3"/>.
@@ -60,14 +65,24 @@ public class WaAccordion : ComponentBase
     [Parameter] public WaHeadingLevel? HeadingLevel { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="IconPlacement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaIconPlacement DefaultIconPlacement = WaIconPlacement.End;
+
+    /// <summary>
     /// The location of the expand/collapse icon in child items.
     /// </summary>
-    [Parameter] public WaIconPlacement IconPlacement { get; set; } = WaIconPlacement.End;
+    [Parameter] public WaIconPlacement IconPlacement { get; set; } = DefaultIconPlacement;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Mode"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaAccordionMode DefaultMode = WaAccordionMode.Multiple;
 
     /// <summary>
     /// Controls how items can be expanded.
     /// </summary>
-    [Parameter] public WaAccordionMode Mode { get; set; } = WaAccordionMode.Multiple;
+    [Parameter] public WaAccordionMode Mode { get; set; } = DefaultMode;
 
     #endregion
 
@@ -109,7 +124,7 @@ public class WaAccordion : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-accordion");
+        var attributes = builder.OpenWaElement(this, 0, "wa-accordion");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -117,13 +132,10 @@ public class WaAccordion : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add accordion-specific attributes
-        if (Appearance != WaDetailsAppearance.Outlined)
-            builder.AddAttribute(10, "appearance", Appearance.ToHtmlValue());
-        builder.AddAttributeIfNotNull(11, "heading-level", HeadingLevel?.ToHtmlValue());
-        if (IconPlacement != WaIconPlacement.End)
-            builder.AddAttribute(12, "icon-placement", IconPlacement.ToHtmlValue());
-        if (Mode != WaAccordionMode.Multiple)
-            builder.AddAttribute(13, "mode", Mode.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "appearance", Appearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "heading-level", HeadingLevel?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "icon-placement", IconPlacement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 13, "mode", Mode.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-expand", OnExpand);

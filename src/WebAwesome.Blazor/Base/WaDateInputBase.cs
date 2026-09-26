@@ -230,7 +230,7 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-date-input");
+        var attributes = builder.OpenWaElement(this, 0, "wa-date-input");
 
         // add common attributes
         AddCommonAttributes(builder, 1);
@@ -238,15 +238,15 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
         // add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // add date-input-specific attributes: the selection mode of the wrapper, then the calendar options
-        builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue());
         AddSelectionModeAttributes(builder, 21);
         FormControlRendering.AddCalendarAttributes(builder, 24, this);
-        builder.AddAttributeIfNotNull(40, "placement", Placement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(41, "distance", Distance);
+        builder.AddAttributeIfNotNull(attributes, 40, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 41, "distance", Distance);
         builder.AddAttribute(42, "open", Open);
         builder.AddAttribute(43, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 44, this);

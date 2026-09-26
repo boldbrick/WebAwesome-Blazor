@@ -80,7 +80,7 @@ public class WaKnownDate : WaLabeledInputBase<DateOnly?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-known-date");
+        var attributes = builder.OpenWaElement(this, 0, "wa-known-date");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
@@ -88,14 +88,14 @@ public class WaKnownDate : WaLabeledInputBase<DateOnly?>
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add known-date-specific attributes
-        builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(21, "locale", Locale);
-        builder.AddDateAttribute(22, "min", Min);
-        builder.AddDateAttribute(23, "max", Max);
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 21, "locale", Locale);
+        builder.AddDateAttribute(attributes, 22, "min", Min);
+        builder.AddDateAttribute(attributes, 23, "max", Max);
         builder.AddAttribute(24, "pill", Pill);
         AddWithHintAndLabelAttributes(builder, 14);
 

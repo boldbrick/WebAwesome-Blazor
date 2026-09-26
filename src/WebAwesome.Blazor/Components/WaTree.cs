@@ -40,13 +40,18 @@ public class WaTree : ComponentBase
 
     // Tree properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Selection"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaTreeSelection DefaultSelection = WaTreeSelection.Single;
+
+    /// <summary>
     /// The selection behavior of the tree. <see cref="WaTreeSelection.Single"/> allows only one node to be
     /// selected at a time. <see cref="WaTreeSelection.Multiple"/> displays checkboxes and allows more than one
     /// node to be selected. <see cref="WaTreeSelection.Leaf"/> allows only leaf nodes to be selected.
     /// <see cref="WaTreeSelection.LeafMultiple"/> allows multiple leaf nodes to be selected while parent nodes
     /// only expand and collapse.
     /// </summary>
-    [Parameter] public WaTreeSelection Selection { get; set; } = WaTreeSelection.Single;
+    [Parameter] public WaTreeSelection Selection { get; set; } = DefaultSelection;
 
     #endregion
 
@@ -93,7 +98,7 @@ public class WaTree : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tree");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tree");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -101,7 +106,7 @@ public class WaTree : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add tree-specific attributes
-        builder.AddAttribute(4, "selection", Selection.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "selection", Selection.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(10, "onwa-selection-change", OnSelectionChange);

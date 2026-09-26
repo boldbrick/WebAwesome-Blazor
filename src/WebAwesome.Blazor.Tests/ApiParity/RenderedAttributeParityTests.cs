@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using WebAwesome.Blazor.Components;
 using Xunit;
 using static WebAwesome.Blazor.Tests.ApiParity.ApiParityData;
@@ -204,6 +206,33 @@ public class RenderedAttributeParityTests
             misses.Add($"WaWirePatterns.ListSeparators entry '{key}' belongs to no rendered list parameter and must be removed");
 
         AssertNoMisses(misses, "Date and time attributes not in the form Web Awesome parses");
+    }
+
+    /// <summary>
+    /// (i) Sticky attributes (owner rule): once a wrapper has rendered an attribute that has an element default, a
+    /// later render never removes it. Each parameter is rendered with a sample that renders its attribute, then the
+    /// same instance is re-rendered with the parameter back at its C# default (null for a nullable parameter), and the
+    /// attribute must still be there, holding the element default (the CEM literal default, which the library's
+    /// WaElementDefaults table must match). Removing it would make Lit set the property to null, not to its default
+    /// (a slider's max 0, a popup's placement null). Exempt by rule: bool parameters (a removed Lit boolean attribute
+    /// reads false, the default), attributes without a literal CEM default (removal restores the unset state), and
+    /// the bound value of an InputBase control (its live-value sync assigns the property).
+    /// </summary>
+    [Fact]
+    public void RenderedAttributes_FallBackToTheElementDefault_InsteadOfBeingRemoved()
+    {
+        SkipUnlessParityEnabled();
+
+        var checkedCount = 0;
+        var misses = new List<string>();
+        foreach (var element in RenderedElements())
+            misses.AddRange(StickyMisses(element, ref checkedCount));
+
+        // guard the check itself: it must have re-rendered parameters at all
+        if (checkedCount == 0) misses.Add("no parameter was re-rendered at its default, so the sticky rule went unchecked");
+        TestContext.Current.TestOutputHelper?.WriteLine($"{checkedCount} parameters re-rendered at their default");
+
+        AssertNoMisses(misses.Distinct(StringComparer.Ordinal).ToList(), "Attributes removed (or not reset to the element default) after they were rendered");
     }
 
     /// <summary>
@@ -416,6 +445,7 @@ public class RenderedAttributeParityTests
     private const string StringSetKind = "IReadOnlySet<string>";
     private const string PlacementListKind = "IReadOnlyList<WaPlacement>";
     private const string ListKeyPrefix = "list:";
+    private const string DefaultConstantPrefix = "Default";
     private const string ListItemSampleA = "x-item-a";
     private const string ListItemSampleB = "x-item-b";
     private const string AriaPrefix = "aria-";
@@ -1072,10 +1102,108 @@ public class RenderedAttributeParityTests
         foreach (var (attribute, value) in root.Attributes.OrderBy(a => a.Key, StringComparer.Ordinal))
         {
             if (!element.Component.Attributes.TryGetValue(attribute, out var surface) || IsIgnoredAttribute(element.Config, attribute)) continue;
-            if (RendersElementDefault(value, surface)) continue;
 
-            yield return (attribute, $"{element.Tag} ({element.Name}): renders {attribute}=\"{value}\" with no parameter set, " +
-                $"but the element default is {surface.Default ?? "unset"}");
+            // owner rule: an unset parameter renders nothing, not even the element default, so the attribute is
+            // never rendered (and later removed) for a value the element holds anyway
+            yield return (attribute, RendersElementDefault(value, surface)
+                ? $"{element.Tag} ({element.Name}): renders {attribute}=\"{value}\" with no parameter set; it is the element default, which must not be rendered"
+                : $"{element.Tag} ({element.Name}): renders {attribute}=\"{value}\" with no parameter set, but the element default is {surface.Default ?? "unset"}");
+        }
+
+        // a non-nullable parameter set to its own default on the first render is still unset
+        var mapped = MappedAttributes(element).Where(m => m.Property != null).ToLookup(m => m.Property!, m => m.Attribute);
+        var defaults = DefaultInstance(element.Renders.ComponentType);
+        foreach (var render in element.Renders.Samples.Where(s => s.Root.Error == null && s.Sample.Value is not bool && s.Sample.Prerequisites.Count == 0))
+        {
+            var property = render.Sample.Property;
+            if (defaults == null || Nullable.GetUnderlyingType(property.PropertyType) != null || !property.PropertyType.IsValueType) continue;
+            if (!Equals(property.GetValue(defaults), render.Sample.Value)) continue;
+
+            foreach (var attribute in mapped[property].Where(a => render.Root.Attributes.ContainsKey(a) && !element.Renders.Baseline.Attributes.ContainsKey(a)))
+            {
+                yield return (attribute, $"{element.Tag} ({element.Name}.{render.Sample.Label}): renders {attribute}=\"{render.Root.Attributes[attribute]}\" " +
+                    "for the parameter's own default on the first render, which must render nothing");
+            }
+        }
+    }
+
+    // the (i) misses of one element; counts the parameters it re-rendered
+    private static List<string> StickyMisses(RenderedElement element, ref int checkedCount)
+    {
+        var misses = new List<string>();
+        var defaults = DefaultInstance(element.Renders.ComponentType);
+        if (defaults == null || element.Renders.Baseline.Tag != element.Tag) return misses;
+
+        foreach (var (attribute, _, property) in MappedAttributes(element))
+        {
+            if (property == null || EnumValueParityTests.IsBoolType(property.PropertyType) || IsBoundValue(element.Renders.ComponentType, property)) continue;
+
+            var elementDefault = ElementDefaultsTableTests.CemDefaultOf(element.Tag, attribute);
+            if (elementDefault == null) continue;
+
+            // a sample that renders the attribute with another value than the element default
+            var sample = element.Renders.Samples.FirstOrDefault(s => s.Sample.Property == property && s.Root.Error == null
+                && s.Root.Attributes.TryGetValue(attribute, out var value) && !SameAttributeValue(value, elementDefault));
+            if (sample == null) continue;
+
+            var prerequisites = sample.Sample.Prerequisites.Select(p => (p.Name, (object?)p.Value)).ToList();
+            var sets = new IReadOnlyList<(string Name, object? Value)>[]
+            {
+                prerequisites.Append((property.Name, sample.Sample.Value)).ToList(),
+                prerequisites.Append((property.Name, property.GetValue(defaults))).ToList()
+            };
+
+            var after = RenderedWrapperCatalog.RenderSequence(element.Renders.ComponentType, sets, HostileCulture)[1];
+            checkedCount++;
+            var label = $"{element.Tag} ({element.Name}.{sample.Sample.Label}, then {property.Name} back to its default)";
+
+            if (after.Error != null)
+                misses.Add($"{label}: failed to re-render: {after.Error}");
+            else if (!after.Attributes.TryGetValue(attribute, out var rendered))
+                misses.Add($"{label}: removes '{attribute}', so the element property becomes null; it must render the element default \"{elementDefault}\"");
+            else if (!SameAttributeValue(rendered, elementDefault))
+                misses.Add($"{label}: renders {attribute}=\"{rendered}\", expected the element default \"{elementDefault}\"");
+        }
+
+        return misses;
+    }
+
+    // the bound Value of an InputBase control, which the live-value sync assigns to the element property
+    private static bool IsBoundValue(Type componentType, PropertyInfo property)
+        => property.Name == nameof(InputBase<object>.Value) && IsInputBase(componentType);
+
+    private static bool IsInputBase(Type type)
+    {
+        for (var current = type; current != null; current = current.BaseType)
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(InputBase<>)) return true;
+        }
+
+        return false;
+    }
+
+    // whether two attribute texts stand for the same value: numerically for numbers, ordinally otherwise
+    private static bool SameAttributeValue(string value, string other)
+    {
+        if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number)
+            && double.TryParse(other, NumberStyles.Float, CultureInfo.InvariantCulture, out var otherNumber))
+        {
+            return number.Equals(otherNumber);
+        }
+
+        return string.Equals(value, other, StringComparison.Ordinal);
+    }
+
+    // a component instance holding the parameters' C# defaults, or null when the type cannot be created bare
+    private static object? DefaultInstance(Type componentType)
+    {
+        try
+        {
+            return Activator.CreateInstance(componentType);
+        }
+        catch (Exception ex) when (ex is MissingMethodException or TargetInvocationException)
+        {
+            return null;
         }
     }
 
@@ -1098,6 +1226,16 @@ public class RenderedAttributeParityTests
 
             var value = property.GetValue(instance);
             if (value == null) continue;
+
+            // owner rule: a non-nullable default is declared as a named public constant and used as the default
+            if (value is not bool && property.PropertyType.IsValueType && Nullable.GetUnderlyingType(property.PropertyType) == null && !IsBoundValue(element.Renders.ComponentType, property))
+            {
+                var constant = element.Renders.ComponentType.GetField(DefaultConstantPrefix + property.Name, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                if (constant == null || !(constant.IsLiteral || constant.IsDefined(typeof(DecimalConstantAttribute))))
+                    yield return (attribute, $"{element.Tag} ({element.Name}): {property.Name} is non-nullable, but declares no public const {DefaultConstantPrefix}{property.Name} holding its default");
+                else if (!Equals(constant.GetValue(null), value))
+                    yield return (attribute, $"{element.Tag} ({element.Name}): {property.Name} defaults to {Describe(value)}, not to its constant {constant.Name} = {Describe(constant.GetValue(null)!)}");
+            }
 
             var text = DefaultText(value);
             if (text == null || ParameterDefaultMatches(value, text, surface)) continue;

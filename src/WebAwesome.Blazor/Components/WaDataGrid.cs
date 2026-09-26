@@ -338,7 +338,7 @@ public class WaDataGrid : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-data-grid");
+        var attributes = builder.OpenWaElement(this, 0, "wa-data-grid");
 
         // Common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -346,30 +346,30 @@ public class WaDataGrid : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Data grid attributes ('data' and 'columns' are JS properties, pushed separately - see OnAfterRenderAsync/OnParametersSetAsync)
-        builder.AddAttributeIfNotNullOrEmpty(10, "label", Label);
-        builder.AddAttributeIfNotNull(11, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(12, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label);
+        builder.AddAttributeIfNotNull(attributes, 11, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "size", Size?.ToHtmlValue());
         builder.AddAttribute(13, "striped", Striped);
         builder.AddAttribute(14, "with-search", WithSearch);
         builder.AddAttribute(15, "with-column-menu", WithColumnMenu);
         builder.AddAttribute(16, "with-columns-menu", WithColumnsMenu);
         builder.AddAttribute(17, "without-sort-removal", WithoutSortRemoval);
         builder.AddAttribute(18, "sort-desc-first", SortDescFirst);
-        builder.AddAttributeIfNotNull(19, "max-multi-sort", MaxMultiSort);
-        builder.AddAttributeIfNotNull(20, "selectable", Selectable?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(21, "row-key", RowKey);
+        builder.AddAttributeIfNotNull(attributes, 19, "max-multi-sort", MaxMultiSort);
+        builder.AddAttributeIfNotNull(attributes, 20, "selectable", Selectable?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 21, "row-key", RowKey);
         builder.AddAttribute(22, "paginate", Paginate);
-        builder.AddAttributeIfNotNull(23, "page", Page);
-        builder.AddAttributeIfNotNull(24, "page-size", PageSize);
+        builder.AddAttributeIfNotNull(attributes, 23, "page", Page);
+        builder.AddAttributeIfNotNull(attributes, 24, "page-size", PageSize);
         builder.AddAttribute(25, "server", Server);
-        builder.AddAttributeIfNotNull(26, "filter-debounce", FilterDebounce);
+        builder.AddAttributeIfNotNull(attributes, 26, "filter-debounce", FilterDebounce);
         builder.AddAttribute(27, "filter-from-leaf-rows", FilterFromLeafRows);
-        builder.AddTokenListAttribute(28, "group-by", GroupBy, WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceAndCommaSeparators);
-        builder.AddAttributeIfNotNullOrEmpty(29, "child-rows", ChildRows);
+        builder.AddTokenListAttribute(attributes, 28, "group-by", GroupBy, WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceAndCommaSeparators);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 29, "child-rows", ChildRows);
         builder.AddAttribute(30, "resizable", Resizable);
         builder.AddAttribute(31, "reorderable", Reorderable);
         builder.AddAttribute(32, "pinnable", Pinnable);
-        builder.AddAttributeIfNotNull(33, "total", Total);
+        builder.AddAttributeIfNotNull(attributes, 33, "total", Total);
         builder.AddAttribute(34, "loading", Loading);
 
         // Event handlers

@@ -144,7 +144,7 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-time-input");
+        var attributes = builder.OpenWaElement(this, 0, "wa-time-input");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
@@ -152,17 +152,17 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add time-input-specific attributes
-        builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(21, "hour-format", HourFormat?.ToHtmlValue());
-        builder.AddTimeAttribute(22, "min", Min);
-        builder.AddTimeAttribute(23, "max", Max);
-        builder.AddStepAttribute(24, "step", Step);
-        builder.AddAttributeIfNotNull(25, "placement", Placement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(26, "distance", Distance);
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 21, "hour-format", HourFormat?.ToHtmlValue());
+        builder.AddTimeAttribute(attributes, 22, "min", Min);
+        builder.AddTimeAttribute(attributes, 23, "max", Max);
+        builder.AddStepAttribute(attributes, 24, "step", Step);
+        builder.AddAttributeIfNotNull(attributes, 25, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 26, "distance", Distance);
         builder.AddAttribute(27, "open", Open);
         builder.AddAttribute(28, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 29, this);

@@ -95,16 +95,16 @@ public class WaBadge : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-badge");
+        var attributes = builder.OpenWaElement(this, 0, "wa-badge");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "variant", Variant?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(5, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "appearance", Appearance?.ToHtmlValue());
         builder.AddAttribute(6, "pill", Pill);
-        builder.AddAttributeIfNotNull(7, "attention", Attention?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 7, "attention", Attention?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __badgeReference => Element = __badgeReference);

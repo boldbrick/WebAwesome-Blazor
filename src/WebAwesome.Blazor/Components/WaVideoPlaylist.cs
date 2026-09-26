@@ -83,13 +83,13 @@ public class WaVideoPlaylist : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-video-playlist");
+        var attributes = builder.OpenWaElement(this, 0, "wa-video-playlist");
 
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", Class);
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "controls", Controls?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(5, "icon-library", IconLibrary);
+        builder.AddAttributeIfNotNull(attributes, 4, "controls", Controls?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "icon-library", IconLibrary);
 
         builder.AddAttributeIfHasDelegate(20, "onwa-video-change", OnVideoChange);
 

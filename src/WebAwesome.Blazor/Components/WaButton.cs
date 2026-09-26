@@ -242,36 +242,36 @@ public class WaButton : ComponentBase, IFormValidation
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-button");
+        var attributes = builder.OpenWaElement(this, 0, "wa-button");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "variant", Variant?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(5, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(6, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 6, "size", Size?.ToHtmlValue());
         builder.AddAttribute(7, "pill", Pill);
         builder.AddAttribute(8, "with-caret", WithCaret);
         builder.AddAttribute(9, "loading", Loading);
         builder.AddAttribute(10, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(11, "type", Type?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "type", Type?.ToHtmlValue());
 
         // Link behavior attributes
-        builder.AddAttributeIfNotNullOrEmpty(12, "href", Href);
-        builder.AddAttributeIfNotNull(13, "target", Target?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(14, "download", Download);
-        builder.AddAttributeIfNotNullOrEmpty(15, "rel", Rel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "href", Href);
+        builder.AddAttributeIfNotNull(attributes, 13, "target", Target?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 14, "download", Download);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 15, "rel", Rel);
 
         // Form-submission attributes
-        builder.AddAttributeIfNotNullOrEmpty(16, "form", Form);
-        builder.AddAttributeIfNotNullOrEmpty(17, "formaction", FormAction);
-        builder.AddAttributeIfNotNull(18, "formenctype", FormEncType?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(19, "formmethod", FormMethod?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 16, "form", Form);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 17, "formaction", FormAction);
+        builder.AddAttributeIfNotNull(attributes, 18, "formenctype", FormEncType?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 19, "formmethod", FormMethod?.ToHtmlValue());
         builder.AddBooleanAttribute(60, "formnovalidate", FormNoValidate);
-        builder.AddAttributeIfNotNullOrEmpty(61, "formtarget", FormTarget);
-        builder.AddAttributeIfNotNullOrEmpty(62, "name", Name);
-        builder.AddAttributeIfNotNullOrEmpty(63, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 61, "formtarget", FormTarget);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 62, "name", Name);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 63, "value", Value);
 
         // SSR hydration hints for the start/end slots
         builder.AddAttribute(64, "with-start", WithStart);

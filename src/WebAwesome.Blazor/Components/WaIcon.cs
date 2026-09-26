@@ -107,9 +107,14 @@ public class WaIcon : ComponentBase
     [Parameter] public WaFlip? Flip { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Rotate"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultRotate = 0;
+
+    /// <summary>
     /// Sets the rotation degree of the icon.
     /// </summary>
-    [Parameter] public int Rotate { get; set; } = 0;
+    [Parameter] public int Rotate { get; set; } = DefaultRotate;
 
     /// <summary>
     /// Sets the icon canvas — the box the icon is centered within. Unset renders as fixed
@@ -141,7 +146,7 @@ public class WaIcon : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-icon");
+        var attributes = builder.OpenWaElement(this, 0, "wa-icon");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -149,18 +154,18 @@ public class WaIcon : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add icon-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "name", Name);
-        builder.AddAttributeIfNotNullOrEmpty(11, "library", Library);
-        builder.AddAttributeIfNotNullOrEmpty(12, "family", Family);
-        builder.AddAttributeIfNotNullOrEmpty(13, "variant", Variant);
-        builder.AddAttributeIfNotNullOrEmpty(14, "src", Src);
-        builder.AddAttributeIfNotNullOrEmpty(15, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "name", Name);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "library", Library);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "family", Family);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "variant", Variant);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 14, "src", Src);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 15, "label", Label);
         builder.AddAttribute(16, "auto-width", AutoWidth);
         builder.AddAttribute(17, "swap-opacity", SwapOpacity);
-        builder.AddAttributeIfNotNull(18, "animation", Animation?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(19, "flip", Flip?.ToHtmlValue());
-        builder.AddNumberAttribute(20, "rotate", Rotate);
-        builder.AddAttributeIfNotNull(21, "canvas", Canvas?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 18, "animation", Animation?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 19, "flip", Flip?.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 20, "rotate", Rotate);
+        builder.AddAttributeIfNotNull(attributes, 21, "canvas", Canvas?.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(30, "onwa-load", OnLoad);

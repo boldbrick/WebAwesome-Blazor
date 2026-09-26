@@ -40,9 +40,14 @@ public class WaScroller : ComponentBase
 
     // Scroller properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Horizontal;
+
+    /// <summary>
     /// The scroller's orientation.
     /// </summary>
-    [Parameter] public WaOrientation Orientation { get; set; } = WaOrientation.Horizontal;
+    [Parameter] public WaOrientation Orientation { get; set; } = DefaultOrientation;
 
     /// <summary>
     /// Removes the visible scrollbar.
@@ -70,7 +75,7 @@ public class WaScroller : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-scroller");
+        var attributes = builder.OpenWaElement(this, 0, "wa-scroller");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -78,7 +83,7 @@ public class WaScroller : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add scroller-specific attributes
-        builder.AddAttribute(4, "orientation", Orientation.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue());
         builder.AddAttribute(5, "without-scrollbar", WithoutScrollbar);
         builder.AddAttribute(6, "without-shadow", WithoutShadow);
 
