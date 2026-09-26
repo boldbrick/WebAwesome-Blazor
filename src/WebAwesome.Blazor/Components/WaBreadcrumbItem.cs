@@ -47,6 +47,12 @@ public class WaBreadcrumbItem : ComponentBase
     [Parameter] public string? Href { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Rel"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultRel = "noreferrer noopener";
+
+    /// <summary>
     /// The <c>rel</c> attribute to use when <see cref="Href"/> is set.
     /// </summary>
     [Parameter] public string? Rel { get; set; }
@@ -115,9 +121,9 @@ public class WaBreadcrumbItem : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add breadcrumb item-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "href", Href);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "rel", Rel);
-        builder.AddAttributeIfNotNull(attributes, 12, "target", Target?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(10, "href", Href);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "rel", Rel, DefaultRel);
+        builder.AddAttributeIfNotNull(12, "target", Target?.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);

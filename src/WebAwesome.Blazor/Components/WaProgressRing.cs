@@ -51,6 +51,12 @@ public class WaProgressRing : ComponentBase
     [Parameter] public int Value { get; set; } = DefaultValue;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// A label used for assistive devices, such as screen readers. If in doubt, this label should describe
     /// the progress ring in its current state, e.g. "Copying files, 30% complete".
     /// </summary>
@@ -78,8 +84,8 @@ public class WaProgressRing : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddNumberAttribute(attributes, 4, "value", Value);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "label", Label);
+        builder.AddNumberAttribute(attributes, 4, "value", Value, DefaultValue);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "label", Label, DefaultLabel);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __progressRingReference => Element = __progressRingReference);

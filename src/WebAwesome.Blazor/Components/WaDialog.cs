@@ -50,6 +50,12 @@ public class WaDialog : ComponentBase
 
     // Dialog properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// The dialog's label as displayed in the header. A relevant label is required for proper accessibility. If you
     /// need to display HTML, use <see cref="LabelContent"/> instead.
     /// </summary>
@@ -141,7 +147,7 @@ public class WaDialog : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add dialog-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label, DefaultLabel);
         builder.AddAttribute(11, "open", Open);
         builder.AddAttribute(12, "without-header", WithoutHeader);
         builder.AddAttribute(13, "light-dismiss", LightDismiss);

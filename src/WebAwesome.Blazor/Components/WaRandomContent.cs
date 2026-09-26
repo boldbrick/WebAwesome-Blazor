@@ -125,11 +125,11 @@ public class WaRandomContent : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddNumberAttribute(attributes, 4, "items", Items);
-        builder.AddDefaultedAttribute(attributes, 5, "mode", Mode.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 4, "items", Items, DefaultItems);
+        builder.AddDefaultedAttribute(attributes, 5, "mode", Mode.ToHtmlValue(), DefaultMode.ToHtmlValue());
         builder.AddAttribute(6, "autoplay", Autoplay);
-        builder.AddNumberAttribute(attributes, 7, "autoplay-interval", AutoplayInterval);
-        builder.AddDefaultedAttribute(attributes, 8, "animation", Animation.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 7, "autoplay-interval", AutoplayInterval, DefaultAutoplayInterval);
+        builder.AddDefaultedAttribute(attributes, 8, "animation", Animation.ToHtmlValue(), DefaultAnimation.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(15, "onwa-content-change", OnContentChange);

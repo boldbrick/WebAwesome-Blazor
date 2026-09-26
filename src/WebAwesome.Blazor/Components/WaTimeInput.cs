@@ -32,6 +32,12 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Autocomplete"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultAutocomplete = "";
+
+    /// <summary>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
@@ -41,14 +47,32 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
     #region ------ Visual &amp; Behavior Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
+
+    /// <summary>
     /// The time picker's visual appearance.
     /// </summary>
     [Parameter] public WaInputAppearance? Appearance { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="HourFormat"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaTimeHourFormat DefaultHourFormat = WaTimeHourFormat.Auto;
+
+    /// <summary>
     /// Whether the UI uses a 12-hour or 24-hour clock. <see cref="WaTimeHourFormat.Auto"/> follows the resolved locale.
     /// </summary>
     [Parameter] public WaTimeHourFormat? HourFormat { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Min"/>: no bound, which the element holds as the empty attribute; it is rendered in
+    /// place of null once the attribute has been rendered.
+    /// </summary>
+    public static readonly TimeOnly? DefaultMin = null;
 
     /// <summary>
     /// The earliest selectable time; null sets no bound. May be later than <see cref="Max"/> to represent an overnight
@@ -57,9 +81,21 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
     [Parameter] public TimeOnly? Min { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Max"/>: no bound, which the element holds as the empty attribute; it is rendered in
+    /// place of null once the attribute has been rendered.
+    /// </summary>
+    public static readonly TimeOnly? DefaultMax = null;
+
+    /// <summary>
     /// The latest selectable time; null sets no bound. Rendered as <c>HH:mm</c>, or <c>HH:mm:ss</c> when it has seconds.
     /// </summary>
     [Parameter] public TimeOnly? Max { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Step"/> (60 seconds, minute precision): what the element holds while the
+    /// parameter is null, and what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public static readonly WaStep DefaultStep = 60;
 
     /// <summary>
     /// The granularity, in seconds, matching HTML <c>&lt;input type="time"&gt;</c>. The default <c>60</c> hides the
@@ -69,10 +105,22 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
     [Parameter] public WaStep? Step { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPickerPlacement DefaultPlacement = WaPickerPlacement.BottomStart;
+
+    /// <summary>
     /// The preferred placement of the time picker popup, above or below the field. When null, the attribute is omitted and
     /// Web Awesome's default (bottom-start) applies.
     /// </summary>
     [Parameter] public WaPickerPlacement? Placement { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Distance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultDistance = 0;
 
     /// <summary>
     /// Distance in pixels between the popup and the input.
@@ -152,17 +200,17 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete, DefaultAutocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add time-input-specific attributes
-        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 21, "hour-format", HourFormat?.ToHtmlValue());
-        builder.AddTimeAttribute(attributes, 22, "min", Min);
-        builder.AddTimeAttribute(attributes, 23, "max", Max);
-        builder.AddStepAttribute(attributes, 24, "step", Step);
-        builder.AddAttributeIfNotNull(attributes, 25, "placement", Placement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 26, "distance", Distance);
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 21, "hour-format", HourFormat?.ToHtmlValue(), DefaultHourFormat.ToHtmlValue());
+        builder.AddTimeAttribute(attributes, 22, "min", Min, DefaultMin);
+        builder.AddTimeAttribute(attributes, 23, "max", Max, DefaultMax);
+        builder.AddStepAttribute(attributes, 24, "step", Step, DefaultStep);
+        builder.AddAttributeIfNotNull(attributes, 25, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 26, "distance", Distance, DefaultDistance);
         builder.AddAttribute(27, "open", Open);
         builder.AddAttribute(28, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 29, this);

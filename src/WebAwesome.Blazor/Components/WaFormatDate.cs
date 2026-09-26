@@ -59,6 +59,12 @@ public class WaFormatDate : ComponentBase
     [Parameter] public string? Lang { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="HourFormat"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaHourFormat DefaultHourFormat = WaHourFormat.Auto;
+
+    /// <summary>
     /// Whether to use 12-hour or 24-hour time when displaying the hour; <see cref="WaHourFormat.Auto"/> follows the
     /// locale. When unset, the attribute is omitted and Web Awesome's default ("auto") applies.
     /// </summary>
@@ -129,21 +135,21 @@ public class WaFormatDate : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddDateTimeOffsetAttribute(attributes, 4, "date", Date);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "lang", Lang);
-        builder.AddAttributeIfNotNull(attributes, 6, "hour-format", HourFormat?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "time-zone", TimeZone);
+        builder.AddDateTimeOffsetAttribute(4, "date", Date);
+        builder.AddAttributeIfNotNullOrEmpty(5, "lang", Lang);
+        builder.AddAttributeIfNotNull(attributes, 6, "hour-format", HourFormat?.ToHtmlValue(), DefaultHourFormat.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(7, "time-zone", TimeZone);
 
         // Add formatting options
-        builder.AddAttributeIfNotNull(attributes, 10, "weekday", Weekday?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 11, "era", Era?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 12, "year", Year?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 13, "month", Month?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 14, "day", Day?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 15, "hour", Hour?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 16, "minute", Minute?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 17, "second", Second?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 18, "time-zone-name", TimeZoneName?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(10, "weekday", Weekday?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(11, "era", Era?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(12, "year", Year?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(13, "month", Month?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(14, "day", Day?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(15, "hour", Hour?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(16, "minute", Minute?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(17, "second", Second?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(18, "time-zone-name", TimeZoneName?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __formatDateReference => Element = __formatDateReference);

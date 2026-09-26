@@ -204,6 +204,9 @@ internal static class RenderedWrapperCatalog
     private const string IconTag = "wa-icon";
     private const string IconNameAttribute = "name";
     private const string ScriptTag = "script";
+    private const string AttributeMemoryTypeName = "WebAwesome.Blazor.Base.WaAttributeMemory";
+    private const string AttributeMemoryOfMethod = "Of";
+    private const string PassedDefaultsPropertyName = "PassedDefaults";
 
     private static readonly Lazy<IReadOnlyList<Type>> wrapperTypes = new(() => ApiParityData.WrapperAssembly.GetTypes()
         .Where(IsWrapperComponent)
@@ -238,13 +241,39 @@ internal static class RenderedWrapperCatalog
             var wrapperId = FirstComponentId(CurrentFrames(context.Renderer, rendered.ComponentId));
             return wrapperId == null
                 ? new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), null)
-                : ReadRootAttributes(context.Renderer, wrapperId.Value);
+                : ReadRootAttributes(context.Renderer, wrapperId.Value) with { PassedDefaults = PassedDefaultsOf(rendered, componentType) };
         }
         catch (Exception ex)
         {
             return new RenderedRoot(null, new Dictionary<string, string>(StringComparer.Ordinal), $"{ex.GetType().Name}: {ex.Message}");
         }
     }
+
+    // the element defaults the wrapper's sticky call sites passed during the render, by attribute name, read from its
+    // WaAttributeMemory (internal to the library, hence the reflection)
+    private static IReadOnlyDictionary<string, string> PassedDefaultsOf(IRenderedComponent<ContainerFragment> rendered, Type componentType)
+    {
+        var instance = FindInstanceMethod.MakeGenericMethod(componentType).Invoke(null, [rendered]);
+        if (instance == null) return new Dictionary<string, string>(StringComparer.Ordinal);
+
+        var memory = AttributeMemoryOf.Invoke(null, [instance])!;
+        var passed = (IReadOnlyDictionary<string, string>)PassedDefaultsProperty.GetValue(memory)!;
+        return new Dictionary<string, string>(passed, StringComparer.Ordinal);
+    }
+
+    private static object? FindInstance<TComponent>(IRenderedComponent<ContainerFragment> rendered) where TComponent : IComponent
+        => rendered.FindComponents<TComponent>().Select(c => (object)c.Instance).FirstOrDefault();
+
+    private static readonly MethodInfo FindInstanceMethod = typeof(RenderedWrapperCatalog)
+        .GetMethod(nameof(FindInstance), BindingFlags.NonPublic | BindingFlags.Static)!;
+
+    private static readonly Type AttributeMemoryType = ApiParityData.WrapperAssembly.GetType(AttributeMemoryTypeName, throwOnError: true)!;
+
+    private static readonly MethodInfo AttributeMemoryOf = AttributeMemoryType.GetMethod(AttributeMemoryOfMethod, BindingFlags.Public | BindingFlags.Static)
+        ?? throw new InvalidOperationException($"{AttributeMemoryTypeName}.{AttributeMemoryOfMethod} not found");
+
+    private static readonly PropertyInfo PassedDefaultsProperty = AttributeMemoryType.GetProperty(PassedDefaultsPropertyName, BindingFlags.Public | BindingFlags.Instance)
+        ?? throw new InvalidOperationException($"{AttributeMemoryTypeName}.{PassedDefaultsPropertyName} not found");
 
     private static RenderedSlots RenderSlotSet(BunitContext context, Type componentType, IReadOnlyList<(string Name, object? Value)> parameters)
     {
@@ -547,7 +576,14 @@ internal sealed record RenderedWrapper(
 /// <param name="Tag">Local name of the rendered root element, or null when nothing (or no element) was rendered</param>
 /// <param name="Attributes">Non-handler attributes of the root element; a present boolean attribute has an empty value</param>
 /// <param name="Error">The render exception, or null when the component rendered</param>
-internal sealed record RenderedRoot(string? Tag, IReadOnlyDictionary<string, string> Attributes, string? Error);
+internal sealed record RenderedRoot(string? Tag, IReadOnlyDictionary<string, string> Attributes, string? Error)
+{
+    /// <summary>
+    /// The element defaults the wrapper's sticky call sites passed during the render, by attribute name, in their wire
+    /// form (RenderRoots only; empty elsewhere).
+    /// </summary>
+    public IReadOnlyDictionary<string, string> PassedDefaults { get; init; } = new Dictionary<string, string>(StringComparer.Ordinal);
+}
 
 /// <summary>
 /// The root element of one render of a wrapper and the slots of its direct children, read from the markup.

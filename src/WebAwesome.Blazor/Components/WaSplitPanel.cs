@@ -61,6 +61,12 @@ public class WaSplitPanel : ComponentBase
     [Parameter] public WaOrientation Orientation { get; set; } = DefaultOrientation;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Position"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const decimal DefaultPosition = 50m;
+
+    /// <summary>
     /// The current position of the divider from the primary panel's edge as a percentage between 0 and 100. Defaults to 50% of the container's initial size.
     /// </summary>
     [Parameter] public decimal? Position { get; set; }
@@ -136,13 +142,13 @@ public class WaSplitPanel : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 5, "position", Position);
-        builder.AddAttributeIfNotNull(attributes, 6, "position-in-pixels", PositionInPixels);
-        builder.AddAttributeIfNotNull(attributes, 7, "primary", Primary?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "position", Position, DefaultPosition);
+        builder.AddAttributeIfNotNull(6, "position-in-pixels", PositionInPixels);
+        builder.AddAttributeIfNotNull(7, "primary", Primary?.ToHtmlValue());
         builder.AddAttribute(8, "disabled", Disabled);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 9, "snap", Snap);
-        builder.AddNumberAttribute(attributes, 10, "snap-threshold", SnapThreshold);
+        builder.AddAttributeIfNotNullOrEmpty(9, "snap", Snap);
+        builder.AddNumberAttribute(attributes, 10, "snap-threshold", SnapThreshold, DefaultSnapThreshold);
 
         // Add event handlers; the interop module's createEventArgs reads position and
         // position-in-pixels from the element, as the wa-reposition event carries no detail

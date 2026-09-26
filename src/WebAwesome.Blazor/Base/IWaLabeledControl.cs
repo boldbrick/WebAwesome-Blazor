@@ -11,6 +11,18 @@ namespace WebAwesome.Blazor.Base;
 public interface IWaLabeledControl
 {
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/> on every labeled element: what the element holds while the
+    /// parameter is null, and what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    const string DefaultLabel = "";
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Hint"/> on every labeled element: what the element holds while the
+    /// parameter is null, and what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    const string DefaultHint = "";
+
+    /// <summary>
     /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes precedence
     /// when set.
     /// </summary>

@@ -40,9 +40,21 @@ public class WaBadge : ComponentBase
 
     // Visual properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVariant DefaultVariant = WaVariant.Brand;
+
+    /// <summary>
     /// The badge's theme variant. Defaults to <c>brand</c> if not within another element with a variant.
     /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaBadgeAppearance DefaultAppearance = WaBadgeAppearance.Accent;
 
     /// <summary>
     /// The badge's visual appearance.
@@ -53,6 +65,12 @@ public class WaBadge : ComponentBase
     /// Draws a pill-style badge with rounded edges.
     /// </summary>
     [Parameter] public bool Pill { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Attention"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaAttention DefaultAttention = WaAttention.None;
 
     /// <summary>
     /// Adds an animation to draw attention to the badge.
@@ -101,10 +119,10 @@ public class WaBadge : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(attributes, 4, "variant", Variant?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 5, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
         builder.AddAttribute(6, "pill", Pill);
-        builder.AddAttributeIfNotNull(attributes, 7, "attention", Attention?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 7, "attention", Attention?.ToHtmlValue(), DefaultAttention.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __badgeReference => Element = __badgeReference);

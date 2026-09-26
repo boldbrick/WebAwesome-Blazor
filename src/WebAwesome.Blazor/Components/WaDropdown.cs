@@ -67,6 +67,12 @@ public class WaDropdown : ComponentBase
     [Parameter] public WaPlacement Placement { get; set; } = DefaultPlacement;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Distance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultDistance = 0;
+
+    /// <summary>
     /// The distance of the dropdown menu from its trigger, in pixels. Null (the default) leaves the element's
     /// default, 0.
     /// </summary>
@@ -81,6 +87,12 @@ public class WaDropdown : ComponentBase
     /// The offset of the dropdown menu along its trigger.
     /// </summary>
     [Parameter] public int Skidding { get; set; } = DefaultSkidding;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The size of dropdown items slotted into the default slot (i.e. <c>wa-dropdown-item</c>).
@@ -146,10 +158,10 @@ public class WaDropdown : ComponentBase
 
         // Add dropdown-specific attributes
         builder.AddAttribute(10, "open", Open);
-        builder.AddDefaultedAttribute(attributes, 11, "placement", Placement.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 12, "distance", Distance);
-        builder.AddNumberAttribute(attributes, 13, "skidding", Skidding);
-        builder.AddAttributeIfNotNull(attributes, 14, "size", Size?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 11, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "distance", Distance, DefaultDistance);
+        builder.AddNumberAttribute(attributes, 13, "skidding", Skidding, DefaultSkidding);
+        builder.AddAttributeIfNotNull(attributes, 14, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);

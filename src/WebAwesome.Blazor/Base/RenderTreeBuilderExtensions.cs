@@ -577,10 +577,11 @@ internal static class RenderTreeBuilderExtensions
     #region ------ Sticky attributes of the Web Awesome element ------
 
     // The overloads taking a WaAttributeMemory render an attribute of the wrapper's Web Awesome element under the
-    // sticky rule (see WaAttributeMemory): an unset parameter renders nothing, and once rendered, the attribute is
-    // never removed again, but falls back to the element default. The nullable-value overloads treat null as unset;
-    // AddNumberAttribute and AddDefaultedAttribute, for non-nullable parameters, treat the element default as unset
-    // until the attribute has been rendered. Plain boolean attributes keep Blazor's present/absent rendering.
+    // sticky rule (see WaAttributeMemory), with the element default passed explicitly by the call site, as the
+    // wrapper's public Default<Name> constant: while the attribute was never rendered, a null (unset) value renders
+    // nothing, and so does the default value of a non-nullable parameter (AddNumberAttribute, AddDefaultedAttribute);
+    // once rendered, the attribute is never removed again, but falls back to the passed default. An attribute without a literal element default uses the plain overload, whose removal restores
+    // the unset state; plain boolean attributes keep Blazor's present/absent rendering.
 
     /// <summary>
     /// Opens the wrapper's Web Awesome element and returns the component's attribute memory for its attributes.
@@ -592,14 +593,12 @@ internal static class RenderTreeBuilderExtensions
     /// <returns>The attribute memory to pass to the sticky attribute helpers</returns>
     public static WaAttributeMemory OpenWaElement(this RenderTreeBuilder builder, object component, int sequence, string tag)
     {
-        var memory = WaAttributeMemory.Of(component);
-        memory.Open(tag);
         builder.OpenElement(sequence, tag);
-        return memory;
+        return WaAttributeMemory.Of(component);
     }
 
     /// <summary>
-    /// Adds a sticky attribute of a nullable parameter, converted with the invariant culture; see the non-sticky overload.
+    /// Adds a sticky attribute, converted with the invariant culture; see the non-sticky overload.
     /// </summary>
     /// <typeparam name="T">Type of the value</typeparam>
     /// <param name="builder">Render tree builder</param>
@@ -607,8 +606,9 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null is unset</param>
-    public static void AddAttributeIfNotNull<T>(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, T? value)
-        => memory.Render(builder, sequence, name, value == null ? null : FormatInvariant(value), omitWhileDefault: false);
+    /// <param name="defaultValue">The element default, rendered in place of null or the default once the attribute was rendered</param>
+    public static void AddAttributeIfNotNull<T>(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, T? value, T defaultValue)
+        => memory.Render(builder, sequence, name, value == null ? null : FormatInvariant(value), FormatInvariant(defaultValue) ?? string.Empty, omitWhileDefault: false);
 
     /// <summary>
     /// Adds a sticky string attribute; null or empty is unset.
@@ -618,12 +618,13 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null or empty is unset</param>
-    public static void AddAttributeIfNotNullOrEmpty(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, string? value)
-        => memory.Render(builder, sequence, name, string.IsNullOrEmpty(value) ? null : value, omitWhileDefault: false);
+    /// <param name="defaultValue">The element default, rendered in place of an unset value or the default once the attribute was rendered</param>
+    public static void AddAttributeIfNotNullOrEmpty(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, string? value,
+        string defaultValue)
+        => memory.Render(builder, sequence, name, string.IsNullOrEmpty(value) ? null : value, defaultValue, omitWhileDefault: false);
 
     /// <summary>
-    /// Adds the sticky attribute of a non-nullable number parameter, formatted with the invariant culture: nothing
-    /// while it holds the element default and was never rendered.
+    /// Adds the sticky attribute of a non-nullable number parameter, formatted with the invariant culture.
     /// </summary>
     /// <typeparam name="T">Number type</typeparam>
     /// <param name="builder">Render tree builder</param>
@@ -631,45 +632,35 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value</param>
-    public static void AddNumberAttribute<T>(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, T value)
+    /// <param name="defaultValue">The element default: nothing is rendered while the value equals it and the attribute was never rendered</param>
+    public static void AddNumberAttribute<T>(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, T value, T defaultValue)
         where T : struct, IFormattable
-        => memory.Render(builder, sequence, name, FormatInvariant(value), omitWhileDefault: true);
+        => memory.Render(builder, sequence, name, FormatInvariant(value), FormatInvariant(defaultValue)!, omitWhileDefault: true);
 
     /// <summary>
-    /// Adds the sticky attribute of a non-nullable parameter in its wire form (an enum's ToHtmlValue()): nothing while
-    /// it holds the element default and was never rendered.
+    /// Adds the sticky attribute of a non-nullable parameter in its wire form (an enum's ToHtmlValue()).
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="memory">The component's attribute memory</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value</param>
-    public static void AddDefaultedAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, string value)
-        => memory.Render(builder, sequence, name, value, omitWhileDefault: true);
+    /// <param name="defaultValue">The element default in the same wire form: nothing is rendered while the value equals it and the attribute was never rendered</param>
+    public static void AddDefaultedAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, string value, string defaultValue)
+        => memory.Render(builder, sequence, name, value, defaultValue, omitWhileDefault: true);
 
     /// <summary>
-    /// Adds a sticky attribute read by a "true"/"false" converter; see the non-sticky overload. Returning to null
-    /// renders the element default (spellcheck: "true" on wa-input and wa-textarea), because the converter reads a
-    /// removed attribute as false.
+    /// Adds a sticky attribute read by a "true"/"false" converter; see the non-sticky overload. The converter reads a
+    /// removed attribute as false, so once rendered, a return to null renders the default ("true" for spellcheck).
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="memory">The component's attribute memory</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null is unset</param>
-    public static void AddTrueFalseAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, bool? value)
-        => memory.Render(builder, sequence, name, value.HasValue ? (value.Value ? Constants.TrueAttributeValue : Constants.FalseAttributeValue) : null, omitWhileDefault: false);
-
-    /// <summary>
-    /// Adds a sticky attribute read by an "on"/"off" converter; see the non-sticky overload.
-    /// </summary>
-    /// <param name="builder">Render tree builder</param>
-    /// <param name="memory">The component's attribute memory</param>
-    /// <param name="sequence">Sequence number for the attribute frame</param>
-    /// <param name="name">Attribute name</param>
-    /// <param name="value">Attribute value; null is unset</param>
-    public static void AddOnOffAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, bool? value)
-        => memory.Render(builder, sequence, name, value.HasValue ? (value.Value ? Constants.OnAttributeValue : Constants.OffAttributeValue) : null, omitWhileDefault: false);
+    /// <param name="defaultValue">The element default, rendered in place of null or the default once the attribute was rendered</param>
+    public static void AddTrueFalseAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, bool? value, bool defaultValue)
+        => memory.Render(builder, sequence, name, value.HasValue ? TrueFalseText(value.Value) : null, TrueFalseText(defaultValue), omitWhileDefault: false);
 
     /// <summary>
     /// Adds a sticky step attribute; see the non-sticky overload.
@@ -679,8 +670,9 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null is unset</param>
-    public static void AddStepAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, WaStep? value)
-        => memory.Render(builder, sequence, name, value?.ToString(), omitWhileDefault: false);
+    /// <param name="defaultValue">The element default, rendered in place of null or the default once the attribute was rendered</param>
+    public static void AddStepAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, WaStep? value, WaStep defaultValue)
+        => memory.Render(builder, sequence, name, value?.ToString(), defaultValue.ToString(), omitWhileDefault: false);
 
     /// <summary>
     /// Adds a sticky date attribute (ISO <c>yyyy-MM-dd</c>); see the non-sticky overload.
@@ -690,8 +682,13 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null is unset</param>
-    public static void AddDateAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateOnly? value)
-        => memory.Render(builder, sequence, name, value.HasValue ? WaWireFormat.FormatDate(value.Value) : null, omitWhileDefault: false);
+    /// <param name="defaultValue">
+    /// The element default, rendered in place of null or the default once the attribute was rendered; null stands for
+    /// the element's "no date", the empty attribute
+    /// </param>
+    public static void AddDateAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateOnly? value, DateOnly? defaultValue)
+        => memory.Render(builder, sequence, name, value.HasValue ? WaWireFormat.FormatDate(value.Value) : null,
+            defaultValue.HasValue ? WaWireFormat.FormatDate(defaultValue.Value) : string.Empty, omitWhileDefault: false);
 
     /// <summary>
     /// Adds a sticky time bound attribute; see the non-sticky overload.
@@ -701,8 +698,13 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null is unset</param>
-    public static void AddTimeAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, TimeOnly? value)
-        => memory.Render(builder, sequence, name, value.HasValue ? WaWireFormat.FormatTimeBound(value.Value) : null, omitWhileDefault: false);
+    /// <param name="defaultValue">
+    /// The element default, rendered in place of null or the default once the attribute was rendered; null stands for
+    /// the element's "no bound", the empty attribute
+    /// </param>
+    public static void AddTimeAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, TimeOnly? value, TimeOnly? defaultValue)
+        => memory.Render(builder, sequence, name, value.HasValue ? WaWireFormat.FormatTimeBound(value.Value) : null,
+            defaultValue.HasValue ? WaWireFormat.FormatTimeBound(defaultValue.Value) : string.Empty, omitWhileDefault: false);
 
     /// <summary>
     /// Adds a sticky date-list attribute; null or empty is unset. See the non-sticky overload.
@@ -712,8 +714,11 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null or empty is unset</param>
-    public static void AddDateSetAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, IReadOnlySet<DateOnly>? value)
-        => memory.Render(builder, sequence, name, value is { Count: > 0 } ? WaWireFormat.FormatDates(value) : null, omitWhileDefault: false);
+    /// <param name="defaultValue">The element default (an empty set renders as the empty attribute), rendered in place of an unset value once the attribute was rendered</param>
+    public static void AddDateSetAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, IReadOnlySet<DateOnly>? value,
+        IReadOnlySet<DateOnly> defaultValue)
+        => memory.Render(builder, sequence, name, value is { Count: > 0 } ? WaWireFormat.FormatDates(value) : null, WaWireFormat.FormatDates(defaultValue),
+            omitWhileDefault: false);
 
     /// <summary>
     /// Adds a sticky weekday-list attribute; null or empty is unset. See the non-sticky overload.
@@ -723,19 +728,27 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null or empty is unset</param>
-    public static void AddDaysOfWeekAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, IReadOnlySet<DayOfWeek>? value)
-        => memory.Render(builder, sequence, name, value is { Count: > 0 } ? WaWireFormat.FormatDaysOfWeek(value) : null, omitWhileDefault: false);
+    /// <param name="defaultValue">The element default (an empty set renders as the empty attribute), rendered in place of an unset value once the attribute was rendered</param>
+    public static void AddDaysOfWeekAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, IReadOnlySet<DayOfWeek>? value,
+        IReadOnlySet<DayOfWeek> defaultValue)
+        => memory.Render(builder, sequence, name, value is { Count: > 0 } ? WaWireFormat.FormatDaysOfWeek(value) : null,
+            WaWireFormat.FormatDaysOfWeek(defaultValue), omitWhileDefault: false);
 
     /// <summary>
-    /// Adds a sticky instant attribute; see the non-sticky overload.
+    /// Adds a sticky instant attribute whose element default is the current instant, computed when the element is set
+    /// up (<c>date = new Date()</c>): nothing while unset, the value when set, and once rendered, a return to null
+    /// renders the clock's current instant, because a removed attribute would read as the 1970 epoch.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="memory">The component's attribute memory</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null is unset</param>
-    public static void AddDateTimeOffsetAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateTimeOffset? value)
-        => memory.Render(builder, sequence, name, value.HasValue ? WaWireFormat.FormatInstant(value.Value) : null, omitWhileDefault: false);
+    /// <param name="clock">The clock the current instant is read from, only when it is rendered</param>
+    public static void AddDateTimeOffsetAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateTimeOffset? value,
+        TimeProvider clock)
+        => memory.Render(builder, sequence, name, value.HasValue ? WaWireFormat.FormatInstant(value.Value) : null,
+            () => WaWireFormat.FormatInstant(clock.GetUtcNow()));
 
     /// <summary>
     /// Adds a sticky number-list attribute; null or empty is unset. See the non-sticky overload.
@@ -745,9 +758,12 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null or empty is unset</param>
+    /// <param name="defaultValue">The element default (an empty list renders as the empty attribute), rendered in place of an unset value once the attribute was rendered</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown for a number that is not finite</exception>
-    public static void AddNumberListAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, IReadOnlyList<double>? value)
-        => memory.Render(builder, sequence, name, value is { Count: > 0 } ? WaWireFormat.FormatNumbers(value, WaWireFormat.SpaceSeparator) : null, omitWhileDefault: false);
+    public static void AddNumberListAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, IReadOnlyList<double>? value,
+        IReadOnlyList<double> defaultValue)
+        => memory.Render(builder, sequence, name, value is { Count: > 0 } ? WaWireFormat.FormatNumbers(value, WaWireFormat.SpaceSeparator) : null,
+            WaWireFormat.FormatNumbers(defaultValue, WaWireFormat.SpaceSeparator), omitWhileDefault: false);
 
     /// <summary>
     /// Adds a sticky token-list attribute; null or empty is unset. See the non-sticky overload.
@@ -757,26 +773,14 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null or empty is unset</param>
+    /// <param name="defaultValue">The element default (an empty list renders as the empty attribute), rendered in place of an unset value once the attribute was rendered</param>
     /// <param name="separator">The separator the element splits the attribute on</param>
     /// <param name="forbidden">The characters the element also splits on, which a token must not contain</param>
     /// <exception cref="ArgumentException">Thrown for an empty token or one containing a forbidden character</exception>
     public static void AddTokenListAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name,
-        IReadOnlyCollection<string>? value, string separator, char[] forbidden)
-        => memory.Render(builder, sequence, name, value is { Count: > 0 } ? WaWireFormat.FormatTokens(value, separator, forbidden) : null, omitWhileDefault: false);
-
-    /// <summary>
-    /// Adds a sticky token-set attribute (ordinal order, space-separated); null or empty is unset.
-    /// </summary>
-    /// <param name="builder">Render tree builder</param>
-    /// <param name="memory">The component's attribute memory</param>
-    /// <param name="sequence">Sequence number for the attribute frame</param>
-    /// <param name="name">Attribute name</param>
-    /// <param name="value">Attribute value; null or empty is unset</param>
-    /// <exception cref="ArgumentException">Thrown for an empty token or one containing whitespace</exception>
-    public static void AddTokenSetAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, IReadOnlySet<string>? value)
-        => memory.Render(builder, sequence, name,
-            value is { Count: > 0 } ? WaWireFormat.FormatTokens(value.Order(StringComparer.Ordinal), WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceSeparators) : null,
-            omitWhileDefault: false);
+        IReadOnlyCollection<string>? value, IReadOnlyCollection<string> defaultValue, string separator, char[] forbidden)
+        => memory.Render(builder, sequence, name, value is { Count: > 0 } ? WaWireFormat.FormatTokens(value, separator, forbidden) : null,
+            WaWireFormat.FormatTokens(defaultValue, separator, forbidden), omitWhileDefault: false);
 
     /// <summary>
     /// Blocks bools from the sticky generic path; see the non-sticky guard.
@@ -786,9 +790,10 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value</param>
+    /// <param name="defaultValue">The element default</param>
     /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
     [Obsolete(BooleanToStringMessage, error: true)]
-    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, bool? value)
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, bool? value, bool? defaultValue)
         => throw new NotSupportedException(BooleanToStringMessage);
 
     /// <summary>
@@ -799,35 +804,38 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value</param>
+    /// <param name="defaultValue">The element default</param>
     /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
     [Obsolete(BooleanToStringMessage, error: true)]
-    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, bool value)
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, bool value, bool defaultValue)
         => throw new NotSupportedException(BooleanToStringMessage);
 
     /// <summary>
-    /// Blocks dates from the sticky generic path; use the sticky <see cref="AddDateAttribute(RenderTreeBuilder, WaAttributeMemory, int, string, DateOnly?)"/>.
+    /// Blocks dates from the sticky generic path; use the sticky <see cref="AddDateAttribute(RenderTreeBuilder, WaAttributeMemory, int, string, DateOnly?, DateOnly?)"/>.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="memory">The component's attribute memory</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value</param>
+    /// <param name="defaultValue">The element default</param>
     /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
     [Obsolete(TemporalToStringMessage, error: true)]
-    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateOnly? value)
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateOnly? value, DateOnly? defaultValue)
         => throw new NotSupportedException(TemporalToStringMessage);
 
     /// <summary>
-    /// Blocks times from the sticky generic path; use the sticky <see cref="AddTimeAttribute(RenderTreeBuilder, WaAttributeMemory, int, string, TimeOnly?)"/>.
+    /// Blocks times from the sticky generic path; use the sticky <see cref="AddTimeAttribute(RenderTreeBuilder, WaAttributeMemory, int, string, TimeOnly?, TimeOnly?)"/>.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="memory">The component's attribute memory</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value</param>
+    /// <param name="defaultValue">The element default</param>
     /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
     [Obsolete(TemporalToStringMessage, error: true)]
-    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, TimeOnly? value)
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, TimeOnly? value, TimeOnly? defaultValue)
         => throw new NotSupportedException(TemporalToStringMessage);
 
     /// <summary>
@@ -838,22 +846,25 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value</param>
+    /// <param name="defaultValue">The element default</param>
     /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
     [Obsolete(TemporalToStringMessage, error: true)]
-    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateTime? value)
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateTime? value, DateTime? defaultValue)
         => throw new NotSupportedException(TemporalToStringMessage);
 
     /// <summary>
-    /// Blocks instants from the sticky generic path; use the sticky <see cref="AddDateTimeOffsetAttribute(RenderTreeBuilder, WaAttributeMemory, int, string, DateTimeOffset?)"/>.
+    /// Blocks instants from the sticky generic path; use the sticky <see cref="AddDateTimeOffsetAttribute(RenderTreeBuilder, WaAttributeMemory, int, string, DateTimeOffset?, TimeProvider)"/>.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="memory">The component's attribute memory</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value</param>
+    /// <param name="defaultValue">The element default</param>
     /// <exception cref="NotSupportedException">Always; the overload exists only to fail the build</exception>
     [Obsolete(TemporalToStringMessage, error: true)]
-    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateTimeOffset? value)
+    public static void AddAttributeIfNotNull(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, DateTimeOffset? value,
+        DateTimeOffset? defaultValue)
         => throw new NotSupportedException(TemporalToStringMessage);
 
     #endregion
@@ -869,6 +880,9 @@ internal static class RenderTreeBuilderExtensions
     private const string TemporalToStringMessage =
         "A date or time would be emitted in a form Web Awesome does not parse; use AddDateAttribute, AddTimeAttribute, " +
         "AddDateSetAttribute or AddDateTimeOffsetAttribute (WaWireFormat)";
+
+    // the text a "true"/"false" converter reads
+    private static string TrueFalseText(bool value) => value ? Constants.TrueAttributeValue : Constants.FalseAttributeValue;
 
     #endregion
 }

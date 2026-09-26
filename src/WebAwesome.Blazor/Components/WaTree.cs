@@ -106,7 +106,7 @@ public class WaTree : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add tree-specific attributes
-        builder.AddDefaultedAttribute(attributes, 4, "selection", Selection.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "selection", Selection.ToHtmlValue(), DefaultSelection.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(10, "onwa-selection-change", OnSelectionChange);

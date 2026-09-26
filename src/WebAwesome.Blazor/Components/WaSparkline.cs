@@ -44,9 +44,21 @@ public class WaSparkline : ComponentBase
 
     // Sparkline properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSparklineAppearance DefaultAppearance = WaSparklineAppearance.Solid;
+
+    /// <summary>
     /// The sparkline's visual appearance.
     /// </summary>
     [Parameter] public WaSparklineAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Curve"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSparklineCurve DefaultCurve = WaSparklineCurve.Linear;
 
     /// <summary>
     /// The type of curve used to connect the data points.
@@ -54,9 +66,21 @@ public class WaSparkline : ComponentBase
     [Parameter] public WaSparklineCurve? Curve { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Data"/>: no data, rendered as the empty attribute in place of null or an empty
+    /// list once the attribute has been rendered.
+    /// </summary>
+    public static readonly IReadOnlyList<double> DefaultData = [];
+
+    /// <summary>
     /// The sparkline's data points, in order (e.g. <c>new[] { 10.0, 20, 40, 25, 35 }</c>), rendered in the invariant`n    /// culture and separated by a space; null or empty draws nothing.
     /// </summary>
     [Parameter] public IReadOnlyList<double>? Data { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
 
     /// <summary>
     /// The label for assistive devices to announce.
@@ -83,11 +107,11 @@ public class WaSparkline : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add sparkline-specific attributes
-        builder.AddAttributeIfNotNull(attributes, 4, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 5, "curve", Curve?.ToHtmlValue());
-        builder.AddNumberListAttribute(attributes, 6, "data", Data);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "label", Label);
-        builder.AddAttributeIfNotNull(attributes, 8, "trend", Trend?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "curve", Curve?.ToHtmlValue(), DefaultCurve.ToHtmlValue());
+        builder.AddNumberListAttribute(attributes, 6, "data", Data, DefaultData);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "label", Label, DefaultLabel);
+        builder.AddAttributeIfNotNull(8, "trend", Trend?.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __sparklineReference => Element = __sparklineReference);

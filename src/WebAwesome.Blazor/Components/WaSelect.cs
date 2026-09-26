@@ -27,9 +27,21 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placeholder"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPlaceholder = "";
+
+    /// <summary>
     /// Placeholder text to show as a hint when the select is empty.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
 
     /// <summary>
     /// The select's visual appearance.
@@ -52,9 +64,21 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
     [Parameter] public bool Multiple { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="MaxOptionsVisible"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultMaxOptionsVisible = 3;
+
+    /// <summary>
     /// The maximum number of selected options to show when <see cref="Multiple"/> is true. Beyond this count, a "+n" indicator is shown. Set to 0 to remove the limit.
     /// </summary>
     [Parameter] public int? MaxOptionsVisible { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaListboxPlacement DefaultPlacement = WaListboxPlacement.Bottom;
 
     /// <summary>
     /// The preferred placement of the select's menu, above or below the field. The actual placement may vary as needed to keep
@@ -160,13 +184,13 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
         AddLabelAndHintAttributes(builder, 12);
 
         // Add select-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder, DefaultPlaceholder);
+        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
         builder.AddAttribute(22, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 23, this);
         builder.AddAttribute(24, "multiple", Multiple);
-        builder.AddAttributeIfNotNull(attributes, 25, "max-options-visible", MaxOptionsVisible);
-        builder.AddAttributeIfNotNull(attributes, 26, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 25, "max-options-visible", MaxOptionsVisible, DefaultMaxOptionsVisible);
+        builder.AddAttributeIfNotNull(attributes, 26, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
         builder.AddAttribute(27, "open", Open);
         AddWithHintAndLabelAttributes(builder, 14);
 

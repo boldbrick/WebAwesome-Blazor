@@ -132,10 +132,22 @@ public class WaPopup : ComponentBase
     [Parameter] public bool Flip { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="FlipFallbackPlacements"/>: none (the opposite side), rendered as the empty
+    /// attribute in place of null or an empty list once the attribute has been rendered.
+    /// </summary>
+    public static readonly IReadOnlyList<WaPlacement> DefaultFlipFallbackPlacements = [];
+
+    /// <summary>
     /// If the preferred placement doesn't fit, the popup is tested in these fallback placements until one
     /// fits, in list order (rendered separated by a space); null or empty tries the opposite side only.
     /// </summary>
     [Parameter] public IReadOnlyList<WaPlacement>? FlipFallbackPlacements { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="FlipFallbackStrategy"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaFlipFallbackStrategy DefaultFlipFallbackStrategy = WaFlipFallbackStrategy.BestFit;
 
     /// <summary>
     /// When neither the preferred placement nor the fallback placements fit, this value determines whether
@@ -214,6 +226,12 @@ public class WaPopup : ComponentBase
 
     // Boundary
     /// <summary>
+    /// The Web Awesome default of <see cref="Boundary"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPopupBoundary DefaultBoundary = WaPopupBoundary.Viewport;
+
+    /// <summary>
     /// The bounding box to use for flipping, shifting, and auto-sizing.
     /// </summary>
     [Parameter] public WaPopupBoundary? Boundary { get; set; }
@@ -257,53 +275,54 @@ public class WaPopup : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add positioning attributes
-        builder.AddDefaultedAttribute(attributes, 10, "placement", Placement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
         builder.AddAttribute(11, "active", Active);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "anchor", Anchor);
-        builder.AddNumberAttribute(attributes, 13, "distance", Distance);
-        builder.AddNumberAttribute(attributes, 14, "skidding", Skidding);
+        builder.AddAttributeIfNotNullOrEmpty(12, "anchor", Anchor);
+        builder.AddNumberAttribute(attributes, 13, "distance", Distance, DefaultDistance);
+        builder.AddNumberAttribute(attributes, 14, "skidding", Skidding, DefaultSkidding);
 
         // Add arrow attributes
         if (Arrow)
         {
             builder.AddAttribute(20, "arrow", true);
-            builder.AddDefaultedAttribute(attributes, 21, "arrow-placement", ArrowPlacement.ToHtmlValue());
-            builder.AddNumberAttribute(attributes, 22, "arrow-padding", ArrowPadding);
+            builder.AddDefaultedAttribute(attributes, 21, "arrow-placement", ArrowPlacement.ToHtmlValue(), DefaultArrowPlacement.ToHtmlValue());
+            builder.AddNumberAttribute(attributes, 22, "arrow-padding", ArrowPadding, DefaultArrowPadding);
         }
 
         // Add flip attributes
         if (Flip)
         {
             builder.AddAttribute(30, "flip", true);
-            builder.AddTokenListAttribute(attributes, 31, "flip-fallback-placements", FlipFallbackPlacements?.Select(p => p.ToHtmlValue()).ToList(), WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceSeparators);
-            builder.AddAttributeIfNotNull(attributes, 32, "flip-fallback-strategy", FlipFallbackStrategy?.ToHtmlValue());
-            builder.AddNumberAttribute(attributes, 34, "flip-padding", FlipPadding);
+            builder.AddTokenListAttribute(attributes, 31, "flip-fallback-placements", FlipFallbackPlacements?.Select(p => p.ToHtmlValue()).ToList(),
+                DefaultFlipFallbackPlacements.Select(p => p.ToHtmlValue()).ToList(), WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceSeparators);
+            builder.AddAttributeIfNotNull(attributes, 32, "flip-fallback-strategy", FlipFallbackStrategy?.ToHtmlValue(), DefaultFlipFallbackStrategy.ToHtmlValue());
+            builder.AddNumberAttribute(attributes, 34, "flip-padding", FlipPadding, DefaultFlipPadding);
         }
 
         // Add shift attributes
         if (Shift)
         {
             builder.AddAttribute(40, "shift", true);
-            builder.AddNumberAttribute(attributes, 42, "shift-padding", ShiftPadding);
+            builder.AddNumberAttribute(attributes, 42, "shift-padding", ShiftPadding, DefaultShiftPadding);
         }
 
         // Add auto-size attributes
         if (AutoSize != WaAutoSize.None)
         {
-            builder.AddDefaultedAttribute(attributes, 50, "auto-size", AutoSize.ToHtmlValue());
-            builder.AddNumberAttribute(attributes, 52, "auto-size-padding", AutoSizePadding);
+            builder.AddAttribute(50, "auto-size", AutoSize.ToHtmlValue());
+            builder.AddNumberAttribute(attributes, 52, "auto-size-padding", AutoSizePadding, DefaultAutoSizePadding);
         }
 
         // Add sync attributes
         if (Sync != WaSync.None)
-            builder.AddDefaultedAttribute(attributes, 60, "sync", Sync.ToHtmlValue());
+            builder.AddAttribute(60, "sync", Sync.ToHtmlValue());
 
         // Add hover bridge
         if (HoverBridge)
             builder.AddAttribute(70, "hover-bridge", true);
 
         // Add boundary
-        builder.AddAttributeIfNotNull(attributes, 80, "boundary", Boundary?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 80, "boundary", Boundary?.ToHtmlValue(), DefaultBoundary.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(85, "onwa-reposition", OnReposition);

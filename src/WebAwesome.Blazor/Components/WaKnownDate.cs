@@ -31,6 +31,12 @@ public class WaKnownDate : WaLabeledInputBase<DateOnly?>
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Autocomplete"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultAutocomplete = "";
+
+    /// <summary>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
@@ -40,9 +46,21 @@ public class WaKnownDate : WaLabeledInputBase<DateOnly?>
     #region ------ Visual &amp; Behavior Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
+
+    /// <summary>
     /// The known date's visual appearance.
     /// </summary>
     [Parameter] public WaInputAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Locale"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLocale = "";
 
     /// <summary>
     /// BCP-47 locale override. When empty, the inherited <c>lang</c> attribute is used.
@@ -50,9 +68,21 @@ public class WaKnownDate : WaLabeledInputBase<DateOnly?>
     [Parameter] public string? Locale { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Min"/>: no bound, which the element holds as the empty attribute; it is rendered in
+    /// place of null once the attribute has been rendered.
+    /// </summary>
+    public static readonly DateOnly? DefaultMin = null;
+
+    /// <summary>
     /// The earliest valid date; null sets no bound.
     /// </summary>
     [Parameter] public DateOnly? Min { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Max"/>: no bound, which the element holds as the empty attribute; it is rendered in
+    /// place of null once the attribute has been rendered.
+    /// </summary>
+    public static readonly DateOnly? DefaultMax = null;
 
     /// <summary>
     /// The latest valid date; null sets no bound.
@@ -88,14 +118,14 @@ public class WaKnownDate : WaLabeledInputBase<DateOnly?>
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete, DefaultAutocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add known-date-specific attributes
-        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 21, "locale", Locale);
-        builder.AddDateAttribute(attributes, 22, "min", Min);
-        builder.AddDateAttribute(attributes, 23, "max", Max);
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 21, "locale", Locale, DefaultLocale);
+        builder.AddDateAttribute(attributes, 22, "min", Min, DefaultMin);
+        builder.AddDateAttribute(attributes, 23, "max", Max, DefaultMax);
         builder.AddAttribute(24, "pill", Pill);
         AddWithHintAndLabelAttributes(builder, 14);
 

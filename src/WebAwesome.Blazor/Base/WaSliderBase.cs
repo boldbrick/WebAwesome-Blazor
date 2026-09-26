@@ -62,14 +62,32 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
     [Parameter] public bool Range { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="MinValue"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const decimal DefaultMinValue = 0m;
+
+    /// <summary>
     /// The minimum value of a range selection. Used only when <see cref="Range"/> is set.
     /// </summary>
     [Parameter] public decimal? MinValue { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="MaxValue"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const decimal DefaultMaxValue = 50m;
+
+    /// <summary>
     /// The maximum value of a range selection. Used only when <see cref="Range"/> is set.
     /// </summary>
     [Parameter] public decimal? MaxValue { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Horizontal;
 
     /// <summary>
     /// The orientation of the slider.
@@ -87,10 +105,22 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
     [Parameter] public bool WithMarkers { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="TooltipPlacement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaTooltipSide DefaultTooltipPlacement = WaTooltipSide.Top;
+
+    /// <summary>
     /// The side of the slider's thumb on which the tooltip is shown. When null, the attribute is omitted and Web
     /// Awesome's default (top) applies.
     /// </summary>
     [Parameter] public WaTooltipSide? TooltipPlacement { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="TooltipDistance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultTooltipDistance = 8;
 
     /// <summary>
     /// The distance in pixels from which to offset the tooltip from the slider's thumb.
@@ -196,16 +226,16 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
         AddLabelAndHintAttributes(builder, 12);
 
         // Add slider-specific attributes
-        builder.AddNumberAttribute(attributes, 20, "min", Min);
-        builder.AddNumberAttribute(attributes, 21, "max", Max);
-        builder.AddNumberAttribute(attributes, 22, "step", Step);
-        builder.AddAttributeIfNotNull(attributes, 23, "indicator-offset", IndicatorOffset);
+        builder.AddNumberAttribute(attributes, 20, "min", Min, DefaultMin);
+        builder.AddNumberAttribute(attributes, 21, "max", Max, DefaultMax);
+        builder.AddNumberAttribute(attributes, 22, "step", Step, DefaultStep);
+        builder.AddAttributeIfNotNull(23, "indicator-offset", IndicatorOffset);
         builder.AddAttribute(24, "range", Range);
-        builder.AddAttributeIfNotNull(attributes, 25, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 25, "orientation", Orientation?.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
         builder.AddAttribute(26, "with-tooltip", WithTooltip);
         builder.AddAttribute(27, "with-markers", WithMarkers);
-        builder.AddAttributeIfNotNull(attributes, 28, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 29, "tooltip-distance", TooltipDistance);
+        builder.AddAttributeIfNotNull(attributes, 28, "tooltip-placement", TooltipPlacement?.ToHtmlValue(), DefaultTooltipPlacement.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 29, "tooltip-distance", TooltipDistance, DefaultTooltipDistance);
         builder.AddAttribute(33, "autofocus", AutoFocus);
         AddWithHintAndLabelAttributes(builder, 14);
 
@@ -214,13 +244,13 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
         // change event that delivers it as an invariant-culture string ("min,max" in range mode)
         if (Range)
         {
-            builder.AddAttributeIfNotNull(attributes, 30, "min-value", MinValue);
-            builder.AddAttributeIfNotNull(attributes, 31, "max-value", MaxValue);
+            builder.AddAttributeIfNotNull(attributes, 30, "min-value", MinValue, DefaultMinValue);
+            builder.AddAttributeIfNotNull(attributes, 31, "max-value", MaxValue, DefaultMaxValue);
             builder.AddAttribute(32, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleRangeValueChangeAsync));
         }
         else
         {
-            AddValueAttribute(builder, attributes, 30);
+            AddValueAttribute(builder, 30);
             builder.AddAttribute(31, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChangeAsync));
             builder.SetUpdatesAttributeName("value");
         }
@@ -279,9 +309,8 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
     /// Adds the single-value mode's value attribute at the given sequence number.
     /// </summary>
     /// <param name="builder">The render tree builder</param>
-    /// <param name="attributes">The component's attribute memory</param>
     /// <param name="sequence">The sequence number of the attribute</param>
-    private protected abstract void AddValueAttribute(RenderTreeBuilder builder, WaAttributeMemory attributes, int sequence);
+    private protected abstract void AddValueAttribute(RenderTreeBuilder builder, int sequence);
 
     /// <summary>
     /// Handles the single-value mode's change event, whose value the numericchange alias delivers as a JS-formatted number.

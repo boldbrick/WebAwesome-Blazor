@@ -69,10 +69,22 @@ public class WaPage : ComponentBase
     [Parameter] public WaPageSections? DisableSticky { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="MobileBreakpoint"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultMobileBreakpoint = "768px";
+
+    /// <summary>
     /// At what page width to hide the "navigation" slot and collapse into a hamburger button. Accepts both numbers
     /// (interpreted as px) and CSS lengths (e.g. <c>50em</c>), which are resolved based on the root element. Null leaves the element's default, 768px.
     /// </summary>
     [Parameter] public string? MobileBreakpoint { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="NavigationPlacement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPageNavigationPlacement DefaultNavigationPlacement = WaPageNavigationPlacement.Start;
 
     /// <summary>
     /// Where to place the navigation when in the mobile viewport.
@@ -83,6 +95,12 @@ public class WaPage : ComponentBase
     /// Whether or not the navigation drawer is open. Note, the navigation drawer is only "open" on mobile views.
     /// </summary>
     [Parameter] public bool NavOpen { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="View"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPageView DefaultView = WaPageView.Desktop;
 
     /// <summary>
     /// The view is a reflection of the "mobileBreakpoint": when the page is larger than the <see cref="MobileBreakpoint"/>
@@ -196,11 +214,11 @@ public class WaPage : ComponentBase
 
         // Add page-specific attributes
         builder.AddAttribute(10, "disable-navigation-toggle", DisableNavigationToggle);
-        builder.AddAttributeIfNotNull(attributes, 15, "disable-sticky", DisableSticky?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "mobile-breakpoint", MobileBreakpoint);
-        builder.AddAttributeIfNotNull(attributes, 12, "navigation-placement", NavigationPlacement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(15, "disable-sticky", DisableSticky?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "mobile-breakpoint", MobileBreakpoint, DefaultMobileBreakpoint);
+        builder.AddAttributeIfNotNull(attributes, 12, "navigation-placement", NavigationPlacement?.ToHtmlValue(), DefaultNavigationPlacement.ToHtmlValue());
         builder.AddAttribute(13, "nav-open", NavOpen);
-        builder.AddAttributeIfNotNull(attributes, 14, "view", View?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 14, "view", View?.ToHtmlValue(), DefaultView.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __pageReference => Element = __pageReference);

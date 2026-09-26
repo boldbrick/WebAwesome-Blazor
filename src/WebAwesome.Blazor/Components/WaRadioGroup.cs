@@ -30,6 +30,12 @@ public class WaRadioGroup : WaLabeledInputBase<string?>
     [Parameter] public string? Name { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Vertical;
+
+    /// <summary>
     /// The orientation in which to show radio items.
     /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
@@ -75,8 +81,8 @@ public class WaRadioGroup : WaLabeledInputBase<string?>
         AddLabelAndHintAttributes(builder, 12);
 
         // Add radio group specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "name", Name);
-        builder.AddAttributeIfNotNull(attributes, 21, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(20, "name", Name);
+        builder.AddAttributeIfNotNull(attributes, 21, "orientation", Orientation?.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
         AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding; an explicit handler rather than a binder, so it can invoke OnValueChange after the
@@ -145,6 +151,11 @@ public class WaRadioGroup : WaLabeledInputBase<string?>
         SetCurrentValueAsStringFromElement(args.GetStringValue());
         await OnValueChange.InvokeAsync(CurrentValue);
     }
+
+    // wa-radio-group declares no size default (it passes its size down to the radios), so removing the attribute
+    // restores the unset state and the size renders plainly
+    private protected override void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
+        => builder.AddAttributeIfNotNull(sequence, "size", Size?.ToHtmlValue());
 
     #endregion
 

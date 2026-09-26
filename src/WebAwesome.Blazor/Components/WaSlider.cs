@@ -83,8 +83,8 @@ public class WaSlider : WaSliderBase<decimal?>
     }
 
     /// <inheritdoc />
-    private protected override void AddValueAttribute(RenderTreeBuilder builder, WaAttributeMemory attributes, int sequence)
-        => builder.AddAttributeIfNotNull(attributes, sequence, "value", CurrentValue);
+    private protected override void AddValueAttribute(RenderTreeBuilder builder, int sequence)
+        => builder.AddAttributeIfNotNull(sequence, "value", CurrentValue);
 
     /// <inheritdoc />
     /// <remarks>

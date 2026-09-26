@@ -82,6 +82,12 @@ public class WaPopover : ComponentBase
     [Parameter] public int Distance { get; set; } = DefaultDistance;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Skidding"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultSkidding = 0;
+
+    /// <summary>
     /// The distance in pixels from which to offset the popover along its target.
     /// </summary>
     [Parameter] public int? Skidding { get; set; }
@@ -139,12 +145,12 @@ public class WaPopover : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add popover-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "for", For);
-        builder.AddDefaultedAttribute(attributes, 11, "placement", Placement.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(10, "for", For);
+        builder.AddDefaultedAttribute(attributes, 11, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
         builder.AddAttribute(12, "open", Open);
-        builder.AddNumberAttribute(attributes, 13, "distance", Distance);
+        builder.AddNumberAttribute(attributes, 13, "distance", Distance, DefaultDistance);
         builder.AddAttribute(14, "without-arrow", WithoutArrow);
-        builder.AddAttributeIfNotNull(attributes, 15, "skidding", Skidding);
+        builder.AddAttributeIfNotNull(attributes, 15, "skidding", Skidding, DefaultSkidding);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);

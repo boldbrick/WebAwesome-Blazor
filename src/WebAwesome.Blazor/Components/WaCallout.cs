@@ -40,6 +40,12 @@ public class WaCallout : ComponentBase
 
     // Callout properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVariant DefaultVariant = WaVariant.Brand;
+
+    /// <summary>
     /// The callout's theme variant. Null (the default) leaves the element's default: brand, unless the callout is
     /// within another element with a variant.
     /// </summary>
@@ -94,9 +100,9 @@ public class WaCallout : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add callout-specific attributes
-        builder.AddAttributeIfNotNull(attributes, 10, "variant", Variant?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 11, "appearance", Appearance?.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 12, "size", Size.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 10, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
+        builder.AddAttributeIfNotNull(11, "appearance", Appearance?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "size", Size.ToHtmlValue(), DefaultSize.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(13, __calloutReference => Element = __calloutReference);

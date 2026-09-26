@@ -55,6 +55,12 @@ public class WaIntersectionObserver : ComponentBase
 
     // IntersectionObserver options
     /// <summary>
+    /// The Web Awesome default of <see cref="Threshold"/> (a single threshold of 0): what the element holds while the
+    /// parameter is null or empty, and what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public static readonly IReadOnlyList<double> DefaultThreshold = [0];
+
+    /// <summary>
     /// The intersection ratios (0.0 to 1.0) at which the observer reports, rendered in the invariant culture and`n    /// separated by a space; null or empty leaves the element's default, 0.
     /// </summary>
     [Parameter] public IReadOnlyList<double>? Threshold { get; set; }
@@ -65,9 +71,21 @@ public class WaIntersectionObserver : ComponentBase
     [Parameter] public string? Root { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="RootMargin"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultRootMargin = "0px";
+
+    /// <summary>
     /// Margin around the root element for intersection calculations (CSS margin syntax)
     /// </summary>
     [Parameter] public string? RootMargin { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="IntersectClass"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultIntersectClass = "";
 
     /// <summary>
     /// CSS class to toggle on intersection state changes
@@ -117,10 +135,10 @@ public class WaIntersectionObserver : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add intersection observer specific attributes
-        builder.AddNumberListAttribute(attributes, 10, "threshold", Threshold);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "root", Root);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "root-margin", RootMargin);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "intersect-class", IntersectClass);
+        builder.AddNumberListAttribute(attributes, 10, "threshold", Threshold, DefaultThreshold);
+        builder.AddAttributeIfNotNullOrEmpty(11, "root", Root);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "root-margin", RootMargin, DefaultRootMargin);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "intersect-class", IntersectClass, DefaultIntersectClass);
         builder.AddAttribute(14, "disabled", Disabled);
         builder.AddAttribute(15, "once", Once);
 

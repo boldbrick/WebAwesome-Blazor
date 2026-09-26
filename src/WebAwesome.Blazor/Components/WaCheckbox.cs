@@ -21,6 +21,12 @@ public class WaCheckbox : WaInputBase<bool>
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Hint"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultHint = "";
+
+    /// <summary>
     /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
     /// precedence when set.
     /// </summary>
@@ -79,7 +85,7 @@ public class WaCheckbox : WaInputBase<bool>
 
         // Add the form control attributes the element declares
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "hint", Hint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "hint", Hint, DefaultHint);
 
         // Add checkbox-specific attributes
         builder.AddAttribute(20, "checked", BindConverter.FormatValue(CurrentValue));

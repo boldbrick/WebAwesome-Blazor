@@ -47,6 +47,12 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placeholder"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPlaceholder = "";
+
+    /// <summary>
     /// Placeholder text to show as a hint when the input is empty.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
@@ -61,6 +67,12 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// are supported.
     /// </summary>
     [Parameter] public WaInputType Type { get; set; } = DefaultType;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
 
     /// <summary>
     /// The input's visual appearance.
@@ -81,6 +93,12 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// Adds a button to toggle the password's visibility. Only applies to password types.
     /// </summary>
     [Parameter] public bool PasswordToggle { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Spellcheck"/> (on): what the element holds while the parameter is null, and
+    /// what is rendered in its place once the attribute has been rendered (a removed attribute would read as off).
+    /// </summary>
+    public const bool DefaultSpellcheck = true;
 
     /// <summary>
     /// Enables spell checking on the input.
@@ -306,28 +324,28 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNull(attributes, 9, "minlength", MinLength);
-        builder.AddAttributeIfNotNull(attributes, 10, "maxlength", MaxLength);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNull(9, "minlength", MinLength);
+        builder.AddAttributeIfNotNull(10, "maxlength", MaxLength);
+        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add input-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder);
-        builder.AddDefaultedAttribute(attributes, 21, "type", Type.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 22, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder, DefaultPlaceholder);
+        builder.AddDefaultedAttribute(attributes, 21, "type", Type.ToHtmlValue(), DefaultType.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 22, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
         builder.AddAttribute(23, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 24, this);
         builder.AddAttribute(25, "password-toggle", PasswordToggle);
-        builder.AddTrueFalseAttribute(attributes, 26, "spellcheck", Spellcheck);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 27, "pattern", Pattern);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 28, "min", MinAttributeValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 29, "max", MaxAttributeValue());
-        builder.AddStepAttribute(attributes, 30, "step", Step);
-        builder.AddAttributeIfNotNull(attributes, 33, "autocapitalize", AutoCapitalize?.ToHtmlValue());
-        builder.AddOnOffAttribute(attributes, 34, "autocorrect", AutoCorrect);
+        builder.AddTrueFalseAttribute(attributes, 26, "spellcheck", Spellcheck, DefaultSpellcheck);
+        builder.AddAttributeIfNotNullOrEmpty(27, "pattern", Pattern);
+        builder.AddAttributeIfNotNullOrEmpty(28, "min", MinAttributeValue());
+        builder.AddAttributeIfNotNullOrEmpty(29, "max", MaxAttributeValue());
+        builder.AddStepAttribute(30, "step", Step);
+        builder.AddAttributeIfNotNull(33, "autocapitalize", AutoCapitalize?.ToHtmlValue());
+        builder.AddOnOffAttribute(34, "autocorrect", AutoCorrect);
         builder.AddAttribute(35, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNull(attributes, 36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 37, "inputmode", InputMode?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(37, "inputmode", InputMode?.ToHtmlValue());
         builder.AddAttribute(38, "password-visible", PasswordVisible);
         AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(48, "without-spin-buttons", WithoutSpinButtons);

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -47,6 +48,12 @@ public class WaAnimation : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     // Animation properties
+    /// <summary>
+    /// The Web Awesome default of <see cref="Name"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultName = "none";
+
     /// <summary>
     /// The name of the built-in animation to use. For custom animations, use <see cref="SetKeyframesAsync"/>.
     /// </summary>
@@ -98,10 +105,22 @@ public class WaAnimation : ComponentBase
     [Parameter] public WaAnimationEasing Easing { get; set; } = DefaultEasing;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Iterations"/> (endless): what the element holds while the parameter is null,
+    /// and what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const double DefaultIterations = double.PositiveInfinity;
+
+    /// <summary>
     /// The number of iterations to run before the animation completes; <see cref="double.PositiveInfinity"/> renders
     /// Infinity. Null (the default) leaves the element's default, Infinity, so the animation loops until stopped.
     /// </summary>
     [Parameter] public double? Iterations { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Fill"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaAnimationFill DefaultFill = WaAnimationFill.Auto;
 
     /// <summary>
     /// Sets how the animation applies styles to its target before and after its execution. Null (the default)
@@ -121,9 +140,21 @@ public class WaAnimation : ComponentBase
     [Parameter] public decimal PlaybackRate { get; set; } = DefaultPlaybackRate;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="EndDelay"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultEndDelay = 0;
+
+    /// <summary>
     /// The number of milliseconds to delay after the end of the animation.
     /// </summary>
     [Parameter] public int? EndDelay { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="IterationStart"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const double DefaultIterationStart = 0;
 
     /// <summary>
     /// The offset at which to start the animation, usually between 0 (start) and 1 (end).
@@ -171,17 +202,17 @@ public class WaAnimation : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "name", Name);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "name", Name, DefaultName);
         builder.AddAttribute(5, "play", Play);
-        builder.AddNumberAttribute(attributes, 6, "duration", Duration);
-        builder.AddNumberAttribute(attributes, 7, "delay", Delay);
-        builder.AddDefaultedAttribute(attributes, 8, "direction", Direction.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 9, "easing", Easing.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 10, "iterations", Iterations is double.PositiveInfinity ? InfiniteIterations : RenderTreeBuilderExtensions.FormatInvariant(Iterations));
-        builder.AddAttributeIfNotNull(attributes, 11, "fill", Fill?.ToHtmlValue());
-        builder.AddNumberAttribute(attributes, 12, "playback-rate", PlaybackRate);
-        builder.AddAttributeIfNotNull(attributes, 13, "end-delay", EndDelay);
-        builder.AddAttributeIfNotNull(attributes, 14, "iteration-start", IterationStart);
+        builder.AddNumberAttribute(attributes, 6, "duration", Duration, DefaultDuration);
+        builder.AddNumberAttribute(attributes, 7, "delay", Delay, DefaultDelay);
+        builder.AddDefaultedAttribute(attributes, 8, "direction", Direction.ToHtmlValue(), DefaultDirection.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 9, "easing", Easing.ToHtmlValue(), DefaultEasing.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 10, "iterations", Iterations is { } iterations ? IterationsText(iterations) : null, IterationsText(DefaultIterations));
+        builder.AddAttributeIfNotNull(attributes, 11, "fill", Fill?.ToHtmlValue(), DefaultFill.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 12, "playback-rate", PlaybackRate, DefaultPlaybackRate);
+        builder.AddAttributeIfNotNull(attributes, 13, "end-delay", EndDelay, DefaultEndDelay);
+        builder.AddAttributeIfNotNull(attributes, 14, "iteration-start", IterationStart, DefaultIterationStart);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-cancel", OnCancel);
@@ -276,6 +307,10 @@ public class WaAnimation : ComponentBase
 
     // the iterations value of an endless animation, rendered for double.PositiveInfinity
     private const string InfiniteIterations = "Infinity";
+
+    // the iterations attribute text: Infinity for an endless animation, otherwise the invariant number
+    private static string IterationsText(double iterations)
+        => double.IsPositiveInfinity(iterations) ? InfiniteIterations : iterations.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Gets the CSS class string combining user classes

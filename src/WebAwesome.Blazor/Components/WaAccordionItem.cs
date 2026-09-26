@@ -50,6 +50,12 @@ public class WaAccordionItem : ComponentBase
 
     // Accordion item properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// The text label shown in the header. If you need HTML, use <see cref="LabelContent"/> instead.
     /// </summary>
     [Parameter] public string? Label { get; set; }
@@ -98,7 +104,7 @@ public class WaAccordionItem : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add accordion-item-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label, DefaultLabel);
         builder.AddAttribute(11, "expanded", Expanded);
         builder.AddAttribute(12, "disabled", Disabled);
 

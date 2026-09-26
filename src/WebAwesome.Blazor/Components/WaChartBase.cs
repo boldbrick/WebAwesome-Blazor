@@ -55,14 +55,32 @@ public abstract class WaChartBase : ComponentBase
     [Parameter] public WaChartType? Type { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Grid"/> on every chart: what the element holds while the parameter is null,
+    /// and what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaChartGrid DefaultGrid = WaChartGrid.Both;
+
+    /// <summary>
     /// Which axes to show grid lines on.
     /// </summary>
     [Parameter] public WaChartGrid? Grid { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="IndexAxis"/> on every chart: what the element holds while the parameter is null,
+    /// and what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaChartAxis DefaultIndexAxis = WaChartAxis.X;
+
+    /// <summary>
     /// The base axis of the dataset. <c>x</c> for vertical bars and <c>y</c> for horizontal bars.
     /// </summary>
     [Parameter] public WaChartAxis? IndexAxis { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="LegendPosition"/> on every chart: what the element holds while the parameter is null,
+    /// and what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaChartLegendPosition DefaultLegendPosition = WaChartLegendPosition.Top;
 
     /// <summary>
     /// The position of the legend relative to the chart.
@@ -134,20 +152,20 @@ public abstract class WaChartBase : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // chart configuration attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "description", Description);
-        builder.AddAttributeIfNotNull(attributes, 6, "type", Type?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 7, "grid", Grid?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 8, "index-axis", IndexAxis?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 9, "legend-position", LegendPosition?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "min", Min?.ToString(CultureInfo.InvariantCulture));
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "max", Max?.ToString(CultureInfo.InvariantCulture));
+        builder.AddAttributeIfNotNullOrEmpty(4, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(5, "description", Description);
+        builder.AddAttributeIfNotNull(attributes, 6, "type", Type?.ToHtmlValue(), ElementDefaultType.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 7, "grid", Grid?.ToHtmlValue(), DefaultGrid.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 8, "index-axis", IndexAxis?.ToHtmlValue(), DefaultIndexAxis.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 9, "legend-position", LegendPosition?.ToHtmlValue(), DefaultLegendPosition.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(10, "min", Min?.ToString(CultureInfo.InvariantCulture));
+        builder.AddAttributeIfNotNullOrEmpty(11, "max", Max?.ToString(CultureInfo.InvariantCulture));
         builder.AddAttribute(12, "stacked", Stacked);
         builder.AddAttribute(13, "without-animation", WithoutAnimation);
         builder.AddAttribute(14, "without-legend", WithoutLegend);
         builder.AddAttribute(15, "without-tooltip", WithoutTooltip);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 16, "x-label", XLabel);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 17, "y-label", YLabel);
+        builder.AddAttributeIfNotNullOrEmpty(16, "x-label", XLabel);
+        builder.AddAttributeIfNotNullOrEmpty(17, "y-label", YLabel);
 
         // chart-specific attributes contributed by derived components
         AddExtraAttributes(builder, 18);
@@ -172,6 +190,12 @@ public abstract class WaChartBase : ComponentBase
     /// The custom-element tag rendered by the concrete chart component (e.g. <c>wa-bar-chart</c>).
     /// </summary>
     protected abstract string TagName { get; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Type"/> on the concrete chart (its DefaultType constant), rendered in place
+    /// of null once the type attribute has been rendered.
+    /// </summary>
+    protected abstract WaChartType ElementDefaultType { get; }
 
     /// <summary>
     /// Emits attributes specific to a derived chart component. The default implementation emits none.

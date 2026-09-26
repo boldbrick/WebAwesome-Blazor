@@ -83,7 +83,7 @@ public class WaScroller : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add scroller-specific attributes
-        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
         builder.AddAttribute(5, "without-scrollbar", WithoutScrollbar);
         builder.AddAttribute(6, "without-shadow", WithoutShadow);
 

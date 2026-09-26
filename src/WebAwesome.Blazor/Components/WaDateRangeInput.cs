@@ -26,9 +26,21 @@ namespace WebAwesome.Blazor.Components;
 public class WaDateRangeInput : WaDateInputBase<WaDateRange?>
 {
     /// <summary>
+    /// The Web Awesome default of <see cref="MinRange"/> (0, no limit): what the element holds while the parameter is null, and
+    /// what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultMinRange = 0;
+
+    /// <summary>
     /// Minimum range length in days, counting both ends; null (or 0) sets no minimum.
     /// </summary>
     [Parameter] public int? MinRange { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="MaxRange"/> (0, no limit): what the element holds while the parameter is null, and
+    /// what is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultMaxRange = 0;
 
     /// <summary>
     /// Maximum range length in days, counting both ends; null (or 0) sets no maximum.
@@ -76,8 +88,8 @@ public class WaDateRangeInput : WaDateInputBase<WaDateRange?>
     private protected override void AddSelectionModeAttributes(RenderTreeBuilder builder, int sequence)
     {
         builder.AddAttribute(sequence + 0, Constants.ModeAttribute, Constants.RangeModeValue);
-        builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence + 1, Constants.MinRangeAttribute, MinRange);
-        builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence + 2, Constants.MaxRangeAttribute, MaxRange);
+        builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence + 1, Constants.MinRangeAttribute, MinRange, DefaultMinRange);
+        builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence + 2, Constants.MaxRangeAttribute, MaxRange, DefaultMaxRange);
     }
 
     #endregion

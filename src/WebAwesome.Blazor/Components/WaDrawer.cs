@@ -50,6 +50,12 @@ public class WaDrawer : ComponentBase
 
     // Drawer properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// The drawer's label as displayed in the header. A relevant label is required for proper accessibility. If you
     /// need to display HTML, use <see cref="LabelContent"/> instead.
     /// </summary>
@@ -151,9 +157,9 @@ public class WaDrawer : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add drawer-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label, DefaultLabel);
         builder.AddAttribute(11, "open", Open);
-        builder.AddDefaultedAttribute(attributes, 12, "placement", Placement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
         builder.AddAttribute(13, "without-header", WithoutHeader);
         builder.AddAttribute(14, "light-dismiss", LightDismiss);
         builder.AddAttribute(15, "with-footer", WithFooter);

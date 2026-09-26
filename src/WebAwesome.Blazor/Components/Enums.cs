@@ -126,6 +126,8 @@ public enum WaAttention
     Pulse,
     /// <summary>Bounces to draw attention.</summary>
     Bounce,
+    /// <summary>No attention animation (the Web Awesome default).</summary>
+    None,
 }
 
 /// <summary>
@@ -1971,6 +1973,7 @@ public static class WaEnumExtensions
     {
         return attention switch
         {
+            WaAttention.None => "none",
             WaAttention.Pulse => "pulse",
             WaAttention.Bounce => "bounce",
             _ => throw new ArgumentOutOfRangeException(nameof(attention), attention, null)

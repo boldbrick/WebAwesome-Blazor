@@ -164,15 +164,15 @@ public class WaCarousel : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
         builder.AddAttribute(5, "pagination", Pagination);
         builder.AddAttribute(6, "navigation", Navigation);
         builder.AddAttribute(7, "mouse-dragging", MouseDragging);
         builder.AddAttribute(8, "loop", Loop);
         builder.AddAttribute(9, "autoplay", Autoplay);
-        builder.AddNumberAttribute(attributes, 10, "autoplay-interval", AutoplayInterval);
-        builder.AddNumberAttribute(attributes, 11, "slides-per-page", SlidesPerPage);
-        builder.AddNumberAttribute(attributes, 12, "slides-per-move", SlidesPerMove);
+        builder.AddNumberAttribute(attributes, 10, "autoplay-interval", AutoplayInterval, DefaultAutoplayInterval);
+        builder.AddNumberAttribute(attributes, 11, "slides-per-page", SlidesPerPage, DefaultSlidesPerPage);
+        builder.AddNumberAttribute(attributes, 12, "slides-per-move", SlidesPerMove, DefaultSlidesPerMove);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(15, "onwa-slide-change", OnSlideChange);

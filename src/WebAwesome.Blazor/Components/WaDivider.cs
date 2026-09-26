@@ -63,7 +63,7 @@ public class WaDivider : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add divider-specific attributes
-        builder.AddDefaultedAttribute(attributes, 10, "orientation", Orientation.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "orientation", Orientation.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __dividerReference => Element = __dividerReference);

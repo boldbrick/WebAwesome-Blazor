@@ -78,6 +78,12 @@ public class WaDropdownItem : ComponentBase
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaDropdownItemVariant DefaultVariant = WaDropdownItemVariant.Default;
+
+    /// <summary>
     /// The dropdown item's theme variant; use <see cref="WaDropdownItemVariant.Danger"/> for destructive actions.
     /// When unset, the attribute is omitted and Web Awesome's default styling applies.
     /// </summary>
@@ -163,17 +169,17 @@ public class WaDropdownItem : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add link attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "href", Href);
-        builder.AddAttributeIfNotNull(attributes, 6, "target", Target?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "rel", Rel);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 8, "download", Download);
+        builder.AddAttributeIfNotNullOrEmpty(5, "href", Href);
+        builder.AddAttributeIfNotNull(6, "target", Target?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(7, "rel", Rel);
+        builder.AddAttributeIfNotNullOrEmpty(8, "download", Download);
 
         // Add dropdown item-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "value", Value);
-        builder.AddDefaultedAttribute(attributes, 11, "type", Type.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(10, "value", Value);
+        builder.AddDefaultedAttribute(attributes, 11, "type", Type.ToHtmlValue(), DefaultType.ToHtmlValue());
         builder.AddAttribute(12, "checked", Checked);
         builder.AddAttribute(13, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(attributes, 14, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 14, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(16, "onblur", OnBlur);

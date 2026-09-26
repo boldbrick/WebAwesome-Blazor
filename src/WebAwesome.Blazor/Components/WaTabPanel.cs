@@ -41,6 +41,12 @@ public class WaTabPanel : ComponentBase
 
     // Tab panel properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Name"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultName = "";
+
+    /// <summary>
     /// The tab panel's name.
     /// </summary>
     [Parameter] public string? Name { get; set; }
@@ -72,7 +78,7 @@ public class WaTabPanel : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "name", Name);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "name", Name, DefaultName);
         builder.AddAttribute(5, "active", Active);
 
         // Add element reference capture

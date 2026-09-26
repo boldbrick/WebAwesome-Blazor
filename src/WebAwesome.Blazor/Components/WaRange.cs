@@ -32,8 +32,8 @@ public class WaRange : WaSliderBase<decimal>
     #region ------ Overrides ------
 
     /// <inheritdoc />
-    private protected override void AddValueAttribute(RenderTreeBuilder builder, WaAttributeMemory attributes, int sequence)
-        => builder.AddNumberAttribute(attributes, sequence, "value", CurrentValue);
+    private protected override void AddValueAttribute(RenderTreeBuilder builder, int sequence)
+        => builder.AddNumberAttribute(sequence, "value", CurrentValue);
 
     /// <inheritdoc />
     /// <remarks>

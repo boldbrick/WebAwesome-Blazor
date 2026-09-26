@@ -45,9 +45,21 @@ public class WaTextArea : WaLabeledInputBase<string?>
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placeholder"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPlaceholder = "";
+
+    /// <summary>
     /// Placeholder text to show as a hint when the input is empty.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Rows"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultRows = 4;
 
     /// <summary>
     /// The number of rows to display by default. When not set, the Web Awesome default applies.
@@ -55,14 +67,32 @@ public class WaTextArea : WaLabeledInputBase<string?>
     [Parameter] public int? Rows { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
+
+    /// <summary>
     /// The textarea's visual appearance.
     /// </summary>
     [Parameter] public WaInputAppearance? Appearance { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Resize"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaResize DefaultResize = WaResize.Vertical;
+
+    /// <summary>
     /// Controls how the textarea can be resized.
     /// </summary>
     [Parameter] public WaResize? Resize { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Spellcheck"/> (on): what the element holds while the parameter is null, and
+    /// what is rendered in its place once the attribute has been rendered (a removed attribute would read as off).
+    /// </summary>
+    public const bool DefaultSpellcheck = true;
 
     /// <summary>
     /// Enables spell checking on the textarea.
@@ -134,22 +164,22 @@ public class WaTextArea : WaLabeledInputBase<string?>
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNull(attributes, 9, "minlength", MinLength);
-        builder.AddAttributeIfNotNull(attributes, 10, "maxlength", MaxLength);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNull(9, "minlength", MinLength);
+        builder.AddAttributeIfNotNull(10, "maxlength", MaxLength);
+        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add textarea-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNull(attributes, 21, "rows", Rows);
-        builder.AddAttributeIfNotNull(attributes, 22, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 23, "resize", Resize?.ToHtmlValue());
-        builder.AddTrueFalseAttribute(attributes, 24, "spellcheck", Spellcheck);
-        builder.AddAttributeIfNotNull(attributes, 30, "autocapitalize", AutoCapitalize?.ToHtmlValue());
-        builder.AddOnOffAttribute(attributes, 31, "autocorrect", AutoCorrect);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder, DefaultPlaceholder);
+        builder.AddAttributeIfNotNull(attributes, 21, "rows", Rows, DefaultRows);
+        builder.AddAttributeIfNotNull(attributes, 22, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 23, "resize", Resize?.ToHtmlValue(), DefaultResize.ToHtmlValue());
+        builder.AddTrueFalseAttribute(attributes, 24, "spellcheck", Spellcheck, DefaultSpellcheck);
+        builder.AddAttributeIfNotNull(30, "autocapitalize", AutoCapitalize?.ToHtmlValue());
+        builder.AddOnOffAttribute(31, "autocorrect", AutoCorrect);
         builder.AddAttribute(32, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNull(attributes, 33, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 34, "inputmode", InputMode?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(33, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(34, "inputmode", InputMode?.ToHtmlValue());
         AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(37, "with-count", WithCount);
 

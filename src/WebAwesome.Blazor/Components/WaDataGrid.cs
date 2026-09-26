@@ -93,9 +93,21 @@ public class WaDataGrid : ComponentBase
     [Parameter] public string? Label { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaDataGridAppearance DefaultAppearance = WaDataGridAppearance.Outlined;
+
+    /// <summary>
     /// The grid's visual appearance.
     /// </summary>
     [Parameter] public WaDataGridAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The grid's size. Controls the font scale of grid text and form controls, plus row height and
@@ -135,10 +147,22 @@ public class WaDataGrid : ComponentBase
     [Parameter] public bool SortDescFirst { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="MaxMultiSort"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultMaxMultiSort = 0;
+
+    /// <summary>
     /// The maximum number of columns that can participate in a multi-column sort. Zero (the default)
     /// means no limit.
     /// </summary>
     [Parameter] public int? MaxMultiSort { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Selectable"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaDataGridSelectable DefaultSelectable = WaDataGridSelectable.None;
 
     /// <summary>
     /// Enables row selection. A bare attribute (or <see cref="WaDataGridSelectable.Multiple"/>) means
@@ -158,9 +182,21 @@ public class WaDataGrid : ComponentBase
     [Parameter] public bool Paginate { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Page"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultPage = 0;
+
+    /// <summary>
     /// The current page index (0-based).
     /// </summary>
     [Parameter] public int? Page { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="PageSize"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultPageSize = 20;
 
     /// <summary>
     /// The number of rows per page.
@@ -173,6 +209,12 @@ public class WaDataGrid : ComponentBase
     /// then set <see cref="Data"/>, <see cref="Total"/>, and <see cref="Loading"/>.
     /// </summary>
     [Parameter] public bool Server { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="FilterDebounce"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultFilterDebounce = 250;
 
     /// <summary>
     /// How long (in milliseconds) to wait after a search or filter keystroke before requesting data in
@@ -220,6 +262,12 @@ public class WaDataGrid : ComponentBase
     /// with <c>pinnable</c>.
     /// </summary>
     [Parameter] public bool Pinnable { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Total"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultTotal = -1;
 
     /// <summary>
     /// The total row count in server mode. Drives the pager.
@@ -346,30 +394,30 @@ public class WaDataGrid : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Data grid attributes ('data' and 'columns' are JS properties, pushed separately - see OnAfterRenderAsync/OnParametersSetAsync)
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label);
-        builder.AddAttributeIfNotNull(attributes, 11, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 12, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(10, "label", Label);
+        builder.AddAttributeIfNotNull(attributes, 11, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
         builder.AddAttribute(13, "striped", Striped);
         builder.AddAttribute(14, "with-search", WithSearch);
         builder.AddAttribute(15, "with-column-menu", WithColumnMenu);
         builder.AddAttribute(16, "with-columns-menu", WithColumnsMenu);
         builder.AddAttribute(17, "without-sort-removal", WithoutSortRemoval);
         builder.AddAttribute(18, "sort-desc-first", SortDescFirst);
-        builder.AddAttributeIfNotNull(attributes, 19, "max-multi-sort", MaxMultiSort);
-        builder.AddAttributeIfNotNull(attributes, 20, "selectable", Selectable?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 21, "row-key", RowKey);
+        builder.AddAttributeIfNotNull(attributes, 19, "max-multi-sort", MaxMultiSort, DefaultMaxMultiSort);
+        builder.AddAttributeIfNotNull(attributes, 20, "selectable", Selectable?.ToHtmlValue(), DefaultSelectable.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(21, "row-key", RowKey);
         builder.AddAttribute(22, "paginate", Paginate);
-        builder.AddAttributeIfNotNull(attributes, 23, "page", Page);
-        builder.AddAttributeIfNotNull(attributes, 24, "page-size", PageSize);
+        builder.AddAttributeIfNotNull(attributes, 23, "page", Page, DefaultPage);
+        builder.AddAttributeIfNotNull(attributes, 24, "page-size", PageSize, DefaultPageSize);
         builder.AddAttribute(25, "server", Server);
-        builder.AddAttributeIfNotNull(attributes, 26, "filter-debounce", FilterDebounce);
+        builder.AddAttributeIfNotNull(attributes, 26, "filter-debounce", FilterDebounce, DefaultFilterDebounce);
         builder.AddAttribute(27, "filter-from-leaf-rows", FilterFromLeafRows);
-        builder.AddTokenListAttribute(attributes, 28, "group-by", GroupBy, WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceAndCommaSeparators);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 29, "child-rows", ChildRows);
+        builder.AddTokenListAttribute(28, "group-by", GroupBy, WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceAndCommaSeparators);
+        builder.AddAttributeIfNotNullOrEmpty(29, "child-rows", ChildRows);
         builder.AddAttribute(30, "resizable", Resizable);
         builder.AddAttribute(31, "reorderable", Reorderable);
         builder.AddAttribute(32, "pinnable", Pinnable);
-        builder.AddAttributeIfNotNull(attributes, 33, "total", Total);
+        builder.AddAttributeIfNotNull(attributes, 33, "total", Total, DefaultTotal);
         builder.AddAttribute(34, "loading", Loading);
 
         // Event handlers

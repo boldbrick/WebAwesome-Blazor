@@ -72,6 +72,12 @@ public class WaRelativeTime : ComponentBase
     [Parameter] public bool Sync { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Format"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaRelativeTimeFormat DefaultFormat = WaRelativeTimeFormat.Long;
+
+    /// <summary>
     /// The formatting style to use, e.g. "3 hours ago" (long), "3 hr. ago" (short) or "3h ago" (narrow).
     /// When null, no attribute is emitted and Web Awesome uses its default, long.
     /// </summary>
@@ -81,6 +87,12 @@ public class WaRelativeTime : ComponentBase
     /// The locale used to format the relative time phrase, e.g. "en-US".
     /// </summary>
     [Parameter] public string? Lang { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Numeric"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaRelativeTimeNumeric DefaultNumeric = WaRelativeTimeNumeric.Auto;
 
     /// <summary>
     /// Controls whether idiomatic phrases such as "yesterday" and "tomorrow" are used (auto) or numeric
@@ -104,11 +116,11 @@ public class WaRelativeTime : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add relative time attributes
-        builder.AddDateTimeOffsetAttribute(attributes, 10, "date", Date);
+        builder.AddDateTimeOffsetAttribute(10, "date", Date);
         builder.AddAttribute(11, "sync", Sync);
-        builder.AddAttributeIfNotNull(attributes, 12, "format", Format?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "lang", Lang);
-        builder.AddAttributeIfNotNull(attributes, 14, "numeric", Numeric?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "format", Format?.ToHtmlValue(), DefaultFormat.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(13, "lang", Lang);
+        builder.AddAttributeIfNotNull(attributes, 14, "numeric", Numeric?.ToHtmlValue(), DefaultNumeric.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __relativeTimeReference => Element = __relativeTimeReference);

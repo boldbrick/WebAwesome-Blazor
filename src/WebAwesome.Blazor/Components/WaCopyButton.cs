@@ -51,9 +51,21 @@ public class WaCopyButton : ComponentBase
 
     // Copy functionality
     /// <summary>
+    /// The Web Awesome default of <see cref="Value"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultValue = "";
+
+    /// <summary>
     /// The text value to copy.
     /// </summary>
     [Parameter] public string? Value { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="From"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultFrom = "";
 
     /// <summary>
     /// An id referencing an element in the same document from which data is copied. If both this and
@@ -71,14 +83,32 @@ public class WaCopyButton : ComponentBase
 
     // Labels for different states
     /// <summary>
+    /// The Web Awesome default of <see cref="CopyLabel"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultCopyLabel = "";
+
+    /// <summary>
     /// A custom label to show in the tooltip. Null (the default) leaves the element's localized label.
     /// </summary>
     [Parameter] public string? CopyLabel { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="SuccessLabel"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultSuccessLabel = "";
+
+    /// <summary>
     /// A custom label to show in the tooltip after copying. Null (the default) leaves the element's localized label.
     /// </summary>
     [Parameter] public string? SuccessLabel { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="ErrorLabel"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultErrorLabel = "";
 
     /// <summary>
     /// A custom label to show in the tooltip when a copy error occurs. Null (the default) leaves the element's
@@ -96,6 +126,12 @@ public class WaCopyButton : ComponentBase
     /// The length of time, in milliseconds, to show feedback before restoring the default trigger.
     /// </summary>
     [Parameter] public int FeedbackDuration { get; set; } = DefaultFeedbackDuration;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="TooltipPlacement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaTooltipSide DefaultTooltipPlacement = WaTooltipSide.Top;
 
     /// <summary>
     /// The side of the button on which the tooltip for the copy, success, and error labels is shown. When null, the attribute
@@ -183,15 +219,15 @@ public class WaCopyButton : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "from", From);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value, DefaultValue);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "from", From, DefaultFrom);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "copy-label", CopyLabel);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 8, "success-label", SuccessLabel);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 9, "error-label", ErrorLabel);
-        builder.AddNumberAttribute(attributes, 10, "feedback-duration", FeedbackDuration);
-        builder.AddAttributeIfNotNull(attributes, 11, "tooltip-placement", TooltipPlacement?.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 12, "tooltip", Tooltip.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "copy-label", CopyLabel, DefaultCopyLabel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 8, "success-label", SuccessLabel, DefaultSuccessLabel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 9, "error-label", ErrorLabel, DefaultErrorLabel);
+        builder.AddNumberAttribute(attributes, 10, "feedback-duration", FeedbackDuration, DefaultFeedbackDuration);
+        builder.AddAttributeIfNotNull(attributes, 11, "tooltip-placement", TooltipPlacement?.ToHtmlValue(), DefaultTooltipPlacement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "tooltip", Tooltip.ToHtmlValue(), DefaultTooltip.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-copy", OnCopy);

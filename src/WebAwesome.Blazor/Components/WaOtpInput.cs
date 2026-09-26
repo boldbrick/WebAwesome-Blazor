@@ -26,15 +26,33 @@ public class WaOtpInput : WaInputBase<string?>
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Autocomplete"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultAutocomplete = "one-time-code";
+
+    /// <summary>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
 
     /// <summary>
     /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes
     /// precedence when set.
     /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Hint"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultHint = "";
 
     /// <summary>
     /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
@@ -57,9 +75,21 @@ public class WaOtpInput : WaInputBase<string?>
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Length"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultLength = 6;
+
+    /// <summary>
     /// Number of character segments to display. Overridden by <see cref="Format"/> when set.
     /// </summary>
     [Parameter] public int? Length { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOtpInputAppearance DefaultAppearance = WaOtpInputAppearance.Outlined;
 
     /// <summary>
     /// Visual appearance of the segments.
@@ -67,14 +97,32 @@ public class WaOtpInput : WaInputBase<string?>
     [Parameter] public WaOtpInputAppearance? Appearance { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Type"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOtpInputType DefaultType = WaOtpInputType.Numeric;
+
+    /// <summary>
     /// Allowed character class.
     /// </summary>
     [Parameter] public WaOtpInputType? Type { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Case"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOtpInputCase DefaultCase = WaOtpInputCase.Preserve;
+
+    /// <summary>
     /// Case transformation applied to entered characters.
     /// </summary>
     [Parameter] public WaOtpInputCase? Case { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Format"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultFormat = "";
 
     /// <summary>
     /// Segment format string using <c>#</c> as a segment placeholder and any other character as a literal
@@ -147,16 +195,16 @@ public class WaOtpInput : WaInputBase<string?>
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "hint", Hint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete, DefaultAutocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label, DefaultLabel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "hint", Hint, DefaultHint);
 
         // Add otp-input-specific attributes
-        builder.AddAttributeIfNotNull(attributes, 20, "length", Length);
-        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 22, "type", Type?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 23, "case", Case?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 24, "format", Format);
+        builder.AddAttributeIfNotNull(attributes, 20, "length", Length, DefaultLength);
+        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 22, "type", Type?.ToHtmlValue(), DefaultType.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 23, "case", Case?.ToHtmlValue(), DefaultCase.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 24, "format", Format, DefaultFormat);
         builder.AddAttribute(25, "autosubmit", AutoSubmit);
         builder.AddAttribute(26, "autofocus", AutoFocus);
         builder.AddAttribute(27, "mask", Mask);

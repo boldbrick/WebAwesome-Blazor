@@ -49,6 +49,12 @@ public class WaColorPicker : WaPopupInputBase<string?>
     [Parameter] public bool WithoutFormatToggle { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Swatches"/>: no swatches, rendered as the empty attribute in place of null or an
+    /// empty list once the attribute has been rendered.
+    /// </summary>
+    public static readonly IReadOnlyList<string> DefaultSwatches = [];
+
+    /// <summary>
     /// Predefined color swatches to display as presets, in list order (rendered separated by a semicolon, so a swatch
     /// cannot contain one; null or empty shows none). Can include
     /// any format the color picker can parse, such as HEX(A), RGB(A), HSL(A), HSV(A), or CSS color names.
@@ -59,6 +65,12 @@ public class WaColorPicker : WaPopupInputBase<string?>
     /// Renders the color format toggle and hex input using uppercase letters.
     /// </summary>
     [Parameter] public bool Uppercase { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPlacement DefaultPlacement = WaPlacement.BottomStart;
 
     /// <summary>
     /// The preferred placement of the color picker's popup. The actual placement may vary to keep the panel
@@ -93,14 +105,14 @@ public class WaColorPicker : WaPopupInputBase<string?>
 
         // Add color picker-specific attributes
         builder.AddAttribute(20, "opacity", Opacity);
-        builder.AddDefaultedAttribute(attributes, 21, "format", Format.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 21, "format", Format.ToHtmlValue(), DefaultFormat.ToHtmlValue());
         builder.AddAttribute(22, "without-format-toggle", WithoutFormatToggle);
-        builder.AddTokenListAttribute(attributes, 23, "swatches", Swatches, WaWireFormat.SemicolonSeparator, WaWireFormat.SemicolonSeparators);
+        builder.AddTokenListAttribute(attributes, 23, "swatches", Swatches, DefaultSwatches, WaWireFormat.SemicolonSeparator, WaWireFormat.SemicolonSeparators);
         builder.AddAttribute(24, "value", CurrentValueAsString);
         builder.AddAttribute(25, "open", Open);
         builder.AddAttribute(26, "uppercase", Uppercase);
         AddWithHintAndLabelAttributes(builder, 14);
-        builder.AddAttributeIfNotNull(attributes, 29, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 29, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
 
         // Add value binding
         builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));

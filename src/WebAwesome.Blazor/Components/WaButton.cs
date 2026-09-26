@@ -48,14 +48,32 @@ public class WaButton : ComponentBase, IFormValidation
 
     // Visual & behavior properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVariant DefaultVariant = WaVariant.Neutral;
+
+    /// <summary>
     /// The button's theme variant. Defaults to <c>neutral</c> if not within another element with a variant.
     /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaAppearance DefaultAppearance = WaAppearance.Accent;
+
+    /// <summary>
     /// The button's visual appearance.
     /// </summary>
     [Parameter] public WaAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The button's size.
@@ -95,6 +113,12 @@ public class WaButton : ComponentBase, IFormValidation
     /// Disables the button. Does not apply to link buttons.
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Type"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaButtonType DefaultType = WaButtonType.Button;
 
     /// <summary>
     /// The type of button. The default is <see cref="WaButtonType.Button"/> rather than <c>submit</c>, which is the
@@ -248,30 +272,30 @@ public class WaButton : ComponentBase, IFormValidation
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(attributes, 4, "variant", Variant?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 5, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 6, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 6, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
         builder.AddAttribute(7, "pill", Pill);
         builder.AddAttribute(8, "with-caret", WithCaret);
         builder.AddAttribute(9, "loading", Loading);
         builder.AddAttribute(10, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(attributes, 11, "type", Type?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "type", Type?.ToHtmlValue(), DefaultType.ToHtmlValue());
 
         // Link behavior attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "href", Href);
-        builder.AddAttributeIfNotNull(attributes, 13, "target", Target?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 14, "download", Download);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 15, "rel", Rel);
+        builder.AddAttributeIfNotNullOrEmpty(12, "href", Href);
+        builder.AddAttributeIfNotNull(13, "target", Target?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(14, "download", Download);
+        builder.AddAttributeIfNotNullOrEmpty(15, "rel", Rel);
 
         // Form-submission attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 16, "form", Form);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 17, "formaction", FormAction);
-        builder.AddAttributeIfNotNull(attributes, 18, "formenctype", FormEncType?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 19, "formmethod", FormMethod?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(16, "form", Form);
+        builder.AddAttributeIfNotNullOrEmpty(17, "formaction", FormAction);
+        builder.AddAttributeIfNotNull(18, "formenctype", FormEncType?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(19, "formmethod", FormMethod?.ToHtmlValue());
         builder.AddBooleanAttribute(60, "formnovalidate", FormNoValidate);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 61, "formtarget", FormTarget);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 62, "name", Name);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 63, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(61, "formtarget", FormTarget);
+        builder.AddAttributeIfNotNullOrEmpty(62, "name", Name);
+        builder.AddAttributeIfNotNullOrEmpty(63, "value", Value);
 
         // SSR hydration hints for the start/end slots
         builder.AddAttribute(64, "with-start", WithStart);

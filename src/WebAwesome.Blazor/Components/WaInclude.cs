@@ -105,8 +105,8 @@ public class WaInclude : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add include-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "src", Src);
-        builder.AddDefaultedAttribute(attributes, 11, "mode", Mode.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(10, "src", Src);
+        builder.AddDefaultedAttribute(attributes, 11, "mode", Mode.ToHtmlValue(), DefaultMode.ToHtmlValue());
         if (AllowScripts)
             builder.AddAttribute(12, "allow-scripts", AllowScripts);
 

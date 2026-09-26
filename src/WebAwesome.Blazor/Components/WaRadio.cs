@@ -66,6 +66,12 @@ public class WaRadio : ComponentBase, IFormValidation
     [Parameter] public WaSize? Size { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaRadioAppearance DefaultAppearance = WaRadioAppearance.Default;
+
+    /// <summary>
     /// The radio's visual appearance.
     /// </summary>
     [Parameter] public WaRadioAppearance? Appearance { get; set; }
@@ -106,10 +112,10 @@ public class WaRadio : ComponentBase, IFormValidation
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(attributes, 7, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 8, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(7, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 8, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
 
         // Add event handlers; wa-radio dispatches no change event of its own (selection changes are
         // reported by the parent radio group)

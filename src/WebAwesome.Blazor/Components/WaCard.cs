@@ -50,6 +50,12 @@ public class WaCard : ComponentBase
     [Parameter] public WaAppearance Appearance { get; set; } = DefaultAppearance;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Vertical;
+
+    /// <summary>
     /// The card's orientation.
     /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
@@ -141,8 +147,8 @@ public class WaCard : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add card-specific attributes
-        builder.AddDefaultedAttribute(attributes, 10, "appearance", Appearance.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 11, "orientation", Orientation?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "appearance", Appearance.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "orientation", Orientation?.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
         builder.AddAttribute(12, "with-header", WithHeader || HeaderContent is not null || HeaderActionsContent is not null);
         builder.AddAttribute(13, "with-footer", WithFooter || FooterContent is not null || FooterActionsContent is not null);
         builder.AddAttribute(14, "with-media", WithMedia || MediaContent is not null);

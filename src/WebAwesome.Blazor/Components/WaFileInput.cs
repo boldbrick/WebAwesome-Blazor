@@ -55,15 +55,33 @@ public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
 
     // File input properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Accept"/>: any file type, rendered as the empty attribute in place of null or an
+    /// empty list once the attribute has been rendered.
+    /// </summary>
+    public static readonly IReadOnlyList<string> DefaultAccept = [];
+
+    /// <summary>
     /// The file types the input accepts, each an extension (<c>.pdf</c>), a MIME type (<c>image/png</c>) or a wildcard
     /// MIME type (<c>image/*</c>), rendered separated by a comma like the native accept; null or empty accepts any file.
     /// </summary>
     [Parameter] public IReadOnlyList<string>? Accept { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Hint"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultHint = "";
+
+    /// <summary>
     /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes precedence when set.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
 
     /// <summary>
     /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes precedence when set.
@@ -84,6 +102,12 @@ public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
     /// Marks the file input as required for form validation.
     /// </summary>
     [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The file input's size.
@@ -182,16 +206,16 @@ public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add file-input-specific attributes
-        builder.AddTokenListAttribute(attributes, 10, "accept", Accept, WaWireFormat.CommaSeparator, WaWireFormat.CommaSeparators);
+        builder.AddTokenListAttribute(attributes, 10, "accept", Accept, DefaultAccept, WaWireFormat.CommaSeparator, WaWireFormat.CommaSeparators);
 
         // hint before label, unlike the shared label cluster renderer, so the attribute order stays as it was
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "hint", Hint);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "hint", Hint, DefaultHint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label, DefaultLabel);
         builder.AddAttribute(13, "multiple", Multiple);
         builder.AddAttribute(14, "required", Required);
         builder.AddAttribute(18, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(attributes, 15, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 19, "capture", Capture?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 15, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
+        builder.AddAttributeIfNotNull(19, "capture", Capture?.ToHtmlValue());
         FormControlRendering.AddWithHintAndLabelAttributes(builder, 16, this);
 
         // Add event handlers

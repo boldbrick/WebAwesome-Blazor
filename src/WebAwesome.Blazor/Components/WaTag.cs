@@ -113,9 +113,9 @@ public class WaTag : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add tag-specific attributes
-        builder.AddDefaultedAttribute(attributes, 10, "variant", Variant.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 11, "appearance", Appearance.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 12, "size", Size.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "variant", Variant.ToHtmlValue(), DefaultVariant.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 11, "appearance", Appearance.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "size", Size.ToHtmlValue(), DefaultSize.ToHtmlValue());
         builder.AddAttribute(13, "pill", Pill);
         builder.AddAttribute(14, "with-remove", WithRemove);
 

@@ -66,6 +66,12 @@ public class WaFormatBytes : ComponentBase
     [Parameter] public string? Lang { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Display"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaDisplay DefaultDisplay = WaDisplay.Short;
+
+    /// <summary>
     /// The unit label style to use when displaying the value.
     /// </summary>
     [Parameter] public WaDisplay? Display { get; set; }
@@ -83,10 +89,10 @@ public class WaFormatBytes : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddNumberAttribute(attributes, 4, "value", Value);
-        builder.AddDefaultedAttribute(attributes, 5, "unit", Unit.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 6, "lang", Lang);
-        builder.AddAttributeIfNotNull(attributes, 7, "display", Display?.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 4, "value", Value, DefaultValue);
+        builder.AddDefaultedAttribute(attributes, 5, "unit", Unit.ToHtmlValue(), DefaultUnit.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(6, "lang", Lang);
+        builder.AddAttributeIfNotNull(attributes, 7, "display", Display?.ToHtmlValue(), DefaultDisplay.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __formatBytesReference => Element = __formatBytesReference);

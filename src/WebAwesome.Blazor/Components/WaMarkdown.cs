@@ -51,6 +51,12 @@ public class WaMarkdown : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="TabSize"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultTabSize = 4;
+
+    /// <summary>
     /// The tab stop width used when converting leading tabs to spaces during whitespace normalization. When unset,
     /// the Web Awesome default (4) applies.
     /// </summary>
@@ -85,7 +91,7 @@ public class WaMarkdown : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(attributes, 4, "tab-size", TabSize);
+        builder.AddAttributeIfNotNull(attributes, 4, "tab-size", TabSize, DefaultTabSize);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __markdownReference => Element = __markdownReference);

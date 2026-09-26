@@ -57,6 +57,12 @@ public class WaCheckboxGroup : ComponentBase, IWaLabeledControl
     [Parameter] public string? Hint { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Vertical;
+
+    /// <summary>
     /// The orientation in which to show grouped checkboxes. Defaults to vertical when not set.
     /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
@@ -120,8 +126,8 @@ public class WaCheckboxGroup : ComponentBase, IWaLabeledControl
 
         // Add checkbox group specific attributes
         FormControlRendering.AddLabelAndHintAttributes(builder, 10, this);
-        builder.AddAttributeIfNotNull(attributes, 12, "orientation", Orientation?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 13, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "orientation", Orientation?.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
+        builder.AddAttributeIfNotNull(13, "size", Size?.ToHtmlValue());
         builder.AddAttribute(14, "required", Required);
         FormControlRendering.AddWithHintAndLabelAttributes(builder, 15, this);
 

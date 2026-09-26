@@ -50,6 +50,12 @@ public class WaToast : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaToastPlacement DefaultPlacement = WaToastPlacement.TopEnd;
+
+    /// <summary>
     /// The placement of the toast stack on the screen.
     /// </summary>
     [Parameter] public WaToastPlacement? Placement { get; set; }
@@ -75,7 +81,7 @@ public class WaToast : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(attributes, 4, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
 
         builder.AddElementReferenceCapture(10, __toastReference => Element = __toastReference);
 

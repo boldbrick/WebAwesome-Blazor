@@ -51,6 +51,12 @@ public class WaProgressBar : ComponentBase
     [Parameter] public int Value { get; set; } = DefaultValue;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// A custom label for assistive devices.
     /// </summary>
     [Parameter] public string? Label { get; set; }
@@ -86,8 +92,8 @@ public class WaProgressBar : ComponentBase
 
         // Add progress bar-specific attributes
         if (!Indeterminate)
-            builder.AddNumberAttribute(attributes, 10, "value", Value);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "label", Label);
+            builder.AddNumberAttribute(attributes, 10, "value", Value, DefaultValue);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "label", Label, DefaultLabel);
         builder.AddAttribute(12, "indeterminate", Indeterminate);
 
         // Add element reference capture

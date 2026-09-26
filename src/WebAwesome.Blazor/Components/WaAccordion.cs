@@ -60,6 +60,12 @@ public class WaAccordion : ComponentBase
     [Parameter] public WaDetailsAppearance Appearance { get; set; } = DefaultAppearance;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="HeadingLevel"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaHeadingLevel DefaultHeadingLevel = WaHeadingLevel.H3;
+
+    /// <summary>
     /// The heading level for child item triggers, or <see cref="WaHeadingLevel.None"/> to omit the heading wrapper. Null leaves the element's default, <see cref="WaHeadingLevel.H3"/>.
     /// </summary>
     [Parameter] public WaHeadingLevel? HeadingLevel { get; set; }
@@ -132,10 +138,10 @@ public class WaAccordion : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add accordion-specific attributes
-        builder.AddDefaultedAttribute(attributes, 10, "appearance", Appearance.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 11, "heading-level", HeadingLevel?.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 12, "icon-placement", IconPlacement.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 13, "mode", Mode.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "appearance", Appearance.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "heading-level", HeadingLevel?.ToHtmlValue(), DefaultHeadingLevel.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "icon-placement", IconPlacement.ToHtmlValue(), DefaultIconPlacement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 13, "mode", Mode.ToHtmlValue(), DefaultMode.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-expand", OnExpand);

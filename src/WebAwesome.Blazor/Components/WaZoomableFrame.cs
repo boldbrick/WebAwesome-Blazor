@@ -76,6 +76,13 @@ public class WaZoomableFrame : ComponentBase
     [Parameter] public double Zoom { get; set; } = DefaultZoom;
 
     /// <summary>
+    /// The Web Awesome default of <see cref="ZoomLevels"/>, 25% to 200% in steps of 25% (the element's "25% 50% ... 200%"):
+    /// what the element holds while the parameter is null or empty, and what is rendered in its place once the attribute has
+    /// been rendered.
+    /// </summary>
+    public static readonly IReadOnlyList<double> DefaultZoomLevels = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+    /// <summary>
     /// The zoom levels to step through when using the zoom controls, as factors (<c>1</c> is 100%), in order; null or
     /// empty leaves the element's default, 25% to 200% in steps of 25%. Does not restrict programmatic changes to the zoom.
     /// </summary>
@@ -102,6 +109,12 @@ public class WaZoomableFrame : ComponentBase
     /// Whether the iframe is allowed to be displayed in fullscreen mode.
     /// </summary>
     [Parameter] public bool AllowFullScreen { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Loading"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaLoading DefaultLoading = WaLoading.Eager;
 
     /// <summary>
     /// Indicates when the browser should load the iframe.
@@ -179,12 +192,12 @@ public class WaZoomableFrame : ComponentBase
         }
         else
         {
-            builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "src", Src);
+            builder.AddAttributeIfNotNullOrEmpty(10, "src", Src);
         }
 
         // Add zoom attributes
-        builder.AddNumberAttribute(attributes, 20, "zoom", Zoom);
-        builder.AddNumberListAttribute(attributes, 21, "zoom-levels", ZoomLevels);
+        builder.AddNumberAttribute(attributes, 20, "zoom", Zoom, DefaultZoom);
+        builder.AddNumberListAttribute(attributes, 21, "zoom-levels", ZoomLevels, DefaultZoomLevels);
 
         // Add control attributes
         builder.AddAttribute(30, "without-controls", WithoutControls);
@@ -193,9 +206,9 @@ public class WaZoomableFrame : ComponentBase
 
         // Add remaining iframe passthrough attributes
         builder.AddAttribute(32, "allowfullscreen", AllowFullScreen);
-        builder.AddAttributeIfNotNull(attributes, 33, "loading", Loading?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 34, "referrerpolicy", ReferrerPolicy?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 35, "sandbox", Sandbox?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 33, "loading", Loading?.ToHtmlValue(), DefaultLoading.ToHtmlValue());
+        builder.AddAttributeIfNotNull(34, "referrerpolicy", ReferrerPolicy?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(35, "sandbox", Sandbox?.ToHtmlValue());
 
         // native load/error events re-dispatched by wa-zoomable-frame on the host element (non-bubbling,
         // composed); delivered through Blazor's built-in non-bubbling event registration (no

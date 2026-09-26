@@ -44,11 +44,6 @@
     }
   },
   "components": {
-    "wa-badge": {
-      "unreachableUnionValues": {
-        "attention": [ "none" ]
-      }
-    },
     "wa-details": {
       "eventOverrides": {
         "wa-show": "OnToggle",
@@ -354,7 +349,6 @@
     "bubblingEventAliases:focusout": "OnBlur binds the bubbling, composed focusout for the same reason as OnFocus binds focusin (see bubblingEventAliases:focusin); the checks treat a focusout handler as the element's blur",
     "unreachableEnumUnionValues:WaChartLegendPosition": "'center' comes from Chart.js' shared LayoutPosition type (a scale position); the Chart.js 4 legend documents only top, left, bottom, right and chartArea, so WaChartLegendPosition deliberately has no Center member",
     "unreachableEnumUnionValues:WaSize": "the long size spellings 'small'/'medium'/'large' are deprecated in WA 3.12.0 ('will be removed in the next major version'); WaSize.Small/Medium/Large emit the equivalent short forms 's'/'m'/'l' since 3.12.0, so the deprecated literals are intentionally unreachable",
-    "unreachableUnionValues:wa-badge:attention": "'none' is the WA default (no animation); it is reached by leaving the nullable WaBadge.Attention unset, which omits the attribute, so WaAttention has no None member",
     "eventOverrides:wa-details:wa-show": "WaDetails raises OnToggle for both wa-show and wa-hide, with IsOpen telling them apart, like the native details toggle event, instead of separate OnShow/OnHide callbacks",
     "eventOverrides:wa-details:wa-hide": "WaDetails raises OnToggle for both wa-show and wa-hide, with IsOpen telling them apart, like the native details toggle event, instead of separate OnShow/OnHide callbacks",
     "unrenderedAttributes:wa-checkbox:value": "the CEM value is the form submission value; WaCheckbox.Value is the two-way bound checked state (rendered as checked), and the submission value is rendered as the constant 'True', like Blazor's InputCheckbox, so no parameter maps to it",

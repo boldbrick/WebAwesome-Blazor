@@ -40,9 +40,21 @@ public class WaAvatar : ComponentBase
 
     // Avatar properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Image"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultImage = "";
+
+    /// <summary>
     /// The image source to use for the avatar.
     /// </summary>
     [Parameter] public string? Image { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Initials"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultInitials = "";
 
     /// <summary>
     /// Initials to use as a fallback when no image is available (1-2 characters max recommended).
@@ -58,6 +70,12 @@ public class WaAvatar : ComponentBase
     /// Indicates how the browser should load the image.
     /// </summary>
     [Parameter] public WaLoading Loading { get; set; } = DefaultLoading;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
 
     /// <summary>
     /// A label to use to describe the avatar to assistive devices.
@@ -112,11 +130,11 @@ public class WaAvatar : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add avatar-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "image", Image);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "initials", Initials);
-        builder.AddDefaultedAttribute(attributes, 12, "loading", Loading.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "label", Label);
-        builder.AddDefaultedAttribute(attributes, 14, "shape", Shape.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "image", Image, DefaultImage);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "initials", Initials, DefaultInitials);
+        builder.AddDefaultedAttribute(attributes, 12, "loading", Loading.ToHtmlValue(), DefaultLoading.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "label", Label, DefaultLabel);
+        builder.AddDefaultedAttribute(attributes, 14, "shape", Shape.ToHtmlValue(), DefaultShape.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(16, "onwa-error", OnError);

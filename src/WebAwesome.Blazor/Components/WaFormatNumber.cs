@@ -66,9 +66,21 @@ public class WaFormatNumber : ComponentBase
     [Parameter] public string? Lang { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Currency"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultCurrency = "USD";
+
+    /// <summary>
     /// The <see href="https://en.wikipedia.org/wiki/ISO_4217">ISO 4217</see> currency code to use when formatting.
     /// </summary>
     [Parameter] public string? Currency { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="CurrencyDisplay"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaCurrencyDisplay DefaultCurrencyDisplay = WaCurrencyDisplay.Symbol;
 
     /// <summary>
     /// How to display the currency.
@@ -119,18 +131,18 @@ public class WaFormatNumber : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddNumberAttribute(attributes, 4, "value", Value);
-        builder.AddDefaultedAttribute(attributes, 5, "type", Type.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 6, "lang", Lang);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "currency", Currency);
-        builder.AddAttributeIfNotNull(attributes, 8, "currency-display", CurrencyDisplay?.ToHtmlValue());
+        builder.AddNumberAttribute(attributes, 4, "value", Value, DefaultValue);
+        builder.AddDefaultedAttribute(attributes, 5, "type", Type.ToHtmlValue(), DefaultType.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(6, "lang", Lang);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "currency", Currency, DefaultCurrency);
+        builder.AddAttributeIfNotNull(attributes, 8, "currency-display", CurrencyDisplay?.ToHtmlValue(), DefaultCurrencyDisplay.ToHtmlValue());
 
         // Add formatting options
-        builder.AddAttributeIfNotNull(attributes, 10, "minimum-integer-digits", MinimumIntegerDigits);
-        builder.AddAttributeIfNotNull(attributes, 11, "minimum-fraction-digits", MinimumFractionDigits);
-        builder.AddAttributeIfNotNull(attributes, 12, "maximum-fraction-digits", MaximumFractionDigits);
-        builder.AddAttributeIfNotNull(attributes, 13, "minimum-significant-digits", MinimumSignificantDigits);
-        builder.AddAttributeIfNotNull(attributes, 14, "maximum-significant-digits", MaximumSignificantDigits);
+        builder.AddAttributeIfNotNull(10, "minimum-integer-digits", MinimumIntegerDigits);
+        builder.AddAttributeIfNotNull(11, "minimum-fraction-digits", MinimumFractionDigits);
+        builder.AddAttributeIfNotNull(12, "maximum-fraction-digits", MaximumFractionDigits);
+        builder.AddAttributeIfNotNull(13, "minimum-significant-digits", MinimumSignificantDigits);
+        builder.AddAttributeIfNotNull(14, "maximum-significant-digits", MaximumSignificantDigits);
         if (WithoutGrouping)
             builder.AddAttribute(18, "without-grouping", WithoutGrouping);
 

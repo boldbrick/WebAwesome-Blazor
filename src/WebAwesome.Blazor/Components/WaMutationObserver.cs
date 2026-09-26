@@ -127,9 +127,9 @@ public class WaMutationObserver : ComponentBase
         // Add mutation observer attributes
         // attr lists the attributes to watch; the element watches none for an empty value, so it cannot be a bare attribute
         if (AttributeFilter is { Count: > 0 })
-            builder.AddTokenSetAttribute(attributes, 10, "attr", AttributeFilter);
+            builder.AddTokenSetAttribute(10, "attr", AttributeFilter);
         else
-            builder.AddAttributeIfNotNull(attributes, 10, "attr", Attr ? AllAttributesFilter : null);
+            builder.AddAttributeIfNotNull(10, "attr", Attr ? AllAttributesFilter : null);
         builder.AddAttribute(11, "child-list", ChildList);
         builder.AddAttribute(12, "char-data", CharData);
         builder.AddAttribute(17, "attr-old-value", AttrOldValue);

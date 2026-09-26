@@ -31,7 +31,10 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// culture; (f) with no parameter set, every rendered CEM attribute carries the element's own default (allowlist
 /// "wrapperDefaultAttributes"), so a wrong wrapper default shows; (g) every parameter's C# default is the element's CEM default,
 /// or null (allowlist "divergentParameterDefaults"); (h) every date, time, instant, range and set renders in the form the
-/// element parses, checked with Web Awesome's own patterns (WaWirePatterns), and an empty set renders nothing. Parameters of
+/// element parses, checked with Web Awesome's own patterns (WaWirePatterns), and an empty set renders nothing; (i) a
+/// rendered attribute with an element default falls back to it instead of being removed; (j) every Default&lt;Name&gt;
+/// constant holds the element default; (k) every default a sticky call site passes is the element default. The element
+/// defaults come from the test-side oracle WaElementDefaults, generated from the CEM. Parameters of
 /// other types (other collections, objects, fragments, callbacks) are not sampled. Every allowlist
 /// entry needs a reason, and stale entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
@@ -212,11 +215,11 @@ public class RenderedAttributeParityTests
     /// (i) Sticky attributes (owner rule): once a wrapper has rendered an attribute that has an element default, a
     /// later render never removes it. Each parameter is rendered with a sample that renders its attribute, then the
     /// same instance is re-rendered with the parameter back at its C# default (null for a nullable parameter), and the
-    /// attribute must still be there, holding the element default (the CEM literal default, which the library's
-    /// WaElementDefaults table must match). Removing it would make Lit set the property to null, not to its default
-    /// (a slider's max 0, a popup's placement null). Exempt by rule: bool parameters (a removed Lit boolean attribute
-    /// reads false, the default), attributes without a literal CEM default (removal restores the unset state), and
-    /// the bound value of an InputBase control (its live-value sync assigns the property).
+    /// attribute must still be there, holding the element default (the CEM literal default, from the test-side oracle
+    /// WaElementDefaults). Removing it would make Lit set the property to null, not to its default (a slider's max 0, a
+    /// popup's placement null). Exempt by rule: bool parameters (a removed Lit boolean attribute reads false, the
+    /// default), attributes without a literal CEM default (removal restores the unset state), and the bound value of an
+    /// InputBase control (its live-value sync assigns the property).
     /// </summary>
     [Fact]
     public void RenderedAttributes_FallBackToTheElementDefault_InsteadOfBeingRemoved()
@@ -233,6 +236,66 @@ public class RenderedAttributeParityTests
         TestContext.Current.TestOutputHelper?.WriteLine($"{checkedCount} parameters re-rendered at their default");
 
         AssertNoMisses(misses.Distinct(StringComparer.Ordinal).ToList(), "Attributes removed (or not reset to the element default) after they were rendered");
+    }
+
+    /// <summary>
+    /// (j) Every parameter mapped to an attribute with a literal element default (the oracle) declares that default as a
+    /// public Default&lt;Name&gt; constant (a static readonly field where the type needs one) on the wrapper, a base class
+    /// or a capability interface it implements, holding exactly the oracle default in its wire form (null stands for the
+    /// empty attribute, a collection for its items separated by a space). A bool parameter (a plain boolean attribute)
+    /// and the bound value of an InputBase control need not declare one, but one they declare must match.
+    /// </summary>
+    [Fact]
+    public void DefaultConstants_MatchTheElementDefaults()
+    {
+        SkipUnlessParityEnabled();
+
+        var checkedCount = 0;
+        var misses = new List<string>();
+        foreach (var element in RenderedElements())
+            misses.AddRange(DefaultConstantMisses(element, ref checkedCount));
+
+        // guard the check itself: it must have compared constants at all
+        if (checkedCount == 0) misses.Add("no Default constant was compared with the element default, so the check went unchecked");
+        TestContext.Current.TestOutputHelper?.WriteLine($"{checkedCount} Default constants compared");
+
+        AssertNoMisses(misses.Distinct(StringComparer.Ordinal).ToList(), "Default constants missing or differing from the element default");
+    }
+
+    /// <summary>
+    /// (k) The default every sticky call site passes (recorded by the wrapper's attribute memory during the baseline and
+    /// sample renders) is the oracle default of that attribute on the rendered element, and no call site passes a
+    /// default for an attribute that has none (its removal restores the unset state). A call site passing the wrong
+    /// constant, or a literal of its own, fails here even where the constant itself is right.
+    /// </summary>
+    [Fact]
+    public void PassedDefaults_MatchTheElementDefaults()
+    {
+        SkipUnlessParityEnabled();
+
+        var checkedAttributes = new HashSet<string>(StringComparer.Ordinal);
+        var misses = new List<string>();
+        foreach (var element in RenderedElements())
+        {
+            foreach (var (root, label) in RootsWithLabels(element.Renders).Where(r => r.Root.Error == null && r.Root.Tag == element.Tag))
+            {
+                foreach (var (attribute, passed) in root.PassedDefaults)
+                {
+                    checkedAttributes.Add($"{element.Name}:{attribute}");
+                    var elementDefault = ElementDefaultsTableTests.CemDefaultOf(element.Tag, attribute);
+                    if (elementDefault == null)
+                        misses.Add($"{element.Tag} ({element.Name}, {label}): the call site of '{attribute}' passes the default \"{passed}\", but the attribute has no literal element default; use the plain helper");
+                    else if (!SameAttributeValue(passed, elementDefault))
+                        misses.Add($"{element.Tag} ({element.Name}, {label}): the call site of '{attribute}' passes the default \"{passed}\", but the element default is \"{elementDefault}\"");
+                }
+            }
+        }
+
+        // guard the check itself: the memory must have recorded call sites at all
+        if (checkedAttributes.Count == 0) misses.Add("no sticky call site recorded a default, so the check went unchecked");
+        TestContext.Current.TestOutputHelper?.WriteLine($"{checkedAttributes.Count} sticky call sites compared");
+
+        AssertNoMisses(misses.Distinct(StringComparer.Ordinal).ToList(), "Defaults passed at sticky call sites that differ from the element default");
     }
 
     /// <summary>
@@ -447,6 +510,11 @@ public class RenderedAttributeParityTests
     private const string PlacementListKind = "IReadOnlyList<WaPlacement>";
     private const string ListKeyPrefix = "list:";
     private const string DefaultConstantPrefix = "Default";
+    private const string PercentSign = "%";
+    private const double PercentScale = 100;
+    private const string ListItemSeparator = " ";
+    private const string TimeBoundPattern = "HH:mm";
+    private const string TimeBoundWithSecondsPattern = "HH:mm:ss";
     private const string ListItemSampleA = "x-item-a";
     private const string ListItemSampleB = "x-item-b";
     private const string AriaPrefix = "aria-";
@@ -1190,7 +1258,8 @@ public class RenderedAttributeParityTests
         return false;
     }
 
-    // whether two attribute texts stand for the same value: numerically for numbers, ordinally otherwise
+    // whether two attribute texts stand for the same value: numerically for numbers and number lists (a percent token
+    // as its fraction, as wa-zoomable-frame reads "25%"), ordinally otherwise
     private static bool SameAttributeValue(string value, string other)
     {
         if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number)
@@ -1199,7 +1268,91 @@ public class RenderedAttributeParityTests
             return number.Equals(otherNumber);
         }
 
+        if (NumberListOf(value) is { } numbers && NumberListOf(other) is { } otherNumbers)
+            return numbers.SequenceEqual(otherNumbers);
+
         return string.Equals(value, other, StringComparison.Ordinal);
+    }
+
+    // the numbers of a whitespace-separated list of numbers or percentages, or null when the text is no such list
+    private static List<double>? NumberListOf(string text)
+    {
+        var tokens = WaWirePatterns.ListSeparator.Split(text.Trim()).Where(t => t.Length > 0).ToList();
+        if (tokens.Count == 0) return null;
+
+        var numbers = new List<double>(tokens.Count);
+        foreach (var token in tokens)
+        {
+            var isPercent = token.EndsWith(PercentSign, StringComparison.Ordinal);
+            var digits = isPercent ? token[..^PercentSign.Length] : token;
+            if (!double.TryParse(digits, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return null;
+            numbers.Add(isPercent ? parsed / PercentScale : parsed);
+        }
+
+        return numbers;
+    }
+
+    // the (j) misses of one element; counts the constants it compared
+    private static List<string> DefaultConstantMisses(RenderedElement element, ref int checkedCount)
+    {
+        var misses = new List<string>();
+        var componentType = element.Renders.ComponentType;
+
+        foreach (var (attribute, _, property) in MappedAttributes(element))
+        {
+            if (property == null) continue;
+
+            var elementDefault = ElementDefaultsTableTests.CemDefaultOf(element.Tag, attribute);
+            if (elementDefault == null) continue;
+
+            var constantName = DefaultConstantPrefix + property.Name;
+            var field = DefaultField(componentType, constantName);
+            if (field == null)
+            {
+                if (!EnumValueParityTests.IsBoolType(property.PropertyType) && !IsBoundValue(componentType, property))
+                    misses.Add($"{element.Tag} ({element.Name}): '{attribute}' has the element default \"{elementDefault}\", but {property.Name} declares no public {constantName} holding it");
+                continue;
+            }
+
+            checkedCount++;
+            var text = WireTextOf(field.GetValue(null));
+            if (text == null)
+                misses.Add($"{element.Tag} ({element.Name}): {field.DeclaringType?.Name}.{constantName} is of a type the check cannot compare");
+            else if (!SameAttributeValue(text, elementDefault))
+                misses.Add($"{element.Tag} ({element.Name}): {field.DeclaringType?.Name}.{constantName} is \"{text}\", but the element default of '{attribute}' is \"{elementDefault}\"");
+        }
+
+        return misses;
+    }
+
+    // the public static Default<Name> field of a wrapper, its base classes or the capability interfaces it implements
+    private static FieldInfo? DefaultField(Type componentType, string name)
+    {
+        return componentType.GetField(name, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+            ?? componentType.GetInterfaces().Select(i => i.GetField(name, BindingFlags.Public | BindingFlags.Static)).FirstOrDefault(f => f != null);
+    }
+
+    // the attribute text a Default constant stands for: null is the empty attribute ("no date"), a collection its items
+    // separated by a space; null for a type the check cannot compare
+    private static string? WireTextOf(object? value) => value switch
+    {
+        null => string.Empty,
+        bool flag => flag ? TrueText : FalseText,
+        string text => text,
+        Enum member => EnumValueParityTests.HtmlValueOf(member),
+        WaStep step => step.ToString(),
+        DateOnly date => date.ToString(IsoDatePattern, CultureInfo.InvariantCulture),
+        TimeOnly time => time.ToString(time.Second == 0 ? TimeBoundPattern : TimeBoundWithSecondsPattern, CultureInfo.InvariantCulture),
+        _ when IsNumber(value) => Convert.ToString(value, CultureInfo.InvariantCulture),
+        System.Collections.IEnumerable items => ListTextOf(items.Cast<object>().Select(WireTextOf)),
+        _ => null
+    };
+
+    // the items' texts separated by a space, or null when an item cannot be compared
+    private static string? ListTextOf(IEnumerable<string?> items)
+    {
+        var texts = items.ToList();
+        return texts.Any(t => t == null) ? null : string.Join(ListItemSeparator, texts);
     }
 
     // a component instance holding the parameters' C# defaults, or null when the type cannot be created bare

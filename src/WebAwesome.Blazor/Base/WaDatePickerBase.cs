@@ -75,6 +75,12 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="View"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaDatePickerView DefaultView = WaDatePickerView.Days;
+
+    /// <summary>
     /// The current view.
     /// </summary>
     [Parameter] public WaDatePickerView? View { get; set; }
@@ -126,10 +132,22 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     [Parameter] public WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="FocusedDate"/>: none (the selected date or today), which the element holds
+    /// as the empty attribute; it is rendered in place of null once the attribute has been rendered.
+    /// </summary>
+    public static readonly DateOnly? DefaultFocusedDate = null;
+
+    /// <summary>
     /// The date the calendar focuses initially; drives the roving tabindex and the visible month. The element moves
     /// its focus as the user navigates without updating this parameter (see <see cref="OnFocusDay"/>).
     /// </summary>
     [Parameter] public DateOnly? FocusedDate { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Locale"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLocale = "";
 
     /// <summary>
     /// BCP-47 locale override. When empty, the inherited <c>lang</c> attribute is used.
@@ -145,6 +163,12 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     /// Whether prev/next advances by the visible range or one month at a time.
     /// </summary>
     [Parameter] public WaDatePageBy? PageBy { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// Visual size.
@@ -280,17 +304,17 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
 
         // add date-picker-specific attributes: the selection mode of the wrapper, then the calendar options
         AddSelectionModeAttributes(builder, 10);
-        builder.AddAttributeIfNotNull(attributes, 13, "view", View?.ToHtmlValue());
-        FormControlRendering.AddCalendarAttributes(builder, 14, this);
+        builder.AddAttributeIfNotNull(attributes, 13, "view", View?.ToHtmlValue(), DefaultView.ToHtmlValue());
+        FormControlRendering.AddCalendarAttributes(builder, 14, this, disabledDatesDefault: null);
         builder.AddAttribute(27, "disabled", Disabled);
         builder.AddAttribute(28, "readonly", Readonly);
-        builder.AddDateAttribute(attributes, 29, "focused-date", FocusedDate);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 30, "locale", Locale);
-        builder.AddAttributeIfNotNull(attributes, 31, "size", Size?.ToHtmlValue());
+        builder.AddDateAttribute(attributes, 29, "focused-date", FocusedDate, DefaultFocusedDate);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 30, "locale", Locale, DefaultLocale);
+        builder.AddAttributeIfNotNull(attributes, 31, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
 
         // add value binding (the native change event drives ValueChanged); the value attribute is the live value
         var wireValue = FormatValue(Value);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 35, "value", wireValue);
+        builder.AddAttributeIfNotNullOrEmpty(35, "value", wireValue);
         builder.AddAttribute(36, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => SetValueAsync(ParseValue(__value)), wireValue));
         builder.SetUpdatesAttributeName("value");
 

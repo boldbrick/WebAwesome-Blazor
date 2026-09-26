@@ -49,9 +49,21 @@ public class WaVideoPlaylist : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Controls"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVideoControls DefaultControls = WaVideoControls.Full;
+
+    /// <summary>
     /// The controls preset forwarded to each child video. When unset, the Web Awesome default (full) applies.
     /// </summary>
     [Parameter] public WaVideoControls? Controls { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="IconLibrary"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultIconLibrary = "system";
 
     /// <summary>
     /// Icon library used for placeholder icons.
@@ -88,8 +100,8 @@ public class WaVideoPlaylist : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", Class);
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(attributes, 4, "controls", Controls?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "icon-library", IconLibrary);
+        builder.AddAttributeIfNotNull(attributes, 4, "controls", Controls?.ToHtmlValue(), DefaultControls.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "icon-library", IconLibrary, DefaultIconLibrary);
 
         builder.AddAttributeIfHasDelegate(20, "onwa-video-change", OnVideoChange);
 

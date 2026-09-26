@@ -41,6 +41,12 @@ public class WaOption : ComponentBase
 
     // Option properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Value"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultValue = "";
+
+    /// <summary>
     /// The option's value. When selected, the containing form control receives this value. The value must be
     /// unique from other options in the same group and must not contain spaces, as spaces are used as
     /// delimiters when listing multiple values.
@@ -106,10 +112,10 @@ public class WaOption : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "value", Value, DefaultValue);
         builder.AddAttribute(5, "selected", Selected);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 7, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(7, "label", Label);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __optionReference => Element = __optionReference);

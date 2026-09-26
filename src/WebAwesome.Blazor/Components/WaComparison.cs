@@ -40,6 +40,12 @@ public class WaComparison : ComponentBase
 
     // Comparison properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Position"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const decimal DefaultPosition = 50m;
+
+    /// <summary>
     /// The position of the divider as a percentage.
     /// </summary>
     [Parameter] public decimal? Position { get; set; }
@@ -87,7 +93,7 @@ public class WaComparison : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add comparison-specific attributes
-        builder.AddAttributeIfNotNull(attributes, 10, "position", Position);
+        builder.AddAttributeIfNotNull(attributes, 10, "position", Position, DefaultPosition);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onchange", OnChange);

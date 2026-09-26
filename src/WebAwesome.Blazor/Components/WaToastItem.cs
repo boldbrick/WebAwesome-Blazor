@@ -49,15 +49,33 @@ public class WaToastItem : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Duration"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultDuration = 5000;
+
+    /// <summary>
     /// The length of time, in milliseconds, before the toast item is automatically dismissed.
     /// Set to 0 to keep the toast item open until the user dismisses it.
     /// </summary>
     [Parameter] public int? Duration { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
+
+    /// <summary>
     /// The toast item's size.
     /// </summary>
     [Parameter] public WaSize? Size { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVariant DefaultVariant = WaVariant.Neutral;
 
     /// <summary>
     /// The toast item's variant.
@@ -126,9 +144,9 @@ public class WaToastItem : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(attributes, 4, "duration", Duration);
-        builder.AddAttributeIfNotNull(attributes, 5, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 6, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "duration", Duration, DefaultDuration);
+        builder.AddAttributeIfNotNull(attributes, 5, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 6, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
         builder.AddAttribute(7, "with-icon", WithIcon);
 
         // event handlers (onwa- prefix; all four events are registered in the JS initializer)

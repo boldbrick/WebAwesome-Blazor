@@ -66,6 +66,12 @@ public class WaDetails : ComponentBase
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaDetailsAppearance DefaultAppearance = WaDetailsAppearance.Outlined;
+
+    /// <summary>
     /// The element's visual appearance.
     /// </summary>
     [Parameter] public WaDetailsAppearance? Appearance { get; set; }
@@ -151,12 +157,12 @@ public class WaDetails : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "summary", Summary);
+        builder.AddAttributeIfNotNullOrEmpty(4, "summary", Summary);
         builder.AddAttribute(5, "open", Open);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(attributes, 7, "appearance", Appearance?.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 8, "icon-placement", IconPlacement.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 9, "name", Name);
+        builder.AddAttributeIfNotNull(attributes, 7, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 8, "icon-placement", IconPlacement.ToHtmlValue(), DefaultIconPlacement.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(9, "name", Name);
 
         // Add event handlers; the interop module's createEventArgs derives IsOpen from the
         // event type (wa-show -> true, wa-hide -> false), so both events share OnToggle

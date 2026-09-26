@@ -65,7 +65,7 @@ public class WaSkeleton : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add skeleton-specific attributes
-        builder.AddDefaultedAttribute(attributes, 10, "effect", Effect.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "effect", Effect.ToHtmlValue(), DefaultEffect.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __skeletonReference => Element = __skeletonReference);

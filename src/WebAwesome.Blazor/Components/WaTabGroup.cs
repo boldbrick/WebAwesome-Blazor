@@ -49,6 +49,12 @@ public class WaTabGroup : ComponentBase
 
     // Tab group properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Active"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultActive = "";
+
+    /// <summary>
     /// The name of the panel belonging to the currently active tab.
     /// </summary>
     [Parameter] public string? Active { get; set; }
@@ -124,9 +130,9 @@ public class WaTabGroup : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "active", Active);
-        builder.AddDefaultedAttribute(attributes, 5, "placement", Placement.ToHtmlValue());
-        builder.AddDefaultedAttribute(attributes, 6, "activation", Activation.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "active", Active, DefaultActive);
+        builder.AddDefaultedAttribute(attributes, 5, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 6, "activation", Activation.ToHtmlValue(), DefaultActivation.ToHtmlValue());
         builder.AddAttribute(9, "without-scroll-controls", WithoutScrollControls);
 
         // Add event handlers; the element emits wa-tab-show/wa-tab-hide only (there is no

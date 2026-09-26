@@ -36,9 +36,21 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     [Parameter] public bool Required { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Autocomplete"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultAutocomplete = "";
+
+    /// <summary>
     /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
     /// </summary>
     [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
 
     /// <summary>
     /// The date input's visual appearance.
@@ -104,10 +116,22 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     [Parameter] public DateOnly? Today { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPickerPlacement DefaultPlacement = WaPickerPlacement.BottomStart;
+
+    /// <summary>
     /// The preferred placement of the date picker popup, above or below the field. When null, the attribute is omitted and
     /// Web Awesome's default (bottom-start) applies.
     /// </summary>
     [Parameter] public WaPickerPlacement? Placement { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Distance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultDistance = 0;
 
     /// <summary>
     /// Distance in pixels between the popup and the input.
@@ -238,15 +262,15 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
         // add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete, DefaultAutocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // add date-input-specific attributes: the selection mode of the wrapper, then the calendar options
-        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
         AddSelectionModeAttributes(builder, 21);
-        FormControlRendering.AddCalendarAttributes(builder, 24, this);
-        builder.AddAttributeIfNotNull(attributes, 40, "placement", Placement?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 41, "distance", Distance);
+        FormControlRendering.AddCalendarAttributes(builder, 24, this, IWaCalendarOptions.DefaultDisabledDates);
+        builder.AddAttributeIfNotNull(attributes, 40, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 41, "distance", Distance, DefaultDistance);
         builder.AddAttribute(42, "open", Open);
         builder.AddAttribute(43, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 44, this);

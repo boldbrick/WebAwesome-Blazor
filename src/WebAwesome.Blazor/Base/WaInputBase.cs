@@ -51,6 +51,13 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
 
     // Visual & behavior properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Size"/> on every form control element that has one (wa-radio-group has
+    /// none): what the element holds while the parameter is null, and what is rendered in its place once the
+    /// attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
+
+    /// <summary>
     /// Size variant of the input, mapped to the underlying Web Awesome element's "size" attribute.
     /// </summary>
     [Parameter] public WaSize? Size { get; set; }
@@ -140,12 +147,13 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// <returns>The next available sequence number (sequence + 13)</returns>
     protected int AddCommonAttributes(RenderTreeBuilder builder, int sequence)
     {
-        var attributes = WaAttributeMemory.Of(this);
         builder.AddMultipleAttributes(sequence + 0, AdditionalAttributes);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, sequence + 1, "name", NameAttributeValue);
+
+        // the name comes from the bound field (or AdditionalAttributes) and never returns to unset, so it renders plainly
+        builder.AddAttributeIfNotNullOrEmpty(sequence + 1, "name", NameAttributeValue);
         builder.AddAttributeIfNotNullOrEmpty(sequence + 2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(sequence + 3, "style", Style);
-        builder.AddAttributeIfNotNull(attributes, sequence + 4, "size", Size?.ToHtmlValue());
+        AddSizeAttribute(builder, sequence + 4);
         builder.AddAttribute(sequence + 5, "disabled", Disabled);
 
         return sequence + 13;
@@ -357,6 +365,15 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// <returns>The validation message</returns>
     private protected string FormatValidationMessage(string format)
         => string.Format(CultureInfo.InvariantCulture, format, DisplayName ?? FieldIdentifier.FieldName);
+
+    /// <summary>
+    /// Adds the "size" attribute at the given sequence number, falling back to <see cref="DefaultSize"/> once rendered;
+    /// a wrapper whose element declares no size default overrides it to render the attribute plainly.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The sequence number for the attribute</param>
+    private protected virtual void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
+        => builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
 
     // the live value last pushed to or received from the element; only meaningful when hasSyncedLiveValue is set
     private object? lastSyncedLiveValue;

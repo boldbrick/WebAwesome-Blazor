@@ -36,6 +36,12 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
+
+    /// <summary>
     /// The input's visual appearance.
     /// </summary>
     [Parameter] public WaInputAppearance? Appearance { get; set; }
@@ -49,6 +55,12 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
     /// Used to customize the label or icon of the Enter key on virtual keyboards.
     /// </summary>
     [Parameter] public WaEnterKeyHint? EnterKeyHint { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="InputMode"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaNumberInputMode DefaultInputMode = WaNumberInputMode.Numeric;
 
     /// <summary>
     /// Tells the browser what type of data will be entered by the user, allowing it to display the appropriate
@@ -72,9 +84,21 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
     [Parameter] public bool Pill { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placeholder"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPlaceholder = "";
+
+    /// <summary>
     /// Placeholder text to show as a hint when the input is empty.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Step"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public static readonly WaStep DefaultStep = 1;
 
     /// <summary>
     /// Specifies the granularity that the value must adhere to, or <see cref="WaStep.Any"/> to disable stepping
@@ -158,19 +182,19 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
         // Add the form control attributes the element declares
         builder.AddAttribute(7, "readonly", Readonly);
         builder.AddAttribute(8, "required", Required);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "autocomplete", Autocomplete);
+        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
         AddLabelAndHintAttributes(builder, 12);
 
         // Add number-input-specific attributes
-        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
         builder.AddAttribute(21, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNull(attributes, 22, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 23, "inputmode", InputMode?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 24, "max", Max);
-        builder.AddAttributeIfNotNull(attributes, 25, "min", Min);
+        builder.AddAttributeIfNotNull(22, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 23, "inputmode", InputMode?.ToHtmlValue(), DefaultInputMode.ToHtmlValue());
+        builder.AddAttributeIfNotNull(24, "max", Max);
+        builder.AddAttributeIfNotNull(25, "min", Min);
         builder.AddAttribute(26, "pill", Pill);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 27, "placeholder", Placeholder);
-        builder.AddStepAttribute(attributes, 28, "step", Step);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 27, "placeholder", Placeholder, DefaultPlaceholder);
+        builder.AddStepAttribute(attributes, 28, "step", Step, DefaultStep);
         builder.AddAttribute(29, "without-steppers", WithoutSteppers);
         AddWithHintAndLabelAttributes(builder, 14);
 

@@ -39,6 +39,12 @@ public class WaBreadcrumb : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// A label to use for the breadcrumb's <c>aria-label</c> attribute for proper accessibility.
     /// </summary>
     [Parameter] public string? Label { get; set; }
@@ -70,7 +76,7 @@ public class WaBreadcrumb : ComponentBase
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "label", Label, DefaultLabel);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __breadcrumbReference => Element = __breadcrumbReference);

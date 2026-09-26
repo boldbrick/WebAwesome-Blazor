@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Components;
@@ -21,8 +23,8 @@ internal static class FormControlRendering
     public static void AddLabelAndHintAttributes(RenderTreeBuilder builder, int sequence, IWaLabeledControl control)
     {
         var attributes = WaAttributeMemory.Of(control);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, sequence + 0, LabelSlot, control.Label);
-        builder.AddAttributeIfNotNullOrEmpty(attributes, sequence + 1, HintSlot, control.Hint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, sequence + 0, LabelSlot, control.Label, IWaLabeledControl.DefaultLabel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, sequence + 1, HintSlot, control.Hint, IWaLabeledControl.DefaultHint);
     }
 
     /// <summary>
@@ -151,20 +153,30 @@ internal static class FormControlRendering
     /// <param name="builder">The render tree builder</param>
     /// <param name="sequence">The constant base sequence number</param>
     /// <param name="calendar">The calendar options</param>
-    public static void AddCalendarAttributes(RenderTreeBuilder builder, int sequence, IWaCalendarOptions calendar)
+    /// <param name="disabledDatesDefault">
+    /// The element default of disabled-dates (<see cref="IWaCalendarOptions.DefaultDisabledDates"/>), or null for an
+    /// element that declares none (wa-date-picker, whose setter reads a removed attribute as no dates)
+    /// </param>
+    public static void AddCalendarAttributes(RenderTreeBuilder builder, int sequence, IWaCalendarOptions calendar,
+        IReadOnlySet<DateOnly>? disabledDatesDefault)
     {
         var attributes = WaAttributeMemory.Of(calendar);
-        builder.AddDateAttribute(attributes, sequence + 0, MinAttribute, calendar.Min);
-        builder.AddDateAttribute(attributes, sequence + 1, MaxAttribute, calendar.Max);
-        builder.AddDateAttribute(attributes, sequence + 2, TodayAttribute, calendar.Today);
-        builder.AddDateSetAttribute(attributes, sequence + 3, DisabledDatesAttribute, calendar.DisabledDates);
-        builder.AddDaysOfWeekAttribute(attributes, sequence + 4, DisabledDaysOfWeekAttribute, calendar.DisabledDaysOfWeek);
+        builder.AddDateAttribute(attributes, sequence + 0, MinAttribute, calendar.Min, IWaCalendarOptions.DefaultMin);
+        builder.AddDateAttribute(attributes, sequence + 1, MaxAttribute, calendar.Max, IWaCalendarOptions.DefaultMax);
+        builder.AddDateAttribute(attributes, sequence + 2, TodayAttribute, calendar.Today, IWaCalendarOptions.DefaultToday);
+        if (disabledDatesDefault is null)
+            builder.AddDateSetAttribute(sequence + 3, DisabledDatesAttribute, calendar.DisabledDates);
+        else
+            builder.AddDateSetAttribute(attributes, sequence + 3, DisabledDatesAttribute, calendar.DisabledDates, disabledDatesDefault);
+        builder.AddDaysOfWeekAttribute(attributes, sequence + 4, DisabledDaysOfWeekAttribute, calendar.DisabledDaysOfWeek, IWaCalendarOptions.DefaultDisabledDaysOfWeek);
         builder.AddAttribute(sequence + 5, DisablePastAttribute, calendar.DisablePast);
         builder.AddAttribute(sequence + 6, DisableFutureAttribute, calendar.DisableFuture);
-        builder.AddAttributeIfNotNull(attributes, sequence + 7, FirstDayOfWeekAttribute, calendar.FirstDayOfWeek?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, sequence + 8, MonthsAttribute, calendar.Months);
-        builder.AddAttributeIfNotNull(attributes, sequence + 9, PageByAttribute, calendar.PageBy?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, sequence + 10, WeekdayFormatAttribute, calendar.WeekdayFormat?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, sequence + 7, FirstDayOfWeekAttribute, calendar.FirstDayOfWeek?.ToHtmlValue(),
+            IWaCalendarOptions.DefaultFirstDayOfWeek.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, sequence + 8, MonthsAttribute, calendar.Months, IWaCalendarOptions.DefaultMonths);
+        builder.AddAttributeIfNotNull(attributes, sequence + 9, PageByAttribute, calendar.PageBy?.ToHtmlValue(), IWaCalendarOptions.DefaultPageBy.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, sequence + 10, WeekdayFormatAttribute, calendar.WeekdayFormat?.ToHtmlValue(),
+            IWaCalendarOptions.DefaultWeekdayFormat.ToHtmlValue());
         builder.AddAttribute(sequence + 11, WithOutsideDaysAttribute, calendar.WithOutsideDays);
         builder.AddAttribute(sequence + 12, WithWeekNumbersAttribute, calendar.WithWeekNumbers);
     }

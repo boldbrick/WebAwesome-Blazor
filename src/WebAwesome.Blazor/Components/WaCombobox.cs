@@ -30,9 +30,21 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placeholder"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPlaceholder = "";
+
+    /// <summary>
     /// Placeholder text to show as a hint when the combobox is empty.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
 
     /// <summary>
     /// The combobox's visual appearance.
@@ -60,9 +72,21 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     [Parameter] public bool AllowCustomValue { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="MaxOptionsVisible"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultMaxOptionsVisible = 3;
+
+    /// <summary>
     /// The maximum number of selected options to show when <see cref="Multiple"/> is true. Beyond this count, a "+n" indicator is shown. Set to 0 to remove the limit.
     /// </summary>
     [Parameter] public int? MaxOptionsVisible { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaListboxPlacement DefaultPlacement = WaListboxPlacement.Bottom;
 
     /// <summary>
     /// The preferred placement of the combobox's listbox, above or below the field. The actual placement may vary as needed to
@@ -194,22 +218,22 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
         AddLabelAndHintAttributes(builder, 12);
 
         // Add combobox-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder, DefaultPlaceholder);
+        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
         builder.AddAttribute(22, "pill", Pill);
         FormControlRendering.AddWithClearAttribute(builder, 23, this);
         builder.AddAttribute(24, "multiple", Multiple);
         builder.AddAttribute(25, "allow-custom-value", AllowCustomValue);
-        builder.AddAttributeIfNotNull(attributes, 26, "max-options-visible", MaxOptionsVisible);
-        builder.AddAttributeIfNotNull(attributes, 27, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 26, "max-options-visible", MaxOptionsVisible, DefaultMaxOptionsVisible);
+        builder.AddAttributeIfNotNull(attributes, 27, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
         builder.AddAttribute(28, "open", Open);
         AddWithHintAndLabelAttributes(builder, 14);
         builder.AddAttribute(33, "allow-create", AllowCreate);
-        builder.AddAttributeIfNotNull(attributes, 34, "autocapitalize", AutoCapitalize?.ToHtmlValue());
-        builder.AddOnOffAttribute(attributes, 35, "autocorrect", AutoCorrect);
-        builder.AddAttributeIfNotNull(attributes, 36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(attributes, 37, "inputmode", InputMode?.ToHtmlValue());
-        builder.AddTrueFalseAttribute(attributes, 38, "spellcheck", Spellcheck);
+        builder.AddAttributeIfNotNull(34, "autocapitalize", AutoCapitalize?.ToHtmlValue());
+        builder.AddOnOffAttribute(35, "autocorrect", AutoCorrect);
+        builder.AddAttributeIfNotNull(36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(37, "inputmode", InputMode?.ToHtmlValue());
+        builder.AddTrueFalseAttribute(38, "spellcheck", Spellcheck);
 
         // Add value binding - handle both single and multiple selection
         if (Multiple)
