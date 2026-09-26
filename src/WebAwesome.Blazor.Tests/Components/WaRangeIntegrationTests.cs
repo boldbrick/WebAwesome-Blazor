@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Components;
 using Xunit;
@@ -8,7 +9,7 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// <summary>
 /// Interop tests for WaRange.SetValueFormatterAsync: it rejects a missing function, throws before the first
 /// render, and afterwards sets the element's valueFormatter property to the function through the interop module
-/// (recorded, see RecordingJSRuntime).
+/// (recorded, see RecordingJSRuntime); and for the focus/blur/stepUp/stepDown methods it shares with WaSlider.
 /// </summary>
 public class WaRangeIntegrationTests : IDisposable
 {
@@ -42,6 +43,39 @@ public class WaRangeIntegrationTests : IDisposable
 
         Assert.Equal(Formatter, runtime.Module.AssertSetProperty("valueFormatter"));
     }
+
+    [Theory]
+    [MemberData(nameof(ElementMethods))]
+    public async Task ElementMethods_WithValidElement_InvokeTheElementMethod(string methodName, Func<WaRange, Task> invoke)
+    {
+        // Act - WaRange gained these from WaSliderBase in 3.12.0 (WaSlider had them, WaRange did not)
+        await invoke(runtime.CreateRendered<WaRange>());
+
+        // Assert
+        Assert.Empty(runtime.Module.AssertInvokedMethod(methodName));
+    }
+
+    [Theory]
+    [MemberData(nameof(ElementMethods))]
+    public async Task ElementMethods_WithNullElement_ThrowInvalidOperationException(string methodName, Func<WaRange, Task> invoke)
+    {
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => invoke(runtime.CreateUnrendered<WaRange>()));
+
+        // Assert - thrown before any interop call, so the element method was not invoked
+        Assert.Contains("component has not been rendered yet", exception.Message);
+        Assert.DoesNotContain(runtime.Module.Invocations, i => i.Args.Contains(methodName));
+    }
+
+    /// <summary>
+    /// The element methods WaRange invokes, with the wrapper call invoking each.
+    /// </summary>
+    public static TheoryData<string, Func<WaRange, Task>> ElementMethods => new()
+    {
+        { "focus", range => range.FocusAsync() },
+        { "blur", range => range.BlurAsync() },
+        { "stepUp", range => range.StepUpAsync() },
+        { "stepDown", range => range.StepDownAsync() },
+    };
 
     #region ------ Implementation of IDisposable ------
 

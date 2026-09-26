@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -12,113 +12,31 @@ namespace WebAwesome.Blazor.Components;
 /// A slider component that allows the user to select a single value or range within a given range.
 /// Corresponds to the wa-slider Web Awesome component.
 /// </summary>
-public class WaSlider : WaLabeledInputBase<decimal?>
+/// <remarks>
+/// In range mode (<see cref="WaSliderBase{TValue}.Range"/>) the selection is bound through
+/// <see cref="WaSliderBase{TValue}.MinValue"/> and <see cref="WaSliderBase{TValue}.MaxValue"/>
+/// (<c>@bind-MinValue</c>/<c>@bind-MaxValue</c>); <c>@bind-Value</c> is neither needed nor used, and
+/// <see cref="OnValueChange"/> is not invoked. When no <c>ValueExpression</c> is supplied (no <c>@bind-Value</c>),
+/// the slider falls back to an internal placeholder field, so no field of an enclosing <c>EditForm</c> model is
+/// associated with it: the range values are not validated or tracked by the edit context. The slider must be in
+/// range mode on its first render to use the fallback; single-value mode keeps requiring <c>@bind-Value</c> like any
+/// other input.
+/// </remarks>
+public class WaSlider : WaSliderBase<decimal?>
 {
-    #region ------ Form Control Properties ------
-
-    /// <summary>
-    /// Makes the input read-only, allowing its value to be seen but not edited.
-    /// </summary>
-    [Parameter] public bool Readonly { get; set; }
-
-    #endregion
-
-    #region ------ Range Properties ------
-
-    /// <summary>
-    /// The minimum value allowed.
-    /// </summary>
-    [Parameter] public decimal Min { get; set; } = 0;
-
-    /// <summary>
-    /// The maximum value allowed.
-    /// </summary>
-    [Parameter] public decimal Max { get; set; } = 100;
-
-    /// <summary>
-    /// The granularity the value must adhere to when incrementing and decrementing.
-    /// </summary>
-    [Parameter] public decimal Step { get; set; } = 1;
-
-    /// <summary>
-    /// The starting value from which to draw the slider's fill, which is based on its current value.
-    /// </summary>
-    [Parameter] public decimal? IndicatorOffset { get; set; }
-
-    #endregion
-
     #region ------ Range Selection Mode ------
 
     /// <summary>
-    /// Whether this slider supports range selection (dual-thumb mode).
-    /// </summary>
-    /// <remarks>
-    /// In range mode the selection is bound through <see cref="MinValue"/> and <see cref="MaxValue"/>
-    /// (<c>@bind-MinValue</c>/<c>@bind-MaxValue</c>); <c>@bind-Value</c> is neither needed nor used, and
-    /// <see cref="OnValueChange"/> is not invoked. When no <c>ValueExpression</c> is supplied (no
-    /// <c>@bind-Value</c>), the slider falls back to an internal placeholder field, so no field of an enclosing
-    /// <c>EditForm</c> model is associated with it: the range values are not validated or tracked by the edit
-    /// context. The slider must be in range mode on its first render to use the fallback; single-value mode keeps
-    /// requiring <c>@bind-Value</c> like any other input.
-    /// </remarks>
-    [Parameter] public bool Range { get; set; }
-
-    /// <summary>
-    /// The minimum value in range selection mode
-    /// </summary>
-    [Parameter] public decimal? MinValue { get; set; }
-
-    /// <summary>
-    /// The maximum value in range selection mode
-    /// </summary>
-    [Parameter] public decimal? MaxValue { get; set; }
-
-    /// <summary>
     /// Invoked with the new minimum value when the user commits a change in range selection mode (the element's
-    /// change event); the <c>@bind-MinValue</c> counterpart of <see cref="MinValue"/>.
+    /// change event); the <c>@bind-MinValue</c> counterpart of <see cref="WaSliderBase{TValue}.MinValue"/>.
     /// </summary>
     [Parameter] public EventCallback<decimal?> MinValueChanged { get; set; }
 
     /// <summary>
     /// Invoked with the new maximum value when the user commits a change in range selection mode (the element's
-    /// change event); the <c>@bind-MaxValue</c> counterpart of <see cref="MaxValue"/>.
+    /// change event); the <c>@bind-MaxValue</c> counterpart of <see cref="WaSliderBase{TValue}.MaxValue"/>.
     /// </summary>
     [Parameter] public EventCallback<decimal?> MaxValueChanged { get; set; }
-
-    #endregion
-
-    #region ------ Visual Properties ------
-
-    /// <summary>
-    /// The orientation of the slider.
-    /// </summary>
-    [Parameter] public WaOrientation? Orientation { get; set; }
-
-    /// <summary>
-    /// Draws a tooltip above the thumb when the control has focus or is dragged.
-    /// </summary>
-    [Parameter] public bool WithTooltip { get; set; }
-
-    /// <summary>
-    /// Draws markers at each step along the slider.
-    /// </summary>
-    [Parameter] public bool WithMarkers { get; set; }
-
-    /// <summary>
-    /// The side of the slider's thumb on which the tooltip is shown. When null, the attribute is omitted and Web Awesome's
-    /// default (top) applies.
-    /// </summary>
-    [Parameter] public WaTooltipSide? TooltipPlacement { get; set; }
-
-    /// <summary>
-    /// The distance in pixels from which to offset the tooltip from the slider's thumb.
-    /// </summary>
-    [Parameter] public int? TooltipDistance { get; set; }
-
-    /// <summary>
-    /// Automatically focuses the slider when the page loads.
-    /// </summary>
-    [Parameter] public bool AutoFocus { get; set; }
 
     #endregion
 
@@ -130,21 +48,6 @@ public class WaSlider : WaLabeledInputBase<decimal?>
     /// <see cref="MinValueChanged"/> and <see cref="MaxValueChanged"/>.
     /// </summary>
     [Parameter] public EventCallback<decimal?> OnValueChange { get; set; }
-
-    /// <summary>
-    /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
-
-    #endregion
-
-    #region ------ Content ------
-
-    /// <summary>
-    /// One or more reference labels shown below the slider (e.g. one <c>&lt;span&gt;</c> per label), rendered into the
-    /// element's "reference" slot; the labels are spread evenly along the track.
-    /// </summary>
-    [Parameter] public RenderFragment? ReferenceContent { get; set; }
 
     #endregion
 
@@ -167,7 +70,7 @@ public class WaSlider : WaLabeledInputBase<decimal?>
     /// <inheritdoc />
     /// <remarks>
     /// In range mode without a supplied <c>ValueExpression</c>, points it at an internal placeholder field before
-    /// the base class validates it, so <c>@bind-Value</c> is not required there (see <see cref="Range"/>).
+    /// the base class validates it, so <c>@bind-Value</c> is not required there (see the class remarks).
     /// </remarks>
     public override Task SetParametersAsync(ParameterView parameters)
     {
@@ -290,80 +193,6 @@ public class WaSlider : WaLabeledInputBase<decimal?>
 
     #endregion
 
-    #region ------ Public Methods ------
-
-    /// <summary>
-    /// Sets the custom value formatting function for tooltips and screen readers.
-    /// </summary>
-    /// <param name="jsFunction">JavaScript function string that formats slider values for display</param>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
-    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
-    public async Task SetValueFormatterAsync(string jsFunction)
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot set value formatter: component has not been rendered yet.");
-
-        if (string.IsNullOrEmpty(jsFunction))
-            throw new ArgumentNullException(nameof(jsFunction));
-
-        await JSInterop.SetPropertyAsync(Element.Value, "valueFormatter", jsFunction);
-    }
-
-    /// <summary>
-    /// Removes focus from the slider.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task BlurAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot blur: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "blur");
-    }
-
-    /// <summary>
-    /// Sets focus on the slider.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task FocusAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
-    }
-
-    /// <summary>
-    /// Decrements the slider's value by <see cref="Step"/>.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task StepDownAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot step down: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "stepDown");
-    }
-
-    /// <summary>
-    /// Increments the slider's value by <see cref="Step"/>.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task StepUpAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot step up: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "stepUp");
-    }
-
-    #endregion
-
     #region ------ Internals ------
 
     // handles the single-value change event, whose value the numericchange alias delivers as a JS-formatted number;
@@ -390,28 +219,26 @@ public class WaSlider : WaLabeledInputBase<decimal?>
         await OnValueChange.InvokeAsync(CurrentValue);
     }
 
-    // handles the range-mode change event, whose value the numericchange alias delivers as "<minValue>,<maxValue>"
-    // (JS-formatted numbers)
+    // handles the range-mode change event: assigns and reports each bound that parses
     private async Task HandleRangeValueChange(ChangeEventArgs args)
     {
-        var parts = args.GetStringValue()?.Split(RangeValueSeparator);
-        if (parts is not { Length: 2 }) return;
+        var values = ParseRangeValues(args);
+        if (values is null) return;
 
-        if (ChangeEventArgsExtensions.TryParseJsNumber(parts[0], out var minVal))
+        var (minValue, maxValue) = values.Value;
+
+        if (minValue.HasValue)
         {
-            MinValue = minVal;
-            await MinValueChanged.InvokeAsync(minVal);
+            MinValue = minValue;
+            await MinValueChanged.InvokeAsync(minValue);
         }
 
-        if (ChangeEventArgsExtensions.TryParseJsNumber(parts[1], out var maxVal))
+        if (maxValue.HasValue)
         {
-            MaxValue = maxVal;
-            await MaxValueChanged.InvokeAsync(maxVal);
+            MaxValue = maxValue;
+            await MaxValueChanged.InvokeAsync(maxValue);
         }
     }
-
-    // separates the min and max value in the range-mode change payload built by the JS initializer
-    private const char RangeValueSeparator = ',';
 
     // target of the fallback ValueExpression in range mode (see SetParametersAsync); never read or written, the
     // range selection lives in MinValue/MaxValue

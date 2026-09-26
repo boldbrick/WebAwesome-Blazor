@@ -213,7 +213,7 @@ public enum WaPickerPlacement
 /// <summary>
 /// Side of the host on which a built-in tooltip is shown, for the slider and copy button components, whose
 /// tooltip-placement attribute takes 'top' | 'right' | 'bottom' | 'left'. Used by
-/// <see cref="WaSlider.TooltipPlacement"/>, <see cref="WaRange.TooltipPlacement"/> and <see cref="WaCopyButton.TooltipPlacement"/>.
+/// <see cref="Base.WaSliderBase{TValue}.TooltipPlacement"/> (<see cref="WaSlider"/>, <see cref="WaRange"/>) and <see cref="WaCopyButton.TooltipPlacement"/>.
 /// </summary>
 public enum WaTooltipSide
 {

@@ -428,6 +428,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
     private static readonly (Type GenericBase, string[] Parameters)[] ClusterBases =
     [
         (typeof(WaLabeledInputBase<>), ["Label", "Hint", "MarkupLabel", "MarkupHint"]),
+        (typeof(WaSliderBase<>), ["Readonly"]),
     ];
 
     // the closed cluster base of the wrapper declaring the parameter, or the wrapper itself

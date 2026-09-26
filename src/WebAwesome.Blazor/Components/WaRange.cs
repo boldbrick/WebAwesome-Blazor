@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -13,115 +11,21 @@ namespace WebAwesome.Blazor.Components;
 /// A range/slider input component for selecting numeric values within a specified range.
 /// Corresponds to the wa-slider Web Awesome component.
 /// </summary>
-public class WaRange : WaLabeledInputBase<decimal>
+public class WaRange : WaSliderBase<decimal>
 {
-    #region ------ Form Control Properties ------
-
-    /// <summary>
-    /// Makes the input read-only, allowing its value to be seen but not edited.
-    /// </summary>
-    [Parameter] public bool Readonly { get; set; }
-
-    #endregion
-
-    #region ------ Range Properties ------
-
-    /// <summary>
-    /// The minimum value allowed.
-    /// </summary>
-    [Parameter] public decimal Min { get; set; } = 0;
-
-    /// <summary>
-    /// The maximum value allowed.
-    /// </summary>
-    [Parameter] public decimal Max { get; set; } = 100;
-
-    /// <summary>
-    /// The granularity the value must adhere to when incrementing and decrementing.
-    /// </summary>
-    [Parameter] public decimal Step { get; set; } = 1;
-
-    /// <summary>
-    /// The orientation of the slider.
-    /// </summary>
-    [Parameter] public WaOrientation? Orientation { get; set; }
-
-    /// <summary>
-    /// Draws a tooltip above the thumb when the control has focus or is dragged.
-    /// </summary>
-    [Parameter] public bool WithTooltip { get; set; }
-
-    /// <summary>
-    /// Draws markers at each step along the slider.
-    /// </summary>
-    [Parameter] public bool WithMarkers { get; set; }
-
-    /// <summary>
-    /// The placement of the tooltip in reference to the slider's thumb.
-    /// </summary>
-    [Parameter] public WaTooltipSide? TooltipPlacement { get; set; }
-
-    /// <summary>
-    /// The distance in pixels from which to offset the tooltip from the slider's thumb.
-    /// </summary>
-    [Parameter] public int? TooltipDistance { get; set; }
-
-    /// <summary>
-    /// The starting value from which to draw the slider's fill, which is based on its current value.
-    /// </summary>
-    [Parameter] public decimal? IndicatorOffset { get; set; }
-
-    /// <summary>
-    /// Automatically focuses the slider when the page loads.
-    /// </summary>
-    [Parameter] public bool AutoFocus { get; set; }
-
-    // Range selection (dual thumb)
-    /// <summary>
-    /// Converts the slider to a range slider with two thumbs.
-    /// </summary>
-    [Parameter] public bool Range { get; set; }
-
-    /// <summary>
-    /// The minimum value of a range selection. Used only when <see cref="Range"/> is set.
-    /// </summary>
-    [Parameter] public decimal? MinValue { get; set; }
-
-    /// <summary>
-    /// The maximum value of a range selection. Used only when <see cref="Range"/> is set.
-    /// </summary>
-    [Parameter] public decimal? MaxValue { get; set; }
-
-    #endregion
-
     #region ------ Events ------
 
     /// <summary>
-    /// Invoked when the user changes <see cref="MinValue"/> in range selection mode, after the change event, with
-    /// the new minimum.
+    /// Invoked when the user changes <see cref="WaSliderBase{TValue}.MinValue"/> in range selection mode, after the
+    /// change event, with the new minimum.
     /// </summary>
     [Parameter] public EventCallback<decimal> OnMinValueChange { get; set; }
 
     /// <summary>
-    /// Invoked when the user changes <see cref="MaxValue"/> in range selection mode, after the change event, with
-    /// the new maximum.
+    /// Invoked when the user changes <see cref="WaSliderBase{TValue}.MaxValue"/> in range selection mode, after the
+    /// change event, with the new maximum.
     /// </summary>
     [Parameter] public EventCallback<decimal> OnMaxValueChange { get; set; }
-
-    /// <summary>
-    /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnInvalid { get; set; }
-
-    #endregion
-
-    #region ------ Content Slots ------
-
-    /// <summary>
-    /// One or more reference labels shown below the slider (e.g. one <c>&lt;span&gt;</c> per label), rendered into the
-    /// element's "reference" slot; the labels are spread evenly along the track.
-    /// </summary>
-    [Parameter] public RenderFragment? ReferenceContent { get; set; }
 
     #endregion
 
@@ -237,28 +141,6 @@ public class WaRange : WaLabeledInputBase<decimal>
 
     #endregion
 
-    #region ------ Public Methods ------
-
-    /// <summary>
-    /// Sets a custom value formatter function for tooltips and screen readers.
-    /// </summary>
-    /// <param name="jsFunction">JavaScript function string that formats values for display</param>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
-    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
-    public async Task SetValueFormatterAsync(string jsFunction)
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot set value formatter: component has not been rendered yet.");
-
-        if (string.IsNullOrEmpty(jsFunction))
-            throw new ArgumentNullException(nameof(jsFunction));
-
-        await JSInterop.SetPropertyAsync(Element.Value, "valueFormatter", jsFunction);
-    }
-
-    #endregion
-
     #region ------ Internals ------
 
     // handles the change event, whose value the numericchange alias delivers as a JS-formatted number; records the
@@ -272,28 +154,26 @@ public class WaRange : WaLabeledInputBase<decimal>
         CurrentValue = value;
     }
 
-    // handles the range-mode change event, whose value the numericchange alias delivers as "<minValue>,<maxValue>"
-    // (JS-formatted numbers); updates MinValue/MaxValue and reports each bound that changed
+    // handles the range-mode change event; updates MinValue/MaxValue and reports each bound that changed
     private async Task HandleRangeValueChangeAsync(ChangeEventArgs args)
     {
-        var parts = args.GetStringValue()?.Split(RangeValueSeparator);
-        if (parts is not { Length: 2 }) return;
+        var values = ParseRangeValues(args);
+        if (values is null) return;
 
-        if (ChangeEventArgsExtensions.TryParseJsNumber(parts[0], out var minValue) && minValue != MinValue)
+        var (minValue, maxValue) = values.Value;
+
+        if (minValue.HasValue && minValue != MinValue)
         {
             MinValue = minValue;
-            await OnMinValueChange.InvokeAsync(minValue);
+            await OnMinValueChange.InvokeAsync(minValue.Value);
         }
 
-        if (ChangeEventArgsExtensions.TryParseJsNumber(parts[1], out var maxValue) && maxValue != MaxValue)
+        if (maxValue.HasValue && maxValue != MaxValue)
         {
             MaxValue = maxValue;
-            await OnMaxValueChange.InvokeAsync(maxValue);
+            await OnMaxValueChange.InvokeAsync(maxValue.Value);
         }
     }
-
-    // separates the min and max value in the range-mode change payload built by the JS initializer
-    private const char RangeValueSeparator = ',';
 
     #endregion
 }

@@ -120,6 +120,47 @@ namespace WebAwesome.Blazor.Base
         public System.Threading.Tasks.Task HideAsync() { }
         public System.Threading.Tasks.Task ShowAsync() { }
     }
+    public abstract class WaSliderBase<TValue> : WebAwesome.Blazor.Base.WaLabeledInputBase<TValue>
+    {
+        protected WaSliderBase() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AutoFocus { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? IndicatorOffset { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Max { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? MaxValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Min { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal? MinValue { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Range { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ReferenceContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public decimal Step { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? TooltipDistance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaTooltipSide? TooltipPlacement { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithMarkers { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithTooltip { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
+        public System.Threading.Tasks.Task StepDownAsync() { }
+        public System.Threading.Tasks.Task StepUpAsync() { }
+    }
     public class WebAwesomeJSInterop
     {
         public WebAwesomeJSInterop(Microsoft.JSInterop.IJSRuntime jsRuntime) { }
@@ -3007,50 +3048,17 @@ namespace WebAwesome.Blazor.Components
         Unique = 1,
         Sequence = 2,
     }
-    public class WaRange : WebAwesome.Blazor.Base.WaLabeledInputBase<decimal>
+    public class WaRange : WebAwesome.Blazor.Base.WaSliderBase<decimal>
     {
         public WaRange() { }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool AutoFocus { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? IndicatorOffset { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal Max { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? MaxValue { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal Min { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? MinValue { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<decimal> OnMaxValueChange { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<decimal> OnMinValueChange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Range { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Readonly { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? ReferenceContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal Step { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? TooltipDistance { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaTooltipSide? TooltipPlacement { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithMarkers { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithTooltip { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         protected override string? FormatValueAsString(decimal value) { }
         protected override object? GetLiveValue() { }
-        public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
         protected override bool TryParseValueFromString(string? value, out decimal result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public class WaRating : WebAwesome.Blazor.Base.WaInputBase<decimal>
@@ -3259,58 +3267,21 @@ namespace WebAwesome.Blazor.Components
         public WaSlideChangeEventArgs() { }
         public int Index { get; set; }
     }
-    public class WaSlider : WebAwesome.Blazor.Base.WaLabeledInputBase<decimal?>
+    public class WaSlider : WebAwesome.Blazor.Base.WaSliderBase<decimal?>
     {
         public WaSlider() { }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool AutoFocus { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? IndicatorOffset { get; set; }
         protected override string? LiveValuePropertyName { get; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal Max { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? MaxValue { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<decimal?> MaxValueChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public decimal Min { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal? MinValue { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<decimal?> MinValueChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<decimal?> OnValueChange { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaOrientation? Orientation { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Range { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Readonly { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? ReferenceContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public decimal Step { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public int? TooltipDistance { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaTooltipSide? TooltipPlacement { get; set; }
         public System.Func<decimal, string>? ValueFormatter { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithMarkers { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithTooltip { get; set; }
-        public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
-        public System.Threading.Tasks.Task FocusAsync() { }
         protected override string? FormatValueAsString(decimal? value) { }
         protected override object? GetLiveValue() { }
         public override System.Threading.Tasks.Task SetParametersAsync(Microsoft.AspNetCore.Components.ParameterView parameters) { }
-        public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
-        public System.Threading.Tasks.Task StepDownAsync() { }
-        public System.Threading.Tasks.Task StepUpAsync() { }
         protected override bool TryParseValueFromString(string? value, out decimal? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
     public class WaSparkline : Microsoft.AspNetCore.Components.ComponentBase
