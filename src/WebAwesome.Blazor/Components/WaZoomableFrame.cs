@@ -131,6 +131,29 @@ public class WaZoomableFrame : ComponentBase
     /// </summary>
     [Parameter] public WaIframeSandbox? Sandbox { get; set; }
 
+    /// <summary>
+    /// A Permissions Policy string granting features to the iframe's content (e.g. <c>"fullscreen; camera"</c>); a
+    /// grammar rather than a closed token set, so it is passed through as-is. Changing it only takes effect the
+    /// next time the frame navigates.
+    /// </summary>
+    [Parameter] public string? Allow { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
+    /// The accessible name of the frame, rendered as the inner iframe's title.
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// The frame's browsing-context name, usable as a link or form target.
+    /// </summary>
+    [Parameter] public string? Name { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -209,6 +232,9 @@ public class WaZoomableFrame : ComponentBase
         builder.AddAttributeIfNotNull(attributes, 33, "loading", Loading?.ToHtmlValue(), DefaultLoading.ToHtmlValue());
         builder.AddAttributeIfNotNull(34, "referrerpolicy", ReferrerPolicy?.ToHtmlValue());
         builder.AddAttributeIfNotNull(35, "sandbox", Sandbox?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(37, "allow", Allow);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 38, "label", Label, DefaultLabel);
+        builder.AddAttributeIfNotNullOrEmpty(39, "name", Name);
 
         // native load/error events re-dispatched by wa-zoomable-frame on the host element (non-bubbling,
         // composed); delivered through Blazor's built-in non-bubbling event registration (no

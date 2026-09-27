@@ -44,6 +44,16 @@ if (-not (Test-Path $pagesDir)) { New-Item -ItemType Directory -Force $pagesDir 
 
 $surface = Get-Content $SurfacePath -Raw | ConvertFrom-Json
 
+# wrapper class names that deviate from the tag (e.g. wa-textarea -> WaTextArea) are recorded in the parity config
+$classOverrides = @{}
+$parityConfigPath = Join-Path $RepoRoot 'src\WebAwesome.Blazor.Tests\ApiParity\parity-config.json'
+if (Test-Path $parityConfigPath) {
+    $parityConfig = Get-Content $parityConfigPath -Raw | ConvertFrom-Json
+    if ($parityConfig.componentClassOverrides) {
+        foreach ($p in $parityConfig.componentClassOverrides.PSObject.Properties) { $classOverrides[$p.Name] = $p.Value }
+    }
+}
+
 function Get-PascalName([string]$tag) {
     $name = $tag -replace '^wa-', ''
     return ($name -split '-' | ForEach-Object { $_.Substring(0,1).ToUpperInvariant() + $_.Substring(1) }) -join ''
@@ -69,7 +79,7 @@ foreach ($tag in $surface.components.PSObject.Properties.Name) {
         continue
     }
 
-    $className = "Wa$pascal"
+    $className = if ($classOverrides.ContainsKey($tag)) { $classOverrides[$tag] } else { "Wa$pascal" }
 
     # components without a wrapper yet get a native-element example so the page still compiles
     $wrapperPath = Join-Path $RepoRoot "src\WebAwesome.Blazor\Components\$className.cs"

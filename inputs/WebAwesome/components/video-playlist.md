@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.13.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
+<!-- Source: reference doc bundled in the Web Awesome 3.14.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
 
 # Video Playlist [Pro]
 
@@ -75,7 +75,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.13.0/components/video-playlist/video-playlist.js';
+import 'https://ka-f.webawesome.com/webawesome@3.14.0/components/video-playlist/video-playlist.js';
 ```
 
 \*\*npm\*\*

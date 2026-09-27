@@ -110,6 +110,8 @@ public static class ComponentCategoryMap
         ["wa-breadcrumb"] = "Navigation",
         ["wa-breadcrumb-item"] = "Navigation",
         ["wa-pagination"] = "Navigation",
+        ["wa-step"] = "Navigation",
+        ["wa-stepper"] = "Navigation",
         ["wa-tab"] = "Navigation",
         ["wa-tab-group"] = "Navigation",
         ["wa-tab-panel"] = "Navigation",

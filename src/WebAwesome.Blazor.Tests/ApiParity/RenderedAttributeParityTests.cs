@@ -502,7 +502,7 @@ public class RenderedAttributeParityTests
     private const string OnOffAttributesKey = "onOffAttributes";
     private const string AnyStepText = "any";
     private const string AnyStepLiteral = "'any'";
-    private const string StepKind = "WaStep";
+    private const string StepKind = "WaValueStep";
     private const string LocalDateTimeKind = "DateTime";
     private const string NumberListKind = "IReadOnlyList<double>";
     private const string StringListKind = "IReadOnlyList<string>";
@@ -758,10 +758,10 @@ public class RenderedAttributeParityTests
             yield return new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
             yield return new HashSet<DayOfWeek>();
         }
-        else if (type == typeof(WaStep))
+        else if (type == typeof(WaValueStep))
         {
-            yield return (WaStep)(decimal)FractionalSample;
-            yield return WaStep.Any;
+            yield return (WaValueStep)(decimal)FractionalSample;
+            yield return WaValueStep.Any;
         }
         else if (type == typeof(IReadOnlyList<double>))
         {
@@ -1084,7 +1084,7 @@ public class RenderedAttributeParityTests
                         ? null
                         : $"renders {rendered}, expected a local date and time (no offset) reading as {dateTime:yyyy-MM-ddTHH:mm:ss.fff}";
                     break;
-                case WaStep step:
+                case WaValueStep step:
                     checkedKinds.Add(StepKind);
                     miss = present && (step.IsAny
                             ? value == AnyStepText
@@ -1340,7 +1340,7 @@ public class RenderedAttributeParityTests
         bool flag => flag ? TrueText : FalseText,
         string text => text,
         Enum member => EnumValueParityTests.HtmlValueOf(member),
-        WaStep step => step.ToString(),
+        WaValueStep step => step.ToString(),
         DateOnly date => date.ToString(IsoDatePattern, CultureInfo.InvariantCulture),
         TimeOnly time => time.ToString(time.Second == 0 ? TimeBoundPattern : TimeBoundWithSecondsPattern, CultureInfo.InvariantCulture),
         _ when IsNumber(value) => Convert.ToString(value, CultureInfo.InvariantCulture),

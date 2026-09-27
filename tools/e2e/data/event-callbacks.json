@@ -339,6 +339,20 @@
       ]
     },
     {
+      "id": "WaCombobox.OnOptionsError",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-options-error"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnOptionsRequest",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-options-request"
+      ]
+    },
+    {
       "id": "WaCombobox.OnShow",
       "tag": "wa-combobox",
       "handlers": [
@@ -1579,6 +1593,20 @@
       "tag": "wa-split-panel",
       "handlers": [
         "wa-reposition"
+      ]
+    },
+    {
+      "id": "WaStepper.OnBeforeStepChange",
+      "tag": "wa-stepper",
+      "handlers": [
+        "wa-before-step-change"
+      ]
+    },
+    {
+      "id": "WaStepper.OnStepChange",
+      "tag": "wa-stepper",
+      "handlers": [
+        "wa-step-change"
       ]
     },
     {

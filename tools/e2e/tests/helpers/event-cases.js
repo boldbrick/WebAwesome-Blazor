@@ -528,6 +528,48 @@ const EVENT_CASES = [
     },
   },
   {
+    // server (event) mode: the element asks for options as the listbox opens and after each typing pause; the
+    // harness's handler swaps them in, and the wrapper clears the element's loading state once it has completed
+    name: 'WaCombobox (server mode) options request from typing swaps the options',
+    route: PRO, tags: ['wa-combobox', 'wa-option'], pro: true,
+    callbacks: ['WaCombobox.OnOptionsRequest'],
+    run: async page => {
+      const combobox = page.getByTestId('pro-combobox-server');
+      const input = combobox.locator('[part~="combobox-input"]');
+      await input.click();
+      await input.pressSequentially('an');
+      await expectFired(page, 'WaCombobox.OnOptionsRequest');
+      await expect.poll(async () => (await payloadOf(page, 'WaCombobox.OnOptionsRequest')).query, { message: 'query of the request after typing' }).toBe('an');
+      await expect(page.getByTestId('pro-combobox-server-options')).toHaveText('Banana,Mango,Orange');
+      await expect(combobox.locator('wa-option')).toHaveText(['Banana', 'Mango', 'Orange']);
+      await expect(combobox, 'the wrapper cleared the loading state').toHaveJSProperty('loading', false);
+      await page.keyboard.press('Escape');
+      await leaveControls(page);
+    },
+  },
+  {
+    // wa-options-error needs a failing JS dataSource, which the wrapper cannot supply (it is a function); the test
+    // installs one on a local-mode combobox, so the element dispatches the real event and the projection runs
+    name: 'WaCombobox options error from a rejecting data source',
+    route: PRO, tags: ['wa-combobox'], pro: true,
+    callbacks: ['WaCombobox.OnOptionsError'],
+    run: async page => {
+      const combobox = page.getByTestId('pro-combobox-data-source');
+      await combobox.evaluate(el => {
+        /** @type {any} */ (el).dataSource = () => Promise.reject(new Error('boom'));
+      });
+      const input = combobox.locator('[part~="combobox-input"]');
+      await input.click();
+      await expectFired(page, 'WaCombobox.OnOptionsError');
+      // the combobox retries as the user types; each failure carries the query of its request
+      await input.pressSequentially('boom');
+      await expect.poll(async () => (await payloadOf(page, 'WaCombobox.OnOptionsError')).query, { message: 'query of the failed request after typing' }).toBe('boom');
+      expect(await payloadOf(page, 'WaCombobox.OnOptionsError')).toEqual({ error: 'boom', query: 'boom' });
+      await page.keyboard.press('Escape');
+      await leaveControls(page);
+    },
+  },
+  {
     name: 'WaFileInput change and input from a chosen file, focus, blur',
     route: PRO, tags: ['wa-file-input'], pro: true,
     callbacks: ids('WaFileInput', ['OnChange', 'OnInput', ...FOCUS]),
@@ -675,6 +717,21 @@ const EVENT_CASES = [
       await expectFired(page, 'WaTab.OnFocus');
       // moving the focus to the next tab blurs the first one
       await page.keyboard.press('ArrowRight');
+    },
+  },
+  {
+    // a clickable stepper renders each step's marker and label in a button (the step's "button" part)
+    name: 'WaStepper before step change and step change from a clicked step',
+    route: CONTENT, tags: ['wa-stepper', 'wa-step'],
+    callbacks: ids('WaStepper', ['OnBeforeStepChange', 'OnStepChange']),
+    run: async page => {
+      await page.getByTestId('ct-step-second').locator('[part~="button"]').click();
+      await expectFiredTimes(page, 'WaStepper.OnBeforeStepChange', 1);
+      await expectFiredTimes(page, 'WaStepper.OnStepChange', 1);
+      // the projection keeps the names of the step elements in the detail
+      expect(await payloadOf(page, 'WaStepper.OnBeforeStepChange')).toEqual({ name: 'second', previousName: 'first' });
+      expect(await payloadOf(page, 'WaStepper.OnStepChange')).toEqual({ name: 'second', previousName: 'first' });
+      await expect(page.getByTestId('ct-stepper')).toHaveJSProperty('active', 'second');
     },
   },
   {

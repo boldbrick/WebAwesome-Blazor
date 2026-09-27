@@ -82,6 +82,12 @@ public class WaDialog : ComponentBase
     /// </summary>
     [Parameter] public bool WithFooter { get; set; }
 
+    /// <summary>
+    /// Only required for SSR. Set to true when slotting a label element in (via <see cref="LabelContent"/>) so the
+    /// server-rendered markup names the dialog before the component hydrates on the client.
+    /// </summary>
+    [Parameter] public bool WithLabel { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -152,6 +158,7 @@ public class WaDialog : ComponentBase
         builder.AddAttribute(12, "without-header", WithoutHeader);
         builder.AddAttribute(13, "light-dismiss", LightDismiss);
         builder.AddAttribute(14, "with-footer", WithFooter);
+        builder.AddAttribute(15, "with-label", WithLabel);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);

@@ -62,6 +62,29 @@
     </WaCombobox>
 </ExampleSection>
 
+<ExampleSection Title="Loading Options from a Server" Code="@ServerExample">
+    <p>
+        With <code>Server</code>, the combobox stops filtering locally: it raises <code>OnOptionsRequest</code> when the
+        listbox opens and again after a <code>FilterDebounce</code> pause in typing, and the handler swaps in the matching
+        <code>WaOption</code> children. The wrapper clears the loading state once the handler has completed.
+        <code>EmptyContent</code>, <code>LoadingContent</code> and <code>NoResultsContent</code> replace the status messages.
+        Web Awesome's JavaScript-only <code>dataSource</code> callback isn't supported.
+    </p>
+    <WaCombobox Label="Country" Placeholder="Search countries" Server="true" WithClear="true" @bind-Value="countryValue"
+                OnOptionsRequest="LoadCountriesAsync">
+        <ChildContent>
+            @foreach (var country in countryOptions)
+            {
+                <WaOption @key="country.Value" Value="@country.Value">@country.Label</WaOption>
+            }
+        </ChildContent>
+        <EmptyContent>Start typing to find a country.</EmptyContent>
+        <LoadingContent>Searching countries…</LoadingContent>
+        <NoResultsContent>No countries match your search.</NoResultsContent>
+    </WaCombobox>
+    <p>Selected: <code>@(countryValue ?? "(none)")</code></p>
+</ExampleSection>
+
 <ApiTable Tag="wa-combobox" />
 
 @code {
@@ -74,6 +97,31 @@
     private string? filledValue = "option-1";
     private string? pillValue = "option-1";
     private string? destinationValue;
+
+    // stands in for the latency of a request to your server
+    private const int ServerLatencyMs = 500;
+
+    private static readonly (string Value, string Label)[] Countries =
+    [
+        ("ar", "Argentina"), ("au", "Australia"), ("br", "Brazil"), ("ca", "Canada"), ("fr", "France"),
+        ("de", "Germany"), ("in", "India"), ("jp", "Japan"), ("mx", "Mexico"), ("no", "Norway"),
+    ];
+
+    private string? countryValue;
+    private (string Value, string Label)[] countryOptions = [];
+    private int countryRequest;
+
+    // an empty query shows the empty message; a request overtaken by a newer one is dropped
+    private async Task LoadCountriesAsync(WaOptionsRequestEventArgs e)
+    {
+        var request = ++countryRequest;
+        await Task.Delay(ServerLatencyMs);
+        if (request != countryRequest) return;
+
+        countryOptions = e.Query.Length == 0
+            ? []
+            : Countries.Where(country => country.Label.Contains(e.Query, StringComparison.OrdinalIgnoreCase)).ToArray();
+    }
 
     private const string DefaultExample = """
         <WaCombobox Label="Choose a fruit" Placeholder="Type to filter" @bind-Value="defaultValue">
@@ -157,6 +205,49 @@
 
         @code {
             private string? destinationValue;
+        }
+        """;
+
+    private const string ServerExample = """
+        <WaCombobox Label="Country" Placeholder="Search countries" Server="true" WithClear="true" @bind-Value="countryValue"
+                    OnOptionsRequest="LoadCountriesAsync">
+            <ChildContent>
+                @foreach (var country in countryOptions)
+                {
+                    <WaOption @key="country.Value" Value="@country.Value">@country.Label</WaOption>
+                }
+            </ChildContent>
+            <EmptyContent>Start typing to find a country.</EmptyContent>
+            <LoadingContent>Searching countries…</LoadingContent>
+            <NoResultsContent>No countries match your search.</NoResultsContent>
+        </WaCombobox>
+        <p>Selected: <code>@(countryValue ?? "(none)")</code></p>
+
+        @code {
+            // stands in for the latency of a request to your server
+            private const int ServerLatencyMs = 500;
+
+            private static readonly (string Value, string Label)[] Countries =
+            [
+                ("ar", "Argentina"), ("au", "Australia"), ("br", "Brazil"), ("ca", "Canada"), ("fr", "France"),
+                ("de", "Germany"), ("in", "India"), ("jp", "Japan"), ("mx", "Mexico"), ("no", "Norway"),
+            ];
+
+            private string? countryValue;
+            private (string Value, string Label)[] countryOptions = [];
+            private int countryRequest;
+
+            // an empty query shows the empty message; a request overtaken by a newer one is dropped
+            private async Task LoadCountriesAsync(WaOptionsRequestEventArgs e)
+            {
+                var request = ++countryRequest;
+                await Task.Delay(ServerLatencyMs);
+                if (request != countryRequest) return;
+
+                countryOptions = e.Query.Length == 0
+                    ? []
+                    : Countries.Where(country => country.Label.Contains(e.Query, StringComparison.OrdinalIgnoreCase)).ToArray();
+            }
         }
         """;
 }

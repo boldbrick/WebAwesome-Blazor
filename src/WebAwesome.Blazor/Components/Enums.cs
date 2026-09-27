@@ -141,6 +141,32 @@ public enum WaOrientation
     Vertical
 }
 
+/// <summary>
+/// The layout direction of a wa-stepper.
+/// </summary>
+public enum WaStepperOrientation
+{
+    /// <summary>Lays the steps out in a row (the Web Awesome default).</summary>
+    Horizontal,
+    /// <summary>Stacks the steps in a column.</summary>
+    Vertical,
+    /// <summary>Lays the steps out in a row and stacks them once the stepper is too narrow for every step's label.</summary>
+    Auto,
+}
+
+/// <summary>
+/// The placement of a wa-divider's label along the divider line.
+/// </summary>
+public enum WaDividerLabelPlacement
+{
+    /// <summary>Places the label at the start of the divider.</summary>
+    Start,
+    /// <summary>Places the label at the center of the divider (the Web Awesome default).</summary>
+    Center,
+    /// <summary>Places the label at the end of the divider.</summary>
+    End,
+}
+
 #endregion
 
 #region ------ Placement & Positioning ------
@@ -1993,6 +2019,40 @@ public static class WaEnumExtensions
             WaOrientation.Horizontal => "horizontal",
             WaOrientation.Vertical => "vertical",
             _ => throw new ArgumentOutOfRangeException(nameof(orientation), orientation, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="orientation">The stepper orientation value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "horizontal"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="orientation"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaStepperOrientation orientation)
+    {
+        return orientation switch
+        {
+            WaStepperOrientation.Horizontal => "horizontal",
+            WaStepperOrientation.Vertical => "vertical",
+            WaStepperOrientation.Auto => "auto",
+            _ => throw new ArgumentOutOfRangeException(nameof(orientation), orientation, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="placement">The divider label placement value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "center"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="placement"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaDividerLabelPlacement placement)
+    {
+        return placement switch
+        {
+            WaDividerLabelPlacement.Start => "start",
+            WaDividerLabelPlacement.Center => "center",
+            WaDividerLabelPlacement.End => "end",
+            _ => throw new ArgumentOutOfRangeException(nameof(placement), placement, null)
         };
     }
 
