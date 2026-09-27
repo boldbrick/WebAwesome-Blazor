@@ -44,7 +44,7 @@ if (-not (Test-Path $pagesDir)) { New-Item -ItemType Directory -Force $pagesDir 
 
 $surface = Get-Content $SurfacePath -Raw | ConvertFrom-Json
 
-# wrapper class names that deviate from the tag (e.g. wa-step -> WaStepperStep) are recorded in the parity config
+# wrapper class names that deviate from the tag (e.g. wa-textarea -> WaTextArea) are recorded in the parity config
 $classOverrides = @{}
 $parityConfigPath = Join-Path $RepoRoot 'src\WebAwesome.Blazor.Tests\ApiParity\parity-config.json'
 if (Test-Path $parityConfigPath) {

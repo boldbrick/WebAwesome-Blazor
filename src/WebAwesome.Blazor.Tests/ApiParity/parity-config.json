@@ -18,8 +18,7 @@
   ],
   "ignoredComponents": [],
   "componentClassOverrides": {
-    "wa-textarea": "WaTextArea",
-    "wa-step": "WaStepperStep"
+    "wa-textarea": "WaTextArea"
   },
   "nativeElementMethods": [ "focus", "blur", "click" ],
   "nativeDomEvents": {
@@ -355,7 +354,6 @@
     "globalIgnoredAttributes:role": "native ARIA global HTML attribute; WA 3.8.0 reflects an internal default role onto the host of several components (wa-rating='slider', wa-tab='tab', wa-tab-panel='tabpanel', wa-tree='tree', wa-tree-item='treeitem') as part of its own accessibility management - not a consumer-authorable parameter, passed through via AdditionalAttributes when overridden",
     "globalIgnoredAttributes:tabindex": "native HTML global attribute; WA 3.8.0 reflects a managed tabindex onto wa-tree (0) and wa-tree-item (-1) to implement roving-tabindex keyboard navigation - not a consumer-authorable parameter, passed through via AdditionalAttributes when overridden",
     "componentClassOverrides:wa-textarea": "the CEM class name of wa-textarea is WaTextarea; the wrapper is named WaTextArea, the natural PascalCase of 'text area' used across .NET (TextArea)",
-    "componentClassOverrides:wa-step": "the CEM class name of wa-step is WaStep, but WebAwesome.Blazor.Components.WaStep is the public number | 'any' step value of WaInput, WaNumberInput, WaTimeInput and the sliders since 3.12.0 (Step=\"WaStep.Any\"); renaming it would break consumers, so the wrapper is named WaStepperStep, after its only valid parent WaStepper (decision recorded in tasks\\WA-3.14\\WAB-50)",
     "cemOnlyEvents:wa-combobox:request": "CEM extraction artifact of wa-combobox, not a real event: the analyzer names it after the variable passed to new WaOptionsRequestEvent(request) in sendRequest; neither dist\\events\\events.d.ts nor the component's @event JSDoc declares a bare 'request' - the compiled source only dispatches wa-options-request, which is bound as OnOptionsRequest",
     "cemOnlyEvents:wa-stepper:detail": "CEM extraction artifact of wa-stepper, not a real event: the analyzer names it after the variable passed to new WaStepChangeEvent(detail) in goTo; neither dist\\events\\events.d.ts nor the component's @event JSDoc declares a bare 'detail' - the compiled source only dispatches wa-before-step-change and wa-step-change, which are bound as OnBeforeStepChange and OnStepChange",
     "nativeElementMethods:focus": "HTMLElement.focus(), which every element inherits (so the CEM lists it for none); invoked by the wrappers' FocusAsync methods",

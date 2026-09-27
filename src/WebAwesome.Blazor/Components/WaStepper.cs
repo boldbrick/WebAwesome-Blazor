@@ -119,7 +119,7 @@ public class WaStepper : ComponentBase
     #region ------ Content ------
 
     /// <summary>
-    /// The stepper's content (one or more WaStepperStep children).
+    /// The stepper's content (one or more WaStep children).
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -150,7 +150,7 @@ public class WaStepper : ComponentBase
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __stepperReference => Element = __stepperReference);
 
-        // Add child content (WaStepperStep children)
+        // Add child content (WaStep children)
         if (ChildContent is not null)
         {
             builder.AddContent(20, ChildContent);

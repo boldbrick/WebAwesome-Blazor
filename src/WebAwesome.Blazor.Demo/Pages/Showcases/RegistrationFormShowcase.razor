@@ -50,10 +50,10 @@ else
                                Active="@ActiveSection(sections)">
                         @foreach (var section in sections)
                         {
-                            <WaStepperStep @key="section.Name" Name="@section.Name" Completed="section.Completed">
+                            <WaStep @key="section.Name" Name="@section.Name" Completed="section.Completed">
                                 <ChildContent>@section.Label</ChildContent>
                                 <DescriptionContent>@section.Description</DescriptionContent>
-                            </WaStepperStep>
+                            </WaStep>
                         }
                     </WaStepper>
 

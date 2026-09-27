@@ -6,19 +6,19 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// The WaStep value type (a positive number or "any", the number | 'any' step of wa-input, wa-number-input and
+/// The WaValueStep value type (a positive number or "any", the number | 'any' step of wa-input, wa-number-input and
 /// wa-time-input): implicit conversion from the numeric literals Razor produces, the positive-and-finite invariant, the
 /// culture-free wire form, and structural equality with default being Any.
 /// </summary>
-public class WaStepTests
+public class WaValueStepTests
 {
     [Fact]
     public void Numbers_ConvertImplicitly()
     {
-        WaStep fromInt = 5;
-        WaStep fromLong = 7L;
-        WaStep fromDouble = 0.5;
-        WaStep fromDecimal = 2.25m;
+        WaValueStep fromInt = 5;
+        WaValueStep fromLong = 7L;
+        WaValueStep fromDouble = 0.5;
+        WaValueStep fromDecimal = 2.25m;
 
         Assert.Equal(5m, fromInt.Number);
         Assert.Equal(7m, fromLong.Number);
@@ -30,9 +30,9 @@ public class WaStepTests
     [Fact]
     public void Any_IsTheDefault_AndHasNoNumber()
     {
-        Assert.True(WaStep.Any.IsAny);
-        Assert.Null(WaStep.Any.Number);
-        Assert.Equal(WaStep.Any, default);
+        Assert.True(WaValueStep.Any.IsAny);
+        Assert.Null(WaValueStep.Any.Number);
+        Assert.Equal(WaValueStep.Any, default);
     }
 
     [Theory]
@@ -43,14 +43,14 @@ public class WaStepTests
     [InlineData(1e30)]
     public void NonPositiveOrNonFiniteNumbers_AreRejected(double step)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => (WaStep)step);
+        Assert.Throws<ArgumentOutOfRangeException>(() => (WaValueStep)step);
     }
 
     [Fact]
     public void NonPositiveDecimals_AreRejected()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new WaStep(0m));
-        Assert.Throws<ArgumentOutOfRangeException>(() => (WaStep)(-3));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new WaValueStep(0m));
+        Assert.Throws<ArgumentOutOfRangeException>(() => (WaValueStep)(-3));
     }
 
     [Theory]
@@ -61,15 +61,15 @@ public class WaStepTests
     {
         using var culture = new CultureScope(RenderedAttributeParityTests.HostileCulture);
 
-        Assert.Equal(expected, ((WaStep)step).ToString());
-        Assert.Equal("any", WaStep.Any.ToString());
+        Assert.Equal(expected, ((WaValueStep)step).ToString());
+        Assert.Equal("any", WaValueStep.Any.ToString());
     }
 
     [Fact]
     public void Equality_IsStructural()
     {
-        Assert.Equal((WaStep)1.5, new WaStep(1.5m));
-        Assert.NotEqual((WaStep)1, WaStep.Any);
-        Assert.NotEqual((WaStep)1, (WaStep)2);
+        Assert.Equal((WaValueStep)1.5, new WaValueStep(1.5m));
+        Assert.NotEqual((WaValueStep)1, WaValueStep.Any);
+        Assert.NotEqual((WaValueStep)1, (WaValueStep)2);
     }
 }

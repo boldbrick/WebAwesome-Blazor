@@ -202,10 +202,10 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
 #endif
 
     /// <summary>
-    /// Specifies the granularity that the value must adhere to, or <see cref="WaStep.Any"/>. Only applies to date and
+    /// Specifies the granularity that the value must adhere to, or <see cref="WaValueStep.Any"/>. Only applies to date and
     /// number input types. A number converts implicitly (<c>Step="0.5"</c>).
     /// </summary>
-    [Parameter] public WaStep? Step { get; set; }
+    [Parameter] public WaValueStep? Step { get; set; }
 
     /// <summary>
     /// Controls whether and how text input is automatically capitalized as it is entered by the user.

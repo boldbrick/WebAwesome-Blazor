@@ -98,13 +98,13 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
     /// The Web Awesome default of <see cref="Step"/>: what the element holds while the parameter is null, and what
     /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    public static readonly WaStep DefaultStep = 1;
+    public static readonly WaValueStep DefaultStep = 1;
 
     /// <summary>
-    /// Specifies the granularity that the value must adhere to, or <see cref="WaStep.Any"/> to disable stepping
+    /// Specifies the granularity that the value must adhere to, or <see cref="WaValueStep.Any"/> to disable stepping
     /// constraints. A number converts implicitly (<c>Step="0.5"</c>).
     /// </summary>
-    [Parameter] public WaStep? Step { get; set; }
+    [Parameter] public WaValueStep? Step { get; set; }
 
     /// <summary>
     /// Hides the increment and decrement stepper buttons.

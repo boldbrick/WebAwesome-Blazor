@@ -4,11 +4,14 @@ All notable changes to the Web Awesome Blazor Bindings. Versions mirror the boun
 
 ## [3.14.0] — 2026-09-27
 
-Alignment with the Web Awesome 3.14.0 release, opening the **WA-3.14 train**. An additive upgrade: a new stepper, a server mode for the combobox, a divider label and a few new attributes. No wrapper API is removed or renamed, so no migration guide is needed.
+Alignment with the Web Awesome 3.14.0 release, opening the **WA-3.14 train**. Upstream this is additive: a new stepper, a server mode for the combobox, a divider label and a few new attributes. One rename in the bindings is **breaking**: the step value type `WaStep` becomes `WaValueStep`, so the wrapper of `wa-step` can be `WaStep`, like every other component. See **[MIGRATION-3.14.0.md](MIGRATION-3.14.0.md)**.
+
+### Breaking changes
+- The step value of `WaInput`, `WaNumberInput` and `WaTimeInput` is renamed from `WaStep` to `WaValueStep` (`Step="WaValueStep.Any"`); numeric `Step` values are unaffected (section 1).
 
 ### New components
 - `WaStepper` (`wa-stepper`, free/experimental) guides users through a process step by step, with `Active`, `Clickable`, `Linear`, `Orientation` and `Label`, the `OnBeforeStepChange` and `OnStepChange` callbacks, and `GoToAsync`, `NextAsync` and `PreviousAsync`.
-- `WaStepperStep` (`wa-step`, free/experimental), a step of a `WaStepper`, with `Completed`, `Loading`, `Disabled`, `Variant` and `Attention`, a description and an icon. It isn't named `WaStep`, because `WaStep` is already the step value of the numeric inputs.
+- `WaStep` (`wa-step`, free/experimental), a step of a `WaStepper`, with `Completed`, `Loading`, `Disabled`, `Variant` and `Attention`, a description and an icon.
 
 ### Changed
 - `WaCombobox` gains a server mode: set `Server`, handle `OnOptionsRequest` by swapping in the matching options, and the wrapper clears the loading state once your handler has finished. Also new: `FilterDebounce`, `Loading`, `ReloadAsync`, `OnOptionsError`, and the `EmptyContent`, `LoadingContent`, `NoResultsContent` and `ErrorContent` status slots.
@@ -21,7 +24,7 @@ Alignment with the Web Awesome 3.14.0 release, opening the **WA-3.14 train**. An
 - Demo: new Stepper and Step pages, server-mode and label examples on the Combobox and Divider pages, and the registration form showcase tracks its progress with a stepper.
 
 ### Public API
-- Baseline promoted with additions only: `WaStepper`, `WaStepperStep`, `WaStepperOrientation`, `WaDividerLabelPlacement`, `WaStepChangeEventArgs`, `WaOptionsRequestEventArgs`, `WaOptionsErrorEventArgs` and the new members above.
+- Baseline promoted with the rename of `WaStep` to `WaValueStep`, and the additions `WaStepper`, `WaStep`, `WaStepperOrientation`, `WaDividerLabelPlacement`, `WaStepChangeEventArgs`, `WaOptionsRequestEventArgs`, `WaOptionsErrorEventArgs` and the new members above.
 
 ## [3.13.0] — 2026-09-27
 

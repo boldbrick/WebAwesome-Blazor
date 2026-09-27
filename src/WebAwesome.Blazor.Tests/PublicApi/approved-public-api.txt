@@ -2669,7 +2669,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? StartIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaStep? Step { get; set; }
+        public WebAwesome.Blazor.Components.WaValueStep? Step { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputType Type { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -2901,7 +2901,7 @@ namespace WebAwesome.Blazor.Components
         public const WebAwesome.Blazor.Components.WaInputAppearance DefaultAppearance = 0;
         public const WebAwesome.Blazor.Components.WaNumberInputMode DefaultInputMode = 0;
         public const string DefaultPlaceholder = "";
-        public static readonly WebAwesome.Blazor.Components.WaStep DefaultStep;
+        public static readonly WebAwesome.Blazor.Components.WaValueStep DefaultStep;
         public WaNumberInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
@@ -2945,7 +2945,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? StartIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaStep? Step { get; set; }
+        public WebAwesome.Blazor.Components.WaValueStep? Step { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithoutSteppers { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
@@ -3994,17 +3994,44 @@ namespace WebAwesome.Blazor.Components
         public decimal Position { get; set; }
         public int PositionInPixels { get; set; }
     }
-    public readonly struct WaStep : System.IEquatable<WebAwesome.Blazor.Components.WaStep>
+    public class WaStep : Microsoft.AspNetCore.Components.ComponentBase
     {
-        public WaStep(decimal number) { }
-        public bool IsAny { get; }
-        public decimal? Number { get; }
-        public static WebAwesome.Blazor.Components.WaStep Any { get; }
-        public override string ToString() { }
-        public static WebAwesome.Blazor.Components.WaStep op_Implicit(decimal step) { }
-        public static WebAwesome.Blazor.Components.WaStep op_Implicit(double step) { }
-        public static WebAwesome.Blazor.Components.WaStep op_Implicit(int step) { }
-        public static WebAwesome.Blazor.Components.WaStep op_Implicit(long step) { }
+        public const WebAwesome.Blazor.Components.WaAttention DefaultAttention = 2;
+        public const string DefaultName = "";
+        public const WebAwesome.Blazor.Components.WaVariant DefaultVariant = 1;
+        public WaStep() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Active { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAttention? Attention { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Class { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Completed { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? DescriptionContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Disabled { get; set; }
+        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? IconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? IconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Loading { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Name { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Style { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaVariant? Variant { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithDescription { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
     public class WaStepChangeEventArgs : System.EventArgs
     {
@@ -4051,45 +4078,6 @@ namespace WebAwesome.Blazor.Components
         Horizontal = 0,
         Vertical = 1,
         Auto = 2,
-    }
-    public class WaStepperStep : Microsoft.AspNetCore.Components.ComponentBase
-    {
-        public const WebAwesome.Blazor.Components.WaAttention DefaultAttention = 2;
-        public const string DefaultName = "";
-        public const WebAwesome.Blazor.Components.WaVariant DefaultVariant = 1;
-        public WaStepperStep() { }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Active { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter(CaptureUnmatchedValues=true)]
-        public System.Collections.Generic.IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaAttention? Attention { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Class { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Completed { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? DescriptionContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Disabled { get; set; }
-        public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public Microsoft.AspNetCore.Components.RenderFragment? IconContent { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? IconName { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool Loading { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Name { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public string? Style { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaVariant? Variant { get; set; }
-        [Microsoft.AspNetCore.Components.Parameter]
-        public bool WithDescription { get; set; }
-        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
     public class WaSwitch : WebAwesome.Blazor.Base.WaInputBase<bool>
     {
@@ -4408,7 +4396,7 @@ namespace WebAwesome.Blazor.Components
         public const WebAwesome.Blazor.Components.WaPickerPlacement DefaultPlacement = 4;
         public static readonly System.TimeOnly? DefaultMax;
         public static readonly System.TimeOnly? DefaultMin;
-        public static readonly WebAwesome.Blazor.Components.WaStep DefaultStep;
+        public static readonly WebAwesome.Blazor.Components.WaValueStep DefaultStep;
         public WaTimeInput() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
@@ -4446,7 +4434,7 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
-        public WebAwesome.Blazor.Components.WaStep? Step { get; set; }
+        public WebAwesome.Blazor.Components.WaValueStep? Step { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithClear { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -4673,6 +4661,18 @@ namespace WebAwesome.Blazor.Components
         Hover = 2,
         Focus = 4,
         Manual = 8,
+    }
+    public readonly struct WaValueStep : System.IEquatable<WebAwesome.Blazor.Components.WaValueStep>
+    {
+        public WaValueStep(decimal number) { }
+        public bool IsAny { get; }
+        public decimal? Number { get; }
+        public static WebAwesome.Blazor.Components.WaValueStep Any { get; }
+        public override string ToString() { }
+        public static WebAwesome.Blazor.Components.WaValueStep op_Implicit(decimal step) { }
+        public static WebAwesome.Blazor.Components.WaValueStep op_Implicit(double step) { }
+        public static WebAwesome.Blazor.Components.WaValueStep op_Implicit(int step) { }
+        public static WebAwesome.Blazor.Components.WaValueStep op_Implicit(long step) { }
     }
     public enum WaVariant
     {

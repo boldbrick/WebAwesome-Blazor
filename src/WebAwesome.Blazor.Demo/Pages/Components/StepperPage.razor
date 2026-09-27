@@ -6,62 +6,62 @@
 <p>
     Steppers show where the user is in a multi-step process, such as a checkout or a setup wizard.
     <code>&lt;wa-stepper&gt;</code> wrapped by <code>WaStepper</code>, with <code>&lt;wa-step&gt;</code> wrapped by
-    <a href="components/step"><code>WaStepperStep</code></a>. <code>Active</code> names the current step; a stepper is a display, not a form control,
+    <a href="components/step"><code>WaStep</code></a>. <code>Active</code> names the current step; a stepper is a display, not a form control,
     so pair it with your own buttons calling <code>NextAsync</code>/<code>PreviousAsync</code>/<code>GoToAsync</code>,
     or make it <code>Clickable</code>.
 </p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaStepper Active="shipping">
-        <WaStepperStep Name="cart" Completed="true">Cart</WaStepperStep>
-        <WaStepperStep Name="shipping">Shipping</WaStepperStep>
-        <WaStepperStep Name="payment">Payment</WaStepperStep>
+        <WaStep Name="cart" Completed="true">Cart</WaStep>
+        <WaStep Name="shipping">Shipping</WaStep>
+        <WaStep Name="payment">Payment</WaStep>
     </WaStepper>
 </ExampleSection>
 
 <ExampleSection Title="Completed &amp; Flagged Steps" Code="@FlaggedExample">
     <WaStepper Active="payment">
-        <WaStepperStep Name="cart" Completed="true" Variant="WaVariant.Success">Cart</WaStepperStep>
-        <WaStepperStep Name="shipping" Completed="true" Variant="WaVariant.Success">Shipping</WaStepperStep>
-        <WaStepperStep Name="payment" Variant="WaVariant.Danger" IconName="xmark">
+        <WaStep Name="cart" Completed="true" Variant="WaVariant.Success">Cart</WaStep>
+        <WaStep Name="shipping" Completed="true" Variant="WaVariant.Success">Shipping</WaStep>
+        <WaStep Name="payment" Variant="WaVariant.Danger" IconName="xmark">
             <ChildContent>Payment</ChildContent>
             <DescriptionContent>Card declined</DescriptionContent>
-        </WaStepperStep>
+        </WaStep>
     </WaStepper>
 </ExampleSection>
 
 <ExampleSection Title="Clickable" Code="@ClickableExample">
     <WaStepper Active="shipping" Clickable="true">
-        <WaStepperStep Name="cart" Completed="true">Cart</WaStepperStep>
-        <WaStepperStep Name="shipping">Shipping</WaStepperStep>
-        <WaStepperStep Name="payment">Payment</WaStepperStep>
+        <WaStep Name="cart" Completed="true">Cart</WaStep>
+        <WaStep Name="shipping">Shipping</WaStep>
+        <WaStep Name="payment">Payment</WaStep>
     </WaStepper>
 </ExampleSection>
 
 <ExampleSection Title="Linear" Code="@LinearExample">
     <WaStepper Active="shipping" Linear="true" Clickable="true">
-        <WaStepperStep Name="cart" Completed="true">Cart</WaStepperStep>
-        <WaStepperStep Name="shipping">Shipping</WaStepperStep>
-        <WaStepperStep Name="payment">Payment</WaStepperStep>
+        <WaStep Name="cart" Completed="true">Cart</WaStep>
+        <WaStep Name="shipping">Shipping</WaStep>
+        <WaStep Name="payment">Payment</WaStep>
     </WaStepper>
 </ExampleSection>
 
 <ExampleSection Title="Orientation" Code="@OrientationExample">
     <WaStack Gap="GapSize.Gap_XL">
         <WaStepper Orientation="WaStepperOrientation.Vertical" Active="proof" Style="--gap: var(--wa-space-3xl);">
-            <WaStepperStep Name="mix" Completed="true">Mix</WaStepperStep>
-            <WaStepperStep Name="knead" Completed="true">Knead</WaStepperStep>
-            <WaStepperStep Name="proof">
+            <WaStep Name="mix" Completed="true">Mix</WaStep>
+            <WaStep Name="knead" Completed="true">Knead</WaStep>
+            <WaStep Name="proof">
                 <ChildContent>Proof</ChildContent>
                 <DescriptionContent>Let it rise. Resist poking it.</DescriptionContent>
-            </WaStepperStep>
-            <WaStepperStep Name="bake">Bake</WaStepperStep>
+            </WaStep>
+            <WaStep Name="bake">Bake</WaStep>
         </WaStepper>
         <WaStepper Orientation="WaStepperOrientation.Auto" Active="team">
-            <WaStepperStep Name="account" Completed="true">Account</WaStepperStep>
-            <WaStepperStep Name="profile" Completed="true">Profile</WaStepperStep>
-            <WaStepperStep Name="team">Team</WaStepperStep>
-            <WaStepperStep Name="notifications">Notifications</WaStepperStep>
+            <WaStep Name="account" Completed="true">Account</WaStep>
+            <WaStep Name="profile" Completed="true">Profile</WaStep>
+            <WaStep Name="team">Team</WaStep>
+            <WaStep Name="notifications">Notifications</WaStep>
         </WaStepper>
     </WaStack>
 </ExampleSection>
@@ -69,9 +69,9 @@
 <ExampleSection Title="Navigating with Your Own Buttons" Code="@NavigatingExample">
     <WaStack Gap="GapSize.Gap_M">
         <WaStepper @ref="navigationStepper" Label="Checkout" Active="cart" OnStepChange="e => navigationStep = e.Name">
-            <WaStepperStep Name="cart" Completed="true">Cart</WaStepperStep>
-            <WaStepperStep Name="shipping">Shipping</WaStepperStep>
-            <WaStepperStep Name="payment">Payment</WaStepperStep>
+            <WaStep Name="cart" Completed="true">Cart</WaStep>
+            <WaStep Name="shipping">Shipping</WaStep>
+            <WaStep Name="payment">Payment</WaStep>
         </WaStepper>
         @if (navigationStep == "cart")
         {
@@ -106,7 +106,7 @@
         <WaStepper @ref="eventsStepper" Label="Order" Active="@eventsStep" OnStepChange="StepChanged">
             @foreach (var step in EventSteps)
             {
-                <WaStepperStep @key="step" Name="@step" Completed="@completedSteps.Contains(step)">@step</WaStepperStep>
+                <WaStep @key="step" Name="@step" Completed="@completedSteps.Contains(step)">@step</WaStep>
             }
         </WaStepper>
         <WaDivider />
@@ -145,62 +145,62 @@
 
     private const string DefaultExample = """
         <WaStepper Active="shipping">
-            <WaStepperStep Name="cart" Completed="true">Cart</WaStepperStep>
-            <WaStepperStep Name="shipping">Shipping</WaStepperStep>
-            <WaStepperStep Name="payment">Payment</WaStepperStep>
+            <WaStep Name="cart" Completed="true">Cart</WaStep>
+            <WaStep Name="shipping">Shipping</WaStep>
+            <WaStep Name="payment">Payment</WaStep>
         </WaStepper>
         """;
 
     private const string FlaggedExample = """
         <WaStepper Active="payment">
-            <WaStepperStep Name="cart" Completed="true" Variant="WaVariant.Success">Cart</WaStepperStep>
-            <WaStepperStep Name="shipping" Completed="true" Variant="WaVariant.Success">Shipping</WaStepperStep>
-            <WaStepperStep Name="payment" Variant="WaVariant.Danger" IconName="xmark">
+            <WaStep Name="cart" Completed="true" Variant="WaVariant.Success">Cart</WaStep>
+            <WaStep Name="shipping" Completed="true" Variant="WaVariant.Success">Shipping</WaStep>
+            <WaStep Name="payment" Variant="WaVariant.Danger" IconName="xmark">
                 <ChildContent>Payment</ChildContent>
                 <DescriptionContent>Card declined</DescriptionContent>
-            </WaStepperStep>
+            </WaStep>
         </WaStepper>
         """;
 
     private const string ClickableExample = """
         <WaStepper Active="shipping" Clickable="true">
-            <WaStepperStep Name="cart" Completed="true">Cart</WaStepperStep>
-            <WaStepperStep Name="shipping">Shipping</WaStepperStep>
-            <WaStepperStep Name="payment">Payment</WaStepperStep>
+            <WaStep Name="cart" Completed="true">Cart</WaStep>
+            <WaStep Name="shipping">Shipping</WaStep>
+            <WaStep Name="payment">Payment</WaStep>
         </WaStepper>
         """;
 
     private const string LinearExample = """
         <WaStepper Active="shipping" Linear="true" Clickable="true">
-            <WaStepperStep Name="cart" Completed="true">Cart</WaStepperStep>
-            <WaStepperStep Name="shipping">Shipping</WaStepperStep>
-            <WaStepperStep Name="payment">Payment</WaStepperStep>
+            <WaStep Name="cart" Completed="true">Cart</WaStep>
+            <WaStep Name="shipping">Shipping</WaStep>
+            <WaStep Name="payment">Payment</WaStep>
         </WaStepper>
         """;
 
     private const string OrientationExample = """
         <WaStepper Orientation="WaStepperOrientation.Vertical" Active="proof" Style="--gap: var(--wa-space-3xl);">
-            <WaStepperStep Name="mix" Completed="true">Mix</WaStepperStep>
-            <WaStepperStep Name="knead" Completed="true">Knead</WaStepperStep>
-            <WaStepperStep Name="proof">
+            <WaStep Name="mix" Completed="true">Mix</WaStep>
+            <WaStep Name="knead" Completed="true">Knead</WaStep>
+            <WaStep Name="proof">
                 <ChildContent>Proof</ChildContent>
                 <DescriptionContent>Let it rise. Resist poking it.</DescriptionContent>
-            </WaStepperStep>
-            <WaStepperStep Name="bake">Bake</WaStepperStep>
+            </WaStep>
+            <WaStep Name="bake">Bake</WaStep>
         </WaStepper>
         <WaStepper Orientation="WaStepperOrientation.Auto" Active="team">
-            <WaStepperStep Name="account" Completed="true">Account</WaStepperStep>
-            <WaStepperStep Name="profile" Completed="true">Profile</WaStepperStep>
-            <WaStepperStep Name="team">Team</WaStepperStep>
-            <WaStepperStep Name="notifications">Notifications</WaStepperStep>
+            <WaStep Name="account" Completed="true">Account</WaStep>
+            <WaStep Name="profile" Completed="true">Profile</WaStep>
+            <WaStep Name="team">Team</WaStep>
+            <WaStep Name="notifications">Notifications</WaStep>
         </WaStepper>
         """;
 
     private const string NavigatingExample = """
         <WaStepper @ref="navigationStepper" Label="Checkout" Active="cart" OnStepChange="e => navigationStep = e.Name">
-            <WaStepperStep Name="cart" Completed="true">Cart</WaStepperStep>
-            <WaStepperStep Name="shipping">Shipping</WaStepperStep>
-            <WaStepperStep Name="payment">Payment</WaStepperStep>
+            <WaStep Name="cart" Completed="true">Cart</WaStep>
+            <WaStep Name="shipping">Shipping</WaStep>
+            <WaStep Name="payment">Payment</WaStep>
         </WaStepper>
         @if (navigationStep == "cart")
         {
@@ -231,7 +231,7 @@
         <WaStepper @ref="eventsStepper" Label="Order" Active="@eventsStep" OnStepChange="StepChanged">
             @foreach (var step in EventSteps)
             {
-                <WaStepperStep @key="step" Name="@step" Completed="@completedSteps.Contains(step)">@step</WaStepperStep>
+                <WaStep @key="step" Name="@step" Completed="@completedSteps.Contains(step)">@step</WaStep>
             }
         </WaStepper>
         <WaDivider />

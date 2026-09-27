@@ -10,7 +10,7 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Render tests for WaStepper: its ChildContent renders WaStepperStep children inside wa-stepper. Its attributes
+/// Render tests for WaStepper: its ChildContent renders WaStep children inside wa-stepper. Its attributes
 /// and defaults are covered by RenderedAttributeParityTests and its events by EventCallbackBindingParityTests,
 /// both against the CEM; there is no C#-side mapping of OnBeforeStepChange/OnStepChange beyond direct binding, so
 /// no TriggerEvent test is added for them here.
@@ -42,12 +42,12 @@ public class WaStepperIntegrationTests : BunitContext
 
     private static readonly RenderFragment StepsFragment = builder =>
     {
-        builder.OpenComponent<WaStepperStep>(0);
-        builder.AddComponentParameter(1, nameof(WaStepperStep.Name), FirstStepName);
+        builder.OpenComponent<WaStep>(0);
+        builder.AddComponentParameter(1, nameof(WaStep.Name), FirstStepName);
         builder.CloseComponent();
 
-        builder.OpenComponent<WaStepperStep>(2);
-        builder.AddComponentParameter(3, nameof(WaStepperStep.Name), SecondStepName);
+        builder.OpenComponent<WaStep>(2);
+        builder.AddComponentParameter(3, nameof(WaStep.Name), SecondStepName);
         builder.CloseComponent();
     };
 

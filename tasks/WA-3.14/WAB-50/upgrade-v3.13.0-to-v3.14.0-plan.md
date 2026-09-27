@@ -49,6 +49,12 @@ released two versions ago. The wrapper is therefore named **`WaStepperStep`**, r
 Owner review point: if the struct should rather be renamed (e.g. `WaStepValue`) and the component take
 `WaStep`, that is a breaking change for a later, deliberate release.
 
+**Revised by the owner (2026-09-27), superseding the above:** aligned component names matter more than
+avoiding a small breaking rename of a supplementary type. The struct is renamed **`WaValueStep`** and the
+`wa-step` wrapper is **`WaStep`**; the `componentClassOverrides` entry is removed. 3.14.0 is therefore a
+breaking release, with the `### Breaking changes` changelog heading and `docs\MIGRATION-3.14.0.md`. The
+`WaStepperStep` names below describe the state before this revision.
+
 ### Upstream source changes outside the CEM
 
 The compiled chunks carry their `// _bundle_/src/...` module markers, so the 3.13.0 and 3.14.0 builds were

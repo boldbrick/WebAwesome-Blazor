@@ -174,10 +174,10 @@ public class WaTimeInputEditFormTests : FormControlTestBase
     private const string AnyStep = "any";
 
     // the step a test row stands for: null, "any", or an invariant number
-    private static WaStep? ToStep(string? step) => step switch
+    private static WaValueStep? ToStep(string? step) => step switch
     {
         null => null,
-        AnyStep => WaStep.Any,
+        AnyStep => WaValueStep.Any,
         _ => decimal.Parse(step, System.Globalization.CultureInfo.InvariantCulture)
     };
 

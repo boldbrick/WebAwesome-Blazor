@@ -27,9 +27,9 @@
     <WaStepper Label="Harness steps" Active="first" Clickable="true" data-testid="ct-stepper"
                OnBeforeStepChange="e => log.Record(Id(nameof(WaStepper), nameof(WaStepper.OnBeforeStepChange)), e)"
                OnStepChange="e => log.Record(Id(nameof(WaStepper), nameof(WaStepper.OnStepChange)), e)">
-        <WaStepperStep Name="first" data-testid="ct-step-first">First</WaStepperStep>
-        <WaStepperStep Name="second" data-testid="ct-step-second">Second</WaStepperStep>
-        <WaStepperStep Name="third" data-testid="ct-step-third">Third</WaStepperStep>
+        <WaStep Name="first" data-testid="ct-step-first">First</WaStep>
+        <WaStep Name="second" data-testid="ct-step-second">Second</WaStep>
+        <WaStep Name="third" data-testid="ct-step-third">Third</WaStep>
     </WaStepper>
 </ExampleSection>
 
