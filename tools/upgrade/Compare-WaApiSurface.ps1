@@ -55,7 +55,9 @@ function Get-Keys($obj) {
     # works for both deserialized PSCustomObjects and in-memory (ordered) hashtables
     if ($null -eq $obj) { return @() }
     if ($obj -is [System.Collections.IDictionary]) { return @($obj.Keys) }
-    return @($obj.PSObject.Properties.Name)
+    # enumerate the properties explicitly: member enumeration over an empty property collection
+    # yields a single null under PowerShell 7, which reads as a removed '' entry
+    return @($obj.PSObject.Properties | ForEach-Object { $_.Name })
 }
 
 function Compare-Map($fromMap, $toMap, [scriptblock]$isChanged) {
