@@ -10,7 +10,7 @@ const {
 
 // Drives every demo page the way a curious user would: each enabled interactive element in the page's content area
 // once (buttons, switches, checkboxes, radios, tabs, disclosures, selects and comboboxes with an option picked,
-// inputs with a value typed, sliders, ratings, pickers, dropdowns with an item picked, tree items, removable tags,
+// inputs with a value typed, tag inputs with a tag entered, sliders, ratings, pickers, dropdowns with an item picked, tree items, removable tags,
 // pagination, carousels, split panels, comparisons), with every dialog, drawer, popover or menu it opens closed
 // again. After each interaction the page clock jumps past the pending timers (toasts, delays, autoplay), so what an
 // interaction starts also finishes, and the page must still be healthy: no Blazor error UI, no page error, no

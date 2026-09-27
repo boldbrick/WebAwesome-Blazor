@@ -7,7 +7,7 @@
     "extraElementMethods and sourceVerifiedEvents are invisible to the CEM diff: re-verify them against the target version's source on every upgrade."
   ],
   "enabled": true,
-  "targetWaVersion": "3.12.0",
+  "targetWaVersion": "3.13.0",
   "globalIgnoredAttributes": [
     "title",
     "did-ssr",
@@ -40,7 +40,7 @@
     },
     "WaSize": {
       "literals": [ "small", "medium", "large" ],
-      "attributes": [ "wa-button:size", "wa-callout:size", "wa-checkbox:size", "wa-checkbox-group:size", "wa-color-picker:size", "wa-combobox:size", "wa-data-grid:size", "wa-date-input:size", "wa-date-picker:size", "wa-dropdown:size", "wa-file-input:size", "wa-input:size", "wa-known-date:size", "wa-number-input:size", "wa-otp-input:size", "wa-radio:size", "wa-radio-group:size", "wa-rating:size", "wa-select:size", "wa-slider:size", "wa-switch:size", "wa-tag:size", "wa-textarea:size", "wa-time-input:size", "wa-toast-item:size" ]
+      "attributes": [ "wa-button:size", "wa-callout:size", "wa-checkbox:size", "wa-checkbox-group:size", "wa-color-picker:size", "wa-combobox:size", "wa-data-grid:size", "wa-date-input:size", "wa-date-picker:size", "wa-dropdown:size", "wa-file-input:size", "wa-input:size", "wa-known-date:size", "wa-number-input:size", "wa-otp-input:size", "wa-radio:size", "wa-radio-group:size", "wa-rating:size", "wa-select:size", "wa-slider:size", "wa-switch:size", "wa-tag:size", "wa-tag-input:size", "wa-textarea:size", "wa-time-input:size", "wa-toast-item:size" ]
     }
   },
   "components": {
@@ -187,6 +187,18 @@
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
+    "wa-tag-input": {
+      "onOffAttributes": [ "autocorrect" ],
+      "attributeOverrides": {
+        "autocapitalize": "AutoCapitalize",
+        "autocorrect": "AutoCorrect",
+        "enterkeyhint": "EnterKeyHint",
+        "inputmode": "InputMode"
+      },
+      "ignoredAttributes": [ "name", "custom-error", "value" ],
+      "ignoredEvents": [ "change" ],
+      "ignoredMethods": [ "formStateRestoreCallback" ]
+    },
     "wa-date-input": {
       "unrenderedAttributes": [ "mode", "min-range", "max-range" ],
       "wrapperDefaultAttributes": [ "mode" ],
@@ -322,6 +334,7 @@
     "onOffAttributes:wa-input:autocorrect": "wa-input's autocorrect converter is fromAttribute: (value) => !value || value === \"off\" ? false : true, toAttribute: value ? \"on\" : \"off\" (3.12.0 chunk.3UR7XKQK.js), so a present empty attribute (Blazor's true) reads false; AutoCorrect (bool?) must render exactly \"on\"/\"off\"",
     "onOffAttributes:wa-textarea:autocorrect": "wa-textarea's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.YIEXWZ6G.js), so AutoCorrect must render exactly \"on\"/\"off\"",
     "onOffAttributes:wa-combobox:autocorrect": "wa-combobox's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.HYTAIWXE.js), so AutoCorrect must render exactly \"on\"/\"off\"",
+    "onOffAttributes:wa-tag-input:autocorrect": "wa-tag-input's autocorrect has the same on/off converter as wa-input (3.13.0 tag-input source: fromAttribute reads empty or \"off\" as false), so AutoCorrect must render exactly \"on\"/\"off\"",
     "tokenListAttributes:wa-zoomable-frame:sandbox": "wa-zoomable-frame forwards sandbox to its iframe (sandbox=${ifDefined(this.sandbox)}, 3.12.0 chunk.PJARYDTD.js); the CEM types it string, but HTML defines it as a space-separated set of these tokens (HTML Living Standard, the iframe sandbox attribute), which WaIframeSandbox flags emit; re-verify every upgrade",
     "tokenListAttributes:wa-zoomable-frame:referrerpolicy": "wa-zoomable-frame forwards referrerpolicy to its iframe (3.12.0 chunk.PJARYDTD.js); the CEM types it string, but the value is one referrer-policy token of this fixed set (W3C Referrer Policy), which WaReferrerPolicy emits; the token check validates the single value",
     "tokenListAttributes:wa-accordion:heading-level": "wa-accordion's heading-level is typed string, but the element reads it as parseInt 1..6 (else 3) or \"none\" to omit the heading (3.12.0 chunk.LVL7ACR6.js renderHeadingWrapper and render); WaHeadingLevel emits exactly those tokens",
@@ -447,6 +460,15 @@
     "ignoredAttributes:wa-combobox:custom-error": "WaCombobox sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
     "ignoredEvents:wa-combobox:change": "WaCombobox binds change as its @bind-Value binder (CurrentValueAsString, or HandleMultipleSelectionChange with Multiple), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
     "ignoredMethods:wa-combobox:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-combobox to restore or autofill its state; not consumer API and not callable from Blazor",
+    "attributeOverrides:wa-tag-input:autocapitalize": "exposed as WaTagInput.AutoCapitalize, the natural-PascalCase name (mechanical conversion would yield 'Autocapitalize')",
+    "attributeOverrides:wa-tag-input:autocorrect": "exposed as WaTagInput.AutoCorrect, the natural-PascalCase name (mechanical conversion would yield 'Autocorrect')",
+    "attributeOverrides:wa-tag-input:enterkeyhint": "exposed as WaTagInput.EnterKeyHint, the natural-PascalCase name (mechanical conversion would yield 'Enterkeyhint')",
+    "attributeOverrides:wa-tag-input:inputmode": "exposed as WaTagInput.InputMode, the natural-PascalCase name (mechanical conversion would yield 'Inputmode')",
+    "ignoredAttributes:wa-tag-input:name": "WaTagInput renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-tag-input:custom-error": "WaTagInput sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-tag-input:change": "WaTagInput binds change as its @bind-Value binder (the element's tag array read into Value), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-tag-input:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-tag-input to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredAttributes:wa-tag-input:value": "the value attribute only sets defaultValue as a trimmed, delimiter-separated string, which cannot carry a tag containing a delimiter or edge whitespace; WaTagInput binds Value (IReadOnlyList<string>?) to the element's live value property, pushed as a string array, so no parameter exposes or renders the attribute (an HTML reset default can still be passed through AdditionalAttributes)",
     "ignoredAttributes:wa-date-input:name": "WaDateInput renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
     "ignoredAttributes:wa-date-input:custom-error": "WaDateInput sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
     "ignoredEvents:wa-date-input:change": "WaDateInput binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",

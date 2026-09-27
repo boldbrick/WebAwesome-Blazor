@@ -6,7 +6,7 @@ using WebAwesome.Blazor.Base;
 namespace WebAwesome.Blazor.Components;
 
 /// <summary>
-/// An experimental date input with segmented text entry and a popup calendar, bound to a date range (a start and an
+/// A date input with segmented text entry and a popup calendar, bound to a date range (a start and an
 /// end date). Renders wa-date-input in range mode; for a single date, use <see cref="WaDateInput"/>.
 /// Corresponds to the wa-date-input Web Awesome component with <c>mode="range"</c>.
 /// </summary>

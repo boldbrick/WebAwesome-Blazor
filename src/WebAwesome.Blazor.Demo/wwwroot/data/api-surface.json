@@ -1,11 +1,64 @@
 {
-  "version": "3.12.0",
+  "version": "3.13.0",
   "generated": "Export-WaApiSurface.ps1",
+  "declaredEventTypes": [
+    "wa-after-collapse",
+    "wa-after-expand",
+    "wa-after-hide",
+    "wa-after-show",
+    "wa-before-page-change",
+    "wa-cancel",
+    "wa-cell-click",
+    "wa-cell-contextmenu",
+    "wa-clear",
+    "wa-collapse",
+    "wa-column-move",
+    "wa-column-pin",
+    "wa-column-resize",
+    "wa-column-visibility-change",
+    "wa-complete",
+    "wa-content-change",
+    "wa-copy",
+    "wa-create",
+    "wa-data-error",
+    "wa-data-request",
+    "wa-error",
+    "wa-expand",
+    "wa-filter-change",
+    "wa-finish",
+    "wa-focus-day",
+    "wa-hide",
+    "wa-hover",
+    "wa-include-error",
+    "wa-intersect",
+    "wa-invalid",
+    "wa-lazy-change",
+    "wa-lazy-load",
+    "wa-load",
+    "wa-mutation",
+    "wa-page-change",
+    "wa-remove",
+    "wa-reposition",
+    "wa-resize",
+    "wa-row-collapse",
+    "wa-row-expand",
+    "wa-row-select",
+    "wa-select",
+    "wa-selection-change",
+    "wa-show",
+    "wa-slide-change",
+    "wa-sort-change",
+    "wa-start",
+    "wa-tab-hide",
+    "wa-tab-show",
+    "wa-video-change",
+    "wa-view-change"
+  ],
   "components": {
     "wa-accordion": {
       "className": "WaAccordion",
       "since": "3.8",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "appearance": {
@@ -66,6 +119,12 @@
           "description": "Emitted before an item expands. Cancelable."
         }
       },
+      "jsDocEvents": [
+        "wa-after-collapse",
+        "wa-after-expand",
+        "wa-collapse",
+        "wa-expand"
+      ],
       "slots": {
         "(default)": "One or more `<wa-accordion-item>` elements."
       },
@@ -84,7 +143,7 @@
     "wa-accordion-item": {
       "className": "WaAccordionItem",
       "since": "3.8",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "did-ssr": {
@@ -119,6 +178,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The accordion item's body content.",
         "icon": "Optional expand/collapse icon. Works best with `<wa-icon>`.",
@@ -202,6 +262,10 @@
           "description": "Emitted when the image loads successfully."
         }
       },
+      "jsDocEvents": [
+        "wa-error",
+        "wa-load"
+      ],
       "slots": {
         "pause-icon": "Optional pause icon to use instead of the default. Works best with `<wa-icon>`.",
         "play-icon": "Optional play icon to use instead of the default. Works best with `<wa-icon>`."
@@ -235,7 +299,8 @@
         "direction": {
           "type": "PlaybackDirection",
           "default": "'normal'",
-          "description": "Determines the direction of playback as well as the behavior when reaching the end of an iteration.\n[Learn more](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction)"
+          "description": "Determines the direction of playback as well as the behavior when reaching the end of an iteration.\n[Learn more](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction)",
+          "resolvedType": "'normal' | 'reverse' | 'alternate' | 'alternate-reverse'"
         },
         "duration": {
           "type": "number",
@@ -255,7 +320,8 @@
         "fill": {
           "type": "FillMode",
           "default": "'auto'",
-          "description": "Sets how the animation applies styles to its target before and after its execution."
+          "description": "Sets how the animation applies styles to its target before and after its execution.",
+          "resolvedType": "'none' | 'forwards' | 'backwards' | 'both' | 'auto'"
         },
         "iteration-start": {
           "type": "number",
@@ -305,6 +371,11 @@
           "description": "Emitted when the animation starts or restarts."
         }
       },
+      "jsDocEvents": [
+        "wa-cancel",
+        "wa-finish",
+        "wa-start"
+      ],
       "slots": {
         "(default)": "The element to animate. Avoid slotting in more than one element, as subsequent ones will be ignored. To animate multiple elements, either wrap them in a single container or use multiple `<wa-animation>` elements."
       },
@@ -374,6 +445,9 @@
           "description": "The image could not be loaded. This may because of an invalid URL, a temporary network condition, or some unknown cause."
         }
       },
+      "jsDocEvents": [
+        "wa-error"
+      ],
       "slots": {
         "icon": "The default icon to use when no image or initials are present. Works best with `<wa-icon>`."
       },
@@ -427,6 +501,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The badge's content.",
         "end": "An element, such as `<wa-icon>`, placed after the label.",
@@ -484,7 +559,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -514,7 +590,8 @@
         "type": {
           "type": "ChartType",
           "default": "'bar'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -543,6 +620,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -577,6 +655,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "One or more breadcrumb items to display.",
         "separator": "The separator to use between breadcrumb items. Works best with `<wa-icon>`."
@@ -625,6 +704,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The breadcrumb item's label.",
         "end": "An element, such as `<wa-icon>`, placed after the label.",
@@ -683,7 +763,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -708,7 +789,8 @@
         "type": {
           "type": "ChartType",
           "default": "'bubble'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -737,6 +819,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -897,6 +980,11 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "wa-invalid"
+      ],
       "slots": {
         "(default)": "The button's label.",
         "end": "An element, such as `<wa-icon>`, placed after the label.",
@@ -971,6 +1059,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "One or more `<wa-button>` elements to display in the button group."
       },
@@ -1017,6 +1106,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The callout's main content.",
         "icon": "An icon to show in the callout. Works best with `<wa-icon>`."
@@ -1085,6 +1175,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The card's main content.",
         "actions": "An optional actions section to render at the end for the horizontal card.",
@@ -1187,6 +1278,9 @@
           "description": "Emitted when the active slide changes."
         }
       },
+      "jsDocEvents": [
+        "wa-slide-change"
+      ],
       "slots": {
         "(default)": "The carousel's main content, one or more `<wa-carousel-item>` elements.",
         "next-icon": "Optional next icon to use instead of the default. Works best with `<wa-icon>`.",
@@ -1250,6 +1344,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The carousel item's content.."
       },
@@ -1410,6 +1505,13 @@
           "description": null
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "hint": "The color picker's form hint. Alternatively, you can use the `hint` attribute.",
         "label": "The color picker's form label. Alternatively, you can use the `label` attribute."
@@ -1695,6 +1797,19 @@
           "description": "Emitted when the combobox's menu opens."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-clear",
+        "wa-create",
+        "wa-hide",
+        "wa-invalid",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The listbox options. Must be `<wa-option>` elements. You can use `<wa-divider>` to group items visually.",
         "clear-icon": "An icon to use in lieu of the default clear icon.",
@@ -1788,6 +1903,9 @@
           "description": "Emitted when the position changes."
         }
       },
+      "jsDocEvents": [
+        "change"
+      ],
       "slots": {
         "after": "The after content, often an `<img>` or `<svg>` element.",
         "before": "The before content, often an `<img>` or `<svg>` element.",
@@ -1882,6 +2000,10 @@
           "description": "Emitted when the data could not be copied."
         }
       },
+      "jsDocEvents": [
+        "wa-copy",
+        "wa-error"
+      ],
       "slots": {
         "(default)": "The trigger element. By default, a copy icon button is rendered so this is optional. If desired, you can slot in a custom element such as `<wa-button>` or `<button>`.",
         "copy-icon": "The icon to show in the default copy state. Works best with `<wa-icon>`.",
@@ -2121,6 +2243,22 @@
           "description": "Emitted when the sort order changes."
         }
       },
+      "jsDocEvents": [
+        "wa-cell-click",
+        "wa-cell-contextmenu",
+        "wa-column-move",
+        "wa-column-pin",
+        "wa-column-resize",
+        "wa-column-visibility-change",
+        "wa-data-error",
+        "wa-data-request",
+        "wa-filter-change",
+        "wa-page-change",
+        "wa-row-collapse",
+        "wa-row-expand",
+        "wa-row-select",
+        "wa-sort-change"
+      ],
       "slots": {
         "empty": "Content shown when there are no rows to display.",
         "loading": "Content shown in the loading overlay (server mode).",
@@ -2280,7 +2418,7 @@
     "wa-date-input": {
       "className": "WaDateInput",
       "since": "3.8",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "appearance": {
@@ -2341,7 +2479,8 @@
         "first-day-of-week": {
           "type": "WaDateInputFirstDayOfWeek",
           "default": "'auto'",
-          "description": "The first day of the week in the popup calendar."
+          "description": "The first day of the week in the popup calendar.",
+          "resolvedType": "'auto' | 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'"
         },
         "hint": {
           "type": "string",
@@ -2381,7 +2520,8 @@
         "mode": {
           "type": "WaDateInputMode",
           "default": "'single'",
-          "description": "Selection mode."
+          "description": "Selection mode.",
+          "resolvedType": "'single' | 'range'"
         },
         "months": {
           "type": "1 | 2",
@@ -2411,7 +2551,8 @@
         "placement": {
           "type": "WaDateInputPlacement",
           "default": "'bottom-start'",
-          "description": "Preferred popup placement."
+          "description": "Preferred popup placement.",
+          "resolvedType": "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end'"
         },
         "readonly": {
           "type": "boolean",
@@ -2426,7 +2567,8 @@
         "size": {
           "type": "WaDateInputSize | 'small' | 'medium' | 'large'",
           "default": "'m'",
-          "description": "The date input's size."
+          "description": "The date input's size.",
+          "resolvedType": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'"
         },
         "today": {
           "type": "string",
@@ -2521,6 +2663,18 @@
           "description": "Emitted when the popup is about to open. Cancelable."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-clear",
+        "wa-hide",
+        "wa-invalid",
+        "wa-show"
+      ],
       "slots": {
         "clear-icon": "An icon to use in lieu of the default clear icon.",
         "day-YYYY-MM-DD": "Custom content for a specific day in the popup date picker. Slot name is dynamic (e.g., `day-2026-05-25`). Forwarded to `<wa-date-picker>`.",
@@ -2592,7 +2746,7 @@
     "wa-date-picker": {
       "className": "WaDatePicker",
       "since": "3.8",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "did-ssr": {
@@ -2633,7 +2787,8 @@
         "first-day-of-week": {
           "type": "WaDatePickerFirstDayOfWeek",
           "default": "'auto'",
-          "description": "The first day of the week. The default `auto` uses the current locale's week info. To set a specific day, pass a\nthree-letter weekday name: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, or `sat`."
+          "description": "The first day of the week. The default `auto` uses the current locale's week info. To set a specific day, pass a\nthree-letter weekday name: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, or `sat`.",
+          "resolvedType": "'auto' | 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'"
         },
         "focused-date": {
           "type": "string",
@@ -2673,7 +2828,8 @@
         "mode": {
           "type": "WaDatePickerMode",
           "default": "'single'",
-          "description": "The selection mode."
+          "description": "The selection mode.",
+          "resolvedType": "'single' | 'range'"
         },
         "months": {
           "type": "1 | 2",
@@ -2683,7 +2839,8 @@
         "page-by": {
           "type": "WaDatePickerPageBy",
           "default": "'months'",
-          "description": "Whether prev/next advances by the visible range (`months`) or one month at a time (`single`)."
+          "description": "Whether prev/next advances by the visible range (`months`) or one month at a time (`single`).",
+          "resolvedType": "'months' | 'single'"
         },
         "readonly": {
           "type": "boolean",
@@ -2693,7 +2850,8 @@
         "size": {
           "type": "WaDatePickerSize | 'small' | 'medium' | 'large'",
           "default": "'m'",
-          "description": "Visual size."
+          "description": "Visual size.",
+          "resolvedType": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'"
         },
         "today": {
           "type": "string",
@@ -2708,12 +2866,14 @@
         "view": {
           "type": "WaDatePickerView",
           "default": "'days'",
-          "description": "The current view."
+          "description": "The current view.",
+          "resolvedType": "'days' | 'months' | 'years'"
         },
         "weekday-format": {
           "type": "WaDatePickerWeekdayFormat",
           "default": "'short'",
-          "description": "The weekday header format."
+          "description": "The weekday header format.",
+          "resolvedType": "'narrow' | 'short' | 'long'"
         },
         "with-outside-days": {
           "type": "boolean",
@@ -2748,6 +2908,12 @@
           "description": "Emitted when the date picker switches between day, month, and year views. `event.detail` is `{ view, date }`."
         }
       },
+      "jsDocEvents": [
+        "change",
+        "input",
+        "wa-focus-day",
+        "wa-view-change"
+      ],
       "slots": {
         "footer": "Optional content rendered below the calendar grid. Empty by default.",
         "header": "Replaces the entire header row including title and navigation buttons. Advanced use only.",
@@ -2884,6 +3050,12 @@
           "description": "Emitted when the details opens."
         }
       },
+      "jsDocEvents": [
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-hide",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The details' main content.",
         "collapse-icon": "Optional collapse icon to use instead of the default. Works best with `<wa-icon>`.",
@@ -2978,6 +3150,12 @@
           "description": "Emitted when the dialog opens."
         }
       },
+      "jsDocEvents": [
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-hide",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The dialog's main content.",
         "footer": "The dialog's footer, usually one or more buttons representing various options.",
@@ -3024,6 +3202,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": []
@@ -3072,7 +3251,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -3097,7 +3277,8 @@
         "type": {
           "type": "ChartType",
           "default": "'doughnut'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -3126,6 +3307,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -3206,6 +3388,12 @@
           "description": "Emitted when the drawer opens."
         }
       },
+      "jsDocEvents": [
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-hide",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The drawer's main content.",
         "footer": "The drawer's footer, usually one or more buttons representing various options.",
@@ -3298,6 +3486,13 @@
           "description": "Emitted when the dropdown is about to show."
         }
       },
+      "jsDocEvents": [
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-hide",
+        "wa-select",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The dropdown's items, typically `<wa-dropdown-item>` elements.",
         "trigger": "The element that triggers the dropdown, such as a `<wa-button>` or `<button>`."
@@ -3392,6 +3587,10 @@
           "description": "Emitted when the dropdown item gains focus."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus"
+      ],
       "slots": {
         "(default)": "The dropdown item's label.",
         "details": "Additional content or details to display after the label.",
@@ -3526,6 +3725,13 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "dropzone": "Custom content to show in the dropzone.",
         "hint": "Text that describes how to use the file input. Alternatively, you can use the `hint` attribute.",
@@ -3611,6 +3817,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": []
@@ -3698,6 +3905,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": []
@@ -3775,6 +3983,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": []
@@ -3823,7 +4032,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -3848,7 +4058,8 @@
         "type": {
           "type": "ChartType",
           "default": "'bar'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -3877,6 +4088,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -3982,6 +4194,13 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "(default)": "The checkbox's label.",
         "hint": "Text that describes how to use the checkbox. Alternatively, you can use the `hint` attribute."
@@ -4080,6 +4299,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The default slot where `<wa-checkbox>` or `<wa-switch>` elements are placed.",
         "hint": "Text that describes how to use the checkbox group. Alternatively, you can use the `hint` attribute.",
@@ -4102,7 +4322,8 @@
         "animation": {
           "type": "IconAnimation | undefined",
           "default": null,
-          "description": "Sets the animation for the icon"
+          "description": "Sets the animation for the icon",
+          "resolvedType": "'beat' | 'fade' | 'beat-fade' | 'bounce' | 'flip' | 'flip-360' | 'shake' | 'spin' | 'spin-pulse' | 'spin-reverse' | 'spin-snap' | 'spin-snap-4' | 'spin-snap-8' | 'buzz' | 'wag' | 'float' | 'swing' | 'jello' | undefined"
         },
         "auto-width": {
           "type": "boolean",
@@ -4112,7 +4333,8 @@
         "canvas": {
           "type": "IconCanvas | undefined",
           "default": null,
-          "description": "Sets the icon canvas — the box the icon is centered within. Unset renders as `fixed` (1.25em × 1em); `auto` hugs the\nicon's width; `square` is 1.25em × 1.25em; `roomy` is 1.5em × 1.5em. Mirrors Font Awesome's `fa-fixed-width`,\n`fa-width-auto`, `fa-canvas-square`, and `fa-canvas-roomy`. Scales with `font-size`."
+          "description": "Sets the icon canvas — the box the icon is centered within. Unset renders as `fixed` (1.25em × 1em); `auto` hugs the\nicon's width; `square` is 1.25em × 1.25em; `roomy` is 1.5em × 1.5em. Mirrors Font Awesome's `fa-fixed-width`,\n`fa-width-auto`, `fa-canvas-square`, and `fa-canvas-roomy`. Scales with `font-size`.",
+          "resolvedType": "'fixed' | 'auto' | 'square' | 'roomy' | undefined"
         },
         "did-ssr": {
           "type": null,
@@ -4187,6 +4409,10 @@
           "description": "Emitted when the icon has loaded. When using `spriteSheet: true` this will not emit."
         }
       },
+      "jsDocEvents": [
+        "wa-error",
+        "wa-load"
+      ],
       "slots": {},
       "methods": {},
       "cssParts": [
@@ -4243,6 +4469,10 @@
           "description": "Emitted when the included file is loaded."
         }
       },
+      "jsDocEvents": [
+        "wa-include-error",
+        "wa-load"
+      ],
       "slots": {},
       "methods": {},
       "cssParts": []
@@ -4466,6 +4696,14 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-clear",
+        "wa-invalid"
+      ],
       "slots": {
         "clear-icon": "An icon to use in lieu of the default clear icon.",
         "end": "An element, such as `<wa-icon>`, placed at the end of the input control.",
@@ -4593,6 +4831,9 @@
           "description": "Fired when a tracked element begins or ceases intersecting."
         }
       },
+      "jsDocEvents": [
+        "wa-intersect"
+      ],
       "slots": {
         "(default)": "Elements to track. Only immediate children of the host are monitored."
       },
@@ -4602,13 +4843,14 @@
     "wa-known-date": {
       "className": "WaKnownDate",
       "since": "3.8",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "appearance": {
           "type": "WaKnownDateAppearance",
           "default": "'outlined'",
-          "description": "The known date's visual appearance."
+          "description": "The known date's visual appearance.",
+          "resolvedType": "'filled' | 'outlined' | 'filled-outlined'"
         },
         "autocomplete": {
           "type": "string",
@@ -4688,7 +4930,8 @@
         "size": {
           "type": "WaKnownDateSize | 'small' | 'medium' | 'large'",
           "default": "'m'",
-          "description": "The known date's size."
+          "description": "The known date's size.",
+          "resolvedType": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'"
         },
         "value": {
           "type": "string",
@@ -4733,6 +4976,13 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "hint": "Text that describes how to use the known date. Alternatively, use the `hint` attribute.",
         "label": "The known date's group label. Alternatively, use the `label` attribute."
@@ -4822,7 +5072,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -4847,7 +5098,8 @@
         "type": {
           "type": "ChartType",
           "default": "'line'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -4876,6 +5128,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -4910,6 +5163,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {
         "getMarked": {
@@ -4986,6 +5240,9 @@
           "description": "Emitted when a mutation occurs."
         }
       },
+      "jsDocEvents": [
+        "wa-mutation"
+      ],
       "slots": {
         "(default)": "The content to watch for mutations."
       },
@@ -5161,6 +5418,14 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "beforeinput",
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "decrement-icon": "An icon to use in lieu of the default decrement icon.",
         "end": "An element, such as `<wa-icon>`, placed at the end of the input control (before steppers).",
@@ -5260,6 +5525,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The option's label.",
         "end": "An element, such as `<wa-icon>`, placed after the label.",
@@ -5276,7 +5542,7 @@
     "wa-otp-input": {
       "className": "WaOtpInput",
       "since": "3.11",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "appearance": {
@@ -5427,6 +5693,15 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-clear",
+        "wa-complete",
+        "wa-invalid"
+      ],
       "slots": {
         "hint": "Optional hint text. Use this for hints that contain HTML. When `hint` attribute is set it takes priority.",
         "label": "An optional label. Use this for labels that contain HTML. When `label` attribute is set it takes priority."
@@ -5517,6 +5792,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The page's main content.",
         "aside": "Content to be shown on the right side of the page. Typically contains a table of contents, ads, etc. This section \"sticks\" to the top as the page scrolls.",
@@ -5579,7 +5855,7 @@
     "wa-pagination": {
       "className": "WaPagination",
       "since": "3.11",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "appearance": {
@@ -5680,6 +5956,10 @@
           "description": "Emitted after the page changes."
         }
       },
+      "jsDocEvents": [
+        "wa-before-page-change",
+        "wa-page-change"
+      ],
       "slots": {
         "first-icon": "An icon to use in lieu of the default first icon.",
         "last-icon": "An icon to use in lieu of the default last icon.",
@@ -5747,7 +6027,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -5772,7 +6053,8 @@
         "type": {
           "type": "ChartType",
           "default": "'pie'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -5801,6 +6083,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -5851,7 +6134,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -5876,7 +6160,8 @@
         "type": {
           "type": "ChartType",
           "default": "'polarArea'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -5905,6 +6190,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -5985,6 +6271,12 @@
           "description": "Emitted when the popover begins to show. Canceling this event will stop the popover from showing."
         }
       },
+      "jsDocEvents": [
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-hide",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The popover's content. Interactive elements such as buttons and links are supported."
       },
@@ -6145,6 +6437,9 @@
           "description": "Emitted when the popup is repositioned. This event can fire a lot, so avoid putting expensive operations in your listener or consider debouncing it."
         }
       },
+      "jsDocEvents": [
+        "wa-reposition"
+      ],
       "slots": {
         "(default)": "The popup's content.",
         "anchor": "The element the popup will be anchored to. If the anchor lives outside of the popup, you can use the `anchor` attribute or property instead."
@@ -6199,6 +6494,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "A label to show inside the progress indicator."
       },
@@ -6243,6 +6539,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "A label to show inside the ring."
       },
@@ -6333,6 +6630,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": [
@@ -6384,7 +6682,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -6409,7 +6708,8 @@
         "type": {
           "type": "ChartType",
           "default": "'radar'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -6438,6 +6738,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -6508,6 +6809,10 @@
           "description": "Emitted when the control gains focus."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus"
+      ],
       "slots": {
         "(default)": "The radio's label."
       },
@@ -6625,6 +6930,11 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "(default)": "The default slot where `<wa-radio>` elements are placed.",
         "hint": "Text that describes how to use the radio group. Alternatively, you can use the `hint` attribute.",
@@ -6658,7 +6968,7 @@
     "wa-random-content": {
       "className": "WaRandomContent",
       "since": "3.10",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "animation": {
@@ -6709,6 +7019,9 @@
           "description": "Emitted whenever the displayed selection changes, including on first render, on `randomize()`, and on each autoplay tick."
         }
       },
+      "jsDocEvents": [
+        "wa-content-change"
+      ],
       "slots": {
         "(default)": "The pool of children to choose from. Only direct element children are eligible; unselected children are hidden with the `hidden` attribute."
       },
@@ -6824,6 +7137,11 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "change",
+        "wa-hover",
+        "wa-invalid"
+      ],
       "slots": {},
       "methods": {
         "formStateRestoreCallback": {
@@ -6887,6 +7205,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": []
@@ -6925,6 +7244,9 @@
           "description": "Emitted when the element is resized."
         }
       },
+      "jsDocEvents": [
+        "wa-resize"
+      ],
       "slots": {
         "(default)": "One or more elements to watch for resizing."
       },
@@ -6975,7 +7297,8 @@
         "legend-position": {
           "type": "LayoutPosition | 'start' | 'end'",
           "default": "'top'",
-          "description": "The position of the legend relative to the chart."
+          "description": "The position of the legend relative to the chart.",
+          "resolvedType": "'left' | 'top' | 'right' | 'bottom' | 'center' | 'chartArea' | 'start' | 'end'"
         },
         "max": {
           "type": "number | null",
@@ -7000,7 +7323,8 @@
         "type": {
           "type": "ChartType",
           "default": "'scatter'",
-          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`."
+          "description": "The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`,\nand `bubble`.",
+          "resolvedType": "'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar'"
         },
         "without-animation": {
           "type": "boolean",
@@ -7029,6 +7353,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "An optional `<script type=\"application/json\">` element containing the Chart.js configuration object."
       },
@@ -7073,6 +7398,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The content to show inside the scroller."
       },
@@ -7247,6 +7573,18 @@
           "description": "Emitted when the select's menu opens."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-clear",
+        "wa-hide",
+        "wa-invalid",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The listbox options. Must be `<wa-option>` elements. You can use `<wa-divider>` to group items visually.",
         "clear-icon": "An icon to use in lieu of the default clear icon.",
@@ -7334,6 +7672,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": [
@@ -7504,6 +7843,13 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "hint": "Text that describes how to use the input. Alternatively, you can use the `hint` attribute. instead.",
         "label": "The slider label. Alternatively, you can use the `label` attribute.",
@@ -7605,6 +7951,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": [
@@ -7637,6 +7984,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {},
       "methods": {},
       "cssParts": [
@@ -7708,6 +8056,9 @@
           "description": "Emitted when the divider's position changes."
         }
       },
+      "jsDocEvents": [
+        "wa-reposition"
+      ],
       "slots": {
         "divider": "The divider. Useful for slotting in a custom icon that renders as a handle.",
         "end": "Content to place in the end panel.",
@@ -7820,6 +8171,13 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "(default)": "The switch's label.",
         "hint": "Text that describes how to use the switch. Alternatively, you can use the `hint` attribute."
@@ -7897,6 +8255,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The tab's label."
       },
@@ -7960,6 +8319,10 @@
           "description": "Emitted when a tab is shown."
         }
       },
+      "jsDocEvents": [
+        "wa-tab-hide",
+        "wa-tab-show"
+      ],
       "slots": {
         "(default)": "Used for grouping tab panels in the tab group. Must be `<wa-tab-panel>` elements.",
         "nav": "Used for grouping tabs in the tab group. Must be `<wa-tab>` elements. Note that `<wa-tab>` will set this slot on itself automatically."
@@ -8015,6 +8378,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "The tab panel's content."
       },
@@ -8077,6 +8441,9 @@
           "description": "Emitted when the remove button is activated."
         }
       },
+      "jsDocEvents": [
+        "wa-remove"
+      ],
       "slots": {
         "(default)": "The tag's content."
       },
@@ -8086,6 +8453,243 @@
         "content",
         "remove-button",
         "remove-button__base"
+      ]
+    },
+    "wa-tag-input": {
+      "className": "WaTagInput",
+      "since": "3.13",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "allow-duplicates": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Allows the same tag to be added more than once. By default, duplicates are ignored."
+        },
+        "appearance": {
+          "type": "'filled' | 'outlined' | 'filled-outlined'",
+          "default": "'outlined'",
+          "description": "The tag input's visual appearance."
+        },
+        "autocapitalize": {
+          "type": "'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters'",
+          "default": null,
+          "description": "Controls whether and how text input is automatically capitalized as it is entered by the user."
+        },
+        "autocomplete": {
+          "type": "string",
+          "default": null,
+          "description": "Specifies what permission the browser has to provide assistance in filling out form field values. Refer to\n[this page on MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete) for available values.\nDefaults to `off`."
+        },
+        "autocorrect": {
+          "type": "boolean",
+          "default": null,
+          "description": "Indicates whether the browser's autocorrect feature is on or off. When set as an attribute, use `\"off\"` or `\"on\"`.\nWhen set as a property, use `true` or `false`."
+        },
+        "custom-error": {
+          "type": "string | null",
+          "default": "null",
+          "description": null
+        },
+        "delimiter": {
+          "type": "string",
+          "default": "','",
+          "description": "The characters that turn typed text into a tag. Each character is a separate delimiter, so `\",;\"` accepts both\ncommas and semicolons. Pasted text is split on the same characters. Set to an empty string so only Enter adds a\ntag. Also used to parse the `value` attribute, which falls back to a comma when the delimiter is empty."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables the form control."
+        },
+        "enterkeyhint": {
+          "type": "'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'",
+          "default": null,
+          "description": "Used to customize the label or icon of the Enter key on virtual keyboards."
+        },
+        "hint": {
+          "type": "string",
+          "default": "''",
+          "description": "The tag input's hint. If you need to display HTML, use the `hint` slot instead."
+        },
+        "inputmode": {
+          "type": "'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url'",
+          "default": null,
+          "description": "Tells the browser what type of data will be entered by the user, allowing it to display the appropriate virtual\nkeyboard on supportive devices."
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "The tag input's label. If you need to display HTML, use the `label` slot instead."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "max-tags": {
+          "type": "number",
+          "default": null,
+          "description": "The maximum number of tags that can be added. Once reached, no more tags can be added until one is removed."
+        },
+        "min-tags": {
+          "type": "number",
+          "default": null,
+          "description": "The minimum number of tags required for the control to be valid. Has no effect when there are no tags."
+        },
+        "name": {
+          "type": "string | null",
+          "default": "null",
+          "description": "The name of the input, submitted as a name/value pair with form data."
+        },
+        "pill": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Draws a pill-style tag input, and pill-style tags, with rounded edges."
+        },
+        "placeholder": {
+          "type": "string",
+          "default": "''",
+          "description": "Placeholder text to show in the text box. Hidden once the maximum number of tags is reached."
+        },
+        "readonly": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the tag input readonly. Tags stay visible and are still submitted, but can't be added or removed."
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the tag input a required field, so at least one tag must be added."
+        },
+        "size": {
+          "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
+          "default": "'m'",
+          "description": "The tag input's size. Also applied to each tag."
+        },
+        "spellcheck": {
+          "type": "boolean",
+          "default": "true",
+          "description": "Enables spell checking on the text box."
+        },
+        "value": {
+          "type": "string | null",
+          "default": null,
+          "description": "The default value of the form control as a delimiter-separated string. Primarily used for resetting the form\ncontrol."
+        },
+        "with-clear": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Adds a clear button that removes all tags."
+        },
+        "with-hint": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `hint` element so the server-rendered markup\nincludes the hint before the component hydrates on the client."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup\nincludes the label before the component hydrates on the client."
+        }
+      },
+      "events": {
+        "blur": {
+          "type": null,
+          "eventName": "BlurEvent",
+          "description": "Emitted when the control loses focus."
+        },
+        "focus": {
+          "type": null,
+          "eventName": "FocusEvent",
+          "description": "Emitted when the control gains focus."
+        },
+        "change": {
+          "type": "Event",
+          "eventName": "ChangeEvent",
+          "description": "Emitted when a tag is added, removed, or all tags are cleared by the user."
+        },
+        "input": {
+          "type": "InputEvent",
+          "eventName": "InputEvent",
+          "description": "Emitted when the user types in the text box or when a tag is added or removed."
+        },
+        "wa-clear": {
+          "type": null,
+          "eventName": "WaClearEvent",
+          "description": "Emitted when the clear button is activated."
+        },
+        "wa-create": {
+          "type": null,
+          "eventName": "WaCreateEvent",
+          "description": "Emitted before typed text becomes a tag. Call `event.preventDefault()` to reject it. The event `detail` contains `{ inputValue: string }`, the text that would become the tag."
+        },
+        "wa-invalid": {
+          "type": null,
+          "eventName": "WaInvalidEvent",
+          "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
+        }
+      },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-clear",
+        "wa-create",
+        "wa-invalid"
+      ],
+      "slots": {
+        "clear-icon": "An icon to use in lieu of the default clear icon.",
+        "end": "An element, such as `<wa-icon>`, placed at the end of the control.",
+        "hint": "Text that describes how to use the tag input. Alternatively, you can use the `hint` attribute.",
+        "label": "The tag input's label. Alternatively, you can use the `label` attribute.",
+        "start": "An element, such as `<wa-icon>`, placed at the start of the control."
+      },
+      "methods": {
+        "blur": {
+          "signature": "blur() => void",
+          "description": "Removes focus from the text box."
+        },
+        "focus": {
+          "signature": "focus(options?: FocusOptions) => void",
+          "description": "Sets focus on the text box."
+        },
+        "formStateRestoreCallback": {
+          "signature": "formStateRestoreCallback(state: string | File | FormData | null, reason: 'autocomplete' | 'restore') => void",
+          "description": "Called when the browser is trying to restore element’s state to state in which case reason is \"restore\", or when\nthe browser is trying to fulfill autofill on behalf of user in which case reason is \"autocomplete\". In the case of\n\"restore\", state is a string, File, or FormData object previously set as the second argument to setFormValue."
+        },
+        "resetValidity": {
+          "signature": "resetValidity() => void",
+          "description": "Reset validity is a way of removing manual custom errors and native validation."
+        },
+        "setCustomValidity": {
+          "signature": "setCustomValidity(message: string) => void",
+          "description": "Do not use this when creating a \"Validator\". This is intended for end users of components.\nWe track manually defined custom errors so we don't clear them on accident in our validators."
+        }
+      },
+      "cssParts": [
+        "clear-button",
+        "end",
+        "form-control-label",
+        "hint",
+        "input",
+        "start",
+        "tag",
+        "tag__content",
+        "tag__remove-button",
+        "tag__remove-button__base",
+        "tag-input",
+        "tags"
       ]
     },
     "wa-textarea": {
@@ -8267,6 +8871,13 @@
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-invalid"
+      ],
       "slots": {
         "hint": "Text that describes how to use the input. Alternatively, you can use the `hint` attribute.",
         "label": "The textarea's label. Alternatively, you can use the `label` attribute."
@@ -8323,7 +8934,7 @@
     "wa-time-input": {
       "className": "WaTimeInput",
       "since": "3.8",
-      "status": "experimental",
+      "status": "stable",
       "pro": false,
       "attributes": {
         "appearance": {
@@ -8369,7 +8980,8 @@
         "hour-format": {
           "type": "WaTimeInputHourFormat",
           "default": "'auto'",
-          "description": "Whether the UI uses a 12-hour or 24-hour clock. `auto` follows the resolved locale."
+          "description": "Whether the UI uses a 12-hour or 24-hour clock. `auto` follows the resolved locale.",
+          "resolvedType": "'auto' | '12' | '24'"
         },
         "label": {
           "type": "string",
@@ -8409,7 +9021,8 @@
         "placement": {
           "type": "WaTimeInputPlacement",
           "default": "'bottom-start'",
-          "description": "Preferred popup placement."
+          "description": "Preferred popup placement.",
+          "resolvedType": "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end'"
         },
         "readonly": {
           "type": "boolean",
@@ -8424,7 +9037,8 @@
         "size": {
           "type": "WaTimeInputSize | 'small' | 'medium' | 'large'",
           "default": "'m'",
-          "description": "The time picker's size."
+          "description": "The time picker's size.",
+          "resolvedType": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'"
         },
         "step": {
           "type": "number | 'any'",
@@ -8509,6 +9123,18 @@
           "description": "Emitted when the popup is about to open. Cancelable."
         }
       },
+      "jsDocEvents": [
+        "blur",
+        "focus",
+        "change",
+        "input",
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-clear",
+        "wa-hide",
+        "wa-invalid",
+        "wa-show"
+      ],
       "slots": {
         "clear-icon": "An icon to use in lieu of the default clear icon.",
         "end": "An element placed at the end of the input.",
@@ -8601,6 +9227,7 @@
         }
       },
       "events": {},
+      "jsDocEvents": [],
       "slots": {
         "(default)": "Place `<wa-toast-item>` elements here to show them as notifications."
       },
@@ -8678,6 +9305,12 @@
           "description": "Emitted when the toast item begins to show."
         }
       },
+      "jsDocEvents": [
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-hide",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The toast item's message content.",
         "icon": "An optional icon to show at the start of the toast item."
@@ -8797,6 +9430,12 @@
           "description": "Emitted when the tooltip begins to show."
         }
       },
+      "jsDocEvents": [
+        "wa-after-hide",
+        "wa-after-show",
+        "wa-hide",
+        "wa-show"
+      ],
       "slots": {
         "(default)": "The tooltip's default slot where any content should live. Interactive content should be avoided."
       },
@@ -8862,6 +9501,9 @@
           "description": "Emitted when a tree item is selected or deselected."
         }
       },
+      "jsDocEvents": [
+        "wa-selection-change"
+      ],
       "slots": {
         "(default)": "The default slot.",
         "collapse-icon": "The icon to show when the tree item is collapsed. Works best with `<wa-icon>`.",
@@ -8957,6 +9599,14 @@
           "description": "Emitted when a lazy item is selected. Use this event to asynchronously load data and append items to the tree before expanding. After appending new items, remove the `lazy` attribute to remove the loading state and update the tree."
         }
       },
+      "jsDocEvents": [
+        "wa-after-collapse",
+        "wa-after-expand",
+        "wa-collapse",
+        "wa-expand",
+        "wa-lazy-change",
+        "wa-lazy-load"
+      ],
       "slots": {
         "(default)": "The default slot.",
         "collapse-icon": "The icon to show when the tree item is collapsed.",
@@ -8989,7 +9639,7 @@
     "wa-video": {
       "className": "WaVideo",
       "since": "3.7",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "autoplay": {
@@ -9125,6 +9775,15 @@
           "description": "Emitted when the volume changes."
         }
       },
+      "jsDocEvents": [
+        "ended",
+        "error",
+        "loadedmetadata",
+        "pause",
+        "play",
+        "timeupdate",
+        "volumechange"
+      ],
       "slots": {
         "(default)": "The default slot. Place `<source>` and `<track>` elements for a single video. Alternatively, use the `src` attribute for a single source.",
         "controls-after-play": "Content inserted immediately after the play/pause button. Used by `<wa-video-playlist>` to inject the next button.",
@@ -9204,7 +9863,7 @@
     "wa-video-playlist": {
       "className": "WaVideoPlaylist",
       "since": "3.7",
-      "status": "experimental",
+      "status": "stable",
       "pro": true,
       "attributes": {
         "controls": {
@@ -9240,6 +9899,9 @@
           "description": "Emitted when the active video changes."
         }
       },
+      "jsDocEvents": [
+        "wa-video-change"
+      ],
       "slots": {
         "(default)": "The default slot. Place `<wa-video>` elements to create a playlist."
       },
@@ -9356,6 +10018,10 @@
           "description": "Emitted when the internal iframe when it finishes loading."
         }
       },
+      "jsDocEvents": [
+        "error",
+        "load"
+      ],
       "slots": {
         "zoom-in-icon": "The slot that contains the zoom in icon.",
         "zoom-out-icon": "The slot that contains the zoom out icon."

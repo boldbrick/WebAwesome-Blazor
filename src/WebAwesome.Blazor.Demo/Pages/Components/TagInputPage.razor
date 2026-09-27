@@ -1,0 +1,337 @@
+@page "/components/tag-input"
+
+<PageTitle>Tag Input</PageTitle>
+
+<h1>Tag Input <ComponentBadges Tag="wa-tag-input" /></h1>
+<p>Tag inputs collect a list of short strings, such as keywords or recipients, as removable tags. <code>&lt;wa-tag-input&gt;</code> wrapped by <code>WaTagInput</code>, whose <code>@@bind-Value</code> is the list of tags.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaTagInput Label="Keywords" Placeholder="Add a keyword" @bind-Value="keywords" />
+</ExampleSection>
+
+<ExampleSection Title="Label &amp; Hint" Code="@LabelHintExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTagInput Label="Ingredients" Hint="Press Enter or type a comma after each ingredient." @bind-Value="ingredients" />
+        <WaTagInput @bind-Value="skills">
+            <MarkupLabel>Skills <em>(optional)</em></MarkupLabel>
+            <MarkupHint>Shown on your <strong>public profile</strong>.</MarkupHint>
+        </WaTagInput>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Placeholder" Code="@PlaceholderExample">
+    <WaTagInput Label="Guest list" Placeholder="Add a name" @bind-Value="guests" />
+</ExampleSection>
+
+<ExampleSection Title="Delimiter" Code="@DelimiterExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTagInput Label="Space-separated" Delimiter=" " Placeholder="Type a word and a space" @bind-Value="words" />
+        <WaTagInput Label="Commas or semicolons" Delimiter=",;" Placeholder="Type a value and , or ;" @bind-Value="separatedValues" />
+        <WaTagInput Label="Enter only" Delimiter="" Placeholder="Type a value and press Enter" @bind-Value="enterOnlyValues" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Clearable" Code="@ClearableExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTagInput Label="Tickers" WithClear="true" @bind-Value="tickers" />
+        <WaTagInput Label="Watchlist" WithClear="true" @bind-Value="watchlist">
+            <ClearIconContent><WaIcon Name="trash" /></ClearIconContent>
+        </WaTagInput>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Max Tags" Code="@MaxTagsExample">
+    <WaTagInput Label="Desert island albums" Hint="Choose up to three." MaxTags="3" Placeholder="Add an album" @bind-Value="albums" />
+</ExampleSection>
+
+<ExampleSection Title="Allowing Duplicates" Code="@DuplicatesExample">
+    <WaTagInput Label="Dice rolls" AllowDuplicates="true" Placeholder="Roll again" @bind-Value="diceRolls" />
+</ExampleSection>
+
+<ExampleSection Title="Appearance &amp; Pill" Code="@AppearanceExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTagInput Label="Outlined" Appearance="WaInputAppearance.Outlined" @bind-Value="outlinedTags" />
+        <WaTagInput Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filledTags" />
+        <WaTagInput Label="Filled outlined" Appearance="WaInputAppearance.FilledOutlined" @bind-Value="filledOutlinedTags" />
+        <WaTagInput Label="Interests" Pill="true" @bind-Value="interests" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTagInput Label="Extra small" Size="WaSize.ExtraSmall" @bind-Value="extraSmallTags" />
+        <WaTagInput Label="Small" Size="WaSize.Small" @bind-Value="smallTags" />
+        <WaTagInput Label="Medium" Size="WaSize.Medium" @bind-Value="mediumTags" />
+        <WaTagInput Label="Large" Size="WaSize.Large" @bind-Value="largeTags" />
+        <WaTagInput Label="Extra large" Size="WaSize.ExtraLarge" @bind-Value="extraLargeTags" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Disabled &amp; Readonly" Code="@DisabledReadonlyExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTagInput Label="Assignees" Disabled="true" @bind-Value="assignees" />
+        <WaTagInput Label="Roles" Readonly="true" @bind-Value="roles" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Start &amp; End Decorations" Code="@DecorationsExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaTagInput Label="Recipients" Placeholder="Add an email" StartIconName="envelope" @bind-Value="recipients" />
+        <WaTagInput Label="Keywords" Placeholder="Add a keyword" StartIconName="tag" EndIconName="circle-info" @bind-Value="decoratedKeywords" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Validation" Code="@ValidationExample">
+    <form @onsubmit="SubmitTags" @onsubmit:preventDefault>
+        <WaStack Gap="GapSize.Gap_M">
+            <WaTagInput Label="Tags" Hint="Add between two and five tags." MinTags="2" MaxTags="5" Required="true" @bind-Value="requiredTags" />
+            <WaButton Type="WaButtonType.Submit" Variant="WaVariant.Brand" Style="align-self: start;">Submit</WaButton>
+        </WaStack>
+    </form>
+    @if (submittedTags != null)
+    {
+        <p>Submitted: @submittedTags</p>
+    }
+</ExampleSection>
+
+<ExampleSection Title="Custom Validity" Code="@CustomValidityExample">
+    <form @onsubmit="() => invitesSent = true" @onsubmit:preventDefault>
+        <WaStack Gap="GapSize.Gap_M">
+            <WaTagInput @ref="inviteInput" Label="Invite" Hint="Every tag must be an email address." Placeholder="name@example.com"
+                        @bind-Value="invites" @bind-Value:after="ValidateInvitesAsync" />
+            <WaButton Type="WaButtonType.Submit" Variant="WaVariant.Brand" Style="align-self: start;">Send invites</WaButton>
+        </WaStack>
+    </form>
+    @if (invitesSent)
+    {
+        <p>Invites sent.</p>
+    }
+</ExampleSection>
+
+<ExampleSection Title="Reacting to Changes" Code="@ChangesExample">
+    <WaTagInput Label="Labels" @bind-Value="labels" OnCreate="e => lastCreated = e.InputValue" />
+    <p>Labels: <code>@(labels is { Count: > 0 } ? string.Join(", ", labels) : "(none)")</code></p>
+    <p>Last created: <code>@(lastCreated ?? "(none)")</code></p>
+</ExampleSection>
+
+<ApiTable Tag="wa-tag-input" />
+
+@code {
+    private IReadOnlyList<string>? keywords = ["design", "accessibility"];
+    private IReadOnlyList<string>? ingredients;
+    private IReadOnlyList<string>? skills = ["Blazor", "C#"];
+    private IReadOnlyList<string>? guests;
+    private IReadOnlyList<string>? words;
+    private IReadOnlyList<string>? separatedValues;
+    private IReadOnlyList<string>? enterOnlyValues;
+    private IReadOnlyList<string>? tickers = ["AAPL", "MSFT", "NVDA"];
+    private IReadOnlyList<string>? watchlist = ["AMZN", "GOOG"];
+    private IReadOnlyList<string>? albums = ["Kind of Blue", "Rumours"];
+    private IReadOnlyList<string>? diceRolls = ["6", "6"];
+    private IReadOnlyList<string>? outlinedTags = ["Outlined"];
+    private IReadOnlyList<string>? filledTags = ["Filled"];
+    private IReadOnlyList<string>? filledOutlinedTags = ["Filled outlined"];
+    private IReadOnlyList<string>? interests = ["Hiking", "Chess"];
+    private IReadOnlyList<string>? extraSmallTags = ["Extra small"];
+    private IReadOnlyList<string>? smallTags = ["Small"];
+    private IReadOnlyList<string>? mediumTags = ["Medium"];
+    private IReadOnlyList<string>? largeTags = ["Large"];
+    private IReadOnlyList<string>? extraLargeTags = ["Extra large"];
+    private IReadOnlyList<string>? assignees = ["Ada", "Grace"];
+    private IReadOnlyList<string>? roles = ["Owner", "Maintainer"];
+    private IReadOnlyList<string>? recipients;
+    private IReadOnlyList<string>? decoratedKeywords;
+    private IReadOnlyList<string>? requiredTags;
+    private string? submittedTags;
+    private WaTagInput? inviteInput;
+    private IReadOnlyList<string>? invites;
+    private bool invitesSent;
+    private IReadOnlyList<string>? labels = ["bug", "help wanted"];
+    private string? lastCreated;
+
+    private void SubmitTags() => submittedTags = string.Join(", ", requiredTags ?? []);
+
+    // flags every invite that is not an email address; an empty message clears the error
+    private async Task ValidateInvitesAsync()
+    {
+        var invalid = (invites ?? []).Where(tag => !tag.Contains('@')).ToList();
+        await inviteInput!.SetCustomValidityAsync(invalid.Count > 0 ? $"Not an email address: {string.Join(", ", invalid)}" : string.Empty);
+    }
+
+    private const string DefaultExample = """
+        <WaTagInput Label="Keywords" Placeholder="Add a keyword" @bind-Value="keywords" />
+
+        @code {
+            private IReadOnlyList<string>? keywords = ["design", "accessibility"];
+        }
+        """;
+
+    private const string LabelHintExample = """
+        <WaTagInput Label="Ingredients" Hint="Press Enter or type a comma after each ingredient." @bind-Value="ingredients" />
+        <WaTagInput @bind-Value="skills">
+            <MarkupLabel>Skills <em>(optional)</em></MarkupLabel>
+            <MarkupHint>Shown on your <strong>public profile</strong>.</MarkupHint>
+        </WaTagInput>
+
+        @code {
+            private IReadOnlyList<string>? ingredients;
+            private IReadOnlyList<string>? skills = ["Blazor", "C#"];
+        }
+        """;
+
+    private const string PlaceholderExample = """
+        <WaTagInput Label="Guest list" Placeholder="Add a name" @bind-Value="guests" />
+
+        @code {
+            private IReadOnlyList<string>? guests;
+        }
+        """;
+
+    private const string DelimiterExample = """
+        <WaTagInput Label="Space-separated" Delimiter=" " Placeholder="Type a word and a space" @bind-Value="words" />
+        <WaTagInput Label="Commas or semicolons" Delimiter=",;" Placeholder="Type a value and , or ;" @bind-Value="separatedValues" />
+        <WaTagInput Label="Enter only" Delimiter="" Placeholder="Type a value and press Enter" @bind-Value="enterOnlyValues" />
+
+        @code {
+            private IReadOnlyList<string>? words;
+            private IReadOnlyList<string>? separatedValues;
+            private IReadOnlyList<string>? enterOnlyValues;
+        }
+        """;
+
+    private const string ClearableExample = """
+        <WaTagInput Label="Tickers" WithClear="true" @bind-Value="tickers" />
+        <WaTagInput Label="Watchlist" WithClear="true" @bind-Value="watchlist">
+            <ClearIconContent><WaIcon Name="trash" /></ClearIconContent>
+        </WaTagInput>
+
+        @code {
+            private IReadOnlyList<string>? tickers = ["AAPL", "MSFT", "NVDA"];
+            private IReadOnlyList<string>? watchlist = ["AMZN", "GOOG"];
+        }
+        """;
+
+    private const string MaxTagsExample = """
+        <WaTagInput Label="Desert island albums" Hint="Choose up to three." MaxTags="3" Placeholder="Add an album" @bind-Value="albums" />
+
+        @code {
+            private IReadOnlyList<string>? albums = ["Kind of Blue", "Rumours"];
+        }
+        """;
+
+    private const string DuplicatesExample = """
+        <WaTagInput Label="Dice rolls" AllowDuplicates="true" Placeholder="Roll again" @bind-Value="diceRolls" />
+
+        @code {
+            private IReadOnlyList<string>? diceRolls = ["6", "6"];
+        }
+        """;
+
+    private const string AppearanceExample = """
+        <WaTagInput Label="Outlined" Appearance="WaInputAppearance.Outlined" @bind-Value="outlinedTags" />
+        <WaTagInput Label="Filled" Appearance="WaInputAppearance.Filled" @bind-Value="filledTags" />
+        <WaTagInput Label="Filled outlined" Appearance="WaInputAppearance.FilledOutlined" @bind-Value="filledOutlinedTags" />
+        <WaTagInput Label="Interests" Pill="true" @bind-Value="interests" />
+
+        @code {
+            private IReadOnlyList<string>? outlinedTags = ["Outlined"];
+            private IReadOnlyList<string>? filledTags = ["Filled"];
+            private IReadOnlyList<string>? filledOutlinedTags = ["Filled outlined"];
+            private IReadOnlyList<string>? interests = ["Hiking", "Chess"];
+        }
+        """;
+
+    private const string SizesExample = """
+        <WaTagInput Label="Extra small" Size="WaSize.ExtraSmall" @bind-Value="extraSmallTags" />
+        <WaTagInput Label="Small" Size="WaSize.Small" @bind-Value="smallTags" />
+        <WaTagInput Label="Medium" Size="WaSize.Medium" @bind-Value="mediumTags" />
+        <WaTagInput Label="Large" Size="WaSize.Large" @bind-Value="largeTags" />
+        <WaTagInput Label="Extra large" Size="WaSize.ExtraLarge" @bind-Value="extraLargeTags" />
+
+        @code {
+            private IReadOnlyList<string>? extraSmallTags = ["Extra small"];
+            private IReadOnlyList<string>? smallTags = ["Small"];
+            private IReadOnlyList<string>? mediumTags = ["Medium"];
+            private IReadOnlyList<string>? largeTags = ["Large"];
+            private IReadOnlyList<string>? extraLargeTags = ["Extra large"];
+        }
+        """;
+
+    private const string DisabledReadonlyExample = """
+        <WaTagInput Label="Assignees" Disabled="true" @bind-Value="assignees" />
+        <WaTagInput Label="Roles" Readonly="true" @bind-Value="roles" />
+
+        @code {
+            private IReadOnlyList<string>? assignees = ["Ada", "Grace"];
+            private IReadOnlyList<string>? roles = ["Owner", "Maintainer"];
+        }
+        """;
+
+    private const string DecorationsExample = """
+        <WaTagInput Label="Recipients" Placeholder="Add an email" StartIconName="envelope" @bind-Value="recipients" />
+        <WaTagInput Label="Keywords" Placeholder="Add a keyword" StartIconName="tag" EndIconName="circle-info" @bind-Value="decoratedKeywords" />
+
+        @code {
+            private IReadOnlyList<string>? recipients;
+            private IReadOnlyList<string>? decoratedKeywords;
+        }
+        """;
+
+    private const string ValidationExample = """
+        <form @onsubmit="SubmitTags" @onsubmit:preventDefault>
+            <WaStack Gap="GapSize.Gap_M">
+                <WaTagInput Label="Tags" Hint="Add between two and five tags." MinTags="2" MaxTags="5" Required="true" @bind-Value="requiredTags" />
+                <WaButton Type="WaButtonType.Submit" Variant="WaVariant.Brand" Style="align-self: start;">Submit</WaButton>
+            </WaStack>
+        </form>
+        @if (submittedTags != null)
+        {
+            <p>Submitted: @submittedTags</p>
+        }
+
+        @code {
+            private IReadOnlyList<string>? requiredTags;
+            private string? submittedTags;
+
+            private void SubmitTags() => submittedTags = string.Join(", ", requiredTags ?? []);
+        }
+        """;
+
+    private const string CustomValidityExample = """
+        <form @onsubmit="() => invitesSent = true" @onsubmit:preventDefault>
+            <WaStack Gap="GapSize.Gap_M">
+                <WaTagInput @ref="inviteInput" Label="Invite" Hint="Every tag must be an email address." Placeholder="name@example.com"
+                            @bind-Value="invites" @bind-Value:after="ValidateInvitesAsync" />
+                <WaButton Type="WaButtonType.Submit" Variant="WaVariant.Brand" Style="align-self: start;">Send invites</WaButton>
+            </WaStack>
+        </form>
+        @if (invitesSent)
+        {
+            <p>Invites sent.</p>
+        }
+
+        @code {
+            private WaTagInput? inviteInput;
+            private IReadOnlyList<string>? invites;
+            private bool invitesSent;
+
+            // flags every invite that is not an email address; an empty message clears the error
+            private async Task ValidateInvitesAsync()
+            {
+                var invalid = (invites ?? []).Where(tag => !tag.Contains('@')).ToList();
+                await inviteInput!.SetCustomValidityAsync(invalid.Count > 0 ? $"Not an email address: {string.Join(", ", invalid)}" : string.Empty);
+            }
+        }
+        """;
+
+    private const string ChangesExample = """
+        <WaTagInput Label="Labels" @bind-Value="labels" OnCreate="e => lastCreated = e.InputValue" />
+        <p>Labels: <code>@(labels is { Count: > 0 } ? string.Join(", ", labels) : "(none)")</code></p>
+        <p>Last created: <code>@(lastCreated ?? "(none)")</code></p>
+
+        @code {
+            private IReadOnlyList<string>? labels = ["bug", "help wanted"];
+            private string? lastCreated;
+        }
+        """;
+}

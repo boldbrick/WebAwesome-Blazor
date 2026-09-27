@@ -8,7 +8,9 @@ component without an existing page under src\WebAwesome.Blazor.Demo\Pages\Compon
 skeleton Razor page: title, CEM description, one minimal live example, a TODO marker for curated
 examples, and the ApiTable API reference. Existing pages are never overwritten (idempotent).
 
-With -PruneRemoved, pages whose component no longer exists in the surface are deleted.
+With -PruneRemoved, pages whose component no longer exists in the surface are deleted. A wrapper page
+without a tag of its own (e.g. DateRangeInputPage) is kept while an element its Tag="wa-..." references
+still exists.
 
 The demo navigation is data-driven from wwwroot\data\api-surface.json, so no nav updates are needed.
 
@@ -150,9 +152,14 @@ $codeBody
 # prune pages whose component disappeared from the surface
 $pruned = @()
 if ($PruneRemoved) {
-    $knownPages = $surface.components.PSObject.Properties.Name | ForEach-Object { "$(Get-PascalName $_)Page.razor" }
+    $knownTags = @($surface.components.PSObject.Properties.Name)
+    $knownPages = $knownTags | ForEach-Object { "$(Get-PascalName $_)Page.razor" }
     foreach ($page in (Get-ChildItem $pagesDir -Filter '*Page.razor')) {
-        if ($knownPages -notcontains $page.Name) {
+        # a wrapper page without a tag of its own (e.g. DateRangeInputPage, a mode of wa-date-input) documents
+        # the element its ComponentBadges/ApiTable reference, so it stays while that element exists
+        $referencedTags = @([regex]::Matches([System.IO.File]::ReadAllText($page.FullName), 'Tag="(wa-[a-z0-9-]+)"') | ForEach-Object { $_.Groups[1].Value })
+        $referencesKnownTag = @($referencedTags | Where-Object { $knownTags -contains $_ }).Count -gt 0
+        if ($knownPages -notcontains $page.Name -and -not $referencesKnownTag) {
             Remove-Item $page.FullName
             $pruned += $page.Name
         }
