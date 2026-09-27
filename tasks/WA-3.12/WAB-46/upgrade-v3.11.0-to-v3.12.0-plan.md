@@ -433,3 +433,11 @@ owner-approved remediation on this branch, grouped by sequential agents:
   so the Data Grid page's "Copy selected rows" (`CopySelectedRowsAsync`, unhandled in the demo) crashed Blazor
   there, while a real click is a user gesture and succeeds. In a context that denies the clipboard (an iframe
   without the permission policy) the demo would still crash; same decision as above.
+- **Owner decision on the two demo items above: deferred to a future version.** The direction is a
+  `[WebAwesomePro]` marker attribute on the Pro wrappers, possibly combined with an explicit opt-in
+  registration (e.g. `AddWebAwesomePro()`). Pro components would then not render at all, or would fail clearly
+  and early, when no Pro setup is configured. Their demo buttons then no longer need individual guards.
+- **Nested wa-* events stop at their own wrapper (kept as is, not breaking).** Since 3.12.0 every `onwa-*`
+  binding stops Blazor's propagation, so an `@onwa-*` handler on a plain HTML element no longer receives events
+  from wrappers inside it. The owner considers `onwa-*` events Web Awesome specific, with no value on generic
+  elements. No migration entry.
