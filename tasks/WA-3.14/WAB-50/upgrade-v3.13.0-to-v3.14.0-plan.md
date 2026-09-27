@@ -233,7 +233,28 @@ Each entry with its own `ignoreReasons` key:
 
 ## Implementation notes
 
-(filled in during implementation)
+- **Documentation ingest.** `v3.14.0` is tagged in the public repository, so `Sync-WaDocs.ps1 -Version 3.14.0` ran
+  without `-DocsTagVersion`: 155 files, 138 from the tag and 17 Pro/reference docs from the release zip, none needing
+  capture (cs:323: 2 added, `components\step.md` and `components\stepper.md`; 22 changed).
+- **`OnOptionsError` instead of an `ignoredEvents` entry.** The parity check reads `ignoredEvents` as "bound by the
+  value handling" and failed on `wa-options-error`. The event is bound as `OnOptionsError`
+  (`WaOptionsErrorEventArgs`: `Error` message, `Query`), with a JS initializer projection like `wa-data-error`'s.
+  It fires only when the consumer's own JavaScript assigns a rejecting `dataSource`; the e2e case does exactly that.
+- **Loading-state clear.** `WaCombobox` binds `onwa-options-request` to its own handler (plus the own-event stop
+  propagation): a request counter, the consumer's `OnOptionsRequest`, then, if the request is still the latest and
+  `Loading` is false, a pending flag that `OnAfterRenderAsync` turns into `setProperty(loading, false)` once the
+  swapped options are in the DOM. bUnit covers the single clear, the `Loading = true` opt-out and the superseded
+  request (all with mutation proofs); the Pro e2e case checks `loading` is back to `false` after the options swap.
+- **Demo generator.** `New-WaDemoPages.ps1` built class names from the tag only and emitted `<WaStep>` (the step value
+  struct) for `wa-step`. It now honours the parity config's `componentClassOverrides`.
+- **Region rule.** The engineer's `WaStepper`/`WaStepperStep` drafts kept the injected interop service and private
+  helpers outside an `Internals` region; moved there per the CLAUDE.md hard rule.
+- **Registration form showcase.** A "Registration progress" stepper (orientation `Auto`) sits above the fields, with
+  the steps Attendee, Sessions, Arrival and Verify. A step is completed when its section's required fields are filled
+  and valid; the active step is the first unfinished section. The flow spec asserts the progress at each stage.
+- **e2e cases.** `WaStepper` before-change/change from a clicked step (free, `ContentEventsHarness`); `WaCombobox`
+  server-mode `OnOptionsRequest` with the option swap and the loading clear, and `OnOptionsError` from a rejecting
+  `dataSource` (both Pro, `ProFormEventsHarness`). No exemptions were added.
 
 ## Follow-ups
 
@@ -247,14 +268,19 @@ Each entry with its own `ignoreReasons` key:
 
 ## Validation checklist
 
-- [ ] `dotnet build src/WebAwesome.slnx -p:Configuration=Debug` and `Release`: 0 warnings, 0 errors
-- [ ] `dotnet test src/WebAwesome.slnx` green on net9.0 and net10.0 (baseline 1239 per TFM)
-- [ ] `ApiSurfaceParityTests` green
-- [ ] Render-based parity (attributes, slots, events, registrations, enum values, defaults) green for the new
+- [x] `dotnet build src/WebAwesome.slnx -p:Configuration=Debug` and `Release`: 0 warnings, 0 errors
+- [x] `dotnet test src/WebAwesome.slnx` green on net9.0 and net10.0: 1264 per TFM, Debug and Release (baseline 1239)
+- [x] `ApiSurfaceParityTests` green. At arming the gaps were exactly the two new components, the six modified
+      wrappers' new members and the element-defaults oracle (ten new defaults).
+- [x] Render-based parity (attributes, slots, events, registrations, enum values, defaults) green for the new
       and changed wrappers
-- [ ] `PublicApiSnapshotTests` baseline promoted (additions only)
-- [ ] e2e free CDN and Pro (`temp\wa-src\3.14.0`) green, including the interaction sweep and showcase flows
-
+- [x] `PublicApiSnapshotTests` baseline promoted (additions only: 144 lines added, 0 removed)
+- [ ] e2e free CDN and Pro (`temp\wa-src\3.14.0`), including the interaction sweep and showcase flows: **not run
+      yet**. The release preflight run was stopped by the host for low system memory after its build and test gates
+      (all green) and before its e2e gates. It also reported a Pro asset override (`appsettings.Local.json` in both
+      demo hosts, written before this run) and a demo instance already running from another session; both were left
+      untouched. Rerun `tools\release\Test-WaReleasePreflight.ps1` once memory allows and the override is cleared.
+      3.14.0 is published on jsDelivr (loader and stepper module checked), so the free pass needs no local assets.
 ## Risks
 
 - **Experimental upstream API.** `wa-stepper`/`wa-step` are experimental and may change in a later release.

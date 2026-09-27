@@ -23,6 +23,16 @@
     </WaTabGroup>
 </ExampleSection>
 
+<ExampleSection Title="Stepper">
+    <WaStepper Label="Harness steps" Active="first" Clickable="true" data-testid="ct-stepper"
+               OnBeforeStepChange="e => log.Record(Id(nameof(WaStepper), nameof(WaStepper.OnBeforeStepChange)), e)"
+               OnStepChange="e => log.Record(Id(nameof(WaStepper), nameof(WaStepper.OnStepChange)), e)">
+        <WaStepperStep Name="first" data-testid="ct-step-first">First</WaStepperStep>
+        <WaStepperStep Name="second" data-testid="ct-step-second">Second</WaStepperStep>
+        <WaStepperStep Name="third" data-testid="ct-step-third">Third</WaStepperStep>
+    </WaStepper>
+</ExampleSection>
+
 <ExampleSection Title="Accordion and tree">
     <WaAccordion data-testid="ct-accordion"
                  OnExpand="e => log.Record(Id(nameof(WaAccordion), nameof(WaAccordion.OnExpand)), e)"

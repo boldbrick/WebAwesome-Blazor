@@ -1,0 +1,174 @@
+@page "/components/step"
+
+<PageTitle>Step</PageTitle>
+
+<h1>Step <ComponentBadges Tag="wa-step" /></h1>
+<p>
+    Steps are the individual stages of a <a href="components/stepper"><code>WaStepper</code></a> and must be its children.
+    <code>&lt;wa-step&gt;</code> wrapped by <code>WaStepperStep</code> (named so because <code>WaStep</code> is the
+    step value of the numeric inputs); <code>Name</code> identifies the step, the child content is its label.
+</p>
+
+<ExampleSection Title="Description" Code="@DescriptionExample">
+    <WaStepper Active="shipping">
+        <WaStepperStep Name="cart" Completed="true">
+            <ChildContent>Cart</ChildContent>
+            <DescriptionContent>3 items</DescriptionContent>
+        </WaStepperStep>
+        <WaStepperStep Name="shipping">
+            <ChildContent>Shipping</ChildContent>
+            <DescriptionContent>Enter your address</DescriptionContent>
+        </WaStepperStep>
+        <WaStepperStep Name="payment">
+            <ChildContent>Payment</ChildContent>
+            <DescriptionContent>Add a card</DescriptionContent>
+        </WaStepperStep>
+    </WaStepper>
+</ExampleSection>
+
+<ExampleSection Title="Custom Icon" Code="@IconExample">
+    <p><code>IconContent</code> replaces the step's number, checkmark or spinner; <code>IconName</code> is the shortcut for a single <code>WaIcon</code>.</p>
+    <WaStepper Active="shipped">
+        <WaStepperStep Name="ordered" Completed="true">
+            <IconContent><WaIcon Name="bag-shopping" /></IconContent>
+            <ChildContent>Ordered</ChildContent>
+            <DescriptionContent>Monday</DescriptionContent>
+        </WaStepperStep>
+        <WaStepperStep Name="shipped" IconName="truck">
+            <ChildContent>Shipped</ChildContent>
+            <DescriptionContent>Left the warehouse</DescriptionContent>
+        </WaStepperStep>
+        <WaStepperStep Name="delivered" IconName="house">
+            <ChildContent>Delivered</ChildContent>
+            <DescriptionContent>Thursday, probably</DescriptionContent>
+        </WaStepperStep>
+    </WaStepper>
+</ExampleSection>
+
+<ExampleSection Title="Loading" Code="@LoadingExample">
+    <WaStepper Active="steep">
+        <WaStepperStep Name="boil" Completed="true">Boil the kettle</WaStepperStep>
+        <WaStepperStep Name="warm" Completed="true">Warm the pot</WaStepperStep>
+        <WaStepperStep Name="steep" Loading="true">
+            <ChildContent>Steep</ChildContent>
+            <DescriptionContent>Four minutes for a proper cuppa</DescriptionContent>
+        </WaStepperStep>
+        <WaStepperStep Name="pour">Pour</WaStepperStep>
+    </WaStepper>
+</ExampleSection>
+
+<ExampleSection Title="Drawing Attention" Code="@AttentionExample">
+    <WaStack Gap="GapSize.Gap_L">
+        <WaStepper Active="verify">
+            <WaStepperStep Name="account" Completed="true">Create account</WaStepperStep>
+            <WaStepperStep Name="verify" Attention="WaAttention.Pulse">Verify email</WaStepperStep>
+            <WaStepperStep Name="profile">Set up profile</WaStepperStep>
+        </WaStepper>
+        <WaStepper Active="verify">
+            <WaStepperStep Name="account" Completed="true">Create account</WaStepperStep>
+            <WaStepperStep Name="verify" Attention="WaAttention.Bounce">Verify email</WaStepperStep>
+            <WaStepperStep Name="profile">Set up profile</WaStepperStep>
+        </WaStepper>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaStepper Active="cart" Clickable="true">
+        <WaStepperStep Name="cart">Cart</WaStepperStep>
+        <WaStepperStep Name="shipping">Shipping</WaStepperStep>
+        <WaStepperStep Name="gift-wrap" Disabled="true">Gift Wrap</WaStepperStep>
+        <WaStepperStep Name="payment">Payment</WaStepperStep>
+    </WaStepper>
+</ExampleSection>
+
+<ExampleSection Title="Variant" Code="@VariantExample">
+    <p>The color is cosmetic: pair a warning or danger step with an icon and a reason in its label or description.</p>
+    <WaStepper Active="current">
+        <WaStepperStep Name="current">Current</WaStepperStep>
+        <WaStepperStep Name="success" Variant="WaVariant.Success">Success</WaStepperStep>
+        <WaStepperStep Name="warning" Variant="WaVariant.Warning">Warning</WaStepperStep>
+        <WaStepperStep Name="danger" Variant="WaVariant.Danger">Danger</WaStepperStep>
+    </WaStepper>
+</ExampleSection>
+
+<ApiTable Tag="wa-step" />
+
+@code {
+    private const string DescriptionExample = """
+        <WaStepper Active="shipping">
+            <WaStepperStep Name="cart" Completed="true">
+                <ChildContent>Cart</ChildContent>
+                <DescriptionContent>3 items</DescriptionContent>
+            </WaStepperStep>
+            <WaStepperStep Name="shipping">
+                <ChildContent>Shipping</ChildContent>
+                <DescriptionContent>Enter your address</DescriptionContent>
+            </WaStepperStep>
+            <WaStepperStep Name="payment">
+                <ChildContent>Payment</ChildContent>
+                <DescriptionContent>Add a card</DescriptionContent>
+            </WaStepperStep>
+        </WaStepper>
+        """;
+
+    private const string IconExample = """
+        <WaStepper Active="shipped">
+            <WaStepperStep Name="ordered" Completed="true">
+                <IconContent><WaIcon Name="bag-shopping" /></IconContent>
+                <ChildContent>Ordered</ChildContent>
+                <DescriptionContent>Monday</DescriptionContent>
+            </WaStepperStep>
+            <WaStepperStep Name="shipped" IconName="truck">
+                <ChildContent>Shipped</ChildContent>
+                <DescriptionContent>Left the warehouse</DescriptionContent>
+            </WaStepperStep>
+            <WaStepperStep Name="delivered" IconName="house">
+                <ChildContent>Delivered</ChildContent>
+                <DescriptionContent>Thursday, probably</DescriptionContent>
+            </WaStepperStep>
+        </WaStepper>
+        """;
+
+    private const string LoadingExample = """
+        <WaStepper Active="steep">
+            <WaStepperStep Name="boil" Completed="true">Boil the kettle</WaStepperStep>
+            <WaStepperStep Name="warm" Completed="true">Warm the pot</WaStepperStep>
+            <WaStepperStep Name="steep" Loading="true">
+                <ChildContent>Steep</ChildContent>
+                <DescriptionContent>Four minutes for a proper cuppa</DescriptionContent>
+            </WaStepperStep>
+            <WaStepperStep Name="pour">Pour</WaStepperStep>
+        </WaStepper>
+        """;
+
+    private const string AttentionExample = """
+        <WaStepper Active="verify">
+            <WaStepperStep Name="account" Completed="true">Create account</WaStepperStep>
+            <WaStepperStep Name="verify" Attention="WaAttention.Pulse">Verify email</WaStepperStep>
+            <WaStepperStep Name="profile">Set up profile</WaStepperStep>
+        </WaStepper>
+        <WaStepper Active="verify">
+            <WaStepperStep Name="account" Completed="true">Create account</WaStepperStep>
+            <WaStepperStep Name="verify" Attention="WaAttention.Bounce">Verify email</WaStepperStep>
+            <WaStepperStep Name="profile">Set up profile</WaStepperStep>
+        </WaStepper>
+        """;
+
+    private const string DisabledExample = """
+        <WaStepper Active="cart" Clickable="true">
+            <WaStepperStep Name="cart">Cart</WaStepperStep>
+            <WaStepperStep Name="shipping">Shipping</WaStepperStep>
+            <WaStepperStep Name="gift-wrap" Disabled="true">Gift Wrap</WaStepperStep>
+            <WaStepperStep Name="payment">Payment</WaStepperStep>
+        </WaStepper>
+        """;
+
+    private const string VariantExample = """
+        <WaStepper Active="current">
+            <WaStepperStep Name="current">Current</WaStepperStep>
+            <WaStepperStep Name="success" Variant="WaVariant.Success">Success</WaStepperStep>
+            <WaStepperStep Name="warning" Variant="WaVariant.Warning">Warning</WaStepperStep>
+            <WaStepperStep Name="danger" Variant="WaVariant.Danger">Danger</WaStepperStep>
+        </WaStepper>
+        """;
+}

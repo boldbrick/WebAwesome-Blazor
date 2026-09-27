@@ -2,6 +2,27 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.14.0] — 2026-09-27
+
+Alignment with the Web Awesome 3.14.0 release, opening the **WA-3.14 train**. An additive upgrade: a new stepper, a server mode for the combobox, a divider label and a few new attributes. No wrapper API is removed or renamed, so no migration guide is needed.
+
+### New components
+- `WaStepper` (`wa-stepper`, free/experimental) guides users through a process step by step, with `Active`, `Clickable`, `Linear`, `Orientation` and `Label`, the `OnBeforeStepChange` and `OnStepChange` callbacks, and `GoToAsync`, `NextAsync` and `PreviousAsync`.
+- `WaStepperStep` (`wa-step`, free/experimental), a step of a `WaStepper`, with `Completed`, `Loading`, `Disabled`, `Variant` and `Attention`, a description and an icon. It isn't named `WaStep`, because `WaStep` is already the step value of the numeric inputs.
+
+### Changed
+- `WaCombobox` gains a server mode: set `Server`, handle `OnOptionsRequest` by swapping in the matching options, and the wrapper clears the loading state once your handler has finished. Also new: `FilterDebounce`, `Loading`, `ReloadAsync`, `OnOptionsError`, and the `EmptyContent`, `LoadingContent`, `NoResultsContent` and `ErrorContent` status slots.
+- `WaDivider` can show a label (`ChildContent`, placed with `LabelPlacement`).
+- New attributes: `WithLabel` on `WaDialog`, `WaDrawer` and `WaDivider` (for server-side pre-rendering), `WaPage.Nonce`, and `Allow`, `Label` and `Name` on `WaZoomableFrame`.
+- `OnBeforeStepChange` can't cancel the step change, just as the other cancelable Web Awesome events can't be canceled from .NET.
+
+### Library
+- Versioned reference docs refreshed to the `v3.14.0` tag.
+- Demo: new Stepper and Step pages, server-mode and label examples on the Combobox and Divider pages, and the registration form showcase tracks its progress with a stepper.
+
+### Public API
+- Baseline promoted with additions only: `WaStepper`, `WaStepperStep`, `WaStepperOrientation`, `WaDividerLabelPlacement`, `WaStepChangeEventArgs`, `WaOptionsRequestEventArgs`, `WaOptionsErrorEventArgs` and the new members above.
+
 ## [3.13.0] — 2026-09-27
 
 Alignment with the Web Awesome 3.13.0 release, opening the **WA-3.13 train**. A small additive upgrade: one new form control, `WaTagInput`, and eleven components promoted from experimental to stable upstream. No wrapper API is removed or renamed, so no migration guide is needed.
