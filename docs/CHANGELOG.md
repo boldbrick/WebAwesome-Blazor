@@ -2,7 +2,7 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [3.12.0] — 2026-09-25
+## [3.12.0] — 2026-09-27
 
 Alignment with the Web Awesome 3.12.0 release, opening the **WA-3.12 train**. Upstream this is a small, additive release: `wa-dropdown-item` gains link attributes, and six components change only their CSS parts. This version of the bindings is still **breaking**: it fixes the defects reported in [GitHub issue #1](https://github.com/boldbrick/WebAwesome-Blazor/issues/1), makes every enum, event and default match Web Awesome, and replaces strings with .NET types wherever the value set or shape is known. Thanks to **@Eonasdan** for the report: all three points were confirmed and are fixed here.
 
