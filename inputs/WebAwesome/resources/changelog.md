@@ -29,7 +29,47 @@ Web Awesome follows <a href="https://semver.org/" class="appearance-plain">Seman
 
 {% include "changelog-email-signup.njk" %}
 
+## 3.13.0
+
+<small><time datetime="2026-09-16">September 16th, 2026</time></small>
+
+:::added
+
+- Added the experimental `<wa-tag-input>` component for collecting a list of short values, such as keywords, email addresses, or labels, as removable tags [pr:2796]
+
+:::
+
+:::fixed
+
+- Fixed a bug in `<wa-page>` where an empty `navigation-footer` slot still reserved space for a footer in the mobile navigation drawer [issue:2609] [pr:2691]
+- Fixed a bug in `<wa-page>` where the built-in mobile navigation toggle had no background, leaving a transparent gap in sticky headers [issue:2666] [pr:2690]
+- Fixed a bug in the `.wa-visually-hidden` utility where it didn't set `top` and `left`, so hidden elements could still extend the page's scrollable area [pr:2765]
+- Fixed a bug in `<wa-tooltip>` where hovering content projected into the tooltip through a `<slot>` closed the tooltip [issue:2745] [pr:2746]
+- Fixed a bug in `<wa-popover>` where dragging to select text inside the popover closed it if the cursor was released outside of it [pr:2773]
+- Fixed `<wa-accordion>` removing headers from the page's tab sequence via a roving tabindex, matching the [W3C accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/examples/accordion/) [issue:2764] [pr:2769]
+  - [[Tab]] and [[Shift]] + [[Tab]] now move through every header
+  - Arrow keys, [[Home]], and [[End]] remain as shortcuts for moving between headers
+- Fixed the `+n` overflow tag in `<wa-select multiple>` ignoring the `pill` and `size` attributes, so it no longer looks different from the tags beside it [pr:2805]
+- Fixed a bug in `<wa-combobox>` where typing into a closed combobox showed all options on the first keystroke instead of filtering [issue:2776]
+- Fixed a bug in `<wa-data-grid>` where picking a date in a `date-range` column filter emptied the filter panel while leaving the popover open, leaving a small empty box anchored to the filter button [issue:2768]
+- Fixed a bug in `<wa-data-grid>` where the first click on a link or button rendered by a `formatter` that returns a DOM node was discarded, so neither the control nor `wa-cell-click` responded until a second click [issue:2763]
+- Fixed a bug in `<wa-data-grid>` where a `flex` column with a `minWidth` above 150 lost its flex and rendered at `minWidth` instead [issue:2791]
+- Fixed a bug in `<wa-data-grid>` where icons incorrectly resolved through the default icon library instead of the system library, so they failed to render when the default library was customized or unavailable [issue:2801] [pr:2804]
+
+:::
+
+:::changed
+
+- Promoted the following components from {{ statusBadge('experimental') }} to {{ statusBadge('stable') }} [pr:2809]
+  - Free: `<wa-accordion>`, `<wa-accordion-item>`, `<wa-known-date>`, `<wa-otp-input>`, `<wa-pagination>`, `<wa-random-content>`, and `<wa-time-input>`
+  - Pro: `<wa-date-input>`, `<wa-date-picker>`, `<wa-video>`, and `<wa-video-playlist>`
+- Updated the tags inside `<wa-select multiple>` and `<wa-combobox multiple>` to use `--wa-border-radius-s`, a step down from the control's own radius, matching `<wa-tag-input>` [pr:2805]
+
+:::
+
 ## 3.12.0
+
+<small><time datetime="2026-08-21">August 21st, 2026</time></small>
 
 :::added
 

@@ -110,6 +110,11 @@
                     <td><code data-testid="ev-select-multiple-model">@string.Join(",", selectedToppings ?? [])</code></td>
                 </tr>
                 <tr>
+                    <td><code>WaTagInput</code></td>
+                    <td><WaTagInput @ref="tagInput" Label="Tags" WithClear="true" data-testid="ev-tag-input" @bind-Value="tagValue" @attributes="Common(nameof(WaTagInput))" OnCreate="e => log.Record(Id(nameof(WaTagInput), nameof(WaTagInput.OnCreate)), e)" OnClear="() => log.Record(Id(nameof(WaTagInput), nameof(WaTagInput.OnClear)))" /></td>
+                    <td><code data-testid="ev-tag-input-model">@string.Join(",", tagValue ?? [])</code></td>
+                </tr>
+                <tr>
                     <td><code>WaButton</code></td>
                     <td>
                         <WaCluster Gap="GapSize.Gap_S">
@@ -148,6 +153,7 @@
     private WaOtpInput? otpInput;
     private WaTimeInput? timeInput;
     private WaSelect? select;
+    private WaTagInput? tagInput;
     private WaButton? submitButton;
 
     private string? inputValue = "Hello";
@@ -167,6 +173,7 @@
     private IReadOnlyList<string>? selectedToppings;
     // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
     private string? toppingsValue = null;
+    private IReadOnlyList<string>? tagValue = ["alpha", "beta"];
     private bool invalidMarked;
 
     private static string Id(string wrapper, string callback) => $"{wrapper}.{callback}";
@@ -186,7 +193,7 @@
     // a custom validity error on every control makes the next submit fire the browser's invalid event on each
     private async Task MarkAllInvalidAsync()
     {
-        WebAwesome.Blazor.Base.IFormValidation?[] controls = [input, textArea, numberInput, checkbox, switchControl, radioGroup, slider, range, rating, colorPicker, knownDate, otpInput, timeInput, select, submitButton];
+        WebAwesome.Blazor.Base.IFormValidation?[] controls = [input, textArea, numberInput, checkbox, switchControl, radioGroup, slider, range, rating, colorPicker, knownDate, otpInput, timeInput, select, tagInput, submitButton];
         foreach (var control in controls)
         {
             if (control != null) await control.SetCustomValidityAsync(InvalidMessage);

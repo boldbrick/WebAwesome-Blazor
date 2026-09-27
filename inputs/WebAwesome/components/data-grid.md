@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.12.0 release zip (dist/skills/webawesome/references/components/data-grid.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/data-grid -->
+<!-- Source: reference doc bundled in the Web Awesome 3.13.0 release zip (dist/skills/webawesome/references/components/data-grid.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/data-grid -->
 
 # Data Grid [Pro]
 
@@ -10,7 +10,9 @@ ProIncluded with Web Awesome Pro Experimental [Data Viz](https://webawesome.com/
 
 Data grids display tabular data with sorting, selection, filtering, pinning, tree data, grouping with aggregation, column footers, expandable rows, pagination, CSV export, full keyboard navigation, and virtualization for large datasets.
 
-**[Get Data Grid with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=data-grid)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
+**[Get Data Grid with Web Awesome Pro!](https://webawesome.com/pro?from=pro-docs&component=data-grid)**
+
+Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
 -   [Native Styles](https://webawesome.com/docs/utilities/native)
@@ -214,7 +216,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.12.0/components/data-grid/data-grid.js';
+import 'https://ka-f.webawesome.com/webawesome@3.13.0/components/data-grid/data-grid.js';
 ```
 
 \*\*npm\*\*
@@ -470,6 +472,8 @@ Each column is an object. Use `field` to map a column to a property on your row 
 ### Custom Cell Content
 
 Provide a `formatter` function to control how a cell renders. It receives the cell value and the full row; return a **string** for escaped text, or a [Lit](https://lit.dev/) `html` template for rich content like badges and buttons. Interpolated values are escaped automatically.
+
+A formatter can also return a DOM `Node` if you'd rather not use Lit. Keep in mind that formatters run on every render, so a freshly created node replaces the previous one each time. Return a template for diffed updates, or hand back the same node instance when a cell needs to keep its DOM state, such as a focused input.
 
 ```html
 <wa-data-grid id="grid-format" label="Pull requests" row-key="id"></wa-data-grid>
@@ -1442,7 +1446,9 @@ Set the `rowDetail` property to a function that returns content for an expandabl
     { field: 'eta', label: 'ETA', align: 'end', width: 100 },
   ];
   grid.rowDetail = row => html`
-    <div class="wa-grid" style="--min-column-size: 14ch; gap: var(--wa-space-l);">
+    <div
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(14ch, 100%), 1fr)); gap: var(--wa-space-l);"
+    >
       <div>
         <small style="color: var(--wa-color-text-quiet);">Route</small><br />
         <strong>${row.origin}</strong> &rarr; <strong>${row.destination}</strong>
@@ -2047,6 +2053,8 @@ To style whole rows conditionally, set the `rowClass` property to a function tha
 grid.rowClass = row => (row.overdue ? 'overdue' : null);
 sheet.replaceSync(`.row.overdue { background-color: var(--wa-color-danger-fill-quiet); }`);
 ```
+
+This boundary applies to Web Awesome's own CSS utilities, too. Classes such as `wa-grid`, `wa-cluster`, and `wa-stack` are defined in a document stylesheet, so they have no effect inside the grid. Use inline styles for layout in your formatters and detail panels, or define the rules you need in an adopted stylesheet.
 
 Always scope these selectors to a unique class or data attribute of your own (like `.row-badge` above). The grid's shadow root uses Web Awesome class names and CSS parts for its own markup, so broad selectors such as `wa-badge`, `::part(base)`, or `.cell` collide with those internals and can break the grid's appearance.
 

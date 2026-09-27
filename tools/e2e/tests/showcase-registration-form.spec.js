@@ -8,11 +8,18 @@ const { openShowcase, expectHealthy, pickOption, typeInto } = require('./helpers
 // its message as the field changes (the wrappers' bound values reach the EditContext). The arrival date is a
 // WaDateInput, a Pro component, so on the free CDN the form cannot be completed: the first test ends with that
 // message as the only one left, and the second (Pro) completes the registration and checks the summary Blazor
-// renders from the model, then starts over.
+// renders from the model, then starts over. The topics are a WaTagInput bound to a list: each tag typed and entered
+// reaches the model, and removing every tag (its clear button) brings the list's own message back.
 
 const ROUTE = '/showcases/registration-form';
 const TAGS = ['wa-input', 'wa-select', 'wa-option', 'wa-radio-group', 'wa-radio', 'wa-otp-input', 'wa-known-date',
-  'wa-checkbox', 'wa-switch', 'wa-button', 'wa-textarea', 'wa-number-input'];
+  'wa-checkbox', 'wa-switch', 'wa-button', 'wa-textarea', 'wa-number-input', 'wa-tag-input'];
+
+const TOPICS_MESSAGE = "Please add at least one topic you'd like to hear about.";
+
+// the topics entered as tags, and how the summary lists them
+const TOPICS = ['observability', 'design systems'];
+const TOPICS_SUMMARY = 'Your agenda highlights talks on observability, design systems.';
 
 // the message of each required field when the form is submitted empty, in the model's order
 const REQUIRED_MESSAGES = [
@@ -20,6 +27,7 @@ const REQUIRED_MESSAGES = [
   'Please enter your e-mail address.',
   'Please choose a conference track.',
   'Please pick a ticket type.',
+  TOPICS_MESSAGE,
   'Please choose your arrival date.',
   'Please enter the verification code we texted you.',
   'Please provide your date of birth.',
@@ -63,6 +71,29 @@ async function typeCode(page, code) {
 }
 
 /**
+ * The topics field, a wa-tag-input.
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+function topics(page) {
+  return page.locator('wa-tag-input');
+}
+
+/**
+ * Adds tags to the topics field the way a user does: types each into its text box and presses Enter.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string[]} tags
+ */
+async function addTopics(page, tags) {
+  const input = topics(page).locator('[part~="input"]');
+  for (const tag of tags) {
+    await input.fill(tag);
+    await input.press('Enter');
+  }
+}
+
+/**
  * Fills every field the free CDN can drive: all required ones except the arrival date (a Pro WaDateInput).
  *
  * @param {import('@playwright/test').Page} page
@@ -72,6 +103,7 @@ async function fillFreeFields(page) {
   await typeInto(page.locator('wa-input[label="Work e-mail"]'), 'ada@example.com');
   await pickOption(page.locator('wa-select[label="Conference track"]'), 'Applied AI');
   await page.locator('wa-radio', { hasText: 'Pro (incl. workshops)' }).click();
+  await addTopics(page, TOPICS);
   await typeCode(page, '123456');
 
   // the date of birth: one field per part, committed on leaving it
@@ -98,6 +130,13 @@ test('registration form showcase: validation lists each missing field and follow
   await expect(messages(page).filter({ hasText: INVALID_EMAIL_MESSAGE })).toHaveCount(1);
   await expect(messages(page).filter({ hasText: SHORT_CODE_MESSAGE })).toHaveCount(1);
 
+  // a topic entered as a tag reaches the bound list and clears its message; clearing every tag brings it back
+  await addTopics(page, ['accessibility']);
+  await expect(topics(page), 'the tag was added').toHaveJSProperty('value', ['accessibility']);
+  await expect(messages(page).filter({ hasText: TOPICS_MESSAGE }), 'one topic is enough').toHaveCount(0);
+  await topics(page).locator('[part~="clear-button"]').click();
+  await expect(messages(page).filter({ hasText: TOPICS_MESSAGE }), 'an emptied list is invalid again').toHaveCount(1);
+
   // correcting every field the free CDN can drive leaves the Pro arrival date as the only message
   await fillFreeFields(page);
   await expect(messages(page), 'only the arrival date is missing').toHaveText([ARRIVAL_MESSAGE]);
@@ -110,6 +149,7 @@ test('registration form showcase: validation lists each missing field and follow
   await expect(messages(page)).toHaveCount(0);
   await expect.poll(() => page.locator('wa-input[label="Full name"]').evaluate(el => /** @type {any} */ (el).value ?? ''),
     'the name was cleared').toBe('');
+  await expect(topics(page), 'the topics were cleared').toHaveJSProperty('value', []);
 
   await expectHealthy(page, problems);
 });
@@ -130,6 +170,7 @@ test('registration form showcase: a complete registration shows the summary and 
   const summary = page.locator('wa-callout[variant="success"]');
   await expect(summary).toContainText("You're in, Ada Lovelace!");
   await expect(summary).toContainText('Your pro ticket for the ai track is reserved. A confirmation was sent to ada@example.com.');
+  await expect(summary, 'the topics from the bound tag list').toContainText(TOPICS_SUMMARY);
   await expect(summary).toContainText('Your badge will use the default Nova Summit artwork.');
   await expect(page.locator('wa-input[label="Full name"]'), 'the form was replaced').toHaveCount(0);
 

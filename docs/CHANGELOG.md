@@ -2,6 +2,24 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.13.0] — 2026-09-27
+
+Alignment with the Web Awesome 3.13.0 release, opening the **WA-3.13 train**. A small additive upgrade: one new form control, `WaTagInput`, and eleven components promoted from experimental to stable upstream. No wrapper API is removed or renamed, so no migration guide is needed.
+
+### New components
+- `WaTagInput` (`wa-tag-input`, free/experimental) collects a list of short strings as removable tags. It binds `@bind-Value` to an `IReadOnlyList<string>?` and takes part in `EditForm` validation. It supports `Delimiter`, `MaxTags`/`MinTags`, `AllowDuplicates`, `WithClear`, the label/hint and start/end slots, and the `OnCreate`, `OnClear` and `OnInvalid` callbacks.
+
+### Changed
+- Upstream promoted `wa-accordion`, `wa-accordion-item`, `wa-date-input`, `wa-date-picker`, `wa-known-date`, `wa-otp-input`, `wa-pagination`, `wa-random-content`, `wa-time-input`, `wa-video` and `wa-video-playlist` to stable. Their APIs are unchanged, and the date and time wrappers' docs no longer call them experimental.
+- `WaCreateEventArgs` is shared by `WaCombobox.OnCreate` and `WaTagInput.OnCreate`.
+
+### Library
+- Versioned reference docs refreshed to the `v3.13.0` tag.
+- Demo: a new Tag Input page, and the registration form showcase gains a tag input.
+
+### Public API
+- Baseline promoted with additions only: the `WaTagInput` class.
+
 ## [3.12.0] — 2026-09-27
 
 Alignment with the Web Awesome 3.12.0 release, opening the **WA-3.12 train**. Upstream this is a small, additive release: `wa-dropdown-item` gains link attributes, and six components change only their CSS parts. This version of the bindings is still **breaking**: it fixes the defects reported in [GitHub issue #1](https://github.com/boldbrick/WebAwesome-Blazor/issues/1), makes every enum, event and default match Web Awesome, and replaces strings with .NET types wherever the value set or shape is known. Thanks to **@Eonasdan** for the report: all three points were confirmed and are fixed here.

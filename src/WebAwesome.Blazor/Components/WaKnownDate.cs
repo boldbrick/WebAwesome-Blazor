@@ -8,7 +8,7 @@ using WebAwesome.Blazor.Base;
 namespace WebAwesome.Blazor.Components;
 
 /// <summary>
-/// An experimental form control for entering a known calendar date as separate day, month, and year fields
+/// A form control for entering a known calendar date as separate day, month, and year fields
 /// (e.g. a birthday), bound to a date. Corresponds to the wa-known-date Web Awesome component.
 /// </summary>
 /// <remarks>

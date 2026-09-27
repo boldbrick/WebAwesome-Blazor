@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.12.0 release zip (dist/skills/webawesome/references/components/date-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/date-input -->
+<!-- Source: reference doc bundled in the Web Awesome 3.13.0 release zip (dist/skills/webawesome/references/components/date-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/date-input -->
 
 # Date Input [Pro]
 
@@ -6,11 +6,13 @@
 
 `<wa-date-input>`
 
-ProIncluded with Web Awesome Pro Experimental [Forms](https://webawesome.com/docs/components/?category=forms) [Since 3.8](https://webawesome.com/docs/resources/changelog#wa_380)
+ProIncluded with Web Awesome Pro Stable [Forms](https://webawesome.com/docs/components/?category=forms) [Since 3.8](https://webawesome.com/docs/resources/changelog#wa_380)
 
 Date inputs let users enter a date through a segmented field or select one visually from a popup calendar. They support locale-aware segment order, min and max constraints, and form validation.
 
-**[Get Date Input with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=date-input)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
+**[Get Date Input with Web Awesome Pro!](https://webawesome.com/pro?from=pro-docs&component=date-input)**
+
+Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
 -   [Native Styles](https://webawesome.com/docs/utilities/native)
@@ -102,7 +104,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.12.0/components/date-input/date-input.js';
+import 'https://ka-f.webawesome.com/webawesome@3.13.0/components/date-input/date-input.js';
 ```
 
 \*\*npm\*\*

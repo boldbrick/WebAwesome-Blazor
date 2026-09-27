@@ -17,6 +17,7 @@
         <strong>You're in, @model.FullName!</strong><br />
         Your @model.TicketType ticket for the @model.Track track is reserved. A confirmation was sent
         to @model.Email.
+        Your agenda highlights talks on @(string.Join(", ", model.Interests ?? [])).
         @(model.BadgePhotoSelected ? "Your badge will be printed with the photo you uploaded." : "Your badge will use the default Nova Summit artwork.")
         Your phone number is verified, so on-site check-in is a single scan.
         See you at Nova Summit 2026!
@@ -74,6 +75,9 @@ else
                         <WaOption Value="Product manager">Product manager</WaOption>
                         <WaOption Value="Engineering manager">Engineering manager</WaOption>
                     </WaCombobox>
+
+                    <WaTagInput Label="Topics you'd like to hear about" Hint="Add up to five — press Enter or type a comma after each"
+                                StartIconName="tags" Placeholder="e.g. observability" MaxTags="5" WithClear="true" @bind-Value="model.Interests" />
 
                     <WaNumberInput Label="Additional guest passes" Hint="Reserve extra passes for guests (0–10)"
                                    StartIconName="user-plus" Min="0" Max="10" Step="1" @bind-Value="model.GuestPasses" />
@@ -195,6 +199,11 @@ else
 
         [StringLength(60, ErrorMessage = "Job roles are limited to 60 characters.")]
         public string? Role { get; set; }
+
+        // a tag list: Required catches the untouched (null) list, MinLength the one emptied by removing every tag
+        [Required(ErrorMessage = "Please add at least one topic you'd like to hear about.")]
+        [MinLength(1, ErrorMessage = "Please add at least one topic you'd like to hear about.")]
+        public IReadOnlyList<string>? Interests { get; set; }
 
         [StringLength(300, ErrorMessage = "Notes are limited to 300 characters.")]
         public string? Notes { get; set; }
