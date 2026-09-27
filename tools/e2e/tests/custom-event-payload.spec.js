@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/test');
 const { waitForWaReady } = require('./helpers/wa-ready');
 
 // Regression coverage for a real bug: every wa-* custom event bound in the wrappers was
@@ -28,9 +28,10 @@ test('wa-* custom event delivers its typed payload into the Blazor handler', asy
   await expect(display).toHaveText('Last active panel: general');
 });
 
-// WaDetails derives OnToggle's IsOpen from which event fired (wa-show/wa-hide) via the
-// initializer's createEventArgs — verify a real open/close round-trip produces no errors.
-test('wa-show/wa-hide reach Blazor without event dispatch errors', async ({ page }) => {
+// WaDetails derives OnToggle's IsOpen from which event fired (wa-show/wa-hide) via the initializer's
+// createEventArgs; the Toggle Events example of the Details page echoes OnToggle (with IsOpen) and the two
+// after-events, so a real open/close round-trip must show each callback ran with the right payload
+test('wa-show/wa-hide reach Blazor as OnToggle with IsOpen, and the after-events follow', async ({ page }) => {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
 
@@ -38,11 +39,17 @@ test('wa-show/wa-hide reach Blazor without event dispatch errors', async ({ page
   await page.waitForSelector('.demo-shell');
   await waitForWaReady(page, ['wa-details']);
 
-  const details = page.locator('wa-details').first();
-  await details.click();
-  await page.waitForTimeout(400);
-  await details.click();
-  await page.waitForTimeout(400);
+  const details = page.getByTestId('details-events');
+  const toggle = page.getByTestId('details-toggle-echo');
+  await expect(toggle).toHaveText('OnToggle calls: 0 (last: none)');
+
+  await details.locator('summary, [part~="header"]').first().click();
+  await expect(toggle).toHaveText('OnToggle calls: 1 (last: open)');
+  await expect(page.getByTestId('details-after-show-echo')).toHaveText('OnAfterShow calls: 1');
+
+  await details.locator('summary, [part~="header"]').first().click();
+  await expect(toggle).toHaveText('OnToggle calls: 2 (last: closed)');
+  await expect(page.getByTestId('details-after-hide-echo')).toHaveText('OnAfterHide calls: 1');
 
   expect(errors).toEqual([]);
 });

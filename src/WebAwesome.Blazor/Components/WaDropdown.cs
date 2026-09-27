@@ -56,20 +56,43 @@ public class WaDropdown : ComponentBase
     [Parameter] public bool Open { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaPlacement DefaultPlacement = WaPlacement.BottomStart;
+
+    /// <summary>
     /// The placement of the dropdown menu in reference to the trigger. The menu will shift to a more optimal
     /// location if the preferred placement doesn't have enough room.
     /// </summary>
-    [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.BottomStart;
+    [Parameter] public WaPlacement Placement { get; set; } = DefaultPlacement;
 
     /// <summary>
-    /// The distance of the dropdown menu from its trigger.
+    /// The Web Awesome default of <see cref="Distance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public int Distance { get; set; } = 8;
+    public const int DefaultDistance = 0;
+
+    /// <summary>
+    /// The distance of the dropdown menu from its trigger, in pixels. Null (the default) leaves the element's
+    /// default, 0.
+    /// </summary>
+    [Parameter] public int? Distance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Skidding"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultSkidding = 0;
 
     /// <summary>
     /// The offset of the dropdown menu along its trigger.
     /// </summary>
-    [Parameter] public int Skidding { get; set; } = 0;
+    [Parameter] public int Skidding { get; set; } = DefaultSkidding;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The size of dropdown items slotted into the default slot (i.e. <c>wa-dropdown-item</c>).
@@ -126,7 +149,7 @@ public class WaDropdown : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-dropdown");
+        var attributes = builder.OpenWaElement(this, 0, "wa-dropdown");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -135,13 +158,10 @@ public class WaDropdown : ComponentBase
 
         // Add dropdown-specific attributes
         builder.AddAttribute(10, "open", Open);
-        if (Placement != WaPlacement.BottomStart)
-            builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
-        if (Distance != 8)
-            builder.AddAttribute(12, "distance", Distance);
-        if (Skidding != 0)
-            builder.AddAttribute(13, "skidding", Skidding);
-        builder.AddAttributeIfNotNull(14, "size", Size?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 11, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "distance", Distance, DefaultDistance);
+        builder.AddNumberAttribute(attributes, 13, "skidding", Skidding, DefaultSkidding);
+        builder.AddAttributeIfNotNull(attributes, 14, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);

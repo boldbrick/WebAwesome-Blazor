@@ -13,9 +13,6 @@ namespace WebAwesome.Blazor.Components;
 /// A single instance manages multiple <see cref="WaToastItem"/> notifications.
 /// Corresponds to the wa-toast Web Awesome component.
 /// </summary>
-/// <remarks>
-/// This is a Pro component.
-/// </remarks>
 public class WaToast : ComponentBase
 {
     #region ------ Dependency Injection ------
@@ -50,6 +47,12 @@ public class WaToast : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaToastPlacement DefaultPlacement = WaToastPlacement.TopEnd;
+
+    /// <summary>
     /// The placement of the toast stack on the screen.
     /// </summary>
     [Parameter] public WaToastPlacement? Placement { get; set; }
@@ -59,7 +62,8 @@ public class WaToast : ComponentBase
     #region ------ Content ------
 
     /// <summary>
-    /// The toast stack's content; place <see cref="WaToastItem"/> elements here to show them as notifications.
+    /// The toast stack's content; place <see cref="WaToastItem"/> elements here to show them as notifications, and
+    /// remove each one from the model in its <see cref="WaToastItem.OnAfterHide"/>.
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -70,12 +74,12 @@ public class WaToast : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-toast");
+        var attributes = builder.OpenWaElement(this, 0, "wa-toast");
 
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
 
         builder.AddElementReferenceCapture(10, __toastReference => Element = __toastReference);
 

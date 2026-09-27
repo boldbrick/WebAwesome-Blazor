@@ -1,18 +1,78 @@
-﻿@page "/components/divider"
+@page "/components/divider"
 
 <PageTitle>Divider</PageTitle>
 
-<h1>Divider</h1>
-<p><code>&lt;wa-divider&gt;</code> wrapped by <code>WaDivider</code>.</p>
+<h1>Divider <ComponentBadges Tag="wa-divider" /></h1>
+<p>Dividers visually separate or group elements. <code>&lt;wa-divider&gt;</code> wrapped by <code>WaDivider</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
+    <p>Above the divider</p>
     <WaDivider />
+    <p>Below the divider</p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\divider.md) *@
+<ExampleSection Title="Width, Color and Spacing" Code="@StyleExample">
+    <WaDivider Style="--width: 4px;" />
+    <WaDivider Style="--color: var(--wa-color-brand-fill-loud);" />
+    <WaDivider Style="--spacing: 2rem;" />
+</ExampleSection>
+
+<ExampleSection Title="Vertical" Code="@VerticalExample">
+    <div style="display: flex; align-items: center; height: 2rem;">
+        First
+        <WaDivider Orientation="WaOrientation.Vertical" />
+        Middle
+        <WaDivider Orientation="WaOrientation.Vertical" />
+        Last
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="In Menus" Code="@MenuExample">
+    <WaDropdown>
+        <TriggerContent><WaButton WithCaret="true">Edit</WaButton></TriggerContent>
+        <ChildContent>
+            <WaDropdownItem Value="cut">Cut</WaDropdownItem>
+            <WaDropdownItem Value="copy">Copy</WaDropdownItem>
+            <WaDivider Orientation="WaOrientation.Horizontal" />
+            <WaDropdownItem Value="delete" Variant="WaDropdownItemVariant.Danger">Delete</WaDropdownItem>
+        </ChildContent>
+    </WaDropdown>
+</ExampleSection>
 
 <ApiTable Tag="wa-divider" />
 
 @code {
-    private const string DefaultExample = "<WaDivider />";
+    private const string DefaultExample = """
+        <p>Above the divider</p>
+        <WaDivider />
+        <p>Below the divider</p>
+        """;
+
+    private const string StyleExample = """
+        <WaDivider Style="--width: 4px;" />
+        <WaDivider Style="--color: var(--wa-color-brand-fill-loud);" />
+        <WaDivider Style="--spacing: 2rem;" />
+        """;
+
+    private const string VerticalExample = """
+        <div style="display: flex; align-items: center; height: 2rem;">
+            First
+            <WaDivider Orientation="WaOrientation.Vertical" />
+            Middle
+            <WaDivider Orientation="WaOrientation.Vertical" />
+            Last
+        </div>
+        """;
+
+    private const string MenuExample = """
+        <WaDropdown>
+            <TriggerContent><WaButton WithCaret="true">Edit</WaButton></TriggerContent>
+            <ChildContent>
+                <WaDropdownItem Value="cut">Cut</WaDropdownItem>
+                <WaDropdownItem Value="copy">Copy</WaDropdownItem>
+                <WaDivider Orientation="WaOrientation.Horizontal" />
+                <WaDropdownItem Value="delete" Variant="WaDropdownItemVariant.Danger">Delete</WaDropdownItem>
+            </ChildContent>
+        </WaDropdown>
+        """;
 }

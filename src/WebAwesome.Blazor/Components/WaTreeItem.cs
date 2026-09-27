@@ -132,7 +132,7 @@ public class WaTreeItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tree-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tree-item");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);

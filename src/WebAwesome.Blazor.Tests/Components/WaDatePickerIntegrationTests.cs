@@ -1,145 +1,116 @@
-using Microsoft.AspNetCore.Components;
 using System;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Tests.ApiParity;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for the WaDatePicker wrapper (new in WA 3.8.0). Unlike the date/time inputs it is not a
-/// form-associated control, so it exposes manual Value/ValueChanged two-way binding rather than deriving from
-/// WaInputBase. Covers defaults, parameter settability, enum mappings, the typed focus-day/view-change event
-/// args, and imperative method guard clauses.
+/// Tests for the WaDatePicker wrapper (new in WA 3.8.0, typed DateOnly? since 3.12.0). Unlike the date/time inputs it
+/// is not a form-associated control, so it implements Value/ValueChanged two-way binding itself, from the native
+/// change event; that C# handler logic and its culture-free ISO conversion are tested here, together with the
+/// imperative methods and the typed event args. Its attributes and defaults are covered by
+/// RenderedAttributeParityTests and its events by EventCallbackBindingParityTests, both against the CEM; the
+/// browser delivery of change by the e2e suite.
 /// </summary>
-public class WaDatePickerIntegrationTests
+public class WaDatePickerIntegrationTests : BunitContext
 {
-    #region ------ Defaults ------
-
-    [Fact]
-    public void Constructor_WithDefaultValues_SetsPropertiesCorrectly()
+    public WaDatePickerIntegrationTests()
     {
-        var component = new WaDatePicker();
-
-        Assert.Null(component.Element);
-        Assert.Null(component.Value);
-        Assert.Null(component.Mode);
-        Assert.Null(component.View);
-        Assert.Null(component.Min);
-        Assert.Null(component.Max);
-        Assert.Null(component.FirstDayOfWeek);
-        Assert.Null(component.FocusedDate);
-        Assert.Null(component.Locale);
-        Assert.Null(component.Months);
-        Assert.Null(component.PageBy);
-        Assert.Null(component.Size);
-        Assert.Null(component.WeekdayFormat);
-        Assert.False(component.Disabled);
-        Assert.False(component.Readonly);
-        Assert.False(component.WithOutsideDays);
-        Assert.False(component.WithWeekNumbers);
-    }
-
-    #endregion
-
-    #region ------ Parameter Setting ------
-
-    [Fact]
-    public void CoreAttributes_CanBeSet()
-    {
-        var component = new WaDatePicker
-        {
-            Value = "2026-07-24",
-            Mode = WaDateSelectionMode.Range,
-            View = WaDatePickerView.Months,
-            Min = "2026-01-01",
-            Max = "2026-12-31",
-            FocusedDate = "2026-07-24",
-            Locale = "en-US",
-            Months = 2,
-            Size = WaSize.Large,
-            Readonly = true
-        };
-
-        Assert.Equal("2026-07-24", component.Value);
-        Assert.Equal(WaDateSelectionMode.Range, component.Mode);
-        Assert.Equal(WaDatePickerView.Months, component.View);
-        Assert.Equal("2026-01-01", component.Min);
-        Assert.Equal("2026-12-31", component.Max);
-        Assert.Equal("2026-07-24", component.FocusedDate);
-        Assert.Equal("en-US", component.Locale);
-        Assert.Equal(2, component.Months);
-        Assert.Equal(WaSize.Large, component.Size);
-        Assert.True(component.Readonly);
-    }
-
-    #endregion
-
-    #region ------ Enum Mappings ------
-
-    [Fact]
-    public void View_MapsToHtmlValue()
-    {
-        Assert.Equal("days", WaDatePickerView.Days.ToHtmlValue());
-        Assert.Equal("months", WaDatePickerView.Months.ToHtmlValue());
-        Assert.Equal("years", WaDatePickerView.Years.ToHtmlValue());
-    }
-
-    #endregion
-
-    #region ------ Binding &amp; Events ------
-
-    [Fact]
-    public async Task ValueChanged_CanBeWired()
-    {
-        var component = new WaDatePicker();
-        string? received = null;
-        component.ValueChanged = EventCallback.Factory.Create<string?>(new object(), v => received = v);
-
-        await component.ValueChanged.InvokeAsync("2026-07-24");
-
-        Assert.True(component.ValueChanged.HasDelegate);
-        Assert.Equal("2026-07-24", received);
+        Services.AddScoped<WebAwesomeJSInterop>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
     [Fact]
-    public async Task OnFocusDay_CanBeWired_AndCarriesIsoDate()
+    public void Value_RendersAsIsoValueAttribute_InAnyCulture()
     {
-        var component = new WaDatePicker();
-        WaDatePickerFocusDayEventArgs? received = null;
-        component.OnFocusDay = EventCallback.Factory.Create<WaDatePickerFocusDayEventArgs>(new object(), a => received = a);
+        using var culture = new CultureScope(RenderedAttributeParityTests.HostileCulture);
 
-        await component.OnFocusDay.InvokeAsync(new WaDatePickerFocusDayEventArgs { Date = "2026-07-24" });
+        var cut = Render<WaDatePicker>(parameters => parameters.Add(p => p.Value, SampleDate));
 
-        Assert.True(component.OnFocusDay.HasDelegate);
-        Assert.Equal("2026-07-24", received?.Date);
+        Assert.Equal(SampleIso, cut.Find("wa-date-picker").GetAttribute("value"));
     }
 
     [Fact]
-    public async Task OnViewChange_CanBeWired_AndCarriesViewAndDate()
+    public void NullValue_RendersNoValueAttribute()
     {
-        var component = new WaDatePicker();
-        WaDatePickerViewChangeEventArgs? received = null;
-        component.OnViewChange = EventCallback.Factory.Create<WaDatePickerViewChangeEventArgs>(new object(), a => received = a);
+        var cut = Render<WaDatePicker>(parameters => parameters.Add(p => p.Value, (DateOnly?)null));
 
-        await component.OnViewChange.InvokeAsync(new WaDatePickerViewChangeEventArgs { View = "years", Date = "2026-01-01" });
-
-        Assert.True(component.OnViewChange.HasDelegate);
-        Assert.Equal("years", received?.View);
-        Assert.Equal("2026-01-01", received?.Date);
+        Assert.False(cut.Find("wa-date-picker").HasAttribute("value"));
     }
 
     [Fact]
-    public void OnInput_CanBeWired()
+    public void ChangeEvent_ParsesIsoValue_AndRaisesValueChanged()
     {
-        var component = new WaDatePicker();
-        component.OnInput = EventCallback.Factory.Create<ChangeEventArgs>(component, () => { });
-        Assert.True(component.OnInput.HasDelegate);
+        // C# handler logic only: the change binder parses the element's ISO value and passes it to ValueChanged
+        DateOnly? received = null;
+        var cut = Render<WaDatePicker>(parameters => parameters
+            .Add(p => p.ValueChanged, value => received = value));
+
+        cut.Find("wa-date-picker").Change(SampleIso);
+
+        Assert.Equal(SampleDate, received);
+        Assert.Equal(SampleDate, cut.Instance.Value);
     }
 
-    #endregion
+    [Theory]
+    [InlineData("")]
+    [InlineData("24.07.2026")]
+    [InlineData("2026-7-24")]
+    [InlineData("2026-02-30")]
+    public void ChangeEvent_WithEmptyOrInvalidValue_BindsNull(string wireValue)
+    {
+        DateOnly? received = SampleDate;
+        var cut = Render<WaDatePicker>(parameters => parameters
+            .Add(p => p.Value, SampleDate)
+            .Add(p => p.ValueChanged, value => received = value));
 
-    #region ------ Public Methods (Guard Clauses) ------
+        cut.Find("wa-date-picker").Change(wireValue);
+
+        Assert.Null(received);
+    }
+
+    [Fact]
+    public void FocusedDate_RendersAsIsoAttribute()
+    {
+        var cut = Render<WaDatePicker>(parameters => parameters.Add(p => p.FocusedDate, SampleDate));
+
+        Assert.Equal(SampleIso, cut.Find("wa-date-picker").GetAttribute("focused-date"));
+    }
+
+    [Fact]
+    public async Task GoToDateAsync_PassesTheIsoDate()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("invokeMethod", _ => true).SetVoidResult();
+        var cut = Render<WaDatePicker>();
+
+        await cut.InvokeAsync(() => cut.Instance.GoToDateAsync(SampleDate));
+
+        var invocation = Assert.Single(module.Invocations, i => i.Identifier == "invokeMethod");
+        Assert.Equal("goToDate", invocation.Arguments[1]);
+        Assert.Equal(new object[] { SampleIso }, (object[])invocation.Arguments[2]!);
+    }
+
+    [Theory]
+    [InlineData(typeof(WaDatePickerFocusDayEventArgs))]
+    [InlineData(typeof(WaDatePickerViewChangeEventArgs))]
+    public void EventArgsDate_DeserializesFromTheProjectedIsoString(Type argsType)
+    {
+        // the JS initializer projects the detail's Date to an ISO string (or null); Blazor deserializes custom event
+        // args with the web defaults (camelCase, case-insensitive)
+        var args = JsonSerializer.Deserialize($"{{\"date\":\"{SampleIso}\"}}", argsType, JsonSerializerOptions.Web);
+        var empty = JsonSerializer.Deserialize("{\"date\":null}", argsType, JsonSerializerOptions.Web);
+
+        Assert.Equal(SampleDate, argsType.GetProperty(nameof(WaDatePickerFocusDayEventArgs.Date))!.GetValue(args));
+        Assert.Null(argsType.GetProperty(nameof(WaDatePickerFocusDayEventArgs.Date))!.GetValue(empty));
+    }
 
     [Fact]
     public async Task ClearAsync_WithNullElement_ThrowsInvalidOperationException()
@@ -159,7 +130,7 @@ public class WaDatePickerIntegrationTests
     public async Task GoToDateAsync_WithNullElement_ThrowsInvalidOperationException()
     {
         var component = new WaDatePicker();
-        await Assert.ThrowsAsync<InvalidOperationException>(() => component.GoToDateAsync("2026-07-24"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => component.GoToDateAsync(SampleDate));
     }
 
     [Fact]
@@ -168,6 +139,13 @@ public class WaDatePickerIntegrationTests
         var component = new WaDatePicker();
         await Assert.ThrowsAsync<InvalidOperationException>(() => component.GoToTodayAsync());
     }
+
+    #region ------ Internals ------
+
+    private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+    private const string SampleIso = "2026-07-24";
+
+    private static readonly DateOnly SampleDate = new(2026, 7, 24);
 
     #endregion
 }

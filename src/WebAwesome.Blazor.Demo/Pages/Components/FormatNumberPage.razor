@@ -1,18 +1,96 @@
-﻿@page "/components/format-number"
+@page "/components/format-number"
 
 <PageTitle>Format Number</PageTitle>
 
-<h1>Format Number</h1>
-<p><code>&lt;wa-format-number&gt;</code> wrapped by <code>WaFormatNumber</code>.</p>
+<h1>Format Number <ComponentBadges Tag="wa-format-number" /></h1>
+<p>Formats a number with the browser's <code>Intl.NumberFormat</code>, as a decimal, a percentage or a currency amount. <code>&lt;wa-format-number&gt;</code> wrapped by <code>WaFormatNumber</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaFormatNumber />
+    <WaFormatNumber Value="1000" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\format-number.md) *@
+<ExampleSection Title="Percentages" Code="@PercentExample">
+    <ul>
+        <li><WaFormatNumber Type="WaFormatNumberType.Percent" Value="0" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Percent" Value="0.25M" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Percent" Value="0.5M" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Percent" Value="1" /></li>
+    </ul>
+</ExampleSection>
+
+<ExampleSection Title="Currency" Code="@CurrencyExample">
+    <ul>
+        <li><WaFormatNumber Type="WaFormatNumberType.Currency" Currency="USD" Value="2000" Lang="en-US" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Currency" Currency="GBP" Value="2000" Lang="en-GB" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Currency" Currency="EUR" Value="2000" Lang="de" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CZK" Value="2000" Lang="cs" /></li>
+    </ul>
+</ExampleSection>
+
+<ExampleSection Title="Currency Display" Code="@CurrencyDisplayExample">
+    <ul>
+        <li><WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CAD" Value="1999.99M" Lang="en-US" CurrencyDisplay="WaCurrencyDisplay.Symbol" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CAD" Value="1999.99M" Lang="en-US" CurrencyDisplay="WaCurrencyDisplay.NarrowSymbol" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CAD" Value="1999.99M" Lang="en-US" CurrencyDisplay="WaCurrencyDisplay.Code" /></li>
+        <li><WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CAD" Value="1999.99M" Lang="en-US" CurrencyDisplay="WaCurrencyDisplay.Name" /></li>
+    </ul>
+</ExampleSection>
+
+<ExampleSection Title="Grouping and Digits" Code="@DigitsExample">
+    <ul>
+        <li>Grouped: <WaFormatNumber Value="1234567.891M" /></li>
+        <li>Without grouping: <WaFormatNumber Value="1234567.891M" WithoutGrouping="true" /></li>
+        <li>Two fraction digits: <WaFormatNumber Value="3.14159M" MinimumFractionDigits="2" MaximumFractionDigits="2" /></li>
+        <li>Four integer digits: <WaFormatNumber Value="42" MinimumIntegerDigits="4" /></li>
+        <li>Three significant digits: <WaFormatNumber Value="98765.4321M" MinimumSignificantDigits="1" MaximumSignificantDigits="3" /></li>
+    </ul>
+</ExampleSection>
+
+<ExampleSection Title="Localization" Code="@LocalizationExample">
+    <ul>
+        <li>English: <WaFormatNumber Value="2000.5M" Lang="en" /></li>
+        <li>German: <WaFormatNumber Value="2000.5M" Lang="de" /></li>
+        <li>Russian: <WaFormatNumber Value="2000.5M" Lang="ru" /></li>
+    </ul>
+</ExampleSection>
 
 <ApiTable Tag="wa-format-number" />
 
 @code {
-    private const string DefaultExample = "<WaFormatNumber />";
+    private const string DefaultExample = """<WaFormatNumber Value="1000" />""";
+
+    private const string PercentExample = """
+        <WaFormatNumber Type="WaFormatNumberType.Percent" Value="0" />
+        <WaFormatNumber Type="WaFormatNumberType.Percent" Value="0.25M" />
+        <WaFormatNumber Type="WaFormatNumberType.Percent" Value="0.5M" />
+        <WaFormatNumber Type="WaFormatNumberType.Percent" Value="1" />
+        """;
+
+    private const string CurrencyExample = """
+        <WaFormatNumber Type="WaFormatNumberType.Currency" Currency="USD" Value="2000" Lang="en-US" />
+        <WaFormatNumber Type="WaFormatNumberType.Currency" Currency="GBP" Value="2000" Lang="en-GB" />
+        <WaFormatNumber Type="WaFormatNumberType.Currency" Currency="EUR" Value="2000" Lang="de" />
+        <WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CZK" Value="2000" Lang="cs" />
+        """;
+
+    private const string CurrencyDisplayExample = """
+        <WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CAD" Value="1999.99M" Lang="en-US" CurrencyDisplay="WaCurrencyDisplay.Symbol" />
+        <WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CAD" Value="1999.99M" Lang="en-US" CurrencyDisplay="WaCurrencyDisplay.NarrowSymbol" />
+        <WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CAD" Value="1999.99M" Lang="en-US" CurrencyDisplay="WaCurrencyDisplay.Code" />
+        <WaFormatNumber Type="WaFormatNumberType.Currency" Currency="CAD" Value="1999.99M" Lang="en-US" CurrencyDisplay="WaCurrencyDisplay.Name" />
+        """;
+
+    private const string DigitsExample = """
+        Grouped: <WaFormatNumber Value="1234567.891M" />
+        Without grouping: <WaFormatNumber Value="1234567.891M" WithoutGrouping="true" />
+        Two fraction digits: <WaFormatNumber Value="3.14159M" MinimumFractionDigits="2" MaximumFractionDigits="2" />
+        Four integer digits: <WaFormatNumber Value="42" MinimumIntegerDigits="4" />
+        Three significant digits: <WaFormatNumber Value="98765.4321M" MinimumSignificantDigits="1" MaximumSignificantDigits="3" />
+        """;
+
+    private const string LocalizationExample = """
+        English: <WaFormatNumber Value="2000.5M" Lang="en" />
+        German: <WaFormatNumber Value="2000.5M" Lang="de" />
+        Russian: <WaFormatNumber Value="2000.5M" Lang="ru" />
+        """;
 }

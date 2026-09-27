@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -40,6 +40,12 @@ public class WaComparison : ComponentBase
 
     // Comparison properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Position"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const decimal DefaultPosition = 50m;
+
+    /// <summary>
     /// The position of the divider as a percentage.
     /// </summary>
     [Parameter] public decimal? Position { get; set; }
@@ -56,11 +62,6 @@ public class WaComparison : ComponentBase
     #endregion
 
     #region ------ Content ------
-
-    /// <summary>
-    /// The main comparison content (default slot).
-    /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// The before content, often an <c>&lt;img&gt;</c> or <c>&lt;svg&gt;</c> element.
@@ -84,7 +85,7 @@ public class WaComparison : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-comparison");
+        var attributes = builder.OpenWaElement(this, 0, "wa-comparison");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -92,10 +93,10 @@ public class WaComparison : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add comparison-specific attributes
-        builder.AddAttributeIfNotNull(10, "position", Position);
+        builder.AddAttributeIfNotNull(attributes, 10, "position", Position, DefaultPosition);
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(20, "change", OnChange);
+        builder.AddAttributeIfHasDelegate(20, "onchange", OnChange);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __comparisonReference => Element = __comparisonReference);
@@ -125,12 +126,6 @@ public class WaComparison : ComponentBase
             builder.AddAttribute(61, "slot", "handle");
             builder.AddContent(62, HandleContent);
             builder.CloseElement();
-        }
-
-        // Add main content
-        if (ChildContent is not null)
-        {
-            builder.AddContent(70, ChildContent);
         }
 
         builder.CloseElement();

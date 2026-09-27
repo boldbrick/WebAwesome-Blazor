@@ -1,18 +1,81 @@
-﻿@page "/components/relative-time"
+@page "/components/relative-time"
 
 <PageTitle>Relative Time</PageTitle>
 
 <h1>Relative Time</h1>
-<p><code>&lt;wa-relative-time&gt;</code> wrapped by <code>WaRelativeTime</code>.</p>
+<p>Outputs a localized time phrase relative to the current date and time, using the browser's <code>Intl.RelativeTimeFormat</code> API (no language packs required). <code>Date</code> is a <code>DateTimeOffset?</code>, sent with its offset, so the phrase is right in every browser time zone; unset means now. <code>&lt;wa-relative-time&gt;</code> wrapped by <code>WaRelativeTime</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaRelativeTime />
+    <WaRelativeTime Date="release" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\relative-time.md) *@
+<ExampleSection Title="Format" Code="@FormatExample">
+    <WaRelativeTime Date="release" Format="WaRelativeTimeFormat.Narrow" /><br />
+    <WaRelativeTime Date="release" Format="WaRelativeTimeFormat.Short" /><br />
+    <WaRelativeTime Date="release" Format="WaRelativeTimeFormat.Long" />
+</ExampleSection>
+
+<ExampleSection Title="Numeric" Code="@NumericExample">
+    Auto (default): <WaRelativeTime Date="yesterday" /><br />
+    Always: <WaRelativeTime Date="yesterday" Numeric="WaRelativeTimeNumeric.Always" />
+</ExampleSection>
+
+<ExampleSection Title="Sync" Code="@SyncExample">
+    <WaRelativeTime Date="oneMinuteAgo" Sync="true" />
+</ExampleSection>
+
+<ExampleSection Title="Localization" Code="@LocalizationExample">
+    English: <WaRelativeTime Date="release" Lang="en-US" /><br />
+    Chinese: <WaRelativeTime Date="release" Lang="zh-CN" /><br />
+    German: <WaRelativeTime Date="release" Lang="de" /><br />
+    Greek: <WaRelativeTime Date="release" Lang="el" /><br />
+    Russian: <WaRelativeTime Date="release" Lang="ru" />
+</ExampleSection>
 
 <ApiTable Tag="wa-relative-time" />
 
 @code {
-    private const string DefaultExample = "<WaRelativeTime />";
+    // a fixed instant with its offset (midnight in New York), and instants relative to now in UTC
+    private readonly DateTimeOffset release = new(2025, 12, 2, 0, 0, 0, TimeSpan.FromHours(-5));
+    private readonly DateTimeOffset yesterday = DateTimeOffset.UtcNow.AddDays(-1);
+    private readonly DateTimeOffset oneMinuteAgo = DateTimeOffset.UtcNow.AddMinutes(-1);
+
+    private const string DefaultExample = """
+        <WaRelativeTime Date="release" />
+
+        @code {
+            private readonly DateTimeOffset release = new(2025, 12, 2, 0, 0, 0, TimeSpan.FromHours(-5));
+        }
+        """;
+
+    private const string FormatExample = """
+        <WaRelativeTime Date="release" Format="WaRelativeTimeFormat.Narrow" /><br />
+        <WaRelativeTime Date="release" Format="WaRelativeTimeFormat.Short" /><br />
+        <WaRelativeTime Date="release" Format="WaRelativeTimeFormat.Long" />
+        """;
+
+    private const string NumericExample = """
+        Auto (default): <WaRelativeTime Date="yesterday" /><br />
+        Always: <WaRelativeTime Date="yesterday" Numeric="WaRelativeTimeNumeric.Always" />
+
+        @code {
+            private readonly DateTimeOffset yesterday = DateTimeOffset.UtcNow.AddDays(-1);
+        }
+        """;
+
+    private const string SyncExample = """
+        <WaRelativeTime Date="oneMinuteAgo" Sync="true" />
+
+        @code {
+            private readonly DateTimeOffset oneMinuteAgo = DateTimeOffset.UtcNow.AddMinutes(-1);
+        }
+        """;
+
+    private const string LocalizationExample = """
+        English: <WaRelativeTime Date="release" Lang="en-US" /><br />
+        Chinese: <WaRelativeTime Date="release" Lang="zh-CN" /><br />
+        German: <WaRelativeTime Date="release" Lang="de" /><br />
+        Greek: <WaRelativeTime Date="release" Lang="el" /><br />
+        Russian: <WaRelativeTime Date="release" Lang="ru" />
+        """;
 }

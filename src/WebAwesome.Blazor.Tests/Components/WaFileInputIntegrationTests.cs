@@ -12,7 +12,8 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// <summary>
 /// Integration tests for the new WaFileInput component introduced in Web Awesome 3.2.0. WaFileInput is
 /// a ComponentBase (not a WaInputBase-derived form control, since selected files are not exposed as a
-/// bindable scalar value), so these tests cover rendering, slots, and event wiring rather than EditForm binding.
+/// bindable scalar value), so these tests cover rendering and slots rather than EditForm binding; its events are
+/// covered by EventCallbackBindingParityTests (binding) and the e2e event-dispatch spec (browser delivery).
 /// </summary>
 public class WaFileInputIntegrationTests : BunitContext
 {
@@ -45,7 +46,7 @@ public class WaFileInputIntegrationTests : BunitContext
     {
         // Arrange & Act
         var cut = Render<WaFileInput>(parameters => parameters
-            .Add(p => p.Accept, "image/*")
+            .Add(p => p.Accept, new[] { "image/*", ".pdf" })
             .Add(p => p.Hint, "Max 5 MB")
             .Add(p => p.Label, "Attachment")
             .Add(p => p.Multiple, true)
@@ -56,12 +57,12 @@ public class WaFileInputIntegrationTests : BunitContext
 
         // Assert
         var element = cut.Find("wa-file-input");
-        Assert.Equal("image/*", element.GetAttribute("accept"));
+        Assert.Equal("image/*,.pdf", element.GetAttribute("accept"));
         Assert.Equal("Max 5 MB", element.GetAttribute("hint"));
         Assert.Equal("Attachment", element.GetAttribute("label"));
         Assert.True(element.HasAttribute("multiple"));
         Assert.True(element.HasAttribute("required"));
-        Assert.Equal("large", element.GetAttribute("size"));
+        Assert.Equal("l", element.GetAttribute("size"));
         Assert.True(element.HasAttribute("with-hint"));
         Assert.True(element.HasAttribute("with-label"));
     }
@@ -72,45 +73,13 @@ public class WaFileInputIntegrationTests : BunitContext
         // Arrange & Act
         var cut = Render<WaFileInput>(parameters => parameters
             .Add(p => p.DropzoneContent, builder => builder.AddContent(0, "Drop files here"))
-            .Add(p => p.LabelContent, builder => builder.AddContent(0, "Rich label"))
-            .Add(p => p.HintContent, builder => builder.AddContent(0, "Rich hint")));
+            .Add(p => p.MarkupLabel, builder => builder.AddContent(0, "Rich label"))
+            .Add(p => p.MarkupHint, builder => builder.AddContent(0, "Rich hint")));
 
         // Assert
         Assert.Equal("Drop files here", cut.Find("span[slot='dropzone']").TextContent);
         Assert.Equal("Rich label", cut.Find("span[slot='label']").TextContent);
         Assert.Equal("Rich hint", cut.Find("span[slot='hint']").TextContent);
-    }
-
-    [Fact]
-    public void Events_WhenWired_ReceiveDomEvents()
-    {
-        // Arrange
-        var changeCount = 0;
-        var inputCount = 0;
-        var focusCount = 0;
-        var blurCount = 0;
-        var invalidCount = 0;
-        var cut = Render<WaFileInput>(parameters => parameters
-            .Add(p => p.OnChange, () => changeCount++)
-            .Add(p => p.OnInput, () => inputCount++)
-            .Add(p => p.OnFocus, () => focusCount++)
-            .Add(p => p.OnBlur, () => blurCount++)
-            .Add(p => p.OnInvalid, () => invalidCount++));
-
-        // Act
-        var element = cut.Find("wa-file-input");
-        element.TriggerEvent("onchange", new EventArgs());
-        element.TriggerEvent("oninput", new EventArgs());
-        element.TriggerEvent("onfocus", new Microsoft.AspNetCore.Components.Web.FocusEventArgs());
-        element.TriggerEvent("onblur", new Microsoft.AspNetCore.Components.Web.FocusEventArgs());
-        element.TriggerEvent("onwa-invalid", new EventArgs());
-
-        // Assert
-        Assert.Equal(1, changeCount);
-        Assert.Equal(1, inputCount);
-        Assert.Equal(1, focusCount);
-        Assert.Equal(1, blurCount);
-        Assert.Equal(1, invalidCount);
     }
 
     [Fact]

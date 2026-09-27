@@ -1,0 +1,197 @@
+@page "/testing/events-forms"
+
+@* e2e harness for tools\e2e\tests\event-dispatch.spec.js - deliberately outside /components/, so it is neither
+   derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js *@
+
+<PageTitle>Testing: Form Events</PageTitle>
+
+<h1>Form Events Harness</h1>
+<p>This page is an end-to-end test harness: every free form control wires its focus, keyboard, input and validity callbacks, plus its own events, into the event log below, so the browser tests can check which callbacks a real interaction reached in .NET.</p>
+
+<ExampleSection Title="Form controls">
+    <form id="events-form" @onsubmit="() => log.Record(FormSubmitId)" @onsubmit:preventDefault>
+        <table>
+            <thead><tr><th>Wrapper</th><th>Control</th><th>Model</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><code>WaInput</code></td>
+                    <td><WaInput @ref="input" Label="Name" WithClear="true" data-testid="ev-input" @bind-Value="inputValue" @attributes="Common(nameof(WaInput))" OnClear="() => log.Record(Id(nameof(WaInput), nameof(WaInput.OnClear)))" /></td>
+                    <td><code data-testid="ev-input-model">@inputValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaTextArea</code></td>
+                    <td><WaTextArea @ref="textArea" Label="Notes" data-testid="ev-textarea" @bind-Value="textAreaValue" @attributes="Common(nameof(WaTextArea))" /></td>
+                    <td><code data-testid="ev-textarea-model">@textAreaValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaNumberInput</code></td>
+                    <td><WaNumberInput @ref="numberInput" Label="Quantity" data-testid="ev-number-input" @bind-Value="numberValue" @attributes="Common(nameof(WaNumberInput))" OnBeforeInput="e => log.Record(Id(nameof(WaNumberInput), nameof(WaNumberInput.OnBeforeInput)), e)" /></td>
+                    <td><code data-testid="ev-number-input-model">@numberValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaCheckbox</code></td>
+                    <td><WaCheckbox @ref="checkbox" data-testid="ev-checkbox" @bind-Value="checkboxValue" @attributes="Common(nameof(WaCheckbox))" OnCheckedChange="e => log.Record(Id(nameof(WaCheckbox), nameof(WaCheckbox.OnCheckedChange)), e)">Subscribe</WaCheckbox></td>
+                    <td><code data-testid="ev-checkbox-model">@checkboxValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaSwitch</code></td>
+                    <td><WaSwitch @ref="switchControl" data-testid="ev-switch" @bind-Value="switchValue" @attributes="Common(nameof(WaSwitch))" OnCheckedChange="e => log.Record(Id(nameof(WaSwitch), nameof(WaSwitch.OnCheckedChange)), e)">Notifications</WaSwitch></td>
+                    <td><code data-testid="ev-switch-model">@switchValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaRadioGroup</code>, <code>WaRadio</code></td>
+                    <td>
+                        <WaRadioGroup @ref="radioGroup" Label="Plan" Name="events-plan" Orientation="WaOrientation.Horizontal" data-testid="ev-radio-group" @bind-Value="radioValue" @attributes="Common(nameof(WaRadioGroup))" OnValueChange="e => log.Record(Id(nameof(WaRadioGroup), nameof(WaRadioGroup.OnValueChange)), e)">
+                            <WaRadio Value="alpha" data-testid="ev-radio-alpha" OnFocus="e => log.Record(Id(nameof(WaRadio), nameof(WaRadio.OnFocus)), e)" OnBlur="e => log.Record(Id(nameof(WaRadio), nameof(WaRadio.OnBlur)), e)">Alpha</WaRadio>
+                            <WaRadio Value="beta">Beta</WaRadio>
+                        </WaRadioGroup>
+                    </td>
+                    <td><code data-testid="ev-radio-group-model">@radioValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaSlider</code></td>
+                    <td><WaSlider @ref="slider" Label="Volume" data-testid="ev-slider" @bind-Value="sliderValue" @attributes="Common(nameof(WaSlider))" OnValueChange="e => log.Record(Id(nameof(WaSlider), nameof(WaSlider.OnValueChange)), e)" /></td>
+                    <td><code data-testid="ev-slider-model">@sliderValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaRange</code> (range mode)</td>
+                    <td><WaRange @ref="range" Label="Price" Range="true" MinValue="20" MaxValue="80" data-testid="ev-range" @bind-Value="rangeValue" @attributes="Common(nameof(WaRange))" OnMinValueChange="e => log.Record(Id(nameof(WaRange), nameof(WaRange.OnMinValueChange)), e)" OnMaxValueChange="e => log.Record(Id(nameof(WaRange), nameof(WaRange.OnMaxValueChange)), e)" /></td>
+                    <td><code data-testid="ev-range-model">@rangeValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaRating</code></td>
+                    <td><WaRating @ref="rating" Label="Stars" data-testid="ev-rating" @bind-Value="ratingValue" @attributes="Common(nameof(WaRating))" OnHover="e => log.Record(Id(nameof(WaRating), nameof(WaRating.OnHover)), e)" /></td>
+                    <td><code data-testid="ev-rating-model">@ratingValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaColorPicker</code></td>
+                    <td><WaColorPicker @ref="colorPicker" Label="Color" data-testid="ev-color-picker" @bind-Value="colorValue" @attributes="Common(nameof(WaColorPicker))" OnShow="e => log.Record(Id(nameof(WaColorPicker), nameof(WaColorPicker.OnShow)), e)" OnAfterShow="e => log.Record(Id(nameof(WaColorPicker), nameof(WaColorPicker.OnAfterShow)), e)" OnHide="e => log.Record(Id(nameof(WaColorPicker), nameof(WaColorPicker.OnHide)), e)" OnAfterHide="e => log.Record(Id(nameof(WaColorPicker), nameof(WaColorPicker.OnAfterHide)), e)" /></td>
+                    <td><code data-testid="ev-color-picker-model">@colorValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaKnownDate</code></td>
+                    <td><WaKnownDate @ref="knownDate" Label="Birthday" Locale="en-US" data-testid="ev-known-date" @bind-Value="knownDateValue" @attributes="Common(nameof(WaKnownDate))" /></td>
+                    <td><code data-testid="ev-known-date-model">@DemoFormat.Iso(knownDateValue)</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaOtpInput</code></td>
+                    <td>
+                        <WaOtpInput @ref="otpInput" Label="Code" Length="4" data-testid="ev-otp-input" @bind-Value="otpValue" @attributes="Common(nameof(WaOtpInput))" OnComplete="() => log.Record(Id(nameof(WaOtpInput), nameof(WaOtpInput.OnComplete)))" OnClear="() => log.Record(Id(nameof(WaOtpInput), nameof(WaOtpInput.OnClear)))" />
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="ev-otp-input-clear" OnClick="() => otpInput!.ClearAsync()">Clear code</WaButton>
+                    </td>
+                    <td><code data-testid="ev-otp-input-model">@otpValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaTimeInput</code></td>
+                    <td><WaTimeInput @ref="timeInput" Label="Time" WithClear="true" data-testid="ev-time-input" @bind-Value="timeValue" @attributes="Common(nameof(WaTimeInput))" OnClear="() => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnClear)))" OnShow="e => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnShow)), e)" OnAfterShow="e => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnAfterShow)), e)" OnHide="e => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnHide)), e)" OnAfterHide="e => log.Record(Id(nameof(WaTimeInput), nameof(WaTimeInput.OnAfterHide)), e)" /></td>
+                    <td><code data-testid="ev-time-input-model">@DemoFormat.Iso(timeValue)</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaSelect</code></td>
+                    <td>
+                        <WaSelect @ref="select" Label="Fruit" WithClear="true" data-testid="ev-select" @bind-Value="selectValue" @attributes="Common(nameof(WaSelect))" OnClear="() => log.Record(Id(nameof(WaSelect), nameof(WaSelect.OnClear)))" OnShow="e => log.Record(Id(nameof(WaSelect), nameof(WaSelect.OnShow)), e)" OnAfterShow="e => log.Record(Id(nameof(WaSelect), nameof(WaSelect.OnAfterShow)), e)" OnHide="e => log.Record(Id(nameof(WaSelect), nameof(WaSelect.OnHide)), e)" OnAfterHide="e => log.Record(Id(nameof(WaSelect), nameof(WaSelect.OnAfterHide)), e)">
+                            <WaOption Value="apple">Apple</WaOption>
+                            <WaOption Value="banana">Banana</WaOption>
+                            <WaOption Value="cherry">Cherry</WaOption>
+                        </WaSelect>
+                    </td>
+                    <td><code data-testid="ev-select-model">@selectValue</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaSelect</code> (multiple)</td>
+                    <td>
+                        <WaSelect Label="Toppings" Multiple="true" data-testid="ev-select-multiple" @bind-SelectedValues="selectedToppings" ValueExpression="() => toppingsValue">
+                            <WaOption Value="cheese">Cheese</WaOption>
+                            <WaOption Value="ham">Ham</WaOption>
+                            <WaOption Value="olives">Olives</WaOption>
+                        </WaSelect>
+                    </td>
+                    <td><code data-testid="ev-select-multiple-model">@string.Join(",", selectedToppings ?? [])</code></td>
+                </tr>
+                <tr>
+                    <td><code>WaButton</code></td>
+                    <td>
+                        <WaCluster Gap="GapSize.Gap_S">
+                            <WaButton @ref="submitButton" Type="WaButtonType.Submit" Variant="WaVariant.Brand" data-testid="ev-submit" OnClick="e => log.Record(Id(nameof(WaButton), nameof(WaButton.OnClick)), e)" OnFocus="e => log.Record(Id(nameof(WaButton), nameof(WaButton.OnFocus)), e)" OnBlur="e => log.Record(Id(nameof(WaButton), nameof(WaButton.OnBlur)), e)" OnInvalid="e => log.Record(Id(nameof(WaButton), nameof(WaButton.OnInvalid)), e)">Submit</WaButton>
+                            <WaButton Appearance="WaAppearance.Outlined" data-testid="ev-mark-invalid" OnClick="MarkAllInvalidAsync">Mark every control invalid</WaButton>
+                        </WaCluster>
+                    </td>
+                    <td><code data-testid="ev-invalid-marked">@invalidMarked</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</ExampleSection>
+
+<ExampleSection Title="Event log">
+    <EventLogView Log="log" />
+</ExampleSection>
+
+@code {
+    private const string FormSubmitId = "form.submit";
+    private const string InvalidMessage = "Rejected by the e2e harness";
+
+    private readonly EventLog log = new();
+
+    private WaInput? input;
+    private WaTextArea? textArea;
+    private WaNumberInput? numberInput;
+    private WaCheckbox? checkbox;
+    private WaSwitch? switchControl;
+    private WaRadioGroup? radioGroup;
+    private WaSlider? slider;
+    private WaRange? range;
+    private WaRating? rating;
+    private WaColorPicker? colorPicker;
+    private WaKnownDate? knownDate;
+    private WaOtpInput? otpInput;
+    private WaTimeInput? timeInput;
+    private WaSelect? select;
+    private WaButton? submitButton;
+
+    private string? inputValue = "Hello";
+    private string? textAreaValue = "Some notes";
+    private decimal? numberValue = 5;
+    private bool checkboxValue;
+    private bool switchValue;
+    private string? radioValue = "beta";
+    private decimal? sliderValue = 50;
+    private decimal rangeValue;
+    private decimal ratingValue = 2;
+    private string colorValue = "#336699";
+    private DateOnly? knownDateValue = new(2000, 1, 15);
+    private string? otpValue;
+    private TimeOnly? timeValue = new(9, 30);
+    private string? selectValue = "apple";
+    private IReadOnlyList<string>? selectedToppings;
+    // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
+    private string? toppingsValue = null;
+    private bool invalidMarked;
+
+    private static string Id(string wrapper, string callback) => $"{wrapper}.{callback}";
+
+    // the callbacks every WaInputBase control inherits, splatted onto the control's parameters
+    private Dictionary<string, object> Common(string wrapper) => new()
+    {
+        [nameof(WaInput.OnFocus)] = EventCallback.Factory.Create<FocusEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnFocus)), e)),
+        [nameof(WaInput.OnBlur)] = EventCallback.Factory.Create<FocusEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnBlur)), e)),
+        [nameof(WaInput.OnKeyDown)] = EventCallback.Factory.Create<KeyboardEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnKeyDown)), e)),
+        [nameof(WaInput.OnKeyUp)] = EventCallback.Factory.Create<KeyboardEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnKeyUp)), e)),
+        [nameof(WaInput.OnKeyPress)] = EventCallback.Factory.Create<KeyboardEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnKeyPress)), e)),
+        [nameof(WaInput.OnInput)] = EventCallback.Factory.Create<ChangeEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnInput)), e)),
+        [nameof(WaInput.OnInvalid)] = EventCallback.Factory.Create<EventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnInvalid)), e)),
+    };
+
+    // a custom validity error on every control makes the next submit fire the browser's invalid event on each
+    private async Task MarkAllInvalidAsync()
+    {
+        WebAwesome.Blazor.Base.IFormValidation?[] controls = [input, textArea, numberInput, checkbox, switchControl, radioGroup, slider, range, rating, colorPicker, knownDate, otpInput, timeInput, select, submitButton];
+        foreach (var control in controls)
+        {
+            if (control != null) await control.SetCustomValidityAsync(InvalidMessage);
+        }
+
+        invalidMarked = true;
+    }
+}

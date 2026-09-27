@@ -1,48 +1,22 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
-using WebAwesome.Blazor.Extensions;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for WaRating component using the new JS interop infrastructure
+/// Interop tests for WaRating.SetSymbolFunctionAsync: it rejects a missing function, throws before the first
+/// render, and afterwards sets the element's getSymbol property to the function through the interop module
+/// (recorded, see RecordingJSRuntime).
 /// </summary>
 public class WaRatingIntegrationTests : IDisposable
 {
-    private readonly ServiceProvider serviceProvider;
-    private readonly WaRating ratingComponent;
-
-    public WaRatingIntegrationTests()
-    {
-        var services = new ServiceCollection();
-        services.AddWebAwesome();
-        services.AddSingleton<IJSRuntime, TestJSRuntime>();
-        serviceProvider = services.BuildServiceProvider();
-
-        ratingComponent = new WaRating();
-
-        // Inject dependencies manually for testing (WaRating inherits from WaInputBase)
-        var jsInterop = serviceProvider.GetRequiredService<WebAwesomeJSInterop>();
-        var propertyInfo = typeof(WaRating).BaseType!.GetProperty("JSInterop",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        propertyInfo?.SetValue(ratingComponent, jsInterop);
-    }
-
     [Fact]
     public async Task SetSymbolFunctionAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            ratingComponent.SetSymbolFunctionAsync("(value, isSelected) => isSelected ? '★' : '☆'"));
+            runtime.CreateUnrendered<WaRating>().SetSymbolFunctionAsync(SymbolFunction));
 
         Assert.Contains("Cannot set symbol function: component has not been rendered yet", exception.Message);
     }
@@ -50,92 +24,39 @@ public class WaRatingIntegrationTests : IDisposable
     [Fact]
     public async Task SetSymbolFunctionAsync_WithNullFunction_ThrowsArgumentNullException()
     {
-        // Arrange
-        SetupElementReference();
-
-        // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            ratingComponent.SetSymbolFunctionAsync(null!));
+            runtime.CreateRendered<WaRating>().SetSymbolFunctionAsync(null!));
     }
 
     [Fact]
     public async Task SetSymbolFunctionAsync_WithEmptyFunction_ThrowsArgumentNullException()
     {
-        // Arrange
-        SetupElementReference();
-
-        // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            ratingComponent.SetSymbolFunctionAsync(""));
+            runtime.CreateRendered<WaRating>().SetSymbolFunctionAsync(string.Empty));
     }
 
     [Fact]
-    public async Task SetSymbolFunctionAsync_WithValidElement_CallsJSInterop()
+    public async Task SetSymbolFunctionAsync_WithValidElement_SetsTheGetSymbolProperty()
     {
-        // Arrange
-        SetupElementReference();
-        var jsFunction = "function(value, isSelected) { return isSelected ? '★' : '☆'; }";
+        await runtime.CreateRendered<WaRating>().SetSymbolFunctionAsync(SymbolFunction);
 
-        // Act - This should not throw because we have a test JSRuntime
-        await ratingComponent.SetSymbolFunctionAsync(jsFunction);
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
+        Assert.Equal(SymbolFunction, runtime.Module.AssertSetProperty("getSymbol"));
     }
 
-    private void SetupElementReference()
+    #region ------ Implementation of IDisposable ------
+
+    public void Dispose()
     {
-        // Simulate element being rendered by setting Element property
-        var elementRef = new ElementReference("test-rating-element");
-        var elementProperty = typeof(WaRating).GetProperty("Element",
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        elementProperty?.SetValue(ratingComponent, elementRef);
-    }
-
-    #region ------ Test JSRuntime ------
-
-    private class TestJSRuntime : IJSRuntime
-    {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Simulate module import returning a mock module
-            if (identifier == "import")
-            {
-                return ValueTask.FromResult((TValue)(object)new TestJSObjectReference());
-            }
-
-            throw new NotImplementedException($"Test runtime does not implement {identifier}");
-        }
-
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
-    }
-
-    private class TestJSObjectReference : IJSObjectReference
-    {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Return default values for testing
-            return ValueTask.FromResult(default(TValue)!);
-        }
-
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return ValueTask.CompletedTask;
-        }
+        runtime.Dispose();
     }
 
     #endregion
 
-    public void Dispose()
-    {
-        serviceProvider?.Dispose();
-    }
+    #region ------ Internals ------
+
+    private const string SymbolFunction = "function(value, isSelected) { return isSelected ? '★' : '☆'; }";
+
+    private readonly RecordingJSRuntime runtime = new();
+
+    #endregion
 }

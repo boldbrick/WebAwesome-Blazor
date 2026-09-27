@@ -9,11 +9,12 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Forms;
 
 /// <summary>
-/// EditForm integration tests for WaSlider in single-value mode: two-way binding of its nullable
-/// decimal Value (bound directly over CurrentValue via CreateBinder&lt;decimal?&gt;, same pattern as
-/// WaRange/WaRating), and the DataAnnotations validation lifecycle. Range mode (MinValue/MaxValue,
-/// dual-thumb) uses a separate, custom "onchange" handler (see WaSlider.HandleRangeValueChange) that
-/// is not mediated through InputBase and is out of scope for these @bind-Value scenarios.
+/// EditForm integration tests for WaSlider in single-value mode: two-way binding of its nullable decimal Value
+/// and the DataAnnotations validation lifecycle. The value arrives through the "numericchange" alias of the
+/// change event (HandleValueChangeAsync parses it with the invariant culture); these tests raise the alias with
+/// NumericChange, so they cover the C# half only (see NumericChangeExtensions for where the JS alias is checked).
+/// Range mode (MinValue/MaxValue, dual-thumb, HandleRangeValueChange) is not mediated through InputBase and is
+/// covered by ChangeCallbackWiringTests.
 /// </summary>
 public class WaSliderEditFormTests : FormControlTestBase
 {
@@ -38,7 +39,7 @@ public class WaSliderEditFormTests : FormControlTestBase
         var model = new SliderModel { Level = 50m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-slider").Change("75");
+        cut.Find("wa-slider").NumericChange("75");
 
         Assert.Equal(75m, model.Level);
     }
@@ -50,7 +51,7 @@ public class WaSliderEditFormTests : FormControlTestBase
         var cut = RenderForm(model);
 
         // Range(0, 100) violated by a value outside the range
-        cut.Find("wa-slider").Change("150");
+        cut.Find("wa-slider").NumericChange("150");
 
         var cssClass = cut.Find("wa-slider").GetAttribute("class");
         Assert.Contains("modified", cssClass);
@@ -63,8 +64,8 @@ public class WaSliderEditFormTests : FormControlTestBase
         var model = new SliderModel { Level = 50m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-slider").Change("150");
-        cut.Find("wa-slider").Change("60");
+        cut.Find("wa-slider").NumericChange("150");
+        cut.Find("wa-slider").NumericChange("60");
 
         var cssClass = cut.Find("wa-slider").GetAttribute("class");
         Assert.Contains("modified", cssClass);

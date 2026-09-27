@@ -1,9 +1,9 @@
-﻿@page "/components/mutation-observer"
+@page "/components/mutation-observer"
 
 <PageTitle>Mutation Observer</PageTitle>
 
-<h1>Mutation Observer</h1>
-<p><code>&lt;wa-mutation-observer&gt;</code> wrapped by <code>WaMutationObserver</code>.</p>
+<h1>Mutation Observer <ComponentBadges Tag="wa-mutation-observer" /></h1>
+<p>Mutation observers report changes to their content: attributes, text and child elements. <code>&lt;wa-mutation-observer&gt;</code> wrapped by <code>WaMutationObserver</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaMutationObserver Attr="true" OnMutation="HandleMutation">
@@ -12,7 +12,50 @@
     <p>@mutationMessage</p>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\mutation-observer.md) *@
+<ExampleSection Title="Attribute Filter and Old Values" Code="@FilterExample">
+    <p>Only changes to <code>variant</code> are reported, with the previous value recorded; <code>size</code> changes are ignored.</p>
+    <WaMutationObserver AttributeFilter="@(new HashSet<string> { "variant" })" AttrOldValue="true" OnMutation="() => filteredCount++">
+        <WaButton Variant="filteredVariant" Size="filteredSize">Observed button</WaButton>
+    </WaMutationObserver>
+    <WaCluster Gap="GapSize.Gap_S" Style="margin-top: var(--wa-space-s);">
+        <WaButton Size="WaSize.Small" OnClick="ToggleVariant">Change variant</WaButton>
+        <WaButton Size="WaSize.Small" OnClick="ToggleSize">Change size</WaButton>
+    </WaCluster>
+    <p>Reported mutations: <strong>@filteredCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Child List" Code="@ChildListExample">
+    <WaMutationObserver ChildList="true" Attr="false" OnMutation="() => childListCount++">
+        <ul>
+            @foreach (var item in items)
+            {
+                <li @key="item">@item</li>
+            }
+        </ul>
+    </WaMutationObserver>
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaButton Size="WaSize.Small" OnClick="AddItem">Add item</WaButton>
+        <WaButton Size="WaSize.Small" Disabled="items.Count == 0" OnClick="() => items.RemoveAt(items.Count - 1)">Remove item</WaButton>
+    </WaCluster>
+    <p>Child list mutations: <strong>@childListCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Character Data" Code="@CharDataExample">
+    <WaMutationObserver CharData="true" CharDataOldValue="true" OnMutation="() => charDataCount++">
+        <p contenteditable="true" style="border: 1px dashed var(--wa-color-surface-border); padding: var(--wa-space-s);">Edit this text.</p>
+    </WaMutationObserver>
+    <p>Text changes: <strong>@charDataCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+        <WaMutationObserver Attr="true" Disabled="observerDisabled" OnMutation="() => disabledCount++">
+            <WaButton Variant="disabledVariant" OnClick="() => disabledVariant = disabledVariant == WaVariant.Brand ? WaVariant.Neutral : WaVariant.Brand">Mutate</WaButton>
+        </WaMutationObserver>
+        <WaSwitch @bind-Value="observerDisabled">Observer disabled</WaSwitch>
+    </WaCluster>
+    <p>Reported mutations: <strong>@disabledCount</strong></p>
+</ExampleSection>
 
 <ApiTable Tag="wa-mutation-observer" />
 
@@ -21,6 +64,19 @@
     private int clicks;
     private WaVariant mutationVariant = WaVariant.Brand;
     private string mutationMessage = "Click the button to mutate its variant and see events fire.";
+
+    private WaVariant filteredVariant = WaVariant.Brand;
+    private WaSize filteredSize = WaSize.Medium;
+    private int filteredCount;
+
+    private readonly List<string> items = ["First item"];
+    private int childListCount;
+
+    private int charDataCount;
+
+    private bool observerDisabled = true;
+    private WaVariant disabledVariant = WaVariant.Brand;
+    private int disabledCount;
 
     private void ChangeVariant()
     {
@@ -32,6 +88,12 @@
     {
         mutationMessage = $"Mutation observed at {DateTime.Now:T}";
     }
+
+    private void ToggleVariant() => filteredVariant = filteredVariant == WaVariant.Brand ? WaVariant.Success : WaVariant.Brand;
+
+    private void ToggleSize() => filteredSize = filteredSize == WaSize.Medium ? WaSize.Large : WaSize.Medium;
+
+    private void AddItem() => items.Add($"Item {items.Count + 1}");
 
     private const string DefaultExample = """
         <WaMutationObserver Attr="true" OnMutation="HandleMutation">
@@ -55,6 +117,71 @@
             {
                 mutationMessage = $"Mutation observed at {DateTime.Now:T}";
             }
+        }
+        """;
+
+    private const string FilterExample = """
+        <WaMutationObserver AttributeFilter="@(new HashSet<string> { "variant" })" AttrOldValue="true" OnMutation="() => filteredCount++">
+            <WaButton Variant="filteredVariant" Size="filteredSize">Observed button</WaButton>
+        </WaMutationObserver>
+        <WaButton Size="WaSize.Small" OnClick="ToggleVariant">Change variant</WaButton>
+        <WaButton Size="WaSize.Small" OnClick="ToggleSize">Change size</WaButton>
+        <p>Reported mutations: @filteredCount</p>
+
+        @code {
+            private WaVariant filteredVariant = WaVariant.Brand;
+            private WaSize filteredSize = WaSize.Medium;
+            private int filteredCount;
+
+            private void ToggleVariant() => filteredVariant = filteredVariant == WaVariant.Brand ? WaVariant.Success : WaVariant.Brand;
+
+            private void ToggleSize() => filteredSize = filteredSize == WaSize.Medium ? WaSize.Large : WaSize.Medium;
+        }
+        """;
+
+    private const string ChildListExample = """
+        <WaMutationObserver ChildList="true" Attr="false" OnMutation="() => childListCount++">
+            <ul>
+                @foreach (var item in items)
+                {
+                    <li @key="item">@item</li>
+                }
+            </ul>
+        </WaMutationObserver>
+        <WaButton Size="WaSize.Small" OnClick="AddItem">Add item</WaButton>
+        <WaButton Size="WaSize.Small" Disabled="items.Count == 0" OnClick="() => items.RemoveAt(items.Count - 1)">Remove item</WaButton>
+        <p>Child list mutations: @childListCount</p>
+
+        @code {
+            private readonly List<string> items = ["First item"];
+            private int childListCount;
+
+            private void AddItem() => items.Add($"Item {items.Count + 1}");
+        }
+        """;
+
+    private const string CharDataExample = """
+        <WaMutationObserver CharData="true" CharDataOldValue="true" OnMutation="() => charDataCount++">
+            <p contenteditable="true">Edit this text.</p>
+        </WaMutationObserver>
+        <p>Text changes: @charDataCount</p>
+
+        @code {
+            private int charDataCount;
+        }
+        """;
+
+    private const string DisabledExample = """
+        <WaMutationObserver Attr="true" Disabled="observerDisabled" OnMutation="() => disabledCount++">
+            <WaButton Variant="disabledVariant" OnClick="() => disabledVariant = disabledVariant == WaVariant.Brand ? WaVariant.Neutral : WaVariant.Brand">Mutate</WaButton>
+        </WaMutationObserver>
+        <WaSwitch @bind-Value="observerDisabled">Observer disabled</WaSwitch>
+        <p>Reported mutations: @disabledCount</p>
+
+        @code {
+            private bool observerDisabled = true;
+            private WaVariant disabledVariant = WaVariant.Brand;
+            private int disabledCount;
         }
         """;
 }

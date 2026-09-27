@@ -185,7 +185,8 @@ public class WaNewJSInteropMethodsTests : IDisposable
     [Fact]
     public void WaTextAreaSelectMode_ToHtmlValue_ReturnsCorrectStrings()
     {
-        // Assert
+        // Assert - change detector with an independent source: these are setRangeText() arguments, not attributes,
+        // so no CEM check covers them; the values are the HTML standard's SelectionMode enum
         Assert.Equal("select", WaTextAreaSelectMode.Select.ToHtmlValue());
         Assert.Equal("start", WaTextAreaSelectMode.Start.ToHtmlValue());
         Assert.Equal("end", WaTextAreaSelectMode.End.ToHtmlValue());
@@ -195,7 +196,8 @@ public class WaNewJSInteropMethodsTests : IDisposable
     [Fact]
     public void WaTextAreaSelectionDirection_ToHtmlValue_ReturnsCorrectStrings()
     {
-        // Assert
+        // Assert - change detector with an independent source: these are setSelectionRange() arguments, not
+        // attributes, so no CEM check covers them; the values are the HTML standard's selection directions
         Assert.Equal("none", WaTextAreaSelectionDirection.None.ToHtmlValue());
         Assert.Equal("forward", WaTextAreaSelectionDirection.Forward.ToHtmlValue());
         Assert.Equal("backward", WaTextAreaSelectionDirection.Backward.ToHtmlValue());

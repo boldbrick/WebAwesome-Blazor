@@ -9,7 +9,10 @@ module.exports = defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
-  timeout: 30_000,
+  // per test: a page boots the WASM runtime and loads the Web Awesome modules from the CDN before a test can act,
+  // and under the default worker count (half the logical CPUs) that alone can take most of 30 s; every assertion
+  // keeps its own expect() timeout, so a real failure still fails fast
+  timeout: 60_000,
   use: {
     baseURL,
     trace: 'retain-on-failure',

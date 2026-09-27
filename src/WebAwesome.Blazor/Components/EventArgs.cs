@@ -48,9 +48,9 @@ public class WaTabChangeEventArgs : EventArgs
 public class WaRatingHoverEventArgs : EventArgs
 {
     /// <summary>
-    /// Hover phase: 'start', 'move', or 'end'
+    /// The hover phase.
     /// </summary>
-    public string Phase { get; set; } = string.Empty;
+    public WaRatingHoverPhase Phase { get; set; }
 
     /// <summary>
     /// The potential rating value during hover
@@ -124,9 +124,32 @@ public class WaPaginationPageChangeEventArgs : EventArgs
 public class MutationEventArgs : EventArgs
 {
     /// <summary>
-    /// Array of MutationRecord objects describing the mutations
+    /// The mutations, one per DOM MutationRecord of the wa-mutation event, projected to the fields that marshal
+    /// (the records' node references do not).
     /// </summary>
-    public object[]? MutationRecords { get; set; }
+    public IReadOnlyList<WaMutationRecord>? MutationRecords { get; set; }
+}
+
+/// <summary>
+/// One DOM mutation reported by wa-mutation, projected from a MutationRecord by the JS initializer.
+/// </summary>
+public sealed record WaMutationRecord
+{
+    /// <summary>
+    /// The kind of change.
+    /// </summary>
+    public WaMutationType Type { get; init; }
+
+    /// <summary>
+    /// The name of the changed attribute, for an <see cref="WaMutationType.Attributes"/> change; otherwise null.
+    /// </summary>
+    public string? AttributeName { get; init; }
+
+    /// <summary>
+    /// The previous value of the attribute or character data, when the observer records old values
+    /// (<c>AttrOldValue</c>, <c>CharDataOldValue</c>); otherwise null.
+    /// </summary>
+    public string? OldValue { get; init; }
 }
 
 /// <summary>
@@ -135,9 +158,67 @@ public class MutationEventArgs : EventArgs
 public class ResizeEventArgs : EventArgs
 {
     /// <summary>
-    /// Array of ResizeObserverEntry objects describing the size changes
+    /// The size changes, one per ResizeObserverEntry of the wa-resize event, projected to its content box.
     /// </summary>
-    public object[]? ResizeObserverEntries { get; set; }
+    public IReadOnlyList<WaResizeEntry>? ResizeObserverEntries { get; set; }
+}
+
+/// <summary>
+/// One size change reported by wa-resize, projected from a ResizeObserverEntry by the JS initializer.
+/// </summary>
+public sealed record WaResizeEntry
+{
+    /// <summary>
+    /// The observed element's new content box (ResizeObserverEntry.contentRect), or null when the entry had none.
+    /// </summary>
+    public WaRect? ContentRect { get; init; }
+}
+
+/// <summary>
+/// A rectangle in CSS pixels, as a DOMRect serializes it (DOMRect.toJSON()).
+/// </summary>
+public sealed record WaRect
+{
+    /// <summary>The x coordinate of the rectangle's origin.</summary>
+    public double X { get; init; }
+
+    /// <summary>The y coordinate of the rectangle's origin.</summary>
+    public double Y { get; init; }
+
+    /// <summary>The width.</summary>
+    public double Width { get; init; }
+
+    /// <summary>The height.</summary>
+    public double Height { get; init; }
+
+    /// <summary>The top edge.</summary>
+    public double Top { get; init; }
+
+    /// <summary>The right edge.</summary>
+    public double Right { get; init; }
+
+    /// <summary>The bottom edge.</summary>
+    public double Bottom { get; init; }
+
+    /// <summary>The left edge.</summary>
+    public double Left { get; init; }
+}
+
+/// <summary>
+/// The identifying data of an element an event reported (a selected tree item, a shown random-content child),
+/// projected by the JS initializer, because live DOM elements do not marshal into Blazor.
+/// </summary>
+public sealed record WaElementInfo
+{
+    /// <summary>
+    /// The element's id, or null when it has none.
+    /// </summary>
+    public string? Id { get; init; }
+
+    /// <summary>
+    /// The element's trimmed text content.
+    /// </summary>
+    public string TextContent { get; init; } = string.Empty;
 }
 
 #endregion
@@ -160,22 +241,6 @@ public class IncludeErrorEventArgs : EventArgs
     public string? Message { get; set; }
 }
 
-/// <summary>
-/// Event arguments for zoom change events
-/// </summary>
-public class ZoomChangeEventArgs : EventArgs
-{
-    /// <summary>
-    /// The new zoom level (1.0 = 100%)
-    /// </summary>
-    public double ZoomLevel { get; set; }
-
-    /// <summary>
-    /// The previous zoom level
-    /// </summary>
-    public double PreviousZoomLevel { get; set; }
-}
-
 #endregion
 
 #region ------ Tree Events ------
@@ -184,20 +249,19 @@ public class ZoomChangeEventArgs : EventArgs
 /// Event arguments for tree selection change events
 /// </summary>
 /// <remarks>
-/// <see cref="Selection"/> is left as raw deserialized objects (one per selected <c>&lt;wa-tree-item&gt;</c>),
-/// mirroring <see cref="MutationEventArgs.MutationRecords"/> and <see cref="ResizeEventArgs.ResizeObserverEntries"/>:
-/// there is no supported way to marshal arbitrary DOM elements from a custom event's <c>detail</c> payload into
-/// live <see cref="ElementReference"/>s (those are only produced by Blazor itself, via <c>@ref</c>/element
-/// reference capture). Consumers needing to act on specific items should track selection via each
-/// <c>WaTreeItem</c>'s own <c>Selected</c> parameter/<c>OnSelectedChange</c>-style wiring instead.
+/// <see cref="Selection"/> identifies each selected <c>&lt;wa-tree-item&gt;</c> by its id and text: there is no
+/// supported way to marshal arbitrary DOM elements from a custom event's <c>detail</c> payload into live
+/// <see cref="ElementReference"/>s (those are only produced by Blazor itself, via <c>@ref</c>/element reference
+/// capture). Consumers needing to act on specific items should give them ids, or track selection via each
+/// <c>WaTreeItem</c>'s own <c>Selected</c> parameter.
 /// </remarks>
 public class WaTreeSelectionChangeEventArgs : EventArgs
 {
     /// <summary>
-    /// Selection data projected from the wa-selection-change event's detail, one entry per
-    /// selected tree item; each entry carries the item's id and trimmed text content.
+    /// The selected tree items, projected from the wa-selection-change event's detail to their id and trimmed text
+    /// content.
     /// </summary>
-    public object[]? Selection { get; set; }
+    public IReadOnlyList<WaElementInfo>? Selection { get; set; }
 }
 
 #endregion
@@ -250,13 +314,14 @@ public class WaCreateEventArgs : EventArgs
 public class WaDatePickerFocusDayEventArgs : EventArgs
 {
     /// <summary>
-    /// The newly focused day as an ISO date string (<c>YYYY-MM-DD</c>).
+    /// The newly focused day, or null when the event carries no valid date.
     /// </summary>
     /// <remarks>
-    /// The wa-focus-day event's detail carries a live JavaScript <c>Date</c>; it is projected to an
-    /// ISO date string by the interop module, since <c>Date</c> objects do not marshal into Blazor.
+    /// The wa-focus-day event's detail carries a live JavaScript <c>Date</c>; the interop module projects it to an
+    /// ISO <c>yyyy-MM-dd</c> string (<c>Date</c> objects do not marshal into Blazor), which deserializes into the
+    /// <see cref="DateOnly"/>.
     /// </remarks>
-    public string? Date { get; set; }
+    public DateOnly? Date { get; set; }
 }
 
 /// <summary>
@@ -265,14 +330,15 @@ public class WaDatePickerFocusDayEventArgs : EventArgs
 public class WaDatePickerViewChangeEventArgs : EventArgs
 {
     /// <summary>
-    /// The view the picker switched to: <c>days</c>, <c>months</c>, or <c>years</c>.
+    /// The view the picker switched to, or null when the event carries none.
     /// </summary>
-    public string? View { get; set; }
+    public WaDatePickerView? View { get; set; }
 
     /// <summary>
-    /// The anchor date of the new view as an ISO date string (<c>YYYY-MM-DD</c>).
+    /// The anchor date of the new view, or null when the event carries no valid date (projected from the detail's
+    /// JavaScript <c>Date</c> like <see cref="WaDatePickerFocusDayEventArgs.Date"/>).
     /// </summary>
-    public string? Date { get; set; }
+    public DateOnly? Date { get; set; }
 }
 
 #endregion
@@ -315,9 +381,9 @@ public class WaVideoChangeEventArgs : EventArgs
 /// <remarks>
 /// The wa-content-change event's detail carries the live child elements now shown; DOM elements
 /// cannot be marshaled into Blazor <see cref="ElementReference"/>s from event payloads, so
-/// <see cref="Items"/> is left as raw deserialized objects (each projected to its id and trimmed
-/// text content), mirroring <see cref="WaTreeSelectionChangeEventArgs.Selection"/>, and
-/// <see cref="Count"/> exposes how many children are now shown.
+/// <see cref="Items"/> identifies each by its id and trimmed text content, like
+/// <see cref="WaTreeSelectionChangeEventArgs.Selection"/>, and <see cref="Count"/> exposes how many children are
+/// now shown.
 /// </remarks>
 public class WaContentChangeEventArgs : EventArgs
 {
@@ -327,10 +393,9 @@ public class WaContentChangeEventArgs : EventArgs
     public int Count { get; set; }
 
     /// <summary>
-    /// Selection data projected from the wa-content-change event's detail, one entry per shown
-    /// child; each entry carries the element's id and trimmed text content.
+    /// The shown children, projected from the wa-content-change event's detail to their id and trimmed text content.
     /// </summary>
-    public object[]? Items { get; set; }
+    public IReadOnlyList<WaElementInfo>? Items { get; set; }
 }
 
 #endregion
@@ -435,9 +500,9 @@ public class WaDataGridColumnPinEventArgs : EventArgs
     public string Column { get; set; } = string.Empty;
 
     /// <summary>
-    /// The side the column is now pinned to (<c>left</c> or <c>right</c>), or null when unpinned.
+    /// The side the column is now pinned to, or null when unpinned.
     /// </summary>
-    public string? Side { get; set; }
+    public WaDataGridPinSide? Side { get; set; }
 }
 
 /// <summary>

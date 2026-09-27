@@ -40,9 +40,21 @@ public class WaAvatar : ComponentBase
 
     // Avatar properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Image"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultImage = "";
+
+    /// <summary>
     /// The image source to use for the avatar.
     /// </summary>
     [Parameter] public string? Image { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Initials"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultInitials = "";
 
     /// <summary>
     /// Initials to use as a fallback when no image is available (1-2 characters max recommended).
@@ -50,9 +62,20 @@ public class WaAvatar : ComponentBase
     [Parameter] public string? Initials { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Loading"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaLoading DefaultLoading = WaLoading.Eager;
+
+    /// <summary>
     /// Indicates how the browser should load the image.
     /// </summary>
-    [Parameter] public WaLoading Loading { get; set; } = WaLoading.Eager;
+    [Parameter] public WaLoading Loading { get; set; } = DefaultLoading;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
 
     /// <summary>
     /// A label to use to describe the avatar to assistive devices.
@@ -60,9 +83,14 @@ public class WaAvatar : ComponentBase
     [Parameter] public string? Label { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Shape"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaAvatarShape DefaultShape = WaAvatarShape.Circle;
+
+    /// <summary>
     /// The shape of the avatar.
     /// </summary>
-    [Parameter] public WaAvatarShape Shape { get; set; } = WaAvatarShape.Circle;
+    [Parameter] public WaAvatarShape Shape { get; set; } = DefaultShape;
 
     #endregion
 
@@ -94,7 +122,7 @@ public class WaAvatar : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-avatar");
+        var attributes = builder.OpenWaElement(this, 0, "wa-avatar");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -102,13 +130,11 @@ public class WaAvatar : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add avatar-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "image", Image);
-        builder.AddAttributeIfNotNullOrEmpty(11, "initials", Initials);
-        if (Loading != WaLoading.Eager)
-            builder.AddAttribute(12, "loading", Loading.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(13, "label", Label);
-        if (Shape != WaAvatarShape.Circle)
-            builder.AddAttribute(14, "shape", Shape.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "image", Image, DefaultImage);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "initials", Initials, DefaultInitials);
+        builder.AddDefaultedAttribute(attributes, 12, "loading", Loading.ToHtmlValue(), DefaultLoading.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "label", Label, DefaultLabel);
+        builder.AddDefaultedAttribute(attributes, 14, "shape", Shape.ToHtmlValue(), DefaultShape.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(16, "onwa-error", OnError);

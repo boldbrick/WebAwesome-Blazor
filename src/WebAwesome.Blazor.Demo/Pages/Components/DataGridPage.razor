@@ -76,7 +76,7 @@
         <WaButton Size="WaSize.Small" OnClick="@(() => groupedGrid!.ExpandAllRowsAsync())">Expand all groups</WaButton>
         <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => groupedGrid!.CollapseAllRowsAsync())">Collapse all</WaButton>
     </WaCluster>
-    <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="department"
+    <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="@(new[] { "department" })"
                 Data="compensation" Columns="groupedColumns" />
 </ExampleSection>
 
@@ -267,8 +267,8 @@
         new() { Field = "sku", Label = "SKU", Width = 110 },
         new() { Field = "product", Label = "Product", Flex = 2, MinWidth = 180 },
         new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 130 },
-        new() { Field = "price", Label = "Price (EUR)", Align = "end", Width = 130 },
-        new() { Field = "stock", Label = "In Stock", Align = "end", Width = 110 }
+        new() { Field = "price", Label = "Price (EUR)", Align = WaDataGridAlign.End, Width = 130 },
+        new() { Field = "stock", Label = "In Stock", Align = WaDataGridAlign.End, Width = 110 }
     ];
 
     private sealed record ElementRow(int Number, string Symbol, string Name, double Mass, string Category);
@@ -287,10 +287,10 @@
 
     private readonly WaDataGridColumn[] elementColumns =
     [
-        new() { Field = "number", Label = "#", Align = "end", Width = 64 },
+        new() { Field = "number", Label = "#", Align = WaDataGridAlign.End, Width = 64 },
         new() { Field = "symbol", Label = "Symbol", Width = 110 },
         new() { Field = "name", Label = "Name", Flex = 1, MinWidth = 130 },
-        new() { Field = "mass", Label = "Atomic Mass", Align = "end", Width = 150 },
+        new() { Field = "mass", Label = "Atomic Mass", Align = WaDataGridAlign.End, Width = 150 },
         new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 150 }
     ];
 
@@ -309,11 +309,11 @@
     private readonly WaDataGridColumn[] standingColumns =
     [
         new() { Field = "team", Label = "Team", Flex = 1, MinWidth = 160 },
-        new() { Field = "played", Label = "P", Align = "end", Width = 70 },
-        new() { Field = "won", Label = "W", Align = "end", Width = 70 },
-        new() { Field = "drawn", Label = "D", Align = "end", Width = 70 },
-        new() { Field = "lost", Label = "L", Align = "end", Width = 70 },
-        new() { Field = "points", Label = "Pts", Align = "end", Width = 80, SortDescFirst = true }
+        new() { Field = "played", Label = "P", Align = WaDataGridAlign.End, Width = 70 },
+        new() { Field = "won", Label = "W", Align = WaDataGridAlign.End, Width = 70 },
+        new() { Field = "drawn", Label = "D", Align = WaDataGridAlign.End, Width = 70 },
+        new() { Field = "lost", Label = "L", Align = WaDataGridAlign.End, Width = 70 },
+        new() { Field = "points", Label = "Pts", Align = WaDataGridAlign.End, Width = 80, SortDescFirst = true }
     ];
 
     private sealed record SubscriberRow(int Id, string Name, string Email, string Plan);
@@ -348,7 +348,7 @@
     [
         new() { Field = "name", Label = "Plan", Flex = 1, MinWidth = 130 },
         new() { Field = "seats", Label = "Seats", Flex = 1, MinWidth = 130 },
-        new() { Field = "price", Label = "Price/mo", Align = "end", Width = 120 }
+        new() { Field = "price", Label = "Price/mo", Align = WaDataGridAlign.End, Width = 120 }
     ];
 
     private sealed record TransactionRow(int Id, string Merchant, string Method, decimal Amount, string Status);
@@ -371,7 +371,7 @@
         new() { Field = "id", Label = "Txn", Width = 90 },
         new() { Field = "merchant", Label = "Merchant", Flex = 2, MinWidth = 140 },
         new() { Field = "method", Label = "Payment Method", Flex = 1, MinWidth = 185 },
-        new() { Field = "amount", Label = "Amount", Align = "end", Width = 120 },
+        new() { Field = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 120 },
         new() { Field = "status", Label = "Status", Width = 120 }
     ];
 
@@ -393,8 +393,8 @@
     [
         new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150, Filterable = true },
         new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
-        new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = "set" },
-        new() { Field = "population", Label = "Population", Align = "end", Width = 160, Filterable = true, FilterType = "number-range" }
+        new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set },
+        new() { Field = "population", Label = "Population", Align = WaDataGridAlign.End, Width = 160, Filterable = true, FilterType = WaDataGridFilterType.NumberRange }
     ];
 
     private readonly WaDataGridColumn[] cellClickColumns =
@@ -419,10 +419,10 @@
 
     private readonly WaDataGridColumn[] managedColumns =
     [
-        new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160, Pinned = "left" },
+        new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160, Pinned = WaDataGridPinSide.Left },
         new() { Field = "department", Label = "Department", Flex = 1, MinWidth = 150 },
         new() { Field = "title", Label = "Title", Flex = 2, MinWidth = 150 },
-        new() { Field = "salary", Label = "Salary", Align = "end", Width = 130, Hidden = true }
+        new() { Field = "salary", Label = "Salary", Align = WaDataGridAlign.End, Width = 130, Hidden = true }
     ];
 
     private readonly WaDataGridColumn[] groupedColumns =
@@ -430,7 +430,7 @@
         new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160 },
         new() { Field = "department", Label = "Department", Flex = 1, MinWidth = 150 },
         new() { Field = "title", Label = "Title", Flex = 2, MinWidth = 150 },
-        new() { Field = "salary", Label = "Salary", Align = "end", Width = 130, Aggregation = "sum" }
+        new() { Field = "salary", Label = "Salary", Align = WaDataGridAlign.End, Width = 130, Aggregation = WaDataGridAggregation.Sum }
     ];
 
     private sealed record InvoiceRow(int Id, string Item, int Hours, int Rate);
@@ -446,8 +446,8 @@
     private readonly WaDataGridColumn[] invoiceColumns =
     [
         new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
-        new() { Field = "hours", Label = "Hours", Align = "end", Width = 110, Footer = "132" },
-        new() { Field = "rate", Label = "Rate", Align = "end", Width = 120 }
+        new() { Field = "hours", Label = "Hours", Align = WaDataGridAlign.End, Width = 110, Footer = "132" },
+        new() { Field = "rate", Label = "Rate", Align = WaDataGridAlign.End, Width = 120 }
     ];
 
     private sealed record FileRow(int Id, string Name, string Kind, string Size, object[]? Children = null);
@@ -474,7 +474,7 @@
     [
         new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 200 },
         new() { Field = "kind", Label = "Kind", Flex = 1, MinWidth = 130 },
-        new() { Field = "size", Label = "Size", Align = "end", Width = 110 }
+        new() { Field = "size", Label = "Size", Align = WaDataGridAlign.End, Width = 110 }
     ];
 
     private readonly object[] noInvoices = [];
@@ -483,7 +483,7 @@
     [
         new() { Field = "number", Label = "Invoice #", Width = 130 },
         new() { Field = "client", Label = "Client", Flex = 1, MinWidth = 160 },
-        new() { Field = "amount", Label = "Amount", Align = "end", Width = 120 }
+        new() { Field = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 120 }
     ];
 
     private sealed record OrderRow(int Id, string Customer, string Status, decimal Amount);
@@ -509,7 +509,7 @@
         new() { Field = "id", Label = "Order", Width = 100 },
         new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 180 },
         new() { Field = "status", Label = "Status", Width = 140 },
-        new() { Field = "amount", Label = "Amount", Align = "end", Width = 120 }
+        new() { Field = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 120 }
     ];
 
     private sealed record ExpenseRow(int Id, string Description, string Category, decimal Amount);
@@ -527,7 +527,7 @@
     [
         new() { Field = "description", Label = "Description", Flex = 2, MinWidth = 200 },
         new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 140 },
-        new() { Field = "amount", Label = "Amount", Align = "end", Width = 120 }
+        new() { Field = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 120 }
     ];
 
     #endregion
@@ -554,8 +554,8 @@
                 new() { Field = "sku", Label = "SKU", Width = 110 },
                 new() { Field = "product", Label = "Product", Flex = 2, MinWidth = 180 },
                 new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 130 },
-                new() { Field = "price", Label = "Price (EUR)", Align = "end", Width = 130 },
-                new() { Field = "stock", Label = "In Stock", Align = "end", Width = 110 }
+                new() { Field = "price", Label = "Price (EUR)", Align = WaDataGridAlign.End, Width = 130 },
+                new() { Field = "stock", Label = "In Stock", Align = WaDataGridAlign.End, Width = 110 }
             ];
         }
         """;
@@ -634,8 +634,8 @@
             [
                 new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150, Filterable = true },
                 new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
-                new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = "set" },
-                new() { Field = "population", Label = "Population", Align = "end", Width = 160, Filterable = true, FilterType = "number-range" }
+                new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set },
+                new() { Field = "population", Label = "Population", Align = WaDataGridAlign.End, Width = 160, Filterable = true, FilterType = WaDataGridFilterType.NumberRange }
             ];
         }
         """;
@@ -654,10 +654,10 @@
 
             private readonly WaDataGridColumn[] managedColumns =
             [
-                new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160, Pinned = "left" },
+                new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160, Pinned = WaDataGridPinSide.Left },
                 new() { Field = "department", Label = "Department", Flex = 1, MinWidth = 150 },
                 new() { Field = "title", Label = "Title", Flex = 2, MinWidth = 150 },
-                new() { Field = "salary", Label = "Salary", Align = "end", Width = 130, Hidden = true }
+                new() { Field = "salary", Label = "Salary", Align = WaDataGridAlign.End, Width = 130, Hidden = true }
             ];
         }
         """;
@@ -670,8 +670,8 @@
             private readonly WaDataGridColumn[] invoiceColumns =
             [
                 new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
-                new() { Field = "hours", Label = "Hours", Align = "end", Width = 110, Footer = "132" },
-                new() { Field = "rate", Label = "Rate", Align = "end", Width = 120 }
+                new() { Field = "hours", Label = "Hours", Align = WaDataGridAlign.End, Width = 110, Footer = "132" },
+                new() { Field = "rate", Label = "Rate", Align = WaDataGridAlign.End, Width = 120 }
             ];
         }
         """;
@@ -681,7 +681,7 @@
             <WaButton Size="WaSize.Small" OnClick="@(() => groupedGrid!.ExpandAllRowsAsync())">Expand all groups</WaButton>
             <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="@(() => groupedGrid!.CollapseAllRowsAsync())">Collapse all</WaButton>
         </WaCluster>
-        <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="department"
+        <WaDataGrid @ref="groupedGrid" Label="Team compensation" RowKey="id" GroupBy="@(new[] { "department" })"
                     Data="compensation" Columns="groupedColumns" />
 
         @code {
@@ -692,7 +692,7 @@
                 new() { Field = "name", Label = "Name", Flex = 2, MinWidth = 160 },
                 new() { Field = "department", Label = "Department", Flex = 1, MinWidth = 150 },
                 new() { Field = "title", Label = "Title", Flex = 2, MinWidth = 150 },
-                new() { Field = "salary", Label = "Salary", Align = "end", Width = 130, Aggregation = "sum" }
+                new() { Field = "salary", Label = "Salary", Align = WaDataGridAlign.End, Width = 130, Aggregation = WaDataGridAggregation.Sum }
             ];
         }
         """;

@@ -1,9 +1,9 @@
-﻿@page "/components/tree"
+@page "/components/tree"
 
 <PageTitle>Tree</PageTitle>
 
-<h1>Tree</h1>
-<p><code>&lt;wa-tree&gt;</code> wrapped by <code>WaTree</code>, with <code>&lt;wa-tree-item&gt;</code> wrapped by <code>WaTreeItem</code>.</p>
+<h1>Tree <ComponentBadges Tag="wa-tree" /></h1>
+<p>Trees show a hierarchy of items that can be expanded, collapsed and selected. <code>&lt;wa-tree&gt;</code> wrapped by <code>WaTree</code>, with <code>&lt;wa-tree-item&gt;</code> wrapped by <a href="components/tree-item"><code>WaTreeItem</code></a>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaTree>
@@ -21,11 +21,105 @@
     </WaTree>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tree.md) *@
+<ExampleSection Title="Selection Modes" Code="@SelectionExample">
+    <p><code>Single</code> selects one item, <code>Multiple</code> any number (with checkboxes, and parents follow their children), <code>Leaf</code> and <code>LeafMultiple</code> only items without children; a click on a parent then expands it.</p>
+    <WaSelect Label="Selection" @bind-Value="SelectionMode" Style="max-width: 16rem; margin-bottom: var(--wa-space-m);">
+        <WaOption Value="@nameof(WaTreeSelection.Single)">Single</WaOption>
+        <WaOption Value="@nameof(WaTreeSelection.Multiple)">Multiple</WaOption>
+        <WaOption Value="@nameof(WaTreeSelection.Leaf)">Leaf</WaOption>
+        <WaOption Value="@nameof(WaTreeSelection.LeafMultiple)">Leaf multiple</WaOption>
+    </WaSelect>
+    <WaTree Selection="selection" OnSelectionChange="e => selectedCount = e.Selection?.Count ?? 0">
+        <WaTreeItem Expanded="true">
+            Deciduous
+            <WaTreeItem>Birch</WaTreeItem>
+            <WaTreeItem>Maple</WaTreeItem>
+            <WaTreeItem>Oak</WaTreeItem>
+        </WaTreeItem>
+        <WaTreeItem>
+            Coniferous
+            <WaTreeItem>Cedar</WaTreeItem>
+            <WaTreeItem>Pine</WaTreeItem>
+        </WaTreeItem>
+    </WaTree>
+    <p>Selected items: <strong>@selectedCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Custom Expand and Collapse Icons" Code="@IconsExample">
+    <WaCluster Gap="GapSize.Gap_2XL">
+        <WaTree ExpandIconName="square-plus" CollapseIconName="square-minus">
+            <WaTreeItem>
+                Icons by name
+                <WaTreeItem>First</WaTreeItem>
+                <WaTreeItem>Second</WaTreeItem>
+            </WaTreeItem>
+        </WaTree>
+        <WaTree>
+            <ExpandIconContent><WaIcon Name="folder-plus" /></ExpandIconContent>
+            <CollapseIconContent><WaIcon Name="folder-minus" /></CollapseIconContent>
+            <ChildContent>
+                <WaTreeItem>
+                    Icons as fragments
+                    <WaTreeItem>First</WaTreeItem>
+                    <WaTreeItem>Second</WaTreeItem>
+                </WaTreeItem>
+            </ChildContent>
+        </WaTree>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Lazy Loading" Code="@LazyExample">
+    <WaTree>
+        <WaTreeItem Lazy="lazy" OnLazyLoad="LoadAsync">
+            Available trees
+            @foreach (var name in loaded)
+            {
+                <WaTreeItem>@name</WaTreeItem>
+            }
+        </WaTreeItem>
+    </WaTree>
+</ExampleSection>
+
+<ExampleSection Title="Indent Guides" Code="@GuidesExample">
+    <WaTree Style="--indent-guide-width: 1px; --indent-size: 1.25rem;">
+        <WaTreeItem Expanded="true">
+            src
+            <WaTreeItem Expanded="true">
+                components
+                <WaTreeItem>button.ts</WaTreeItem>
+                <WaTreeItem>tree.ts</WaTreeItem>
+            </WaTreeItem>
+            <WaTreeItem>index.ts</WaTreeItem>
+        </WaTreeItem>
+    </WaTree>
+</ExampleSection>
 
 <ApiTable Tag="wa-tree" />
 
 @code {
+    private WaTreeSelection selection = WaTreeSelection.Single;
+    private int selectedCount;
+    private bool lazy = true;
+    private readonly List<string> loaded = [];
+
+    // the select's string value, parsed into the selection mode
+    private string? SelectionMode
+    {
+        get => selection.ToString();
+        set
+        {
+            if (Enum.TryParse<WaTreeSelection>(value, out var mode)) selection = mode;
+        }
+    }
+
+    // Web Awesome shows a spinner until Lazy is cleared; yield first, so the change lands after the element's update
+    private async Task LoadAsync()
+    {
+        await Task.Yield();
+        loaded.AddRange(["Birch", "Cedar", "Maple", "Oak", "Pine"]);
+        lazy = false;
+    }
+
     private const string DefaultExample = """
         <WaTree>
             <WaTreeItem>
@@ -39,6 +133,102 @@
                 <WaTreeItem>Family</WaTreeItem>
             </WaTreeItem>
             <WaTreeItem>Notes</WaTreeItem>
+        </WaTree>
+        """;
+
+    private const string SelectionExample = """
+        <WaSelect Label="Selection" @bind-Value="SelectionMode">
+            <WaOption Value="@nameof(WaTreeSelection.Single)">Single</WaOption>
+            <WaOption Value="@nameof(WaTreeSelection.Multiple)">Multiple</WaOption>
+            <WaOption Value="@nameof(WaTreeSelection.Leaf)">Leaf</WaOption>
+            <WaOption Value="@nameof(WaTreeSelection.LeafMultiple)">Leaf multiple</WaOption>
+        </WaSelect>
+        <WaTree Selection="selection" OnSelectionChange="e => selectedCount = e.Selection?.Count ?? 0">
+            <WaTreeItem Expanded="true">
+                Deciduous
+                <WaTreeItem>Birch</WaTreeItem>
+                <WaTreeItem>Maple</WaTreeItem>
+                <WaTreeItem>Oak</WaTreeItem>
+            </WaTreeItem>
+            <WaTreeItem>
+                Coniferous
+                <WaTreeItem>Cedar</WaTreeItem>
+                <WaTreeItem>Pine</WaTreeItem>
+            </WaTreeItem>
+        </WaTree>
+        <p>Selected items: @selectedCount</p>
+
+        @code {
+            private WaTreeSelection selection = WaTreeSelection.Single;
+            private int selectedCount;
+
+            private string? SelectionMode
+            {
+                get => selection.ToString();
+                set
+                {
+                    if (Enum.TryParse<WaTreeSelection>(value, out var mode)) selection = mode;
+                }
+            }
+        }
+        """;
+
+    private const string IconsExample = """
+        <WaTree ExpandIconName="square-plus" CollapseIconName="square-minus">
+            <WaTreeItem>
+                Icons by name
+                <WaTreeItem>First</WaTreeItem>
+                <WaTreeItem>Second</WaTreeItem>
+            </WaTreeItem>
+        </WaTree>
+        <WaTree>
+            <ExpandIconContent><WaIcon Name="folder-plus" /></ExpandIconContent>
+            <CollapseIconContent><WaIcon Name="folder-minus" /></CollapseIconContent>
+            <ChildContent>
+                <WaTreeItem>
+                    Icons as fragments
+                    <WaTreeItem>First</WaTreeItem>
+                    <WaTreeItem>Second</WaTreeItem>
+                </WaTreeItem>
+            </ChildContent>
+        </WaTree>
+        """;
+
+    private const string LazyExample = """
+        <WaTree>
+            <WaTreeItem Lazy="lazy" OnLazyLoad="LoadAsync">
+                Available trees
+                @foreach (var name in loaded)
+                {
+                    <WaTreeItem>@name</WaTreeItem>
+                }
+            </WaTreeItem>
+        </WaTree>
+
+        @code {
+            private bool lazy = true;
+            private readonly List<string> loaded = [];
+
+            private async Task LoadAsync()
+            {
+                await Task.Yield();
+                loaded.AddRange(["Birch", "Cedar", "Maple", "Oak", "Pine"]);
+                lazy = false;
+            }
+        }
+        """;
+
+    private const string GuidesExample = """
+        <WaTree Style="--indent-guide-width: 1px; --indent-size: 1.25rem;">
+            <WaTreeItem Expanded="true">
+                src
+                <WaTreeItem Expanded="true">
+                    components
+                    <WaTreeItem>button.ts</WaTreeItem>
+                    <WaTreeItem>tree.ts</WaTreeItem>
+                </WaTreeItem>
+                <WaTreeItem>index.ts</WaTreeItem>
+            </WaTreeItem>
         </WaTree>
         """;
 }

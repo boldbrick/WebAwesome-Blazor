@@ -1,0 +1,129 @@
+@page "/testing/event-payloads"
+@using WebAwesome.Blazor.Models
+
+@* e2e harness for tools\e2e\tests\event-payload.spec.js - deliberately outside /components/, so it is neither
+   derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js *@
+
+<PageTitle>Testing: Event Payloads</PageTitle>
+
+<h1>Event Payloads Harness</h1>
+<p>This page is an end-to-end test harness for the events whose payload the library's JS initializer projects by hand (<code>specialArgs</code> in <code>WebAwesome.Blazor.lib.module.js</code>): every callback's last payload is shown in the event log below as .NET received it, so the browser tests can check each field.</p>
+
+<ExampleSection Title="Split panel">
+    <WaSplitPanel Position="40" data-testid="pl-split-panel" Style="height: 80px;" OnReposition="e => log.Record(Id(nameof(WaSplitPanel), nameof(WaSplitPanel.OnReposition)), e)">
+        <StartContent><div style="padding: var(--wa-space-s);">Start</div></StartContent>
+        <EndContent><div style="padding: var(--wa-space-s);">End</div></EndContent>
+    </WaSplitPanel>
+</ExampleSection>
+
+<ExampleSection Title="Observers">
+    <WaMutationObserver Attr="true" AttrOldValue="true" AttributeFilter="@(new HashSet<string> { "data-state" })" data-testid="pl-mutation-observer"
+                        OnMutation="e => log.Record(Id(nameof(WaMutationObserver), nameof(WaMutationObserver.OnMutation)), e)">
+        <div data-state="@mutationState" data-testid="pl-mutation-target">State: @mutationState</div>
+    </WaMutationObserver>
+    <WaButton Size="WaSize.Small" data-testid="pl-mutation-toggle" OnClick="() => mutationState = MutatedState">Change the observed attribute</WaButton>
+
+    <WaResizeObserver data-testid="pl-resize-observer" OnResize="e => log.Record(Id(nameof(WaResizeObserver), nameof(WaResizeObserver.OnResize)), e)">
+        <div data-testid="pl-resize-target" style="width: @(resizeWidth)px; height: 20px; background: var(--wa-color-brand-fill-loud);"></div>
+    </WaResizeObserver>
+    <WaButton Size="WaSize.Small" data-testid="pl-resize-grow" OnClick="() => resizeWidth = GrownWidth">Resize the observed element</WaButton>
+
+    <WaRandomContent @ref="randomContent" Mode="WaRandomContentMode.Sequence" Animation="WaRandomContentAnimation.None" data-testid="pl-random-content"
+                     OnContentChange="e => log.Record(Id(nameof(WaRandomContent), nameof(WaRandomContent.OnContentChange)), e)">
+        <div id="pl-random-one">First item</div>
+        <div id="pl-random-two">Second item</div>
+    </WaRandomContent>
+    <WaButton Size="WaSize.Small" data-testid="pl-random-next" OnClick="() => randomContent!.RandomizeAsync()">Show the next item</WaButton>
+
+    @* far below the fold, so it intersects only once the test scrolls it into view *@
+    <div style="height: 150vh;"></div>
+    <WaIntersectionObserver data-testid="pl-intersection-observer" OnIntersect="e => log.Record(Id(nameof(WaIntersectionObserver), nameof(WaIntersectionObserver.OnIntersect)), e)">
+        <div style="height: 40px; background: var(--wa-color-success-fill-loud);">Observed</div>
+    </WaIntersectionObserver>
+</ExampleSection>
+
+<ExampleSection Title="Pro: date picker, video playlist, data grid">
+    <WaDatePicker data-testid="pl-date-picker" FocusedDate="PayloadPickerDate" Value="PayloadPickerDate"
+                  OnFocusDay="e => log.Record(Id(nameof(WaDatePicker), nameof(WaDatePicker.OnFocusDay)), e)"
+                  OnViewChange="e => log.Record(Id(nameof(WaDatePicker), nameof(WaDatePicker.OnViewChange)), e)" />
+
+    <WaVideoPlaylist data-testid="pl-video-playlist" OnVideoChange="e => log.Record(Id(nameof(WaVideoPlaylist), nameof(WaVideoPlaylist.OnVideoChange)), e)">
+        <WaVideo Title="First clip" />
+        <WaVideo Title="Second clip" />
+    </WaVideoPlaylist>
+
+    <WaDataGrid Label="Payload grid" RowKey="id" Data="rows" Columns="columns" data-testid="pl-data-grid"
+                Selectable="WaDataGridSelectable.Multiple" WithSearch="true" Paginate="true" PageSize="2"
+                OnCellClick="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnCellClick)), e)"
+                OnCellContextMenu="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnCellContextMenu)), e)"
+                OnSortChange="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnSortChange)), e)"
+                OnRowSelect="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnRowSelect)), e)"
+                OnPageChange="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnPageChange)), e)"
+                OnFilterChange="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnFilterChange)), e)" />
+
+    @* column management and tree data: column menus, reordering, pinning, resizing and child rows *@
+    <WaDataGrid Label="Column grid" RowKey="id" Data="treeRows" Columns="columns" ChildRows="children" data-testid="pl-column-grid"
+                WithColumnMenu="true" WithColumnsMenu="true" Pinnable="true" Resizable="true" Reorderable="true"
+                OnColumnMove="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnColumnMove)), e)"
+                OnColumnPin="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnColumnPin)), e)"
+                OnColumnResize="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnColumnResize)), e)"
+                OnColumnVisibilityChange="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnColumnVisibilityChange)), e)"
+                OnRowExpand="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnRowExpand)), e)"
+                OnRowCollapse="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnRowCollapse)), e)" />
+
+    @* server mode: the grid asks .NET for every page (wa-data-request); a failing JS dataSource, which only the
+       test installs (the wrapper has no dataSource parameter), produces wa-data-error *@
+    <WaDataGrid Label="Server grid" RowKey="id" Columns="columns" Server="true" Paginate="true" PageSize="2" Total="4" Data="serverRows" data-testid="pl-server-grid"
+                OnDataRequest="HandleDataRequest"
+                OnDataError="e => log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnDataError)), e)" />
+</ExampleSection>
+
+<ExampleSection Title="Event log">
+    <EventLogView Log="log" />
+</ExampleSection>
+
+@code {
+    private static readonly DateOnly PayloadPickerDate = new(2024, 3, 15);
+    private const string InitialState = "off";
+    private const string MutatedState = "on";
+    private const int InitialWidth = 100;
+    private const int GrownWidth = 200;
+
+    private readonly EventLog log = new();
+
+    private WaRandomContent? randomContent;
+    private string mutationState = InitialState;
+    private int resizeWidth = InitialWidth;
+
+    private static readonly IReadOnlyList<object> rows =
+    [
+        new { id = 1, name = "Ada", score = 90 },
+        new { id = 2, name = "Grace", score = 85 },
+        new { id = 3, name = "Linus", score = 70 },
+        new { id = 4, name = "Margaret", score = 95 },
+    ];
+
+    private static readonly IReadOnlyList<object> treeRows =
+    [
+        new { id = 10, name = "Team", score = 80, children = new object[] { new { id = 11, name = "Member", score = 75 } } },
+        new { id = 20, name = "Solo", score = 60 },
+    ];
+
+    private IReadOnlyList<object> serverRows = rows.Take(2).ToList();
+
+    private static readonly IReadOnlyList<WaDataGridColumn> columns =
+    [
+        new() { Field = "name", Label = "Name", Sortable = true },
+        new() { Field = "score", Label = "Score", Sortable = true },
+    ];
+
+    private static string Id(string wrapper, string callback) => $"{wrapper}.{callback}";
+
+    // server mode: answers each request with the requested page
+    private void HandleDataRequest(WaDataGridDataRequestEventArgs args)
+    {
+        log.Record(Id(nameof(WaDataGrid), nameof(WaDataGrid.OnDataRequest)), args);
+        serverRows = rows.Skip(args.Page * args.PageSize).Take(args.PageSize).ToList();
+    }
+}

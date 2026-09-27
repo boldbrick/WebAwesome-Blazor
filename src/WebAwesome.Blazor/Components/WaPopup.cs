@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
@@ -21,7 +21,7 @@ public class WaPopup : ComponentBase
 {
     #region ------ Dependency Injection ------
 
-    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private WebAwesomeJSInterop JSInterop { get; set; } = default!;
 
     #endregion
 
@@ -53,10 +53,15 @@ public class WaPopup : ComponentBase
 
     // Popup positioning properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaPlacement DefaultPlacement = WaPlacement.Top;
+
+    /// <summary>
     /// The preferred placement of the popup. Note that the actual placement will vary as configured to keep
     /// the panel inside of the viewport.
     /// </summary>
-    [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
+    [Parameter] public WaPlacement Placement { get; set; } = DefaultPlacement;
 
     /// <summary>
     /// Activates the positioning logic and shows the popup. When deactivated, the positioning logic is torn
@@ -71,14 +76,24 @@ public class WaPopup : ComponentBase
     [Parameter] public string? Anchor { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Distance"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const double DefaultDistance = 0;
+
+    /// <summary>
     /// The distance in pixels from which to offset the panel away from its anchor.
     /// </summary>
-    [Parameter] public double Distance { get; set; } = 0;
+    [Parameter] public double Distance { get; set; } = DefaultDistance;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Skidding"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const double DefaultSkidding = 0;
 
     /// <summary>
     /// The distance in pixels from which to offset the panel along its anchor.
     /// </summary>
-    [Parameter] public double Skidding { get; set; } = 0;
+    [Parameter] public double Skidding { get; set; } = DefaultSkidding;
 
     // Arrow properties
     /// <summary>
@@ -88,16 +103,26 @@ public class WaPopup : ComponentBase
     [Parameter] public bool Arrow { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="ArrowPlacement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaArrowPlacement DefaultArrowPlacement = WaArrowPlacement.Anchor;
+
+    /// <summary>
     /// The placement of the arrow. The default, <see cref="WaArrowPlacement.Anchor"/>, aligns the arrow as
     /// close to the center of the anchor as possible, considering available space and <see cref="ArrowPadding"/>.
     /// </summary>
-    [Parameter] public WaArrowPlacement ArrowPlacement { get; set; } = WaArrowPlacement.Anchor;
+    [Parameter] public WaArrowPlacement ArrowPlacement { get; set; } = DefaultArrowPlacement;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="ArrowPadding"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const double DefaultArrowPadding = 10;
 
     /// <summary>
     /// The amount of padding, in pixels, between the arrow and the edges of the popup. If the popup has a
     /// border-radius, this prevents the arrow from overflowing the corners.
     /// </summary>
-    [Parameter] public double ArrowPadding { get; set; } = 10;
+    [Parameter] public double ArrowPadding { get; set; } = DefaultArrowPadding;
 
     // Flip behavior
     /// <summary>
@@ -107,28 +132,39 @@ public class WaPopup : ComponentBase
     [Parameter] public bool Flip { get; set; }
 
     /// <summary>
-    /// If the preferred placement doesn't fit, the popup is tested in these fallback placements until one
-    /// fits. Must be a string of any number of placements separated by a space, e.g. <c>top bottom left</c>.
+    /// The Web Awesome default of <see cref="FlipFallbackPlacements"/>: none (the opposite side), rendered as the empty
+    /// attribute in place of null or an empty list once the attribute has been rendered.
     /// </summary>
-    [Parameter] public string? FlipFallbackPlacements { get; set; }
+    public static readonly IReadOnlyList<WaPlacement> DefaultFlipFallbackPlacements = [];
+
+    /// <summary>
+    /// If the preferred placement doesn't fit, the popup is tested in these fallback placements until one
+    /// fits, in list order (rendered separated by a space); null or empty tries the opposite side only.
+    /// </summary>
+    [Parameter] public IReadOnlyList<WaPlacement>? FlipFallbackPlacements { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="FlipFallbackStrategy"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaFlipFallbackStrategy DefaultFlipFallbackStrategy = WaFlipFallbackStrategy.BestFit;
 
     /// <summary>
     /// When neither the preferred placement nor the fallback placements fit, this value determines whether
     /// the popup is positioned using the best available fit based on available space or as it was initially
-    /// preferred.
+    /// preferred. Null (the default) leaves the element's default, <see cref="WaFlipFallbackStrategy.BestFit"/>.
     /// </summary>
-    [Parameter] public string? FlipFallbackStrategy { get; set; } = "initial";
+    [Parameter] public WaFlipFallbackStrategy? FlipFallbackStrategy { get; set; }
 
     /// <summary>
-    /// The clipping element(s) that overflow is checked relative to when flipping. By default, the boundary
-    /// includes overflow ancestors that will cause the element to be clipped.
+    /// The Web Awesome default of <see cref="FlipPadding"/>, which renders no attribute until the parameter first differs from it.
     /// </summary>
-    [Parameter] public string? FlipBoundary { get; set; }
+    public const double DefaultFlipPadding = 0;
 
     /// <summary>
     /// The amount of padding, in pixels, to exceed before the flip behavior occurs.
     /// </summary>
-    [Parameter] public double FlipPadding { get; set; } = 0;
+    [Parameter] public double FlipPadding { get; set; } = DefaultFlipPadding;
 
     // Shift behavior
     /// <summary>
@@ -137,38 +173,48 @@ public class WaPopup : ComponentBase
     [Parameter] public bool Shift { get; set; }
 
     /// <summary>
-    /// The clipping element(s) that overflow is checked relative to when shifting. By default, the boundary
-    /// includes overflow ancestors that will cause the element to be clipped.
+    /// The Web Awesome default of <see cref="ShiftPadding"/>, which renders no attribute until the parameter first differs from it.
     /// </summary>
-    [Parameter] public string? ShiftBoundary { get; set; }
+    public const double DefaultShiftPadding = 0;
 
     /// <summary>
     /// The amount of padding, in pixels, to exceed before the shift behavior occurs.
     /// </summary>
-    [Parameter] public double ShiftPadding { get; set; } = 0;
+    [Parameter] public double ShiftPadding { get; set; } = DefaultShiftPadding;
 
     // Auto-size behavior
     /// <summary>
-    /// When set, causes the popup to automatically resize itself to prevent it from overflowing.
+    /// The Web Awesome default of <see cref="AutoSize"/>, which renders no attribute until the parameter first differs from it.
     /// </summary>
-    [Parameter] public WaAutoSize AutoSize { get; set; } = WaAutoSize.None;
+    public const WaAutoSize DefaultAutoSize = WaAutoSize.None;
 
     /// <summary>
-    /// The clipping element(s) that overflow is checked relative to when auto-sizing. By default, the
-    /// boundary includes overflow ancestors that will cause the element to be clipped.
+    /// When set, causes the popup to automatically resize itself to prevent it from overflowing:
+    /// <see cref="WaAutoSize.Horizontal"/> resizes the width, <see cref="WaAutoSize.Vertical"/> the height and
+    /// <see cref="WaAutoSize.Both"/> both. <see cref="WaAutoSize.None"/> (the default) omits the auto-size attribute.
     /// </summary>
-    [Parameter] public string? AutoSizeBoundary { get; set; }
+    [Parameter] public WaAutoSize AutoSize { get; set; } = DefaultAutoSize;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="AutoSizePadding"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const double DefaultAutoSizePadding = 0;
 
     /// <summary>
     /// The amount of padding, in pixels, to exceed before the auto-size behavior occurs.
     /// </summary>
-    [Parameter] public double AutoSizePadding { get; set; } = 0;
+    [Parameter] public double AutoSizePadding { get; set; } = DefaultAutoSizePadding;
 
     // Sync behavior
     /// <summary>
+    /// The Web Awesome default of <see cref="Sync"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaSync DefaultSync = WaSync.None;
+
+    /// <summary>
     /// Syncs the popup's width or height to that of the anchor element.
     /// </summary>
-    [Parameter] public WaSync Sync { get; set; } = WaSync.None;
+    [Parameter] public WaSync Sync { get; set; } = DefaultSync;
 
     // Hover bridge
     /// <summary>
@@ -180,9 +226,15 @@ public class WaPopup : ComponentBase
 
     // Boundary
     /// <summary>
+    /// The Web Awesome default of <see cref="Boundary"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPopupBoundary DefaultBoundary = WaPopupBoundary.Viewport;
+
+    /// <summary>
     /// The bounding box to use for flipping, shifting, and auto-sizing.
     /// </summary>
-    [Parameter] public string? Boundary { get; set; }
+    [Parameter] public WaPopupBoundary? Boundary { get; set; }
 
     #endregion
 
@@ -215,7 +267,7 @@ public class WaPopup : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-popup");
+        var attributes = builder.OpenWaElement(this, 0, "wa-popup");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -223,52 +275,42 @@ public class WaPopup : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add positioning attributes
-        if (Placement != WaPlacement.Top)
-            builder.AddAttribute(10, "placement", Placement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
         builder.AddAttribute(11, "active", Active);
         builder.AddAttributeIfNotNullOrEmpty(12, "anchor", Anchor);
-        if (Distance != 0)
-            builder.AddAttribute(13, "distance", Distance);
-        if (Skidding != 0)
-            builder.AddAttribute(14, "skidding", Skidding);
+        builder.AddNumberAttribute(attributes, 13, "distance", Distance, DefaultDistance);
+        builder.AddNumberAttribute(attributes, 14, "skidding", Skidding, DefaultSkidding);
 
         // Add arrow attributes
         if (Arrow)
         {
             builder.AddAttribute(20, "arrow", true);
-            if (ArrowPlacement != WaArrowPlacement.Anchor)
-                builder.AddAttribute(21, "arrow-placement", ArrowPlacement.ToHtmlValue());
-            if (ArrowPadding != 10)
-                builder.AddAttribute(22, "arrow-padding", ArrowPadding);
+            builder.AddDefaultedAttribute(attributes, 21, "arrow-placement", ArrowPlacement.ToHtmlValue(), DefaultArrowPlacement.ToHtmlValue());
+            builder.AddNumberAttribute(attributes, 22, "arrow-padding", ArrowPadding, DefaultArrowPadding);
         }
 
         // Add flip attributes
         if (Flip)
         {
             builder.AddAttribute(30, "flip", true);
-            builder.AddAttributeIfNotNullOrEmpty(31, "flip-fallback-placements", FlipFallbackPlacements);
-            builder.AddAttributeIfNotNullOrEmpty(32, "flip-fallback-strategy", FlipFallbackStrategy);
-            builder.AddAttributeIfNotNullOrEmpty(33, "flip-boundary", FlipBoundary);
-            if (FlipPadding != 0)
-                builder.AddAttribute(34, "flip-padding", FlipPadding);
+            builder.AddTokenListAttribute(attributes, 31, "flip-fallback-placements", FlipFallbackPlacements?.Select(p => p.ToHtmlValue()).ToList(),
+                DefaultFlipFallbackPlacements.Select(p => p.ToHtmlValue()).ToList(), WaWireFormat.SpaceSeparator, WaWireFormat.WhitespaceSeparators);
+            builder.AddAttributeIfNotNull(attributes, 32, "flip-fallback-strategy", FlipFallbackStrategy?.ToHtmlValue(), DefaultFlipFallbackStrategy.ToHtmlValue());
+            builder.AddNumberAttribute(attributes, 34, "flip-padding", FlipPadding, DefaultFlipPadding);
         }
 
         // Add shift attributes
         if (Shift)
         {
             builder.AddAttribute(40, "shift", true);
-            builder.AddAttributeIfNotNullOrEmpty(41, "shift-boundary", ShiftBoundary);
-            if (ShiftPadding != 0)
-                builder.AddAttribute(42, "shift-padding", ShiftPadding);
+            builder.AddNumberAttribute(attributes, 42, "shift-padding", ShiftPadding, DefaultShiftPadding);
         }
 
         // Add auto-size attributes
         if (AutoSize != WaAutoSize.None)
         {
             builder.AddAttribute(50, "auto-size", AutoSize.ToHtmlValue());
-            builder.AddAttributeIfNotNullOrEmpty(51, "auto-size-boundary", AutoSizeBoundary);
-            if (AutoSizePadding != 0)
-                builder.AddAttribute(52, "auto-size-padding", AutoSizePadding);
+            builder.AddNumberAttribute(attributes, 52, "auto-size-padding", AutoSizePadding, DefaultAutoSizePadding);
         }
 
         // Add sync attributes
@@ -280,7 +322,7 @@ public class WaPopup : ComponentBase
             builder.AddAttribute(70, "hover-bridge", true);
 
         // Add boundary
-        builder.AddAttributeIfNotNullOrEmpty(80, "boundary", Boundary);
+        builder.AddAttributeIfNotNull(attributes, 80, "boundary", Boundary?.ToHtmlValue(), DefaultBoundary.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(85, "onwa-reposition", OnReposition);
@@ -321,7 +363,7 @@ public class WaPopup : ComponentBase
     {
         if (Element.HasValue)
         {
-            await JSRuntime.InvokeVoidAsync("eval", $"arguments[0].reposition()", Element.Value);
+            await JSInterop.InvokeMethodAsync(Element.Value, "reposition");
         }
     }
 

@@ -1,7 +1,13 @@
 {
-  "$comment": "Configuration for the API surface parity tests (ApiSurfaceParityTests, ElementMethodInvocationTests). 'enabled' is flipped to true by the wa-upgrade process once expected-api-surface.json matches the version being implemented. Overrides document intentional naming deviations of the Blazor wrappers - typically idiomatic .NET PascalCase word splits (e.g. maxlength -> MaxLength, autofocus -> AutoFocus) that differ from mechanical kebab-case conversion; ignores document intentional omissions (each ignore should carry a reason in 'ignoreReasons'). 'nativeElementMethods' lists DOM methods valid on any element; per-component 'extraElementMethods' allowlists element methods that exist in the Web Awesome source but are not CEM-documented - these MUST be re-verified against the target version's source on every upgrade (the CEM diff cannot see them).",
+  "$comment": [
+    "Configuration of the API parity tests (src\\WebAwesome.Blazor.Tests\\ApiParity). 'enabled' and 'targetWaVersion' are set by the wa-upgrade process (Phase 3) once expected-api-surface.json matches the version being implemented.",
+    "Every other top-level member except 'components', 'ignoreReasons' and 'knownDefects' is an allowlist or override, and so is every member of a 'components' entry (semantics: the summaries in ApiParityModels.cs and docs\\UPGRADE-PROCESS.md, Testing strategy).",
+    "Every entry needs a reason of its own, keyed '<list>:<tag>:<entry>' for a per-component list (e.g. 'ignoredEvents:wa-checkbox:change') or '<list>:<entry>' for a top-level one (e.g. 'globalIgnoredAttributes:title'); the entry is the list item or the map key. The reason goes into 'ignoreReasons' for a deliberate deviation, or into 'knownDefects' for a defect awaiting an owner decision - never both, and never a reason shared by name across components.",
+    "AllowlistHygieneTests fails on an entry without a reason, a reason without an entry, a KNOWN DEFECT marker inside 'ignoreReasons', and a change of the number of known defects (pinned in the test, printed in its output). Stale entries fail the *_AreNotStale test of the class reading the list.",
+    "extraElementMethods and sourceVerifiedEvents are invisible to the CEM diff: re-verify them against the target version's source on every upgrade."
+  ],
   "enabled": true,
-  "targetWaVersion": "3.11.0",
+  "targetWaVersion": "3.12.0",
   "globalIgnoredAttributes": [
     "title",
     "did-ssr",
@@ -15,26 +21,55 @@
     "wa-textarea": "WaTextArea"
   },
   "nativeElementMethods": [ "focus", "blur", "click" ],
+  "nativeDomEvents": {
+    "blur": "OnBlur",
+    "click": "OnClick",
+    "focus": "OnFocus",
+    "keydown": "OnKeyDown",
+    "keypress": "OnKeyPress",
+    "keyup": "OnKeyUp"
+  },
+  "bubblingEventAliases": {
+    "focusin": "focus",
+    "focusout": "blur"
+  },
+  "unreachableEnumUnionValues": {
+    "WaChartLegendPosition": {
+      "literals": [ "center" ],
+      "attributes": [ "wa-bar-chart:legend-position", "wa-bubble-chart:legend-position", "wa-chart:legend-position", "wa-doughnut-chart:legend-position", "wa-line-chart:legend-position", "wa-pie-chart:legend-position", "wa-polar-area-chart:legend-position", "wa-radar-chart:legend-position", "wa-scatter-chart:legend-position" ]
+    },
+    "WaSize": {
+      "literals": [ "small", "medium", "large" ],
+      "attributes": [ "wa-button:size", "wa-callout:size", "wa-checkbox:size", "wa-checkbox-group:size", "wa-color-picker:size", "wa-combobox:size", "wa-data-grid:size", "wa-date-input:size", "wa-date-picker:size", "wa-dropdown:size", "wa-file-input:size", "wa-input:size", "wa-known-date:size", "wa-number-input:size", "wa-otp-input:size", "wa-radio:size", "wa-radio-group:size", "wa-rating:size", "wa-select:size", "wa-slider:size", "wa-switch:size", "wa-tag:size", "wa-textarea:size", "wa-time-input:size", "wa-toast-item:size" ]
+    }
+  },
   "components": {
     "wa-details": {
       "eventOverrides": {
         "wa-show": "OnToggle",
-        "wa-hide": "OnToggle",
-        "wa-after-show": "OnAfterShow",
-        "wa-after-hide": "OnAfterHide"
+        "wa-hide": "OnToggle"
       }
     },
     "wa-checkbox": {
+      "unrenderedAttributes": [ "value" ],
+      "wrapperDefaultAttributes": [ "value" ],
       "ignoredAttributes": [ "name", "checked", "custom-error" ],
       "ignoredEvents": [ "change" ],
+      "derivedEventCallbacks": { "OnCheckedChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-color-picker": {
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
+      "sourceVerifiedEvents": [ "wa-after-hide", "wa-after-show", "wa-hide", "wa-show" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-input": {
+      "additionalAttributeParameters": {
+        "min": [ "MinDecimal", "MinLong", "MinULong", "MinDate", "MinTime", "MinDateTime" ],
+        "max": [ "MaxDecimal", "MaxLong", "MaxULong", "MaxDate", "MaxTime", "MaxDateTime" ]
+      },
+      "onOffAttributes": [ "autocorrect" ],
       "attributeOverrides": {
         "maxlength": "MaxLength",
         "minlength": "MinLength",
@@ -49,6 +84,7 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-button": {
+      "extraRenderedAttributes": [ "form" ],
       "attributeOverrides": {
         "formaction": "FormAction",
         "formenctype": "FormEncType",
@@ -60,6 +96,10 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-zoomable-frame": {
+      "tokenListAttributes": {
+        "sandbox": [ "allow-downloads", "allow-forms", "allow-modals", "allow-orientation-lock", "allow-pointer-lock", "allow-popups", "allow-popups-to-escape-sandbox", "allow-presentation", "allow-same-origin", "allow-scripts", "allow-top-navigation", "allow-top-navigation-by-user-activation", "allow-top-navigation-to-custom-protocols" ],
+        "referrerpolicy": [ "no-referrer", "no-referrer-when-downgrade", "origin", "origin-when-cross-origin", "same-origin", "strict-origin", "strict-origin-when-cross-origin", "unsafe-url" ]
+      },
       "attributeOverrides": {
         "srcdoc": "SrcDoc",
         "allowfullscreen": "AllowFullScreen",
@@ -72,21 +112,30 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-slider": {
+      "wrapperDefaultAttributes": [ "value" ],
+      "divergentParameterDefaults": [ "value" ],
+      "attributePrerequisites": { "min-value": { "Range": true }, "max-value": { "Range": true } },
       "attributeOverrides": {
         "autofocus": "AutoFocus"
       },
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
+      "derivedEventCallbacks": { "OnValueChange": "change", "OnMinValueChange": "change", "OnMaxValueChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-switch": {
+      "unrenderedAttributes": [ "value" ],
+      "wrapperDefaultAttributes": [ "value" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
+      "derivedEventCallbacks": { "OnCheckedChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-radio-group": {
+      "wrapperDefaultAttributes": [ "name" ],
       "ignoredAttributes": [ "custom-error" ],
       "ignoredEvents": [ "change" ],
+      "derivedEventCallbacks": { "OnValueChange": "change" },
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-radio": {
@@ -98,6 +147,7 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-textarea": {
+      "onOffAttributes": [ "autocorrect" ],
       "attributeOverrides": {
         "maxlength": "MaxLength",
         "minlength": "MinLength",
@@ -125,6 +175,8 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-combobox": {
+      "onOffAttributes": [ "autocorrect" ],
+      "trueFalseAttributes": [ "spellcheck" ],
       "attributeOverrides": {
         "autocapitalize": "AutoCapitalize",
         "autocorrect": "AutoCorrect",
@@ -136,6 +188,8 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-date-input": {
+      "unrenderedAttributes": [ "mode", "min-range", "max-range" ],
+      "wrapperDefaultAttributes": [ "mode" ],
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
@@ -151,11 +205,15 @@
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-date-picker": {
-      "ignoredEvents": [ "change" ]
+      "unrenderedAttributes": [ "mode", "min-range", "max-range" ],
+      "wrapperDefaultAttributes": [ "mode" ],
+      "ignoredEvents": [ "change" ],
+      "sourceVerifiedSlots": [ "day-YYYY-MM-DD" ]
     },
     "wa-rating": {
       "ignoredAttributes": [ "getSymbol", "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
+      "unboundEventCallbacks": [ "OnInput" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
     "wa-markdown": {
@@ -165,8 +223,11 @@
       "eventOverrides": {
         "wa-cell-contextmenu": "OnCellContextMenu"
       },
-      "ignoredEvents": [ "request" ],
-      "ignoredMethods": [ "getColumnFacets", "handleColumnsChange", "handlePageChange", "handleSearchTermChange" ]
+      "cemOnlyEvents": [ "request" ],
+      "ignoredMethods": [ "getColumnFacets", "handleColumnsChange", "handlePageChange", "handleSearchTermChange" ],
+      "unreachableUnionValues": {
+        "selectable": [ "" ]
+      }
     },
     "wa-otp-input": {
       "attributeOverrides": {
@@ -177,13 +238,52 @@
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
     },
+    "wa-tab": {
+      "extraRenderedAttributes": [ "active" ]
+    },
+    "wa-tab-group": {
+      "derivedEventCallbacks": { "OnTabChange": "wa-tab-show" }
+    },
     "wa-carousel": {
-      "ignoredAttributes": [ "currentSlide", "slides" ]
+      "ignoredAttributes": [ "currentSlide", "slides" ],
+      "ignoredMethods": [ "addSlide", "removeSlide" ]
     },
     "wa-dropdown-item": {
       "ignoredAttributes": [ "submenuOpen" ]
     },
+    "wa-popup": {
+      "ignoredAttributes": [ "autoSizeBoundary", "flipBoundary", "shiftBoundary" ],
+      "attributePrerequisites": {
+        "arrow-padding": { "Arrow": true },
+        "arrow-placement": { "Arrow": true },
+        "auto-size-padding": { "AutoSize": "Both" },
+        "flip-fallback-placements": { "Flip": true },
+        "flip-fallback-strategy": { "Flip": true },
+        "flip-padding": { "Flip": true },
+        "shift-padding": { "Shift": true }
+      },
+      "ignoredEnumValues": {
+        "auto-size": [ "None" ],
+        "sync": [ "None" ]
+      }
+    },
+    "wa-accordion": {
+      "tokenListAttributes": {
+        "heading-level": [ "1", "2", "3", "4", "5", "6", "none" ]
+      }
+    },
+    "wa-tooltip": {
+      "tokenListAttributes": {
+        "trigger": [ "click", "hover", "focus", "manual" ]
+      }
+    },
+    "wa-animation": {
+      "unresolvedEnumAttributes": [ "easing" ]
+    },
     "wa-mutation-observer": {
+      "additionalAttributeParameters": {
+        "attr": [ "AttributeFilter" ]
+      },
       "extraElementMethods": [ "stopObserver", "startObserver" ]
     },
     "wa-resize-observer": {
@@ -193,6 +293,7 @@
       "extraElementMethods": [ "update" ]
     },
     "wa-page": {
+      "extraRenderedAttributes": [ "disable-sticky" ],
       "ignoredMethods": [ "visiblePixelsInViewport" ]
     },
     "wa-video": {
@@ -214,41 +315,221 @@
     "wa-scatter-chart": { "ignoredAttributes": [ "plugins" ] }
   },
   "ignoreReasons": {
-    "title": "native HTML attribute, passed through via AdditionalAttributes",
-    "did-ssr": "internal SSR hydration marker set by Web Awesome server-side rendering (added to every component's base element in WA 3.3.0); not a consumer-authorable attribute",
-    "dir": "native HTML global attribute, passed through via AdditionalAttributes (added to every component's base element in WA 3.3.0)",
-    "lang": "native HTML global attribute, passed through via AdditionalAttributes (added to every component's base element in WA 3.3.0)",
-    "role": "native ARIA global HTML attribute; WA 3.8.0 reflects an internal default role onto the host of several components (wa-rating='slider', wa-tab='tab', wa-tab-panel='tabpanel', wa-tree='tree', wa-tree-item='treeitem') as part of its own accessibility management - not a consumer-authorable parameter, passed through via AdditionalAttributes when overridden",
-    "tabindex": "native HTML global attribute; WA 3.8.0 reflects a managed tabindex onto wa-tree (0) and wa-tree-item (-1) to implement roving-tabindex keyboard navigation - not a consumer-authorable parameter, passed through via AdditionalAttributes when overridden",
-    "change": "native change event folded into Blazor two-way binding (ValueChanged / @bind-Value)",
-    "name": "form-control name is handled by Blazor InputBase form integration (NameAttributeValue / EditContext), not a discrete parameter",
-    "checked": "checkbox checked state is the two-way-bound Value on WaInputBase<bool>",
-    "custom-error": "the manually-set custom validity message (WA 3.3.0 form-associated validation) is managed imperatively through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not an authorable attribute",
-    "formStateRestoreCallback": "form-associated custom element (FACE) lifecycle callback the browser invokes to restore or autofill element state (WA 3.3.0); not consumer-facing and not marshalable from Blazor",
-    "plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied via the chart's JSON <script> config slot); not an authorable HTML attribute",
-    "visiblePixelsInViewport": "wa-page internal scroll-gap layout helper (takes a live HTMLElement arg; its own doc comment cites a StackOverflow scroll-fill fix) - not a consumer-facing API and not marshalable from Blazor",
-    "timeupdate": "wa-video native media event; exposed as the natural-PascalCase EventCallback OnTimeUpdate (mechanical conversion would yield 'OnTimeupdate'), mapped via eventOverrides",
-    "volumechange": "wa-video native media event; exposed as the natural-PascalCase EventCallback OnVolumeChange (mechanical conversion would yield 'OnVolumechange'), mapped via eventOverrides",
-    "loadedmetadata": "wa-video native media event; exposed as the natural-PascalCase EventCallback OnLoadedMetadata (mechanical conversion would yield 'OnLoadedmetadata'), mapped via eventOverrides",
-    "getVideoElement": "wa-video method returning the live native HTMLVideoElement; a DOM node, not marshalable across Blazor JS interop, so not exposed as a wrapper method",
-    "maxlength": "exposed as MaxLength on WaInputBase (idiomatic .NET casing); mapped via attributeOverrides",
-    "minlength": "exposed as MinLength on WaInputBase (idiomatic .NET casing); mapped via attributeOverrides",
-    "beforeinput": "wa-number-input's cancelable before-value-change event (added in WA 3.6.0); exposed as the natural-PascalCase EventCallback OnBeforeInput (mechanical conversion would yield 'OnBeforeinput'), mapped via eventOverrides",
-    "getSymbol": "function-valued property (custom symbol renderer callback), not an authorable HTML attribute",
-    "getMarked": "static class method (WaMarkdown.getMarked() in markdown.d.ts) returning the shared Marked parser instance - a non-marshalable JS object, not a per-element instance method",
-    "updateAll": "static class method (WaMarkdown.updateAll() in markdown.d.ts) that re-renders all connected wa-markdown instances after the shared Marked config changes - class-level, not a per-element instance method addressable via ElementReference interop",
-    "request": "CEM extraction artifact of wa-data-grid, not a real event: it carries the same WaDataRequestEvent type as wa-data-request, and neither dist\\events\\events.d.ts (the canonical event-class export list) nor the component's own @event JSDoc block declares a bare 'request' - the compiled source only ever dispatches wa-data-request, which is bound as OnDataRequest",
-    "wa-cell-contextmenu": "wa-data-grid cell context-menu event; exposed as the natural-PascalCase EventCallback OnCellContextMenu (mechanical conversion would yield 'OnCellContextmenu'), mapped via eventOverrides",
-    "getColumnFacets": "wa-data-grid method returning { uniqueValues: Map<...>, minMax }; a JS Map serializes to an empty object over JSON interop, silently losing every value, so no faithful wrapper method can be offered",
-    "handleColumnsChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
-    "handlePageChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
-    "handleSearchTermChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
-    "autosubmit": "exposed as AutoSubmit on WaOtpInput (natural PascalCase, matching the existing autofocus -> AutoFocus convention); mapped via attributeOverrides",
-    "hrefTemplate": "wa-pagination's href-template also accepts a JS function (page: number) => string; only the string-template form is exposed as WaPagination.HrefTemplate, because a JS function cannot cross the Blazor interop boundary - the attribute name itself needs no override",
-    "currentSlide": "read-only JS state property of wa-carousel, not an authorable HTML attribute",
-    "slides": "read-only JS collection property of wa-carousel, not an authorable HTML attribute",
-    "submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute",
-    "extraElementMethods:stopObserver/startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24) and WA 3.11.0 (2026-07-30), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
-    "extraElementMethods:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19) and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24) and WA 3.11.0 (2026-07-30, the Lit ReactiveElement lifecycle update() inherited via WebAwesomeElement - 'WebAwesomeElement extends LitElement' reconfirmed in internal\\webawesome-element.d.ts, hence absent from the component .d.ts: only updateTimeout and willUpdate appear in relative-time.d.ts), not CEM-documented"
-  }
+    "additionalAttributeParameters:wa-input:min": "wa-input's min is typed number | string in the CEM and passed unchanged to its native input (3.12.0 chunk.3UR7XKQK.js:232-233): a number for type=number, an ISO date, time or local date-time for the date and time types. Until C# 15 union types (net11.0, a planned breaking change; docs\\technical.md, Multi-targeting) the raw string Min is joined by one strongly typed accessor per value type (MinDecimal, MinLong, MinULong, MinDate, MinTime, MinDateTime), at most one of which may be set; all of them feed the one attribute",
+    "additionalAttributeParameters:wa-input:max": "wa-input's max is typed number | string in the CEM and passed unchanged to its native input (3.12.0 chunk.3UR7XKQK.js:232-233): a number for type=number, an ISO date, time or local date-time for the date and time types. Until C# 15 union types (net11.0, a planned breaking change; docs\\technical.md, Multi-targeting) the raw string Max is joined by one strongly typed accessor per value type (MaxDecimal, MaxLong, MaxULong, MaxDate, MaxTime, MaxDateTime), at most one of which may be set; all of them feed the one attribute",
+    "additionalAttributeParameters:wa-mutation-observer:attr": "wa-mutation-observer's attr is either '*' (all attributes, Attr = true) or a space-separated list of names (this.attr.split(' '), 3.12.0 chunk.KJH3JDJP.js:48), which AttributeFilter (IReadOnlySet<string>) renders instead when set; both parameters feed the one attribute",
+    "extraRenderedAttributes:wa-page:disable-sticky": "wa-page's disable-sticky is a CSS-only attribute the CEM omits: the 3.12.0 page styles match it with :host([disable-sticky~='banner'|'header'|'subheader'|'aside'|'menu']) rules (chunk.NSKMM5IJ.js:86-116) and page.md (Sticky Sections) documents it; WaPage.DisableSticky renders the WaPageSections tokens, which FlagTokenTests pins - re-verify every upgrade",
+    "onOffAttributes:wa-input:autocorrect": "wa-input's autocorrect converter is fromAttribute: (value) => !value || value === \"off\" ? false : true, toAttribute: value ? \"on\" : \"off\" (3.12.0 chunk.3UR7XKQK.js), so a present empty attribute (Blazor's true) reads false; AutoCorrect (bool?) must render exactly \"on\"/\"off\"",
+    "onOffAttributes:wa-textarea:autocorrect": "wa-textarea's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.YIEXWZ6G.js), so AutoCorrect must render exactly \"on\"/\"off\"",
+    "onOffAttributes:wa-combobox:autocorrect": "wa-combobox's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.HYTAIWXE.js), so AutoCorrect must render exactly \"on\"/\"off\"",
+    "tokenListAttributes:wa-zoomable-frame:sandbox": "wa-zoomable-frame forwards sandbox to its iframe (sandbox=${ifDefined(this.sandbox)}, 3.12.0 chunk.PJARYDTD.js); the CEM types it string, but HTML defines it as a space-separated set of these tokens (HTML Living Standard, the iframe sandbox attribute), which WaIframeSandbox flags emit; re-verify every upgrade",
+    "tokenListAttributes:wa-zoomable-frame:referrerpolicy": "wa-zoomable-frame forwards referrerpolicy to its iframe (3.12.0 chunk.PJARYDTD.js); the CEM types it string, but the value is one referrer-policy token of this fixed set (W3C Referrer Policy), which WaReferrerPolicy emits; the token check validates the single value",
+    "tokenListAttributes:wa-accordion:heading-level": "wa-accordion's heading-level is typed string, but the element reads it as parseInt 1..6 (else 3) or \"none\" to omit the heading (3.12.0 chunk.LVL7ACR6.js renderHeadingWrapper and render); WaHeadingLevel emits exactly those tokens",
+    "wrapperDefaultAttributes:wa-checkbox:value": "the submission value is the constant 'True', rendered always, like Blazor's InputCheckbox (see unrenderedAttributes:wa-checkbox:value); the element leaves value unset and submits 'on'",
+    "wrapperDefaultAttributes:wa-switch:value": "the submission value is the constant 'True', rendered always, like Blazor's InputCheckbox (see unrenderedAttributes:wa-switch:value); the element leaves value unset and submits 'on'",
+    "wrapperDefaultAttributes:wa-slider:value": "WaRange renders its two-way bound decimal value (0 when unbound) as value in single mode; the value of a bound control comes from the binding, not from an element default",
+    "divergentParameterDefaults:wa-slider:value": "WaRange.Value is the two-way bound value of InputBase<decimal>, whose C# default is default(decimal), 0, like every non-nullable bound model; the element's default value is computed at runtime from min (or min-value), which the CEM cannot express",
+    "wrapperDefaultAttributes:wa-radio-group:name": "WaRadioGroup renders name from Blazor's InputBase form integration (the bound field's name, here the harness's ValueExpression field), so a bound control always carries a name",
+    "globalIgnoredAttributes:title": "native HTML attribute, passed through via AdditionalAttributes",
+    "globalIgnoredAttributes:did-ssr": "internal SSR hydration marker set by Web Awesome server-side rendering (added to every component's base element in WA 3.3.0); not a consumer-authorable attribute",
+    "globalIgnoredAttributes:dir": "native HTML global attribute, passed through via AdditionalAttributes (added to every component's base element in WA 3.3.0)",
+    "globalIgnoredAttributes:lang": "native HTML global attribute, passed through via AdditionalAttributes (added to every component's base element in WA 3.3.0)",
+    "globalIgnoredAttributes:role": "native ARIA global HTML attribute; WA 3.8.0 reflects an internal default role onto the host of several components (wa-rating='slider', wa-tab='tab', wa-tab-panel='tabpanel', wa-tree='tree', wa-tree-item='treeitem') as part of its own accessibility management - not a consumer-authorable parameter, passed through via AdditionalAttributes when overridden",
+    "globalIgnoredAttributes:tabindex": "native HTML global attribute; WA 3.8.0 reflects a managed tabindex onto wa-tree (0) and wa-tree-item (-1) to implement roving-tabindex keyboard navigation - not a consumer-authorable parameter, passed through via AdditionalAttributes when overridden",
+    "componentClassOverrides:wa-textarea": "the CEM class name of wa-textarea is WaTextarea; the wrapper is named WaTextArea, the natural PascalCase of 'text area' used across .NET (TextArea)",
+    "nativeElementMethods:focus": "HTMLElement.focus(), which every element inherits (so the CEM lists it for none); invoked by the wrappers' FocusAsync methods",
+    "nativeElementMethods:blur": "HTMLElement.blur(), which every element inherits (so the CEM lists it for none); invoked by the wrappers' BlurAsync methods",
+    "nativeElementMethods:click": "HTMLElement.click(), which every element inherits (so the CEM lists it for none); invoked by the wrappers' ClickAsync methods",
+    "nativeDomEvents:blur": "native blur, dispatched by the browser on the focused element; Blazor delivers it (non-bubbling) only to composedPath()[0], so a wrapper binds it only where the host itself takes the focus (wa-radio, wa-tab, wa-dropdown-item), several of which do not list it in their CEM entry; controls focused inside their shadow root bind focusout instead (bubblingEventAliases)",
+    "nativeDomEvents:click": "native click, dispatched by the browser on any element (composed, bubbling out of the shadow tree); Web Awesome documents no click event for wa-button, wa-tab or wa-breadcrumb-item because it is not theirs to dispatch",
+    "nativeDomEvents:focus": "native focus, dispatched by the browser on the focused element; Blazor delivers it (non-bubbling) only to composedPath()[0], so a wrapper binds it only where the host itself takes the focus (wa-radio, wa-tab, wa-dropdown-item), several of which do not list it in their CEM entry; controls focused inside their shadow root bind focusin instead (bubblingEventAliases)",
+    "nativeDomEvents:keydown": "native keyboard event, dispatched by the browser on the focused element and composed out of the shadow tree, so the host of every focusable form control receives it; Web Awesome documents no keyboard events. wa-select, wa-combobox and wa-color-picker stop its propagation in their shadow root, so the JS initializer relays it for them (relayedEvents, wablazor-keydown) and their wrappers bind the relayed name, which the binding checks resolve to keydown",
+    "nativeDomEvents:keypress": "native keyboard event, dispatched by the browser on the focused element and composed out of the shadow tree, so the host of every focusable form control receives it; Web Awesome documents no keyboard events",
+    "nativeDomEvents:keyup": "native keyboard event, dispatched by the browser on the focused element and composed out of the shadow tree, so the host of every focusable form control receives it; Web Awesome documents no keyboard events",
+    "bubblingEventAliases:focusin": "OnFocus binds the bubbling, composed focusin wherever the focus can land inside the shadow root (every WaInputBase control, WaButton, WaFileInput): the element-level focus does not bubble, and Blazor delivers a non-bubbling event only to composedPath()[0], the inner input, so a focus handler on the host never ran. focusin reaches the host and bubbles on to Blazor, and a focus move between two parts of the same shadow root is not dispatched outside it; the checks treat a focusin handler as the element's focus",
+    "bubblingEventAliases:focusout": "OnBlur binds the bubbling, composed focusout for the same reason as OnFocus binds focusin (see bubblingEventAliases:focusin); the checks treat a focusout handler as the element's blur",
+    "unreachableEnumUnionValues:WaChartLegendPosition": "'center' comes from Chart.js' shared LayoutPosition type (a scale position); the Chart.js 4 legend documents only top, left, bottom, right and chartArea, so WaChartLegendPosition deliberately has no Center member",
+    "unreachableEnumUnionValues:WaSize": "the long size spellings 'small'/'medium'/'large' are deprecated in WA 3.12.0 ('will be removed in the next major version'); WaSize.Small/Medium/Large emit the equivalent short forms 's'/'m'/'l' since 3.12.0, so the deprecated literals are intentionally unreachable",
+    "eventOverrides:wa-details:wa-show": "WaDetails raises OnToggle for both wa-show and wa-hide, with IsOpen telling them apart, like the native details toggle event, instead of separate OnShow/OnHide callbacks",
+    "eventOverrides:wa-details:wa-hide": "WaDetails raises OnToggle for both wa-show and wa-hide, with IsOpen telling them apart, like the native details toggle event, instead of separate OnShow/OnHide callbacks",
+    "unrenderedAttributes:wa-checkbox:value": "the CEM value is the form submission value; WaCheckbox.Value is the two-way bound checked state (rendered as checked), and the submission value is rendered as the constant 'True', like Blazor's InputCheckbox, so no parameter maps to it",
+    "ignoredAttributes:wa-checkbox:name": "WaCheckbox renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-checkbox:checked": "the checked state is the two-way bound WaCheckbox.Value (WaInputBase<bool>), rendered as checked",
+    "ignoredAttributes:wa-checkbox:custom-error": "WaCheckbox sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-checkbox:change": "WaCheckbox binds change itself: HandleCheckedChangedAsync reads checked back into Value and raises ValueChanged and OnCheckedChange, so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "derivedEventCallbacks:wa-checkbox:OnCheckedChange": "reports the checked state read back from the element after the native change event; raised by the wrapper's change handler (the value binding), which is always bound",
+    "ignoredMethods:wa-checkbox:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-checkbox to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredAttributes:wa-color-picker:name": "WaColorPicker renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-color-picker:custom-error": "WaColorPicker sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-color-picker:change": "WaColorPicker binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-color-picker:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-color-picker to restore or autofill its state; not consumer API and not callable from Blazor",
+    "sourceVerifiedEvents:wa-color-picker:wa-after-hide": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
+    "sourceVerifiedEvents:wa-color-picker:wa-after-show": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
+    "sourceVerifiedEvents:wa-color-picker:wa-hide": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
+    "sourceVerifiedEvents:wa-color-picker:wa-show": "wa-color-picker's @event JSDoc omits its popup events, but the compiled 3.12.0 source dispatches them (verified 2026-09-25 in the color-picker chunk: this.dispatchEvent(new CustomEvent(\"wa-show\")) and likewise wa-after-show, wa-hide, wa-after-hide) - re-verify every upgrade. Unlike every other component's (the bubbling, composed Wa*Event classes of dist\\events) they are plain non-bubbling CustomEvents, which Blazor never receives, so the JS initializer relays them (relayedEvents, Constants.Relayed*EventAttribute) and WaColorPicker binds the relayed names; the binding checks resolve a relayed name to this event",
+    "attributeOverrides:wa-input:maxlength": "exposed as WaInput.MaxLength, the natural-PascalCase name (mechanical conversion would yield 'Maxlength')",
+    "attributeOverrides:wa-input:minlength": "exposed as WaInput.MinLength, the natural-PascalCase name (mechanical conversion would yield 'Minlength')",
+    "attributeOverrides:wa-input:autocapitalize": "exposed as WaInput.AutoCapitalize, the natural-PascalCase name (mechanical conversion would yield 'Autocapitalize')",
+    "attributeOverrides:wa-input:autocorrect": "exposed as WaInput.AutoCorrect, the natural-PascalCase name (mechanical conversion would yield 'Autocorrect')",
+    "attributeOverrides:wa-input:autofocus": "exposed as WaInput.AutoFocus, the natural-PascalCase name (mechanical conversion would yield 'Autofocus')",
+    "attributeOverrides:wa-input:enterkeyhint": "exposed as WaInput.EnterKeyHint, the natural-PascalCase name (mechanical conversion would yield 'Enterkeyhint')",
+    "attributeOverrides:wa-input:inputmode": "exposed as WaInput.InputMode, the natural-PascalCase name (mechanical conversion would yield 'Inputmode')",
+    "ignoredAttributes:wa-input:name": "WaInput renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-input:custom-error": "WaInput sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-input:change": "WaInput binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-input:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-input to restore or autofill its state; not consumer API and not callable from Blazor",
+    "extraRenderedAttributes:wa-button:form": "wa-button is form-associated (WebAwesomeFormAssociatedElement), and the browser reads the form content attribute natively through ElementInternals; the base class's form setter writes it (setAttribute(\"form\", val), 3.12.0 source), but the CEM analyzer lists no form attribute. Covered by WaButtonFormAssociationTests",
+    "attributeOverrides:wa-button:formaction": "exposed as WaButton.FormAction, the natural-PascalCase name (mechanical conversion would yield 'Formaction')",
+    "attributeOverrides:wa-button:formenctype": "exposed as WaButton.FormEncType, the natural-PascalCase name (mechanical conversion would yield 'Formenctype')",
+    "attributeOverrides:wa-button:formmethod": "exposed as WaButton.FormMethod, the natural-PascalCase name (mechanical conversion would yield 'Formmethod')",
+    "attributeOverrides:wa-button:formnovalidate": "exposed as WaButton.FormNoValidate, the natural-PascalCase name (mechanical conversion would yield 'Formnovalidate')",
+    "attributeOverrides:wa-button:formtarget": "exposed as WaButton.FormTarget, the natural-PascalCase name (mechanical conversion would yield 'Formtarget')",
+    "ignoredAttributes:wa-button:custom-error": "WaButton sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredMethods:wa-button:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-button to restore or autofill its state; not consumer API and not callable from Blazor",
+    "attributeOverrides:wa-zoomable-frame:srcdoc": "exposed as WaZoomableFrame.SrcDoc, the natural-PascalCase name (mechanical conversion would yield 'Srcdoc')",
+    "attributeOverrides:wa-zoomable-frame:allowfullscreen": "exposed as WaZoomableFrame.AllowFullScreen, the natural-PascalCase name (mechanical conversion would yield 'Allowfullscreen')",
+    "attributeOverrides:wa-zoomable-frame:referrerpolicy": "exposed as WaZoomableFrame.ReferrerPolicy, the natural-PascalCase name (mechanical conversion would yield 'Referrerpolicy')",
+    "ignoredAttributes:wa-select:name": "WaSelect renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-select:custom-error": "WaSelect sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-select:change": "WaSelect binds change as its @bind-Value binder (CurrentValueAsString, or HandleMultipleSelectionChange with Multiple), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-select:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-select to restore or autofill its state; not consumer API and not callable from Blazor",
+    "attributePrerequisites:wa-slider:min-value": "min-value is rendered only in range mode (Range = true); in single-value mode the element ignores it",
+    "attributePrerequisites:wa-slider:max-value": "max-value is rendered only in range mode (Range = true); in single-value mode the element ignores it",
+    "attributeOverrides:wa-slider:autofocus": "exposed as WaSlider.AutoFocus and WaRange.AutoFocus, the natural-PascalCase name (mechanical conversion would yield 'Autofocus')",
+    "ignoredAttributes:wa-slider:name": "WaSlider (and WaRange, which also renders wa-slider) renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-slider:custom-error": "WaSlider (and WaRange, which also renders wa-slider) sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-slider:change": "WaSlider and WaRange bind change through the numericchange alias (Constants.NumericChangeEventAttribute), which hands .NET the element's numeric value and raises ValueChanged (MinValueChanged/MaxValueChanged in range mode) and OnValueChange, so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "derivedEventCallbacks:wa-slider:OnValueChange": "WaSlider: reports the new single value after the change event; raised by the numericchange handler (the value binding), which is always bound",
+    "derivedEventCallbacks:wa-slider:OnMinValueChange": "WaRange (renders wa-slider): reports the new range minimum after the change event; raised by the range-mode numericchange handler",
+    "derivedEventCallbacks:wa-slider:OnMaxValueChange": "WaRange (renders wa-slider): reports the new range maximum after the change event; raised by the range-mode numericchange handler",
+    "ignoredMethods:wa-slider:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-slider to restore or autofill its state; not consumer API and not callable from Blazor",
+    "unrenderedAttributes:wa-switch:value": "the CEM value is the form submission value; WaSwitch.Value is the two-way bound checked state (rendered as checked), and the submission value is rendered as the constant 'True', like Blazor's InputCheckbox, so no parameter maps to it",
+    "ignoredAttributes:wa-switch:name": "WaSwitch renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-switch:custom-error": "WaSwitch sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-switch:change": "WaSwitch binds change itself: HandleCheckedChangedAsync reads checked back into Value and raises ValueChanged and OnCheckedChange, so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "derivedEventCallbacks:wa-switch:OnCheckedChange": "reports the checked state read back from the element after the native change event; raised by the wrapper's change handler (the value binding), which is always bound",
+    "ignoredMethods:wa-switch:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-switch to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredAttributes:wa-radio-group:custom-error": "WaRadioGroup sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-radio-group:change": "WaRadioGroup binds change itself: HandleValueChangeAsync reads the value back and raises ValueChanged and OnValueChange, so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "derivedEventCallbacks:wa-radio-group:OnValueChange": "reports the new value after the native change event; raised by the wrapper's change handler (the value binding), which is always bound",
+    "ignoredMethods:wa-radio-group:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-radio-group to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredAttributes:wa-radio:name": "a wa-radio is submitted through its wa-radio-group, whose name WaRadioGroup.Name renders; a standalone name can be passed through AdditionalAttributes",
+    "ignoredAttributes:wa-radio:custom-error": "WaRadio sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredMethods:wa-radio:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-radio to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredAttributes:wa-file-input:name": "WaFileInput has no Name parameter; the form name of a natively submitted file input is passed through AdditionalAttributes",
+    "ignoredAttributes:wa-file-input:custom-error": "WaFileInput sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredMethods:wa-file-input:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-file-input to restore or autofill its state; not consumer API and not callable from Blazor",
+    "attributeOverrides:wa-textarea:maxlength": "exposed as WaTextArea.MaxLength, the natural-PascalCase name (mechanical conversion would yield 'Maxlength')",
+    "attributeOverrides:wa-textarea:minlength": "exposed as WaTextArea.MinLength, the natural-PascalCase name (mechanical conversion would yield 'Minlength')",
+    "attributeOverrides:wa-textarea:autocapitalize": "exposed as WaTextArea.AutoCapitalize, the natural-PascalCase name (mechanical conversion would yield 'Autocapitalize')",
+    "attributeOverrides:wa-textarea:autocorrect": "exposed as WaTextArea.AutoCorrect, the natural-PascalCase name (mechanical conversion would yield 'Autocorrect')",
+    "attributeOverrides:wa-textarea:autofocus": "exposed as WaTextArea.AutoFocus, the natural-PascalCase name (mechanical conversion would yield 'Autofocus')",
+    "attributeOverrides:wa-textarea:enterkeyhint": "exposed as WaTextArea.EnterKeyHint, the natural-PascalCase name (mechanical conversion would yield 'Enterkeyhint')",
+    "attributeOverrides:wa-textarea:inputmode": "exposed as WaTextArea.InputMode, the natural-PascalCase name (mechanical conversion would yield 'Inputmode')",
+    "ignoredAttributes:wa-textarea:name": "WaTextArea renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-textarea:custom-error": "WaTextArea sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-textarea:change": "WaTextArea binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-textarea:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-textarea to restore or autofill its state; not consumer API and not callable from Blazor",
+    "attributeOverrides:wa-number-input:autofocus": "exposed as WaNumberInput.AutoFocus, the natural-PascalCase name (mechanical conversion would yield 'Autofocus')",
+    "attributeOverrides:wa-number-input:enterkeyhint": "exposed as WaNumberInput.EnterKeyHint, the natural-PascalCase name (mechanical conversion would yield 'Enterkeyhint')",
+    "attributeOverrides:wa-number-input:inputmode": "exposed as WaNumberInput.InputMode, the natural-PascalCase name (mechanical conversion would yield 'Inputmode')",
+    "eventOverrides:wa-number-input:beforeinput": "wa-number-input's cancelable before-value-change event (added in WA 3.6.0); exposed as the natural-PascalCase EventCallback OnBeforeInput (mechanical conversion would yield 'OnBeforeinput'), mapped via eventOverrides",
+    "ignoredAttributes:wa-number-input:name": "WaNumberInput renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-number-input:custom-error": "WaNumberInput sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-number-input:change": "WaNumberInput binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-number-input:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-number-input to restore or autofill its state; not consumer API and not callable from Blazor",
+    "trueFalseAttributes:wa-combobox:spellcheck": "wa-combobox's spellcheck converter is fromAttribute: (value) => !value || value === \"false\" ? false : true (3.12.0 source), so an explicit false must render \"false\"; its default is false, so the CEM-default rule does not cover it",
+    "attributeOverrides:wa-combobox:autocapitalize": "exposed as WaCombobox.AutoCapitalize, the natural-PascalCase name (mechanical conversion would yield 'Autocapitalize')",
+    "attributeOverrides:wa-combobox:autocorrect": "exposed as WaCombobox.AutoCorrect, the natural-PascalCase name (mechanical conversion would yield 'Autocorrect')",
+    "attributeOverrides:wa-combobox:enterkeyhint": "exposed as WaCombobox.EnterKeyHint, the natural-PascalCase name (mechanical conversion would yield 'Enterkeyhint')",
+    "attributeOverrides:wa-combobox:inputmode": "exposed as WaCombobox.InputMode, the natural-PascalCase name (mechanical conversion would yield 'Inputmode')",
+    "ignoredAttributes:wa-combobox:name": "WaCombobox renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-combobox:custom-error": "WaCombobox sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-combobox:change": "WaCombobox binds change as its @bind-Value binder (CurrentValueAsString, or HandleMultipleSelectionChange with Multiple), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-combobox:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-combobox to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredAttributes:wa-date-input:name": "WaDateInput renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-date-input:custom-error": "WaDateInput sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-date-input:change": "WaDateInput binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-date-input:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-date-input to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredAttributes:wa-time-input:name": "WaTimeInput renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-time-input:custom-error": "WaTimeInput sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-time-input:change": "WaTimeInput binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-time-input:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-time-input to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredAttributes:wa-known-date:name": "WaKnownDate renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-known-date:custom-error": "WaKnownDate sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-known-date:change": "WaKnownDate binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-known-date:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-known-date to restore or autofill its state; not consumer API and not callable from Blazor",
+    "unrenderedAttributes:wa-date-input:mode": "the selection mode is the wrapper's value type since 3.12.0: WaDateInput binds a DateOnly? and leaves mode unset (single), WaDateRangeInput binds a WaDateRange? and always renders mode=\"range\"; no Mode parameter chooses it",
+    "wrapperDefaultAttributes:wa-date-input:mode": "WaDateRangeInput is the range-mode wrapper of wa-date-input: it binds a WaDateRange? and so always renders mode=\"range\" (the element default is single, which WaDateInput leaves unset)",
+    "unrenderedAttributes:wa-date-input:min-range": "a range-mode-only option (CEM: range mode only), exposed as MinRange on WaDateRangeInput only; WaDateInput, the single-date wrapper, has no range to constrain",
+    "unrenderedAttributes:wa-date-input:max-range": "a range-mode-only option (CEM: range mode only), exposed as MaxRange on WaDateRangeInput only; WaDateInput, the single-date wrapper, has no range to constrain",
+    "unrenderedAttributes:wa-date-picker:mode": "the selection mode is the wrapper's value type since 3.12.0: WaDatePicker binds a DateOnly? and leaves mode unset (single), WaDateRangePicker binds a WaDateRange? and always renders mode=\"range\"; no Mode parameter chooses it",
+    "wrapperDefaultAttributes:wa-date-picker:mode": "WaDateRangePicker is the range-mode wrapper of wa-date-picker: it binds a WaDateRange? and so always renders mode=\"range\" (the element default is single, which WaDatePicker leaves unset)",
+    "unrenderedAttributes:wa-date-picker:min-range": "a range-mode-only option (CEM: range mode only), exposed as MinRange on WaDateRangePicker only; WaDatePicker, the single-date wrapper, has no range to constrain",
+    "unrenderedAttributes:wa-date-picker:max-range": "a range-mode-only option (CEM: range mode only), exposed as MaxRange on WaDateRangePicker only; WaDatePicker, the single-date wrapper, has no range to constrain",
+    "ignoredEvents:wa-date-picker:change": "WaDatePicker binds change as its @bind-Value binder (SetValueAsync), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "sourceVerifiedSlots:wa-date-picker:day-YYYY-MM-DD": "wa-date-picker's CEM and @slot JSDoc omit its per-day slots, but the compiled 3.12.0 source renders one in every day cell (verified 2026-09-26 in chunk.YRRAFIFT.js renderDay, line 864: const slotName = `day-${iso}`, rendered as <slot name=${slotName}> with the day number as fallback) and its documentation describes them (inputs\\WebAwesome\\components\\date-picker.md:427-444, Custom Day Content); wa-date-input declares the same slot family and forwards it here. WaDayContent in the ChildContent of WaDatePicker/WaDateRangePicker feeds it. Upstream issue filed by the owner - once a CEM declares the slot this entry is stale and must be removed (SourceVerifiedSlots_AreNotStale); re-verify against the source every upgrade",
+    "ignoredAttributes:wa-rating:getSymbol": "function-valued property (custom symbol renderer callback), not an authorable HTML attribute",
+    "ignoredAttributes:wa-rating:name": "WaRating renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-rating:custom-error": "WaRating sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-rating:change": "WaRating binds change through the numericchange alias (Constants.NumericChangeEventAttribute), whose handler raises ValueChanged, so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "unboundEventCallbacks:wa-rating:OnInput": "OnInput is inherited from WaInputBase; wa-rating dispatches no input event (the 3.12.0 source dispatches only change and wa-hover, and neither the @event JSDoc nor the CEM lists input), so the wrapper deliberately binds nothing for it",
+    "ignoredMethods:wa-rating:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-rating to restore or autofill its state; not consumer API and not callable from Blazor",
+    "ignoredMethods:wa-carousel:addSlide": "imperative DOM mutation of slides; conflicts with Blazor ownership, slides are managed through the model",
+    "ignoredMethods:wa-carousel:removeSlide": "imperative DOM mutation of slides; conflicts with Blazor ownership, slides are managed through the model",
+    "ignoredMethods:wa-markdown:getMarked": "static class method (WaMarkdown.getMarked() in markdown.d.ts) returning the shared Marked parser instance - a non-marshalable JS object, not a per-element instance method",
+    "ignoredMethods:wa-markdown:updateAll": "static class method (WaMarkdown.updateAll() in markdown.d.ts) that re-renders all connected wa-markdown instances after the shared Marked config changes - class-level, not a per-element instance method addressable via ElementReference interop",
+    "eventOverrides:wa-data-grid:wa-cell-contextmenu": "wa-data-grid cell context-menu event; exposed as the natural-PascalCase EventCallback OnCellContextMenu (mechanical conversion would yield 'OnCellContextmenu'), mapped via eventOverrides",
+    "cemOnlyEvents:wa-data-grid:request": "CEM extraction artifact of wa-data-grid, not a real event: it carries the same WaDataRequestEvent type as wa-data-request, and neither dist\\events\\events.d.ts (the canonical event-class export list) nor the component's own @event JSDoc block declares a bare 'request' - the compiled source only ever dispatches wa-data-request, which is bound as OnDataRequest",
+    "ignoredMethods:wa-data-grid:getColumnFacets": "wa-data-grid method returning { uniqueValues: Map<...>, minMax }; a JS Map serializes to an empty object over JSON interop, silently losing every value, so no faithful wrapper method can be offered",
+    "ignoredMethods:wa-data-grid:handleColumnsChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
+    "ignoredMethods:wa-data-grid:handlePageChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
+    "ignoredMethods:wa-data-grid:handleSearchTermChange": "internal wa-data-grid reactive-property watcher invoked by the element's own update cycle, not consumer API",
+    "unreachableUnionValues:wa-data-grid:selectable": "'' is the bare-attribute form of selectable, which WA documents as meaning 'multiple'; WaDataGridSelectable.Multiple emits 'multiple' explicitly, so the empty literal adds no reachable behavior",
+    "attributeOverrides:wa-otp-input:autofocus": "exposed as WaOtpInput.AutoFocus, the natural-PascalCase name (mechanical conversion would yield 'Autofocus')",
+    "attributeOverrides:wa-otp-input:autosubmit": "exposed as WaOtpInput.AutoSubmit, the natural-PascalCase name (mechanical conversion would yield 'Autosubmit')",
+    "ignoredAttributes:wa-otp-input:name": "WaOtpInput renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-otp-input:custom-error": "WaOtpInput sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-otp-input:change": "WaOtpInput binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "ignoredMethods:wa-otp-input:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-otp-input to restore or autofill its state; not consumer API and not callable from Blazor",
+    "extraRenderedAttributes:wa-tab:active": "wa-tab's active is an @internal Lit property ({ type: Boolean, reflect: true }), so the CEM omits it, but wa-tab-group observes the active attribute of its tabs (3.12.0 tab and tab-group chunks); WaTab.Active renders it",
+    "derivedEventCallbacks:wa-tab-group:OnTabChange": "kept alias of OnTabShow: Web Awesome 3 has no wa-tab-change event, so the wrapper raises OnTabChange from the same wa-tab-show handler as OnTabShow",
+    "ignoredAttributes:wa-carousel:currentSlide": "read-only JS state property of wa-carousel, not an authorable HTML attribute",
+    "ignoredAttributes:wa-carousel:slides": "read-only JS collection property of wa-carousel, not an authorable HTML attribute",
+    "ignoredAttributes:wa-dropdown-item:submenuOpen": "read-only JS state property of wa-dropdown-item, not an authorable HTML attribute",
+    "ignoredAttributes:wa-popup:autoSizeBoundary": "wa-popup property typed Element | Element[] ({ type: Object }, no attribute option), so it can only be set as a JS property to live elements; not settable from an attribute or from Blazor (the former string AutoSizeBoundary rendered a nonexistent auto-size-boundary attribute and was removed in 3.12.0)",
+    "ignoredAttributes:wa-popup:flipBoundary": "wa-popup property typed Element | Element[] ({ type: Object }, no attribute option), so it can only be set as a JS property to live elements; not settable from an attribute or from Blazor (the former string FlipBoundary rendered a nonexistent flip-boundary attribute and was removed in 3.12.0)",
+    "ignoredAttributes:wa-popup:shiftBoundary": "wa-popup property typed Element | Element[] ({ type: Object }, no attribute option), so it can only be set as a JS property to live elements; not settable from an attribute or from Blazor (the former string ShiftBoundary rendered a nonexistent shift-boundary attribute and was removed in 3.12.0)",
+    "attributePrerequisites:wa-popup:arrow-padding": "rendered only with Arrow = true, since the element ignores it without an arrow",
+    "attributePrerequisites:wa-popup:arrow-placement": "rendered only with Arrow = true, since the element ignores it without an arrow",
+    "attributePrerequisites:wa-popup:auto-size-padding": "rendered only while AutoSize is set, since the element ignores it otherwise",
+    "attributePrerequisites:wa-popup:flip-fallback-placements": "rendered only with Flip = true, since the element ignores it otherwise",
+    "attributePrerequisites:wa-popup:flip-fallback-strategy": "rendered only with Flip = true, since the element ignores it otherwise",
+    "attributePrerequisites:wa-popup:flip-padding": "rendered only with Flip = true, since the element ignores it otherwise",
+    "attributePrerequisites:wa-popup:shift-padding": "rendered only with Shift = true, since the element ignores it otherwise",
+    "ignoredEnumValues:wa-popup:auto-size": "WaAutoSize.None ('') is the non-nullable parameter's 'off' state; WaPopup omits the auto-size attribute entirely when AutoSize == None, so the empty string is never emitted",
+    "ignoredEnumValues:wa-popup:sync": "WaSync.None ('') is the non-nullable parameter's 'off' state; WaPopup omits the sync attribute entirely when Sync == None, so the empty string is never emitted",
+    "tokenListAttributes:wa-tooltip:trigger": "wa-tooltip's trigger is typed string, but the element reads it as a space-separated token list: the 3.12.0 tooltip.d.ts JSDoc lists click, hover, focus and manual ('multiple options can be passed by separating them with a space'), and the compiled tooltip chunk tests exactly those four via hasTrigger(\"click\"|\"hover\"|\"focus\"|\"manual\"), which splits the attribute on spaces - re-verify every upgrade",
+    "unresolvedEnumAttributes:wa-animation:easing": "wa-animation's easing is typed string because it takes any CSS <easing-function> (the JSDoc cites cubic-bezier(...)); WaAnimationEasing offers the CSS easing keywords linear, ease, ease-in, ease-out and ease-in-out, which the CSS Easing Functions spec defines, so no CEM union exists to check them against",
+    "extraElementMethods:wa-mutation-observer:stopObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24), WA 3.11.0 (2026-07-30) and WA 3.12.0 (2026-09-24), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:wa-mutation-observer:startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24), WA 3.11.0 (2026-07-30) and WA 3.12.0 (2026-09-24), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:wa-resize-observer:stopObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24), WA 3.11.0 (2026-07-30) and WA 3.12.0 (2026-09-24), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:wa-resize-observer:startObserver": "observer control methods, browser-verified on the live WA 3.0.0 elements (2026-07-19) after the disconnect/reconnect rename incident and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24), WA 3.11.0 (2026-07-30) and WA 3.12.0 (2026-09-24), still present as private methods in mutation-observer.d.ts/resize-observer.d.ts; the CEM reports empty methods for both observers, so renames here are invisible to the upgrade diff - re-verify each upgrade",
+    "extraElementMethods:wa-relative-time:update": "wa-relative-time refresh method, browser-verified on the live WA 3.0.0 element (2026-07-19) and source-re-verified against WA 3.1.0 (2026-07-22), WA 3.2.0 (2026-07-23), WA 3.2.1 (2026-07-23), WA 3.3.0 (2026-07-23), WA 3.3.1 (2026-07-23), WA 3.4.0 (2026-07-23), WA 3.5.0 (2026-07-23), WA 3.6.0 (2026-07-24), WA 3.7.0 (2026-07-24), WA 3.8.0 (2026-07-24), WA 3.9.0 (2026-07-24), WA 3.10.0 (2026-07-24), WA 3.11.0 (2026-07-30) and WA 3.12.0 (2026-09-24, the Lit ReactiveElement lifecycle update() inherited via WebAwesomeElement - 'WebAwesomeElement extends LitElement' reconfirmed in internal\\webawesome-element.d.ts, hence absent from the component .d.ts: relative-time.d.ts declares only disconnectedCallback, willUpdate and render), not CEM-documented",
+    "ignoredMethods:wa-page:visiblePixelsInViewport": "wa-page internal scroll-gap layout helper (takes a live HTMLElement arg; its own doc comment cites a StackOverflow scroll-fill fix) - not a consumer-facing API and not marshalable from Blazor",
+    "eventOverrides:wa-video:timeupdate": "wa-video native media event; exposed as the natural-PascalCase EventCallback OnTimeUpdate (mechanical conversion would yield 'OnTimeupdate'), mapped via eventOverrides",
+    "eventOverrides:wa-video:volumechange": "wa-video native media event; exposed as the natural-PascalCase EventCallback OnVolumeChange (mechanical conversion would yield 'OnVolumechange'), mapped via eventOverrides",
+    "eventOverrides:wa-video:loadedmetadata": "wa-video native media event; exposed as the natural-PascalCase EventCallback OnLoadedMetadata (mechanical conversion would yield 'OnLoadedmetadata'), mapped via eventOverrides",
+    "ignoredMethods:wa-video:getVideoElement": "wa-video method returning the live native HTMLVideoElement; a DOM node, not marshalable across Blazor JS interop, so not exposed as a wrapper method",
+    "ignoredAttributes:wa-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-chart",
+    "ignoredAttributes:wa-bar-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-bar-chart",
+    "ignoredAttributes:wa-bubble-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-bubble-chart",
+    "ignoredAttributes:wa-doughnut-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-doughnut-chart",
+    "ignoredAttributes:wa-line-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-line-chart",
+    "ignoredAttributes:wa-pie-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-pie-chart",
+    "ignoredAttributes:wa-polar-area-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-polar-area-chart",
+    "ignoredAttributes:wa-radar-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-radar-chart",
+    "ignoredAttributes:wa-scatter-chart:plugins": "Chart.js plugin registration is a JS-only array (typed never[] in the WA source, supplied through the chart's JSON <script> config slot); not an authorable HTML attribute of wa-scatter-chart"
+  },
+  "knownDefects": {}
 }

@@ -6,7 +6,9 @@
 // Without registerCustomEventType, custom events bound in the render tree never reach the
 // .NET handlers. The createEventArgs result is deserialized case-insensitively into the
 // wrapper's typed event args (extra properties are ignored), so payload shapes here must
-// stay in sync with Components\EventArgs.cs.
+// stay in sync with Components\EventArgs.cs. It also relays the events Blazor cannot receive
+// where Web Awesome dispatches them (relayedEvents below), and keeps the toast items Blazor renders
+// in the DOM until Blazor removes them (installOwnershipGuard below).
 
 // events whose detail (when present) is JSON-safe and maps 1:1 onto the typed args
 const eventNames = [
@@ -18,7 +20,6 @@ const eventNames = [
   'wa-cancel',
   'wa-cell-click',
   'wa-cell-contextmenu',
-  'wa-change',
   'wa-clear',
   'wa-collapse',
   'wa-column-move',
@@ -39,16 +40,12 @@ const eventNames = [
   'wa-hide',
   'wa-hover',
   'wa-include-error',
-  'wa-initial-focus',
-  'wa-intersect',
   'wa-invalid',
   'wa-lazy-change',
   'wa-lazy-load',
   'wa-load',
   'wa-mutation',
   'wa-page-change',
-  'wa-password-toggle',
-  'wa-password-visibility-change',
   'wa-remove',
   'wa-reposition',
   'wa-resize',
@@ -61,14 +58,10 @@ const eventNames = [
   'wa-slide-change',
   'wa-sort-change',
   'wa-start',
-  'wa-success',
-  'wa-tab-change',
-  'wa-tab-close',
   'wa-tab-hide',
   'wa-tab-show',
   'wa-video-change',
   'wa-view-change',
-  'wa-zoom-change',
 ];
 
 // native-named events that Web Awesome re-dispatches as custom events (not Blazor built-ins,
@@ -138,7 +131,8 @@ const specialArgs = {
   'wa-show': event => ({ ...detailArgs(event), isOpen: true }),
   'wa-hide': event => ({ ...detailArgs(event), isOpen: false }),
 
-  // detail is { entry: IntersectionObserverEntry } - flatten the two marshalable fields
+  // detail is { entry: IntersectionObserverEntry } - flatten the two marshalable fields; wa-intersect does not
+  // bubble, so it is registered only as its relay (relayedEvents), which uses this payload
   'wa-intersect': event => {
     const entry = event.detail && event.detail.entry;
     return {
@@ -251,11 +245,175 @@ const specialArgs = {
   },
 };
 
+// wa-slider and wa-rating keep their live value as a JS number and dispatch plain change/input
+// events. Blazor's built-in change/input reader forwards target.value as is, and the server
+// rejects a number ("Unsupported ChangeEventArgs value") before any handler runs, so a binder on
+// "onchange"/"oninput" never fires for these elements. These aliases listen to the same browser
+// events under non-wa names (the wrappers bind "onnumericchange"/"onnumericinput") and hand .NET
+// the value as a string: "<minValue>,<maxValue>" for a range-mode wa-slider (its value is an
+// unused default there), otherwise String(value), empty for null/undefined.
+function numericValueArgs(event) {
+  const target = event.target;
+  if (!target) return { value: '' };
+  if (target.range) return { value: `${target.minValue},${target.maxValue}` };
+  const value = target.value;
+  return { value: value === null || value === undefined ? '' : String(value) };
+}
+
+// Blazor event name -> aliased browser event name
+const numericValueEventAliases = {
+  'numericchange': 'change',
+  'numericinput': 'input',
+};
+
+// Blazor receives an event only where it listens: on the document, in the bubbling phase for a custom event
+// (and for keydown), and for a built-in non-bubbling event only at composedPath()[0]. Some events never get
+// there: wa-color-picker dispatches its popup events as plain non-bubbling CustomEvents, WaIntersectEvent is
+// constructed with bubbles: false, and wa-select, wa-combobox (always) and wa-color-picker (Escape while open)
+// stop the propagation of the keydown in their shadow root. A capture-phase listener on the document still
+// sees each of them first, so it re-dispatches every one, once, as a bubbling, composed event under a private
+// name on the host element; the wrappers bind the private name (Constants.Relayed*EventAttribute) instead of
+// the original, together with a Blazor-side stopPropagation, so the relayed event reaches no other wrapper.
+// The original event is left untouched and page listeners never see a second wa-* event.
+//
+// Blazor event name -> { event: the element event it relays, hosts: the elements it is relayed for,
+// source: 'host' when only the host's own dispatch counts (a nested component's event retargeted to the host
+// is not relayed), 'subtree' when the event may originate anywhere inside the host (native input events) }
+const relayedEvents = {
+  'wablazor-show': { event: 'wa-show', hosts: ['wa-color-picker'], source: 'host' },
+  'wablazor-after-show': { event: 'wa-after-show', hosts: ['wa-color-picker'], source: 'host' },
+  'wablazor-hide': { event: 'wa-hide', hosts: ['wa-color-picker'], source: 'host' },
+  'wablazor-after-hide': { event: 'wa-after-hide', hosts: ['wa-color-picker'], source: 'host' },
+  'wablazor-intersect': { event: 'wa-intersect', hosts: ['wa-intersection-observer'], source: 'host' },
+  'wablazor-keydown': { event: 'keydown', hosts: ['wa-color-picker', 'wa-combobox', 'wa-select'], source: 'subtree' },
+};
+
+// the payload Blazor's built-in keyboard reader builds (KeyboardEventArgs), for relayed keyboard events
+function keyboardArgs(event) {
+  return {
+    key: event.key,
+    code: event.code,
+    location: event.location,
+    repeat: event.repeat,
+    ctrlKey: event.ctrlKey,
+    shiftKey: event.shiftKey,
+    altKey: event.altKey,
+    metaKey: event.metaKey,
+    type: event.type,
+    isComposing: event.isComposing,
+  };
+}
+
+// payload builders of the relayed native events; relayed wa-* events use their own payload (specialArgs or
+// the sanitized detail)
+const relayedNativeArgs = {
+  'keydown': keyboardArgs,
+};
+
+// relayed event -> the original event, read by createEventArgs while the relayed event is being dispatched
+const relayOrigins = new WeakMap();
+
+// the element a relayed event is dispatched on, or null when the event is not relayed there
+function relayHost(event, relay) {
+  const path = event.composedPath();
+  if (relay.source === 'host') {
+    const origin = path[0];
+    return origin instanceof Element && relay.hosts.includes(origin.localName) ? origin : null;
+  }
+
+  // the innermost listed host the event passes through
+  for (const node of path) {
+    if (node instanceof Element && relay.hosts.includes(node.localName)) return node;
+  }
+  return null;
+}
+
+function relayArgs(relay) {
+  const argsOf = relayedNativeArgs[relay.event] || specialArgs[relay.event] || detailArgs;
+  return event => argsOf(relayOrigins.get(event) || event);
+}
+
+// symbol marking the document once the relay listeners are installed, shared by every copy of this module
+const relayInstalledKey = Symbol.for('WebAwesome.Blazor.eventRelay');
+
+function installEventRelay() {
+  if (typeof document === 'undefined' || document[relayInstalledKey]) return;
+  document[relayInstalledKey] = true;
+
+  for (const [name, relay] of Object.entries(relayedEvents)) {
+    document.addEventListener(relay.event, event => {
+      const host = relayHost(event, relay);
+      if (!host) return;
+
+      const relayed = new CustomEvent(name, { bubbles: true, composed: true, detail: event.detail });
+      relayOrigins.set(relayed, event);
+      host.dispatchEvent(relayed);
+    }, true);
+  }
+}
+
+// Blazor is the only owner of the elements it renders: it removes one with parentNode.removeChild and inserts new
+// nodes next to the ones it tracks, so an element that left the DOM behind its back fails the next render ("Cannot
+// read properties of null (reading 'removeChild')"). Web Awesome removes a toast item once it has hidden: wa-toast
+// in its wa-after-hide handler and wa-toast-item itself right after dispatching wa-after-hide. For an element the
+// wrapper marks as Blazor-owned (Constants.BlazorOwnedAttribute), a capture-phase listener on the document, which
+// runs before both, turns those removals into hiding the element in place (the hidden attribute); Blazor removes it
+// when the model drops the item, in the wrapper's OnAfterHide. A toast item Web Awesome creates itself (create())
+// carries no marker and is removed as before.
+const blazorOwnedAttribute = 'data-wablazor-owned';
+
+// Blazor-owned toast items Web Awesome has removed, from its point of view: hidden in place until Blazor removes them
+const retainedToastItems = new WeakSet();
+
+// closes a toast stack whose items have all been retained, as wa-toast does once it has removed its last item
+function closeEmptyToastStack(toast) {
+  const showing = [...toast.children].some(child => child.localName === 'wa-toast-item' && !retainedToastItems.has(child));
+  if (showing || !toast.matches(':popover-open')) return;
+
+  // wa-toast's own hideStack also clears its visible custom state
+  if (typeof toast.hideStack === 'function') toast.hideStack();
+  else toast.hidePopover();
+}
+
+// what a Web Awesome remove() of a Blazor-owned toast item does instead
+function retainToastItem(item) {
+  item.hidden = true;
+  retainedToastItems.add(item);
+
+  const toast = item.parentElement;
+  if (toast && toast.localName === 'wa-toast') closeEmptyToastStack(toast);
+}
+
+// symbol marking the document once the ownership listener is installed, shared by every copy of this module
+const ownershipGuardInstalledKey = Symbol.for('WebAwesome.Blazor.ownershipGuard');
+
+function installOwnershipGuard() {
+  if (typeof document === 'undefined' || document[ownershipGuardInstalledKey]) return;
+  document[ownershipGuardInstalledKey] = true;
+
+  document.addEventListener('wa-after-hide', event => {
+    const item = event.composedPath()[0];
+    if (!(item instanceof Element) || item.localName !== 'wa-toast-item' || !item.hasAttribute(blazorOwnedAttribute)) return;
+
+    // an own property shadows Element.prototype.remove for this element only; Blazor itself removes it through
+    // its parent's removeChild
+    item.remove = () => retainToastItem(item);
+  }, true);
+}
+
 let eventTypesRegistered = false;
 
 function registerEventTypes(blazor) {
   if (eventTypesRegistered || !blazor || typeof blazor.registerCustomEventType !== 'function') return;
   eventTypesRegistered = true;
+
+  for (const [name, relay] of Object.entries(relayedEvents)) {
+    blazor.registerCustomEventType(name, {
+      createEventArgs: relayArgs(relay),
+    });
+  }
+
+  installEventRelay();
 
   for (const name of eventNames) {
     blazor.registerCustomEventType(name, {
@@ -268,14 +426,23 @@ function registerEventTypes(blazor) {
       createEventArgs: specialArgs[name] || detailArgs,
     });
   }
+
+  for (const [name, browserEventName] of Object.entries(numericValueEventAliases)) {
+    blazor.registerCustomEventType(name, {
+      browserEventName,
+      createEventArgs: numericValueArgs,
+    });
+  }
 }
 
 // Blazor Web (blazor.web.js, .NET 8+)
 export function afterWebStarted(blazor) {
   registerEventTypes(blazor);
+  installOwnershipGuard();
 }
 
 // classic hosts (blazor.webassembly.js / blazor.server.js)
 export function afterStarted(blazor) {
   registerEventTypes(blazor);
+  installOwnershipGuard();
 }

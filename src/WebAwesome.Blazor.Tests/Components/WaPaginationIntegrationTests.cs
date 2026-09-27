@@ -7,8 +7,8 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// <summary>
 /// Integration tests for the WaPagination wrapper, new in Web Awesome 3.11.0. Covers default attribute
 /// omission, kebab-case attribute rendering when parameters are set, the appearance/format enum
-/// mappings, the before/after page-change events, and the four icon slots (RenderFragment and
-/// icon-name forms).
+/// mappings, and the four icon slots (RenderFragment and icon-name forms). The page-change events are covered
+/// by EventCallbackBindingParityTests (binding) and the e2e event specs (browser delivery and payload).
 /// </summary>
 public class WaPaginationIntegrationTests : BunitContext
 {
@@ -81,51 +81,6 @@ public class WaPaginationIntegrationTests : BunitContext
         var element = cut.Find("wa-pagination");
         Assert.Equal("custom-class", element.GetAttribute("class"));
         Assert.Equal("margin-top: 1rem;", element.GetAttribute("style"));
-    }
-
-    [Fact]
-    public void Appearance_MapsToHtmlValue()
-    {
-        Assert.Equal("outlined", WaPaginationAppearance.Outlined.ToHtmlValue());
-        Assert.Equal("filled", WaPaginationAppearance.Filled.ToHtmlValue());
-        Assert.Equal("plain", WaPaginationAppearance.Plain.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Format_MapsToHtmlValue()
-    {
-        Assert.Equal("standard", WaPaginationFormat.Standard.ToHtmlValue());
-        Assert.Equal("compact", WaPaginationFormat.Compact.ToHtmlValue());
-    }
-
-    [Fact]
-    public void OnBeforePageChange_WhenWired_ReceivesDomEventWithPage()
-    {
-        WaPaginationPageChangeEventArgs? received = null;
-        var cut = Render<WaPagination>(parameters => parameters
-            .Add(p => p.OnBeforePageChange, args => received = args));
-
-        cut.Find("wa-pagination").TriggerEvent("onwa-before-page-change",
-            new WaPaginationPageChangeEventArgs { Page = 4, PageSize = 10 });
-
-        Assert.NotNull(received);
-        Assert.Equal(4, received!.Page);
-        Assert.Equal(10, received.PageSize);
-    }
-
-    [Fact]
-    public void OnPageChange_WhenWired_ReceivesDomEventWithPage()
-    {
-        WaPaginationPageChangeEventArgs? received = null;
-        var cut = Render<WaPagination>(parameters => parameters
-            .Add(p => p.OnPageChange, args => received = args));
-
-        cut.Find("wa-pagination").TriggerEvent("onwa-page-change",
-            new WaPaginationPageChangeEventArgs { Page = 5, PageSize = 10 });
-
-        Assert.NotNull(received);
-        Assert.Equal(5, received!.Page);
-        Assert.Equal(10, received.PageSize);
     }
 
     [Fact]

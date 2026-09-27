@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/data-grid.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/data-grid -->
+<!-- Source: reference doc bundled in the Web Awesome 3.12.0 release zip (dist/skills/webawesome/references/components/data-grid.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/data-grid -->
 
 # Data Grid [Pro]
 
@@ -6,21 +6,21 @@
 
 `<wa-data-grid>`
 
-ProIncluded with Web Awesome Pro Experimental [Since 3.11](https://webawesome.com/docs/resources/changelog#wa_3110)
+ProIncluded with Web Awesome Pro Experimental [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.11](https://webawesome.com/docs/resources/changelog#wa_3110)
 
 Data grids display tabular data with sorting, selection, filtering, pinning, tree data, grouping with aggregation, column footers, expandable rows, pagination, CSV export, full keyboard navigation, and virtualization for large datasets.
 
 **[Get Data Grid with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=data-grid)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
--   Responsive [Layout Tools](https://webawesome.com/docs/utilities)
+-   [Native Styles](https://webawesome.com/docs/utilities/native)
+-   [CSS + Layout Utilities](https://webawesome.com/docs/utilities)
 -   Ever-Growing [Pattern Library](https://webawesome.com/docs/patterns)
 -   Unlimited Hosted Projects
 -   Pre-Built [Pro Themes](https://webawesome.com/docs/themes)
 -   Pro Theme Builder
 -   Pro Color Tools
--   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma) Newer additions to Web Awesome, like [`<wa-toast>`](https://webawesome.com/docs/components/toast), aren't included in the currently available kit, but a new version is in the works.  
-    Track its progress on GitHub.
+-   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma)
 -   [WA Pro Perpetual License](https://webawesome.com/license/pro)
 -   Actual Human™ Support
 
@@ -29,6 +29,39 @@ Get Web Awesome Pro + Data Grid!
 Like the [chart components](https://webawesome.com/docs/components/chart), data grids are driven by JavaScript properties. Set `data` and `columns` on the element and the grid handles rendering, sorting, filtering, selection, and pagination. Grids are fully keyboard-navigable, and large datasets are virtualized automatically. The body scrolls within a default max height of 30rem; see [Large Datasets](#large-datasets--virtualization) to change it.
 
 The demo below turns on the most common features at once: sort, filter, search, select, reorder, resize, and paginate. Each is opt-in and covered in its own section below.
+
+```html
+<wa-data-grid
+  id="grid-anatomy"
+  label="Team directory"
+  row-key="id"
+  selectable
+  with-search
+  with-columns-menu
+  with-column-menu
+  resizable
+  paginate
+  page-size="2"
+></wa-data-grid>
+
+<script type="module">
+  const grid = document.querySelector('#grid-anatomy');
+
+  grid.pageSizeOptions = [2, 5, 10];
+
+  grid.columns = [
+    { field: 'name', label: 'Name', filterable: true, footer: '3 people' },
+    { field: 'title', label: 'Title' },
+    { field: 'location', label: 'Location' },
+  ];
+
+  grid.data = [
+    { id: 1, name: 'Ava Mitchell', title: 'Staff Engineer', location: 'Austin, TX' },
+    { id: 2, name: 'Liam Chen', title: 'Senior Engineer', location: 'Seattle, WA' },
+    { id: 3, name: 'Sofia Rossi', title: 'Design Lead', location: 'Remote' },
+  ];
+</script>
+```
 
 ```html
 <wa-data-grid
@@ -50,6 +83,9 @@ The demo below turns on the most common features at once: sort, filter, search, 
   import { html } from 'https://cdn.jsdelivr.net/npm/lit@3/+esm';
 
   const grid = document.querySelector('#grid-overview');
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   const statusVariant = { active: 'success', remote: 'brand', 'on leave': 'neutral' };
 
@@ -178,7 +214,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/data-grid/data-grid.js';
+import 'https://ka-f.webawesome.com/webawesome@3.12.0/components/data-grid/data-grid.js';
 ```
 
 \*\*npm\*\*
@@ -410,6 +446,8 @@ Each column is an object. Use `field` to map a column to a property on your row 
 
 <script type="module">
   const grid = document.querySelector('#grid-columns');
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
 
   grid.data = [
     { sku: 'CHA-014', product: 'Aeron Office Chair', category: 'Furniture', price: 1395, stock: 18 },
@@ -440,6 +478,8 @@ Provide a `formatter` function to control how a cell renders. It receives the ce
   import { html } from 'https://cdn.jsdelivr.net/npm/lit@3/+esm';
 
   const grid = document.querySelector('#grid-format');
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
 
   grid.data = [
     { id: 1, title: 'Fix focus trap in dialog', author: 'Ava Mitchell', state: 'merged', additions: 84, deletions: 12 },
@@ -484,6 +524,9 @@ A column doesn't need a `field`. Give it an `id` and a `formatter` to render but
   import { html } from 'https://cdn.jsdelivr.net/npm/lit@3/+esm';
 
   const grid = document.querySelector('#grid-actions');
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, name: 'Q2 Financial Report (Final) (Final v2).pdf', owner: 'Grace Thompson', shared: true },
     { id: 2, name: 'Brand Guidelines.fig', owner: 'Chloe Dubois', shared: true },
@@ -539,6 +582,10 @@ Add the `striped` attribute for alternating row backgrounds, which can make dens
 
 <script type="module">
   const grid = document.querySelector('#grid-striped');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { number: 1, symbol: 'H', name: 'Hydrogen', mass: 1.008, category: 'Nonmetal' },
     { number: 2, symbol: 'He', name: 'Helium', mass: 4.0026, category: 'Noble gas' },
@@ -581,6 +628,10 @@ Use the `size` attribute (`xs`, `s`, `m`, `l`, `xl`) to control both the grid's 
   const demo = document.querySelector('#grid-size-demo');
   const grid = demo.querySelector('wa-data-grid');
   const picker = demo.querySelector('wa-select');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, version: '3.0.0', date: 'Jun 24, 2026', changes: 142, type: 'major' },
     { id: 2, version: '2.8.4', date: 'Jun 10, 2026', changes: 12, type: 'patch' },
@@ -618,6 +669,10 @@ Use the `appearance` attribute to switch between the default `outlined` look and
   const demo = document.querySelector('#grid-appearance-demo');
   const grid = demo.querySelector('wa-data-grid');
   const picker = demo.querySelector('wa-select');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 'WA-481', summary: 'Resize handle hard to grab', assignee: 'Ava Mitchell', priority: 'high' },
     { id: 'WA-477', summary: 'Add empty-state slot to data grid', assignee: 'Liam Chen', priority: 'medium' },
@@ -649,6 +704,9 @@ Columns with a `field` are sortable by default; set `sortable: false` to opt out
 
 <script type="module">
   const grid = document.querySelector('#grid-sort');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
 
   grid.data = [
     { id: 1, team: 'Arsenal', played: 28, won: 19, drawn: 5, lost: 4, points: 62 },
@@ -703,6 +761,10 @@ For full control, provide a `comparator` to define your own order, for example, 
   import { html } from 'https://cdn.jsdelivr.net/npm/lit@3/+esm';
 
   const grid = document.querySelector('#grid-comparator');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, incident: 'API latency spike', severity: 'high', opened: '2026-06-21' },
     { id: 2, incident: 'Typo in the pricing page', severity: 'low', opened: '2026-06-24' },
@@ -755,6 +817,9 @@ Add the `selectable` attribute to render a leading checkbox column with select-a
 <script type="module">
   const grid = document.querySelector('#grid-select');
 
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, name: 'Ava Mitchell', email: 'ava.mitchell@example.com', plan: 'Pro' },
     { id: 2, name: 'Liam Chen', email: 'liam.chen@example.com', plan: 'Team' },
@@ -789,6 +854,9 @@ Set `selectable="single"` for radio-style selection that allows one row at a tim
 <script type="module">
   const grid = document.querySelector('#grid-single');
 
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 'starter', name: 'Starter', seats: 'Up to 3', price: 0 },
     { id: 'pro', name: 'Pro', seats: 'Up to 10', price: 12 },
@@ -815,6 +883,9 @@ The `page` property is **0-based**, so `page="0"` is the first page. This matche
 
 <script type="module">
   const grid = document.querySelector('#grid-page');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
 
   const merchants = ['Amazon', 'Spotify', 'Uber', 'Whole Foods', 'Delta Air Lines', 'Apple', 'Shell', 'Netflix'];
   const methods = ['Visa ••4291', 'Amex ••1008', 'Mastercard ••7733'];
@@ -849,6 +920,10 @@ Add the `with-search` attribute to show a search box that filters across all col
 
 <script type="module">
   const grid = document.querySelector('#grid-search');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { code: 'US', country: 'United States', capital: 'Washington, D.C.', region: 'Americas', population: 331893745 },
     { code: 'JP', country: 'Japan', capital: 'Tokyo', region: 'Asia', population: 125681593 },
@@ -886,6 +961,10 @@ Set `filterable: true` on a column to add a filter button to its header. It open
 
 <script type="module">
   const grid = document.querySelector('#grid-filter');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, name: 'Aurora Floor Lamp', category: 'Lighting', material: 'Brass', price: 249 },
     { id: 2, name: 'Borealis Wool Rug', category: 'Textiles', material: 'Wool', price: 429 },
@@ -924,6 +1003,10 @@ When a value list has more than ten entries, the panel adds a search box to narr
 
 <script type="module">
   const grid = document.querySelector('#grid-filter-types');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, name: 'Aurora Floor Lamp', category: 'Lighting', price: 249, restocked: '2026-06-02' },
     { id: 2, name: 'Borealis Wool Rug', category: 'Textiles', price: 429, restocked: '2026-05-11' },
@@ -980,7 +1063,69 @@ const { uniqueValues, minMax } = grid.getColumnFacets('category');
 // minMax: undefined (non-numeric); for 'price' it would be [44, 429]
 ```
 
-Faceting is client-mode only. In [server mode](#loading-data-from-a-server), the server owns filtering, so `getColumnFacets` returns empty facets and the `'set'` filter's panel falls back to a plain text box (range filters keep their controls and pass their bounds to your server).
+Faceting is client-mode only. In [server mode](#loading-data-from-a-server), the server owns filtering, so `getColumnFacets` returns empty facets and the `'set'` filter's panel falls back to a plain text box unless the column provides [`filterOptions`](#custom-filter-options) (range filters keep their controls and pass their bounds to your server).
+
+#### Custom Filter Options
+
+Set a column's `filterOptions` to supply the value picker's list yourself instead of letting the grid compute facets. Each option filters by its `value`, displays its `label` (defaulting to the value), and shows its `count` next to the label when one is provided. Options render in the order you give them.
+
+This is how you get a `'set'` or `'includes-*'` picker in [server mode](#loading-data-from-a-server), where the grid only holds one page of rows and can't derive the distinct values itself. Fetch them alongside your page data and the checked values arrive in your request's `filters`. It also works in client mode, where it replaces the computed facets, so you can control ordering, relabel values, or list values no loaded row has.
+
+```html
+<wa-data-grid id="grid-filter-options" label="Products" row-key="id" paginate page-size="5"></wa-data-grid>
+
+<script type="module">
+  const grid = document.querySelector('#grid-filter-options');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
+  // A fake server. In a real app, fetch() from your API instead.
+  const ALL = [
+    { id: 1, name: 'Aurora Floor Lamp', category: 'Lighting', price: 249 },
+    { id: 2, name: 'Borealis Wool Rug', category: 'Textiles', price: 429 },
+    { id: 3, name: 'Cascade Glass Vase', category: 'Decor', price: 85 },
+    { id: 4, name: 'Dusk Wall Sconce', category: 'Lighting', price: 139 },
+    { id: 5, name: 'Ember Throw Blanket', category: 'Textiles', price: 69 },
+    { id: 6, name: 'Fjord Ceramic Bowl', category: 'Decor', price: 44 },
+    { id: 7, name: 'Grove Table Lamp', category: 'Lighting', price: 119 },
+    { id: 8, name: 'Harbor Linen Curtains', category: 'Textiles', price: 159 },
+    { id: 9, name: 'Inlet Picture Frame', category: 'Decor', price: 29 },
+    { id: 10, name: 'Juniper Pendant Light', category: 'Lighting', price: 189 },
+    { id: 11, name: 'Kestrel Cushion Cover', category: 'Textiles', price: 39 },
+    { id: 12, name: 'Lagoon Wall Mirror', category: 'Decor', price: 210 },
+  ];
+
+  // Compute the distinct values and counts up front — in a real app, your API would return these
+  const counts = new Map();
+  for (const row of ALL) counts.set(row.category, (counts.get(row.category) ?? 0) + 1);
+
+  grid.columns = [
+    { field: 'name', label: 'Name', flex: 2, minWidth: 160 },
+    {
+      field: 'category',
+      label: 'Category',
+      filterable: true,
+      filterType: 'set',
+      width: 150,
+      filterOptions: [...counts].map(([value, count]) => ({ value, count })),
+    },
+    { field: 'price', label: 'Price', align: 'end', width: 110, formatter: v => `$${v}` },
+  ];
+
+  grid.dataSource = async ({ filters, page, pageSize }) => {
+    await new Promise(r => setTimeout(r, 250)); // simulate latency
+    let rows = ALL;
+    const categories = filters.find(f => f.id === 'category')?.value;
+    if (Array.isArray(categories) && categories.length > 0) {
+      rows = rows.filter(r => categories.includes(r.category));
+    }
+    return { rows: rows.slice(page * pageSize, (page + 1) * pageSize), total: rows.length };
+  };
+</script>
+```
+
+Counts you provide are static — unlike client-mode facets, they won't update as other filters narrow the results. Omit `count` to show the list without numbers.
 
 ### Column Visibility
 
@@ -991,6 +1136,10 @@ Add the `with-columns-menu` attribute to render a menu that lets users show and 
 
 <script type="module">
   const grid = document.querySelector('#grid-visibility');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, page: '/', views: 48210, visitors: 31044, bounce: 0.38, avgTime: 142 },
     { id: 2, page: '/pricing', views: 21088, visitors: 16730, bounce: 0.51, avgTime: 96 },
@@ -1024,6 +1173,10 @@ Add the `resizable` attribute to let users drag column borders, or set `resizabl
 
 <script type="module">
   const grid = document.querySelector('#grid-resize');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, file: 'Q2-financial-report-final.pdf', type: 'PDF', size: '2.4 MB', modified: 'Jun 12, 2026' },
     { id: 2, file: 'marketing-budget-2026.xlsx', type: 'Spreadsheet', size: '1.1 MB', modified: 'Jun 1, 2026' },
@@ -1049,6 +1202,10 @@ Add the `reorderable` attribute to let users drag column headers to reorder them
 
 <script type="module">
   const grid = document.querySelector('#grid-reorder');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, name: 'Ava Mitchell', role: 'Staff Engineer', team: 'Platform', location: 'Austin, TX' },
     { id: 2, name: 'Liam Chen', role: 'Senior Engineer', team: 'Growth', location: 'Seattle, WA' },
@@ -1083,6 +1240,10 @@ Start a column pinned with `pinned: 'left'` (or `'right'`) in its definition, or
 
 <script type="module">
   const grid = document.querySelector('#grid-pin');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, name: 'Ada Lovelace', team: 'Platform', location: 'London', startDate: '2019-03-01', status: 'Active' },
     { id: 2, name: 'Alan Turing', team: 'Research', location: 'Manchester', startDate: '2018-07-15', status: 'Active' },
@@ -1123,6 +1284,10 @@ Give a column a `footer` to render a totals row pinned to the bottom of the scro
 
 <script type="module">
   const grid = document.querySelector('#grid-footers');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
   grid.data = [
     { id: 1, item: 'Design sprint', hours: 24, rate: 150 },
@@ -1169,6 +1334,10 @@ Set the `group-by` attribute to a column id to group rows by that column's value
 
 <script type="module">
   const grid = document.querySelector('#grid-grouped');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   grid.data = [
     { id: 1, name: 'Ada Lovelace', department: 'Engineering', title: 'Principal Engineer', salary: 186000 },
@@ -1192,8 +1361,6 @@ Set the `group-by` attribute to a column id to group rows by that column's value
       formatter: value => currency.format(value),
     },
   ];
-  // Start with every group open.
-  await customElements.whenDefined('wa-data-grid');
   grid.expandAllRows();
 </script>
 ```
@@ -1229,6 +1396,10 @@ Set the `rowDetail` property to a function that returns content for an expandabl
   import { html } from 'https://cdn.jsdelivr.net/npm/lit@3/+esm';
 
   const grid = document.querySelector('#grid-detail');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     {
       id: 1,
@@ -1298,6 +1469,10 @@ Sorting orders children within their parent, and pagination keeps an expanded su
 
 <script type="module">
   const grid = document.querySelector('#grid-tree');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     {
       id: 1,
@@ -1367,6 +1542,10 @@ When there are no rows to display, the grid shows a default empty message. Provi
 
 <script type="module">
   const grid = document.querySelector('#grid-empty');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [];
   grid.columns = [
     { field: 'number', label: 'Invoice #' },
@@ -1376,15 +1555,52 @@ When there are no rows to display, the grid shows a default empty message. Provi
 </script>
 ```
 
-While a [server-mode](#loading-data-from-a-server) request is in flight, the grid sets its `loading` attribute and shows a translucent overlay with a spinner. Slot your own content into the `loading` slot to customize it:
+While a [server-mode](#loading-data-from-a-server) request is in flight, the grid sets its `loading` attribute and shows a translucent overlay with a spinner. You can slot your own content into the `loading` slot to customize it. Search the grid or press the button below to see the loading state in action.
 
 ```html
-<wa-data-grid label="Orders">
+<div class="wa-cluster" style="margin-block-end: var(--wa-space-m);">
+  <wa-button id="grid-loading-reload">Reload</wa-button>
+</div>
+<wa-data-grid id="grid-loading" label="Orders" row-key="id" with-search>
   <div slot="loading" class="wa-stack wa-align-items-center">
     <wa-spinner style="font-size: 2rem;"></wa-spinner>
     <small>Loading orders…</small>
   </div>
 </wa-data-grid>
+
+<script type="module">
+  const grid = document.querySelector('#grid-loading');
+  const reload = document.querySelector('#grid-loading-reload');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
+  grid.columns = [
+    { field: 'id', label: 'Order #', width: 110 },
+    { field: 'customer', label: 'Customer', flex: 1, minWidth: 140 },
+    { field: 'total', label: 'Total', align: 'end', width: 110 },
+  ];
+
+  const orders = [
+    { id: 'A-1043', customer: 'Ada Lovelace', total: '$248.00' },
+    { id: 'A-1044', customer: 'Grace Hopper', total: '$1,120.50' },
+    { id: 'A-1045', customer: 'Alan Turing', total: '$76.25' },
+    { id: 'A-1046', customer: 'Katherine Johnson', total: '$540.00' },
+    { id: 'A-1047', customer: 'Edsger Dijkstra', total: '$312.75' },
+    { id: 'A-1048', customer: 'Barbara Liskov', total: '$894.00' },
+  ];
+
+  // Setting dataSource switches the grid to server mode: it toggles `loading` around every request, so searching
+  // shows the overlay too. In a real app, fetch() from your API instead.
+  grid.dataSource = async ({ search }) => {
+    await new Promise(resolve => setTimeout(resolve, 1200)); // simulate latency
+    const q = search.trim().toLowerCase();
+    const rows = q ? orders.filter(order => order.customer.toLowerCase().includes(q)) : orders;
+    return { rows, total: rows.length };
+  };
+
+  reload.addEventListener('click', () => grid.reload());
+</script>
 ```
 
 ### Large Datasets & Virtualization
@@ -1406,6 +1622,10 @@ Rows are virtualized automatically. Only the visible window (plus a small oversc
 
 <script type="module">
   const grid = document.querySelector('#grid-virtual');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   const sensors = ['temp-01', 'temp-02', 'hum-01', 'co2-01', 'lux-01'];
 
   grid.data = Array.from({ length: 10000 }, (_, i) => ({
@@ -1436,13 +1656,17 @@ Virtualization works because the grid's body has a fixed max height. Setting `--
 
 For large or remote datasets, set the `dataSource` property to an async function. The grid switches to server mode, where sorting, filtering, and pagination become your server's job, and calls `dataSource` whenever they change. Return the current page of `rows` and the `total` row count; the `loading` property reflects whether a request is in flight.
 
-Each request carries an `AbortSignal` that you forward to your `fetch()`. The grid aborts the previous request and ignores out-of-order responses, so rapid changes can't show stale data. Search and filter keystrokes are debounced (250ms by default; tune with the `filter-debounce` attribute), and `reload()` re-runs the current request at any time.
+Each request carries an `AbortSignal` that you forward to your `fetch()`. The grid aborts the previous request and ignores out-of-order responses, so rapid changes can't show stale data. Search and filter keystrokes are debounced (250ms by default; tune with the `filter-debounce` attribute), and `reload()` re-runs the current request at any time. To offer `'set'`\-style value pickers in server mode, provide each column's distinct values with [`filterOptions`](#custom-filter-options).
 
 ```html
 <wa-data-grid id="grid-server" label="Audit log" row-key="id" paginate page-size="10" with-search></wa-data-grid>
 
 <script type="module">
   const grid = document.querySelector('#grid-server');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.columns = [
     { field: 'time', label: 'Time', sortable: true, width: 110 },
     { field: 'user', label: 'User', flex: 1, minWidth: 140 },
@@ -1504,6 +1728,10 @@ If you prefer to manage fetching yourself, or you're not using JavaScript callba
 
 <script type="module">
   const grid = document.querySelector('wa-data-grid');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.addEventListener('wa-data-request', async event => {
     const { sort, filters, search, page, pageSize, signal } = event.detail;
     grid.loading = true;
@@ -1533,6 +1761,9 @@ The grid emits `wa-cell-click` when a data cell is clicked or Enter is pressed o
 <script type="module">
   const grid = document.querySelector('#grid-click');
   const result = document.querySelector('#grid-click-result');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
 
   grid.data = [
     { id: 1, company: 'Globex', contact: 'Hank Scorpio', country: 'USA', orders: 42 },
@@ -1576,6 +1807,10 @@ Press Ctrl + C (or Cmd + C) with rows selected to copy them, or call `copySelect
 
 <script type="module">
   const grid = document.querySelector('#grid-copy');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   grid.data = [
     { id: 1, category: 'Payroll', budget: 480000, actual: 472500 },
@@ -1611,6 +1846,10 @@ Call `grid.exportDataAsCsv()` to download the current rows as a CSV file, or `ge
 
 <script type="module">
   const grid = document.querySelector('#grid-csv');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   grid.data = [
     { id: 1, product: 'Aeron Office Chair', region: 'North America', units: 312, revenue: 435240 },
@@ -1663,6 +1902,10 @@ Call `grid.getState()` for a serializable snapshot of the column order, widths, 
 
 <script type="module">
   const grid = document.querySelector('#grid-state');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, name: 'Ava Mitchell', role: 'Staff Engineer', team: 'Platform', location: 'Austin, TX' },
     { id: 2, name: 'Liam Chen', role: 'Senior Engineer', team: 'Growth', location: 'Seattle, WA' },
@@ -1709,6 +1952,10 @@ The grid follows the [ARIA grid pattern](https://www.w3.org/WAI/ARIA/apg/pattern
 
 <script type="module">
   const grid = document.querySelector('#grid-keyboard');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   const cities = [
     'Tokyo',
     'Delhi',
@@ -1831,6 +2078,10 @@ When theming with a raw palette color, mix it with a neutral surface or text tok
 
 <script type="module">
   const grid = document.querySelector('#grid-theme');
+
+  await customElements.whenDefined('wa-data-grid');
+  await grid.updateComplete;
+
   grid.data = [
     { id: 1, name: 'Ava Mitchell', role: 'Staff Engineer', team: 'Platform' },
     { id: 2, name: 'Liam Chen', role: 'Senior Engineer', team: 'Growth' },

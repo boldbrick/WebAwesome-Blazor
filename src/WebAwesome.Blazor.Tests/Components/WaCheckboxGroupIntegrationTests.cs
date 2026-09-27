@@ -1,146 +1,33 @@
-using Microsoft.AspNetCore.Components;
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for the WaCheckboxGroup wrapper (new in WA 3.9.0): defaults, parameter
-/// settability, enum mappings, and slot content. WaCheckboxGroup is a grouping wrapper, not a
-/// form control - it exposes no value binding and no events.
+/// Render tests for the content slots of the WaCheckboxGroup wrapper (new in WA 3.9.0), a grouping wrapper
+/// without value binding or events: ChildContent renders into the default slot, MarkupLabel and MarkupHint into
+/// the label and hint slots. Its attributes and defaults are covered by the CEM-driven
+/// RenderedAttributeParityTests.
 /// </summary>
-public class WaCheckboxGroupIntegrationTests
+public class WaCheckboxGroupIntegrationTests : BunitContext
 {
-    #region ------ Defaults ------
-
-    [Fact]
-    public void Constructor_WithDefaultValues_SetsPropertiesCorrectly()
+    public WaCheckboxGroupIntegrationTests()
     {
-        // Arrange & Act
-        var component = new WaCheckboxGroup();
-
-        // Assert
-        Assert.Null(component.Element);
-        Assert.Null(component.Label);
-        Assert.Null(component.Hint);
-        Assert.Null(component.Orientation);
-        Assert.Null(component.Size);
-        Assert.False(component.Required);
-        Assert.False(component.WithHint);
-        Assert.False(component.WithLabel);
-        Assert.Null(component.ChildContent);
-        Assert.Null(component.MarkupLabel);
-        Assert.Null(component.MarkupHint);
+        Services.AddScoped<WebAwesomeJSInterop>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
-    #endregion
-
-    #region ------ Parameter Setting ------
-
-    [Fact]
-    public void LabelAndHint_CanBeSetAndRetrieved()
+    [Theory]
+    [InlineData(nameof(WaCheckboxGroup.ChildContent), "")]
+    [InlineData(nameof(WaCheckboxGroup.MarkupLabel), "label")]
+    [InlineData(nameof(WaCheckboxGroup.MarkupHint), "hint")]
+    public void SlotContent_RendersIntoItsSlot(string parameterName, string slot)
     {
-        // Arrange
-        var component = new WaCheckboxGroup();
+        var cut = Render<WaCheckboxGroup>(parameters => parameters.TryAdd(parameterName, SlotProbe.Fragment));
 
-        // Act
-        component.Label = "Interests";
-        component.Hint = "Choose as many as you like.";
-
-        // Assert
-        Assert.Equal("Interests", component.Label);
-        Assert.Equal("Choose as many as you like.", component.Hint);
+        Assert.Equal(slot, SlotProbe.SlotOf(cut.Find("wa-checkbox-group")));
     }
-
-    [Fact]
-    public void Required_WithHint_WithLabel_CanBeSetTogether()
-    {
-        // Arrange
-        var component = new WaCheckboxGroup();
-
-        // Act
-        component.Required = true;
-        component.WithHint = true;
-        component.WithLabel = true;
-
-        // Assert
-        Assert.True(component.Required);
-        Assert.True(component.WithHint);
-        Assert.True(component.WithLabel);
-    }
-
-    #endregion
-
-    #region ------ Enum Mappings ------
-
-    [Fact]
-    public void Orientation_CanBeSetAndMapsToHtmlValue()
-    {
-        // Arrange
-        var component = new WaCheckboxGroup();
-
-        // Act & Assert
-        component.Orientation = WaOrientation.Horizontal;
-        Assert.Equal("horizontal", component.Orientation?.ToHtmlValue());
-
-        component.Orientation = WaOrientation.Vertical;
-        Assert.Equal("vertical", component.Orientation?.ToHtmlValue());
-    }
-
-    [Fact]
-    public void Size_CanBeSetAndMapsToHtmlValue()
-    {
-        // Arrange
-        var component = new WaCheckboxGroup();
-
-        // Act & Assert - the group size is applied to all grouped items
-        component.Size = WaSize.Small;
-        Assert.Equal("small", component.Size?.ToHtmlValue());
-
-        component.Size = WaSize.Large;
-        Assert.Equal("large", component.Size?.ToHtmlValue());
-    }
-
-    #endregion
-
-    #region ------ Slots ------
-
-    [Fact]
-    public void ChildContent_DefaultsToNullAndCanBeSet()
-    {
-        // Arrange
-        var component = new WaCheckboxGroup();
-        RenderFragment fragment = builder => { };
-
-        // Assert - default
-        Assert.Null(component.ChildContent);
-
-        // Act
-        component.ChildContent = fragment;
-
-        // Assert
-        Assert.Same(fragment, component.ChildContent);
-    }
-
-    [Fact]
-    public void MarkupLabelAndMarkupHint_DefaultToNullAndCanBeSet()
-    {
-        // Arrange
-        var component = new WaCheckboxGroup();
-        RenderFragment fragment = builder => { };
-
-        // Assert - defaults
-        Assert.Null(component.MarkupLabel);
-        Assert.Null(component.MarkupHint);
-
-        // Act
-        component.MarkupLabel = fragment;
-        component.MarkupHint = fragment;
-
-        // Assert
-        Assert.Same(fragment, component.MarkupLabel);
-        Assert.Same(fragment, component.MarkupHint);
-    }
-
-    #endregion
 }

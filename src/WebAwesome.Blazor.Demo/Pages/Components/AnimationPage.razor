@@ -1,9 +1,9 @@
-﻿@page "/components/animation"
+@page "/components/animation"
 
 <PageTitle>Animation</PageTitle>
 
-<h1>Animation</h1>
-<p><code>&lt;wa-animation&gt;</code> wrapped by <code>WaAnimation</code>.</p>
+<h1>Animation <ComponentBadges Tag="wa-animation" /></h1>
+<p>Animations animate the first child element with one of Web Awesome's built-in keyframe animations. <code>&lt;wa-animation&gt;</code> wrapped by <code>WaAnimation</code>. Unset, <code>Iterations</code> is the element's default, <code>Infinity</code>, so an animation loops until it is stopped.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaAnimation Name="bounce" Play="true" Iterations="1">
@@ -11,14 +11,112 @@
     </WaAnimation>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\animation.md) *@
+<ExampleSection Title="Easing" Code="@EasingExample">
+    <WaCluster Gap="GapSize.Gap_XL">
+        <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.Linear"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.Ease"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.EaseIn"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.EaseOut"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.EaseInOut"><div class="demo-box"></div></WaAnimation>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Direction" Code="@DirectionExample">
+    <WaCluster Gap="GapSize.Gap_XL">
+        <WaAnimation Name="slideInLeft" Play="true" Duration="1500" Direction="WaAnimationDirection.Normal"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="slideInLeft" Play="true" Duration="1500" Direction="WaAnimationDirection.Reverse"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="slideInLeft" Play="true" Duration="1500" Direction="WaAnimationDirection.Alternate"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="slideInLeft" Play="true" Duration="1500" Direction="WaAnimationDirection.AlternateReverse"><div class="demo-box"></div></WaAnimation>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Iterations, Delay and Fill" Code="@FillExample">
+    <p>Each box fades out three times after a 500 ms delay; <code>Fill</code> decides which frame styles the box before the delay and after the last iteration.</p>
+    <WaCluster Gap="GapSize.Gap_XL">
+        <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.None"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.Forwards"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.Backwards"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.Both"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.Auto"><div class="demo-box"></div></WaAnimation>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Playback Rate and Start Offset" Code="@PlaybackExample">
+    <p>Half speed, double speed, and starting halfway through each iteration with a one-second pause after it.</p>
+    <WaCluster Gap="GapSize.Gap_XL">
+        <WaAnimation Name="rubberBand" Play="true" Duration="2000" PlaybackRate="0.5M"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="rubberBand" Play="true" Duration="2000" PlaybackRate="2"><div class="demo-box"></div></WaAnimation>
+        <WaAnimation Name="rubberBand" Play="true" Duration="2000" IterationStart="0.5" EndDelay="1000"><div class="demo-box"></div></WaAnimation>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Play on Demand" Code="@PlayExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+        <WaAnimation Name="tada" Duration="1000" Iterations="1" Play="playing" OnFinish="() => playing = false">
+            <div class="demo-box"></div>
+        </WaAnimation>
+        <WaButton Disabled="playing" OnClick="() => playing = true">Play once</WaButton>
+    </WaCluster>
+</ExampleSection>
 
 <ApiTable Tag="wa-animation" />
 
 @code {
+    private bool playing;
+
     private const string DefaultExample = """
         <WaAnimation Name="bounce" Play="true" Iterations="1">
             <div style="background: var(--wa-color-brand-fill-loud); width: 100px; height: 100px;"></div>
         </WaAnimation>
+        """;
+
+    private const string EasingExample = """
+        <WaCluster Gap="GapSize.Gap_XL">
+            <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.Linear"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.Ease"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.EaseIn"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.EaseOut"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="bounce" Play="true" Duration="2000" Easing="WaAnimationEasing.EaseInOut"><div class="demo-box"></div></WaAnimation>
+        </WaCluster>
+        """;
+
+    private const string DirectionExample = """
+        <WaCluster Gap="GapSize.Gap_XL">
+            <WaAnimation Name="slideInLeft" Play="true" Duration="1500" Direction="WaAnimationDirection.Normal"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="slideInLeft" Play="true" Duration="1500" Direction="WaAnimationDirection.Reverse"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="slideInLeft" Play="true" Duration="1500" Direction="WaAnimationDirection.Alternate"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="slideInLeft" Play="true" Duration="1500" Direction="WaAnimationDirection.AlternateReverse"><div class="demo-box"></div></WaAnimation>
+        </WaCluster>
+        """;
+
+    private const string FillExample = """
+        <WaCluster Gap="GapSize.Gap_XL">
+            <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.None"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.Forwards"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.Backwards"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.Both"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="fadeOut" Play="true" Duration="800" Iterations="3" Delay="500" Fill="WaAnimationFill.Auto"><div class="demo-box"></div></WaAnimation>
+        </WaCluster>
+        """;
+
+    private const string PlaybackExample = """
+        <WaCluster Gap="GapSize.Gap_XL">
+            <WaAnimation Name="rubberBand" Play="true" Duration="2000" PlaybackRate="0.5M"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="rubberBand" Play="true" Duration="2000" PlaybackRate="2"><div class="demo-box"></div></WaAnimation>
+            <WaAnimation Name="rubberBand" Play="true" Duration="2000" IterationStart="0.5" EndDelay="1000"><div class="demo-box"></div></WaAnimation>
+        </WaCluster>
+        """;
+
+    private const string PlayExample = """
+        <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+            <WaAnimation Name="tada" Duration="1000" Iterations="1" Play="playing" OnFinish="() => playing = false">
+                <div class="demo-box"></div>
+            </WaAnimation>
+            <WaButton Disabled="playing" OnClick="() => playing = true">Play once</WaButton>
+        </WaCluster>
+
+        @code {
+            private bool playing;
+        }
         """;
 }

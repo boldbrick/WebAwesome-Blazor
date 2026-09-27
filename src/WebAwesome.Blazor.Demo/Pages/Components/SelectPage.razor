@@ -70,7 +70,7 @@
 <ApiTable Tag="wa-select" />
 
 @code {
-    private string[]? selectedValues = ["option-1", "option-2"];
+    private IReadOnlyList<string>? selectedValues = ["option-1", "option-2"];
     private string? multipleValue;
     private string? defaultValue = "option-1";
     private string? experienceValue = "1";
@@ -159,7 +159,7 @@
 
         @code {
             private string? multipleValue;
-            private string[]? selectedValues = ["option-1", "option-2"];
+            private IReadOnlyList<string>? selectedValues = ["option-1", "option-2"];
         }
         """;
 

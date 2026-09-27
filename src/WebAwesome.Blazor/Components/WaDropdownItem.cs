@@ -58,9 +58,14 @@ public class WaDropdownItem : ComponentBase
     [Parameter] public string? Value { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Type"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaDropdownItemType DefaultType = WaDropdownItemType.Normal;
+
+    /// <summary>
     /// Set to <see cref="WaDropdownItemType.Checkbox"/> to make the item a checkbox.
     /// </summary>
-    [Parameter] public WaDropdownItemType Type { get; set; } = WaDropdownItemType.Normal;
+    [Parameter] public WaDropdownItemType Type { get; set; } = DefaultType;
 
     /// <summary>
     /// Checks the dropdown item. Only valid when <see cref="Type"/> is <see cref="WaDropdownItemType.Checkbox"/>.
@@ -73,9 +78,38 @@ public class WaDropdownItem : ComponentBase
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
-    /// The type of menu item to render.
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public WaVariant? Variant { get; set; }
+    public const WaDropdownItemVariant DefaultVariant = WaDropdownItemVariant.Default;
+
+    /// <summary>
+    /// The dropdown item's theme variant; use <see cref="WaDropdownItemVariant.Danger"/> for destructive actions.
+    /// When unset, the attribute is omitted and Web Awesome's default styling applies.
+    /// </summary>
+    [Parameter] public WaDropdownItemVariant? Variant { get; set; }
+
+    /// <summary>
+    /// When set, selecting the item will navigate to this URL. The item remains a menu item for assistive devices,
+    /// so make sure the label describes where the link goes. Ignored when the item has a submenu.
+    /// </summary>
+    [Parameter] public string? Href { get; set; }
+
+    /// <summary>
+    /// Tells the browser where to open the link.
+    /// Only used when <see cref="Href"/> is present.
+    /// </summary>
+    [Parameter] public WaLinkTarget? Target { get; set; }
+
+    /// <summary>
+    /// When using <see cref="Href"/>, this maps to the underlying link's <c>rel</c> attribute.
+    /// </summary>
+    [Parameter] public string? Rel { get; set; }
+
+    /// <summary>
+    /// Tells the browser to download the linked file as this filename. Only used when <see cref="Href"/> is present.
+    /// </summary>
+    [Parameter] public string? Download { get; set; }
 
     #endregion
 
@@ -127,24 +161,29 @@ public class WaDropdownItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-dropdown-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-dropdown-item");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
+        // Add link attributes
+        builder.AddAttributeIfNotNullOrEmpty(5, "href", Href);
+        builder.AddAttributeIfNotNull(6, "target", Target?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(7, "rel", Rel);
+        builder.AddAttributeIfNotNullOrEmpty(8, "download", Download);
+
         // Add dropdown item-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "value", Value);
-        if (Type != WaDropdownItemType.Normal)
-            builder.AddAttribute(11, "type", Type.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 11, "type", Type.ToHtmlValue(), DefaultType.ToHtmlValue());
         builder.AddAttribute(12, "checked", Checked);
         builder.AddAttribute(13, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(14, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 14, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
 
         // Add event handlers
-        builder.AddAttributeIfHasDelegate(16, "blur", OnBlur);
-        builder.AddAttributeIfHasDelegate(17, "focus", OnFocus);
+        builder.AddAttributeIfHasDelegate(16, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(17, "onfocus", OnFocus);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(15, __dropdownItemReference => Element = __dropdownItemReference);

@@ -40,9 +40,20 @@ public class WaCard : ComponentBase
 
     // Card properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaAppearance DefaultAppearance = WaAppearance.Outlined;
+
+    /// <summary>
     /// The card's visual appearance.
     /// </summary>
-    [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.Outlined;
+    [Parameter] public WaAppearance Appearance { get; set; } = DefaultAppearance;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Vertical;
 
     /// <summary>
     /// The card's orientation.
@@ -115,6 +126,12 @@ public class WaCard : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? MediaContent { get; set; }
 
+    /// <summary>
+    /// An optional actions section rendered at the end of a horizontal card (see <see cref="Orientation"/>), in the
+    /// element's "actions" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? ActionsContent { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -122,7 +139,7 @@ public class WaCard : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-card");
+        var attributes = builder.OpenWaElement(this, 0, "wa-card");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -130,9 +147,8 @@ public class WaCard : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add card-specific attributes
-        if (Appearance != WaAppearance.Outlined)
-            builder.AddAttribute(10, "appearance", Appearance.ToHtmlValue());
-        builder.AddAttributeIfNotNull(11, "orientation", Orientation?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "appearance", Appearance.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "orientation", Orientation?.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
         builder.AddAttribute(12, "with-header", WithHeader || HeaderContent is not null || HeaderActionsContent is not null);
         builder.AddAttribute(13, "with-footer", WithFooter || FooterContent is not null || FooterActionsContent is not null);
         builder.AddAttribute(14, "with-media", WithMedia || MediaContent is not null);
@@ -190,6 +206,15 @@ public class WaCard : ComponentBase
             builder.OpenElement(55, "div");
             builder.AddAttribute(56, "slot", "footer-actions");
             builder.AddContent(57, FooterActionsContent);
+            builder.CloseElement();
+        }
+
+        // Add actions slot content (horizontal card)
+        if (ActionsContent is not null)
+        {
+            builder.OpenElement(60, "div");
+            builder.AddAttribute(61, "slot", "actions");
+            builder.AddContent(62, ActionsContent);
             builder.CloseElement();
         }
 

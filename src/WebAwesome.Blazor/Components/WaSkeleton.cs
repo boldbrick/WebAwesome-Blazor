@@ -41,9 +41,14 @@ public class WaSkeleton : ComponentBase
 
     // Skeleton properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Effect"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaEffect DefaultEffect = WaEffect.None;
+
+    /// <summary>
     /// Determines which effect the skeleton will use.
     /// </summary>
-    [Parameter] public WaEffect Effect { get; set; } = WaEffect.None;
+    [Parameter] public WaEffect Effect { get; set; } = DefaultEffect;
 
     #endregion
 
@@ -52,7 +57,7 @@ public class WaSkeleton : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-skeleton");
+        var attributes = builder.OpenWaElement(this, 0, "wa-skeleton");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -60,8 +65,7 @@ public class WaSkeleton : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add skeleton-specific attributes
-        if (Effect != WaEffect.None)
-            builder.AddAttribute(10, "effect", Effect.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "effect", Effect.ToHtmlValue(), DefaultEffect.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(11, __skeletonReference => Element = __skeletonReference);

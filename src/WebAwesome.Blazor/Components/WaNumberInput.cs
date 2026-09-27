@@ -12,9 +12,34 @@ namespace WebAwesome.Blazor.Components;
 /// A numeric input component for editing <see cref="decimal"/> values, with optional increment/decrement steppers.
 /// Corresponds to the wa-number-input Web Awesome component.
 /// </summary>
-public class WaNumberInput : WaInputBase<decimal?>
+public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Makes the input read-only, allowing its value to be seen but not edited.
+    /// </summary>
+    [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// Value of the browser's "autocomplete" attribute controlling autofill behavior.
+    /// </summary>
+    [Parameter] public string? Autocomplete { get; set; }
+
+    #endregion
+
     #region ------ Visual & Behavior Properties ------
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
 
     /// <summary>
     /// The input's visual appearance.
@@ -29,13 +54,19 @@ public class WaNumberInput : WaInputBase<decimal?>
     /// <summary>
     /// Used to customize the label or icon of the Enter key on virtual keyboards.
     /// </summary>
-    [Parameter] public string? EnterKeyHint { get; set; }
+    [Parameter] public WaEnterKeyHint? EnterKeyHint { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="InputMode"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaNumberInputMode DefaultInputMode = WaNumberInputMode.Numeric;
 
     /// <summary>
     /// Tells the browser what type of data will be entered by the user, allowing it to display the appropriate
     /// virtual keyboard on supportive devices.
     /// </summary>
-    [Parameter] public string? InputMode { get; set; }
+    [Parameter] public WaNumberInputMode? InputMode { get; set; }
 
     /// <summary>
     /// The input's maximum value.
@@ -53,14 +84,27 @@ public class WaNumberInput : WaInputBase<decimal?>
     [Parameter] public bool Pill { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placeholder"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPlaceholder = "";
+
+    /// <summary>
     /// Placeholder text to show as a hint when the input is empty.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
 
     /// <summary>
-    /// Specifies the granularity that the value must adhere to. Set to <c>any</c> to disable stepping constraints.
+    /// The Web Awesome default of <see cref="Step"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public string? Step { get; set; }
+    public static readonly WaStep DefaultStep = 1;
+
+    /// <summary>
+    /// Specifies the granularity that the value must adhere to, or <see cref="WaStep.Any"/> to disable stepping
+    /// constraints. A number converts implicitly (<c>Step="0.5"</c>).
+    /// </summary>
+    [Parameter] public WaStep? Step { get; set; }
 
     /// <summary>
     /// Hides the increment and decrement stepper buttons.
@@ -68,14 +112,12 @@ public class WaNumberInput : WaInputBase<decimal?>
     [Parameter] public bool WithoutSteppers { get; set; }
 
     /// <summary>
-    /// Used for SSR. Determines whether the SSRed component has the hint slot rendered on initial paint.
+    /// Binds the value on every keystroke (the "input" event) instead of only when the change is committed (the
+    /// "change" event, e.g. on blur), so the model is current while the user is typing - for example when a key
+    /// handler reads it. Named after the equivalent MudBlazor and Fluent UI Blazor parameter. <see cref="WaInputBase{TValue}.OnInput"/>
+    /// is still invoked, after the value has been updated.
     /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Used for SSR. Determines whether the SSRed component has the label slot rendered on initial paint.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
+    [Parameter] public bool Immediate { get; set; }
 
     #endregion
 
@@ -132,32 +174,39 @@ public class WaNumberInput : WaInputBase<decimal?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-number-input");
+        var attributes = builder.OpenWaElement(this, 0, "wa-number-input");
 
         // Add common attributes
         var sequence = AddCommonAttributes(builder, 1);
 
+        // Add the form control attributes the element declares
+        builder.AddAttribute(7, "readonly", Readonly);
+        builder.AddAttribute(8, "required", Required);
+        builder.AddAttributeIfNotNullOrEmpty(11, "autocomplete", Autocomplete);
+        AddLabelAndHintAttributes(builder, 12);
+
         // Add number-input-specific attributes
-        builder.AddAttributeIfNotNull(20, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 20, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
         builder.AddAttribute(21, "autofocus", AutoFocus);
-        builder.AddAttributeIfNotNullOrEmpty(22, "enterkeyhint", EnterKeyHint);
-        builder.AddAttributeIfNotNullOrEmpty(23, "inputmode", InputMode);
+        builder.AddAttributeIfNotNull(22, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 23, "inputmode", InputMode?.ToHtmlValue(), DefaultInputMode.ToHtmlValue());
         builder.AddAttributeIfNotNull(24, "max", Max);
         builder.AddAttributeIfNotNull(25, "min", Min);
         builder.AddAttribute(26, "pill", Pill);
-        builder.AddAttributeIfNotNullOrEmpty(27, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNullOrEmpty(28, "step", Step);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 27, "placeholder", Placeholder, DefaultPlaceholder);
+        builder.AddStepAttribute(attributes, 28, "step", Step, DefaultStep);
         builder.AddAttribute(29, "without-steppers", WithoutSteppers);
-        builder.AddAttribute(39, "with-hint", WithHint);
-        builder.AddAttribute(46, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding
         builder.AddAttribute(31, "value", CurrentValueAsString);
-        builder.AddAttribute(32, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(32, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
-        // Add common event handlers
-        AddCommonEventHandlers(builder, 40);
+        // Add common event handlers; with immediate binding, the value binder and OnInput share one oninput handler
+        AddCommonEventHandlers(builder, 40, includeInputHandler: !Immediate);
+        if (Immediate)
+            builder.AddAttribute(47, "oninput", CreateImmediateInputHandler());
 
         // Add number-input-specific event handlers
         builder.AddAttributeIfHasDelegate(49, "onwa-invalid", OnInvalid);
@@ -166,31 +215,8 @@ public class WaNumberInput : WaInputBase<decimal?>
         // Add element reference capture
         builder.AddElementReferenceCapture(53, __numberInputReference => Element = __numberInputReference);
 
-        // Add start slot content
-        if (StartContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "start");
-            builder.AddContent(62, StartContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(100, "start", StartIconName);
-        }
-
-        // Add end slot content
-        if (EndContent is not null)
-        {
-            builder.OpenElement(65, "span");
-            builder.AddAttribute(66, "slot", "end");
-            builder.AddContent(67, EndContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(105, "end", EndIconName);
-        }
+        // Add start and end slot content (the fragment wins over the icon-name shortcut)
+        FormControlRendering.AddAffixSlots(builder, 60, this, StartIconName, EndIconName);
 
         // Add increment-icon slot content
         if (IncrementIconContent is not null)
@@ -226,7 +252,7 @@ public class WaNumberInput : WaInputBase<decimal?>
             return true;
         }
 
-        if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsedValue))
+        if (decimal.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsedValue))
         {
             result = parsedValue;
             validationErrorMessage = null;
@@ -237,6 +263,16 @@ public class WaNumberInput : WaInputBase<decimal?>
         validationErrorMessage = $"The {DisplayName} field must be a number.";
         return false;
     }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Formats with the invariant culture, the form the element's value attribute and live value property parse and
+    /// <see cref="TryParseValueFromString"/> reads back (the base class would use the current culture, e.g. "2,5").
+    /// </remarks>
+    protected override string? FormatValueAsString(decimal? value) => value?.ToString(CultureInfo.InvariantCulture);
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
 
     #endregion
 

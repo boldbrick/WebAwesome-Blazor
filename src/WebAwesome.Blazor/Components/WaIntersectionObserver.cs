@@ -55,9 +55,15 @@ public class WaIntersectionObserver : ComponentBase
 
     // IntersectionObserver options
     /// <summary>
-    /// Space-separated threshold values for intersection detection (0.0 to 1.0)
+    /// The Web Awesome default of <see cref="Threshold"/> (a single threshold of 0): what the element holds while the
+    /// parameter is null or empty, and what is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public string? Threshold { get; set; }
+    public static readonly IReadOnlyList<double> DefaultThreshold = [0];
+
+    /// <summary>
+    /// The intersection ratios (0.0 to 1.0) at which the observer reports, rendered in the invariant culture and`n    /// separated by a space; null or empty leaves the element's default, 0.
+    /// </summary>
+    [Parameter] public IReadOnlyList<double>? Threshold { get; set; }
 
     /// <summary>
     /// ID of the root element to use as the viewport for intersection calculations
@@ -65,9 +71,21 @@ public class WaIntersectionObserver : ComponentBase
     [Parameter] public string? Root { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="RootMargin"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultRootMargin = "0px";
+
+    /// <summary>
     /// Margin around the root element for intersection calculations (CSS margin syntax)
     /// </summary>
     [Parameter] public string? RootMargin { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="IntersectClass"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultIntersectClass = "";
 
     /// <summary>
     /// CSS class to toggle on intersection state changes
@@ -109,7 +127,7 @@ public class WaIntersectionObserver : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-intersection-observer");
+        var attributes = builder.OpenWaElement(this, 0, "wa-intersection-observer");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -117,16 +135,16 @@ public class WaIntersectionObserver : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add intersection observer specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "threshold", Threshold);
+        builder.AddNumberListAttribute(attributes, 10, "threshold", Threshold, DefaultThreshold);
         builder.AddAttributeIfNotNullOrEmpty(11, "root", Root);
-        builder.AddAttributeIfNotNullOrEmpty(12, "root-margin", RootMargin);
-        builder.AddAttributeIfNotNullOrEmpty(13, "intersect-class", IntersectClass);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "root-margin", RootMargin, DefaultRootMargin);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "intersect-class", IntersectClass, DefaultIntersectClass);
         builder.AddAttribute(14, "disabled", Disabled);
         builder.AddAttribute(15, "once", Once);
 
-        // Add event handlers; the interop module's createEventArgs flattens the
-        // IntersectionObserverEntry from the event detail into the typed args
-        builder.AddAttributeIfHasDelegate(20, "onwa-intersect", OnIntersect);
+        // Add event handlers; wa-intersect does not bubble, so Blazor never receives it where it is dispatched and
+        // the JS initializer relays it, flattening the IntersectionObserverEntry of its detail into the typed args
+        builder.AddRelayedEventIfHasDelegate(20, Constants.RelayedIntersectEventAttribute, OnIntersect);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __intersectionObserverReference => Element = __intersectionObserverReference);

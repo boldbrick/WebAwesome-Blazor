@@ -1,0 +1,369 @@
+@page "/testing/value-sync"
+
+@* e2e harness for tools\e2e\tests\value-sync-binding.spec.js - deliberately outside /components/,
+   so it is neither derived from api-surface.json nor linked from the sidebar; the sweep reaches it
+   through HARNESS_ROUTES in tools\e2e\tests\helpers\routes.js *@
+
+<PageTitle>Testing: Value Sync</PageTitle>
+
+<h1>Value Sync Harness</h1>
+<p>This page is an end-to-end test harness: each row binds a form control, shows its model, and changes the model from C# so the browser tests can verify that the element follows it.</p>
+
+<ExampleSection Title="Form controls">
+    <table>
+        <thead><tr><th>Wrapper</th><th>Control</th><th>Model</th><th>C# actions</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><code>WaNumberInput</code></td>
+                <td><WaNumberInput Label="Quantity" data-testid="number-input" @bind-Value="numberValue" /></td>
+                <td><code data-testid="number-input-model">@numberValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="number-input-set" OnClick="@(() => numberValue = SetNumber)">Set @SetNumber</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="number-input-reset" OnClick="@(() => numberValue = InitialNumber)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaColorPicker</code></td>
+                <td><WaColorPicker Label="Color" data-testid="color-picker" @bind-Value="colorValue" /></td>
+                <td><code data-testid="color-picker-model">@colorValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="color-picker-set" OnClick="@(() => colorValue = SetColor)">Set @SetColor</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="color-picker-reset" OnClick="@(() => colorValue = InitialColor)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateInput</code> <ComponentBadges Tag="wa-date-input" /></td>
+                <td><WaDateInput Label="Date" data-testid="date-input" @bind-Value="dateValue" /></td>
+                <td><code data-testid="date-input-model">@DemoFormat.Iso(dateValue)</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="date-input-set" OnClick="@(() => dateValue = SetDate)">Set @DemoFormat.Iso(SetDate)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-input-reset" OnClick="@(() => dateValue = InitialDate)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaKnownDate</code></td>
+                <td><WaKnownDate Label="Birthday" Locale="en-US" data-testid="known-date" @bind-Value="knownDateValue" /></td>
+                <td><code data-testid="known-date-model">@DemoFormat.Iso(knownDateValue)</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="known-date-set" OnClick="@(() => knownDateValue = SetKnownDate)">Set @DemoFormat.Iso(SetKnownDate)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="known-date-reset" OnClick="@(() => knownDateValue = InitialKnownDate)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaOtpInput</code></td>
+                <td><WaOtpInput Label="Code" Length="6" data-testid="otp-input" @bind-Value="otpValue" /></td>
+                <td><code data-testid="otp-input-model">@otpValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="otp-input-set" OnClick="@(() => otpValue = SetOtp)">Set @SetOtp</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="otp-input-reset" OnClick="@(() => otpValue = InitialOtp)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaRadioGroup</code></td>
+                <td>
+                    <WaRadioGroup Label="Plan" Name="value-sync-plan" Orientation="WaOrientation.Horizontal" data-testid="radio-group" @bind-Value="radioValue">
+                        <WaRadio Value="alpha">Alpha</WaRadio>
+                        <WaRadio Value="beta">Beta</WaRadio>
+                        <WaRadio Value="gamma">Gamma</WaRadio>
+                    </WaRadioGroup>
+                </td>
+                <td><code data-testid="radio-group-model">@radioValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="radio-group-set" OnClick="@(() => radioValue = SetRadio)">Set @SetRadio</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="radio-group-reset" OnClick="@(() => radioValue = InitialRadio)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaSlider</code></td>
+                <td><WaSlider Label="Volume" data-testid="slider" @bind-Value="sliderValue" /></td>
+                <td><code data-testid="slider-model">@sliderValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="slider-set" OnClick="@(() => sliderValue = SetSlider)">Set @SetSlider</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="slider-reset" OnClick="@(() => sliderValue = InitialSlider)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaTimeInput</code></td>
+                <td><WaTimeInput Label="Time" data-testid="time-input" @bind-Value="timeValue" /></td>
+                <td><code data-testid="time-input-model">@DemoFormat.Iso(timeValue)</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="time-input-set" OnClick="@(() => timeValue = SetTime)">Set @DemoFormat.Iso(SetTime)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="time-input-reset" OnClick="@(() => timeValue = InitialTime)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaSwitch</code></td>
+                <td><WaSwitch data-testid="switch" @bind-Value="switchValue">Notifications</WaSwitch></td>
+                <td><code data-testid="switch-model">@switchValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="switch-set" OnClick="@(() => switchValue = true)">Set on</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="switch-reset" OnClick="@(() => switchValue = false)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaRange</code></td>
+                <td><WaRange Label="Brightness" data-testid="range" @bind-Value="rangeValue" /></td>
+                <td><code data-testid="range-model">@rangeValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="range-set" OnClick="@(() => rangeValue = SetRange)">Set @SetRange</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="range-reset" OnClick="@(() => rangeValue = InitialRange)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaRating</code></td>
+                <td><WaRating Label="Stars" data-testid="rating" @bind-Value="ratingValue" /></td>
+                <td><code data-testid="rating-model">@ratingValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="rating-set" OnClick="@(() => ratingValue = SetRating)">Set @SetRating</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="rating-reset" OnClick="@(() => ratingValue = InitialRating)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaSelect</code></td>
+                <td>
+                    <WaSelect Label="Fruit" data-testid="select" @bind-Value="selectValue">
+                        <WaOption Value="apple">Apple</WaOption>
+                        <WaOption Value="banana">Banana</WaOption>
+                        <WaOption Value="cherry">Cherry</WaOption>
+                    </WaSelect>
+                </td>
+                <td><code data-testid="select-model">@selectValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="select-set" OnClick="@(() => selectValue = SetOption)">Set @SetOption</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="select-reset" OnClick="@(() => selectValue = InitialOption)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaSelect</code> (multiple)</td>
+                <td>
+                    <WaSelect Label="Toppings" Multiple="true" data-testid="select-multiple" @bind-SelectedValues="selectedToppings" ValueExpression="() => unusedMultipleValue">
+                        <WaOption Value="cheese">Cheese</WaOption>
+                        <WaOption Value="ham">Ham</WaOption>
+                        <WaOption Value="olives">Olives</WaOption>
+                    </WaSelect>
+                </td>
+                <td><code data-testid="select-multiple-model">@string.Join(",", selectedToppings ?? [])</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="select-multiple-set" OnClick="@(() => selectedToppings = [.. SetToppings])">Set @string.Join(",", SetToppings)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="select-multiple-reset" OnClick="@(() => selectedToppings = [.. InitialToppings])">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaCombobox</code> (multiple) <ComponentBadges Tag="wa-combobox" /></td>
+                <td>
+                    <WaCombobox Label="Toppings" Multiple="true" data-testid="combobox-multiple" @bind-SelectedValues="comboboxToppings" ValueExpression="() => unusedMultipleValue">
+                        <WaOption Value="cheese">Cheese</WaOption>
+                        <WaOption Value="ham">Ham</WaOption>
+                        <WaOption Value="olives">Olives</WaOption>
+                    </WaCombobox>
+                </td>
+                <td><code data-testid="combobox-multiple-model">@string.Join(",", comboboxToppings ?? [])</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="combobox-multiple-set" OnClick="@(() => comboboxToppings = [.. SetToppings])">Set @string.Join(",", SetToppings)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="combobox-multiple-reset" OnClick="@(() => comboboxToppings = [.. InitialToppings])">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaCombobox</code> <ComponentBadges Tag="wa-combobox" /></td>
+                <td>
+                    <WaCombobox Label="Fruit" data-testid="combobox" @bind-Value="comboboxValue">
+                        <WaOption Value="apple">Apple</WaOption>
+                        <WaOption Value="banana">Banana</WaOption>
+                        <WaOption Value="cherry">Cherry</WaOption>
+                    </WaCombobox>
+                </td>
+                <td><code data-testid="combobox-model">@comboboxValue</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="combobox-set" OnClick="@(() => comboboxValue = SetOption)">Set @SetOption</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="combobox-reset" OnClick="@(() => comboboxValue = InitialOption)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDatePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                <td><WaDatePicker data-testid="date-picker" FocusedDate="InitialPickerDate" @bind-Value="datePickerValue" /></td>
+                <td><code data-testid="date-picker-model">@DemoFormat.Iso(datePickerValue)</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="date-picker-set" OnClick="@(() => datePickerValue = SetPickerDate)">Set @DemoFormat.Iso(SetPickerDate)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-picker-reset" OnClick="@(() => datePickerValue = InitialPickerDate)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateRangeInput</code> <ComponentBadges Tag="wa-date-input" /></td>
+                <td><WaDateRangeInput Label="Stay" data-testid="date-range-input" @bind-Value="dateRangeValue" /></td>
+                <td><code data-testid="date-range-input-model">@DemoFormat.Iso(dateRangeValue)</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="date-range-input-set" OnClick="@(() => dateRangeValue = SetDateRange)">Set @DemoFormat.Iso(SetDateRange)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-range-input-reset" OnClick="@(() => dateRangeValue = InitialDateRange)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateRangePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                <td><WaDateRangePicker data-testid="date-range-picker" FocusedDate="InitialPickerDate" @bind-Value="dateRangePickerValue" /></td>
+                <td><code data-testid="date-range-picker-model">@DemoFormat.Iso(dateRangePickerValue)</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="date-range-picker-set" OnClick="@(() => dateRangePickerValue = SetPickerRange)">Set @DemoFormat.Iso(SetPickerRange)</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="date-range-picker-reset" OnClick="@(() => dateRangePickerValue = InitialPickerRange)">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaSlider</code> (range mode)</td>
+                <td><WaSlider Label="Price range" Range="true" data-testid="slider-range" @bind-MinValue="sliderRangeMin" @bind-MaxValue="sliderRangeMax" /></td>
+                <td><code data-testid="slider-range-model">@($"{sliderRangeMin}-{sliderRangeMax}")</code></td>
+                <td>
+                    <WaCluster Gap="GapSize.Gap_S">
+                        <WaButton Size="WaSize.Small" data-testid="slider-range-set" OnClick="SetSliderRange">Set @($"{SetSliderRangeMin}-{SetSliderRangeMax}")</WaButton>
+                        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="slider-range-reset" OnClick="ResetSliderRange">Reset</WaButton>
+                    </WaCluster>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</ExampleSection>
+
+@* migrated markup: these three rows were migrated from the pre-fix Numeric="false", Format="WaFormat.Relative"
+   and Format="WaFormat.Numeric" to Numeric="WaRelativeTimeNumeric.Always", Format="WaRelativeTimeFormat.Short" and
+   Format="WaRelativeTimeFormat.Narrow" respectively when WaRelativeTime took the new enums; the spec stayed as it was *@
+<ExampleSection Title="Relative time">
+    <table>
+        <thead><tr><th>Row</th><th>Requested style</th><th>Rendered</th></tr></thead>
+        <tbody>
+            <tr data-testid="rt-always">
+                <td><code>rt-always</code></td>
+                <td>numeric always, 1 day ago</td>
+                <td><WaRelativeTime Lang="en-US" Date="oneDayAgo" Numeric="WaRelativeTimeNumeric.Always" /></td>
+            </tr>
+            <tr data-testid="rt-short">
+                <td><code>rt-short</code></td>
+                <td>short format, 3 hours ago</td>
+                <td><WaRelativeTime Lang="en-US" Date="threeHoursAgo" Format="WaRelativeTimeFormat.Short" /></td>
+            </tr>
+            <tr data-testid="rt-narrow">
+                <td><code>rt-narrow</code></td>
+                <td>narrow format, 3 hours ago</td>
+                <td><WaRelativeTime Lang="en-US" Date="threeHoursAgo" Format="WaRelativeTimeFormat.Narrow" /></td>
+            </tr>
+        </tbody>
+    </table>
+</ExampleSection>
+
+@code {
+    private const decimal InitialNumber = 10;
+    private const decimal SetNumber = 42;
+    private const string InitialColor = "#336699";
+    private const string SetColor = "#00aa55";
+    private static readonly DateOnly InitialDate = new(2024, 1, 15);
+    private static readonly DateOnly SetDate = new(2025, 6, 30);
+    private static readonly DateOnly InitialKnownDate = new(2000, 1, 15);
+    private static readonly DateOnly SetKnownDate = new(1999, 12, 31);
+    private const string InitialOtp = "123456";
+    private const string SetOtp = "111222";
+    private const string InitialRadio = "alpha";
+    private const string SetRadio = "gamma";
+    private const decimal InitialSlider = 50;
+    private const decimal SetSlider = 80;
+    private static readonly TimeOnly InitialTime = new(9, 30);
+    private static readonly TimeOnly SetTime = new(14, 45);
+    private const decimal InitialRange = 30;
+    private const decimal SetRange = 70;
+    private const decimal InitialRating = 2;
+    private const decimal SetRating = 1;
+    private const decimal InitialSliderRangeMin = 20;
+    private const decimal InitialSliderRangeMax = 80;
+    private const decimal SetSliderRangeMin = 30;
+    private const decimal SetSliderRangeMax = 60;
+    private const string InitialOption = "apple";
+    private const string SetOption = "cherry";
+    private static readonly DateOnly InitialPickerDate = new(2024, 3, 15);
+    private static readonly DateOnly SetPickerDate = new(2024, 3, 25);
+    private static readonly WaDateRange InitialDateRange = new(new DateOnly(2024, 1, 10), new DateOnly(2024, 1, 12));
+    private static readonly WaDateRange SetDateRange = new(new DateOnly(2025, 6, 1), new DateOnly(2025, 6, 7));
+    private static readonly WaDateRange InitialPickerRange = new(new DateOnly(2024, 3, 11), new DateOnly(2024, 3, 13));
+    private static readonly WaDateRange SetPickerRange = new(new DateOnly(2024, 3, 25), new DateOnly(2024, 3, 28));
+    private static readonly string[] InitialToppings = ["cheese"];
+    private static readonly string[] SetToppings = ["ham"];
+    private const int RelativeHoursAgo = 3;
+    private const int RelativeDaysAgo = 1;
+
+    private decimal? numberValue = InitialNumber;
+    private string colorValue = InitialColor;
+    private DateOnly? dateValue = InitialDate;
+    private DateOnly? knownDateValue = InitialKnownDate;
+    private string? otpValue = InitialOtp;
+    private string? radioValue = InitialRadio;
+    private decimal? sliderValue = InitialSlider;
+    private TimeOnly? timeValue = InitialTime;
+    private bool switchValue;
+    private decimal rangeValue = InitialRange;
+    private decimal ratingValue = InitialRating;
+    private decimal? sliderRangeMin = InitialSliderRangeMin;
+    private decimal? sliderRangeMax = InitialSliderRangeMax;
+    private string? selectValue = InitialOption;
+    private string? comboboxValue = InitialOption;
+    private DateOnly? datePickerValue = InitialPickerDate;
+    private WaDateRange? dateRangeValue = InitialDateRange;
+    private WaDateRange? dateRangePickerValue = InitialPickerRange;
+    private IReadOnlyList<string>? selectedToppings = [.. InitialToppings];
+    private IReadOnlyList<string>? comboboxToppings = [.. InitialToppings];
+
+    // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
+    private string? unusedMultipleValue = null;
+    private DateTimeOffset threeHoursAgo;
+    private DateTimeOffset oneDayAgo;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        // computed once, so re-renders never shift the reference dates
+        var now = DateTimeOffset.UtcNow;
+        threeHoursAgo = now.AddHours(-RelativeHoursAgo);
+        oneDayAgo = now.AddDays(-RelativeDaysAgo);
+    }
+
+    private void SetSliderRange()
+    {
+        sliderRangeMin = SetSliderRangeMin;
+        sliderRangeMax = SetSliderRangeMax;
+    }
+
+    private void ResetSliderRange()
+    {
+        sliderRangeMin = InitialSliderRangeMin;
+        sliderRangeMax = InitialSliderRangeMax;
+    }
+}

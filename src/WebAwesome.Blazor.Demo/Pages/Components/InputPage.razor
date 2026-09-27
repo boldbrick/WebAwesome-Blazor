@@ -39,6 +39,26 @@
     <p>You typed: <strong>@name</strong></p>
 </ExampleSection>
 
+<ExampleSection Title="Programmatic Value / Reset" Code="@ProgrammaticExample">
+    <WaInput Label="Message" data-testid="input-sync" @bind-Value="message" />
+    <p>Model: <code data-testid="input-sync-model">@message</code></p>
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaButton Size="WaSize.Small" data-testid="input-sync-set" OnClick="SetMessage">Set to "Set from C#"</WaButton>
+        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="input-sync-reset" OnClick="ResetMessage">Reset</WaButton>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Replace Text Programmatically" Code="@RangeTextExample">
+    <WaInput @ref="greetingInput" Label="Greeting" data-testid="input-range" @bind-Value="greeting" />
+    <p>Model: <code data-testid="input-range-model">@greeting</code></p>
+    <WaButton Size="WaSize.Small" data-testid="input-range-apply" OnClick="ReplaceWorldAsync">Replace "world" with "Blazor"</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Immediate Binding" Code="@ImmediateExample">
+    <WaInput Label="Search as you type" Immediate="true" data-testid="input-immediate" @bind-Value="searchAsYouType" />
+    <p>Model: <code data-testid="input-immediate-model">@searchAsYouType</code></p>
+</ExampleSection>
+
 <ApiTable Tag="wa-input" />
 
 @code {
@@ -54,6 +74,18 @@
     private string? mediumValue;
     private string? largeValue;
     private string? searchValue;
+    private const string InitialMessage = "Hello world";
+    private string? message = InitialMessage;
+    private WaInput? greetingInput;
+    private string? greeting = "Hello world";
+    private string? searchAsYouType;
+
+    private void SetMessage() => message = "Set from C#";
+
+    private void ResetMessage() => message = InitialMessage;
+
+    // replaces "world" (characters 6 to 11) in the rendered input
+    private async Task ReplaceWorldAsync() => await greetingInput!.SetRangeTextAsync("Blazor", 6, 11);
 
     private const string DefaultExample = """
         <WaInput @bind-Value="defaultValue" />
@@ -119,6 +151,47 @@
 
         @code {
             private string? name;
+        }
+        """;
+
+    private const string ProgrammaticExample = """
+        <WaInput Label="Message" data-testid="input-sync" @bind-Value="message" />
+        <p>Model: <code data-testid="input-sync-model">@message</code></p>
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaButton Size="WaSize.Small" data-testid="input-sync-set" OnClick="SetMessage">Set to "Set from C#"</WaButton>
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="input-sync-reset" OnClick="ResetMessage">Reset</WaButton>
+        </WaCluster>
+
+        @code {
+            private const string InitialMessage = "Hello world";
+            private string? message = InitialMessage;
+
+            private void SetMessage() => message = "Set from C#";
+
+            private void ResetMessage() => message = InitialMessage;
+        }
+        """;
+
+    private const string RangeTextExample = """
+        <WaInput @ref="greetingInput" Label="Greeting" data-testid="input-range" @bind-Value="greeting" />
+        <p>Model: <code data-testid="input-range-model">@greeting</code></p>
+        <WaButton Size="WaSize.Small" data-testid="input-range-apply" OnClick="ReplaceWorldAsync">Replace "world" with "Blazor"</WaButton>
+
+        @code {
+            private WaInput? greetingInput;
+            private string? greeting = "Hello world";
+
+            // replaces "world" (characters 6 to 11) in the rendered input
+            private async Task ReplaceWorldAsync() => await greetingInput!.SetRangeTextAsync("Blazor", 6, 11);
+        }
+        """;
+
+    private const string ImmediateExample = """
+        <WaInput Label="Search as you type" Immediate="true" data-testid="input-immediate" @bind-Value="searchAsYouType" />
+        <p>Model: <code data-testid="input-immediate-model">@searchAsYouType</code></p>
+
+        @code {
+            private string? searchAsYouType;
         }
         """;
 }

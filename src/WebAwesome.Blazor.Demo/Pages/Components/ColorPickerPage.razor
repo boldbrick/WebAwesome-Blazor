@@ -1,20 +1,78 @@
-﻿@page "/components/color-picker"
+@page "/components/color-picker"
 
 <PageTitle>Color Picker</PageTitle>
 
-<h1>Color Picker</h1>
-<p><code>&lt;wa-color-picker&gt;</code> wrapped by <code>WaColorPicker</code>.</p>
+<h1>Color Picker <ComponentBadges Tag="wa-color-picker" /></h1>
+<p>Color pickers let the user choose a color. <code>&lt;wa-color-picker&gt;</code> wrapped by <code>WaColorPicker</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaColorPicker @bind-Value="value" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\color-picker.md) *@
+<ExampleSection Title="Label and Hint" Code="@LabelExample">
+    <WaColorPicker Label="Brand color" Hint="Used for buttons and links." @bind-Value="labeled" />
+    <p>Selected: <strong>@labeled</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Formats" Code="@FormatsExample">
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaColorPicker Label="Hex" Format="WaColorFormat.Hex" @bind-Value="hex" />
+        <WaColorPicker Label="RGB" Format="WaColorFormat.Rgb" @bind-Value="rgb" />
+        <WaColorPicker Label="HSL" Format="WaColorFormat.Hsl" @bind-Value="hsl" />
+        <WaColorPicker Label="HSV" Format="WaColorFormat.Hsv" @bind-Value="hsv" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Opacity and Uppercase" Code="@OpacityExample">
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaColorPicker Label="With opacity" Opacity="true" @bind-Value="translucent" />
+        <WaColorPicker Label="Uppercase hex" Uppercase="true" @bind-Value="upper" />
+        <WaColorPicker Label="No format toggle" WithoutFormatToggle="true" @bind-Value="fixedFormat" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Swatches" Code="@SwatchesExample">
+    <WaColorPicker Label="Pick a swatch" Swatches="@(new[] { "#d0021b", "#f5a623", "#f8e71c", "#8b572a", "#7ed321", "#417505", "#bd10e0", "#9013fe", "#4a90e2", "#50e3c2" })" @bind-Value="swatch" />
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.End">
+        <WaColorPicker Label="Small" Size="WaSize.Small" @bind-Value="small" />
+        <WaColorPicker Label="Medium" Size="WaSize.Medium" @bind-Value="medium" />
+        <WaColorPicker Label="Large" Size="WaSize.Large" @bind-Value="large" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Placement" Code="@PlacementExample">
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaColorPicker Label="Opens above" Placement="WaPlacement.Top" @bind-Value="above" />
+        <WaColorPicker Label="Opens to the right" Placement="WaPlacement.RightStart" @bind-Value="right" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaColorPicker Label="Theme color" Disabled="true" @bind-Value="disabled" />
+</ExampleSection>
 
 <ApiTable Tag="wa-color-picker" />
 
 @code {
     private string value = "#4a90d9";
+    private string labeled = "#4a90d9";
+    private string hex = "#4a90d9";
+    private string rgb = "rgb(74, 144, 217)";
+    private string hsl = "hsl(211, 65%, 57%)";
+    private string hsv = "hsv(211, 66%, 85%)";
+    private string translucent = "#4a90d980";
+    private string upper = "#4A90D9";
+    private string fixedFormat = "#4a90d9";
+    private string swatch = "#f5a623";
+    private string small = "#7ed321";
+    private string medium = "#7ed321";
+    private string large = "#7ed321";
+    private string above = "#bd10e0";
+    private string right = "#bd10e0";
+    private string disabled = "#8b572a";
 
     private const string DefaultExample = """
         <WaColorPicker @bind-Value="value" />
@@ -22,5 +80,42 @@
         @code {
             private string value = "#4a90d9";
         }
+        """;
+
+    private const string LabelExample = """
+        <WaColorPicker Label="Brand color" Hint="Used for buttons and links." @bind-Value="labeled" />
+        <p>Selected: @labeled</p>
+        """;
+
+    private const string FormatsExample = """
+        <WaColorPicker Label="Hex" Format="WaColorFormat.Hex" @bind-Value="hex" />
+        <WaColorPicker Label="RGB" Format="WaColorFormat.Rgb" @bind-Value="rgb" />
+        <WaColorPicker Label="HSL" Format="WaColorFormat.Hsl" @bind-Value="hsl" />
+        <WaColorPicker Label="HSV" Format="WaColorFormat.Hsv" @bind-Value="hsv" />
+        """;
+
+    private const string OpacityExample = """
+        <WaColorPicker Label="With opacity" Opacity="true" @bind-Value="translucent" />
+        <WaColorPicker Label="Uppercase hex" Uppercase="true" @bind-Value="upper" />
+        <WaColorPicker Label="No format toggle" WithoutFormatToggle="true" @bind-Value="fixedFormat" />
+        """;
+
+    private const string SwatchesExample = """
+        <WaColorPicker Label="Pick a swatch" Swatches="@(new[] { "#d0021b", "#f5a623", "#f8e71c", "#8b572a", "#7ed321", "#417505", "#bd10e0", "#9013fe", "#4a90e2", "#50e3c2" })" @bind-Value="swatch" />
+        """;
+
+    private const string SizesExample = """
+        <WaColorPicker Label="Small" Size="WaSize.Small" @bind-Value="small" />
+        <WaColorPicker Label="Medium" Size="WaSize.Medium" @bind-Value="medium" />
+        <WaColorPicker Label="Large" Size="WaSize.Large" @bind-Value="large" />
+        """;
+
+    private const string PlacementExample = """
+        <WaColorPicker Label="Opens above" Placement="WaPlacement.Top" @bind-Value="above" />
+        <WaColorPicker Label="Opens to the right" Placement="WaPlacement.RightStart" @bind-Value="right" />
+        """;
+
+    private const string DisabledExample = """
+        <WaColorPicker Label="Theme color" Disabled="true" @bind-Value="disabled" />
         """;
 }

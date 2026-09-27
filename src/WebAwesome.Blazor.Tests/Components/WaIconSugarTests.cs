@@ -1,127 +1,102 @@
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Tests for the icon convenience ("icon sugar") parameters added to components with icon-shaped slots.
+/// Render tests for the icon convenience ("icon sugar") parameters of components with icon-shaped slots: an
+/// icon name renders a wa-icon into its slot, nothing renders without one, and a fragment for the same slot
+/// wins over the name (the wrapper's own C#-side choice, which no CEM check sees).
 /// </summary>
-public class WaIconSugarTests
+public class WaIconSugarTests : BunitContext
 {
-    [Fact]
-    public void WaButton_IconNameProperties_DefaultToNull()
+    public WaIconSugarTests()
     {
-        // Arrange & Act
-        var component = new WaButton();
-
-        // Assert
-        Assert.Null(component.StartIconName);
-        Assert.Null(component.EndIconName);
+        Services.AddScoped<WebAwesomeJSInterop>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
     [Fact]
-    public void WaButton_IconNameProperties_CanBeSetAlongsideExistingProperties()
+    public void WaButton_IconNames_RenderWaIconsIntoStartAndEndSlots()
     {
-        // Arrange
-        var component = new WaButton();
+        var cut = Render<WaButton>(parameters => parameters
+            .Add(p => p.StartIconName, "star")
+            .Add(p => p.EndIconName, "arrow-right"));
 
-        // Act
-        component.StartIconName = "star";
-        component.EndIconName = "arrow-right";
-        component.Variant = WaVariant.Brand;
-        component.Pill = true;
-
-        // Assert
-        Assert.Equal("star", component.StartIconName);
-        Assert.Equal("arrow-right", component.EndIconName);
-        Assert.Equal(WaVariant.Brand, component.Variant);
-        Assert.True(component.Pill);
+        Assert.Equal("star", cut.Find("wa-button > wa-icon[slot='start']").GetAttribute("name"));
+        Assert.Equal("arrow-right", cut.Find("wa-button > wa-icon[slot='end']").GetAttribute("name"));
     }
 
     [Fact]
-    public void WaButton_StartContentFragment_CanCoexistWithStartIconNameProperty()
+    public void WaButton_WithoutIconNames_RendersNoIcons()
     {
-        // Arrange
-        var component = new WaButton();
+        var cut = Render<WaButton>();
 
-        // Act
-        component.StartContent = builder => { };
-        component.StartIconName = "star";
-
-        // Assert - both are settable; BuildRenderTree prefers the fragment at render time
-        Assert.NotNull(component.StartContent);
-        Assert.Equal("star", component.StartIconName);
+        Assert.Empty(cut.FindAll("wa-icon"));
     }
 
     [Fact]
-    public void WaCallout_IconNameProperty_DefaultsToNull()
+    public void WaButton_StartContent_WinsOverStartIconName()
     {
-        // Arrange & Act
-        var component = new WaCallout();
+        var cut = Render<WaButton>(parameters => parameters
+            .Add(p => p.StartContent, SlotProbe.Fragment)
+            .Add(p => p.StartIconName, "star"));
 
-        // Assert
-        Assert.Null(component.IconName);
+        Assert.Equal("start", SlotProbe.SlotOf(cut.Find("wa-button")));
+        Assert.Empty(cut.FindAll("wa-icon[slot='start']"));
     }
 
     [Fact]
-    public void WaCallout_IconNameProperty_CanBeSetAlongsideExistingProperties()
+    public void WaCallout_IconName_RendersWaIconIntoIconSlot()
     {
-        // Arrange
-        var component = new WaCallout();
+        var cut = Render<WaCallout>(parameters => parameters.Add(p => p.IconName, "info-circle"));
 
-        // Act
-        component.IconName = "info-circle";
-        component.Variant = WaVariant.Warning;
-        component.Size = WaSize.Large;
-
-        // Assert
-        Assert.Equal("info-circle", component.IconName);
-        Assert.Equal(WaVariant.Warning, component.Variant);
-        Assert.Equal(WaSize.Large, component.Size);
+        Assert.Equal("info-circle", cut.Find("wa-callout > wa-icon[slot='icon']").GetAttribute("name"));
     }
 
     [Fact]
-    public void WaDetails_IconNameProperties_DefaultToNull()
+    public void WaCallout_WithoutIconName_RendersNoIcon()
     {
-        // Arrange & Act
-        var component = new WaDetails();
+        var cut = Render<WaCallout>();
 
-        // Assert
-        Assert.Null(component.ExpandIconName);
-        Assert.Null(component.CollapseIconName);
+        Assert.Empty(cut.FindAll("wa-icon"));
     }
 
     [Fact]
-    public void WaDetails_IconNameProperties_CanBeSetAlongsideExistingProperties()
+    public void WaDetails_IconNames_RenderWaIconsIntoExpandAndCollapseSlots()
     {
-        // Arrange
-        var component = new WaDetails();
+        var cut = Render<WaDetails>(parameters => parameters
+            .Add(p => p.ExpandIconName, "chevron-down")
+            .Add(p => p.CollapseIconName, "chevron-up"));
 
-        // Act
-        component.ExpandIconName = "chevron-down";
-        component.CollapseIconName = "chevron-up";
-        component.Summary = "More info";
-        component.Open = true;
-
-        // Assert
-        Assert.Equal("chevron-down", component.ExpandIconName);
-        Assert.Equal("chevron-up", component.CollapseIconName);
-        Assert.Equal("More info", component.Summary);
-        Assert.True(component.Open);
+        Assert.Equal("chevron-down", cut.Find("wa-details > wa-icon[slot='expand-icon']").GetAttribute("name"));
+        Assert.Equal("chevron-up", cut.Find("wa-details > wa-icon[slot='collapse-icon']").GetAttribute("name"));
     }
 
     [Fact]
-    public void WaDetails_CollapseIconFragment_CanCoexistWithCollapseIconNameProperty()
+    public void WaDetails_CollapseIcon_WinsOverCollapseIconName()
     {
-        // Arrange
-        var component = new WaDetails();
+        var cut = Render<WaDetails>(parameters => parameters
+            .Add(p => p.CollapseIcon, SlotProbe.Fragment)
+            .Add(p => p.CollapseIconName, "chevron-up"));
 
-        // Act
-        component.CollapseIcon = builder => { };
-        component.CollapseIconName = "chevron-up";
+        Assert.Equal("collapse-icon", SlotProbe.SlotOf(cut.Find("wa-details")));
+        Assert.Empty(cut.FindAll("wa-icon[slot='collapse-icon']"));
+    }
 
-        // Assert - both are settable; BuildRenderTree prefers the fragment at render time
-        Assert.NotNull(component.CollapseIcon);
-        Assert.Equal("chevron-up", component.CollapseIconName);
+    [Fact]
+    public void WaCombobox_IconNames_RenderWaIconsIntoStartAndEndSlots()
+    {
+        string? value = null;
+        var cut = Render<WaCombobox>(parameters => parameters
+            .Add(p => p.ValueExpression, () => value)
+            .Add(p => p.StartIconName, "search")
+            .Add(p => p.EndIconName, "chevron-down"));
+
+        Assert.Equal("search", cut.Find("wa-combobox > wa-icon[slot='start']").GetAttribute("name"));
+        Assert.Equal("chevron-down", cut.Find("wa-combobox > wa-icon[slot='end']").GetAttribute("name"));
     }
 }

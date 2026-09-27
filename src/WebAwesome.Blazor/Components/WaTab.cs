@@ -50,6 +50,12 @@ public class WaTab : ComponentBase
 
     // Tab properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Panel"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPanel = "";
+
+    /// <summary>
     /// The name of the tab panel this tab is associated with. The panel must be located in the same tab group.
     /// </summary>
     [Parameter] public string? Panel { get; set; }
@@ -63,11 +69,6 @@ public class WaTab : ComponentBase
     /// Disables the tab and prevents selection.
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
-
-    /// <summary>
-    /// Shows a close button on the tab, allowing the user to remove it.
-    /// </summary>
-    [Parameter] public bool Closable { get; set; }
 
     #endregion
 
@@ -104,16 +105,15 @@ public class WaTab : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tab");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tab");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "panel", Panel);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "panel", Panel, DefaultPanel);
         builder.AddAttribute(5, "active", Active);
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttribute(7, "closable", Closable);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(10, "onclick", OnClick);

@@ -1,18 +1,68 @@
-﻿@page "/components/include"
+@page "/components/include"
 
 <PageTitle>Include</PageTitle>
 
-<h1>Include</h1>
-<p><code>&lt;wa-include&gt;</code> wrapped by <code>WaInclude</code>.</p>
+<h1>Include <ComponentBadges Tag="wa-include" /></h1>
+<p>Includes fetch an HTML fragment and render it in place. <code>&lt;wa-include&gt;</code> wrapped by <code>WaInclude</code>. The fragments of these examples are served from the demo's <code>wwwroot/fragments</code> folder.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaInclude />
+    <WaInclude Src="fragments/release-notes.html" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\include.md) *@
+<ExampleSection Title="Request Mode" Code="@ModeExample">
+    <p>The fetch mode of the request; a same-origin fragment loads with every mode.</p>
+    <WaStack Gap="GapSize.Gap_S">
+        <WaInclude Src="fragments/release-notes.html" Mode="WaMode.Cors" />
+        <WaInclude Src="fragments/release-notes.html" Mode="WaMode.SameOrigin" />
+        <WaInclude Src="fragments/release-notes.html" Mode="WaMode.NoCors" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Allowing Scripts" Code="@ScriptsExample">
+    <p>Scripts in the fragment run only with <code>AllowScripts</code>. Include only content you trust.</p>
+    <WaStack Gap="GapSize.Gap_S">
+        <WaInclude Src="fragments/include-script.html" AllowScripts="false" />
+        <WaInclude Src="fragments/include-script.html" AllowScripts="true" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Load and Error Events" Code="@EventsExample">
+    <WaInclude Src="fragments/release-notes.html" OnLoad="() => loaded = true" />
+    <WaInclude Src="fragments/does-not-exist.html" OnIncludeError="e => errorStatus = e.Status" />
+    <p>Fragment loaded: <strong>@(loaded ? "yes" : "not yet")</strong>. Missing fragment failed with status: <strong>@(errorStatus?.ToString() ?? "none yet")</strong>.</p>
+</ExampleSection>
 
 <ApiTable Tag="wa-include" />
 
 @code {
-    private const string DefaultExample = "<WaInclude />";
+    private bool loaded;
+    private int? errorStatus;
+
+    private const string DefaultExample = """<WaInclude Src="fragments/release-notes.html" />""";
+
+    private const string ModeExample = """
+        <WaStack Gap="GapSize.Gap_S">
+            <WaInclude Src="fragments/release-notes.html" Mode="WaMode.Cors" />
+            <WaInclude Src="fragments/release-notes.html" Mode="WaMode.SameOrigin" />
+            <WaInclude Src="fragments/release-notes.html" Mode="WaMode.NoCors" />
+        </WaStack>
+        """;
+
+    private const string ScriptsExample = """
+        <WaStack Gap="GapSize.Gap_S">
+            <WaInclude Src="fragments/include-script.html" AllowScripts="false" />
+            <WaInclude Src="fragments/include-script.html" AllowScripts="true" />
+        </WaStack>
+        """;
+
+    private const string EventsExample = """
+        <WaInclude Src="fragments/release-notes.html" OnLoad="() => loaded = true" />
+        <WaInclude Src="fragments/does-not-exist.html" OnIncludeError="e => errorStatus = e.Status" />
+        <p>Fragment loaded: @(loaded ? "yes" : "not yet"). Missing fragment failed with status: @(errorStatus?.ToString() ?? "none yet").</p>
+
+        @code {
+            private bool loaded;
+            private int? errorStatus;
+        }
+        """;
 }

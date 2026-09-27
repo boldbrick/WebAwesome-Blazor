@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -12,8 +13,17 @@ namespace WebAwesome.Blazor.Components;
 /// A color picker input component that allows users to select colors.
 /// Corresponds to the wa-color-picker Web Awesome component.
 /// </summary>
-public class WaColorPicker : WaInputBase<string>
+public class WaColorPicker : WaPopupInputBase<string?>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    #endregion
+
     #region ------ Color Picker Properties ------
 
     /// <summary>
@@ -22,11 +32,16 @@ public class WaColorPicker : WaInputBase<string>
     [Parameter] public bool Opacity { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Format"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaColorFormat DefaultFormat = WaColorFormat.Hex;
+
+    /// <summary>
     /// The color format to use. If <see cref="Opacity"/> is enabled, formats translate to their alpha-channel
     /// equivalent (HEXA, RGBA, HSLA, or HSVA). The color picker accepts user input in any format, including CSS
     /// color names, and converts it to the desired format.
     /// </summary>
-    [Parameter] public WaColorFormat Format { get; set; } = WaColorFormat.Hex;
+    [Parameter] public WaColorFormat Format { get; set; } = DefaultFormat;
 
     /// <summary>
     /// Removes the button that lets users toggle between formats.
@@ -34,15 +49,17 @@ public class WaColorPicker : WaInputBase<string>
     [Parameter] public bool WithoutFormatToggle { get; set; }
 
     /// <summary>
-    /// One or more predefined color swatches to display as presets, separated by a semicolon (<c>;</c>). Can include
-    /// any format the color picker can parse, such as HEX(A), RGB(A), HSL(A), HSV(A), or CSS color names.
+    /// The Web Awesome default of <see cref="Swatches"/>: no swatches, rendered as the empty attribute in place of null or an
+    /// empty list once the attribute has been rendered.
     /// </summary>
-    [Parameter] public string? Swatches { get; set; }
+    public static readonly IReadOnlyList<string> DefaultSwatches = [];
 
     /// <summary>
-    /// Indicates whether the color picker's dropdown is open.
+    /// Predefined color swatches to display as presets, in list order (rendered separated by a semicolon, so a swatch
+    /// cannot contain one; null or empty shows none). Can include
+    /// any format the color picker can parse, such as HEX(A), RGB(A), HSL(A), HSV(A), or CSS color names.
     /// </summary>
-    [Parameter] public bool Open { get; set; }
+    [Parameter] public IReadOnlyList<string>? Swatches { get; set; }
 
     /// <summary>
     /// Renders the color format toggle and hex input using uppercase letters.
@@ -50,14 +67,10 @@ public class WaColorPicker : WaInputBase<string>
     [Parameter] public bool Uppercase { get; set; }
 
     /// <summary>
-    /// Reserves space for the hint even when it is not populated.
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Reserves space for the label even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
+    public const WaPlacement DefaultPlacement = WaPlacement.BottomStart;
 
     /// <summary>
     /// The preferred placement of the color picker's popup. The actual placement may vary to keep the panel
@@ -68,26 +81,6 @@ public class WaColorPicker : WaInputBase<string>
     #endregion
 
     #region ------ Events ------
-
-    /// <summary>
-    /// Invoked when the color picker's dropdown opens.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
-
-    /// <summary>
-    /// Invoked when the color picker's dropdown closes.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
-
-    /// <summary>
-    /// Invoked after the color picker's dropdown opens and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
-
-    /// <summary>
-    /// Invoked after the color picker's dropdown closes and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
     /// <summary>
     /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
@@ -101,39 +94,43 @@ public class WaColorPicker : WaInputBase<string>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-color-picker");
+        var attributes = builder.OpenWaElement(this, 0, "wa-color-picker");
 
         // Add common attributes from base
         AddCommonAttributes(builder, 1);
 
+        // Add the form control attributes the element declares
+        builder.AddAttribute(8, "required", Required);
+        AddLabelAndHintAttributes(builder, 12);
+
         // Add color picker-specific attributes
         builder.AddAttribute(20, "opacity", Opacity);
-        builder.AddAttribute(21, "format", Format.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 21, "format", Format.ToHtmlValue(), DefaultFormat.ToHtmlValue());
         builder.AddAttribute(22, "without-format-toggle", WithoutFormatToggle);
-        builder.AddAttributeIfNotNullOrEmpty(23, "swatches", Swatches);
+        builder.AddTokenListAttribute(attributes, 23, "swatches", Swatches, DefaultSwatches, WaWireFormat.SemicolonSeparator, WaWireFormat.SemicolonSeparators);
         builder.AddAttribute(24, "value", CurrentValueAsString);
         builder.AddAttribute(25, "open", Open);
         builder.AddAttribute(26, "uppercase", Uppercase);
-        builder.AddAttribute(27, "with-hint", WithHint);
-        builder.AddAttribute(28, "with-label", WithLabel);
-        builder.AddAttributeIfNotNull(29, "placement", Placement?.ToHtmlValue());
+        AddWithHintAndLabelAttributes(builder, 14);
+        builder.AddAttributeIfNotNull(attributes, 29, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
 
         // Add value binding
-        builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<string?>(this, SetCurrentValueAsStringFromElement, CurrentValueAsString));
         builder.SetUpdatesAttributeName("value");
 
         // Add common event handlers
         AddCommonEventHandlers(builder, 50);
 
-        // Add color picker-specific event handlers
-        builder.AddAttributeIfHasDelegate(56, "onwa-show", OnShow);
-        builder.AddAttributeIfHasDelegate(57, "onwa-hide", OnHide);
-        builder.AddAttributeIfHasDelegate(58, "onwa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(59, "onwa-after-hide", OnAfterHide);
-        builder.AddAttributeIfHasDelegate(60, "onwa-invalid", OnInvalid);
+        // Add color picker-specific event handlers; the popup events are relayed, because the element dispatches
+        // them as non-bubbling events, which Blazor never receives
+        AddPopupEventHandlers(builder, 56);
+        builder.AddAttributeIfHasDelegate(64, "onwa-invalid", OnInvalid);
+
+        // the keydown is relayed too, because the element stops the propagation of Escape while it is open
+        AddRelayedKeyDownHandler(builder, 65);
 
         // Add element reference capture
-        builder.AddElementReferenceCapture(65, __colorPickerReference => Element = __colorPickerReference);
+        builder.AddElementReferenceCapture(67, __colorPickerReference => Element = __colorPickerReference);
 
         // Add label and hint slots
         AddLabelAndHintSlots(builder, 70);
@@ -142,12 +139,24 @@ public class WaColorPicker : WaInputBase<string>
     }
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out string result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        result = value!;
+        result = value;
         validationErrorMessage = null;
         return true;
     }
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
+
+    /// <inheritdoc />
+    internal override bool RelaysKeyDown => true;
+
+    /// <summary>
+    /// wa-color-picker dispatches its popup events as non-bubbling CustomEvents, which Blazor never receives, so
+    /// their relays are bound.
+    /// </summary>
+    internal override bool RelaysPopupEvents => true;
 
     #endregion
 
@@ -160,7 +169,7 @@ public class WaColorPicker : WaInputBase<string>
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
     /// <exception cref="ArgumentNullException">Thrown when colors is null</exception>
-    public async Task SetSwatchesAsync(string[] colors)
+    public async Task SetSwatchesAsync(IEnumerable<string> colors)
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot set swatches: component has not been rendered yet.");
@@ -168,7 +177,7 @@ public class WaColorPicker : WaInputBase<string>
         if (colors == null)
             throw new ArgumentNullException(nameof(colors));
 
-        await JSInterop.SetPropertyAsync(Element.Value, "swatches", colors);
+        await JSInterop.SetPropertyAsync(Element.Value, "swatches", colors.ToArray());
     }
 
     /// <summary>
@@ -225,19 +234,6 @@ public class WaColorPicker : WaInputBase<string>
     }
 
     /// <summary>
-    /// Hides the color picker's dropdown.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task HideAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot hide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
-    }
-
-    /// <summary>
     /// Checks the validity of the color picker and shows the browser's validation message if it is invalid.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result is true if the value is valid</returns>
@@ -248,19 +244,6 @@ public class WaColorPicker : WaInputBase<string>
             throw new InvalidOperationException("Cannot report validity: component has not been rendered yet.");
 
         return await JSInterop.InvokeMethodAsync<bool>(Element.Value, "reportValidity");
-    }
-
-    /// <summary>
-    /// Shows the color picker's dropdown.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ShowAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot show: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
     }
 
     #endregion

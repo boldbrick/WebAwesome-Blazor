@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -41,10 +42,19 @@ public class WaFormatDate : ComponentBase
 
     // Date/time properties
     /// <summary>
-    /// The date/time to format. If not set, the current date and time is used. When passing a string, it's
-    /// strongly recommended to use the ISO 8601 format to ensure time zones are handled correctly.
+    /// The instant to format; when null, the attribute is omitted and Web Awesome formats the current date and time. Once a date
+    /// was rendered, a return to null renders the current instant (read from the registered <see cref="TimeProvider"/>)
+    /// instead of removing the attribute, which the element would read as the 1970 epoch.
+    /// Rendered with its offset (ISO 8601, <c>2026-01-02T03:04:05.678+01:00</c>), so the browser reads the same instant
+    /// in every time zone and expresses it in <see cref="TimeZone"/> (or the browser's own).
     /// </summary>
-    [Parameter] public string? Date { get; set; }
+    /// <remarks>
+    /// A <see cref="DateTime"/> converts implicitly: a UTC one keeps its instant, an unspecified or local one takes the
+    /// offset of the server's time zone. For a calendar date, pass it at midnight with the offset of the time zone it is
+    /// shown in, e.g. <c>new DateTimeOffset(date.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero)</c> together with
+    /// <c>TimeZone="UTC"</c>.
+    /// </remarks>
+    [Parameter] public DateTimeOffset? Date { get; set; }
 
     /// <summary>
     /// The locale (BCP 47 language tag) to use when formatting the date. When unset, the browser's default locale is used.
@@ -52,7 +62,14 @@ public class WaFormatDate : ComponentBase
     [Parameter] public string? Lang { get; set; }
 
     /// <summary>
-    /// Whether to use 12-hour or 24-hour time when displaying the hour.
+    /// The Web Awesome default of <see cref="HourFormat"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaHourFormat DefaultHourFormat = WaHourFormat.Auto;
+
+    /// <summary>
+    /// Whether to use 12-hour or 24-hour time when displaying the hour; <see cref="WaHourFormat.Auto"/> follows the
+    /// locale. When unset, the attribute is omitted and Web Awesome's default ("auto") applies.
     /// </summary>
     [Parameter] public WaHourFormat? HourFormat { get; set; }
 
@@ -66,17 +83,17 @@ public class WaFormatDate : ComponentBase
     /// <summary>
     /// The format for displaying the weekday.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Weekday { get; set; }
+    [Parameter] public WaDateTimeTextStyle? Weekday { get; set; }
 
     /// <summary>
     /// The format for displaying the era.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Era { get; set; }
+    [Parameter] public WaDateTimeTextStyle? Era { get; set; }
 
     /// <summary>
     /// The format for displaying the year.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Year { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Year { get; set; }
 
     /// <summary>
     /// The format for displaying the month.
@@ -86,27 +103,27 @@ public class WaFormatDate : ComponentBase
     /// <summary>
     /// The format for displaying the day.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Day { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Day { get; set; }
 
     /// <summary>
     /// The format for displaying the hour.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Hour { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Hour { get; set; }
 
     /// <summary>
     /// The format for displaying the minute.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Minute { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Minute { get; set; }
 
     /// <summary>
     /// The format for displaying the second.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? Second { get; set; }
+    [Parameter] public WaDateTimeNumericStyle? Second { get; set; }
 
     /// <summary>
     /// The format for displaying the time zone name.
     /// </summary>
-    [Parameter] public WaDateTimeStyle? TimeZoneName { get; set; }
+    [Parameter] public WaTimeZoneNameStyle? TimeZoneName { get; set; }
 
     #endregion
 
@@ -115,15 +132,15 @@ public class WaFormatDate : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-format-date");
+        var attributes = builder.OpenWaElement(this, 0, "wa-format-date");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "date", Date);
+        builder.AddDateTimeOffsetAttribute(attributes, 4, "date", Date, Clock);
         builder.AddAttributeIfNotNullOrEmpty(5, "lang", Lang);
-        builder.AddAttributeIfNotNull(6, "hour-format", HourFormat?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 6, "hour-format", HourFormat?.ToHtmlValue(), DefaultHourFormat.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(7, "time-zone", TimeZone);
 
         // Add formatting options
@@ -159,6 +176,13 @@ public class WaFormatDate : ComponentBase
 
         return string.Join(' ', classes);
     }
+
+    // the element's date defaults to new Date() when it is set up, and a removed attribute would read as the 1970
+    // epoch, so once rendered, a return to null renders the current instant of this clock: the application's
+    // TimeProvider (AddWebAwesome registers the system clock), or the system clock when none is registered
+    private TimeProvider Clock => Services.GetService<TimeProvider>() ?? TimeProvider.System;
+
+    [Inject] private IServiceProvider Services { get; set; } = default!;
 
     #endregion
 }

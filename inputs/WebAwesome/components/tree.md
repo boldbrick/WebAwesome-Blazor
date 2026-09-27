@@ -1,14 +1,20 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/tree.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/tree -->
+---
+title: Tree
+layout: component
+category: Navigation
+synonyms:
+  - treeview
+  - tree view
+  - file tree
+  - hierarchy
+use-cases:
+  - file browser
+  - directory tree
+  - nested list
+  - org chart
+---
 
-# Tree
-
-`<wa-tree>`
-
-Stable [Navigation](https://webawesome.com/docs/components/?category=navigation) [Since 2.0](https://webawesome.com/docs/resources/changelog#wa_200)
-
-Trees allow you to display a hierarchical list of selectable tree items. Items with children can be expanded and collapsed as desired by the user.
-
-```html
+```html {.example}
 <wa-tree style="--indent-guide-width: 1px;">
   <wa-tree-item expanded>
     Deciduous
@@ -46,103 +52,20 @@ Trees allow you to display a hierarchical list of selectable tree items. Items w
 </wa-tree>
 ```
 
-## API
-
-### Importing
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/tree/tree.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/tree/tree.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/tree/tree.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaTree from '@awesome.me/webawesome/dist/react/tree/index.js';
-```
-
-### Slots
-
-| Name | Description |
-| --- | --- |
-| (default) | The default slot. |
-| \`collapse-icon\` | \`\` The icon to show when the tree item is expanded. Works best with . |
-
-### Attributes & Properties
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`selection\` selection | \`'single' \\| 'multiple' \\| 'leaf' \\| 'leaf-multiple'\` The selection behavior of the tree. Single selection allows only one node to be selected at a time. Multiple displays checkboxes and allows more than one node to be selected. Leaf allows only leaf nodes to be selected. Leaf-multiple allows multiple leaf nodes to be selected while parent nodes only expand and collapse. Type Default 'single' | |
-
-### Events
-
-| Name | Description |
-| --- | --- |
-| \`wa-selection-change\` | Emitted when a tree item is selected or deselected. |
-
-### CSS Custom Properties
-
-| Name | Description |
-| --- | --- |
-| \`--indent-guide-color\` | \`var(--wa-color-surface-border)\` The color of the indentation line. Default |
-| \`--indent-guide-offset\` | \`0\` The amount of vertical spacing to leave between the top and bottom of the indentation line's starting position. Default |
-| \`--indent-guide-style\` | \`solid\` The style of the indentation line, e.g. , dotted, dashed. Default solid |
-| \`--indent-guide-width\` | \`0\` The width of the indentation line. Default |
-| \`--indent-size\` | \`var(--wa-space-m)\` The size of the indentation for nested items. Default |
-
-### CSS Parts
-
-| Name | Description | CSS selector |
-| --- | --- | --- |
-| \`tree\` | The component's outer wrapper. | \`::part(tree)\` |
-| \`base\` | \`tree\` Deprecated. Use the part instead. | \`::part(base)\` |
-
-### Dependencies
-
-This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
-
--   [`<wa-checkbox>`](https://webawesome.com/docs/components/checkbox)
--   [`<wa-icon>`](https://webawesome.com/docs/components/icon)
--   [`<wa-spinner>`](https://webawesome.com/docs/components/spinner)
--   [`<wa-tree-item>`](https://webawesome.com/docs/components/tree-item)
-
 ## Examples
 
 ### Selection
 
 Set the `selection` attribute to change what a tree lets you select.
 
-| Value | Selects |
-| --- | --- |
-| \`single\` default | One item at a time |
-| \`multiple\` | Any number of items |
-| \`leaf\` | One leaf node (a node with no children) |
-| \`leaf-multiple\` | Any number of leaf nodes |
+| Value                                                                              | Selects                              |
+| ---------------------------------------------------------------------------------- | ------------------------------------ |
+| `single` <wa-badge appearance="outlined" variant="neutral" pill style="font-size: var(--wa-font-size-2xs);">default</wa-badge> | One item at a time                   |
+| `multiple`                                                                         | Any number of items                  |
+| `leaf`                                                                             | One leaf node (a node with no children) |
+| `leaf-multiple`                                                                    | Any number of leaf nodes             |
 
-```html
+```html {.example}
 <div>
   <wa-tree class="tree-selectable">
     <wa-tree-item expanded>
@@ -193,7 +116,7 @@ Set the `selection` attribute to change what a tree lets you select.
 
 Trees inherit their font size by default. You can change the size of a tree and all of its items by setting `font-size` on the `<wa-tree>` element. All internal dimensions, including checkboxes, expand buttons, and labels, scale proportionally.
 
-```html
+```html {.example}
 <wa-tree style="font-size: .75rem;" selection="multiple">
   <wa-tree-item expanded>
     Small
@@ -239,7 +162,7 @@ Trees inherit their font size by default. You can change the size of a tree and 
 
 Set the `--indent-guide-width` custom property to draw indent guides. The `--indent-guide-color`, `--indent-guide-style`, and `--indent-guide-offset` custom properties tune their color, style, and offset.
 
-```html
+```html {.example}
 <wa-tree class="tree-with-lines">
   <wa-tree-item expanded>
     Design
@@ -283,7 +206,7 @@ Set the `--indent-guide-width` custom property to draw indent guides. The `--ind
 
 Use the `expand-icon` and `collapse-icon` slots to change the expand and collapse icons, respectively. To disable the animation, override the `rotate` property on the `expand-button` part as shown below.
 
-```html
+```html {.example}
 <wa-tree class="custom-icons">
   <wa-icon name="square-plus" variant="solid" slot="expand-icon"></wa-icon>
   <wa-icon name="square-minus" variant="solid" slot="collapse-icon"></wa-icon>
@@ -329,7 +252,7 @@ Use the `expand-icon` and `collapse-icon` slots to change the expand and collaps
 
 Decorative icons can be used before labels to provide hints for each node.
 
-```html
+```html {.example}
 <wa-tree class="tree-with-icons">
   <wa-tree-item expanded>
     <wa-icon name="folder" variant="regular"></wa-icon>
@@ -404,7 +327,7 @@ Use the `lazy` attribute on a tree item to indicate that the content is not yet 
 
 If you want to disable this behavior after the first load, remove the `lazy` attribute and, on the next expand, the existing content will be shown instead.
 
-```html
+```html {.example}
 <wa-tree>
   <wa-tree-item lazy>Remote Repositories</wa-tree-item>
 </wa-tree>

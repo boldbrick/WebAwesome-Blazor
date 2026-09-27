@@ -3,11 +3,11 @@
 <PageTitle>Known Date</PageTitle>
 
 <h1>Known Date <ComponentBadges Tag="wa-known-date" /></h1>
-<p>Known Date collects a date the user already knows — a birthday, a document date — through separate day, month, and year fields. It submits a single canonical ISO date (<code>YYYY-MM-DD</code>). <code>&lt;wa-known-date&gt;</code> wrapped by <code>WaKnownDate</code>.</p>
+<p>Known Date collects a date the user already knows — a birthday, a document date — through separate day, month, and year fields. <code>WaKnownDate</code> binds a <code>DateOnly?</code>, converted culture-free from the element's canonical ISO date (<code>YYYY-MM-DD</code>); a partly filled date binds as null. <code>&lt;wa-known-date&gt;</code> wrapped by <code>WaKnownDate</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaKnownDate Label="When was your passport issued?" @bind-Value="defaultValue" />
-    <p>Value: <code>@(defaultValue ?? "(empty)")</code></p>
+    <p>Value: <code>@(defaultValue is null ? "(empty)" : DemoFormat.Iso(defaultValue))</code></p>
 </ExampleSection>
 
 <ExampleSection Title="Initial Value &amp; Hint" Code="@ValueExample">
@@ -15,7 +15,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Min, Max &amp; Locale" Code="@ConstraintsExample">
-    <WaKnownDate Label="Issue date" Locale="en-GB" Min="1900-01-01" Max="2026-12-31" @bind-Value="issueValue" />
+    <WaKnownDate Label="Issue date" Locale="en-GB" Min="EarliestIssue" Max="LatestIssue" @bind-Value="issueValue" />
 </ExampleSection>
 
 <ExampleSection Title="Appearance &amp; Pill" Code="@AppearanceExample">
@@ -26,17 +26,20 @@
 <ApiTable Tag="wa-known-date" />
 
 @code {
-    private string? defaultValue;
-    private string? dobValue = "1990-05-25";
-    private string? issueValue;
-    private string? filledValue;
-    private string? pillValue;
+    private static readonly DateOnly EarliestIssue = new(1900, 1, 1);
+    private static readonly DateOnly LatestIssue = new(2026, 12, 31);
+
+    private DateOnly? defaultValue;
+    private DateOnly? dobValue = new(1990, 5, 25);
+    private DateOnly? issueValue;
+    private DateOnly? filledValue;
+    private DateOnly? pillValue;
 
     private const string DefaultExample = """
         <WaKnownDate Label="When was your passport issued?" @bind-Value="defaultValue" />
 
         @code {
-            private string? defaultValue;
+            private DateOnly? defaultValue;
         }
         """;
 
@@ -44,15 +47,17 @@
         <WaKnownDate Label="Date of birth" Hint="We use this to verify your age." @bind-Value="dobValue" />
 
         @code {
-            private string? dobValue = "1990-05-25";
+            private DateOnly? dobValue = new(1990, 5, 25);
         }
         """;
 
     private const string ConstraintsExample = """
-        <WaKnownDate Label="Issue date" Locale="en-GB" Min="1900-01-01" Max="2026-12-31" @bind-Value="issueValue" />
+        <WaKnownDate Label="Issue date" Locale="en-GB" Min="EarliestIssue" Max="LatestIssue" @bind-Value="issueValue" />
 
         @code {
-            private string? issueValue;
+            private static readonly DateOnly EarliestIssue = new(1900, 1, 1);
+            private static readonly DateOnly LatestIssue = new(2026, 12, 31);
+            private DateOnly? issueValue;
         }
         """;
 
@@ -61,8 +66,8 @@
         <WaKnownDate Label="Pill" Pill="true" @bind-Value="pillValue" />
 
         @code {
-            private string? filledValue;
-            private string? pillValue;
+            private DateOnly? filledValue;
+            private DateOnly? pillValue;
         }
         """;
 }

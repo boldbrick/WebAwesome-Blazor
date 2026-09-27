@@ -1,0 +1,105 @@
+@page "/testing/events-overlays"
+
+@* e2e harness for tools\e2e\tests\event-dispatch.spec.js - deliberately outside /components/, so it is neither
+   derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js *@
+
+<PageTitle>Testing: Overlay Events</PageTitle>
+
+<h1>Overlay Events Harness</h1>
+<p>This page is an end-to-end test harness: dialogs, drawers, popovers, tooltips, dropdowns and toasts wire their show/hide callbacks into the event log below, so the browser tests can check which callbacks a real interaction reached in .NET.</p>
+
+<ExampleSection Title="Dialog and drawer">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaButton data-testid="ov-dialog-open" OnClick="() => dialog!.ShowAsync()">Open dialog</WaButton>
+        <WaButton data-testid="ov-drawer-open" OnClick="() => drawer!.ShowAsync()">Open drawer</WaButton>
+    </WaCluster>
+    <WaDialog @ref="dialog" Label="Harness dialog" data-testid="ov-dialog"
+              OnShow="e => log.Record(Id(nameof(WaDialog), nameof(WaDialog.OnShow)), e)"
+              OnAfterShow="e => log.Record(Id(nameof(WaDialog), nameof(WaDialog.OnAfterShow)), e)"
+              OnHide="e => log.Record(Id(nameof(WaDialog), nameof(WaDialog.OnHide)), e)"
+              OnAfterHide="e => log.Record(Id(nameof(WaDialog), nameof(WaDialog.OnAfterHide)), e)">
+        Press Escape or use the close button.
+    </WaDialog>
+    <WaDrawer @ref="drawer" Label="Harness drawer" data-testid="ov-drawer"
+              OnShow="e => log.Record(Id(nameof(WaDrawer), nameof(WaDrawer.OnShow)), e)"
+              OnAfterShow="e => log.Record(Id(nameof(WaDrawer), nameof(WaDrawer.OnAfterShow)), e)"
+              OnHide="e => log.Record(Id(nameof(WaDrawer), nameof(WaDrawer.OnHide)), e)"
+              OnAfterHide="e => log.Record(Id(nameof(WaDrawer), nameof(WaDrawer.OnAfterHide)), e)">
+        Press Escape or use the close button.
+    </WaDrawer>
+</ExampleSection>
+
+<ExampleSection Title="Popover and tooltip">
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaButton id="ov-popover-anchor" data-testid="ov-popover-anchor">Toggle popover</WaButton>
+        <WaPopover For="ov-popover-anchor" data-testid="ov-popover"
+                   OnShow="e => log.Record(Id(nameof(WaPopover), nameof(WaPopover.OnShow)), e)"
+                   OnAfterShow="e => log.Record(Id(nameof(WaPopover), nameof(WaPopover.OnAfterShow)), e)"
+                   OnHide="e => log.Record(Id(nameof(WaPopover), nameof(WaPopover.OnHide)), e)"
+                   OnAfterHide="e => log.Record(Id(nameof(WaPopover), nameof(WaPopover.OnAfterHide)), e)">
+            Popover content
+        </WaPopover>
+
+        <WaButton id="ov-tooltip-anchor" data-testid="ov-tooltip-anchor">Hover for a tooltip</WaButton>
+        <WaTooltip For="ov-tooltip-anchor" data-testid="ov-tooltip"
+                   OnShow="e => log.Record(Id(nameof(WaTooltip), nameof(WaTooltip.OnShow)), e)"
+                   OnAfterShow="e => log.Record(Id(nameof(WaTooltip), nameof(WaTooltip.OnAfterShow)), e)"
+                   OnHide="e => log.Record(Id(nameof(WaTooltip), nameof(WaTooltip.OnHide)), e)"
+                   OnAfterHide="e => log.Record(Id(nameof(WaTooltip), nameof(WaTooltip.OnAfterHide)), e)">
+            Tooltip content
+        </WaTooltip>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Dropdown">
+    <WaDropdown data-testid="ov-dropdown"
+                OnShow="e => log.Record(Id(nameof(WaDropdown), nameof(WaDropdown.OnShow)), e)"
+                OnAfterShow="e => log.Record(Id(nameof(WaDropdown), nameof(WaDropdown.OnAfterShow)), e)"
+                OnHide="e => log.Record(Id(nameof(WaDropdown), nameof(WaDropdown.OnHide)), e)"
+                OnAfterHide="e => log.Record(Id(nameof(WaDropdown), nameof(WaDropdown.OnAfterHide)), e)"
+                OnSelect="e => log.Record(Id(nameof(WaDropdown), nameof(WaDropdown.OnSelect)), e)">
+        <TriggerContent>
+            <WaButton WithCaret="true" data-testid="ov-dropdown-trigger">Actions</WaButton>
+        </TriggerContent>
+        <ChildContent>
+            <WaDropdownItem Value="copy" data-testid="ov-dropdown-copy"
+                            OnFocus="e => log.Record(Id(nameof(WaDropdownItem), nameof(WaDropdownItem.OnFocus)), e)"
+                            OnBlur="e => log.Record(Id(nameof(WaDropdownItem), nameof(WaDropdownItem.OnBlur)), e)">Copy</WaDropdownItem>
+            <WaDropdownItem Value="paste" data-testid="ov-dropdown-paste">Paste</WaDropdownItem>
+        </ChildContent>
+    </WaDropdown>
+</ExampleSection>
+
+<ExampleSection Title="Toast">
+    <WaButton data-testid="ov-toast-show" OnClick="() => toastShown = true">Show toast</WaButton>
+    <WaToast>
+        @if (toastShown)
+        {
+            <WaToastItem Duration="0" data-testid="ov-toast-item"
+                         OnShow="e => log.Record(Id(nameof(WaToastItem), nameof(WaToastItem.OnShow)), e)"
+                         OnAfterShow="e => log.Record(Id(nameof(WaToastItem), nameof(WaToastItem.OnAfterShow)), e)"
+                         OnHide="e => log.Record(Id(nameof(WaToastItem), nameof(WaToastItem.OnHide)), e)"
+                         OnAfterHide="e => log.Record(Id(nameof(WaToastItem), nameof(WaToastItem.OnAfterHide)), e)">
+                Harness toast - close it with its close button.
+            </WaToastItem>
+        }
+    </WaToast>
+</ExampleSection>
+
+<ExampleSection Title="Event log">
+    <EventLogView Log="log" />
+</ExampleSection>
+
+@code {
+    private readonly EventLog log = new();
+
+    private WaDialog? dialog;
+    private WaDrawer? drawer;
+
+    // toast items remove themselves from the DOM after hiding, so the flag is never reset (Blazor must not
+    // try to remove the element a second time)
+    private bool toastShown;
+
+    private static string Id(string wrapper, string callback) => $"{wrapper}.{callback}";
+}

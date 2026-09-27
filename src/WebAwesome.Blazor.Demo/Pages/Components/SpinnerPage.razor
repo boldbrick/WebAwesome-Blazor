@@ -1,18 +1,54 @@
-﻿@page "/components/spinner"
+@page "/components/spinner"
 
 <PageTitle>Spinner</PageTitle>
 
-<h1>Spinner</h1>
-<p><code>&lt;wa-spinner&gt;</code> wrapped by <code>WaSpinner</code>.</p>
+<h1>Spinner <ComponentBadges Tag="wa-spinner" /></h1>
+<p>Spinners show the progress of an indeterminate operation. <code>&lt;wa-spinner&gt;</code> wrapped by <code>WaSpinner</code>; it has no parameters of its own, it is sized and colored with CSS.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaSpinner />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\spinner.md) *@
+<ExampleSection Title="Size" Code="@SizeExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+        <WaSpinner />
+        <WaSpinner Style="font-size: 2rem;" />
+        <WaSpinner Style="font-size: 3rem;" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Track Width and Color" Code="@TrackExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+        <WaSpinner Style="font-size: 3rem; --track-width: 8px;" />
+        <WaSpinner Style="font-size: 3rem; --track-color: var(--wa-color-brand-fill-quiet); --indicator-color: var(--wa-color-danger-fill-loud);" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="In a Button" Code="@ButtonExample">
+    <WaButton Disabled="true"><WaSpinner /> Saving...</WaButton>
+</ExampleSection>
 
 <ApiTable Tag="wa-spinner" />
 
 @code {
     private const string DefaultExample = "<WaSpinner />";
+
+    private const string SizeExample = """
+        <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+            <WaSpinner />
+            <WaSpinner Style="font-size: 2rem;" />
+            <WaSpinner Style="font-size: 3rem;" />
+        </WaCluster>
+        """;
+
+    private const string TrackExample = """
+        <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+            <WaSpinner Style="font-size: 3rem; --track-width: 8px;" />
+            <WaSpinner Style="font-size: 3rem; --track-color: var(--wa-color-brand-fill-quiet); --indicator-color: var(--wa-color-danger-fill-loud);" />
+        </WaCluster>
+        """;
+
+    private const string ButtonExample = """
+        <WaButton Disabled="true"><WaSpinner /> Saving...</WaButton>
+        """;
 }

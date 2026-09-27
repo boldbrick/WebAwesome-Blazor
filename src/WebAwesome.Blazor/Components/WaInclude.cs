@@ -61,9 +61,14 @@ public class WaInclude : ComponentBase
     [Parameter] public string? Src { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Mode"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaMode DefaultMode = WaMode.Cors;
+
+    /// <summary>
     /// The fetch mode to use when requesting the included content.
     /// </summary>
-    [Parameter] public WaMode Mode { get; set; } = WaMode.Cors;
+    [Parameter] public WaMode Mode { get; set; } = DefaultMode;
 
     /// <summary>
     /// Allows scripts included as part of the requested file to be executed. Be extra careful to use this feature
@@ -92,7 +97,7 @@ public class WaInclude : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-include");
+        var attributes = builder.OpenWaElement(this, 0, "wa-include");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -101,8 +106,7 @@ public class WaInclude : ComponentBase
 
         // Add include-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "src", Src);
-        if (Mode != WaMode.Cors)
-            builder.AddAttribute(11, "mode", Mode.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 11, "mode", Mode.ToHtmlValue(), DefaultMode.ToHtmlValue());
         if (AllowScripts)
             builder.AddAttribute(12, "allow-scripts", AllowScripts);
 

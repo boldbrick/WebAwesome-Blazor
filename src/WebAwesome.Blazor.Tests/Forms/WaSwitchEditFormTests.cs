@@ -26,24 +26,27 @@ public class WaSwitchEditFormTests : FormControlTestBase
         var element = cut.Find("wa-switch");
         Assert.True(element.HasAttribute("checked"));
 
-        var cssClass = element.GetAttribute("class");
-        Assert.Contains("user-class", cssClass);
-        Assert.Contains("valid", cssClass);
+        var classes = ClassesOf(element);
+        Assert.Contains("user-class", classes);
+        Assert.Contains("valid", classes);
+        Assert.DoesNotContain("invalid", classes);
     }
 
-    [Fact]
-    public void UserChange_ReadsRealCheckedStateViaInterop()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void UserChange_ReadsRealCheckedStateViaInterop(bool elementChecked)
     {
-        // the wrapper reads the custom element's .checked property back through JS interop
-        var module = JSInterop.SetupModule(InteropModulePath);
-        module.Setup<bool>("getProperty", invocation => Equals(invocation.Arguments[1], "checked")).SetResult(true);
+        // the wrapper reads the custom element's .checked property back through JS interop (Strict, see CheckedReadBack)
+        var module = JSInterop.SetupCheckedReadBack(elementChecked);
 
-        var model = new SwitchModel { Enabled = false };
+        var model = new SwitchModel { Enabled = !elementChecked };
         var cut = RenderForm(model);
 
         cut.Find("wa-switch").Change(bool.TrueString);
 
-        Assert.True(model.Enabled);
+        module.VerifyCheckedReadBack();
+        Assert.Equal(elementChecked, model.Enabled);
     }
 
     #region ------ Internals ------

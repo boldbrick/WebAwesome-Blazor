@@ -41,9 +41,20 @@ public class WaProgressRing : ComponentBase
 
     // Progress properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Value"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultValue = 0;
+
+    /// <summary>
     /// The current progress as a percentage, 0 to 100.
     /// </summary>
-    [Parameter] public int Value { get; set; }
+    [Parameter] public int Value { get; set; } = DefaultValue;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
 
     /// <summary>
     /// A label used for assistive devices, such as screen readers. If in doubt, this label should describe
@@ -67,14 +78,14 @@ public class WaProgressRing : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-progress-ring");
+        var attributes = builder.OpenWaElement(this, 0, "wa-progress-ring");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttribute(4, "value", Value);
-        builder.AddAttributeIfNotNullOrEmpty(5, "label", Label);
+        builder.AddNumberAttribute(attributes, 4, "value", Value, DefaultValue);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 5, "label", Label, DefaultLabel);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __progressRingReference => Element = __progressRingReference);

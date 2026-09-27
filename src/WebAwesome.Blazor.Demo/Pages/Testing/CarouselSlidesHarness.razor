@@ -1,0 +1,78 @@
+@page "/testing/carousel-slides"
+
+@* e2e harness for tools\e2e\tests\carousel-slides.spec.js - deliberately outside /components/, so it is neither
+   derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. Model-driven slides: each carousel renders its WaCarouselItems from a list with
+   @key, and the buttons change the list (add a slide, remove the active one, remove the last one); Blazor adds and
+   removes the elements, and the carousel picks the change up itself. The second carousel loops, so Web Awesome keeps
+   clones of the first and last slides next to the ones Blazor renders. *@
+
+<PageTitle>Testing: Carousel Slides</PageTitle>
+
+<h1>Carousel Slides Harness</h1>
+<p>This page is an end-to-end test harness for carousel slides rendered from a model: adding and removing slides changes the list, and Blazor renders the change.</p>
+
+@foreach (var deck in decks)
+{
+    <ExampleSection Title="@deck.Title">
+        <WaCarousel data-testid="@($"cs-{deck.Key}")" Navigation="true" Pagination="true" Loop="deck.Loop"
+                    OnSlideChange="e => deck.Active = e.Index">
+            @foreach (var slide in deck.Slides)
+            {
+                <WaCarouselItem @key="slide" data-testid="@($"cs-{deck.Key}-slide-{slide}")">
+                    <div style="height: 8rem; display: flex; align-items: center; justify-content: center; background: var(--wa-color-brand-fill-quiet);">
+                        Slide @slide
+                    </div>
+                </WaCarouselItem>
+            }
+        </WaCarousel>
+        <WaCluster Gap="GapSize.Gap_S" Style="margin-block-start: var(--wa-space-s);">
+            <WaButton data-testid="@($"cs-{deck.Key}-add")" OnClick="() => deck.Add()">Add a slide</WaButton>
+            <WaButton data-testid="@($"cs-{deck.Key}-remove-active")" OnClick="() => deck.RemoveActive()">Remove the active slide</WaButton>
+            <WaButton data-testid="@($"cs-{deck.Key}-remove-last")" OnClick="() => deck.RemoveLast()">Remove the last slide</WaButton>
+        </WaCluster>
+        <p>
+            Slides in the model: <code data-testid="@($"cs-{deck.Key}-model")">@string.Join(",", deck.Slides)</code>,
+            active slide (OnSlideChange): <code data-testid="@($"cs-{deck.Key}-active")">@deck.Active</code>
+        </p>
+    </ExampleSection>
+}
+
+@code {
+    // the slides each carousel starts with
+    private const int InitialSlides = 3;
+
+    private readonly Deck[] decks =
+    [
+        new("plain", "Slides from the model", loop: false),
+        new("loop", "Slides from the model, looping", loop: true)
+    ];
+
+    // one carousel's model: its slide numbers and the active index it last reported
+    private sealed class Deck(string key, string title, bool loop)
+    {
+        public string Key { get; } = key;
+
+        public string Title { get; } = title;
+
+        public bool Loop { get; } = loop;
+
+        public List<int> Slides { get; } = [.. Enumerable.Range(1, InitialSlides)];
+
+        public int Active { get; set; }
+
+        public void Add() => Slides.Add(nextSlide++);
+
+        public void RemoveActive()
+        {
+            if (Active >= 0 && Active < Slides.Count) Slides.RemoveAt(Active);
+        }
+
+        public void RemoveLast()
+        {
+            if (Slides.Count > 0) Slides.RemoveAt(Slides.Count - 1);
+        }
+
+        private int nextSlide = InitialSlides + 1;
+    }
+}

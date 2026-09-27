@@ -48,13 +48,13 @@ public class WaNumberInputIntegrationTests : FormControlTestBase
             {
                 builder.AddComponentParameter(10, nameof(WaNumberInput.Appearance), WaInputAppearance.Filled);
                 builder.AddComponentParameter(11, nameof(WaNumberInput.AutoFocus), true);
-                builder.AddComponentParameter(12, nameof(WaNumberInput.EnterKeyHint), "go");
-                builder.AddComponentParameter(13, nameof(WaNumberInput.InputMode), "decimal");
+                builder.AddComponentParameter(12, nameof(WaNumberInput.EnterKeyHint), WaEnterKeyHint.Go);
+                builder.AddComponentParameter(13, nameof(WaNumberInput.InputMode), WaNumberInputMode.Decimal);
                 builder.AddComponentParameter(14, nameof(WaNumberInput.Max), 100m);
                 builder.AddComponentParameter(15, nameof(WaNumberInput.Min), 0m);
                 builder.AddComponentParameter(16, nameof(WaNumberInput.Pill), true);
                 builder.AddComponentParameter(17, nameof(WaNumberInput.Placeholder), "Enter a number");
-                builder.AddComponentParameter(18, nameof(WaNumberInput.Step), "0.5");
+                builder.AddComponentParameter(18, nameof(WaNumberInput.Step), (WaStep?)0.5);
                 builder.AddComponentParameter(19, nameof(WaNumberInput.WithoutSteppers), true);
             });
 
@@ -113,40 +113,6 @@ public class WaNumberInputIntegrationTests : FormControlTestBase
         // Assert
         Assert.Equal("dollar-sign", cut.Find("wa-icon[slot='start']").GetAttribute("name"));
         Assert.Equal("percent", cut.Find("wa-icon[slot='end']").GetAttribute("name"));
-    }
-
-    [Fact]
-    public void OnInvalid_WhenWired_ReceivesDomEvent()
-    {
-        // Arrange
-        var invalidCount = 0;
-        var model = new NumberModel();
-        var cut = RenderControlForm<WaNumberInput, decimal?>(model, model.Amount, v => model.Amount = v, () => model.Amount,
-            builder => builder.AddComponentParameter(10, nameof(WaNumberInput.OnInvalid),
-                Microsoft.AspNetCore.Components.EventCallback.Factory.Create<EventArgs>(this, () => invalidCount++)));
-
-        // Act
-        cut.Find("wa-number-input").TriggerEvent("onwa-invalid", new EventArgs());
-
-        // Assert
-        Assert.Equal(1, invalidCount);
-    }
-
-    [Fact]
-    public void OnBeforeInput_WhenWired_ReceivesDomEvent()
-    {
-        // Arrange
-        var beforeInputCount = 0;
-        var model = new NumberModel();
-        var cut = RenderControlForm<WaNumberInput, decimal?>(model, model.Amount, v => model.Amount = v, () => model.Amount,
-            builder => builder.AddComponentParameter(10, nameof(WaNumberInput.OnBeforeInput),
-                Microsoft.AspNetCore.Components.EventCallback.Factory.Create<EventArgs>(this, () => beforeInputCount++)));
-
-        // Act
-        cut.Find("wa-number-input").TriggerEvent("onbeforeinput", new EventArgs());
-
-        // Assert
-        Assert.Equal(1, beforeInputCount);
     }
 
     [Fact]

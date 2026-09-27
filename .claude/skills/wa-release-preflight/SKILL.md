@@ -1,24 +1,26 @@
 ---
 name: wa-release-preflight
 description: Go/no-go release preflight for WebAwesome.Blazor — runs the automated gate script (version alignment, changelog/migration shape, builds, tests, nupkg dependency floors, browser e2e), verifies VCS and ticketing state, and reports blockers plus the owner-side checklist. Invoke as /wa-release-preflight before merging a task branch for release or promoting the subtrunk to /main. Add --skip-e2e to omit the browser sweep, --docs-only for a quick docs/version check without builds.
-argument-hint: [--skip-e2e] [--docs-only]
+argument-hint: [--skip-e2e] [--skip-pro-e2e] [--docs-only]
 ---
 
 # Web Awesome Blazor Release Preflight
 
 Determine whether the workspace is ready to (a) merge the current task branch to its train subtrunk and (b) release the version in `src\Version.props` (promote to `/main`, label `wa-blazor-<version>`). **Read-only: fix nothing, change nothing, transition nothing — report.** Release model background: `README.md` (promotion model), `CONTRIBUTING.md`, `docs\UPGRADE-PROCESS.md`.
 
-Arguments: `$ARGUMENTS` (`--skip-e2e` → pass `-SkipE2E` to the script; `--docs-only` → pass `-SkipBuild -SkipE2E`).
+Arguments: `$ARGUMENTS` (`--skip-e2e` → pass `-SkipE2E` to the script; `--skip-pro-e2e` → pass `-SkipProE2E`; `--docs-only` → pass `-SkipBuild -SkipE2E`).
 
 ## 1. Automated gates (script)
 
 Run from the repo root (Windows PowerShell):
 
 ```powershell
-powershell -File tools\release\Test-WaReleasePreflight.ps1 [-SkipE2E] [-SkipBuild]
+& .\tools\release\Test-WaReleasePreflight.ps1 [-SkipE2E] [-SkipBuild] [-ProDist <path>] [-SkipProE2E] [-E2EPort <port>]
 ```
 
-The script checks: clean workspace; version alignment across `Version.props`, `parity-config.json` (armed + target version), `expected-api-surface.json`, README CDN snippet; no hard-coded Web Awesome CDN pins in the demo hosts (asset tags come from `WebAwesomeAssets` configuration and default to the library version); no Pro asset leakage (the generated `appsettings.Local.json`/`wwwroot\webawesome` override must not be versioned, no kit-like URLs in sources/workflows, ignore rules present in both `ignore.conf` and `.gitignore`); `docs\CHANGELOG.md` has a dated `## [<version>]` section with no leftover `[Unreleased]` content; `docs\MIGRATION-<version>.md` exists when that section declares breaking changes; Debug and Release builds with zero warnings; full test suite green on all target frameworks with nothing skipped; every dependency in the packed nuspec floored at a base major (`x.0.0`, per `docs\technical.md`); Playwright e2e sweep against the locally started demo. Non-zero exit = blockers; the script prints them as `BLOCKER:` lines.
+Call it directly with `&`; a nested `powershell -File` leaves `$PSScriptRoot` empty. The script runs a second e2e pass (`e2e-pro`) against a self-hosted Pro dist **by default** when the local Pro build of the target version exists at `temp\wa-src\<Version.props version>` (extracted from the release zip by the upgrade pipeline). When it doesn't, it prints a `WARNING` (not a failure, repeated after the gate summary) that the Pro components went unverified in the browser; report that warning prominently next to the verdict. `-ProDist <path>` (or `-ProE2E` with `WA_PRO_DIST`) points the pass at another dist; `-SkipProE2E` turns it off (report the Pro pass as not run then). Always report the `e2e-pro` result, or why the pass didn't run.
+
+The script checks: clean workspace; version alignment across `Version.props`, `parity-config.json` (armed + target version), `expected-api-surface.json`, README CDN snippet; no hard-coded Web Awesome CDN pins in the demo hosts (asset tags come from `WebAwesomeAssets` configuration and default to the library version); no Pro asset leakage (the generated `appsettings.Local.json`/`wwwroot\webawesome` override must not be versioned, no kit-like URLs in sources/workflows, ignore rules present in both `ignore.conf` and `.gitignore`); `docs\CHANGELOG.md` has a dated `## [<version>]` section with no leftover `[Unreleased]` content; `docs\MIGRATION-<version>.md` exists when that section declares breaking changes; Debug and Release builds with zero warnings; full test suite green on all target frameworks with nothing skipped; every dependency in the packed nuspec floored at a base major (`x.0.0`, per `docs\technical.md`); Playwright e2e suite against a demo the script starts on a free port (`e2e-free-cdn`: `CI=1`, `--forbid-only`, every skip must be listed with a reason in `tools\e2e\data\expected-skips.json`, at least `minimumTests` tests; `e2e-pro` likewise, with no skips, against the local Pro build or `-ProDist`). Non-zero exit = blockers; the script prints them as `BLOCKER:` lines.
 
 ## 2. Version control state
 

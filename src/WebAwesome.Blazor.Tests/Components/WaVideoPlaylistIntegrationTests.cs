@@ -42,22 +42,6 @@ public class WaVideoPlaylistIntegrationTests : BunitContext
     }
 
     [Fact]
-    public void OnVideoChange_WhenWired_ReceivesEvent()
-    {
-        WaVideoChangeEventArgs? received = null;
-        var cut = Render<WaVideoPlaylist>(parameters => parameters
-            .Add(p => p.OnVideoChange, args => received = args));
-
-        var payload = new WaVideoChangeEventArgs { PreviousIndex = 0, CurrentIndex = 2, VideoTitle = "Clip C" };
-        cut.Find("wa-video-playlist").TriggerEvent("onwa-video-change", payload);
-
-        Assert.NotNull(received);
-        Assert.Equal(0, received!.PreviousIndex);
-        Assert.Equal(2, received.CurrentIndex);
-        Assert.Equal("Clip C", received.VideoTitle);
-    }
-
-    [Fact]
     public async Task NextAsync_WithNullElement_ThrowsInvalidOperationException()
     {
         var component = new WaVideoPlaylist();

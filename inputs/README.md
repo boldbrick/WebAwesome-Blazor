@@ -3,9 +3,10 @@
 This folder contains _input resources_ used as a reference to build the wrappers.
 
 **`WebAwesome` folder:**
-- Contains: the respective version of the documentation of Web Awesome components
-- Ingested from: [Web Awesome GitHub repo](https://github.com/shoelace-style/webawesome/tree/v3.0.0), contents of the [`packages/webawesome/docs/docs` folder](https://github.com/shoelace-style/webawesome/tree/v3.0.0/packages/webawesome/docs/docs)
-- Pro components (e.g. `combobox`, `page`) are not documented in the public GitHub repo; their docs are ingested from the public pages at `https://webawesome.com/docs/components/<name>` instead (source URL noted at the top of each such file)
+- Contains: the respective version of the documentation of Web Awesome components, refreshed by `tools\upgrade\Sync-WaDocs.ps1 -Version <version>` on every upgrade
+- Primary source: the [Web Awesome GitHub repo](https://github.com/shoelace-style/webawesome) at tag `v<version>`, contents of the `packages/webawesome/docs/docs` folder. This is the full docs site source, including the non-component pages (tokens, utilities, frameworks, theming).
+- Gap fill for components missing from that tree (the Pro components): the component reference docs bundled in the release zip (`dist/skills/webawesome/references/components/<name>.md`, present since WA 3.3.0), marked with a source comment at the top of each file. Only when a component has neither falls back to carrying the previous version's doc forward, or to a manual capture from `https://webawesome.com/docs/components/<name>` (reported by the script as NEEDS CAPTURE).
+- When a release is published before its public GitHub tag, `-DocsTagVersion <older>` takes the non-component pages from an older tag and makes the bundled references take precedence over that tree's component docs (`-PreferBundledRefs`).
 
 # Upgrading instructions
 

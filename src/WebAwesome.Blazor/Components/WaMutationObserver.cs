@@ -55,7 +55,8 @@ public class WaMutationObserver : ComponentBase
 
     // MutationObserver options
     /// <summary>
-    /// Watches for changes to attributes on the observed element.
+    /// Watches for changes to all attributes (the element's attr="*"). To watch only some attributes, set
+    /// <see cref="AttributeFilter"/> instead, which takes precedence.
     /// </summary>
     [Parameter] public bool Attr { get; set; }
 
@@ -70,25 +71,11 @@ public class WaMutationObserver : ComponentBase
     [Parameter] public bool CharData { get; set; }
 
     /// <summary>
-    /// Extends monitoring to the entire subtree of the observed element, not just its immediate children.
+    /// Watches for changes to these attributes, e.g. <c>new HashSet&lt;string&gt; { "class", "id" }</c> (the element's attr
+    /// attribute, the names in ordinal order separated by a space); <c>*</c> watches all attributes. Takes precedence
+    /// over <see cref="Attr"/> unless empty.
     /// </summary>
-    [Parameter] public bool Subtree { get; set; }
-
-    /// <summary>
-    /// Indicates whether the attribute's previous value should be recorded when monitoring changes.
-    /// </summary>
-    [Parameter] public bool AttributeOldValue { get; set; }
-
-    /// <summary>
-    /// Indicates whether the previous value of the node's text should be recorded.
-    /// </summary>
-    [Parameter] public bool CharacterDataOldValue { get; set; }
-
-    /// <summary>
-    /// Restricts attribute change notifications to the specified space-separated list of attribute names,
-    /// e.g. <c>class id title</c>. Use <c>*</c> to watch all attributes.
-    /// </summary>
-    [Parameter] public string? AttributeFilter { get; set; }
+    [Parameter] public IReadOnlySet<string>? AttributeFilter { get; set; }
 
     /// <summary>
     /// Indicates whether the attribute's previous value should be recorded when monitoring changes.
@@ -130,7 +117,7 @@ public class WaMutationObserver : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-mutation-observer");
+        var attributes = builder.OpenWaElement(this, 0, "wa-mutation-observer");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -138,13 +125,13 @@ public class WaMutationObserver : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add mutation observer attributes
-        builder.AddAttribute(10, "attr", Attr);
+        // attr lists the attributes to watch; the element watches none for an empty value, so it cannot be a bare attribute
+        if (AttributeFilter is { Count: > 0 })
+            builder.AddTokenSetAttribute(10, "attr", AttributeFilter);
+        else
+            builder.AddAttributeIfNotNull(10, "attr", Attr ? AllAttributesFilter : null);
         builder.AddAttribute(11, "child-list", ChildList);
         builder.AddAttribute(12, "char-data", CharData);
-        builder.AddAttribute(13, "subtree", Subtree);
-        builder.AddAttribute(14, "attribute-old-value", AttributeOldValue);
-        builder.AddAttribute(15, "character-data-old-value", CharacterDataOldValue);
-        builder.AddAttributeIfNotNullOrEmpty(16, "attribute-filter", AttributeFilter);
         builder.AddAttribute(17, "attr-old-value", AttrOldValue);
         builder.AddAttribute(18, "disabled", Disabled);
         builder.AddAttribute(19, "char-data-old-value", CharDataOldValue);
@@ -201,6 +188,9 @@ public class WaMutationObserver : ComponentBase
     #endregion
 
     #region ------ Private Methods ------
+
+    // the attr value that watches every attribute
+    private const string AllAttributesFilter = "*";
 
     /// <summary>
     /// Gets the CSS class string combining user classes

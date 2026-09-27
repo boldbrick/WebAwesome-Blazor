@@ -10,11 +10,10 @@ namespace WebAwesome.Blazor.Tests.Forms;
 
 /// <summary>
 /// EditForm integration tests for WaRange: two-way binding of its non-nullable decimal Value, and the
-/// DataAnnotations validation lifecycle. Unlike the string-valued controls, WaRange's non-range-mode
-/// onchange binds directly via <c>EventCallback.Factory.CreateBinder&lt;decimal&gt;</c> over
-/// <c>CurrentValue</c> rather than <c>CurrentValueAsString</c>, so the numeric conversion happens
-/// through Microsoft's BindConverter rather than through WaRange's own TryParseValueFromString
-/// override (which is effectively unreachable from normal user input as a result).
+/// DataAnnotations validation lifecycle. In single-value mode the value arrives through the "numericchange"
+/// alias of the change event (HandleValueChange parses it with the invariant culture); these tests raise the
+/// alias with NumericChange, so they cover the C# half only (see NumericChangeExtensions for where the JS alias is
+/// checked).
 /// </summary>
 public class WaRangeEditFormTests : FormControlTestBase
 {
@@ -39,7 +38,7 @@ public class WaRangeEditFormTests : FormControlTestBase
         var model = new RangeModel { Volume = 50m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-slider").Change("75");
+        cut.Find("wa-slider").NumericChange("75");
 
         Assert.Equal(75m, model.Volume);
     }
@@ -51,7 +50,7 @@ public class WaRangeEditFormTests : FormControlTestBase
         var cut = RenderForm(model);
 
         // Range(0, 100) violated by a value outside the range
-        cut.Find("wa-slider").Change("150");
+        cut.Find("wa-slider").NumericChange("150");
 
         var cssClass = cut.Find("wa-slider").GetAttribute("class");
         Assert.Contains("modified", cssClass);
@@ -64,8 +63,8 @@ public class WaRangeEditFormTests : FormControlTestBase
         var model = new RangeModel { Volume = 50m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-slider").Change("150");
-        cut.Find("wa-slider").Change("60");
+        cut.Find("wa-slider").NumericChange("150");
+        cut.Find("wa-slider").NumericChange("60");
 
         var cssClass = cut.Find("wa-slider").GetAttribute("class");
         Assert.Contains("modified", cssClass);

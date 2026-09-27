@@ -14,7 +14,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Accept &amp; Multiple" Code="@AcceptMultipleExample">
-    <WaFileInput Label="Upload images" Hint="PNG or JPEG only, multiple files allowed." Accept="image/png,image/jpeg" Multiple="true" />
+    <WaFileInput Label="Upload images" Hint="PNG or JPEG only, multiple files allowed." Accept="@(new[] { "image/png", "image/jpeg" })" Multiple="true" />
 </ExampleSection>
 
 <ExampleSection Title="Sizes &amp; Disabled" Code="@SizesExample">
@@ -53,7 +53,7 @@
 
     private const string AcceptMultipleExample = """
         <WaFileInput Label="Upload images" Hint="PNG or JPEG only, multiple files allowed."
-                     Accept="image/png,image/jpeg" Multiple="true" />
+                     Accept="@(new[] { "image/png", "image/jpeg" })" Multiple="true" />
         """;
 
     private const string SizesExample = """

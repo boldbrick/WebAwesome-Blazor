@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
@@ -13,14 +13,35 @@ namespace WebAwesome.Blazor.Components;
 /// A select component that allows choosing items from a menu of predefined options.
 /// Corresponds to the wa-select Web Awesome component.
 /// </summary>
-public class WaSelect : WaInputBase<string?>
+public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffixedControl
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    #endregion
+
     #region ------ Visual & Behavior Properties ------
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Placeholder"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPlaceholder = "";
 
     /// <summary>
     /// Placeholder text to show as a hint when the select is empty.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaInputAppearance DefaultAppearance = WaInputAppearance.Outlined;
 
     /// <summary>
     /// The select's visual appearance.
@@ -43,29 +64,27 @@ public class WaSelect : WaInputBase<string?>
     [Parameter] public bool Multiple { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="MaxOptionsVisible"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultMaxOptionsVisible = 3;
+
+    /// <summary>
     /// The maximum number of selected options to show when <see cref="Multiple"/> is true. Beyond this count, a "+n" indicator is shown. Set to 0 to remove the limit.
     /// </summary>
     [Parameter] public int? MaxOptionsVisible { get; set; }
 
     /// <summary>
-    /// The preferred placement of the select's menu. The actual placement may vary as needed to keep the listbox inside the viewport.
+    /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public WaPlacement? Placement { get; set; }
+    public const WaListboxPlacement DefaultPlacement = WaListboxPlacement.Bottom;
 
     /// <summary>
-    /// Indicates whether the select's dropdown is open.
+    /// The preferred placement of the select's menu, above or below the field. The actual placement may vary as needed to keep
+    /// the listbox inside the viewport. When null, the attribute is omitted and Web Awesome's default (bottom) applies.
     /// </summary>
-    [Parameter] public bool Open { get; set; }
-
-    /// <summary>
-    /// Reserves space for the hint even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Reserves space for the label even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
+    [Parameter] public WaListboxPlacement? Placement { get; set; }
 
     #endregion
 
@@ -74,12 +93,12 @@ public class WaSelect : WaInputBase<string?>
     /// <summary>
     /// The selected values when Multiple is true. Use this for two-way binding in multiple selection mode.
     /// </summary>
-    [Parameter] public string[]? SelectedValues { get; set; }
+    [Parameter] public IReadOnlyList<string>? SelectedValues { get; set; }
 
     /// <summary>
     /// Callback for when SelectedValues changes in multiple selection mode.
     /// </summary>
-    [Parameter] public EventCallback<string[]?> SelectedValuesChanged { get; set; }
+    [Parameter] public EventCallback<IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
 
     #endregion
 
@@ -89,26 +108,6 @@ public class WaSelect : WaInputBase<string?>
     /// Invoked when the control's value is cleared.
     /// </summary>
     [Parameter] public EventCallback OnClear { get; set; }
-
-    /// <summary>
-    /// Invoked when the select's dropdown opens.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnShow { get; set; }
-
-    /// <summary>
-    /// Invoked when the select's dropdown closes.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
-
-    /// <summary>
-    /// Invoked after the select's dropdown opens and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterShow { get; set; }
-
-    /// <summary>
-    /// Invoked after the select's dropdown closes and all animations are complete.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
     /// <summary>
     /// Invoked when the form control has been checked for validity and its constraints are not satisfied.
@@ -144,6 +143,16 @@ public class WaSelect : WaInputBase<string?>
     /// </summary>
     [Parameter] public string? EndIconName { get; set; }
 
+    /// <summary>
+    /// An icon to use in lieu of the default clear icon (see <see cref="WithClear"/>), rendered into the element's "clear-icon" slot.
+    /// </summary>
+    [Parameter] public RenderFragment? ClearIconContent { get; set; }
+
+    /// <summary>
+    /// The icon to show when the control is expanded and collapsed, rendered into the element's "expand-icon" slot; it rotates on open and close.
+    /// </summary>
+    [Parameter] public RenderFragment? ExpandIconContent { get; set; }
+
     #endregion
 
     #region ------ JavaScript Interop Properties ------
@@ -165,29 +174,31 @@ public class WaSelect : WaInputBase<string?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-select");
+        var attributes = builder.OpenWaElement(this, 0, "wa-select");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
 
+        // Add the form control attributes the element declares
+        builder.AddAttribute(8, "required", Required);
+        AddLabelAndHintAttributes(builder, 12);
+
         // Add select-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(20, "placeholder", Placeholder);
-        builder.AddAttributeIfNotNull(21, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 20, "placeholder", Placeholder, DefaultPlaceholder);
+        builder.AddAttributeIfNotNull(attributes, 21, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
         builder.AddAttribute(22, "pill", Pill);
-        builder.AddAttribute(23, "with-clear", WithClear);
+        FormControlRendering.AddWithClearAttribute(builder, 23, this);
         builder.AddAttribute(24, "multiple", Multiple);
-        builder.AddAttributeIfNotNull(25, "max-options-visible", MaxOptionsVisible);
-        builder.AddAttributeIfNotNull(26, "placement", Placement?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 25, "max-options-visible", MaxOptionsVisible, DefaultMaxOptionsVisible);
+        builder.AddAttributeIfNotNull(attributes, 26, "placement", Placement?.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
         builder.AddAttribute(27, "open", Open);
-        builder.AddAttribute(28, "with-hint", WithHint);
-        builder.AddAttribute(29, "with-label", WithLabel);
+        AddWithHintAndLabelAttributes(builder, 14);
 
         // Add value binding - handle both single and multiple selection
         if (Multiple)
         {
-            // For multiple selection, we need special handling
-            var selectedValuesString = SelectedValues != null ? string.Join(",", SelectedValues) : string.Empty;
-            builder.AddAttribute(30, "value", selectedValuesString);
+            // multiple selection: no value attribute, which the element would read as one option value; the
+            // selection is pushed into the live value property as an array instead (see LiveValuePropertyName)
             builder.AddAttribute(31, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, HandleMultipleSelectionChange));
         }
         else
@@ -203,46 +214,35 @@ public class WaSelect : WaInputBase<string?>
         AddCommonEventHandlers(builder, 40);
 
         // Add select-specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "onwa-clear", OnClear);
-        builder.AddAttributeIfHasDelegate(52, "onwa-show", OnShow);
-        builder.AddAttributeIfHasDelegate(53, "onwa-hide", OnHide);
-        builder.AddAttributeIfHasDelegate(54, "onwa-after-show", OnAfterShow);
-        builder.AddAttributeIfHasDelegate(55, "onwa-after-hide", OnAfterHide);
+        FormControlRendering.AddClearEventHandler(builder, 50, this);
+        AddPopupEventHandlers(builder, 52);
         builder.AddAttributeIfHasDelegate(56, "onwa-invalid", OnInvalid);
 
+        // the keydown is relayed, because the element stops its propagation in the shadow root
+        AddRelayedKeyDownHandler(builder, 57);
+
         // Add element reference capture
-        builder.AddElementReferenceCapture(57, __selectReference => Element = __selectReference);
+        builder.AddElementReferenceCapture(59, __selectReference => Element = __selectReference);
 
-        // Add start slot content
-        if (StartContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "start");
-            builder.AddContent(62, StartContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(100, "start", StartIconName);
-        }
-
-        // Add end slot content
-        if (EndContent is not null)
-        {
-            builder.OpenElement(65, "span");
-            builder.AddAttribute(66, "slot", "end");
-            builder.AddContent(67, EndContent);
-            builder.CloseElement();
-        }
-        else
-        {
-            builder.AddIconSlot(105, "end", EndIconName);
-        }
+        // Add start and end slot content (the fragment wins over the icon-name shortcut)
+        FormControlRendering.AddAffixSlots(builder, 60, this, StartIconName, EndIconName);
 
         // Add child content (options)
         if (ChildContent is not null)
         {
             builder.AddContent(70, ChildContent);
+        }
+
+        // Add clear-icon slot content
+        FormControlRendering.AddClearIconSlot(builder, 110, this);
+
+        // Add expand-icon slot content
+        if (ExpandIconContent is not null)
+        {
+            builder.OpenElement(115, "span");
+            builder.AddAttribute(116, "slot", "expand-icon");
+            builder.AddContent(117, ExpandIconContent);
+            builder.CloseElement();
         }
 
         // Add label and hint slots
@@ -259,6 +259,45 @@ public class WaSelect : WaInputBase<string?>
         return true;
     }
 
+    /// <summary>
+    /// In multiple selection mode, the selection lives in the element's value property as a string array.
+    /// </summary>
+    protected override string? LiveValuePropertyName => Multiple ? MultipleValueProperty : null;
+
+    /// <inheritdoc />
+    internal override bool RelaysKeyDown => true;
+
+    /// <summary>
+    /// The selected values as the array the element's value property holds in multiple selection mode.
+    /// </summary>
+    /// <returns>The selected values</returns>
+    protected override object? GetLiveValue() => Multiple ? liveSelectedValues : base.GetLiveValue();
+
+    /// <summary>
+    /// Keeps the array pushed to the element stable while <see cref="SelectedValues"/> keeps its content, so a
+    /// re-render with an equal list does not reassign the element's selection.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        var values = SelectedValues ?? [];
+        if (!values.SequenceEqual(liveSelectedValues)) liveSelectedValues = values.ToArray();
+    }
+
+    /// <summary>
+    /// Pushes the initial multiple selection too, since multiple selection mode renders no value attribute.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first time the component has rendered</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender && Multiple && liveSelectedValues.Length > 0 && Element is not null)
+            await JSInterop.SyncPropertyAsync(Element.Value, MultipleValueProperty, liveSelectedValues);
+    }
+
     #endregion
 
     #region ------ Private Methods ------
@@ -268,24 +307,27 @@ public class WaSelect : WaInputBase<string?>
     /// </summary>
     private async Task HandleMultipleSelectionChange(ChangeEventArgs args)
     {
-        if (args.Value is string stringValue)
+        // the element reports its selection as a string array; recorded as the live value before the model changes,
+        // so the next render does not push it back
+        var values = args.GetStringArrayValue();
+        liveSelectedValues = values;
+        MarkLiveValueSynced(values);
+
+        SelectedValues = values;
+        await SelectedValuesChanged.InvokeAsync(values);
+
+        // Also update the single value for consistency (use first selected or null)
+        var singleValue = values.FirstOrDefault();
+        if (CurrentValueAsString != singleValue)
         {
-            // Parse the comma-separated values
-            var values = string.IsNullOrEmpty(stringValue)
-                ? Array.Empty<string>()
-                : stringValue.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-            SelectedValues = values;
-            await SelectedValuesChanged.InvokeAsync(values);
-
-            // Also update the single value for consistency (use first selected or null)
-            var singleValue = values.FirstOrDefault();
-            if (CurrentValueAsString != singleValue)
-            {
-                CurrentValueAsString = singleValue;
-            }
+            CurrentValueAsString = singleValue;
         }
     }
+
+    private const string MultipleValueProperty = "value";
+
+    // the selection last pushed to or received from the element in multiple selection mode
+    private string[] liveSelectedValues = [];
 
     #endregion
 
@@ -334,32 +376,6 @@ public class WaSelect : WaInputBase<string?>
             throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "focus");
-    }
-
-    /// <summary>
-    /// Hides the select's dropdown.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task HideAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot hide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
-    }
-
-    /// <summary>
-    /// Shows the select's dropdown.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    public async Task ShowAsync()
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot show: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
     }
 
     #endregion
