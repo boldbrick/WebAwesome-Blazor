@@ -178,8 +178,11 @@ plus an `IconName` shortcut.
 - `reload()` → `ReloadAsync()`.
 - Slots `empty`, `error`, `loading`, `no-results` → `EmptyContent`, `ErrorContent`, `LoadingContent`,
   `NoResultsContent`.
-- `wa-options-error` → `ignoredEvents`: only the JS-only `dataSource` callback path dispatches it, and no
-  Blazor parameter can set a JS function property.
+- `wa-options-error` → `OnOptionsError` (`EventCallback<WaOptionsErrorEventArgs>`: `Error` message, `Query`). Only the
+  `dataSource` callback path dispatches it, a JS function property no parameter sets, so it fires only when the
+  consumer's own JavaScript assigns one. Bound anyway, following the `WaDataGrid.OnDataError` precedent (same
+  `dataSource` rejection, same message projection); the plan first listed it under `ignoredEvents`, which the
+  parity check rejects, because that list means "bound by the value handling".
 - `request` (CEM-invented) → `cemOnlyEvents`.
 - Not wrapped: the JS-only `dataSource` callback property (not a CEM attribute).
 
@@ -206,7 +209,7 @@ plus an `IconName` shortcut.
 
 Each entry with its own `ignoreReasons` key:
 - `componentClassOverrides`: `wa-step` → `WaStepperStep` (name clash with the `WaStep` value type).
-- `wa-combobox`: `ignoredEvents` `wa-options-error`; `cemOnlyEvents` `request`.
+- `wa-combobox`: `cemOnlyEvents` `request`.
 - `wa-stepper`: `cemOnlyEvents` `detail`.
 - Whatever the render-based checks report beyond this is resolved in the wrapper or recorded here with its
   reason (see Implementation notes).
@@ -220,7 +223,7 @@ Each entry with its own `ignoreReasons` key:
   component is a form control. No breaking-change validation tests, since nothing is breaking.
 - `ApiParity\WaElementDefaults.cs` refreshed from `ElementDefaultsTableTests`' received file.
 - `EventCallbackManifestTests` refresh plus an e2e dispatch/payload case for every new callback
-  (`OnStepChange`, `OnBeforeStepChange`, `OnOptionsRequest`).
+  (`OnStepChange`, `OnBeforeStepChange`, `OnOptionsRequest`, `OnOptionsError`; the last by assigning a rejecting `dataSource` from the spec).
 - CHANGELOG `## [3.14.0]`: New components, Changed, Library, Public API. No `### Breaking changes` heading.
 - Demo: `New-WaDemoPages.ps1 -PruneRemoved`, curated `StepperPage.razor` and `StepPage.razor` (from
   `inputs\WebAwesome\components\stepper.md`/`step.md`), `ComponentCategoryMap` entries (`wa-stepper`,

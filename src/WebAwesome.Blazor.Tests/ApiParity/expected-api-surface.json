@@ -1,5 +1,5 @@
 {
-  "version": "3.13.0",
+  "version": "3.14.0",
   "generated": "Export-WaApiSurface.ps1",
   "declaredEventTypes": [
     "wa-after-collapse",
@@ -7,6 +7,7 @@
     "wa-after-hide",
     "wa-after-show",
     "wa-before-page-change",
+    "wa-before-step-change",
     "wa-cancel",
     "wa-cell-click",
     "wa-cell-contextmenu",
@@ -36,6 +37,8 @@
     "wa-lazy-load",
     "wa-load",
     "wa-mutation",
+    "wa-options-error",
+    "wa-options-request",
     "wa-page-change",
     "wa-remove",
     "wa-reposition",
@@ -49,6 +52,7 @@
     "wa-slide-change",
     "wa-sort-change",
     "wa-start",
+    "wa-step-change",
     "wa-tab-hide",
     "wa-tab-show",
     "wa-video-change",
@@ -1649,6 +1653,11 @@
           "default": null,
           "description": "Used to customize the label or icon of the Enter key on virtual keyboards."
         },
+        "filter-debounce": {
+          "type": "number",
+          "default": "250",
+          "description": "How long to wait, in milliseconds, after the user stops typing before requesting options in server mode. Opening\nthe listbox and calling `reload()` request immediately."
+        },
         "hint": {
           "type": "string",
           "default": "''",
@@ -1668,6 +1677,11 @@
           "type": "string",
           "default": null,
           "description": null
+        },
+        "loading": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether a request for options is pending. The combobox sets this to `true` the moment a request is scheduled\n(including the debounce wait) and, with a `dataSource`, clears it when the request settles. In event mode, set it\nto `false` yourself once you've updated the options."
         },
         "max-options-visible": {
           "type": "number",
@@ -1708,6 +1722,11 @@
           "type": "boolean",
           "default": "false",
           "description": "The combobox's required attribute."
+        },
+        "server": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Switches the combobox to server mode without a `dataSource` callback: client-side filtering is turned off and you\nswap the slotted `<wa-option>` elements yourself in response to `wa-options-request`, then set `loading` to\n`false`. Implied when `dataSource` is set."
         },
         "size": {
           "type": "'xs' | 's' | 'm' | 'l' | 'xl' | 'small' | 'medium' | 'large'",
@@ -1761,6 +1780,11 @@
           "eventName": "InputEvent",
           "description": "Emitted when the control receives input."
         },
+        "request": {
+          "type": "WaOptionsRequestEvent",
+          "eventName": "RequestEvent",
+          "description": null
+        },
         "wa-after-hide": {
           "type": null,
           "eventName": "WaAfterHideEvent",
@@ -1791,6 +1815,16 @@
           "eventName": "WaInvalidEvent",
           "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
         },
+        "wa-options-error": {
+          "type": null,
+          "eventName": "WaOptionsErrorEvent",
+          "description": "Emitted when a `dataSource` request rejects. The event `detail` contains `{ error: unknown, request: { query: string } }`."
+        },
+        "wa-options-request": {
+          "type": null,
+          "eventName": "WaOptionsRequestEvent",
+          "description": "Emitted in server mode whenever a request for options starts. The event `detail` contains `{ query: string, signal: AbortSignal }`."
+        },
         "wa-show": {
           "type": null,
           "eventName": "WaShowEvent",
@@ -1808,15 +1842,21 @@
         "wa-create",
         "wa-hide",
         "wa-invalid",
+        "wa-options-error",
+        "wa-options-request",
         "wa-show"
       ],
       "slots": {
         "(default)": "The listbox options. Must be `<wa-option>` elements. You can use `<wa-divider>` to group items visually.",
         "clear-icon": "An icon to use in lieu of the default clear icon.",
+        "empty": "Shown in the listbox when there are no options and no query has been typed.",
         "end": "An element, such as `<wa-icon>`, placed at the end of the combobox.",
+        "error": "Shown in the listbox when the last `dataSource` request failed.",
         "expand-icon": "The icon to show when the control is expanded and collapsed. Rotates on open and close.",
         "hint": "Text that describes how to use the input. Alternatively, you can use the `hint` attribute.",
         "label": "The input's label. Alternatively, you can use the `label` attribute.",
+        "loading": "Shown in the listbox while options are loading and none are available yet.",
+        "no-results": "Shown in the listbox when the query matched nothing.",
         "start": "An element, such as `<wa-icon>`, placed at the start of the combobox."
       },
       "methods": {
@@ -1836,6 +1876,10 @@
           "signature": "hide() => void",
           "description": "Hides the listbox."
         },
+        "reload": {
+          "signature": "reload() => Promise<void>",
+          "description": "Re-requests options using the current query (or an empty query when the listbox is closed). Resolves once the\nresponse has been applied in `dataSource` mode, or immediately after `wa-options-request` is emitted in event\nmode, so `await combobox.reload()` followed by setting `value` works."
+        },
         "resetValidity": {
           "signature": "resetValidity() => void",
           "description": "Reset validity is a way of removing manual custom errors and native validation."
@@ -1853,7 +1897,9 @@
         "clear-button",
         "combobox",
         "combobox-input",
+        "empty",
         "end",
+        "error",
         "expand-icon",
         "form-control",
         "form-control-input",
@@ -1861,7 +1907,11 @@
         "hint",
         "label",
         "listbox",
+        "loading",
+        "no-results",
+        "spinner",
         "start",
+        "status",
         "tag",
         "tag__content",
         "tag__remove-button",
@@ -3100,7 +3150,7 @@
         "label": {
           "type": "string",
           "default": "''",
-          "description": "The dialog's label as displayed in the header. You should always include a relevant label, as it is required for\nproper accessibility. If you need to display HTML, use the `label` slot instead."
+          "description": "The dialog's label as displayed in the header. You should always include a relevant label, as it is required for\nproper accessibility. If you need to display HTML, use the `label` slot instead. When `without-header` is set,\nonly the attribute provides the dialog's accessible name."
         },
         "lang": {
           "type": "string",
@@ -3121,6 +3171,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Only required for SSR. Set to `true` if you're slotting in a `footer` element so the server-rendered markup\nincludes the footer before the component hydrates on the client."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup names\nthe dialog before the component hydrates on the client."
         },
         "without-header": {
           "type": "boolean",
@@ -3190,6 +3245,11 @@
           "default": null,
           "description": null
         },
+        "label-placement": {
+          "type": "'start' | 'center' | 'end'",
+          "default": "'center'",
+          "description": "Where the label sits along the divider."
+        },
         "lang": {
           "type": "string",
           "default": null,
@@ -3199,13 +3259,22 @@
           "type": "'horizontal' | 'vertical'",
           "default": "'horizontal'",
           "description": "Sets the divider's orientation."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a label so the server-rendered markup includes the\nlabel's layout before the component hydrates on the client."
         }
       },
       "events": {},
       "jsDocEvents": [],
-      "slots": {},
+      "slots": {
+        "(default)": "An optional label to show in the center of the divider."
+      },
       "methods": {},
-      "cssParts": []
+      "cssParts": [
+        "label"
+      ]
     },
     "wa-doughnut-chart": {
       "className": "WaDoughnutChart",
@@ -3333,7 +3402,7 @@
         "label": {
           "type": "string",
           "default": "''",
-          "description": "The drawer's label as displayed in the header. You should always include a relevant label, as it is required for\nproper accessibility. If you need to display HTML, use the `label` slot instead."
+          "description": "The drawer's label as displayed in the header. You should always include a relevant label, as it is required for\nproper accessibility. If you need to display HTML, use the `label` slot instead. When `without-header` is set,\nonly the attribute provides the drawer's accessible name."
         },
         "lang": {
           "type": "string",
@@ -3359,6 +3428,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Only required for SSR. Set to `true` if you're slotting in a `footer` element so the server-rendered markup\nincludes the footer before the component hydrates on the client."
+        },
+        "with-label": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `label` element so the server-rendered markup names\nthe drawer before the component hydrates on the client."
         },
         "without-header": {
           "type": "boolean",
@@ -5763,7 +5837,7 @@
         "disable-navigation-toggle": {
           "type": "boolean",
           "default": "false",
-          "description": "Determines whether or not to hide the default hamburger button.\nThis will automatically flip to \"true\" if you add an element with `data-toggle-nav` anywhere in the element light DOM.\nGenerally this will be set for you and you don't need to do anything, unless you're using SSR, in which case you should set this manually for initial page loads."
+          "description": "Determines whether or not to hide the default hamburger button. This will automatically flip to \"true\" if you add\nan element with `data-toggle-nav` anywhere in the element light DOM. Generally this will be set for you and you\ndon't need to do anything, unless you're using SSR, in which case you should set this manually for initial page\nloads. If you set this yourself, automatic detection is skipped. This is useful when your toggle lives inside\nanother component's shadow root, where it can't be detected."
         },
         "lang": {
           "type": "string",
@@ -5784,6 +5858,11 @@
           "type": "'start' | 'end'",
           "default": "'start'",
           "description": "Where to place the navigation when in the mobile viewport."
+        },
+        "nonce": {
+          "type": "string | undefined",
+          "default": null,
+          "description": "Sets a `nonce` for the injected `<style>` tag used for handling media queries. The style tag will use `window.litNonce` if `nonce` isn't defined on `<wa-page>`"
         },
         "view": {
           "type": "'mobile' | 'desktop'",
@@ -5825,7 +5904,7 @@
         },
         "visiblePixelsInViewport": {
           "signature": "visiblePixelsInViewport(element: HTMLElement | null) => void",
-          "description": "https://stackoverflow.com/a/26831113\nThis prevents awkward gaps when scrolling the page and the aside / menu dont \"fill\" the gaps."
+          "description": "https://stackoverflow.com/a/26831113\nThis prevents awkward gaps when scrolling the page and the aside / menu don't \"fill\" the gaps."
         }
       },
       "cssParts": [
@@ -8072,6 +8151,184 @@
         "start"
       ]
     },
+    "wa-step": {
+      "className": "WaStep",
+      "since": "3.14",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "active": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Draws the step as the stepper's current step. The parent `<wa-stepper>` sets this from its own `active`\nattribute, so you only need to set it yourself for SSR."
+        },
+        "attention": {
+          "type": "'none' | 'pulse' | 'bounce'",
+          "default": "'none'",
+          "description": "Adds an animation to the step's marker to draw attention to it, e.g. the step the user should do next."
+        },
+        "completed": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Marks the step done. Shows a checkmark instead of the step number."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Makes the step non-interactive. It can't be clicked or reached with `next()`/`goTo()`, and it renders as a\ndisabled button when the stepper is `clickable`."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "loading": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows a loading indicator instead of the step number, e.g. while an async transition is in progress."
+        },
+        "name": {
+          "type": "string",
+          "default": "''",
+          "description": "Identifies the step. Matched against the stepper's `active` attribute and used in events."
+        },
+        "role": {
+          "type": "string",
+          "default": "'listitem'",
+          "description": null
+        },
+        "variant": {
+          "type": "'neutral' | 'brand' | 'success' | 'warning' | 'danger'",
+          "default": "'brand'",
+          "description": "Colors the step's marker with a semantic color. Upcoming `brand` steps keep a neutral outline so a default stepper\nreads quietly. The color is cosmetic; pair it with an icon in the `icon` slot and a clear label when a step needs\nto read as failed or flagged."
+        },
+        "with-description": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Only required for SSR. Set to `true` if you're slotting in a `description` element, so the server-rendered\nmarkup includes it before the component hydrates on the client."
+        }
+      },
+      "events": {},
+      "jsDocEvents": [],
+      "slots": {
+        "(default)": "The step's label.",
+        "description": "Optional text shown under the label.",
+        "icon": "An element, such as `<wa-icon>`, that replaces the step number, checkmark, or loading indicator."
+      },
+      "methods": {},
+      "cssParts": [
+        "button",
+        "connector",
+        "content",
+        "description",
+        "label",
+        "marker",
+        "spinner",
+        "status",
+        "step"
+      ]
+    },
+    "wa-stepper": {
+      "className": "WaStepper",
+      "since": "3.14",
+      "status": "experimental",
+      "pro": false,
+      "attributes": {
+        "active": {
+          "type": "string",
+          "default": "''",
+          "description": "The name of the active step. Falls back to the first step if unset, or if it doesn't match any step's name."
+        },
+        "clickable": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Allows clicking a step, or focusing it and pressing Enter/Space, to jump straight to it. When unset (the\ndefault), only `next()`/`previous()`/`goTo()` change the active step, e.g. from your own Next/Back buttons or a\n`data-stepper` invoker."
+        },
+        "did-ssr": {
+          "type": null,
+          "default": null,
+          "description": null
+        },
+        "dir": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "A label that describes the stepper to assistive devices. Especially useful when more than one is on the page."
+        },
+        "lang": {
+          "type": "string",
+          "default": null,
+          "description": null
+        },
+        "linear": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Requires steps to be completed in order. When set, `next()`/`goTo()`/a `data-stepper` invoker and, if\n`clickable` is also set, clicking or activating a step can't reach a step until every step before it is\ncompleted. Every step past that point renders as locked."
+        },
+        "orientation": {
+          "type": "'horizontal' | 'vertical' | 'auto'",
+          "default": "'horizontal'",
+          "description": "The stepper's layout direction. `auto` lays steps out in a row and stacks them when the stepper is too narrow to\ngive each step about 6em of width, so labels stay legible on small screens; use it for anything shown on a\nphone. It relies on measuring the stepper, so a server-rendered `auto` stepper starts as a row and stacks once\nit hydrates, which is why `horizontal` is the default."
+        }
+      },
+      "events": {
+        "detail": {
+          "type": "WaStepChangeEvent",
+          "eventName": "DetailEvent",
+          "description": null
+        },
+        "wa-before-step-change": {
+          "type": "{ name: string, previousName: string | null, step: WaStep, previousStep: WaStep | null }",
+          "eventName": "WaBeforeStepChangeEvent",
+          "description": "Emitted before the active step changes. Calling `event.preventDefault()` prevents the change, to guard against invalid or unsaved data."
+        },
+        "wa-step-change": {
+          "type": "{ name: string, previousName: string | null, step: WaStep, previousStep: WaStep | null }",
+          "eventName": "WaStepChangeEvent",
+          "description": "Emitted after the active step changes."
+        }
+      },
+      "jsDocEvents": [
+        "wa-before-step-change",
+        "wa-step-change"
+      ],
+      "slots": {
+        "(default)": "One or more `<wa-step>` elements."
+      },
+      "methods": {
+        "goTo": {
+          "signature": "goTo(name: string) => void",
+          "description": "Requests a change to the named step. Emits a cancelable `wa-before-step-change`; if not canceled, updates\n`active`, emits `wa-step-change`, and announces the new position to assistive technology. No-ops silently if the\nstep doesn't exist, is disabled, or (in `linear` mode) isn't reachable yet."
+        },
+        "next": {
+          "signature": "next() => void",
+          "description": "Advances to the step after the active one, if any."
+        },
+        "previous": {
+          "signature": "previous() => void",
+          "description": "Goes back to the step before the active one, if any."
+        }
+      },
+      "cssParts": [
+        "stepper",
+        "steps",
+        "summary"
+      ]
+    },
     "wa-switch": {
       "className": "WaSwitch",
       "since": "2.0",
@@ -9935,6 +10192,11 @@
       "status": "stable",
       "pro": false,
       "attributes": {
+        "allow": {
+          "type": "string",
+          "default": null,
+          "description": "A [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Permissions_Policy) that controls which\nfeatures the embedded content can use, e.g. `clipboard-write; fullscreen`. The browser reads this when the frame\nloads, so changing it afterwards has no effect until the frame navigates again."
+        },
         "allowfullscreen": {
           "type": "boolean",
           "default": "false",
@@ -9950,6 +10212,11 @@
           "default": null,
           "description": null
         },
+        "label": {
+          "type": "string",
+          "default": "''",
+          "description": "An accessible name for the frame. Screen readers announce it when moving between frames, so set one that describes\nthe frame's content."
+        },
         "lang": {
           "type": "string",
           "default": null,
@@ -9960,6 +10227,11 @@
           "default": "'eager'",
           "description": "Controls iframe loading behavior."
         },
+        "name": {
+          "type": "string",
+          "default": null,
+          "description": "The name of the frame, which lets it be targeted by links and forms using the same name."
+        },
         "referrerpolicy": {
           "type": "string",
           "default": null,
@@ -9968,7 +10240,7 @@
         "sandbox": {
           "type": "string",
           "default": null,
-          "description": "Security restrictions for the iframe."
+          "description": "Security restrictions for the iframe. The browser reads this when the frame loads, so changing it afterwards has\nno effect until the frame navigates again."
         },
         "src": {
           "type": "string",
@@ -10015,7 +10287,7 @@
         "load": {
           "type": "Event",
           "eventName": "LoadEvent",
-          "description": "Emitted when the internal iframe when it finishes loading."
+          "description": "Emitted from the internal iframe when it finishes loading."
         }
       },
       "jsDocEvents": [

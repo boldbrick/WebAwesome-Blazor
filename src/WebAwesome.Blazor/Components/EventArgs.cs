@@ -40,6 +40,30 @@ public class WaTabChangeEventArgs : EventArgs
 
 #endregion
 
+#region ------ Stepper Events ------
+
+/// <summary>
+/// Event arguments for wa-stepper's wa-before-step-change and wa-step-change events.
+/// </summary>
+/// <remarks>
+/// The event's detail also carries the step and previous step elements themselves; DOM elements cannot be
+/// marshaled into Blazor <see cref="ElementReference"/>s from event payloads, so only their names are exposed.
+/// </remarks>
+public class WaStepChangeEventArgs : EventArgs
+{
+    /// <summary>
+    /// Name of the step becoming active.
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Name of the step that was active before the change, or null when there was none.
+    /// </summary>
+    public string? PreviousName { get; set; }
+}
+
+#endregion
+
 #region ------ Rating Events ------
 
 /// <summary>
@@ -302,6 +326,37 @@ public class WaCreateEventArgs : EventArgs
     /// The text the user typed that would become the new option (combobox) or tag (tag input).
     /// </summary>
     public string InputValue { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Event arguments for the wa-options-request event of a combobox in server (event) mode.
+/// </summary>
+public class WaOptionsRequestEventArgs : EventArgs
+{
+    /// <summary>
+    /// The text the user has typed so far, to fetch matching options for.
+    /// </summary>
+    /// <remarks>
+    /// The detail's AbortSignal (for cancelling a superseded request) is not transferable to .NET and is dropped;
+    /// use a request counter on the handler side instead, as the wrapper itself does for the loading state.
+    /// </remarks>
+    public string Query { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Event arguments for the wa-options-error event of a combobox, emitted when a <c>dataSource</c> request rejects.
+/// </summary>
+public class WaOptionsErrorEventArgs : EventArgs
+{
+    /// <summary>
+    /// The error message the data source rejected with.
+    /// </summary>
+    public string? Error { get; set; }
+
+    /// <summary>
+    /// The query of the request that failed.
+    /// </summary>
+    public string Query { get; set; } = string.Empty;
 }
 
 #endregion
