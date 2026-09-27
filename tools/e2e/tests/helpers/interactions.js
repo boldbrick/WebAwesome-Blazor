@@ -27,7 +27,7 @@ const CANDIDATE_SELECTOR = [
   'wa-tab',
   'wa-details', 'details', 'wa-accordion-item',
   'wa-select', 'wa-combobox',
-  'wa-input', 'wa-textarea', 'wa-number-input', 'input', 'textarea',
+  'wa-input', 'wa-textarea', 'wa-number-input', 'input', 'textarea', 'wa-tag-input',
   'wa-otp-input', 'wa-known-date', 'wa-date-input', 'wa-time-input', 'wa-date-picker',
   'wa-slider', 'wa-rating', 'wa-color-picker',
   'wa-dropdown',
@@ -54,6 +54,9 @@ const TYPED_VALUES = {
   '': 'e2e sweep', text: 'e2e sweep', search: 'e2e sweep', password: 'e2e sweep',
   email: 'e2e@example.com', url: 'https://example.com/', tel: '5550100', number: '7',
 };
+
+// the tag entered into a tag input (a single word, so no delimiter splits it)
+const TYPED_TAG = 'e2e';
 
 // the digits typed into a one-time-code or known-date field
 const TYPED_DIGITS = '123456';
@@ -153,6 +156,7 @@ function nextCandidate(options) {
       case 'wa-textarea':
       case 'wa-number-input':
       case 'textarea': return el.hasAttribute('readonly') ? (passOver(el, 'readonly'), null) : 'text';
+      case 'wa-tag-input': return el.hasAttribute('readonly') ? (passOver(el, 'readonly'), null) : 'tags';
       case 'input': {
         const type = el.getAttribute('type') ?? '';
         if (type === 'checkbox') return 'toggle';
@@ -245,6 +249,13 @@ async function drive(page, el, candidate) {
       await page.keyboard.press('Tab');
       break;
     }
+    case 'tags':
+      // the text box inside the shadow root; Enter turns the typed text into a tag
+      await el.locator('[part~="input"]').focus({ timeout });
+      await page.keyboard.type(TYPED_TAG);
+      await page.keyboard.press('Enter');
+      await page.keyboard.press('Tab');
+      break;
     case 'digits':
       await el.focus({ timeout });
       await page.keyboard.type(TYPED_DIGITS);

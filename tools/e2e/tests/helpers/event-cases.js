@@ -412,6 +412,32 @@ const EVENT_CASES = [
     },
   },
   {
+    name: 'WaTagInput focus, keyboard, input, create, clear',
+    route: FORMS, tags: ['wa-tag-input'],
+    callbacks: ids('WaTagInput', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnCreate', 'OnClear']),
+    proven: ['WaTagInput.ValueChanged'],
+    run: async page => {
+      const tagInput = page.getByTestId('ev-tag-input');
+      const model = page.getByTestId('ev-tag-input-model');
+      const input = tagInput.locator('[part~="input"]');
+      await expect(model).toHaveText('alpha,beta');
+      await input.focus();
+      await input.pressSequentially('gamma');
+      // Enter turns the typed text into a tag: wa-create carries the text, the change the new list
+      await input.press('Enter');
+      await expectFired(page, 'WaTagInput.OnCreate');
+      expect((await payloadOf(page, 'WaTagInput.OnCreate')).inputValue).toBe('gamma');
+      await expect(model).toHaveText('alpha,beta,gamma');
+      // the tags and the text box share the shadow root: one OnFocus, OnBlur only on leaving the control
+      await page.keyboard.press('Tab');
+      await expectFiredTimes(page, 'WaTagInput.OnFocus', 1);
+      await expectFiredTimes(page, 'WaTagInput.OnBlur', 1);
+      await tagInput.locator('[part~="clear-button"]').click();
+      await expect(model).toHaveText('');
+      await leaveControls(page);
+    },
+  },
+  {
     name: 'WaButton click submitting the form, focus, blur',
     route: FORMS, tags: ['wa-button'],
     callbacks: ids('WaButton', ['OnClick', ...FOCUS]),
@@ -427,10 +453,10 @@ const EVENT_CASES = [
     // no setCustomValidity yet, so marking it throws and the form is never marked (the Pro pass serves the modules
     // from the demo itself, where under a full worker load wa-otp-input or wa-known-date can lag behind)
     route: FORMS, tags: ['wa-input', 'wa-textarea', 'wa-number-input', 'wa-checkbox', 'wa-switch', 'wa-radio-group', 'wa-slider',
-      'wa-rating', 'wa-color-picker', 'wa-known-date', 'wa-otp-input', 'wa-time-input', 'wa-select', 'wa-button'],
+      'wa-rating', 'wa-color-picker', 'wa-known-date', 'wa-otp-input', 'wa-time-input', 'wa-select', 'wa-tag-input', 'wa-button'],
     callbacks: ids('WaInput', ['OnInvalid']).concat(
       ['WaTextArea', 'WaNumberInput', 'WaCheckbox', 'WaSwitch', 'WaRadioGroup', 'WaSlider', 'WaRange', 'WaRating',
-        'WaColorPicker', 'WaKnownDate', 'WaOtpInput', 'WaTimeInput', 'WaSelect', 'WaButton'].map(w => `${w}.OnInvalid`)),
+        'WaColorPicker', 'WaKnownDate', 'WaOtpInput', 'WaTimeInput', 'WaSelect', 'WaTagInput', 'WaButton'].map(w => `${w}.OnInvalid`)),
     run: async page => {
       await page.getByTestId('ev-mark-invalid').click();
       await expect(page.getByTestId('ev-invalid-marked')).toHaveText('True');

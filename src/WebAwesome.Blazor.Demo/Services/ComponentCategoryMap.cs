@@ -92,6 +92,7 @@ public static class ComponentCategoryMap
         ["wa-select"] = "Forms",
         ["wa-slider"] = "Forms",
         ["wa-switch"] = "Forms",
+        ["wa-tag-input"] = "Forms",
         ["wa-textarea"] = "Forms",
         ["wa-time-input"] = "Forms",
 

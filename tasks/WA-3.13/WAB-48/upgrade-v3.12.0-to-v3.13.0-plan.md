@@ -215,15 +215,47 @@ empty string binds null.
   the doc's front matter), and the tag input added to the **form showcase** plus its flow spec.
 - Public API snapshot promoted (only additions expected).
 
+## Implementation notes
+
+- **Demo generator fix.** `New-WaDemoPages.ps1 -PruneRemoved` deleted `DateRangeInputPage.razor` and
+  `DateRangePickerPage.razor`. They are the 3.12.0 wrapper-only pages (range modes of `wa-date-input`/
+  `wa-date-picker`) and have no surface tag of their own. Both were restored byte-identical from cs:318. The
+  prune now keeps a page while an element that its `Tag="wa-..."` references still exists.
+- **Interaction sweep driver.** It didn't drive `wa-tag-input`. It gains a `tags` kind: type into
+  `[part~="input"]`, press Enter, then Tab. Readonly tag inputs are skipped.
+- **Form showcase.** The registration form gains a "Topics you'd like to hear about" tag input
+  (`[Required]` + `[MinLength(1)]` on `IReadOnlyList<string>?`, `MaxTags="5"`, `WithClear`), and its flow spec
+  covers it.
+
+## Follow-ups
+
+- **Wrapper API gap: rejecting a tag.** Upstream rejects a typed tag with `preventDefault()` on `wa-create`.
+  .NET can't cancel it (Blazor dispatches after the DOM event), so `OnCreate` is notification-only, like the
+  other cancelable events. The demo leaves out the upstream "reject" example.
+- **Native form reset.** A `type="reset"` button runs the element's `formResetCallback`, which restores
+  `defaultValue` and dispatches no `change`. The bound model therefore keeps its tags while the element shows
+  none. This is the same class of behaviour as the other form controls, and it's Web Awesome's, so there is no
+  wrapper workaround. The demo leaves out the upstream Reset button. Recheck on the next upgrade.
+- **Interaction sweep on `WebAwesome.Blazor.Demo.Server`.** Against the Blazor Server host (port 5100), the
+  sweep's fast-forwarded page clock (6 s per interaction) trips the SignalR server timeout ("Server timeout
+  elapsed without receiving a message from the server") on 31 routes. The release gate and Phase 5 run the
+  WASM demo, where the sweep is green. The Server host would need the sweep to stop advancing the clock past
+  the SignalR keep-alive. The failing routes are mostly pages this upgrade didn't touch, and the error is
+  host-level, not tag-input-specific. It wasn't checked against the 3.12.0 build, and it's out of scope here.
+- The WAB-46 follow-ups carry forward unchanged (see "Next-release check items").
+
 ## Validation checklist
 
-- [ ] `dotnet build src/WebAwesome.slnx -p:Configuration=Debug` and `Release`: 0 warnings, 0 errors
-- [ ] `dotnet test src/WebAwesome.slnx` green on net9.0 and net10.0 (baseline 1211 per TFM)
-- [ ] `ApiSurfaceParityTests` green (at arming, the only gap must be `wa-tag-input`)
-- [ ] Render-based parity (attributes, slots, events, registrations, enum values, defaults) green for `WaTagInput`
-- [ ] `PublicApiSnapshotTests` baseline promoted, every difference explained by this plan
-- [ ] e2e green on the free CDN (sweep, interaction sweep, showcase flows, event coverage), Pro pass against
-      `temp\wa-src\3.13.0`, and the Pro override cleared afterwards
+- [x] `dotnet build src/WebAwesome.slnx -p:Configuration=Debug` and `Release`: 0 warnings, 0 errors
+- [x] `dotnet test src/WebAwesome.slnx` green on net9.0 and net10.0: 1239 per TFM, Debug and Release (baseline 1211)
+- [x] `ApiSurfaceParityTests` green. At arming the gaps were exactly `wa-tag-input` plus the element-defaults
+      oracle (seven new `wa-tag-input` defaults).
+- [x] Render-based parity (attributes, slots, events, registrations, enum values, defaults) green for `WaTagInput`
+- [x] `PublicApiSnapshotTests` baseline promoted (additions only: `WaTagInput`)
+- [x] Release preflight (`Test-WaReleasePreflight.ps1`): every gate green except `workspace-clean` (the Phase 5
+      work was still pending). e2e free CDN: 343 passed, 43 expected skips. e2e Pro against
+      `temp\wa-src\3.13.0`: 386 passed. The Pro override is absent afterwards, and `minimumTests` is raised from
+      383 to 386.
 
 ## Risks
 
