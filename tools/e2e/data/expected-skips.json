@@ -2,7 +2,7 @@
   "description": "Release gate policy for the Playwright suite (tools\\release\\Test-WaReleasePreflight.ps1). Every skipped test must be listed for the asset mode the pass runs in, with a reason; any other skip fails the gate, and so does a listed test that ran or no longer exists. The pass must also run at least minimumTests tests (raise it when tests are added, lower it only on purpose). Test keys are '<spec file> > <describe titles> > <test title>'.",
   "modes": {
     "free-cdn": {
-      "minimumTests": 386,
+      "minimumTests": 393,
       "expectedSkips": [
         {
           "test": "pro-assets.spec.js > Pro components upgrade when a Pro asset override is active",
@@ -38,6 +38,14 @@
         },
         {
           "test": "event-dispatch.spec.js > dispatch: WaCombobox (multiple) SelectedValuesChanged follows option clicks",
+          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "event-dispatch.spec.js > dispatch: WaCombobox (server mode) options request from typing swaps the options",
+          "reason": "wa-combobox is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "event-dispatch.spec.js > dispatch: WaCombobox options error from a rejecting data source",
           "reason": "wa-combobox is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
@@ -179,7 +187,7 @@
       ]
     },
     "pro": {
-      "minimumTests": 386,
+      "minimumTests": 393,
       "expectedSkips": []
     }
   }

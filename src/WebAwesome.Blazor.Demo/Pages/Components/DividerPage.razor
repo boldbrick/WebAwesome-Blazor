@@ -27,6 +27,21 @@
     </div>
 </ExampleSection>
 
+<ExampleSection Title="Label" Code="@LabelExample">
+    <WaStack Style="max-width: 20rem;">
+        <WaButton Appearance="WaAppearance.Filled" Variant="WaVariant.Brand" StartIconName="envelope">Sign In with Email</WaButton>
+        <WaDivider>or</WaDivider>
+        <WaButton Appearance="WaAppearance.Outlined" StartIconName="key">Use a Passkey</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Label Placement" Code="@LabelPlacementExample">
+    <WaDivider LabelPlacement="WaDividerLabelPlacement.Start">Start</WaDivider>
+    <WaDivider LabelPlacement="WaDividerLabelPlacement.Center">Center</WaDivider>
+    <WaDivider LabelPlacement="WaDividerLabelPlacement.End">End</WaDivider>
+    <WaDivider LabelPlacement="WaDividerLabelPlacement.Start" Style="--label-offset: 4rem;">Start, offset 4rem</WaDivider>
+</ExampleSection>
+
 <ExampleSection Title="In Menus" Code="@MenuExample">
     <WaDropdown>
         <TriggerContent><WaButton WithCaret="true">Edit</WaButton></TriggerContent>
@@ -62,6 +77,21 @@
             <WaDivider Orientation="WaOrientation.Vertical" />
             Last
         </div>
+        """;
+
+    private const string LabelExample = """
+        <WaStack Style="max-width: 20rem;">
+            <WaButton Appearance="WaAppearance.Filled" Variant="WaVariant.Brand" StartIconName="envelope">Sign In with Email</WaButton>
+            <WaDivider>or</WaDivider>
+            <WaButton Appearance="WaAppearance.Outlined" StartIconName="key">Use a Passkey</WaButton>
+        </WaStack>
+        """;
+
+    private const string LabelPlacementExample = """
+        <WaDivider LabelPlacement="WaDividerLabelPlacement.Start">Start</WaDivider>
+        <WaDivider LabelPlacement="WaDividerLabelPlacement.Center">Center</WaDivider>
+        <WaDivider LabelPlacement="WaDividerLabelPlacement.End">End</WaDivider>
+        <WaDivider LabelPlacement="WaDividerLabelPlacement.Start" Style="--label-offset: 4rem;">Start, offset 4rem</WaDivider>
         """;
 
     private const string MenuExample = """

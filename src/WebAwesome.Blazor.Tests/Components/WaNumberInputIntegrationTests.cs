@@ -54,7 +54,7 @@ public class WaNumberInputIntegrationTests : FormControlTestBase
                 builder.AddComponentParameter(15, nameof(WaNumberInput.Min), 0m);
                 builder.AddComponentParameter(16, nameof(WaNumberInput.Pill), true);
                 builder.AddComponentParameter(17, nameof(WaNumberInput.Placeholder), "Enter a number");
-                builder.AddComponentParameter(18, nameof(WaNumberInput.Step), (WaStep?)0.5);
+                builder.AddComponentParameter(18, nameof(WaNumberInput.Step), (WaValueStep?)0.5);
                 builder.AddComponentParameter(19, nameof(WaNumberInput.WithoutSteppers), true);
             });
 

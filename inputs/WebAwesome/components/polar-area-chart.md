@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.13.0 release zip (dist/skills/webawesome/references/components/polar-area-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/polar-area-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.14.0 release zip (dist/skills/webawesome/references/components/polar-area-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/polar-area-chart -->
 
 # Polar Area Chart [Pro]
 
@@ -54,7 +54,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.13.0/components/polar-area-chart/polar-area-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.14.0/components/polar-area-chart/polar-area-chart.js';
 ```
 
 \*\*npm\*\*

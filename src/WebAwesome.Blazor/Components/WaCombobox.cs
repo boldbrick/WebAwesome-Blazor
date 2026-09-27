@@ -14,7 +14,9 @@ namespace WebAwesome.Blazor.Components;
 /// Corresponds to the wa-combobox Web Awesome component.
 /// </summary>
 /// <remarks>
-/// This is a Pro component.
+/// This is a Pro component. The element's JS-only <c>dataSource</c> callback property (an alternative asynchronous
+/// data source) is not wrapped, since Blazor cannot supply a JS function property; use <see cref="Server"/>,
+/// <see cref="OnOptionsRequest"/> and swapped <c>WaOption</c> children instead.
 /// </remarks>
 public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAffixedControl
 {
@@ -128,6 +130,35 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     /// </summary>
     [Parameter] public bool? Spellcheck { get; set; }
 
+    /// <summary>
+    /// Enables server (event) mode: instead of filtering the slotted options locally, the combobox fires
+    /// <see cref="OnOptionsRequest"/> as the user types and expects the consumer to swap in matching
+    /// <c>WaOption</c> children. Not a CEM-invented state: see <see cref="Loading"/> and
+    /// <see cref="OnOptionsRequest"/> for how the loading state is cleared.
+    /// </summary>
+    [Parameter] public bool Server { get; set; }
+
+    /// <summary>
+    /// Shows the combobox's loading indicator (and the "loading" status slot). The element itself sets this to
+    /// true when it schedules a request in server mode; the wrapper clears it back to false once the
+    /// <see cref="OnOptionsRequest"/> handler for the latest request has completed and the resulting render has
+    /// reached the DOM, unless this parameter is true. A handler that fires and forgets its fetch (rather than
+    /// awaiting it) should set this parameter itself instead of relying on the automatic clear.
+    /// </summary>
+    [Parameter] public bool Loading { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="FilterDebounce"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultFilterDebounce = 250;
+
+    /// <summary>
+    /// How long to wait, in milliseconds, after the user stops typing before filtering locally or firing
+    /// <see cref="OnOptionsRequest"/> in <see cref="Server"/> mode.
+    /// </summary>
+    [Parameter] public int? FilterDebounce { get; set; }
+
     #endregion
 
     #region ------ Multiple Selection Support ------
@@ -161,6 +192,23 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     /// carries the typed input value.
     /// </summary>
     [Parameter] public EventCallback<WaCreateEventArgs> OnCreate { get; set; }
+
+    /// <summary>
+    /// Invoked in <see cref="Server"/> mode when the combobox needs matching options for the typed query. Handle
+    /// it by swapping in the matching <c>WaOption</c> children. The wrapper clears the element's own loading
+    /// state once the handler for the latest request has completed and re-rendered, unless <see cref="Loading"/>
+    /// is true (see its remarks); the event detail's AbortSignal is not transferable and is dropped. The
+    /// alternative, JS-only <c>dataSource</c> callback property is not wrapped; use this event instead.
+    /// </summary>
+    [Parameter] public EventCallback<WaOptionsRequestEventArgs> OnOptionsRequest { get; set; }
+
+    /// <summary>
+    /// Invoked when a request of the element's <c>dataSource</c> callback rejects, with the error message and the
+    /// query of the failed request. The <c>dataSource</c> callback is a JavaScript function property that no
+    /// parameter sets, so this fires only when the consumer's own JavaScript assigns one to the element; in the
+    /// Blazor server mode (<see cref="Server"/> with <see cref="OnOptionsRequest"/>) there is no request to reject.
+    /// </summary>
+    [Parameter] public EventCallback<WaOptionsErrorEventArgs> OnOptionsError { get; set; }
 
     #endregion
 
@@ -201,6 +249,31 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     /// </summary>
     [Parameter] public string? EndIconName { get; set; }
 
+    /// <summary>
+    /// Content shown in the listbox when there are no options at all, replacing the element's localized default
+    /// text.
+    /// </summary>
+    [Parameter] public RenderFragment? EmptyContent { get; set; }
+
+    /// <summary>
+    /// Content shown in the listbox after a failed <c>dataSource</c> request. Since the wrapper does not expose
+    /// <c>dataSource</c> (a JS-only callback property), this slot only ever shows when a consumer sets it up
+    /// through direct JS interop; use <see cref="Server"/> and <see cref="OnOptionsRequest"/> instead.
+    /// </summary>
+    [Parameter] public RenderFragment? ErrorContent { get; set; }
+
+    /// <summary>
+    /// Content shown in the listbox while <see cref="Loading"/> is true, replacing the element's localized
+    /// default text.
+    /// </summary>
+    [Parameter] public RenderFragment? LoadingContent { get; set; }
+
+    /// <summary>
+    /// Content shown in the listbox when filtering yields no matching options, replacing the element's localized
+    /// default text.
+    /// </summary>
+    [Parameter] public RenderFragment? NoResultsContent { get; set; }
+
     #endregion
 
     #region ------ Overrides ------
@@ -234,6 +307,9 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
         builder.AddAttributeIfNotNull(36, "enterkeyhint", EnterKeyHint?.ToHtmlValue());
         builder.AddAttributeIfNotNull(37, "inputmode", InputMode?.ToHtmlValue());
         builder.AddTrueFalseAttribute(38, "spellcheck", Spellcheck);
+        builder.AddAttribute(120, "server", Server);
+        builder.AddAttribute(121, "loading", Loading);
+        builder.AddAttributeIfNotNull(attributes, 122, "filter-debounce", FilterDebounce, DefaultFilterDebounce);
 
         // Add value binding - handle both single and multiple selection
         if (Multiple)
@@ -263,6 +339,14 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
         // the keydown is relayed, because the element stops its propagation in the shadow root
         AddRelayedKeyDownHandler(builder, 57);
 
+        // the wrapper handles wa-options-request itself (to drive the loading-clear logic in
+        // OnAfterRenderAsync) and only relays it to the consumer's OnOptionsRequest from there
+        if (OnOptionsRequest.HasDelegate)
+            builder.AddAttribute(125, "onwa-options-request", EventCallback.Factory.Create<WaOptionsRequestEventArgs>(this, HandleOptionsRequestAsync));
+
+        builder.AddOwnEventStopPropagation(125, "onwa-options-request");
+        builder.AddAttributeIfHasDelegate(126, "onwa-options-error", OnOptionsError);
+
         // Add element reference capture
         builder.AddElementReferenceCapture(59, __comboboxReference => Element = __comboboxReference);
 
@@ -289,6 +373,12 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
 
         // Add label and hint slots
         AddLabelAndHintSlots(builder, 80);
+
+        // Add status slots (each replaces the element's localized default text)
+        builder.AddSlotContent(130, "empty", EmptyContent);
+        builder.AddSlotContent(133, "error", ErrorContent);
+        builder.AddSlotContent(136, "loading", LoadingContent);
+        builder.AddSlotContent(139, "no-results", NoResultsContent);
 
         builder.CloseElement();
     }
@@ -328,7 +418,9 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     }
 
     /// <summary>
-    /// Pushes the initial multiple selection too, since multiple selection mode renders no value attribute.
+    /// Pushes the initial multiple selection too, since multiple selection mode renders no value attribute; also
+    /// clears the element's own "loading" property once the <see cref="OnOptionsRequest"/> handler for the
+    /// latest request has completed and this render has reached the DOM (see <see cref="HandleOptionsRequestAsync"/>).
     /// </summary>
     /// <param name="firstRender">Whether this is the first time the component has rendered</param>
     /// <returns>A task that represents the asynchronous operation</returns>
@@ -338,6 +430,12 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
 
         if (firstRender && Multiple && liveSelectedValues.Length > 0 && Element is not null)
             await JSInterop.SyncPropertyAsync(Element.Value, MultipleValueProperty, liveSelectedValues);
+
+        if (pendingLoadingClear && Element is not null)
+        {
+            pendingLoadingClear = false;
+            await JSInterop.SetPropertyAsync(Element.Value, "loading", false);
+        }
     }
 
     #endregion
@@ -348,6 +446,29 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
 
     // the selection last pushed to or received from the element in multiple selection mode
     private string[] liveSelectedValues = [];
+
+    // identifies the latest wa-options-request, so a request superseded before its handler completed does not
+    // clear the loading state the newer request needs
+    private int latestOptionsRequestId;
+
+    // set once the OnOptionsRequest handler for the latest request has completed and Loading was false at that
+    // point; consumed by OnAfterRenderAsync once the resulting render has reached the DOM
+    private bool pendingLoadingClear;
+
+    /// <summary>
+    /// Handles the element's own wa-options-request (server mode): forwards it to <see cref="OnOptionsRequest"/>
+    /// and, once that handler completes, arranges for the element's "loading" property to be cleared in the next
+    /// <see cref="OnAfterRenderAsync"/> unless a newer request arrived meanwhile or <see cref="Loading"/> is true.
+    /// </summary>
+    private async Task HandleOptionsRequestAsync(WaOptionsRequestEventArgs args)
+    {
+        var requestId = ++latestOptionsRequestId;
+
+        await OnOptionsRequest.InvokeAsync(args);
+
+        if (requestId == latestOptionsRequestId && !Loading)
+            pendingLoadingClear = true;
+    }
 
     /// <summary>
     /// Handles change events for multiple selection mode.
@@ -399,6 +520,20 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
             throw new InvalidOperationException("Cannot focus: component has not been rendered yet.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+    }
+
+    /// <summary>
+    /// Re-runs the current filter, either locally or (in <see cref="Server"/> mode) by firing
+    /// <see cref="OnOptionsRequest"/> again for the current query.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    public async Task ReloadAsync()
+    {
+        if (Element == null)
+            throw new InvalidOperationException("Cannot reload: component has not been rendered yet.");
+
+        await JSInterop.InvokeMethodAsync(Element.Value, "reload");
     }
 
     #endregion

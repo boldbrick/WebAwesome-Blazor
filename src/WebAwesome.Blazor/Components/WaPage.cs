@@ -110,6 +110,12 @@ public class WaPage : ComponentBase
     /// </summary>
     [Parameter] public WaPageView? View { get; set; }
 
+    /// <summary>
+    /// The nonce for the style tag the page injects for its responsive media queries, for pages served with a
+    /// Content-Security-Policy; falls back to <c>window.litNonce</c> when null.
+    /// </summary>
+    [Parameter] public string? Nonce { get; set; }
+
     #endregion
 
     #region ------ Content ------
@@ -219,6 +225,7 @@ public class WaPage : ComponentBase
         builder.AddAttributeIfNotNull(attributes, 12, "navigation-placement", NavigationPlacement?.ToHtmlValue(), DefaultNavigationPlacement.ToHtmlValue());
         builder.AddAttribute(13, "nav-open", NavOpen);
         builder.AddAttributeIfNotNull(attributes, 14, "view", View?.ToHtmlValue(), DefaultView.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(16, "nonce", Nonce);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(30, __pageReference => Element = __pageReference);

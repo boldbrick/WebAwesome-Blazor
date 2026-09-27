@@ -9,11 +9,13 @@ const { openShowcase, expectHealthy, pickOption, typeInto } = require('./helpers
 // WaDateInput, a Pro component, so on the free CDN the form cannot be completed: the first test ends with that
 // message as the only one left, and the second (Pro) completes the registration and checks the summary Blazor
 // renders from the model, then starts over. The topics are a WaTagInput bound to a list: each tag typed and entered
-// reaches the model, and removing every tag (its clear button) brings the list's own message back.
+// reaches the model, and removing every tag (its clear button) brings the list's own message back. A WaStepper above
+// the fields tracks the progress from the model: a section's step is completed once its required fields are filled and
+// valid, and the first unfinished section is the active step.
 
 const ROUTE = '/showcases/registration-form';
 const TAGS = ['wa-input', 'wa-select', 'wa-option', 'wa-radio-group', 'wa-radio', 'wa-otp-input', 'wa-known-date',
-  'wa-checkbox', 'wa-switch', 'wa-button', 'wa-textarea', 'wa-number-input', 'wa-tag-input'];
+  'wa-checkbox', 'wa-switch', 'wa-button', 'wa-textarea', 'wa-number-input', 'wa-tag-input', 'wa-stepper', 'wa-step'];
 
 const TOPICS_MESSAGE = "Please add at least one topic you'd like to hear about.";
 
@@ -33,6 +35,9 @@ const REQUIRED_MESSAGES = [
   'Please provide your date of birth.',
   'You must accept the code of conduct to attend.',
 ];
+
+// the steps of the progress stepper, one per section of the form, in order
+const SECTIONS = ['attendee', 'sessions', 'arrival', 'verify'];
 
 const INVALID_EMAIL_MESSAGE = "That doesn't look like a valid e-mail address.";
 const SHORT_CODE_MESSAGE = 'The verification code is six digits long.';
@@ -94,6 +99,24 @@ async function addTopics(page, tags) {
 }
 
 /**
+ * Asserts the progress stepper: which section is the active step and which steps are completed. The stepper sets
+ * the active property of its current step itself, from its own active attribute.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string} active the active section
+ * @param {string[]} completed the completed sections
+ */
+async function expectProgress(page, active, completed) {
+  const stepper = page.locator('wa-stepper[label="Registration progress"]');
+  await expect(stepper, 'the active section').toHaveJSProperty('active', active);
+  for (const section of SECTIONS) {
+    const step = stepper.locator(`wa-step[name="${section}"]`);
+    await expect(step, `${section} is the current step`).toHaveJSProperty('active', section === active);
+    await expect(step, `${section} is completed`).toHaveJSProperty('completed', completed.includes(section));
+  }
+}
+
+/**
  * Fills every field the free CDN can drive: all required ones except the arrival date (a Pro WaDateInput).
  *
  * @param {import('@playwright/test').Page} page
@@ -119,6 +142,9 @@ async function fillFreeFields(page) {
 test('registration form showcase: validation lists each missing field and follows the corrections', async ({ page }) => {
   const problems = await openShowcase(page, ROUTE, TAGS);
 
+  // an untouched form starts on its first section, with nothing completed
+  await expectProgress(page, 'attendee', []);
+
   await submit(page);
   await expect(messages(page), 'every required field').toHaveText(REQUIRED_MESSAGES);
 
@@ -129,6 +155,8 @@ test('registration form showcase: validation lists each missing field and follow
   await expect(messages(page)).not.toContainText(['Please enter your full name.']);
   await expect(messages(page).filter({ hasText: INVALID_EMAIL_MESSAGE })).toHaveCount(1);
   await expect(messages(page).filter({ hasText: SHORT_CODE_MESSAGE })).toHaveCount(1);
+  // both attendee fields are filled, but the invalid e-mail keeps the first section open
+  await expectProgress(page, 'attendee', []);
 
   // a topic entered as a tag reaches the bound list and clears its message; clearing every tag brings it back
   await addTopics(page, ['accessibility']);
@@ -140,6 +168,8 @@ test('registration form showcase: validation lists each missing field and follow
   // correcting every field the free CDN can drive leaves the Pro arrival date as the only message
   await fillFreeFields(page);
   await expect(messages(page), 'only the arrival date is missing').toHaveText([ARRIVAL_MESSAGE]);
+  // every other section is completed, so the stepper waits on the arrival section
+  await expectProgress(page, 'arrival', ['attendee', 'sessions', 'verify']);
   await submit(page);
   await expect(messages(page), 'the submit validates the same').toHaveText([ARRIVAL_MESSAGE]);
   await expect(page.getByText("You're in,"), 'nothing was submitted').toHaveCount(0);
@@ -150,6 +180,7 @@ test('registration form showcase: validation lists each missing field and follow
   await expect.poll(() => page.locator('wa-input[label="Full name"]').evaluate(el => /** @type {any} */ (el).value ?? ''),
     'the name was cleared').toBe('');
   await expect(topics(page), 'the topics were cleared').toHaveJSProperty('value', []);
+  await expectProgress(page, 'attendee', []);
 
   await expectHealthy(page, problems);
 });
@@ -165,6 +196,8 @@ test('registration form showcase: a complete registration shows the summary and 
   await arrival.locator('[data-segment="month"]').click();
   await page.keyboard.type('03132026');
   await page.keyboard.press('Tab');
+  // every section is completed; a finished form stays on the last step
+  await expectProgress(page, 'verify', SECTIONS);
 
   await submit(page);
   const summary = page.locator('wa-callout[variant="success"]');

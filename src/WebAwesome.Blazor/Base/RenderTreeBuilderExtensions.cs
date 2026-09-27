@@ -328,7 +328,7 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a step attribute in its wire form (<see cref="WaStep.ToString"/>: "any", or the number in the invariant
+    /// Adds a step attribute in its wire form (<see cref="WaValueStep.ToString"/>: "any", or the number in the invariant
     /// culture); nothing when null.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
@@ -336,7 +336,7 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; nothing is emitted when null</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void AddStepAttribute(this RenderTreeBuilder builder, int sequence, string name, WaStep? value)
+    public static void AddStepAttribute(this RenderTreeBuilder builder, int sequence, string name, WaValueStep? value)
     {
         if (value.HasValue)
         {
@@ -696,7 +696,7 @@ internal static class RenderTreeBuilderExtensions
     /// <param name="name">Attribute name</param>
     /// <param name="value">Attribute value; null is unset</param>
     /// <param name="defaultValue">The element default, rendered in place of null or the default once the attribute was rendered</param>
-    public static void AddStepAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, WaStep? value, WaStep defaultValue)
+    public static void AddStepAttribute(this RenderTreeBuilder builder, WaAttributeMemory memory, int sequence, string name, WaValueStep? value, WaValueStep defaultValue)
         => memory.Render(builder, sequence, name, value?.ToString(), defaultValue.ToString(), omitWhileDefault: false);
 
     /// <summary>

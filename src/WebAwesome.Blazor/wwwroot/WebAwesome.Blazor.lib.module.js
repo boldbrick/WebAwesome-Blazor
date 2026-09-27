@@ -17,6 +17,7 @@ const eventNames = [
   'wa-after-hide',
   'wa-after-show',
   'wa-before-page-change',
+  'wa-before-step-change',
   'wa-cancel',
   'wa-cell-click',
   'wa-cell-contextmenu',
@@ -45,6 +46,8 @@ const eventNames = [
   'wa-lazy-load',
   'wa-load',
   'wa-mutation',
+  'wa-options-error',
+  'wa-options-request',
   'wa-page-change',
   'wa-remove',
   'wa-reposition',
@@ -58,6 +61,7 @@ const eventNames = [
   'wa-slide-change',
   'wa-sort-change',
   'wa-start',
+  'wa-step-change',
   'wa-tab-hide',
   'wa-tab-show',
   'wa-video-change',
@@ -130,6 +134,23 @@ const specialArgs = {
   // extra property is ignored by every other wa-show/wa-hide consumer
   'wa-show': event => ({ ...detailArgs(event), isOpen: true }),
   'wa-hide': event => ({ ...detailArgs(event), isOpen: false }),
+
+  // detail is { name, previousName, step: Element, previousStep: Element | null } - drop the
+  // live step elements, keep only their names (WaStepChangeEventArgs)
+  'wa-before-step-change': event => {
+    const detail = event.detail || {};
+    return {
+      name: typeof detail.name === 'string' ? detail.name : '',
+      previousName: typeof detail.previousName === 'string' ? detail.previousName : null,
+    };
+  },
+  'wa-step-change': event => {
+    const detail = event.detail || {};
+    return {
+      name: typeof detail.name === 'string' ? detail.name : '',
+      previousName: typeof detail.previousName === 'string' ? detail.previousName : null,
+    };
+  },
 
   // detail is { entry: IntersectionObserverEntry } - flatten the two marshalable fields; wa-intersect does not
   // bubble, so it is registered only as its relay (relayedEvents), which uses this payload
@@ -230,6 +251,23 @@ const specialArgs = {
       error: error && typeof error.message === 'string' ? error.message : (error != null ? String(error) : null),
       request: detail.request || null,
     };
+  },
+
+  // detail is { error, request: { query } } - error is typically an Error instance (own enumerable props are
+  // empty), so project its message (WaOptionsErrorEventArgs)
+  'wa-options-error': event => {
+    const detail = event.detail || {};
+    const error = detail.error;
+    return {
+      error: error && typeof error.message === 'string' ? error.message : (error != null ? String(error) : null),
+      query: detail.request && typeof detail.request.query === 'string' ? detail.request.query : '',
+    };
+  },
+
+  // detail is { query, signal } - signal is an AbortSignal, not marshalable (WaOptionsRequestEventArgs)
+  'wa-options-request': event => {
+    const detail = event.detail || {};
+    return { query: typeof detail.query === 'string' ? detail.query : '' };
   },
 
   // detail.signal is an AbortSignal - not marshalable (WaDataGridDataRequestEventArgs)

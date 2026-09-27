@@ -86,6 +86,23 @@
     </form>
 </ExampleSection>
 
+<ExampleSection Title="Pro combobox options requests">
+    @* server (event) mode: the handler swaps the options in; the second combobox stays in local mode, so the spec can
+       give it a rejecting JS dataSource (a function property no parameter sets) for wa-options-error *@
+    <WaStack Gap="GapSize.Gap_M">
+        <WaCombobox Label="Fruit (server mode)" Server="true" FilterDebounce="ServerFilterDebounceMs" data-testid="pro-combobox-server"
+                    @bind-Value="serverComboboxValue" OnOptionsRequest="LoadServerOptionsAsync">
+            @foreach (var fruit in serverOptions)
+            {
+                <WaOption @key="fruit" Value="@fruit.ToLowerInvariant()">@fruit</WaOption>
+            }
+        </WaCombobox>
+        <code data-testid="pro-combobox-server-options">@string.Join(",", serverOptions)</code>
+        <WaCombobox Label="City (data source)" data-testid="pro-combobox-data-source" @bind-Value="dataSourceComboboxValue"
+                    OnOptionsError="e => log.Record(Id(nameof(WaCombobox), nameof(WaCombobox.OnOptionsError)), e)" />
+    </WaStack>
+</ExampleSection>
+
 <ExampleSection Title="Pro media">
     @* a generated half-second silent WAV plays in a video element, so the media events need no network *@
     <WaVideo Src="@silentClip" data-testid="pro-video" Style="max-width: 320px;"
@@ -122,6 +139,13 @@
     private string? comboboxToppingsValue = null;
     private DateOnly? dateValue = new(2024, 1, 15);
     private DateOnly? datePickerValue = InitialDatePicker;
+
+    // the server-mode combobox's catalogue, filtered by the handler as a server would
+    private static readonly string[] ServerFruits = ["Apple", "Banana", "Cherry", "Grape", "Mango", "Orange", "Peach"];
+    private const int ServerFilterDebounceMs = 50;
+    private IReadOnlyList<string> serverOptions = [];
+    private string? serverComboboxValue;
+    private string? dataSourceComboboxValue;
 
     private const int ClipSampleRate = 8000;
     private const int ClipSamples = ClipSampleRate / 2;
@@ -169,6 +193,15 @@
         [nameof(WaInput.OnInput)] = EventCallback.Factory.Create<ChangeEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnInput)), e)),
         [nameof(WaInput.OnInvalid)] = EventCallback.Factory.Create<EventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnInvalid)), e)),
     };
+
+    // records the request and swaps in the matching options; the yield stands in for the round trip, so the wrapper
+    // clears the element's loading state only after the handler has completed asynchronously
+    private async Task LoadServerOptionsAsync(WaOptionsRequestEventArgs args)
+    {
+        log.Record(Id(nameof(WaCombobox), nameof(WaCombobox.OnOptionsRequest)), args);
+        await Task.Yield();
+        serverOptions = ServerFruits.Where(fruit => fruit.Contains(args.Query, StringComparison.OrdinalIgnoreCase)).ToArray();
+    }
 
     // a custom validity error on every control makes the next submit fire the browser's invalid event on each
     private async Task MarkAllInvalidAsync()

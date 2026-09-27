@@ -6,7 +6,9 @@
 <h1>Nova Summit 2026 — Registration</h1>
 <p>
     A realistic event-registration form demonstrating every Web Awesome form control inside a single
-    <code>EditForm</code> with <code>DataAnnotationsValidator</code>-backed validation.
+    <code>EditForm</code> with <code>DataAnnotationsValidator</code>-backed validation. A <code>WaStepper</code> above the
+    fields tracks the progress, driven from the model: a section's step is completed once its required fields are
+    filled and valid, and the first unfinished section is the active step.
 </p>
 
 <WaVisuallyHidden>All fields marked required must be completed before the registration can be submitted.</WaVisuallyHidden>
@@ -43,6 +45,18 @@ else
                 <DataAnnotationsValidator />
 
                 <WaStack Gap="GapSize.Gap_L">
+                    @{ var sections = BuildSections(); }
+                    <WaStepper Label="Registration progress" Orientation="WaStepperOrientation.Auto"
+                               Active="@ActiveSection(sections)">
+                        @foreach (var section in sections)
+                        {
+                            <WaStep @key="section.Name" Name="@section.Name" Completed="section.Completed">
+                                <ChildContent>@section.Label</ChildContent>
+                                <DescriptionContent>@section.Description</DescriptionContent>
+                            </WaStep>
+                        }
+                    </WaStepper>
+
                     <WaGrid MinColumnSize="18rem" Gap="GapSize.Gap_L">
                         <WaInput Label="Full name" Hint="As it should appear on your badge" StartIconName="user"
                                  Placeholder="Ada Lovelace" @bind-Value="model.FullName" />
@@ -160,7 +174,7 @@ else
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        editContext = new EditContext(model);
+        editContext = CreateEditContext(model);
     }
 
     private Task SubmitAsync()
@@ -177,9 +191,46 @@ else
     private void ResetForm()
     {
         model = new RegistrationModel();
-        editContext = new EditContext(model);
+        editContext = CreateEditContext(model);
         submitted = false;
     }
+
+    // the progress stepper reads the validator's messages, so the page renders again whenever they change
+    private EditContext CreateEditContext(RegistrationModel registration)
+    {
+        var context = new EditContext(registration);
+        context.OnValidationStateChanged += (_, _) => StateHasChanged();
+        return context;
+    }
+
+    // the step names of the progress stepper, one per section of the form
+    private const string AttendeeSection = "attendee";
+    private const string SessionsSection = "sessions";
+    private const string ArrivalSection = "arrival";
+    private const string VerifySection = "verify";
+
+    // the form's sections as the progress stepper shows them: each is complete once its required fields are filled
+    // and the validator holds no message for them (a field is validated as it changes, so a wrong e-mail keeps its
+    // section open)
+    private IReadOnlyList<FormSection> BuildSections() =>
+    [
+        new(AttendeeSection, "Attendee", "Name and e-mail",
+            IsFilled(model.FullName) && IsFilled(model.Email) && IsValid(nameof(RegistrationModel.FullName)) && IsValid(nameof(RegistrationModel.Email))),
+        new(SessionsSection, "Sessions", "Track, ticket and topics",
+            IsFilled(model.Track) && IsFilled(model.TicketType) && model.Interests is { Count: > 0 }),
+        new(ArrivalSection, "Arrival", "Arrival date", model.ArrivalDate is not null),
+        new(VerifySection, "Verify", "Birth date, code and terms",
+            model.DateOfBirth is not null && IsFilled(model.VerificationCode) && IsValid(nameof(RegistrationModel.VerificationCode)) && model.AcceptTerms),
+    ];
+
+    // the active step follows the first unfinished section; a finished form stays on the last one
+    private static string ActiveSection(IReadOnlyList<FormSection> sections) => (sections.FirstOrDefault(s => !s.Completed) ?? sections[^1]).Name;
+
+    private static bool IsFilled(string? value) => !string.IsNullOrWhiteSpace(value);
+
+    private bool IsValid(string fieldName) => !editContext.GetValidationMessages(editContext.Field(fieldName)).Any();
+
+    private sealed record FormSection(string Name, string Label, string Description, bool Completed);
 
     private class RegistrationModel
     {

@@ -95,14 +95,14 @@ public class WaTimeInput : WaPopupInputBase<TimeOnly?>, IWaClearableControl, IWa
     /// The Web Awesome default of <see cref="Step"/> (60 seconds, minute precision): what the element holds while the
     /// parameter is null, and what is rendered in its place once the attribute has been rendered.
     /// </summary>
-    public static readonly WaStep DefaultStep = 60;
+    public static readonly WaValueStep DefaultStep = 60;
 
     /// <summary>
     /// The granularity, in seconds, matching HTML <c>&lt;input type="time"&gt;</c>. The default <c>60</c> hides the
-    /// seconds segment; values below 60 (or not a whole number of minutes) reveal it; <see cref="WaStep.Any"/> reveals it
+    /// seconds segment; values below 60 (or not a whole number of minutes) reveal it; <see cref="WaValueStep.Any"/> reveals it
     /// and disables step-mismatch enforcement. A number converts implicitly (<c>Step="1"</c>).
     /// </summary>
-    [Parameter] public WaStep? Step { get; set; }
+    [Parameter] public WaValueStep? Step { get; set; }
 
     /// <summary>
     /// The Web Awesome default of <see cref="Placement"/>: what the element holds while the parameter is null, and what
