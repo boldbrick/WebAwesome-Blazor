@@ -1,0 +1,2011 @@
+{
+  "generatedBy": "src\\WebAwesome.Blazor.Tests\\ApiParity\\EventCallbackManifestTests.cs",
+  "callbacks": [
+    {
+      "id": "WaAccordion.OnAfterCollapse",
+      "tag": "wa-accordion",
+      "handlers": [
+        "wa-after-collapse"
+      ]
+    },
+    {
+      "id": "WaAccordion.OnAfterExpand",
+      "tag": "wa-accordion",
+      "handlers": [
+        "wa-after-expand"
+      ]
+    },
+    {
+      "id": "WaAccordion.OnCollapse",
+      "tag": "wa-accordion",
+      "handlers": [
+        "wa-collapse"
+      ]
+    },
+    {
+      "id": "WaAccordion.OnExpand",
+      "tag": "wa-accordion",
+      "handlers": [
+        "wa-expand"
+      ]
+    },
+    {
+      "id": "WaAnimatedImage.OnError",
+      "tag": "wa-animated-image",
+      "handlers": [
+        "wa-error"
+      ]
+    },
+    {
+      "id": "WaAnimatedImage.OnLoad",
+      "tag": "wa-animated-image",
+      "handlers": [
+        "wa-load"
+      ]
+    },
+    {
+      "id": "WaAnimation.OnCancel",
+      "tag": "wa-animation",
+      "handlers": [
+        "wa-cancel"
+      ]
+    },
+    {
+      "id": "WaAnimation.OnFinish",
+      "tag": "wa-animation",
+      "handlers": [
+        "wa-finish"
+      ]
+    },
+    {
+      "id": "WaAnimation.OnStart",
+      "tag": "wa-animation",
+      "handlers": [
+        "wa-start"
+      ]
+    },
+    {
+      "id": "WaAvatar.OnError",
+      "tag": "wa-avatar",
+      "handlers": [
+        "wa-error"
+      ]
+    },
+    {
+      "id": "WaBreadcrumbItem.OnClick",
+      "tag": "wa-breadcrumb-item",
+      "handlers": [
+        "click"
+      ]
+    },
+    {
+      "id": "WaButton.OnBlur",
+      "tag": "wa-button",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaButton.OnClick",
+      "tag": "wa-button",
+      "handlers": [
+        "click"
+      ]
+    },
+    {
+      "id": "WaButton.OnFocus",
+      "tag": "wa-button",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaButton.OnInvalid",
+      "tag": "wa-button",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaCarousel.OnSlideChange",
+      "tag": "wa-carousel",
+      "handlers": [
+        "wa-slide-change"
+      ]
+    },
+    {
+      "id": "WaCheckbox.OnBlur",
+      "tag": "wa-checkbox",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaCheckbox.OnCheckedChange",
+      "tag": "wa-checkbox",
+      "handlers": []
+    },
+    {
+      "id": "WaCheckbox.OnFocus",
+      "tag": "wa-checkbox",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaCheckbox.OnInput",
+      "tag": "wa-checkbox",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaCheckbox.OnInvalid",
+      "tag": "wa-checkbox",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaCheckbox.OnKeyDown",
+      "tag": "wa-checkbox",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaCheckbox.OnKeyPress",
+      "tag": "wa-checkbox",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaCheckbox.OnKeyUp",
+      "tag": "wa-checkbox",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaCheckbox.ValueChanged",
+      "tag": "wa-checkbox",
+      "handlers": []
+    },
+    {
+      "id": "WaColorPicker.OnAfterHide",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "wablazor-after-hide"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnAfterShow",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "wablazor-after-show"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnBlur",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnFocus",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnHide",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "wablazor-hide"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnInput",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnInvalid",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnKeyDown",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "wablazor-keydown"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnKeyPress",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnKeyUp",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaColorPicker.OnShow",
+      "tag": "wa-color-picker",
+      "handlers": [
+        "wablazor-show"
+      ]
+    },
+    {
+      "id": "WaColorPicker.ValueChanged",
+      "tag": "wa-color-picker",
+      "handlers": []
+    },
+    {
+      "id": "WaCombobox.OnAfterHide",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnAfterShow",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnBlur",
+      "tag": "wa-combobox",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnClear",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnCreate",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-create"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnFocus",
+      "tag": "wa-combobox",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnHide",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnInput",
+      "tag": "wa-combobox",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnInvalid",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnKeyDown",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wablazor-keydown"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnKeyPress",
+      "tag": "wa-combobox",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnKeyUp",
+      "tag": "wa-combobox",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaCombobox.OnShow",
+      "tag": "wa-combobox",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaCombobox.SelectedValuesChanged",
+      "tag": "wa-combobox",
+      "handlers": []
+    },
+    {
+      "id": "WaCombobox.ValueChanged",
+      "tag": "wa-combobox",
+      "handlers": []
+    },
+    {
+      "id": "WaComparison.OnChange",
+      "tag": "wa-comparison",
+      "handlers": [
+        "change"
+      ]
+    },
+    {
+      "id": "WaCopyButton.OnCopy",
+      "tag": "wa-copy-button",
+      "handlers": [
+        "wa-copy"
+      ]
+    },
+    {
+      "id": "WaCopyButton.OnError",
+      "tag": "wa-copy-button",
+      "handlers": [
+        "wa-error"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnCellClick",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-cell-click"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnCellContextMenu",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-cell-contextmenu"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnColumnMove",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-column-move"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnColumnPin",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-column-pin"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnColumnResize",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-column-resize"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnColumnVisibilityChange",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-column-visibility-change"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnDataError",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-data-error"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnDataRequest",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-data-request"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnFilterChange",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-filter-change"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnPageChange",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-page-change"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnRowCollapse",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-row-collapse"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnRowExpand",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-row-expand"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnRowSelect",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-row-select"
+      ]
+    },
+    {
+      "id": "WaDataGrid.OnSortChange",
+      "tag": "wa-data-grid",
+      "handlers": [
+        "wa-sort-change"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnAfterHide",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnAfterShow",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnBlur",
+      "tag": "wa-date-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnClear",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnFocus",
+      "tag": "wa-date-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnHide",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnInput",
+      "tag": "wa-date-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnInvalid",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnKeyDown",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnKeyPress",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnKeyUp",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaDateInput.OnShow",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaDateInput.ValueChanged",
+      "tag": "wa-date-input",
+      "handlers": []
+    },
+    {
+      "id": "WaDatePicker.OnFocusDay",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "wa-focus-day"
+      ]
+    },
+    {
+      "id": "WaDatePicker.OnInput",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaDatePicker.OnViewChange",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "wa-view-change"
+      ]
+    },
+    {
+      "id": "WaDatePicker.ValueChanged",
+      "tag": "wa-date-picker",
+      "handlers": []
+    },
+    {
+      "id": "WaDateRangeInput.OnAfterHide",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnAfterShow",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnBlur",
+      "tag": "wa-date-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnClear",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnFocus",
+      "tag": "wa-date-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnHide",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnInput",
+      "tag": "wa-date-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnInvalid",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnKeyDown",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnKeyPress",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnKeyUp",
+      "tag": "wa-date-input",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.OnShow",
+      "tag": "wa-date-input",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaDateRangeInput.ValueChanged",
+      "tag": "wa-date-input",
+      "handlers": []
+    },
+    {
+      "id": "WaDateRangePicker.OnFocusDay",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "wa-focus-day"
+      ]
+    },
+    {
+      "id": "WaDateRangePicker.OnInput",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaDateRangePicker.OnViewChange",
+      "tag": "wa-date-picker",
+      "handlers": [
+        "wa-view-change"
+      ]
+    },
+    {
+      "id": "WaDateRangePicker.ValueChanged",
+      "tag": "wa-date-picker",
+      "handlers": []
+    },
+    {
+      "id": "WaDetails.OnAfterHide",
+      "tag": "wa-details",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaDetails.OnAfterShow",
+      "tag": "wa-details",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaDetails.OnToggle",
+      "tag": "wa-details",
+      "handlers": [
+        "wa-hide",
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaDialog.OnAfterHide",
+      "tag": "wa-dialog",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaDialog.OnAfterShow",
+      "tag": "wa-dialog",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaDialog.OnHide",
+      "tag": "wa-dialog",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaDialog.OnShow",
+      "tag": "wa-dialog",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaDrawer.OnAfterHide",
+      "tag": "wa-drawer",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaDrawer.OnAfterShow",
+      "tag": "wa-drawer",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaDrawer.OnHide",
+      "tag": "wa-drawer",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaDrawer.OnShow",
+      "tag": "wa-drawer",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaDropdown.OnAfterHide",
+      "tag": "wa-dropdown",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaDropdown.OnAfterShow",
+      "tag": "wa-dropdown",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaDropdown.OnHide",
+      "tag": "wa-dropdown",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaDropdown.OnSelect",
+      "tag": "wa-dropdown",
+      "handlers": [
+        "wa-select"
+      ]
+    },
+    {
+      "id": "WaDropdown.OnShow",
+      "tag": "wa-dropdown",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaDropdownItem.OnBlur",
+      "tag": "wa-dropdown-item",
+      "handlers": [
+        "blur"
+      ]
+    },
+    {
+      "id": "WaDropdownItem.OnFocus",
+      "tag": "wa-dropdown-item",
+      "handlers": [
+        "focus"
+      ]
+    },
+    {
+      "id": "WaFileInput.OnBlur",
+      "tag": "wa-file-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaFileInput.OnChange",
+      "tag": "wa-file-input",
+      "handlers": [
+        "change"
+      ]
+    },
+    {
+      "id": "WaFileInput.OnFocus",
+      "tag": "wa-file-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaFileInput.OnInput",
+      "tag": "wa-file-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaFileInput.OnInvalid",
+      "tag": "wa-file-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaIcon.OnError",
+      "tag": "wa-icon",
+      "handlers": [
+        "wa-error"
+      ]
+    },
+    {
+      "id": "WaIcon.OnLoad",
+      "tag": "wa-icon",
+      "handlers": [
+        "wa-load"
+      ]
+    },
+    {
+      "id": "WaInclude.OnIncludeError",
+      "tag": "wa-include",
+      "handlers": [
+        "wa-include-error"
+      ]
+    },
+    {
+      "id": "WaInclude.OnLoad",
+      "tag": "wa-include",
+      "handlers": [
+        "wa-load"
+      ]
+    },
+    {
+      "id": "WaInput.OnBlur",
+      "tag": "wa-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaInput.OnClear",
+      "tag": "wa-input",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaInput.OnFocus",
+      "tag": "wa-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaInput.OnInput",
+      "tag": "wa-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaInput.OnInvalid",
+      "tag": "wa-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaInput.OnKeyDown",
+      "tag": "wa-input",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaInput.OnKeyPress",
+      "tag": "wa-input",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaInput.OnKeyUp",
+      "tag": "wa-input",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaInput.ValueChanged",
+      "tag": "wa-input",
+      "handlers": []
+    },
+    {
+      "id": "WaIntersectionObserver.OnIntersect",
+      "tag": "wa-intersection-observer",
+      "handlers": [
+        "wablazor-intersect"
+      ]
+    },
+    {
+      "id": "WaKnownDate.OnBlur",
+      "tag": "wa-known-date",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaKnownDate.OnFocus",
+      "tag": "wa-known-date",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaKnownDate.OnInput",
+      "tag": "wa-known-date",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaKnownDate.OnInvalid",
+      "tag": "wa-known-date",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaKnownDate.OnKeyDown",
+      "tag": "wa-known-date",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaKnownDate.OnKeyPress",
+      "tag": "wa-known-date",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaKnownDate.OnKeyUp",
+      "tag": "wa-known-date",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaKnownDate.ValueChanged",
+      "tag": "wa-known-date",
+      "handlers": []
+    },
+    {
+      "id": "WaMutationObserver.OnMutation",
+      "tag": "wa-mutation-observer",
+      "handlers": [
+        "wa-mutation"
+      ]
+    },
+    {
+      "id": "WaNumberInput.OnBeforeInput",
+      "tag": "wa-number-input",
+      "handlers": [
+        "beforeinput"
+      ]
+    },
+    {
+      "id": "WaNumberInput.OnBlur",
+      "tag": "wa-number-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaNumberInput.OnFocus",
+      "tag": "wa-number-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaNumberInput.OnInput",
+      "tag": "wa-number-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaNumberInput.OnInvalid",
+      "tag": "wa-number-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaNumberInput.OnKeyDown",
+      "tag": "wa-number-input",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaNumberInput.OnKeyPress",
+      "tag": "wa-number-input",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaNumberInput.OnKeyUp",
+      "tag": "wa-number-input",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaNumberInput.ValueChanged",
+      "tag": "wa-number-input",
+      "handlers": []
+    },
+    {
+      "id": "WaOtpInput.OnBlur",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaOtpInput.OnClear",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaOtpInput.OnComplete",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "wa-complete"
+      ]
+    },
+    {
+      "id": "WaOtpInput.OnFocus",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaOtpInput.OnInput",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaOtpInput.OnInvalid",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaOtpInput.OnKeyDown",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaOtpInput.OnKeyPress",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaOtpInput.OnKeyUp",
+      "tag": "wa-otp-input",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaOtpInput.ValueChanged",
+      "tag": "wa-otp-input",
+      "handlers": []
+    },
+    {
+      "id": "WaPagination.OnBeforePageChange",
+      "tag": "wa-pagination",
+      "handlers": [
+        "wa-before-page-change"
+      ]
+    },
+    {
+      "id": "WaPagination.OnPageChange",
+      "tag": "wa-pagination",
+      "handlers": [
+        "wa-page-change"
+      ]
+    },
+    {
+      "id": "WaPopover.OnAfterHide",
+      "tag": "wa-popover",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaPopover.OnAfterShow",
+      "tag": "wa-popover",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaPopover.OnHide",
+      "tag": "wa-popover",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaPopover.OnShow",
+      "tag": "wa-popover",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaPopup.OnReposition",
+      "tag": "wa-popup",
+      "handlers": [
+        "wa-reposition"
+      ]
+    },
+    {
+      "id": "WaRadio.OnBlur",
+      "tag": "wa-radio",
+      "handlers": [
+        "blur"
+      ]
+    },
+    {
+      "id": "WaRadio.OnFocus",
+      "tag": "wa-radio",
+      "handlers": [
+        "focus"
+      ]
+    },
+    {
+      "id": "WaRadioGroup.OnBlur",
+      "tag": "wa-radio-group",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaRadioGroup.OnFocus",
+      "tag": "wa-radio-group",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaRadioGroup.OnInput",
+      "tag": "wa-radio-group",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaRadioGroup.OnInvalid",
+      "tag": "wa-radio-group",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaRadioGroup.OnKeyDown",
+      "tag": "wa-radio-group",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaRadioGroup.OnKeyPress",
+      "tag": "wa-radio-group",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaRadioGroup.OnKeyUp",
+      "tag": "wa-radio-group",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaRadioGroup.OnValueChange",
+      "tag": "wa-radio-group",
+      "handlers": []
+    },
+    {
+      "id": "WaRadioGroup.ValueChanged",
+      "tag": "wa-radio-group",
+      "handlers": []
+    },
+    {
+      "id": "WaRandomContent.OnContentChange",
+      "tag": "wa-random-content",
+      "handlers": [
+        "wa-content-change"
+      ]
+    },
+    {
+      "id": "WaRange.OnBlur",
+      "tag": "wa-slider",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaRange.OnFocus",
+      "tag": "wa-slider",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaRange.OnInput",
+      "tag": "wa-slider",
+      "handlers": [
+        "numericinput"
+      ]
+    },
+    {
+      "id": "WaRange.OnInvalid",
+      "tag": "wa-slider",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaRange.OnKeyDown",
+      "tag": "wa-slider",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaRange.OnKeyPress",
+      "tag": "wa-slider",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaRange.OnKeyUp",
+      "tag": "wa-slider",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaRange.OnMaxValueChange",
+      "tag": "wa-slider",
+      "handlers": []
+    },
+    {
+      "id": "WaRange.OnMinValueChange",
+      "tag": "wa-slider",
+      "handlers": []
+    },
+    {
+      "id": "WaRange.ValueChanged",
+      "tag": "wa-slider",
+      "handlers": []
+    },
+    {
+      "id": "WaRating.OnBlur",
+      "tag": "wa-rating",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaRating.OnFocus",
+      "tag": "wa-rating",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaRating.OnHover",
+      "tag": "wa-rating",
+      "handlers": [
+        "wa-hover"
+      ]
+    },
+    {
+      "id": "WaRating.OnInput",
+      "tag": "wa-rating",
+      "handlers": []
+    },
+    {
+      "id": "WaRating.OnInvalid",
+      "tag": "wa-rating",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaRating.OnKeyDown",
+      "tag": "wa-rating",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaRating.OnKeyPress",
+      "tag": "wa-rating",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaRating.OnKeyUp",
+      "tag": "wa-rating",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaRating.ValueChanged",
+      "tag": "wa-rating",
+      "handlers": []
+    },
+    {
+      "id": "WaResizeObserver.OnResize",
+      "tag": "wa-resize-observer",
+      "handlers": [
+        "wa-resize"
+      ]
+    },
+    {
+      "id": "WaSelect.OnAfterHide",
+      "tag": "wa-select",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaSelect.OnAfterShow",
+      "tag": "wa-select",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaSelect.OnBlur",
+      "tag": "wa-select",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaSelect.OnClear",
+      "tag": "wa-select",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaSelect.OnFocus",
+      "tag": "wa-select",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaSelect.OnHide",
+      "tag": "wa-select",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaSelect.OnInput",
+      "tag": "wa-select",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaSelect.OnInvalid",
+      "tag": "wa-select",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaSelect.OnKeyDown",
+      "tag": "wa-select",
+      "handlers": [
+        "wablazor-keydown"
+      ]
+    },
+    {
+      "id": "WaSelect.OnKeyPress",
+      "tag": "wa-select",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaSelect.OnKeyUp",
+      "tag": "wa-select",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaSelect.OnShow",
+      "tag": "wa-select",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaSelect.SelectedValuesChanged",
+      "tag": "wa-select",
+      "handlers": []
+    },
+    {
+      "id": "WaSelect.ValueChanged",
+      "tag": "wa-select",
+      "handlers": []
+    },
+    {
+      "id": "WaSlider.MaxValueChanged",
+      "tag": "wa-slider",
+      "handlers": []
+    },
+    {
+      "id": "WaSlider.MinValueChanged",
+      "tag": "wa-slider",
+      "handlers": []
+    },
+    {
+      "id": "WaSlider.OnBlur",
+      "tag": "wa-slider",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaSlider.OnFocus",
+      "tag": "wa-slider",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaSlider.OnInput",
+      "tag": "wa-slider",
+      "handlers": [
+        "numericinput"
+      ]
+    },
+    {
+      "id": "WaSlider.OnInvalid",
+      "tag": "wa-slider",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaSlider.OnKeyDown",
+      "tag": "wa-slider",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaSlider.OnKeyPress",
+      "tag": "wa-slider",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaSlider.OnKeyUp",
+      "tag": "wa-slider",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaSlider.OnValueChange",
+      "tag": "wa-slider",
+      "handlers": []
+    },
+    {
+      "id": "WaSlider.ValueChanged",
+      "tag": "wa-slider",
+      "handlers": []
+    },
+    {
+      "id": "WaSplitPanel.OnReposition",
+      "tag": "wa-split-panel",
+      "handlers": [
+        "wa-reposition"
+      ]
+    },
+    {
+      "id": "WaSwitch.OnBlur",
+      "tag": "wa-switch",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaSwitch.OnCheckedChange",
+      "tag": "wa-switch",
+      "handlers": []
+    },
+    {
+      "id": "WaSwitch.OnFocus",
+      "tag": "wa-switch",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaSwitch.OnInput",
+      "tag": "wa-switch",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaSwitch.OnInvalid",
+      "tag": "wa-switch",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaSwitch.OnKeyDown",
+      "tag": "wa-switch",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaSwitch.OnKeyPress",
+      "tag": "wa-switch",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaSwitch.OnKeyUp",
+      "tag": "wa-switch",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaSwitch.ValueChanged",
+      "tag": "wa-switch",
+      "handlers": []
+    },
+    {
+      "id": "WaTab.OnBlur",
+      "tag": "wa-tab",
+      "handlers": [
+        "blur"
+      ]
+    },
+    {
+      "id": "WaTab.OnClick",
+      "tag": "wa-tab",
+      "handlers": [
+        "click"
+      ]
+    },
+    {
+      "id": "WaTab.OnFocus",
+      "tag": "wa-tab",
+      "handlers": [
+        "focus"
+      ]
+    },
+    {
+      "id": "WaTabGroup.OnTabChange",
+      "tag": "wa-tab-group",
+      "handlers": [
+        "wa-tab-show"
+      ]
+    },
+    {
+      "id": "WaTabGroup.OnTabHide",
+      "tag": "wa-tab-group",
+      "handlers": [
+        "wa-tab-hide"
+      ]
+    },
+    {
+      "id": "WaTabGroup.OnTabShow",
+      "tag": "wa-tab-group",
+      "handlers": [
+        "wa-tab-show"
+      ]
+    },
+    {
+      "id": "WaTag.OnRemove",
+      "tag": "wa-tag",
+      "handlers": [
+        "wa-remove"
+      ]
+    },
+    {
+      "id": "WaTextArea.OnBlur",
+      "tag": "wa-textarea",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaTextArea.OnFocus",
+      "tag": "wa-textarea",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaTextArea.OnInput",
+      "tag": "wa-textarea",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaTextArea.OnInvalid",
+      "tag": "wa-textarea",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaTextArea.OnKeyDown",
+      "tag": "wa-textarea",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaTextArea.OnKeyPress",
+      "tag": "wa-textarea",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaTextArea.OnKeyUp",
+      "tag": "wa-textarea",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaTextArea.ValueChanged",
+      "tag": "wa-textarea",
+      "handlers": []
+    },
+    {
+      "id": "WaTimeInput.OnAfterHide",
+      "tag": "wa-time-input",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnAfterShow",
+      "tag": "wa-time-input",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnBlur",
+      "tag": "wa-time-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnClear",
+      "tag": "wa-time-input",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnFocus",
+      "tag": "wa-time-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnHide",
+      "tag": "wa-time-input",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnInput",
+      "tag": "wa-time-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnInvalid",
+      "tag": "wa-time-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnKeyDown",
+      "tag": "wa-time-input",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnKeyPress",
+      "tag": "wa-time-input",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnKeyUp",
+      "tag": "wa-time-input",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaTimeInput.OnShow",
+      "tag": "wa-time-input",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaTimeInput.ValueChanged",
+      "tag": "wa-time-input",
+      "handlers": []
+    },
+    {
+      "id": "WaToastItem.OnAfterHide",
+      "tag": "wa-toast-item",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaToastItem.OnAfterShow",
+      "tag": "wa-toast-item",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaToastItem.OnHide",
+      "tag": "wa-toast-item",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaToastItem.OnShow",
+      "tag": "wa-toast-item",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaTooltip.OnAfterHide",
+      "tag": "wa-tooltip",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaTooltip.OnAfterShow",
+      "tag": "wa-tooltip",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaTooltip.OnHide",
+      "tag": "wa-tooltip",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaTooltip.OnShow",
+      "tag": "wa-tooltip",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
+      "id": "WaTree.OnSelectionChange",
+      "tag": "wa-tree",
+      "handlers": [
+        "wa-selection-change"
+      ]
+    },
+    {
+      "id": "WaTreeItem.OnAfterCollapse",
+      "tag": "wa-tree-item",
+      "handlers": [
+        "wa-after-collapse"
+      ]
+    },
+    {
+      "id": "WaTreeItem.OnAfterExpand",
+      "tag": "wa-tree-item",
+      "handlers": [
+        "wa-after-expand"
+      ]
+    },
+    {
+      "id": "WaTreeItem.OnCollapse",
+      "tag": "wa-tree-item",
+      "handlers": [
+        "wa-collapse"
+      ]
+    },
+    {
+      "id": "WaTreeItem.OnExpand",
+      "tag": "wa-tree-item",
+      "handlers": [
+        "wa-expand"
+      ]
+    },
+    {
+      "id": "WaTreeItem.OnLazyChange",
+      "tag": "wa-tree-item",
+      "handlers": [
+        "wa-lazy-change"
+      ]
+    },
+    {
+      "id": "WaTreeItem.OnLazyLoad",
+      "tag": "wa-tree-item",
+      "handlers": [
+        "wa-lazy-load"
+      ]
+    },
+    {
+      "id": "WaVideo.OnEnded",
+      "tag": "wa-video",
+      "handlers": [
+        "ended"
+      ]
+    },
+    {
+      "id": "WaVideo.OnError",
+      "tag": "wa-video",
+      "handlers": [
+        "error"
+      ]
+    },
+    {
+      "id": "WaVideo.OnLoadedMetadata",
+      "tag": "wa-video",
+      "handlers": [
+        "loadedmetadata"
+      ]
+    },
+    {
+      "id": "WaVideo.OnPause",
+      "tag": "wa-video",
+      "handlers": [
+        "pause"
+      ]
+    },
+    {
+      "id": "WaVideo.OnPlay",
+      "tag": "wa-video",
+      "handlers": [
+        "play"
+      ]
+    },
+    {
+      "id": "WaVideo.OnTimeUpdate",
+      "tag": "wa-video",
+      "handlers": [
+        "timeupdate"
+      ]
+    },
+    {
+      "id": "WaVideo.OnVolumeChange",
+      "tag": "wa-video",
+      "handlers": [
+        "volumechange"
+      ]
+    },
+    {
+      "id": "WaVideoPlaylist.OnVideoChange",
+      "tag": "wa-video-playlist",
+      "handlers": [
+        "wa-video-change"
+      ]
+    },
+    {
+      "id": "WaZoomableFrame.OnError",
+      "tag": "wa-zoomable-frame",
+      "handlers": [
+        "error"
+      ]
+    },
+    {
+      "id": "WaZoomableFrame.OnLoad",
+      "tag": "wa-zoomable-frame",
+      "handlers": [
+        "load"
+      ]
+    }
+  ]
+}

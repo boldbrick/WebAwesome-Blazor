@@ -56,14 +56,28 @@ public class WaTooltip : ComponentBase
     [Parameter] public string? For { get; set; }
 
     /// <summary>
-    /// The preferred placement of the tooltip. The actual placement may vary as needed to keep the tooltip inside the viewport.
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
     /// </summary>
-    [Parameter] public WaPlacement Placement { get; set; } = WaPlacement.Top;
+    public const WaPlacement DefaultPlacement = WaPlacement.Top;
 
     /// <summary>
-    /// Controls how the tooltip is activated.
+    /// The preferred placement of the tooltip. The actual placement may vary as needed to keep the tooltip inside the viewport.
     /// </summary>
-    [Parameter] public WaTrigger Trigger { get; set; } = WaTrigger.Hover;
+    [Parameter] public WaPlacement Placement { get; set; } = DefaultPlacement;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Trigger"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaTrigger DefaultTrigger = WaTrigger.Hover | WaTrigger.Focus;
+
+    /// <summary>
+    /// Controls how the tooltip is activated. Flags can be combined, e.g. <c>WaTrigger.Hover | WaTrigger.Click</c>,
+    /// and are emitted as a space-separated trigger attribute. When null, the attribute is omitted and the
+    /// Web Awesome default applies, which is hover and focus (<c>WaTrigger.Hover | WaTrigger.Focus</c>).
+    /// Use <see cref="WaTrigger.Manual"/> to control the tooltip only through <see cref="Open"/>.
+    /// </summary>
+    [Parameter] public WaTrigger? Trigger { get; set; }
 
     /// <summary>
     /// Indicates whether the tooltip is open. Can be used in lieu of <see cref="ShowAsync"/>/<see cref="HideAsync"/>.
@@ -81,9 +95,21 @@ public class WaTooltip : ComponentBase
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Distance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultDistance = 8;
+
+    /// <summary>
     /// The distance in pixels from which to offset the tooltip away from its target.
     /// </summary>
     [Parameter] public int? Distance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="HideDelay"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultHideDelay = 0;
 
     /// <summary>
     /// The amount of time to wait, in milliseconds, before hiding the tooltip after activation.
@@ -91,9 +117,21 @@ public class WaTooltip : ComponentBase
     [Parameter] public int? HideDelay { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="ShowDelay"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultShowDelay = 150;
+
+    /// <summary>
     /// The amount of time to wait, in milliseconds, before showing the tooltip after activation.
     /// </summary>
     [Parameter] public int? ShowDelay { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Skidding"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultSkidding = 0;
 
     /// <summary>
     /// The distance in pixels from which to offset the tooltip along its target.
@@ -140,7 +178,7 @@ public class WaTooltip : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tooltip");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tooltip");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -149,17 +187,15 @@ public class WaTooltip : ComponentBase
 
         // Add tooltip-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "for", For);
-        if (Placement != WaPlacement.Top)
-            builder.AddAttribute(11, "placement", Placement.ToHtmlValue());
-        if (Trigger != WaTrigger.Hover)
-            builder.AddAttribute(12, "trigger", Trigger.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 11, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "trigger", Trigger?.ToHtmlValue(), DefaultTrigger.ToHtmlValue());
         builder.AddAttribute(13, "open", Open);
         builder.AddAttribute(14, "without-arrow", WithoutArrow);
         builder.AddAttribute(15, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(16, "distance", Distance);
-        builder.AddAttributeIfNotNull(17, "hide-delay", HideDelay);
-        builder.AddAttributeIfNotNull(18, "show-delay", ShowDelay);
-        builder.AddAttributeIfNotNull(19, "skidding", Skidding);
+        builder.AddAttributeIfNotNull(attributes, 16, "distance", Distance, DefaultDistance);
+        builder.AddAttributeIfNotNull(attributes, 17, "hide-delay", HideDelay, DefaultHideDelay);
+        builder.AddAttributeIfNotNull(attributes, 18, "show-delay", ShowDelay, DefaultShowDelay);
+        builder.AddAttributeIfNotNull(attributes, 19, "skidding", Skidding, DefaultSkidding);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onwa-show", OnShow);

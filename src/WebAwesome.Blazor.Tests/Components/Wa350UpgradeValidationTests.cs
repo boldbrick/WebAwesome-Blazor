@@ -8,9 +8,10 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Validation tests for the Web Awesome 3.5.0 upgrade: the new SSR hydration-hint attributes,
-/// the color-picker placement, the copy-button default slot, the wa-rating form-control promotion,
-/// and the four non-destructive upstream "breaking" changes.
+/// Validation tests for the Web Awesome 3.5.0 upgrade: the new SSR hydration-hint attributes, the copy-button
+/// default slot, and the non-destructive upstream "breaking" changes the wrapper absorbs. The form-control
+/// attributes 3.5.0 added (wa-color-picker placement, wa-slider with-hint/with-label, wa-textarea with-count,
+/// wa-rating default-value) are covered, defaults included, by the CEM-driven RenderedAttributeParityTests.
 /// </summary>
 public class Wa350UpgradeValidationTests : BunitContext
 {
@@ -70,50 +71,6 @@ public class Wa350UpgradeValidationTests : BunitContext
 
     #endregion
 
-    #region ------ Form-control additions (property-level) ------
-
-    [Fact]
-    public void WaColorPicker_HasPlacementParameter()
-    {
-        var component = new WaColorPicker { Placement = WaPlacement.BottomStart };
-        Assert.Equal(WaPlacement.BottomStart, component.Placement);
-    }
-
-    [Fact]
-    public void WaSlider_WithHintAndWithLabel_DefaultToFalse_AndCanBeSet()
-    {
-        var component = new WaSlider();
-        Assert.False(component.WithHint);
-        Assert.False(component.WithLabel);
-
-        component.WithHint = true;
-        component.WithLabel = true;
-        Assert.True(component.WithHint);
-        Assert.True(component.WithLabel);
-    }
-
-    [Fact]
-    public void WaTextArea_WithCount_DefaultsToFalse_AndCanBeSet()
-    {
-        var component = new WaTextArea();
-        Assert.False(component.WithCount);
-
-        component.WithCount = true;
-        Assert.True(component.WithCount);
-    }
-
-    [Fact]
-    public void WaRating_DefaultValue_DefaultsToZero_AndCanBeSet()
-    {
-        var component = new WaRating();
-        Assert.Equal(0m, component.DefaultValue);
-
-        component.DefaultValue = 3m;
-        Assert.Equal(3m, component.DefaultValue);
-    }
-
-    #endregion
-
     #region ------ Non-destructive upstream "breaking" changes ------
 
     [Fact]
@@ -126,15 +83,27 @@ public class Wa350UpgradeValidationTests : BunitContext
         Assert.NotNull(type.GetMethod("FocusAsync", BindingFlags.Public | BindingFlags.Instance));
     }
 
-    [Fact]
-    public void WaTextArea_AutoCorrect_RemainsStringTyped()
+    [Theory]
+    [InlineData(true, "on")]
+    [InlineData(false, "off")]
+    public void WaTextArea_AutoCorrect_IsBooleanRenderedOnOff(bool autoCorrect, string expected)
     {
-        // WA 3.5.0 widened the autocorrect JS property to boolean, but the attribute form is still
-        // "off"/"on" - the wrapper keeps AutoCorrect as string?, unchanged
-        var property = typeof(WaTextArea).GetProperty("AutoCorrect", BindingFlags.Public | BindingFlags.Instance);
-        Assert.NotNull(property);
-        Assert.Equal(typeof(string), property!.PropertyType);
+        // WA 3.5.0 widened the autocorrect JS property to boolean; the attribute converter reads "on"/"off"
+        // (only "off" or an empty value reads false), so the bool? parameter (3.12.0) renders exactly those
+        var cut = Render<WaTextArea>(p => p
+            .Add(x => x.AutoCorrect, autoCorrect)
+            .Add(x => x.ValueExpression, () => textValue));
+
+        Assert.Equal(expected, cut.Find("wa-textarea").GetAttribute("autocorrect"));
+        Assert.False(Render<WaTextArea>(p => p.Add(x => x.ValueExpression, () => textValue)).Find("wa-textarea").HasAttribute("autocorrect"));
     }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // the bound field the text area's ValueExpression points at
+    private readonly string? textValue = null;
 
     #endregion
 }

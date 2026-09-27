@@ -50,8 +50,14 @@ public class WaDrawer : ComponentBase
 
     // Drawer properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// The drawer's label as displayed in the header. A relevant label is required for proper accessibility. If you
-    /// need to display HTML, use <see cref="HeaderActionsContent"/> or a custom header instead.
+    /// need to display HTML, use <see cref="LabelContent"/> instead.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
@@ -61,9 +67,14 @@ public class WaDrawer : ComponentBase
     [Parameter] public bool Open { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaDrawerPlacement DefaultPlacement = WaDrawerPlacement.End;
+
+    /// <summary>
     /// The direction from which the drawer opens.
     /// </summary>
-    [Parameter] public WaDrawerPlacement Placement { get; set; } = WaDrawerPlacement.End;
+    [Parameter] public WaDrawerPlacement Placement { get; set; } = DefaultPlacement;
 
     /// <summary>
     /// Disables the header. This also removes the default close button.
@@ -100,6 +111,12 @@ public class WaDrawer : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? HeaderActionsContent { get; set; }
 
+    /// <summary>
+    /// The drawer's label as rich content, rendered into the element's "label" slot; takes precedence over
+    /// <see cref="Label"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? LabelContent { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -114,11 +131,6 @@ public class WaDrawer : ComponentBase
     /// result in destructive behavior such as data loss.
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
-
-    /// <summary>
-    /// Invoked when the drawer sets initial focus after opening.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnInitialFocus { get; set; }
 
     /// <summary>
     /// Invoked after the drawer opens and all animations are complete.
@@ -137,7 +149,7 @@ public class WaDrawer : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-drawer");
+        var attributes = builder.OpenWaElement(this, 0, "wa-drawer");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -145,10 +157,9 @@ public class WaDrawer : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add drawer-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label, DefaultLabel);
         builder.AddAttribute(11, "open", Open);
-        if (Placement != WaDrawerPlacement.End)
-            builder.AddAttribute(12, "placement", Placement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
         builder.AddAttribute(13, "without-header", WithoutHeader);
         builder.AddAttribute(14, "light-dismiss", LightDismiss);
         builder.AddAttribute(15, "with-footer", WithFooter);
@@ -158,14 +169,21 @@ public class WaDrawer : ComponentBase
 
         builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
 
-        builder.AddAttributeIfHasDelegate(22, "onwa-initial-focus", OnInitialFocus);
-
         builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 
         builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __drawerReference => Element = __drawerReference);
+
+        // Add label slot content
+        if (LabelContent is not null)
+        {
+            builder.OpenElement(25, "span");
+            builder.AddAttribute(26, "slot", "label");
+            builder.AddContent(27, LabelContent);
+            builder.CloseElement();
+        }
 
         // Add header actions slot content
         if (HeaderActionsContent is not null)

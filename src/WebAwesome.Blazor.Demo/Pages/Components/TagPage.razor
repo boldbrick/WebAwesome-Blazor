@@ -1,20 +1,128 @@
-﻿@page "/components/tag"
+@page "/components/tag"
 
 <PageTitle>Tag</PageTitle>
 
-<h1>Tag</h1>
-<p><code>&lt;wa-tag&gt;</code> wrapped by <code>WaTag</code>.</p>
+<h1>Tag <ComponentBadges Tag="wa-tag" /></h1>
+<p>Tags are used as labels to organize things or to indicate a selection. <code>&lt;wa-tag&gt;</code> wrapped by <code>WaTag</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaTag Variant="WaVariant.Brand">Tag</WaTag>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tag.md) *@
+<ExampleSection Title="Variants" Code="@VariantsExample">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaTag Variant="WaVariant.Brand">Brand</WaTag>
+        <WaTag Variant="WaVariant.Success">Success</WaTag>
+        <WaTag Variant="WaVariant.Neutral">Neutral</WaTag>
+        <WaTag Variant="WaVariant.Warning">Warning</WaTag>
+        <WaTag Variant="WaVariant.Danger">Danger</WaTag>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaTag Variant="WaVariant.Brand" Appearance="WaBadgeAppearance.Accent">Accent</WaTag>
+        <WaTag Variant="WaVariant.Brand" Appearance="WaBadgeAppearance.FilledOutlined">Filled outlined</WaTag>
+        <WaTag Variant="WaVariant.Brand" Appearance="WaBadgeAppearance.Filled">Filled</WaTag>
+        <WaTag Variant="WaVariant.Brand" Appearance="WaBadgeAppearance.Outlined">Outlined</WaTag>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+        <WaTag Size="WaSize.ExtraSmall">Extra small</WaTag>
+        <WaTag Size="WaSize.Small">Small</WaTag>
+        <WaTag Size="WaSize.Medium">Medium</WaTag>
+        <WaTag Size="WaSize.Large">Large</WaTag>
+        <WaTag Size="WaSize.ExtraLarge">Extra large</WaTag>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Pill" Code="@PillExample">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaTag Pill="true">Pill</WaTag>
+        <WaTag Pill="false">Square corners</WaTag>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Removable" Code="@RemovableExample">
+    <WaCluster Gap="GapSize.Gap_S">
+        @foreach (var topic in topics)
+        {
+            <WaTag @key="topic" WithRemove="true" Size="WaSize.Small" OnRemove="() => topics.Remove(topic)">@topic</WaTag>
+        }
+        @if (topics.Count == 0)
+        {
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Plain" OnClick="ResetTopics">Restore topics</WaButton>
+        }
+    </WaCluster>
+</ExampleSection>
 
 <ApiTable Tag="wa-tag" />
 
 @code {
+    private static readonly string[] AllTopics = ["Blazor", "Web components", "Accessibility", "Design systems"];
+    private readonly List<string> topics = [.. AllTopics];
+
+    private void ResetTopics() => topics.AddRange(AllTopics);
+
     private const string DefaultExample = """
         <WaTag Variant="WaVariant.Brand">Tag</WaTag>
+        """;
+
+    private const string VariantsExample = """
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaTag Variant="WaVariant.Brand">Brand</WaTag>
+            <WaTag Variant="WaVariant.Success">Success</WaTag>
+            <WaTag Variant="WaVariant.Neutral">Neutral</WaTag>
+            <WaTag Variant="WaVariant.Warning">Warning</WaTag>
+            <WaTag Variant="WaVariant.Danger">Danger</WaTag>
+        </WaCluster>
+        """;
+
+    private const string AppearanceExample = """
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaTag Variant="WaVariant.Brand" Appearance="WaBadgeAppearance.Accent">Accent</WaTag>
+            <WaTag Variant="WaVariant.Brand" Appearance="WaBadgeAppearance.FilledOutlined">Filled outlined</WaTag>
+            <WaTag Variant="WaVariant.Brand" Appearance="WaBadgeAppearance.Filled">Filled</WaTag>
+            <WaTag Variant="WaVariant.Brand" Appearance="WaBadgeAppearance.Outlined">Outlined</WaTag>
+        </WaCluster>
+        """;
+
+    private const string SizesExample = """
+        <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+            <WaTag Size="WaSize.ExtraSmall">Extra small</WaTag>
+            <WaTag Size="WaSize.Small">Small</WaTag>
+            <WaTag Size="WaSize.Medium">Medium</WaTag>
+            <WaTag Size="WaSize.Large">Large</WaTag>
+            <WaTag Size="WaSize.ExtraLarge">Extra large</WaTag>
+        </WaCluster>
+        """;
+
+    private const string PillExample = """
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaTag Pill="true">Pill</WaTag>
+            <WaTag Pill="false">Square corners</WaTag>
+        </WaCluster>
+        """;
+
+    private const string RemovableExample = """
+        <WaCluster Gap="GapSize.Gap_S">
+            @foreach (var topic in topics)
+            {
+                <WaTag @key="topic" WithRemove="true" Size="WaSize.Small" OnRemove="() => topics.Remove(topic)">@topic</WaTag>
+            }
+            @if (topics.Count == 0)
+            {
+                <WaButton Size="WaSize.Small" Appearance="WaAppearance.Plain" OnClick="ResetTopics">Restore topics</WaButton>
+            }
+        </WaCluster>
+
+        @code {
+            private static readonly string[] AllTopics = ["Blazor", "Web components", "Accessibility", "Design systems"];
+            private readonly List<string> topics = [.. AllTopics];
+
+            private void ResetTopics() => topics.AddRange(AllTopics);
+        }
         """;
 }

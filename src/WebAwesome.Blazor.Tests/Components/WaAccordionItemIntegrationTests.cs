@@ -1,70 +1,36 @@
-using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for the WaAccordionItem wrapper (new in WA 3.8.0): defaults, parameter settability,
-/// slot content, and imperative method guard clauses.
+/// Tests for the WaAccordionItem wrapper (new in WA 3.8.0): its content fragments render into their slots, and
+/// its imperative methods throw before the first render. Its attributes and defaults are covered by the
+/// CEM-driven RenderedAttributeParityTests.
 /// </summary>
-public class WaAccordionItemIntegrationTests
+public class WaAccordionItemIntegrationTests : BunitContext
 {
-    #region ------ Defaults ------
-
-    [Fact]
-    public void Constructor_WithDefaultValues_SetsPropertiesCorrectly()
+    public WaAccordionItemIntegrationTests()
     {
-        var component = new WaAccordionItem();
-
-        Assert.Null(component.Element);
-        Assert.Null(component.Label);
-        Assert.False(component.Expanded);
-        Assert.False(component.Disabled);
-        Assert.Null(component.ChildContent);
-        Assert.Null(component.LabelContent);
-        Assert.Null(component.IconContent);
+        Services.AddScoped<WebAwesomeJSInterop>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
-    #endregion
-
-    #region ------ Parameter Setting ------
-
-    [Fact]
-    public void LabelExpandedDisabled_CanBeSet()
+    [Theory]
+    [InlineData(nameof(WaAccordionItem.ChildContent), "")]
+    [InlineData(nameof(WaAccordionItem.LabelContent), "label")]
+    [InlineData(nameof(WaAccordionItem.IconContent), "icon")]
+    public void SlotContent_RendersIntoItsSlot(string parameterName, string slot)
     {
-        var component = new WaAccordionItem
-        {
-            Label = "Section 1",
-            Expanded = true,
-            Disabled = true
-        };
+        var cut = Render<WaAccordionItem>(parameters => parameters.TryAdd(parameterName, SlotProbe.Fragment));
 
-        Assert.Equal("Section 1", component.Label);
-        Assert.True(component.Expanded);
-        Assert.True(component.Disabled);
+        Assert.Equal(slot, SlotProbe.SlotOf(cut.Find("wa-accordion-item")));
     }
-
-    [Fact]
-    public void SlotContent_CanBeSet()
-    {
-        var component = new WaAccordionItem();
-        RenderFragment fragment = builder => { };
-
-        component.LabelContent = fragment;
-        component.IconContent = fragment;
-        component.ChildContent = fragment;
-
-        Assert.Same(fragment, component.LabelContent);
-        Assert.Same(fragment, component.IconContent);
-        Assert.Same(fragment, component.ChildContent);
-    }
-
-    #endregion
-
-    #region ------ Public Methods (Guard Clauses) ------
 
     [Fact]
     public async Task ExpandAsync_WithNullElement_ThrowsInvalidOperationException()
@@ -93,6 +59,4 @@ public class WaAccordionItemIntegrationTests
         var component = new WaAccordionItem();
         await Assert.ThrowsAsync<InvalidOperationException>(() => component.FocusAsync());
     }
-
-    #endregion
 }

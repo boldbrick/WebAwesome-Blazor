@@ -69,7 +69,7 @@
     {
         LogEvent("wa-after-hide");
 
-        // the toast item removes itself from the DOM after hiding, so drop it from the render tree as well
+        // the model owns the item: once it has hidden, drop it from the render tree
         showEventItem = false;
     }
 
@@ -139,7 +139,7 @@
             {
                 LogEvent("wa-after-hide");
 
-                // the toast item removes itself from the DOM after hiding, so drop it from the render tree as well
+                // the model owns the item: once it has hidden, drop it from the render tree
                 showEventItem = false;
             }
 

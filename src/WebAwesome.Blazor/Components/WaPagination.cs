@@ -39,9 +39,21 @@ public class WaPagination : ComponentBase
 
     // Visual & behavior properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPaginationAppearance DefaultAppearance = WaPaginationAppearance.Outlined;
+
+    /// <summary>
     /// The pagination's visual appearance.
     /// </summary>
     [Parameter] public WaPaginationAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Format"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaPaginationFormat DefaultFormat = WaPaginationFormat.Standard;
 
     /// <summary>
     /// The pagination's layout. The default <see cref="WaPaginationFormat.Standard"/> format shows the full page
@@ -56,9 +68,21 @@ public class WaPagination : ComponentBase
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="BoundaryCount"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultBoundaryCount = 1;
+
+    /// <summary>
     /// The number of pages to always show at the start and end.
     /// </summary>
     [Parameter] public int? BoundaryCount { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="SiblingCount"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultSiblingCount = 2;
 
     /// <summary>
     /// The number of pages to show on each side of the current page.
@@ -69,6 +93,12 @@ public class WaPagination : ComponentBase
     /// Renders nothing when there's only one page.
     /// </summary>
     [Parameter] public bool HideSinglePage { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="HrefTemplate"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultHrefTemplate = "";
 
     /// <summary>
     /// A URL template used to render page items as links instead of buttons. When set, items render as
@@ -82,6 +112,12 @@ public class WaPagination : ComponentBase
     [Parameter] public string? HrefTemplate { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// A label that describes the pagination to assistive devices. This won't be shown on the screen, but it will
     /// be announced by screen readers. Especially useful when more than one pagination control exists on the same
     /// page.
@@ -89,14 +125,32 @@ public class WaPagination : ComponentBase
     [Parameter] public string? Label { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Page"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultPage = 1;
+
+    /// <summary>
     /// The current page, starting at 1.
     /// </summary>
     [Parameter] public int? Page { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="PageSize"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultPageSize = 10;
+
+    /// <summary>
     /// The number of items shown per page.
     /// </summary>
     [Parameter] public int? PageSize { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Total"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultTotal = 0;
 
     /// <summary>
     /// The total number of items to paginate.
@@ -189,23 +243,23 @@ public class WaPagination : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-pagination");
+        var attributes = builder.OpenWaElement(this, 0, "wa-pagination");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(5, "format", Format?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "format", Format?.ToHtmlValue(), DefaultFormat.ToHtmlValue());
         builder.AddAttribute(6, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(7, "boundary-count", BoundaryCount);
-        builder.AddAttributeIfNotNull(8, "sibling-count", SiblingCount);
+        builder.AddAttributeIfNotNull(attributes, 7, "boundary-count", BoundaryCount, DefaultBoundaryCount);
+        builder.AddAttributeIfNotNull(attributes, 8, "sibling-count", SiblingCount, DefaultSiblingCount);
         builder.AddAttribute(9, "hide-single-page", HideSinglePage);
-        builder.AddAttributeIfNotNullOrEmpty(10, "href-template", HrefTemplate);
-        builder.AddAttributeIfNotNullOrEmpty(11, "label", Label);
-        builder.AddAttributeIfNotNull(12, "page", Page);
-        builder.AddAttributeIfNotNull(13, "page-size", PageSize);
-        builder.AddAttributeIfNotNull(14, "total", Total);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "href-template", HrefTemplate, DefaultHrefTemplate);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "label", Label, DefaultLabel);
+        builder.AddAttributeIfNotNull(attributes, 12, "page", Page, DefaultPage);
+        builder.AddAttributeIfNotNull(attributes, 13, "page-size", PageSize, DefaultPageSize);
+        builder.AddAttributeIfNotNull(attributes, 14, "total", Total, DefaultTotal);
         builder.AddAttribute(15, "with-edges", WithEdges);
         builder.AddAttribute(16, "with-summary", WithSummary);
         builder.AddAttribute(17, "without-nav", WithoutNav);

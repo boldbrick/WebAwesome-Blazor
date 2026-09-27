@@ -1,18 +1,68 @@
-﻿@page "/components/animated-image"
+@page "/components/animated-image"
 
 <PageTitle>Animated Image</PageTitle>
 
-<h1>Animated Image</h1>
-<p><code>&lt;wa-animated-image&gt;</code> wrapped by <code>WaAnimatedImage</code>.</p>
+<h1>Animated Image <ComponentBadges Tag="wa-animated-image" /></h1>
+<p>Animated images show animated GIFs and WEBPs that play and pause on interaction. <code>&lt;wa-animated-image&gt;</code> wrapped by <code>WaAnimatedImage</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaAnimatedImage />
+    <WaAnimatedImage Src="https://shoelace.style/assets/images/walk.gif" Alt="Animation of untied shoes walking on pavement" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\animated-image.md) *@
+<ExampleSection Title="Playing" Code="@PlayingExample">
+    <WaAnimatedImage Src="https://shoelace.style/assets/images/tie.webp" Alt="Animation of a shoe being tied" Play="true" />
+</ExampleSection>
+
+<ExampleSection Title="Play and Pause from C#" Code="@ToggleExample">
+    <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+        <WaAnimatedImage Src="https://shoelace.style/assets/images/walk.gif" Alt="Animation of untied shoes walking on pavement" Play="playing" Style="--width: 160px;" />
+        <WaSwitch @bind-Value="playing">Playing</WaSwitch>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Custom Play and Pause Icons" Code="@IconsExample">
+    <WaCluster Gap="GapSize.Gap_L">
+        <WaAnimatedImage Src="https://shoelace.style/assets/images/walk.gif" Alt="Animation of untied shoes walking on pavement"
+                         PlayIconName="circle-play" PauseIconName="circle-pause" Style="--width: 160px;" />
+        <WaAnimatedImage Src="https://shoelace.style/assets/images/tie.webp" Alt="Animation of a shoe being tied" Style="--width: 160px;">
+            <PlayIconContent><WaIcon Name="forward" Label="Play" /></PlayIconContent>
+            <PauseIconContent><WaIcon Name="stop" Label="Pause" /></PauseIconContent>
+        </WaAnimatedImage>
+    </WaCluster>
+</ExampleSection>
 
 <ApiTable Tag="wa-animated-image" />
 
 @code {
-    private const string DefaultExample = "<WaAnimatedImage />";
+    private bool playing = true;
+
+    private const string DefaultExample = """
+        <WaAnimatedImage Src="https://shoelace.style/assets/images/walk.gif" Alt="Animation of untied shoes walking on pavement" />
+        """;
+
+    private const string PlayingExample = """
+        <WaAnimatedImage Src="https://shoelace.style/assets/images/tie.webp" Alt="Animation of a shoe being tied" Play="true" />
+        """;
+
+    private const string ToggleExample = """
+        <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+            <WaAnimatedImage Src="https://shoelace.style/assets/images/walk.gif" Alt="Animation of untied shoes walking on pavement" Play="playing" Style="--width: 160px;" />
+            <WaSwitch @bind-Value="playing">Playing</WaSwitch>
+        </WaCluster>
+
+        @code {
+            private bool playing = true;
+        }
+        """;
+
+    private const string IconsExample = """
+        <WaCluster Gap="GapSize.Gap_L">
+            <WaAnimatedImage Src="https://shoelace.style/assets/images/walk.gif" Alt="Animation of untied shoes walking on pavement"
+                             PlayIconName="circle-play" PauseIconName="circle-pause" Style="--width: 160px;" />
+            <WaAnimatedImage Src="https://shoelace.style/assets/images/tie.webp" Alt="Animation of a shoe being tied" Style="--width: 160px;">
+                <PlayIconContent><WaIcon Name="forward" Label="Play" /></PlayIconContent>
+                <PauseIconContent><WaIcon Name="stop" Label="Pause" /></PauseIconContent>
+            </WaAnimatedImage>
+        </WaCluster>
+        """;
 }

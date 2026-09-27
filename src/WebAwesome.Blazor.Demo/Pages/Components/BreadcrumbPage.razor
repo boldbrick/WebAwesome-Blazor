@@ -1,9 +1,9 @@
-﻿@page "/components/breadcrumb"
+@page "/components/breadcrumb"
 
 <PageTitle>Breadcrumb</PageTitle>
 
-<h1>Breadcrumb</h1>
-<p><code>&lt;wa-breadcrumb&gt;</code> wrapped by <code>WaBreadcrumb</code>.</p>
+<h1>Breadcrumb <ComponentBadges Tag="wa-breadcrumb" /></h1>
+<p>Breadcrumbs show where the user is in a hierarchy and let them navigate back up. <code>&lt;wa-breadcrumb&gt;</code> wrapped by <code>WaBreadcrumb</code>; its items are <a href="components/breadcrumb-item"><code>WaBreadcrumbItem</code></a>s.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaBreadcrumb>
@@ -13,7 +13,51 @@
     </WaBreadcrumb>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\breadcrumb.md) *@
+<ExampleSection Title="Label" Code="@LabelExample">
+    <p>The label names the navigation landmark for assistive technology.</p>
+    <WaBreadcrumb Label="Product categories">
+        <WaBreadcrumbItem Href="components/breadcrumb">Catalog</WaBreadcrumbItem>
+        <WaBreadcrumbItem Href="components/breadcrumb">Clothing</WaBreadcrumbItem>
+        <WaBreadcrumbItem>Shirts</WaBreadcrumbItem>
+    </WaBreadcrumb>
+</ExampleSection>
+
+<ExampleSection Title="Custom Separators" Code="@SeparatorsExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaBreadcrumb>
+            <SeparatorContent><WaIcon Name="angles-right" /></SeparatorContent>
+            <ChildContent>
+                <WaBreadcrumbItem Href="components/breadcrumb">First</WaBreadcrumbItem>
+                <WaBreadcrumbItem Href="components/breadcrumb">Second</WaBreadcrumbItem>
+                <WaBreadcrumbItem>Third</WaBreadcrumbItem>
+            </ChildContent>
+        </WaBreadcrumb>
+        <WaBreadcrumb>
+            <SeparatorContent><span>/</span></SeparatorContent>
+            <ChildContent>
+                <WaBreadcrumbItem Href="components/breadcrumb">First</WaBreadcrumbItem>
+                <WaBreadcrumbItem Href="components/breadcrumb">Second</WaBreadcrumbItem>
+                <WaBreadcrumbItem>Third</WaBreadcrumbItem>
+            </ChildContent>
+        </WaBreadcrumb>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Icons and Dropdowns" Code="@IconsExample">
+    <WaBreadcrumb>
+        <WaBreadcrumbItem Href="components/breadcrumb" StartIconName="house">Home</WaBreadcrumbItem>
+        <WaBreadcrumbItem>
+            <WaDropdown>
+                <TriggerContent><WaButton Size="WaSize.Small" Appearance="WaAppearance.Plain" WithCaret="true">More</WaButton></TriggerContent>
+                <ChildContent>
+                    <WaDropdownItem Value="docs">Docs</WaDropdownItem>
+                    <WaDropdownItem Value="blog">Blog</WaDropdownItem>
+                </ChildContent>
+            </WaDropdown>
+        </WaBreadcrumbItem>
+        <WaBreadcrumbItem EndIconName="gear">Settings</WaBreadcrumbItem>
+    </WaBreadcrumb>
+</ExampleSection>
 
 <ApiTable Tag="wa-breadcrumb" />
 
@@ -23,6 +67,49 @@
             <WaBreadcrumbItem Href="/">Home</WaBreadcrumbItem>
             <WaBreadcrumbItem Href="/components">Components</WaBreadcrumbItem>
             <WaBreadcrumbItem>Breadcrumb</WaBreadcrumbItem>
+        </WaBreadcrumb>
+        """;
+
+    private const string LabelExample = """
+        <WaBreadcrumb Label="Product categories">
+            <WaBreadcrumbItem Href="catalog">Catalog</WaBreadcrumbItem>
+            <WaBreadcrumbItem Href="catalog/clothing">Clothing</WaBreadcrumbItem>
+            <WaBreadcrumbItem>Shirts</WaBreadcrumbItem>
+        </WaBreadcrumb>
+        """;
+
+    private const string SeparatorsExample = """
+        <WaBreadcrumb>
+            <SeparatorContent><WaIcon Name="angles-right" /></SeparatorContent>
+            <ChildContent>
+                <WaBreadcrumbItem Href="first">First</WaBreadcrumbItem>
+                <WaBreadcrumbItem Href="second">Second</WaBreadcrumbItem>
+                <WaBreadcrumbItem>Third</WaBreadcrumbItem>
+            </ChildContent>
+        </WaBreadcrumb>
+        <WaBreadcrumb>
+            <SeparatorContent><span>/</span></SeparatorContent>
+            <ChildContent>
+                <WaBreadcrumbItem Href="first">First</WaBreadcrumbItem>
+                <WaBreadcrumbItem Href="second">Second</WaBreadcrumbItem>
+                <WaBreadcrumbItem>Third</WaBreadcrumbItem>
+            </ChildContent>
+        </WaBreadcrumb>
+        """;
+
+    private const string IconsExample = """
+        <WaBreadcrumb>
+            <WaBreadcrumbItem Href="/" StartIconName="house">Home</WaBreadcrumbItem>
+            <WaBreadcrumbItem>
+                <WaDropdown>
+                    <TriggerContent><WaButton Size="WaSize.Small" Appearance="WaAppearance.Plain" WithCaret="true">More</WaButton></TriggerContent>
+                    <ChildContent>
+                        <WaDropdownItem Value="docs">Docs</WaDropdownItem>
+                        <WaDropdownItem Value="blog">Blog</WaDropdownItem>
+                    </ChildContent>
+                </WaDropdown>
+            </WaBreadcrumbItem>
+            <WaBreadcrumbItem EndIconName="gear">Settings</WaBreadcrumbItem>
         </WaBreadcrumb>
         """;
 }

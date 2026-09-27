@@ -55,11 +55,6 @@ public class WaRadio : ComponentBase, IFormValidation
     [Parameter] public string? Value { get; set; }
 
     /// <summary>
-    /// Checks the radio.
-    /// </summary>
-    [Parameter] public bool Checked { get; set; }
-
-    /// <summary>
     /// Disables the radio.
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
@@ -71,6 +66,12 @@ public class WaRadio : ComponentBase, IFormValidation
     [Parameter] public WaSize? Size { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaRadioAppearance DefaultAppearance = WaRadioAppearance.Default;
+
+    /// <summary>
     /// The radio's visual appearance.
     /// </summary>
     [Parameter] public WaRadioAppearance? Appearance { get; set; }
@@ -78,11 +79,6 @@ public class WaRadio : ComponentBase, IFormValidation
     #endregion
 
     #region ------ Events ------
-
-    /// <summary>
-    /// Invoked when the checked state changes.
-    /// </summary>
-    [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
 
     /// <summary>
     /// Invoked when the control gains focus.
@@ -110,21 +106,19 @@ public class WaRadio : ComponentBase, IFormValidation
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-radio");
+        var attributes = builder.OpenWaElement(this, 0, "wa-radio");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
         builder.AddAttributeIfNotNullOrEmpty(4, "value", Value);
-        builder.AddAttribute(5, "checked", Checked);
         builder.AddAttribute(6, "disabled", Disabled);
         builder.AddAttributeIfNotNull(7, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(8, "appearance", Appearance?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 8, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
 
-        // Add event handlers
-        builder.AddAttributeIfHasDelegate(10, "onwa-change", OnCheckedChange);
-
+        // Add event handlers; wa-radio dispatches no change event of its own (selection changes are
+        // reported by the parent radio group)
         builder.AddAttributeIfHasDelegate(11, "onfocus", OnFocus);
 
         builder.AddAttributeIfHasDelegate(12, "onblur", OnBlur);

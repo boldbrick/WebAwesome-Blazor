@@ -41,19 +41,34 @@ public class WaTag : ComponentBase
 
     // Tag properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Variant"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaVariant DefaultVariant = WaVariant.Neutral;
+
+    /// <summary>
     /// The tag's theme variant.
     /// </summary>
-    [Parameter] public WaVariant Variant { get; set; } = WaVariant.Neutral;
+    [Parameter] public WaVariant Variant { get; set; } = DefaultVariant;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaBadgeAppearance DefaultAppearance = WaBadgeAppearance.FilledOutlined;
 
     /// <summary>
     /// The tag's visual appearance.
     /// </summary>
-    [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.OutlinedFilled;
+    [Parameter] public WaBadgeAppearance Appearance { get; set; } = DefaultAppearance;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The tag's size.
     /// </summary>
-    [Parameter] public WaSize Size { get; set; } = WaSize.Medium;
+    [Parameter] public WaSize Size { get; set; } = DefaultSize;
 
     /// <summary>
     /// Draws a pill-style tag with rounded edges.
@@ -90,7 +105,7 @@ public class WaTag : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tag");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tag");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -98,12 +113,9 @@ public class WaTag : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add tag-specific attributes
-        if (Variant != WaVariant.Neutral)
-            builder.AddAttribute(10, "variant", Variant.ToHtmlValue());
-        if (Appearance != WaAppearance.OutlinedFilled)
-            builder.AddAttribute(11, "appearance", Appearance.ToHtmlValue());
-        if (Size != WaSize.Medium)
-            builder.AddAttribute(12, "size", Size.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 10, "variant", Variant.ToHtmlValue(), DefaultVariant.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 11, "appearance", Appearance.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "size", Size.ToHtmlValue(), DefaultSize.ToHtmlValue());
         builder.AddAttribute(13, "pill", Pill);
         builder.AddAttribute(14, "with-remove", WithRemove);
 

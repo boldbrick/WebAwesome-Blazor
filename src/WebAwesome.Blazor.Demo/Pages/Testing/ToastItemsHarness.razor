@@ -1,0 +1,90 @@
+@page "/testing/toast-items"
+
+@* e2e harness for tools\e2e\tests\toast-items.spec.js - deliberately outside /components/, so it is neither derived
+   from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. Declarative toast items live in a list and each one leaves it in its own
+   OnAfterHide, the documented pattern; the spec closes them by the close button, by their Duration and by HideAsync.
+   A kept item stays in the model after hiding until a button removes it, as when the model drops it only later.
+   The echoes come before the stack, so their update is applied ahead of the item's removal in the same render batch *@
+
+<PageTitle>Testing: Toast Items</PageTitle>
+
+<h1>Toast Items Harness</h1>
+<p>This page is an end-to-end test harness for declarative toast items: each item is removed from the model when it has hidden, and Blazor removes its element.</p>
+
+<ExampleSection Title="Declarative toast items">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaButton data-testid="ti-add-persistent" OnClick="() => AddToast(PersistentDuration)">Add a persistent toast</WaButton>
+        <WaButton data-testid="ti-add-timed" OnClick="() => AddToast(TimedDuration)">Add a timed toast</WaButton>
+        <WaButton data-testid="ti-hide-latest" OnClick="HideLatestAsync">Hide the latest (HideAsync)</WaButton>
+        <WaButton data-testid="ti-add-kept" OnClick="() => AddToast(PersistentDuration, removeOnHide: false)">Add a toast kept after hiding</WaButton>
+        <WaButton data-testid="ti-remove-hidden" OnClick="RemoveHiddenToasts">Remove the hidden toasts</WaButton>
+    </WaCluster>
+    <p>
+        Items in the model: <code data-testid="ti-model-count">@toasts.Count</code>,
+        hidden so far: <code data-testid="ti-hidden-count">@hiddenCount</code>
+    </p>
+</ExampleSection>
+
+<WaToast data-testid="ti-toast" Placement="WaToastPlacement.BottomEnd">
+    @foreach (var toast in toasts)
+    {
+        <WaToastItem @key="toast" @ref="itemReferences[toast.Id]" data-testid="@($"ti-item-{toast.Id}")"
+                     Duration="toast.Duration" OnAfterHide="() => HandleAfterHide(toast)">
+            Toast @toast.Id
+        </WaToastItem>
+    }
+</WaToast>
+
+@code {
+    // Duration 0 keeps the item open until it is closed
+    private const int PersistentDuration = 0;
+
+    // short enough for the auto-dismiss test, long enough to see the item show first
+    private const int TimedDuration = 1000;
+
+    private readonly List<ToastEntry> toasts = [];
+    private readonly Dictionary<int, WaToastItem> itemReferences = [];
+    private readonly List<ToastEntry> hiddenToasts = [];
+    private int nextId = 1;
+    private int hiddenCount;
+
+    private void AddToast(int duration, bool removeOnHide = true)
+    {
+        toasts.Add(new ToastEntry(nextId++, duration, removeOnHide));
+    }
+
+    private void HandleAfterHide(ToastEntry toast)
+    {
+        // the model owns the item: dropping it here lets Blazor remove the element; a kept item stays in the model,
+        // hidden, until RemoveHiddenToasts
+        hiddenCount++;
+        if (toast.RemoveOnHide)
+        {
+            toasts.Remove(toast);
+            itemReferences.Remove(toast.Id);
+        }
+        else
+        {
+            hiddenToasts.Add(toast);
+        }
+    }
+
+    private void RemoveHiddenToasts()
+    {
+        foreach (var toast in hiddenToasts)
+        {
+            toasts.Remove(toast);
+            itemReferences.Remove(toast.Id);
+        }
+
+        hiddenToasts.Clear();
+    }
+
+    private async Task HideLatestAsync()
+    {
+        if (toasts.Count > 0 && itemReferences.TryGetValue(toasts[^1].Id, out var item)) await item.HideAsync();
+    }
+
+    private sealed record ToastEntry(int Id, int Duration, bool RemoveOnHide);
+}

@@ -1,9 +1,9 @@
-﻿@page "/components/popover"
+@page "/components/popover"
 
 <PageTitle>Popover</PageTitle>
 
-<h1>Popover</h1>
-<p><code>&lt;wa-popover&gt;</code> wrapped by <code>WaPopover</code>.</p>
+<h1>Popover <ComponentBadges Tag="wa-popover" /></h1>
+<p>Popovers show interactive content next to the element whose id <code>For</code> names; clicking that element toggles them. <code>&lt;wa-popover&gt;</code> wrapped by <code>WaPopover</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaButton id="popover-anchor">Click me</WaButton>
@@ -12,15 +12,94 @@
     </WaPopover>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\popover.md) *@
+<ExampleSection Title="Placement" Code="@PlacementExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        @foreach (var placement in Placements)
+        {
+            var id = $"popover-{placement}";
+            <WaButton id="@id" Size="WaSize.Small">@placement</WaButton>
+            <WaPopover For="@id" Placement="placement">Placed @placement</WaPopover>
+        }
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Distance and Skidding" Code="@DistanceExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaButton id="popover-distance">Distance 30px</WaButton>
+        <WaPopover For="popover-distance" Distance="30">Farther away</WaPopover>
+        <WaButton id="popover-skidding">Skidding 30px</WaButton>
+        <WaPopover For="popover-skidding" Skidding="30">Shifted along the button</WaPopover>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Without an Arrow" Code="@ArrowExample">
+    <WaButton id="popover-no-arrow">No arrow</WaButton>
+    <WaPopover For="popover-no-arrow" WithoutArrow="true">A popover without its arrow.</WaPopover>
+</ExampleSection>
+
+<ExampleSection Title="Opening from C#" Code="@OpenExample">
+    <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+        <WaButton id="popover-controlled" Appearance="WaAppearance.Outlined">Anchor</WaButton>
+        <WaSwitch @bind-Value="open">Open</WaSwitch>
+    </WaCluster>
+    <WaPopover For="popover-controlled" Open="open" OnShow="() => open = true" OnHide="() => open = false">
+        <WaStack Gap="GapSize.Gap_S">
+            <strong>Share this page</strong>
+            <WaButton Size="WaSize.Small" OnClick="() => open = false">Done</WaButton>
+        </WaStack>
+    </WaPopover>
+</ExampleSection>
 
 <ApiTable Tag="wa-popover" />
 
 @code {
+    private static readonly WaPlacement[] Placements = [WaPlacement.Top, WaPlacement.Bottom, WaPlacement.Left, WaPlacement.Right, WaPlacement.TopStart, WaPlacement.BottomEnd];
+    private bool open;
+
     private const string DefaultExample = """
         <WaButton id="popover-anchor">Click me</WaButton>
         <WaPopover For="popover-anchor" Open="true">
             Popover content
         </WaPopover>
+        """;
+
+    private const string PlacementExample = """
+        @foreach (var placement in Placements)
+        {
+            var id = $"popover-{placement}";
+            <WaButton id="@id" Size="WaSize.Small">@placement</WaButton>
+            <WaPopover For="@id" Placement="placement">Placed @placement</WaPopover>
+        }
+
+        @code {
+            private static readonly WaPlacement[] Placements = [WaPlacement.Top, WaPlacement.Bottom, WaPlacement.Left, WaPlacement.Right, WaPlacement.TopStart, WaPlacement.BottomEnd];
+        }
+        """;
+
+    private const string DistanceExample = """
+        <WaButton id="popover-distance">Distance 30px</WaButton>
+        <WaPopover For="popover-distance" Distance="30">Farther away</WaPopover>
+        <WaButton id="popover-skidding">Skidding 30px</WaButton>
+        <WaPopover For="popover-skidding" Skidding="30">Shifted along the button</WaPopover>
+        """;
+
+    private const string ArrowExample = """
+        <WaButton id="popover-no-arrow">No arrow</WaButton>
+        <WaPopover For="popover-no-arrow" WithoutArrow="true">A popover without its arrow.</WaPopover>
+        """;
+
+    private const string OpenExample = """
+        <WaButton id="popover-controlled" Appearance="WaAppearance.Outlined">Anchor</WaButton>
+        <WaSwitch @bind-Value="open">Open</WaSwitch>
+        <WaPopover For="popover-controlled" Open="open" OnShow="() => open = true" OnHide="() => open = false">
+            <WaStack Gap="GapSize.Gap_S">
+                <strong>Share this page</strong>
+                <WaButton Size="WaSize.Small" OnClick="() => open = false">Done</WaButton>
+            </WaStack>
+        </WaPopover>
+
+        @code {
+            private bool open;
+        }
         """;
 }

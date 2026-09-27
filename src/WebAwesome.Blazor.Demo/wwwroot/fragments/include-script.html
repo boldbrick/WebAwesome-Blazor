@@ -1,0 +1,8 @@
+<p class="include-script-output">The script in this fragment did not run.</p>
+<script>
+    // wa-include runs this only with allow-scripts; it marks the fragment instance it was included into
+    (function () {
+        var output = document.currentScript && document.currentScript.previousElementSibling;
+        if (output) output.textContent = 'The script in this fragment ran.';
+    })();
+</script>

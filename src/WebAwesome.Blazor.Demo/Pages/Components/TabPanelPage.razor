@@ -1,9 +1,9 @@
-﻿@page "/components/tab-panel"
+@page "/components/tab-panel"
 
 <PageTitle>Tab Panel</PageTitle>
 
-<h1>Tab Panel</h1>
-<p><code>&lt;wa-tab-panel&gt;</code> wrapped by <code>WaTabPanel</code>.</p>
+<h1>Tab Panel <ComponentBadges Tag="wa-tab-panel" /></h1>
+<p>Tab panels hold the content of a <a href="components/tab-group"><code>WaTabGroup</code></a>; the tab whose <code>Panel</code> equals the panel's <code>Name</code> shows it. <code>&lt;wa-tab-panel&gt;</code> wrapped by <code>WaTabPanel</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaTabGroup>
@@ -14,11 +14,39 @@
     </WaTabGroup>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\tab-panel.md) *@
+<ExampleSection Title="Initially Active Panel" Code="@ActiveExample">
+    <WaTabGroup Active="shipping">
+        <WaTab Panel="cart">Cart</WaTab>
+        <WaTab Panel="shipping">Shipping</WaTab>
+        <WaTab Panel="payment">Payment</WaTab>
+        <WaTabPanel Name="cart" Active="false">Two items in your cart.</WaTabPanel>
+        <WaTabPanel Name="shipping" Active="true">Choose a delivery address.</WaTabPanel>
+        <WaTabPanel Name="payment">Pay by card or invoice.</WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
+
+<ExampleSection Title="Rich Panel Content" Code="@RichExample">
+    <WaTabGroup>
+        <WaTab Panel="profile">Profile</WaTab>
+        <WaTab Panel="security">Security</WaTab>
+        <WaTabPanel Name="profile">
+            <WaStack Gap="GapSize.Gap_S" Style="max-width: 20rem;">
+                <WaInput Label="Display name" @bind-Value="displayName" />
+                <WaSwitch @bind-Value="showEmail">Show my email</WaSwitch>
+            </WaStack>
+        </WaTabPanel>
+        <WaTabPanel Name="security">
+            <WaCallout Variant="WaVariant.Warning" IconName="shield-halved">Two-factor authentication is off.</WaCallout>
+        </WaTabPanel>
+    </WaTabGroup>
+</ExampleSection>
 
 <ApiTable Tag="wa-tab-panel" />
 
 @code {
+    private string? displayName = "Ada Lovelace";
+    private bool showEmail;
+
     private const string DefaultExample = """
         <WaTabGroup>
             <WaTab Panel="general" Active="true">General</WaTab>
@@ -26,5 +54,37 @@
             <WaTabPanel Name="general" Active="true">This is the general tab panel.</WaTabPanel>
             <WaTabPanel Name="advanced">This is the advanced tab panel.</WaTabPanel>
         </WaTabGroup>
+        """;
+
+    private const string ActiveExample = """
+        <WaTabGroup Active="shipping">
+            <WaTab Panel="cart">Cart</WaTab>
+            <WaTab Panel="shipping">Shipping</WaTab>
+            <WaTab Panel="payment">Payment</WaTab>
+            <WaTabPanel Name="cart" Active="false">Two items in your cart.</WaTabPanel>
+            <WaTabPanel Name="shipping" Active="true">Choose a delivery address.</WaTabPanel>
+            <WaTabPanel Name="payment">Pay by card or invoice.</WaTabPanel>
+        </WaTabGroup>
+        """;
+
+    private const string RichExample = """
+        <WaTabGroup>
+            <WaTab Panel="profile">Profile</WaTab>
+            <WaTab Panel="security">Security</WaTab>
+            <WaTabPanel Name="profile">
+                <WaStack Gap="GapSize.Gap_S">
+                    <WaInput Label="Display name" @bind-Value="displayName" />
+                    <WaSwitch @bind-Value="showEmail">Show my email</WaSwitch>
+                </WaStack>
+            </WaTabPanel>
+            <WaTabPanel Name="security">
+                <WaCallout Variant="WaVariant.Warning" IconName="shield-halved">Two-factor authentication is off.</WaCallout>
+            </WaTabPanel>
+        </WaTabGroup>
+
+        @code {
+            private string? displayName = "Ada Lovelace";
+            private bool showEmail;
+        }
         """;
 }

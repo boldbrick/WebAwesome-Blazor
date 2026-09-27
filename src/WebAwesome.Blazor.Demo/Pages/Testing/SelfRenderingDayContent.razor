@@ -1,0 +1,60 @@
+@implements IDisposable
+
+@* a WaDayContent inside a component of its own, shown while its switch is on: toggling the switch re-renders only
+   this component, never the date input or picker hosting it, so day-content.spec.js covers a day slot that appears
+   and disappears without a render of the host *@
+
+@if (Switch.IsOn)
+{
+    <WaDayContent Date="Date"><span class="dc-holiday">@Text</span></WaDayContent>
+}
+
+@code {
+    /// <summary>
+    /// The date of the day content.
+    /// </summary>
+    [Parameter, EditorRequired] public DateOnly Date { get; set; }
+
+    /// <summary>
+    /// The text of the day content.
+    /// </summary>
+    [Parameter, EditorRequired] public string Text { get; set; } = default!;
+
+    /// <summary>
+    /// The switch showing or hiding the day content.
+    /// </summary>
+    [Parameter, EditorRequired] public DaySwitch Switch { get; set; } = default!;
+
+    /// <inheritdoc />
+    protected override void OnInitialized() => Switch.Toggled += OnToggled;
+
+    /// <inheritdoc />
+    public void Dispose() => Switch.Toggled -= OnToggled;
+
+    private void OnToggled() => InvokeAsync(StateHasChanged);
+
+    /// <summary>
+    /// A switch shared by the harness page and its SelfRenderingDayContent components; toggling it notifies only them.
+    /// </summary>
+    public sealed class DaySwitch
+    {
+        /// <summary>
+        /// Whether the day content is shown.
+        /// </summary>
+        public bool IsOn { get; private set; }
+
+        /// <summary>
+        /// Raised after every toggle.
+        /// </summary>
+        public event Action? Toggled;
+
+        /// <summary>
+        /// Shows or hides the day content.
+        /// </summary>
+        public void Toggle()
+        {
+            IsOn = !IsOn;
+            Toggled?.Invoke();
+        }
+    }
+}

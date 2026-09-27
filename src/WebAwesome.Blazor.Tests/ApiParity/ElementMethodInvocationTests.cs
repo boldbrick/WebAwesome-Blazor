@@ -2,59 +2,75 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
+using static WebAwesome.Blazor.Tests.ApiParity.ApiParityData;
 
 namespace WebAwesome.Blazor.Tests.ApiParity;
 
 /// <summary>
-/// Verifies the inverse direction of the method parity check: every JavaScript element
-/// method a wrapper invokes via <c>InvokeMethodAsync</c> must actually exist on the bound
-/// Web Awesome element. A method is accepted when it is documented in the Custom Elements
-/// Manifest (expected-api-surface.json), is a native DOM element method
-/// (parity-config.json "nativeElementMethods"), or is explicitly allowlisted for the
-/// component ("extraElementMethods" — element methods verified against the Web Awesome
-/// source but absent from the CEM; these must be re-verified manually on every upgrade).
-/// This guards against the class of bug where a wrapper calls a renamed or nonexistent
-/// element method and fails only at runtime (e.g. the observers' disconnect/reconnect →
-/// stopObserver/startObserver rename, and the dead "initialize" calls removed in 3.0.0).
+/// Verifies the inverse direction of the method parity check: every JavaScript element method a wrapper invokes
+/// via <c>InvokeMethodAsync</c> must actually exist on the Web Awesome element it runs against. A method is
+/// accepted when it is documented in the Custom Elements Manifest (expected-api-surface.json), is a native DOM
+/// element method (parity-config.json "nativeElementMethods"), or is explicitly allowlisted for the component
+/// ("extraElementMethods" — element methods verified against the Web Awesome source but absent from the CEM;
+/// these must be re-verified manually on every upgrade). This guards against the class of bug where a wrapper
+/// calls a renamed or nonexistent element method and fails only at runtime (e.g. the observers'
+/// disconnect/reconnect → stopObserver/startObserver rename, and the dead "initialize" calls removed in 3.0.0).
+/// Every C# file of the library is scanned, whatever the generic arguments of the call, and a method name passed
+/// through a string parameter is traced to the literal call sites of the helper declaring it (WaVideo's
+/// InvokeVoidElementMethodAsync). The element of a file is the tag its classes, or the concrete wrappers deriving
+/// from them, actually render (RenderedWrapperCatalog), so a base class such as WaInputBase is checked against
+/// every element its descendants render and the charts' OpenElement(0, TagName) resolves; a file with
+/// invocations whose element cannot be resolved fails.
 /// </summary>
 public class ElementMethodInvocationTests
 {
     /// <summary>
-    /// Every element method name invoked from wrapper source must be known: CEM-documented,
-    /// native DOM, or explicitly allowlisted with a per-component reason.
+    /// Every element method name invoked from wrapper source must be known for every element the invoking
+    /// class renders: CEM-documented, native DOM, or explicitly allowlisted with a per-component reason.
     /// </summary>
     [Fact]
     public void AllInvokedElementMethods_AreKnownElementMethods()
     {
         var misses = new List<string>();
+        var invocationCount = 0;
 
         foreach (var file in WrapperSourceFiles())
         {
             var source = File.ReadAllText(file);
+            var fileName = Path.GetFileName(file);
+            var invocations = InvokedMethods(source).ToList();
+            if (invocations.Count == 0) continue;
 
-            var tagMatch = TagRegex.Match(source);
-            if (!tagMatch.Success) continue;
-            var tag = tagMatch.Groups[1].Value;
+            invocationCount += invocations.Count;
+            misses.AddRange(invocations.Where(i => i.MethodName == null).Select(i =>
+                $"{fileName}: invokes an element method named by '{i.Expression}', which traces to no string literal"));
 
-            var known = KnownMethodsFor(tag);
-
-            foreach (Match invocation in InvocationRegex.Matches(source))
+            var tags = RenderedTagsOf(DeclaredTypeNames(source));
+            if (tags.Count == 0)
             {
-                var methodName = invocation.Groups[1].Value;
-                if (!known.Contains(methodName))
-                    misses.Add($"{Path.GetFileName(file)} ({tag}): invokes element method '{methodName}' " +
-                        "which is neither CEM-documented, a native DOM method (nativeElementMethods), " +
-                        "nor allowlisted in parity-config.json (extraElementMethods)");
+                misses.Add($"{fileName}: invokes element methods, but none of its classes (or their descendants) renders an element, so the methods cannot be checked");
+                continue;
+            }
+
+            foreach (var tag in tags)
+            {
+                var known = KnownMethodsFor(tag);
+                foreach (var methodName in invocations.Select(i => i.MethodName).OfType<string>().Distinct(StringComparer.Ordinal))
+                {
+                    if (!known.Contains(methodName))
+                        misses.Add($"{fileName} ({tag}): invokes element method '{methodName}' " +
+                            "which is neither CEM-documented, a native DOM method (nativeElementMethods), " +
+                            "nor allowlisted in parity-config.json (extraElementMethods)");
+                }
             }
         }
 
-        Assert.True(misses.Count == 0,
-            $"Unknown element method invocations ({misses.Count}):{Environment.NewLine}" +
-            string.Join(Environment.NewLine, misses));
+        // guard the scan itself: a pattern that silently stopped matching would pass vacuously
+        Assert.True(invocationCount > 0, "The source scan found no element method invocations at all");
+
+        AssertNoMisses(misses, "Unknown element method invocations");
     }
 
     /// <summary>
@@ -78,48 +94,135 @@ public class ElementMethodInvocationTests
             }
         }
 
-        Assert.True(misses.Count == 0,
-            $"Redundant extraElementMethods entries ({misses.Count}):{Environment.NewLine}" +
-            string.Join(Environment.NewLine, misses));
+        AssertNoMisses(misses, "Redundant extraElementMethods entries");
+    }
+
+    /// <summary>
+    /// Allowlisted extra element methods must still be invoked by a wrapper of the element; an entry nothing
+    /// invokes would silently admit a future misspelling.
+    /// </summary>
+    [Fact]
+    public void ExtraElementMethods_AreInvoked()
+    {
+        var invoked = new HashSet<(string Tag, string Method)>();
+
+        foreach (var file in WrapperSourceFiles())
+        {
+            var source = File.ReadAllText(file);
+            var methods = InvokedMethods(source).Select(i => i.MethodName).OfType<string>().ToList();
+            foreach (var tag in RenderedTagsOf(DeclaredTypeNames(source)))
+                invoked.UnionWith(methods.Select(m => (tag, m)));
+        }
+
+        var misses = Config.Components
+            .SelectMany(c => c.Value.ExtraElementMethods.Select(m => (Tag: c.Key, Method: m)))
+            .Where(e => !invoked.Contains(e))
+            .Select(e => $"{e.Tag}: extraElementMethods entry '{e.Method}' is invoked by no wrapper of the element and must be removed")
+            .ToList();
+
+        AssertNoMisses(misses, "Stale extraElementMethods entries");
+    }
+
+    /// <summary>
+    /// Every "nativeElementMethods" entry must still be invoked by some wrapper; an entry nothing invokes would
+    /// silently admit a misspelled call on any element.
+    /// </summary>
+    [Fact]
+    public void NativeElementMethods_AreInvoked()
+    {
+        var invoked = WrapperSourceFiles()
+            .SelectMany(file => InvokedMethods(File.ReadAllText(file)).Select(i => i.MethodName).OfType<string>())
+            .ToHashSet(StringComparer.Ordinal);
+
+        var misses = Config.NativeElementMethods
+            .Where(m => !invoked.Contains(m))
+            .Select(m => $"nativeElementMethods entry '{m}' is invoked by no wrapper and must be removed")
+            .ToList();
+
+        AssertNoMisses(misses, "Stale nativeElementMethods entries");
     }
 
     #region ------ Internals ------
 
-    private const string DataDirectory = "ApiParity";
-    private const string SurfaceFileName = "expected-api-surface.json";
-    private const string ConfigFileName = "parity-config.json";
-
-    // the component's own element is always opened at sequence 0; nested helper elements use
-    // later sequence numbers, so the first wa-* OpenElement identifies the wrapped tag
-    private static readonly Regex TagRegex = new(
-        "OpenElement\\(0,\\s*\"(wa-[a-z0-9-]+)\"\\)", RegexOptions.Compiled);
-
+    // a call of WebAwesomeJSInterop.InvokeMethodAsync (member access, so the declarations do not match) with any
+    // generic arguments, however nested, and any element expression; the method name is a literal or an identifier
     private static readonly Regex InvocationRegex = new(
-        "InvokeMethodAsync(?:<[^>(]+>)?\\(\\s*Element\\.Value,\\s*\"([^\"]+)\"", RegexOptions.Compiled);
+        "\\.InvokeMethodAsync\\b[^(]*\\(\\s*[^,()]+,\\s*(?:\"([^\"]+)\"|([A-Za-z_]\\w*))", RegexOptions.Compiled);
 
-    private static readonly ApiSurface Surface = LoadDataFile<ApiSurface>(SurfaceFileName);
-    private static readonly ParityConfig Config = LoadDataFile<ParityConfig>(ConfigFileName);
+    private static readonly Regex DeclaredTypeRegex = new(
+        "\\b(?:class|record)\\s+([A-Za-z_]\\w*)", RegexOptions.Compiled);
 
-    private static T LoadDataFile<T>(string fileName)
+    /// <summary>
+    /// An element method invocation found in source.
+    /// </summary>
+    /// <param name="MethodName">The invoked method name, or null when it cannot be traced to a literal</param>
+    /// <param name="Expression">The method-name expression as written</param>
+    internal sealed record ElementMethodInvocation(string? MethodName, string Expression);
+
+    /// <summary>
+    /// Finds the element method invocations in a source file. A method name passed as a string parameter of the
+    /// enclosing helper method is resolved to the string literals the helper is called with.
+    /// </summary>
+    /// <param name="source">C# source text</param>
+    /// <returns>The invocations; untraceable names have a null MethodName</returns>
+    internal static IEnumerable<ElementMethodInvocation> InvokedMethods(string source)
     {
-        var path = Path.Combine(AppContext.BaseDirectory, DataDirectory, fileName);
-        using var stream = File.OpenRead(path);
-        return JsonSerializer.Deserialize<T>(stream)
-            ?? throw new InvalidOperationException($"Failed to deserialize {path}");
+        foreach (Match match in InvocationRegex.Matches(source))
+        {
+            if (match.Groups[1].Success)
+            {
+                yield return new ElementMethodInvocation(match.Groups[1].Value, match.Groups[1].Value);
+                continue;
+            }
+
+            var parameterName = match.Groups[2].Value;
+            var helper = Regex.Match(source, $"\\b([A-Za-z_]\\w*)\\s*\\(\\s*string\\s+{Regex.Escape(parameterName)}\\b");
+            var literals = helper.Success
+                ? Regex.Matches(source, $"\\b{Regex.Escape(helper.Groups[1].Value)}\\s*\\(\\s*\"([^\"]+)\"").Select(m => m.Groups[1].Value).ToList()
+                : new List<string>();
+
+            if (literals.Count == 0)
+            {
+                yield return new ElementMethodInvocation(null, parameterName);
+                continue;
+            }
+
+            foreach (var literal in literals)
+                yield return new ElementMethodInvocation(literal, parameterName);
+        }
     }
 
-    private static IEnumerable<string> WrapperSourceFiles()
+    /// <summary>
+    /// Returns the names of the classes and records a source file declares.
+    /// </summary>
+    /// <param name="source">C# source text</param>
+    /// <returns>The declared type names</returns>
+    internal static IReadOnlySet<string> DeclaredTypeNames(string source)
     {
-        var componentsDir = Path.Combine(WrapperProjectDirectory(), "Components");
-        Assert.True(Directory.Exists(componentsDir), $"Wrapper source directory not found: {componentsDir}");
-        return Directory.EnumerateFiles(componentsDir, "*.cs");
+        return DeclaredTypeRegex.Matches(source).Select(m => m.Groups[1].Value).ToHashSet(StringComparer.Ordinal);
     }
 
-    private static string WrapperProjectDirectory([CallerFilePath] string thisFile = "")
+    /// <summary>
+    /// Returns the tags rendered by the wrappers that are, or derive from, one of the named types.
+    /// </summary>
+    /// <param name="typeNames">Type names (generic arity stripped)</param>
+    /// <returns>The rendered tags</returns>
+    internal static IReadOnlySet<string> RenderedTagsOf(IReadOnlySet<string> typeNames)
     {
-        // this test file lives in src\WebAwesome.Blazor.Tests\ApiParity\
-        var testProjectDir = Path.GetDirectoryName(Path.GetDirectoryName(thisFile))!;
-        return Path.Combine(Path.GetDirectoryName(testProjectDir)!, "WebAwesome.Blazor");
+        return RenderedWrapperCatalog.All
+            .Where(w => w.Tag != null && IsOrDerivesFromAny(w.ComponentType, typeNames))
+            .Select(w => w.Tag!)
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    private static bool IsOrDerivesFromAny(Type type, IReadOnlySet<string> typeNames)
+    {
+        for (var current = type; current != null; current = current.BaseType)
+        {
+            if (current.Assembly == WrapperAssembly && typeNames.Contains(StripGenericArity(current.Name))) return true;
+        }
+
+        return false;
     }
 
     private static HashSet<string> KnownMethodsFor(string tag)

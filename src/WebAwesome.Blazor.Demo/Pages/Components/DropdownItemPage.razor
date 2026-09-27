@@ -3,7 +3,7 @@
 <PageTitle>Dropdown Item</PageTitle>
 
 <h1>Dropdown Item <ComponentBadges Tag="wa-dropdown-item" /></h1>
-<p><code>&lt;wa-dropdown-item&gt;</code> wrapped by <code>WaDropdownItem</code>.</p>
+<p>An individual menu item within a <a href="/components/dropdown"><code>WaDropdown</code></a>. Set <code>Href</code> to navigate when the item is selected; <code>Target</code>, <code>Rel</code> and <code>Download</code> work as they do on an <code>&lt;a&gt;</code> element. Link items keep the <code>menuitem</code> role, so make the label describe the destination; items with a submenu ignore <code>Href</code>. <code>&lt;wa-dropdown-item&gt;</code> wrapped by <code>WaDropdownItem</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaDropdown>
@@ -18,7 +18,21 @@
     </WaDropdown>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\dropdown-item.md) *@
+<ExampleSection Title="Links" Code="@LinksExample">
+    <WaDropdown>
+        <TriggerContent>
+            <WaButton WithCaret="true">Resources</WaButton>
+        </TriggerContent>
+        <ChildContent>
+            <WaDropdownItem Href="/components/dropdown" IconName="book">Dropdown documentation</WaDropdownItem>
+            <WaDropdownItem Href="https://github.com/boldbrick/WebAwesome-Blazor" Target="WaLinkTarget.Blank" Rel="noopener noreferrer" IconName="arrow-up-right-from-square">
+                GitHub repository
+            </WaDropdownItem>
+            <WaDivider />
+            <WaDropdownItem Href="/data/api-surface.json" Download="api-surface.json" IconName="download">Download API surface</WaDropdownItem>
+        </ChildContent>
+    </WaDropdown>
+</ExampleSection>
 
 <ApiTable Tag="wa-dropdown-item" />
 
@@ -32,6 +46,22 @@
                 <WaDropdownItem>Option 1</WaDropdownItem>
                 <WaDropdownItem>Option 2</WaDropdownItem>
                 <WaDropdownItem>Option 3</WaDropdownItem>
+            </ChildContent>
+        </WaDropdown>
+        """;
+
+    private const string LinksExample = """
+        <WaDropdown>
+            <TriggerContent>
+                <WaButton WithCaret="true">Resources</WaButton>
+            </TriggerContent>
+            <ChildContent>
+                <WaDropdownItem Href="/components/dropdown" IconName="book">Dropdown documentation</WaDropdownItem>
+                <WaDropdownItem Href="https://github.com/boldbrick/WebAwesome-Blazor" Target="WaLinkTarget.Blank" Rel="noopener noreferrer" IconName="arrow-up-right-from-square">
+                    GitHub repository
+                </WaDropdownItem>
+                <WaDivider />
+                <WaDropdownItem Href="/data/api-surface.json" Download="api-surface.json" IconName="download">Download API surface</WaDropdownItem>
             </ChildContent>
         </WaDropdown>
         """;

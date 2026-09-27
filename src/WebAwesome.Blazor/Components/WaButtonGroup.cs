@@ -44,10 +44,22 @@ public class WaButtonGroup : ComponentBase
 
     // Button group properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// A label for the button group. This is not displayed on the screen, but it is announced by assistive devices
     /// when interacting with the control and is strongly recommended.
     /// </summary>
     [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Horizontal;
 
     /// <summary>
     /// The button group's orientation.
@@ -70,14 +82,14 @@ public class WaButtonGroup : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-button-group");
+        var attributes = builder.OpenWaElement(this, 0, "wa-button-group");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "label", Label);
-        builder.AddAttributeIfNotNull(5, "orientation", Orientation?.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "label", Label, DefaultLabel);
+        builder.AddAttributeIfNotNull(attributes, 5, "orientation", Orientation?.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(10, __buttonGroupReference => Element = __buttonGroupReference);

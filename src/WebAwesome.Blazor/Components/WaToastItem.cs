@@ -13,7 +13,21 @@ namespace WebAwesome.Blazor.Components;
 /// Corresponds to the wa-toast-item Web Awesome component.
 /// </summary>
 /// <remarks>
-/// This is a Pro component.
+/// <para>
+/// The model owns the item's lifetime. A toast item shows as soon as it is rendered into a <see cref="WaToast"/>.
+/// Once it has hidden (closed by the user, dismissed after <see cref="Duration"/>, or hidden by
+/// <see cref="HideAsync"/>), the element stays in place, hidden, until the item leaves the render tree. Remove it
+/// from the model in <see cref="OnAfterHide"/>. A hidden item does not show again; to show the notification again,
+/// add a new item with a new key.
+/// </para>
+/// <code>
+/// &lt;WaToast&gt;
+///     @foreach (var message in messages)
+///     {
+///         &lt;WaToastItem @key="message" OnAfterHide="@(() =&gt; messages.Remove(message))"&gt;@message.Text&lt;/WaToastItem&gt;
+///     }
+/// &lt;/WaToast&gt;
+/// </code>
 /// </remarks>
 public class WaToastItem : ComponentBase
 {
@@ -49,15 +63,33 @@ public class WaToastItem : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Duration"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const int DefaultDuration = 5000;
+
+    /// <summary>
     /// The length of time, in milliseconds, before the toast item is automatically dismissed.
     /// Set to 0 to keep the toast item open until the user dismisses it.
     /// </summary>
     [Parameter] public int? Duration { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
+
+    /// <summary>
     /// The toast item's size.
     /// </summary>
     [Parameter] public WaSize? Size { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVariant DefaultVariant = WaVariant.Neutral;
 
     /// <summary>
     /// The toast item's variant.
@@ -91,7 +123,8 @@ public class WaToastItem : ComponentBase
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
 
     /// <summary>
-    /// Invoked after the toast item has finished hiding.
+    /// Invoked after the toast item has finished hiding. Remove the item from the model here: the hidden element
+    /// stays in place until the item leaves the render tree.
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnAfterHide { get; set; }
 
@@ -121,15 +154,18 @@ public class WaToastItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-toast-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-toast-item");
 
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "duration", Duration);
-        builder.AddAttributeIfNotNull(5, "size", Size?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(6, "variant", Variant?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "duration", Duration, DefaultDuration);
+        builder.AddAttributeIfNotNull(attributes, 5, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 6, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
         builder.AddAttribute(7, "with-icon", WithIcon);
+
+        // Blazor owns this element: the JS initializer hides it in place where Web Awesome would remove it
+        builder.AddAttribute(8, Constants.BlazorOwnedAttribute, true);
 
         // event handlers (onwa- prefix; all four events are registered in the JS initializer)
         builder.AddAttributeIfHasDelegate(10, "onwa-show", OnShow);
@@ -165,7 +201,8 @@ public class WaToastItem : ComponentBase
     #region ------ Public Methods ------
 
     /// <summary>
-    /// Hides the toast item with animation and removes it from the DOM.
+    /// Hides the toast item with animation. The hidden element stays in place until the item leaves the render tree;
+    /// remove it from the model in <see cref="OnAfterHide"/>.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>

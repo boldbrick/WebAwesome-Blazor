@@ -56,6 +56,12 @@ public class WaIcon : ComponentBase
     [Parameter] public string? Name { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Library"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLibrary = "default";
+
+    /// <summary>
     /// The name of a registered custom icon library.
     /// </summary>
     [Parameter] public string? Library { get; set; }
@@ -79,6 +85,12 @@ public class WaIcon : ComponentBase
     /// as code and can result in XSS attacks.
     /// </summary>
     [Parameter] public string? Src { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
 
     /// <summary>
     /// An alternate description to use for assistive devices. If omitted, the icon is considered presentational
@@ -107,9 +119,14 @@ public class WaIcon : ComponentBase
     [Parameter] public WaFlip? Flip { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Rotate"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultRotate = 0;
+
+    /// <summary>
     /// Sets the rotation degree of the icon.
     /// </summary>
-    [Parameter] public int Rotate { get; set; } = 0;
+    [Parameter] public int Rotate { get; set; } = DefaultRotate;
 
     /// <summary>
     /// Sets the icon canvas — the box the icon is centered within. Unset renders as fixed
@@ -141,7 +158,7 @@ public class WaIcon : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-icon");
+        var attributes = builder.OpenWaElement(this, 0, "wa-icon");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -150,16 +167,16 @@ public class WaIcon : ComponentBase
 
         // Add icon-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "name", Name);
-        builder.AddAttributeIfNotNullOrEmpty(11, "library", Library);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "library", Library, DefaultLibrary);
         builder.AddAttributeIfNotNullOrEmpty(12, "family", Family);
         builder.AddAttributeIfNotNullOrEmpty(13, "variant", Variant);
         builder.AddAttributeIfNotNullOrEmpty(14, "src", Src);
-        builder.AddAttributeIfNotNullOrEmpty(15, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 15, "label", Label, DefaultLabel);
         builder.AddAttribute(16, "auto-width", AutoWidth);
         builder.AddAttribute(17, "swap-opacity", SwapOpacity);
         builder.AddAttributeIfNotNull(18, "animation", Animation?.ToHtmlValue());
         builder.AddAttributeIfNotNull(19, "flip", Flip?.ToHtmlValue());
-        builder.AddAttribute(20, "rotate", Rotate);
+        builder.AddNumberAttribute(attributes, 20, "rotate", Rotate, DefaultRotate);
         builder.AddAttributeIfNotNull(21, "canvas", Canvas?.ToHtmlValue());
 
         // Add event handlers

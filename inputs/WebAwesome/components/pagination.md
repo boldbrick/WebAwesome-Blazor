@@ -1,138 +1,28 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/pagination.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/pagination -->
+---
+title: Pagination
+layout: component
+category: Navigation
+synonyms:
+  - pager
+  - pages
+  - paging
+use-cases:
+  - search results
+  - data tables
+  - archives
+  - large lists
+---
 
-# Pagination
-
-`<wa-pagination>`
-
-Experimental [Navigation](https://webawesome.com/docs/components/?category=navigation) [Since 3.11](https://webawesome.com/docs/resources/changelog#wa_3110)
-
-Pagination splits long lists of content into pages, letting users navigate between them.
-
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="3" label="Search results"></wa-pagination>
 ```
 
 Set `total` and `page-size` to generate numbered page buttons with previous and next controls. Use the `label` attribute to give the control an accessible name, which is especially helpful when more than one appears on the same page.
 
-**Pagination is a navigation control, not a form control.**  
+:::info
+<strong>Pagination is a navigation control, not a form control.</strong><br />
 It tracks the current page and emits events, but it doesn't submit a value with a form. Keep `page` in sync with your data by updating it in response to the [`wa-page-change`](#responding-to-page-changes) event.
-
-## Accessibility Considerations
-
-Pagination ships with several accessibility behaviors built in:
-
--   **Page changes are announced.** When the page changes, the new position is announced to screen readers through a shared live region, so the update isn't silent.
--   **Focus follows the page.** After a control is activated, focus moves to the new current page rather than falling back to the top of the document, keeping keyboard users oriented.
--   **The current page is marked.** The active page carries `aria-current="page"`, and disabled or boundary controls carry `aria-disabled` so assistive technology skips them.
--   **Icons are direction-aware.** The previous, next, first, and last icons flip automatically in right-to-left languages.
-
-Give the control an accessible name with the `label` attribute whenever more than one pagination appears on a page, so screen reader users can tell them apart.
-
-## API
-
-### Importing
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/pagination/pagination.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/pagination/pagination.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/pagination/pagination.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaPagination from '@awesome.me/webawesome/dist/react/pagination/index.js';
-```
-
-### Slots
-
-| Name | Description |
-| --- | --- |
-| \`first-icon\` | An icon to use in lieu of the default first icon. |
-| \`last-icon\` | An icon to use in lieu of the default last icon. |
-| \`next-icon\` | An icon to use in lieu of the default next icon. |
-| \`previous-icon\` | An icon to use in lieu of the default previous icon. |
-
-### Attributes & Properties
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`appearance\` appearance | \`'outlined' \\| 'filled' \\| 'plain'\` The pagination's visual appearance. Type Default 'outlined' | |
-| \`boundaryCount\` boundary-count | \`number\` The of pages to always show at the start and end. Type number Default 1 | |
-| \`disabled\` disabled | \`boolean\` Disables the pagination. Type Default false | |
-| \`format\` format | \`standard\` The pagination's layout. The default format shows the full page list with ellipses; compact collapses it into a short "1 of 5" label flanked by the previous and next buttons, useful in tight spaces like toolbars and cards. Type 'standard' \\| 'compact' Default 'standard' | |
-| \`hideSinglePage\` hide-single-page | \`boolean\` Renders nothing when there's only one page. Type Default false | |
-| \`hrefTemplate\` href-template | \`[\` A URL template used to render page items as links instead of buttons. When set, items render as elements for SSR, SEO, and no-JS support. Provide a string with {page} as a placeholder for the page number, e.g. /products?page={page}. In JavaScript, you can also assign a function that receives the page number and returns the URL, e.g. el.hrefTemplate = page => \\/products?page=${page}\`\`. Type string \\| ((page: number) => string) Default '' | |
-| \`label\` label | \`string\` A label that describes the pagination to assistive devices. This won't be shown on the screen, but it will be announced by screen readers. Especially useful when more than one pagination control exists on the same page. Type Default '' | |
-| \`page\` page | \`number\` The current page, starting at 1. Type Default 1 | |
-| \`pageSize\` page-size | \`number\` The of items shown per page. Type number Default 10 | |
-| \`siblingCount\` sibling-count | \`number\` The of pages to show on each side of the current page. Type number Default 2 | |
-| \`total\` total | \`number\` The total of items to paginate. Type number Default 0 | |
-| \`totalPages\` | \`total\` The number of pages, derived from total and pageSize. | |
-| \`withEdges\` with-edges | \`boolean\` Shows buttons that jump to the first and last pages. Type Default false | |
-| \`withoutNav\` without-nav | \`boolean\` Hides the previous and next buttons. Type Default false | |
-| \`withSummary\` with-summary | \`boolean\` Shows a summary of the items on the current page, e.g. "1–10 of 237". Type Default false | |]()
-
-### Events
-
-| Name | Description |
-| --- | --- |
-| \`wa-before-page-change\` | \`event.preventDefault()\` Emitted when the page is about to change but before it does. Canceling this event with prevents the page from changing. |
-| \`wa-page-change\` | Emitted after the page changes. |
-
-### Custom States
-
-| Name | Description | CSS selector |
-| --- | --- | --- |
-| \`disabled\` | Applied when the pagination is disabled. | \`:state(disabled)\` |
-
-### CSS Parts
-
-| Name | Description | CSS selector |
-| --- | --- | --- |
-| \`button\` | Every button or link, including page numbers and navigation controls. | \`::part(button)\` |
-| \`ellipsis\` | An ellipsis for collapsed pages. Acts as a button that jumps several pages toward that side. | \`::part(ellipsis)\` |
-| \`first-button\` | The first button. | \`::part(first-button)\` |
-| \`label\` | \`compact\` The "1 of 5" label shown between the navigation buttons in the layout. | \`::part(label)\` |
-| \`last-button\` | The last button. | \`::part(last-button)\` |
-| \`next-button\` | The next button. | \`::part(next-button)\` |
-| \`page\` | A page number button or link. | \`::part(page)\` |
-| \`page-current\` | The current page number button or link. | \`::part(page-current)\` |
-| \`pages\` | The list that wraps the page number items. | \`::part(pages)\` |
-| \`pagination\` | \`
-
-\` The component's outer wrapper, a element. | \`::part(pagination)\` |
-| \`previous-button\` | The previous button. | \`::part(previous-button)\` |
-| \`summary\` | \`with-summary\` The summary of items on the current page, shown with the attribute. | \`::part(summary)\` |
-| \`base\` | \`pagination\` Deprecated. Use the part instead. | \`::part(base)\` |
-
-### Dependencies
-
-This component automatically imports the following elements. Sub-dependencies, if any exist, will also be included in this list.
-
--   [`<wa-icon>`](https://webawesome.com/docs/components/icon)
+:::
 
 ## Examples
 
@@ -140,7 +30,7 @@ This component automatically imports the following elements. Sub-dependencies, i
 
 Set the `appearance` attribute to change the pagination's visual style. Valid appearances are `outlined` (the default), `filled`, and `plain`.
 
-```html
+```html {.example}
 <div class="wa-stack">
   <wa-pagination total="237" page-size="10" page="3" appearance="outlined"></wa-pagination>
   <wa-pagination total="237" page-size="10" page="3" appearance="filled"></wa-pagination>
@@ -152,7 +42,7 @@ Set the `appearance` attribute to change the pagination's visual style. Valid ap
 
 Pagination has no `size` attribute; set `font-size` on the control or any ancestor to scale it.
 
-```html
+```html {.example}
 <div class="wa-stack">
   <wa-pagination total="237" page-size="10" page="3" style="font-size: var(--wa-font-size-s)"></wa-pagination>
   <wa-pagination total="237" page-size="10" page="3"></wa-pagination>
@@ -164,7 +54,7 @@ Pagination has no `size` attribute; set `font-size` on the control or any ancest
 
 Use the `sibling-count` attribute to set how many pages show on each side of the current page (defaults to `2`), and `boundary-count` to set how many show at the start and end (defaults to `1`). Remaining pages collapse into an ellipsis, which jumps several pages toward that side when activated.
 
-```html
+```html {.example}
 <div class="wa-stack">
   <wa-pagination total="1000" page-size="10" page="50" sibling-count="1" boundary-count="1"></wa-pagination>
   <wa-pagination total="1000" page-size="10" page="50" sibling-count="3" boundary-count="2"></wa-pagination>
@@ -175,7 +65,7 @@ Use the `sibling-count` attribute to set how many pages show on each side of the
 
 Add the `with-edges` attribute to show buttons that jump to the first and last pages.
 
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="10" with-edges></wa-pagination>
 ```
 
@@ -183,7 +73,7 @@ Add the `with-edges` attribute to show buttons that jump to the first and last p
 
 Add the `without-nav` attribute to hide the previous and next buttons, leaving only the page numbers.
 
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="3" without-nav></wa-pagination>
 ```
 
@@ -191,7 +81,7 @@ Add the `without-nav` attribute to hide the previous and next buttons, leaving o
 
 Add the `with-summary` attribute to show a summary of the items on the current page.
 
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="1" with-summary></wa-pagination>
 ```
 
@@ -199,13 +89,13 @@ Add the `with-summary` attribute to show a summary of the items on the current p
 
 Set the `format` attribute to `compact` to replace the page numbers with a short "1 of 5" label between the previous and next buttons.
 
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="1" format="compact"></wa-pagination>
 ```
 
 The compact format can be combined with other features, such as `with-summary`:
 
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="1" format="compact" with-summary></wa-pagination>
 ```
 
@@ -213,7 +103,7 @@ The compact format can be combined with other features, such as `with-summary`:
 
 Use the `previous-icon`, `next-icon`, `first-icon`, and `last-icon` slots to replace the default navigation icons.
 
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="5" with-edges>
   <wa-icon slot="previous-icon" name="backward-step"></wa-icon>
   <wa-icon slot="next-icon" name="forward-step"></wa-icon>
@@ -222,14 +112,16 @@ Use the `previous-icon`, `next-icon`, `first-icon`, and `last-icon` slots to rep
 </wa-pagination>
 ```
 
-**Replacing an icon doesn't replace its label.**  
+:::info
+<strong>Replacing an icon doesn't replace its label.</strong><br />
 The navigation buttons keep their built-in accessible labels, so screen readers still announce them correctly.
+:::
 
 ### Disabled
 
 Add the `disabled` attribute to disable the entire pagination control.
 
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="3" disabled></wa-pagination>
 ```
 
@@ -243,9 +135,9 @@ Add the `hide-single-page` attribute to render nothing when there's only one pag
 
 ### Page Size Selector
 
-Pair a [select](https://webawesome.com/docs/components/select) with the pagination control to let users change the page size. Update `page-size` when the selection changes, and reset to the first page.
+Pair a [select](/docs/components/select) with the pagination control to let users change the page size. Update `page-size` when the selection changes, and reset to the first page.
 
-```html
+```html {.example}
 <div class="pagination-page-size">
   <wa-pagination total="237" page-size="10" page="1"></wa-pagination>
 
@@ -286,7 +178,7 @@ Pair a [select](https://webawesome.com/docs/components/select) with the paginati
 
 When the user changes the page, the `wa-page-change` event is emitted with `{ page, pageSize }` in `event.detail`. Update the `page` property to reflect the new page and load the corresponding data.
 
-```html
+```html {.example}
 <div class="pagination-change-demo">
   <wa-pagination class="pagination-change" total="237" page-size="10" page="1"></wa-pagination>
 
@@ -311,7 +203,7 @@ When the user changes the page, the `wa-page-change` event is emitted with `{ pa
 
 Set the `page` property to any valid page to change the current page without user interaction. Setting `page` directly doesn't emit `wa-page-change`.
 
-```html
+```html {.example}
 <div class="pagination-set-demo">
   <wa-pagination class="pagination-set" total="237" page-size="10" page="1"></wa-pagination>
 
@@ -340,7 +232,7 @@ Set the `page` property to any valid page to change the current page without use
 
 Call `event.preventDefault()` on the `wa-before-page-change` event to cancel a page change, such as to guard against unsaved changes.
 
-```html
+```html {.example}
 <wa-pagination class="pagination-guard" total="237" page-size="10" page="1"></wa-pagination>
 
 <script>
@@ -362,13 +254,13 @@ Call `event.preventDefault()` on the `wa-before-page-change` event to cancel a p
 
 Set the `href-template` attribute to render page items as links instead of buttons, using `{page}` as a placeholder for the page number. Every control links through the template, which works well for server-rendered pages.
 
-```html
+```html {.example}
 <wa-pagination total="237" page-size="10" page="3" href-template="?page={page}"></wa-pagination>
 ```
 
 In JavaScript, you can also set the `hrefTemplate` property to a function that receives the page number and returns the URL. This is handy when the URL doesn't follow a simple substitution. When server-rendering, set the `href-template` attribute to the closest equivalent as well, so the server and the browser render the same markup.
 
-```html
+```html {.example}
 <wa-pagination
   class="pagination-href-fn"
   total="237"
@@ -384,8 +276,10 @@ In JavaScript, you can also set the `hrefTemplate` property to a function that r
 </script>
 ```
 
-**In link mode, the component navigates instead of updating itself.**  
+:::info
+<strong>In link mode, the component navigates instead of updating itself.</strong><br />
 Render it on the server with the correct `page` for each request. Disabled and boundary controls, such as previous on the first page, render as anchors with no `href` and `aria-disabled` set.
+:::
 
 ### Customizing
 
@@ -393,7 +287,7 @@ Use the exported [CSS parts](#css-parts) to customize the pagination's appearanc
 
 This example turns the control into a row of pill-shaped buttons, gives the navigation arrows a colorful circular treatment, and highlights the current page with a gradient and a soft glow.
 
-```html
+```html {.example}
 <wa-pagination
   class="custom-pagination"
   total="237"
@@ -482,3 +376,14 @@ This example turns the control into a row of pill-shaped buttons, gives the navi
   }
 </style>
 ```
+
+## Accessibility Considerations
+
+Pagination ships with several accessibility behaviors built in:
+
+- **Page changes are announced.** When the page changes, the new position is announced to screen readers through a shared live region, so the update isn't silent.
+- **Focus follows the page.** After a control is activated, focus moves to the new current page rather than falling back to the top of the document, keeping keyboard users oriented.
+- **The current page is marked.** The active page carries `aria-current="page"`, and disabled or boundary controls carry `aria-disabled` so assistive technology skips them.
+- **Icons are direction-aware.** The previous, next, first, and last icons flip automatically in right-to-left languages.
+
+Give the control an accessible name with the `label` attribute whenever more than one pagination appears on a page, so screen reader users can tell them apart.

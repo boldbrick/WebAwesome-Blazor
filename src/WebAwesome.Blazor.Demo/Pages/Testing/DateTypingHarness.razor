@@ -1,0 +1,111 @@
+@page "/testing/date-typing"
+
+@* e2e harness for tools\e2e\tests\date-typing.spec.js - deliberately outside /components/, so it is neither derived
+   from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. The date inputs and pickers are Pro components: they upgrade only with a Pro
+   asset override (tools\demo\Set-WaProAssets.ps1), and their tests skip visibly otherwise. Each echo reads the typed
+   model's own members (DateOnly.DayOfWeek, WaDateRange.From/To/IsComplete, TimeOnly.Hour/Minute), culture-free *@
+
+<PageTitle>Testing: Date Typing</PageTitle>
+
+<h1>Date Typing Harness</h1>
+<p>This page is an end-to-end test harness for the strongly typed date and time wrappers: each control is bound to a typed model, whose members are echoed next to it.</p>
+
+<ExampleSection Title="Typed values">
+    <table>
+        <thead><tr><th>Wrapper</th><th>Control</th><th>Typed model</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><code>WaDateInput</code> <ComponentBadges Tag="wa-date-input" /></td>
+                <td><WaDateInput Label="Date" data-testid="dt-date-input" Today="Today" @bind-Value="dateValue" /></td>
+                <td>
+                    <code data-testid="dt-date-input-model">@DemoFormat.Iso(dateValue)</code>
+                    <code data-testid="dt-date-input-weekday">@dateValue?.DayOfWeek</code>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateRangeInput</code> <ComponentBadges Tag="wa-date-input" /></td>
+                <td><WaDateRangeInput Label="Stay" data-testid="dt-range-input" Today="Today" @bind-Value="rangeInputValue" /></td>
+                <td>
+                    <code data-testid="dt-range-input-from">@DemoFormat.Iso(rangeInputValue?.From)</code>
+                    <code data-testid="dt-range-input-to">@DemoFormat.Iso(rangeInputValue?.To)</code>
+                    <code data-testid="dt-range-input-complete">@rangeInputValue?.IsComplete</code>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDatePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                <td><WaDatePicker data-testid="dt-date-picker" Today="Today" FocusedDate="Today" @bind-Value="datePickerValue" /></td>
+                <td>
+                    <code data-testid="dt-date-picker-model">@DemoFormat.Iso(datePickerValue)</code>
+                    <code data-testid="dt-date-picker-weekday">@datePickerValue?.DayOfWeek</code>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDateRangePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                <td><WaDateRangePicker data-testid="dt-range-picker" Today="Today" FocusedDate="Today" @bind-Value="rangePickerValue" OnInput="e => rangePickerInput = e.Value as string" /></td>
+                <td>
+                    <code data-testid="dt-range-picker-from">@DemoFormat.Iso(rangePickerValue?.From)</code>
+                    <code data-testid="dt-range-picker-to">@DemoFormat.Iso(rangePickerValue?.To)</code>
+                    <code data-testid="dt-range-picker-complete">@rangePickerValue?.IsComplete</code>
+                    <code data-testid="dt-range-picker-input">@rangePickerInput</code>
+                </td>
+            </tr>
+            <tr>
+                <td><code>WaDatePicker</code> (disabled days) <ComponentBadges Tag="wa-date-picker" /></td>
+                <td><WaDatePicker data-testid="dt-disabled-picker" Today="Today" FocusedDate="Today" DisabledDates="Holidays" DisabledDaysOfWeek="Weekend" @bind-Value="disabledPickerValue" /></td>
+                <td><code data-testid="dt-disabled-picker-model">@DemoFormat.Iso(disabledPickerValue)</code></td>
+            </tr>
+            <tr>
+                <td><code>WaTimeInput</code></td>
+                <td><WaTimeInput Label="Time" HourFormat="WaTimeHourFormat.TwentyFour" data-testid="dt-time-input" @bind-Value="timeValue" /></td>
+                <td>
+                    <code data-testid="dt-time-input-model">@DemoFormat.Iso(timeValue)</code>
+                    <code data-testid="dt-time-input-parts">@(timeValue is { } time ? $"{time.Hour}h {time.Minute}m" : "")</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</ExampleSection>
+
+<ExampleSection Title="Instants">
+    <table>
+        <thead><tr><th>Row</th><th>Instant</th><th>Rendered</th></tr></thead>
+        <tbody>
+            <tr data-testid="rt-utc">
+                <td><code>rt-utc</code></td>
+                <td>2 hours ago, as a UTC DateTimeOffset</td>
+                <td><WaRelativeTime Lang="en-US" Date="twoHoursAgoUtc" /></td>
+            </tr>
+            <tr data-testid="rt-offset">
+                <td><code>rt-offset</code></td>
+                <td>the same instant, as a DateTimeOffset at UTC-05:00</td>
+                <td><WaRelativeTime Lang="en-US" Date="twoHoursAgoUtc.ToOffset(NewYorkOffset)" /></td>
+            </tr>
+        </tbody>
+    </table>
+</ExampleSection>
+
+@code {
+    // a fixed "today" (a Friday), so the calendars show the same month on every run
+    private static readonly DateOnly Today = new(2024, 3, 15);
+    private static readonly IReadOnlySet<DateOnly> Holidays = new HashSet<DateOnly> { new(2024, 3, 20), new(2024, 3, 21) };
+    private static readonly IReadOnlySet<DayOfWeek> Weekend = new HashSet<DayOfWeek> { DayOfWeek.Saturday, DayOfWeek.Sunday };
+    private static readonly TimeSpan NewYorkOffset = TimeSpan.FromHours(-5);
+    private const int RelativeHoursAgo = 2;
+
+    private DateOnly? dateValue;
+    private WaDateRange? rangeInputValue;
+    private DateOnly? datePickerValue;
+    private WaDateRange? rangePickerValue;
+    private string? rangePickerInput;
+    private DateOnly? disabledPickerValue;
+    private TimeOnly? timeValue;
+    private DateTimeOffset twoHoursAgoUtc;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        // computed once, so re-renders never shift the reference instant
+        twoHoursAgoUtc = DateTimeOffset.UtcNow.AddHours(-RelativeHoursAgo);
+    }
+}

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 
@@ -12,24 +13,74 @@ namespace WebAwesome.Blazor.Components;
 /// A rating input component that allows users to provide feedback using stars or custom symbols.
 /// Corresponds to the wa-rating Web Awesome component.
 /// </summary>
+/// <remarks>
+/// wa-rating dispatches no input event, so the inherited <see cref="WaInputBase{TValue}.OnInput"/> is never
+/// raised; use <c>@bind-Value</c> (the change event) or <see cref="OnHover"/> instead.
+/// </remarks>
 public class WaRating : WaInputBase<decimal>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Makes the input read-only, allowing its value to be seen but not edited.
+    /// </summary>
+    [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
+    /// Plain-text label rendered via the element's "label" attribute (wa-rating has no label slot).
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
+
+    #endregion
+
     #region ------ Rating Properties ------
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Max"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultMax = 5;
 
     /// <summary>
     /// The highest rating to show.
     /// </summary>
-    [Parameter] public int Max { get; set; } = 5;
+    [Parameter] public int Max { get; set; } = DefaultMax;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Precision"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultPrecision = 1m;
 
     /// <summary>
     /// The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this to 0.5.
     /// </summary>
-    [Parameter] public decimal Precision { get; set; } = 1;
+    [Parameter] public decimal Precision { get; set; } = DefaultPrecision;
+
+    /// <summary>
+    /// The Web Awesome default of the bound value (the "value" attribute), which renders no attribute until the value
+    /// first differs from it. Named after <c>CurrentValue</c>, because <c>DefaultValue</c> is the parameter below.
+    /// </summary>
+    public const decimal DefaultCurrentValue = 0m;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="DefaultValue"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const decimal DefaultDefaultValue = 0m;
 
     /// <summary>
     /// The default value of the form control. Used to reset the rating to its initial value.
     /// </summary>
-    [Parameter] public decimal DefaultValue { get; set; }
+    [Parameter] public decimal DefaultValue { get; set; } = DefaultDefaultValue;
 
     #endregion
 
@@ -52,42 +103,52 @@ public class WaRating : WaInputBase<decimal>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-rating");
+        var attributes = builder.OpenWaElement(this, 0, "wa-rating");
 
         // Add common attributes from base
         AddCommonAttributes(builder, 1);
 
-        // Add rating-specific attributes
-        builder.AddAttribute(20, "max", Max);
-        builder.AddAttribute(21, "precision", Precision);
-        builder.AddAttribute(22, "readonly", Readonly);
-        builder.AddAttribute(23, "value", BindConverter.FormatValue(CurrentValue));
-        builder.AddAttribute(24, "default-value", DefaultValue);
+        // Add the form control attributes the element declares
+        builder.AddAttribute(8, "required", Required);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label, DefaultLabel);
 
-        // Add value binding
-        builder.AddAttribute(30, "onchange", EventCallback.Factory.CreateBinder<decimal>(this, __value => CurrentValue = __value, CurrentValue));
+        // Add rating-specific attributes
+        builder.AddNumberAttribute(attributes, 20, "max", Max, DefaultMax);
+        builder.AddNumberAttribute(attributes, 21, "precision", Precision, DefaultPrecision);
+        builder.AddAttribute(22, "readonly", Readonly);
+        builder.AddNumberAttribute(attributes, 23, "value", CurrentValue, DefaultCurrentValue);
+        builder.AddNumberAttribute(attributes, 24, "default-value", DefaultValue, DefaultDefaultValue);
+
+        // Add value binding; the element's live value is a JS number, which Blazor's built-in change reader cannot
+        // carry, so the handler listens to the "numericchange" alias of the change event that delivers it as an
+        // invariant-culture string. No live-property sync is needed: the value attribute maps to the live property.
+        builder.AddAttribute(30, Constants.NumericChangeEventAttribute, EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChange));
         builder.SetUpdatesAttributeName("value");
 
         // Add rating-specific event handlers
         builder.AddAttributeIfHasDelegate(40, "onwa-hover", OnHover);
         builder.AddAttributeIfHasDelegate(41, "onwa-invalid", OnInvalid);
 
-        // Add common event handlers
-        AddCommonEventHandlers(builder, 50);
+        // Add common event handlers; wa-rating dispatches no input event, so the inherited OnInput is not bound
+        AddCommonEventHandlers(builder, 50, includeInputHandler: false);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(60, __ratingReference => Element = __ratingReference);
-
-        // Add label and hint slots
-        AddLabelAndHintSlots(builder, 70);
 
         builder.CloseElement();
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Formats with the invariant culture, the form <see cref="TryParseValueFromString"/> reads back (the base class would
+    /// use the current culture, e.g. "2,5").
+    /// </remarks>
+    protected override string? FormatValueAsString(decimal value) => value.ToString(CultureInfo.InvariantCulture);
+
+    /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out decimal result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        if (decimal.TryParse(value, out result))
+        if (ChangeEventArgsExtensions.TryParseJsNumber(value, out result))
         {
             validationErrorMessage = null;
             return true;
@@ -144,6 +205,18 @@ public class WaRating : WaInputBase<decimal>
             throw new ArgumentNullException(nameof(jsFunction));
 
         await JSInterop.SetPropertyAsync(Element.Value, "getSymbol", jsFunction);
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // handles the change event, whose value the numericchange alias delivers as a JS-formatted number; leaves the
+    // model unchanged when the value cannot be parsed
+    private void HandleValueChange(ChangeEventArgs args)
+    {
+        if (ChangeEventArgsExtensions.TryParseJsNumber(args.GetStringValue(), out var value))
+            CurrentValue = value;
     }
 
     #endregion

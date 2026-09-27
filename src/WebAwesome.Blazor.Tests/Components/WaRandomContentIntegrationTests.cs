@@ -20,26 +20,27 @@ public class WaRandomContentIntegrationTests : BunitContext
     }
 
     [Fact]
-    public void DefaultRender_EmitsElementWithDefaultAttributes()
+    public void DefaultRender_EmitsNoDefaultAttributes()
     {
         // Arrange & Act
         var cut = Render<WaRandomContent>();
 
-        // Assert - non-nullable defaults are always emitted (items=1, mode=unique, animation=none, interval=3000)
+        // Assert - the non-nullable parameters hold the element defaults (items=1, mode=unique, animation=none,
+        // interval=3000), which render nothing, so the element's own defaults apply
         var element = cut.Find("wa-random-content");
-        Assert.Equal("1", element.GetAttribute("items"));
-        Assert.Equal("unique", element.GetAttribute("mode"));
-        Assert.Equal("none", element.GetAttribute("animation"));
-        Assert.Equal("3000", element.GetAttribute("autoplay-interval"));
+        Assert.False(element.HasAttribute("items"));
+        Assert.False(element.HasAttribute("mode"));
+        Assert.False(element.HasAttribute("animation"));
+        Assert.False(element.HasAttribute("autoplay-interval"));
         // autoplay is a bool attribute, false by default -> Blazor omits it
         Assert.False(element.HasAttribute("autoplay"));
     }
 
     [Theory]
     [InlineData(WaRandomContentMode.Random, "random")]
-    [InlineData(WaRandomContentMode.Unique, "unique")]
+    [InlineData(WaRandomContentMode.Unique, null)]
     [InlineData(WaRandomContentMode.Sequence, "sequence")]
-    public void Mode_MapsToHtmlValue(WaRandomContentMode mode, string expected)
+    public void Mode_MapsToHtmlValue(WaRandomContentMode mode, string? expected)
     {
         // Arrange & Act
         var cut = Render<WaRandomContent>(parameters => parameters.Add(p => p.Mode, mode));
@@ -49,13 +50,13 @@ public class WaRandomContentIntegrationTests : BunitContext
     }
 
     [Theory]
-    [InlineData(WaRandomContentAnimation.None, "none")]
+    [InlineData(WaRandomContentAnimation.None, null)]
     [InlineData(WaRandomContentAnimation.Fade, "fade")]
     [InlineData(WaRandomContentAnimation.FadeUp, "fade-up")]
     [InlineData(WaRandomContentAnimation.FadeDown, "fade-down")]
     [InlineData(WaRandomContentAnimation.FadeLeft, "fade-left")]
     [InlineData(WaRandomContentAnimation.FadeRight, "fade-right")]
-    public void Animation_MapsToKebabCaseHtmlValue(WaRandomContentAnimation animation, string expected)
+    public void Animation_MapsToKebabCaseHtmlValue(WaRandomContentAnimation animation, string? expected)
     {
         // Arrange & Act
         var cut = Render<WaRandomContent>(parameters => parameters.Add(p => p.Animation, animation));

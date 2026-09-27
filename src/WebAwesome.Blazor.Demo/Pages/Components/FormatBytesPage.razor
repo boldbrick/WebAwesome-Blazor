@@ -1,18 +1,74 @@
-﻿@page "/components/format-bytes"
+@page "/components/format-bytes"
 
 <PageTitle>Format Bytes</PageTitle>
 
-<h1>Format Bytes</h1>
-<p><code>&lt;wa-format-bytes&gt;</code> wrapped by <code>WaFormatBytes</code>.</p>
+<h1>Format Bytes <ComponentBadges Tag="wa-format-bytes" /></h1>
+<p>Formats a number of bytes or bits as a human-readable file size. <code>&lt;wa-format-bytes&gt;</code> wrapped by <code>WaFormatBytes</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaFormatBytes />
+    <WaFormatBytes Value="1500" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\format-bytes.md) *@
+<ExampleSection Title="Formatting Bytes" Code="@BytesExample">
+    <ul>
+        <li><WaFormatBytes Value="12" /></li>
+        <li><WaFormatBytes Value="1200" /></li>
+        <li><WaFormatBytes Value="1200000" /></li>
+        <li><WaFormatBytes Value="1200000000" /></li>
+    </ul>
+</ExampleSection>
+
+<ExampleSection Title="Formatting Bits" Code="@BitsExample">
+    <ul>
+        <li><WaFormatBytes Value="12" Unit="WaByteUnit.Bit" /></li>
+        <li><WaFormatBytes Value="1200" Unit="WaByteUnit.Bit" /></li>
+        <li><WaFormatBytes Value="1200000" Unit="WaByteUnit.Bit" /></li>
+    </ul>
+</ExampleSection>
+
+<ExampleSection Title="Display" Code="@DisplayExample">
+    <ul>
+        <li><WaFormatBytes Value="1200000" Display="WaDisplay.Short" /></li>
+        <li><WaFormatBytes Value="1200000" Display="WaDisplay.Long" /></li>
+        <li><WaFormatBytes Value="1200000" Display="WaDisplay.Narrow" /></li>
+    </ul>
+</ExampleSection>
+
+<ExampleSection Title="Localization" Code="@LocalizationExample">
+    <ul>
+        <li>German: <WaFormatBytes Value="1200000" Lang="de" /></li>
+        <li>Czech: <WaFormatBytes Value="1200000" Lang="cs" Display="WaDisplay.Long" /></li>
+        <li>Russian: <WaFormatBytes Value="1200000" Lang="ru" /></li>
+    </ul>
+</ExampleSection>
 
 <ApiTable Tag="wa-format-bytes" />
 
 @code {
-    private const string DefaultExample = "<WaFormatBytes />";
+    private const string DefaultExample = """<WaFormatBytes Value="1500" />""";
+
+    private const string BytesExample = """
+        <WaFormatBytes Value="12" />
+        <WaFormatBytes Value="1200" />
+        <WaFormatBytes Value="1200000" />
+        <WaFormatBytes Value="1200000000" />
+        """;
+
+    private const string BitsExample = """
+        <WaFormatBytes Value="12" Unit="WaByteUnit.Bit" />
+        <WaFormatBytes Value="1200" Unit="WaByteUnit.Bit" />
+        <WaFormatBytes Value="1200000" Unit="WaByteUnit.Bit" />
+        """;
+
+    private const string DisplayExample = """
+        <WaFormatBytes Value="1200000" Display="WaDisplay.Short" />
+        <WaFormatBytes Value="1200000" Display="WaDisplay.Long" />
+        <WaFormatBytes Value="1200000" Display="WaDisplay.Narrow" />
+        """;
+
+    private const string LocalizationExample = """
+        German: <WaFormatBytes Value="1200000" Lang="de" />
+        Czech: <WaFormatBytes Value="1200000" Lang="cs" Display="WaDisplay.Long" />
+        Russian: <WaFormatBytes Value="1200000" Lang="ru" />
+        """;
 }

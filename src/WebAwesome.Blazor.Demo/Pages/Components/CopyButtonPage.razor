@@ -3,16 +3,121 @@
 <PageTitle>Copy Button</PageTitle>
 
 <h1>Copy Button <ComponentBadges Tag="wa-copy-button" /></h1>
-<p><code>&lt;wa-copy-button&gt;</code> wrapped by <code>WaCopyButton</code>.</p>
+<p>Copy buttons copy text to the clipboard when the user activates them. <code>&lt;wa-copy-button&gt;</code> wrapped by <code>WaCopyButton</code>. Unset, the tooltip labels are Web Awesome's own, in the page's language.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaCopyButton />
+    <WaCopyButton Value="Web Awesome rocks!" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\copy-button.md) *@
+<ExampleSection Title="Custom Labels" Code="@LabelsExample">
+    <WaCopyButton Value="Custom labels are easy" CopyLabel="Click to copy" SuccessLabel="You did it!" ErrorLabel="Whoops, your browser doesn't support this!" />
+</ExampleSection>
+
+<ExampleSection Title="Changing the Icons" Code="@IconsExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaCopyButton Value="Copied from a custom button" CopyIconName="clipboard" SuccessIconName="thumbs-up" ErrorIconName="xmark" />
+        <WaCopyButton Value="Copied from fragment icons">
+            <CopyIcon><WaIcon Name="copy" Variant="regular" /></CopyIcon>
+            <SuccessIcon><WaIcon Name="circle-check" /></SuccessIcon>
+        </WaCopyButton>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Copying Values From Other Elements" Code="@FromExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+            <span id="copy-phone">+1 (234) 456-7890</span>
+            <WaCopyButton From="copy-phone" />
+        </WaCluster>
+        <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+            <a id="copy-link" href="https://webawesome.com/">Web Awesome website</a>
+            <WaCopyButton From="copy-link[href]" />
+        </WaCluster>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Tooltip" Code="@TooltipExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaCopyButton Value="Full tooltip" Tooltip="WaCopyButtonTooltip.Full" TooltipPlacement="WaTooltipSide.Top" />
+        <WaCopyButton Value="Copy tooltip only" Tooltip="WaCopyButtonTooltip.Copy" TooltipPlacement="WaTooltipSide.Right" />
+        <WaCopyButton Value="No tooltip" Tooltip="WaCopyButtonTooltip.None" />
+        <WaCopyButton Value="Tooltip below" TooltipPlacement="WaTooltipSide.Bottom" />
+        <WaCopyButton Value="Tooltip to the left" TooltipPlacement="WaTooltipSide.Left" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Feedback Duration" Code="@DurationExample">
+    <WaCopyButton Value="Web Awesome rocks!" FeedbackDuration="250" />
+</ExampleSection>
+
+<ExampleSection Title="Disabled" Code="@DisabledExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaCopyButton Value="You can't copy me" Disabled="true" />
+        <WaCopyButton Value="But you can copy me" Disabled="false" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Copy and Error Events" Code="@EventsExample">
+    <WaCopyButton Value="Counted copy" OnCopy="() => copies++" OnError="() => errors++" />
+    <p>Copied <strong>@copies</strong> time(s), <strong>@errors</strong> error(s).</p>
+</ExampleSection>
 
 <ApiTable Tag="wa-copy-button" />
 
 @code {
-    private const string DefaultExample = "<WaCopyButton />";
+    private int copies;
+    private int errors;
+
+    private const string DefaultExample = """<WaCopyButton Value="Web Awesome rocks!" />""";
+
+    private const string LabelsExample = """
+        <WaCopyButton Value="Custom labels are easy" CopyLabel="Click to copy" SuccessLabel="You did it!" ErrorLabel="Whoops, your browser doesn't support this!" />
+        """;
+
+    private const string IconsExample = """
+        <WaCluster Gap="GapSize.Gap_M">
+            <WaCopyButton Value="Copied from a custom button" CopyIconName="clipboard" SuccessIconName="thumbs-up" ErrorIconName="xmark" />
+            <WaCopyButton Value="Copied from fragment icons">
+                <CopyIcon><WaIcon Name="copy" Variant="regular" /></CopyIcon>
+                <SuccessIcon><WaIcon Name="circle-check" /></SuccessIcon>
+            </WaCopyButton>
+        </WaCluster>
+        """;
+
+    private const string FromExample = """
+        <span id="copy-phone">+1 (234) 456-7890</span>
+        <WaCopyButton From="copy-phone" />
+
+        <a id="copy-link" href="https://webawesome.com/">Web Awesome website</a>
+        <WaCopyButton From="copy-link[href]" />
+        """;
+
+    private const string TooltipExample = """
+        <WaCluster Gap="GapSize.Gap_M">
+            <WaCopyButton Value="Full tooltip" Tooltip="WaCopyButtonTooltip.Full" TooltipPlacement="WaTooltipSide.Top" />
+            <WaCopyButton Value="Copy tooltip only" Tooltip="WaCopyButtonTooltip.Copy" TooltipPlacement="WaTooltipSide.Right" />
+            <WaCopyButton Value="No tooltip" Tooltip="WaCopyButtonTooltip.None" />
+            <WaCopyButton Value="Tooltip below" TooltipPlacement="WaTooltipSide.Bottom" />
+            <WaCopyButton Value="Tooltip to the left" TooltipPlacement="WaTooltipSide.Left" />
+        </WaCluster>
+        """;
+
+    private const string DurationExample = """<WaCopyButton Value="Web Awesome rocks!" FeedbackDuration="250" />""";
+
+    private const string DisabledExample = """
+        <WaCluster Gap="GapSize.Gap_M">
+            <WaCopyButton Value="You can't copy me" Disabled="true" />
+            <WaCopyButton Value="But you can copy me" Disabled="false" />
+        </WaCluster>
+        """;
+
+    private const string EventsExample = """
+        <WaCopyButton Value="Counted copy" OnCopy="() => copies++" OnError="() => errors++" />
+        <p>Copied @copies time(s), @errors error(s).</p>
+
+        @code {
+            private int copies;
+            private int errors;
+        }
+        """;
 }

@@ -1,9 +1,9 @@
-﻿@page "/components/split-panel"
+@page "/components/split-panel"
 
 <PageTitle>Split Panel</PageTitle>
 
-<h1>Split Panel</h1>
-<p><code>&lt;wa-split-panel&gt;</code> wrapped by <code>WaSplitPanel</code>.</p>
+<h1>Split Panel <ComponentBadges Tag="wa-split-panel" /></h1>
+<p>Split panels show two adjacent panels that the user can resize with a divider. <code>&lt;wa-split-panel&gt;</code> wrapped by <code>WaSplitPanel</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaSplitPanel Style="height: 200px;">
@@ -16,19 +16,143 @@
     </WaSplitPanel>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\split-panel.md) *@
+<ExampleSection Title="Initial Position" Code="@PositionExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSplitPanel Position="75" Style="height: 100px;">
+            <StartContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%; padding: var(--wa-space-s);">75%</div></StartContent>
+            <EndContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; padding: var(--wa-space-s);">25%</div></EndContent>
+        </WaSplitPanel>
+        <WaSplitPanel PositionInPixels="150" Style="height: 100px;">
+            <StartContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%; padding: var(--wa-space-s);">150px</div></StartContent>
+            <EndContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; padding: var(--wa-space-s);">Rest</div></EndContent>
+        </WaSplitPanel>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Vertical" Code="@VerticalExample">
+    <WaSplitPanel Orientation="WaOrientation.Vertical" Style="height: 240px;">
+        <StartContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%; padding: var(--wa-space-s);">Top</div></StartContent>
+        <EndContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; padding: var(--wa-space-s);">Bottom</div></EndContent>
+    </WaSplitPanel>
+</ExampleSection>
+
+<ExampleSection Title="Snapping" Code="@SnapExample">
+    <p>The divider snaps to 100px, 50% and 400px when dragged within 20px of them.</p>
+    <WaSplitPanel Snap="100px 50% 400px" SnapThreshold="20" Style="height: 100px;">
+        <StartContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%;"></div></StartContent>
+        <EndContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%;"></div></EndContent>
+    </WaSplitPanel>
+</ExampleSection>
+
+<ExampleSection Title="Primary Panel" Code="@PrimaryExample">
+    <p>When the host resizes, the primary panel keeps its size and the other panel takes up the difference.</p>
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSplitPanel Primary="WaPrimary.Start" Style="height: 80px;">
+            <StartContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%; padding: var(--wa-space-s);">Primary start</div></StartContent>
+            <EndContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; padding: var(--wa-space-s);">End</div></EndContent>
+        </WaSplitPanel>
+        <WaSplitPanel Primary="WaPrimary.End" Style="height: 80px;">
+            <StartContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; padding: var(--wa-space-s);">Start</div></StartContent>
+            <EndContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%; padding: var(--wa-space-s);">Primary end</div></EndContent>
+        </WaSplitPanel>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Disabled and Custom Divider" Code="@DividerExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaSplitPanel Disabled="true" Style="height: 80px;">
+            <StartContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%; padding: var(--wa-space-s);">Locked</div></StartContent>
+            <EndContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; padding: var(--wa-space-s);">Locked</div></EndContent>
+        </WaSplitPanel>
+        <WaSplitPanel Disabled="false" Style="height: 80px; --divider-width: 4px;">
+            <StartContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%;"></div></StartContent>
+            <DividerContent><WaIcon Name="grip-vertical" /></DividerContent>
+            <EndContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%;"></div></EndContent>
+        </WaSplitPanel>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Tracking the Position" Code="@RepositionExample">
+    <WaSplitPanel Style="height: 80px;" OnReposition="e => position = e.Position">
+        <StartContent><div style="background: var(--wa-color-brand-fill-quiet); height: 100%;"></div></StartContent>
+        <EndContent><div style="background: var(--wa-color-neutral-fill-quiet); height: 100%;"></div></EndContent>
+    </WaSplitPanel>
+    <p>Divider at <strong>@position.ToString("0.#")%</strong></p>
+</ExampleSection>
 
 <ApiTable Tag="wa-split-panel" />
 
 @code {
+    private decimal position = 50;
+
     private const string DefaultExample = """
         <WaSplitPanel Style="height: 200px;">
             <StartContent>
-                <div style="background: var(--wa-color-brand-fill-quiet); height: 100%; display: flex; align-items: center; justify-content: center;">Start</div>
+                <div style="...; height: 100%;">Start</div>
             </StartContent>
             <EndContent>
-                <div style="background: var(--wa-color-neutral-fill-quiet); height: 100%; display: flex; align-items: center; justify-content: center;">End</div>
+                <div style="...; height: 100%;">End</div>
             </EndContent>
         </WaSplitPanel>
+        """;
+
+    private const string PositionExample = """
+        <WaSplitPanel Position="75" Style="height: 100px;">
+            <StartContent><div>75%</div></StartContent>
+            <EndContent><div>25%</div></EndContent>
+        </WaSplitPanel>
+        <WaSplitPanel PositionInPixels="150" Style="height: 100px;">
+            <StartContent><div>150px</div></StartContent>
+            <EndContent><div>Rest</div></EndContent>
+        </WaSplitPanel>
+        """;
+
+    private const string VerticalExample = """
+        <WaSplitPanel Orientation="WaOrientation.Vertical" Style="height: 240px;">
+            <StartContent><div>Top</div></StartContent>
+            <EndContent><div>Bottom</div></EndContent>
+        </WaSplitPanel>
+        """;
+
+    private const string SnapExample = """
+        <WaSplitPanel Snap="100px 50% 400px" SnapThreshold="20" Style="height: 100px;">
+            <StartContent><div></div></StartContent>
+            <EndContent><div></div></EndContent>
+        </WaSplitPanel>
+        """;
+
+    private const string PrimaryExample = """
+        <WaSplitPanel Primary="WaPrimary.Start" Style="height: 80px;">
+            <StartContent><div>Primary start</div></StartContent>
+            <EndContent><div>End</div></EndContent>
+        </WaSplitPanel>
+        <WaSplitPanel Primary="WaPrimary.End" Style="height: 80px;">
+            <StartContent><div>Start</div></StartContent>
+            <EndContent><div>Primary end</div></EndContent>
+        </WaSplitPanel>
+        """;
+
+    private const string DividerExample = """
+        <WaSplitPanel Disabled="true" Style="height: 80px;">
+            <StartContent><div>Locked</div></StartContent>
+            <EndContent><div>Locked</div></EndContent>
+        </WaSplitPanel>
+        <WaSplitPanel Disabled="false" Style="height: 80px; --divider-width: 4px;">
+            <StartContent><div></div></StartContent>
+            <DividerContent><WaIcon Name="grip-vertical" /></DividerContent>
+            <EndContent><div></div></EndContent>
+        </WaSplitPanel>
+        """;
+
+    private const string RepositionExample = """
+        <WaSplitPanel Style="height: 80px;" OnReposition="e => position = e.Position">
+            <StartContent><div></div></StartContent>
+            <EndContent><div></div></EndContent>
+        </WaSplitPanel>
+        <p>Divider at @position.ToString("0.#")%</p>
+
+        @code {
+            private decimal position = 50;
+        }
         """;
 }

@@ -84,7 +84,7 @@ public class WaResizeObserver : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-resize-observer");
+        var attributes = builder.OpenWaElement(this, 0, "wa-resize-observer");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);

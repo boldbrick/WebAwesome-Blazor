@@ -3,11 +3,11 @@
 <PageTitle>Time Input</PageTitle>
 
 <h1>Time Input <ComponentBadges Tag="wa-time-input" /></h1>
-<p>Time inputs enter a time of day through a segmented field or a column popup. The submitted value matches native <code>&lt;input type="time"&gt;</code> (<code>HH:mm</code>, or <code>HH:mm:ss</code> when seconds are shown). <code>&lt;wa-time-input&gt;</code> wrapped by <code>WaTimeInput</code>.</p>
+<p>Time inputs enter a time of day through a segmented field or a column popup. <code>WaTimeInput</code> binds a <code>TimeOnly?</code>; the element's wire value matches native <code>&lt;input type="time"&gt;</code> (<code>HH:mm</code>, or <code>HH:mm:ss</code> when the step shows seconds) and is converted culture-free. <code>&lt;wa-time-input&gt;</code> wrapped by <code>WaTimeInput</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaTimeInput Label="Pick a time" @bind-Value="defaultValue" />
-    <p>Value: <code>@(defaultValue ?? "(empty)")</code></p>
+    <p>Value: <code>@(defaultValue is null ? "(empty)" : DemoFormat.Iso(defaultValue))</code></p>
 </ExampleSection>
 
 <ExampleSection Title="Initial Value &amp; Now Button" Code="@ValueExample">
@@ -19,22 +19,25 @@
 </ExampleSection>
 
 <ExampleSection Title="Min &amp; Max" Code="@ConstraintsExample">
-    <WaTimeInput Label="Office hours" Min="09:00" Max="17:00" @bind-Value="officeValue" />
+    <WaTimeInput Label="Office hours" Min="OfficeOpens" Max="OfficeCloses" @bind-Value="officeValue" />
 </ExampleSection>
 
 <ApiTable Tag="wa-time-input" />
 
 @code {
-    private string? defaultValue;
-    private string? meetingValue = "14:30";
-    private string? preciseValue;
-    private string? officeValue;
+    private static readonly TimeOnly OfficeOpens = new(9, 0);
+    private static readonly TimeOnly OfficeCloses = new(17, 0);
+
+    private TimeOnly? defaultValue;
+    private TimeOnly? meetingValue = new(14, 30);
+    private TimeOnly? preciseValue;
+    private TimeOnly? officeValue;
 
     private const string DefaultExample = """
         <WaTimeInput Label="Pick a time" @bind-Value="defaultValue" />
 
         @code {
-            private string? defaultValue;
+            private TimeOnly? defaultValue;
         }
         """;
 
@@ -42,7 +45,7 @@
         <WaTimeInput Label="Meeting time" WithClear="true" WithNow="true" @bind-Value="meetingValue" />
 
         @code {
-            private string? meetingValue = "14:30";
+            private TimeOnly? meetingValue = new(14, 30);
         }
         """;
 
@@ -50,15 +53,17 @@
         <WaTimeInput Label="24-hour with seconds" HourFormat="WaTimeHourFormat.TwentyFour" Step="1" @bind-Value="preciseValue" />
 
         @code {
-            private string? preciseValue;
+            private TimeOnly? preciseValue;
         }
         """;
 
     private const string ConstraintsExample = """
-        <WaTimeInput Label="Office hours" Min="09:00" Max="17:00" @bind-Value="officeValue" />
+        <WaTimeInput Label="Office hours" Min="OfficeOpens" Max="OfficeCloses" @bind-Value="officeValue" />
 
         @code {
-            private string? officeValue;
+            private static readonly TimeOnly OfficeOpens = new(9, 0);
+            private static readonly TimeOnly OfficeCloses = new(17, 0);
+            private TimeOnly? officeValue;
         }
         """;
 }

@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/bubble-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bubble-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.12.0 release zip (dist/skills/webawesome/references/components/bubble-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/bubble-chart -->
 
 # Bubble Chart [Pro]
 
@@ -13,14 +13,14 @@ Bubble charts add a third dimension to scatter plots by varying the size of each
 **[Get Bubble Chart with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=bubble-chart)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
--   Responsive [Layout Tools](https://webawesome.com/docs/utilities)
+-   [Native Styles](https://webawesome.com/docs/utilities/native)
+-   [CSS + Layout Utilities](https://webawesome.com/docs/utilities)
 -   Ever-Growing [Pattern Library](https://webawesome.com/docs/patterns)
 -   Unlimited Hosted Projects
 -   Pre-Built [Pro Themes](https://webawesome.com/docs/themes)
 -   Pro Theme Builder
 -   Pro Color Tools
--   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma) Newer additions to Web Awesome, like [`<wa-toast>`](https://webawesome.com/docs/components/toast), aren't included in the currently available kit, but a new version is in the works.  
-    Track its progress on GitHub.
+-   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma)
 -   [WA Pro Perpetual License](https://webawesome.com/license/pro)
 -   Actual Humanâ„¢ Support
 
@@ -79,7 +79,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/bubble-chart/bubble-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.12.0/components/bubble-chart/bubble-chart.js';
 ```
 
 \*\*npm\*\*

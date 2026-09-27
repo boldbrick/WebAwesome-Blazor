@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -55,14 +56,18 @@ public class WaRelativeTime : ComponentBase
 
     // Relative time properties
     /// <summary>
-    /// The date from which to calculate elapsed time. Takes precedence over <see cref="DateString"/> when set.
+    /// The instant from which to calculate elapsed time. Rendered with its offset (ISO 8601,
+    /// <c>2026-01-02T03:04:05.678+01:00</c>), so the browser reads the same instant in every time zone. When null, the
+    /// attribute is omitted and Web Awesome uses the current time; once a date was rendered, a return to null renders the current
+    /// instant (read from the registered <see cref="TimeProvider"/>) instead of removing the attribute, which the element would
+    /// read as the 1970 epoch.
     /// </summary>
-    [Parameter] public DateTime? Date { get; set; }
-
-    /// <summary>
-    /// The date from which to calculate elapsed time, as an ISO 8601 string. Used only when <see cref="Date"/> is not set.
-    /// </summary>
-    [Parameter] public string? DateString { get; set; }
+    /// <remarks>
+    /// A <see cref="DateTime"/> converts implicitly: a UTC one (<see cref="DateTimeKind.Utc"/>) keeps its instant, but
+    /// an unspecified or local one takes the offset of the server's time zone. Convert a UTC value read without its kind
+    /// (e.g. from a database column) with <c>DateTime.SpecifyKind(value, DateTimeKind.Utc)</c> first.
+    /// </remarks>
+    [Parameter] public DateTimeOffset? Date { get; set; }
 
     /// <summary>
     /// Keeps the displayed value up to date as time passes.
@@ -70,20 +75,34 @@ public class WaRelativeTime : ComponentBase
     [Parameter] public bool Sync { get; set; }
 
     /// <summary>
-    /// The formatting style to use.
+    /// The Web Awesome default of <see cref="Format"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public WaFormat Format { get; set; } = WaFormat.Auto;
+    public const WaRelativeTimeFormat DefaultFormat = WaRelativeTimeFormat.Long;
+
+    /// <summary>
+    /// The formatting style to use, e.g. "3 hours ago" (long), "3 hr. ago" (short) or "3h ago" (narrow).
+    /// When null, no attribute is emitted and Web Awesome uses its default, long.
+    /// </summary>
+    [Parameter] public WaRelativeTimeFormat? Format { get; set; }
 
     /// <summary>
     /// The locale used to format the relative time phrase, e.g. "en-US".
     /// </summary>
     [Parameter] public string? Lang { get; set; }
 
-    // Numeric style for format
     /// <summary>
-    /// When true, values such as "yesterday" and "tomorrow" are shown when possible; when false, values such as "1 day ago" are always used.
+    /// The Web Awesome default of <see cref="Numeric"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public bool Numeric { get; set; } = true;
+    public const WaRelativeTimeNumeric DefaultNumeric = WaRelativeTimeNumeric.Auto;
+
+    /// <summary>
+    /// Controls whether idiomatic phrases such as "yesterday" and "tomorrow" are used (auto) or numeric
+    /// phrases such as "1 day ago" are always used (always).
+    /// When null, no attribute is emitted and Web Awesome uses its default, auto.
+    /// </summary>
+    [Parameter] public WaRelativeTimeNumeric? Numeric { get; set; }
 
     #endregion
 
@@ -92,7 +111,7 @@ public class WaRelativeTime : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-relative-time");
+        var attributes = builder.OpenWaElement(this, 0, "wa-relative-time");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -100,22 +119,11 @@ public class WaRelativeTime : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add relative time attributes
-        if (Date.HasValue)
-        {
-            // Convert DateTime to ISO 8601 string
-            builder.AddAttribute(10, "date", Date.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffK"));
-        }
-        else
-        {
-            builder.AddAttributeIfNotNullOrEmpty(10, "date", DateString);
-        }
-
+        builder.AddDateTimeOffsetAttribute(attributes, 10, "date", Date, Clock);
         builder.AddAttribute(11, "sync", Sync);
-        if (Format != WaFormat.Auto)
-            builder.AddAttribute(12, "format", Format.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 12, "format", Format?.ToHtmlValue(), DefaultFormat.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(13, "lang", Lang);
-        if (!Numeric)
-            builder.AddAttribute(14, "numeric", Numeric);
+        builder.AddAttributeIfNotNull(attributes, 14, "numeric", Numeric?.ToHtmlValue(), DefaultNumeric.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __relativeTimeReference => Element = __relativeTimeReference);
@@ -126,9 +134,10 @@ public class WaRelativeTime : ComponentBase
     /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
+        // the refresh is skipped while the element's module is still loading: its upgrade renders the current attributes
         if (Element != null)
         {
-            await JSInterop.InvokeMethodAsync(Element.Value, "update");
+            await JSInterop.InvokeMethodIfDefinedAsync(Element.Value, "update");
         }
 
         await base.OnParametersSetAsync();
@@ -152,7 +161,7 @@ public class WaRelativeTime : ComponentBase
 
     #endregion
 
-    #region ------ Private Methods ------
+    #region ------ Internals ------
 
     /// <summary>
     /// Gets the CSS class string combining user classes
@@ -167,15 +176,12 @@ public class WaRelativeTime : ComponentBase
         return string.Join(' ', classes);
     }
 
-    /// <summary>
-    /// Gets the date as a string for JavaScript interop
-    /// </summary>
-    private string? GetDateString()
-    {
-        if (Date.HasValue)
-            return Date.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-        return DateString;
-    }
+    // the element's date defaults to new Date() when it is set up, and a removed attribute would read as the 1970
+    // epoch, so once rendered, a return to null renders the current instant of this clock: the application's
+    // TimeProvider (AddWebAwesome registers the system clock), or the system clock when none is registered
+    private TimeProvider Clock => Services.GetService<TimeProvider>() ?? TimeProvider.System;
+
+    [Inject] private IServiceProvider Services { get; set; } = default!;
 
     #endregion
 }

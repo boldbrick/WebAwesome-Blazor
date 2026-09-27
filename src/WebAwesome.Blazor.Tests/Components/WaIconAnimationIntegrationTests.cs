@@ -10,16 +10,16 @@ namespace WebAwesome.Blazor.Tests.Components;
 public class WaIconAnimationIntegrationTests : BunitContext
 {
     [Fact]
-    public void DefaultRender_OmitsAnimationAndFlipButAlwaysEmitsRotate()
+    public void DefaultRender_OmitsAnimationFlipAndRotate()
     {
         // Arrange & Act
         var cut = Render<WaIcon>(parameters => parameters.Add(p => p.Name, "star"));
 
-        // Assert - rotate always renders (int, default 0); animation/flip are nullable and omitted when unset
+        // Assert - animation/flip are nullable and omitted when unset; rotate (int) holds the element default 0, which renders nothing
         var element = cut.Find("wa-icon");
         Assert.False(element.HasAttribute("animation"));
         Assert.False(element.HasAttribute("flip"));
-        Assert.Equal("0", element.GetAttribute("rotate"));
+        Assert.False(element.HasAttribute("rotate"));
     }
 
     [Theory]

@@ -1,18 +1,90 @@
-﻿@page "/components/avatar"
+@page "/components/avatar"
 
 <PageTitle>Avatar</PageTitle>
 
-<h1>Avatar</h1>
-<p><code>&lt;wa-avatar&gt;</code> wrapped by <code>WaAvatar</code>.</p>
+<h1>Avatar <ComponentBadges Tag="wa-avatar" /></h1>
+<p>Avatars represent a person or object with an image, initials, or an icon. <code>&lt;wa-avatar&gt;</code> wrapped by <code>WaAvatar</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaAvatar />
+    <WaAvatar Label="User avatar" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\avatar.md) *@
+<ExampleSection Title="Images" Code="@ImagesExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaAvatar Image="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=300&q=80" Label="Avatar of a gray tabby kitten looking down" />
+        <WaAvatar Image="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=300&q=80" Label="Avatar of a white and grayish kitten" Loading="WaLoading.Lazy" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Initials" Code="@InitialsExample">
+    <WaAvatar Initials="WA" Label="Avatar with initials: WA" />
+</ExampleSection>
+
+<ExampleSection Title="Custom Icons" Code="@IconsExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaAvatar IconName="image" Label="Avatar with an image icon" />
+        <WaAvatar Label="Avatar with an archive icon">
+            <IconContent><WaIcon Name="box-archive" /></IconContent>
+        </WaAvatar>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Shapes" Code="@ShapesExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaAvatar Shape="WaAvatarShape.Circle" Initials="CI" Label="Circle avatar" />
+        <WaAvatar Shape="WaAvatarShape.Rounded" Initials="RO" Label="Rounded avatar" />
+        <WaAvatar Shape="WaAvatarShape.Square" Initials="SQ" Label="Square avatar" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Sizing" Code="@SizingExample">
+    <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+        <WaAvatar Initials="S" Label="Small avatar" Style="--size: 2rem;" />
+        <WaAvatar Initials="M" Label="Medium avatar" Style="--size: 3rem;" />
+        <WaAvatar Initials="L" Label="Large avatar" Style="--size: 4.5rem;" />
+    </WaCluster>
+</ExampleSection>
 
 <ApiTable Tag="wa-avatar" />
 
 @code {
-    private const string DefaultExample = "<WaAvatar />";
+    private const string DefaultExample = """
+        <WaAvatar Label="User avatar" />
+        """;
+
+    private const string ImagesExample = """
+        <WaCluster Gap="GapSize.Gap_M">
+            <WaAvatar Image="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=300&q=80" Label="Avatar of a gray tabby kitten looking down" />
+            <WaAvatar Image="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=300&q=80" Label="Avatar of a white and grayish kitten" Loading="WaLoading.Lazy" />
+        </WaCluster>
+        """;
+
+    private const string InitialsExample = """
+        <WaAvatar Initials="WA" Label="Avatar with initials: WA" />
+        """;
+
+    private const string IconsExample = """
+        <WaCluster Gap="GapSize.Gap_M">
+            <WaAvatar IconName="image" Label="Avatar with an image icon" />
+            <WaAvatar Label="Avatar with an archive icon">
+                <IconContent><WaIcon Name="box-archive" /></IconContent>
+            </WaAvatar>
+        </WaCluster>
+        """;
+
+    private const string ShapesExample = """
+        <WaCluster Gap="GapSize.Gap_M">
+            <WaAvatar Shape="WaAvatarShape.Circle" Initials="CI" Label="Circle avatar" />
+            <WaAvatar Shape="WaAvatarShape.Rounded" Initials="RO" Label="Rounded avatar" />
+            <WaAvatar Shape="WaAvatarShape.Square" Initials="SQ" Label="Square avatar" />
+        </WaCluster>
+        """;
+
+    private const string SizingExample = """
+        <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center">
+            <WaAvatar Initials="S" Label="Small avatar" Style="--size: 2rem;" />
+            <WaAvatar Initials="M" Label="Medium avatar" Style="--size: 3rem;" />
+            <WaAvatar Initials="L" Label="Large avatar" Style="--size: 4.5rem;" />
+        </WaCluster>
+        """;
 }

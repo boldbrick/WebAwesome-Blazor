@@ -16,7 +16,7 @@ namespace WebAwesome.Blazor.Components;
 /// two-way binding.
 /// </para>
 /// </summary>
-public class WaCheckboxGroup : ComponentBase
+public class WaCheckboxGroup : ComponentBase, IWaLabeledControl
 {
     #region ------ Public Properties ------
 
@@ -55,6 +55,12 @@ public class WaCheckboxGroup : ComponentBase
     /// For hints that contain HTML, use <see cref="MarkupHint"/> instead.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Vertical;
 
     /// <summary>
     /// The orientation in which to show grouped checkboxes. Defaults to vertical when not set.
@@ -111,7 +117,7 @@ public class WaCheckboxGroup : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-checkbox-group");
+        var attributes = builder.OpenWaElement(this, 0, "wa-checkbox-group");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -119,13 +125,11 @@ public class WaCheckboxGroup : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add checkbox group specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "label", Label);
-        builder.AddAttributeIfNotNullOrEmpty(11, "hint", Hint);
-        builder.AddAttributeIfNotNull(12, "orientation", Orientation?.ToHtmlValue());
+        FormControlRendering.AddLabelAndHintAttributes(builder, 10, this);
+        builder.AddAttributeIfNotNull(attributes, 12, "orientation", Orientation?.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
         builder.AddAttributeIfNotNull(13, "size", Size?.ToHtmlValue());
         builder.AddAttribute(14, "required", Required);
-        builder.AddAttribute(15, "with-hint", WithHint);
-        builder.AddAttribute(16, "with-label", WithLabel);
+        FormControlRendering.AddWithHintAndLabelAttributes(builder, 15, this);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(20, __checkboxGroupReference => Element = __checkboxGroupReference);
@@ -137,21 +141,7 @@ public class WaCheckboxGroup : ComponentBase
         }
 
         // Add label and hint markup slots
-        if (MarkupLabel is not null)
-        {
-            builder.OpenElement(40, "span");
-            builder.AddAttribute(41, "slot", "label");
-            builder.AddContent(42, MarkupLabel);
-            builder.CloseElement();
-        }
-
-        if (MarkupHint is not null)
-        {
-            builder.OpenElement(45, "span");
-            builder.AddAttribute(46, "slot", "hint");
-            builder.AddContent(47, MarkupHint);
-            builder.CloseElement();
-        }
+        FormControlRendering.AddLabelAndHintSlots(builder, 40, this);
 
         builder.CloseElement();
     }

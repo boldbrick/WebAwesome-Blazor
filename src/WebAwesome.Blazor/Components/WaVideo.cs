@@ -51,9 +51,21 @@ public class WaVideo : ComponentBase
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Controls"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVideoControls DefaultControls = WaVideoControls.Standard;
+
+    /// <summary>
     /// The controls preset. When unset, the Web Awesome default (standard) applies.
     /// </summary>
     [Parameter] public WaVideoControls? Controls { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Preload"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVideoPreload DefaultPreload = WaVideoPreload.Metadata;
 
     /// <summary>
     /// Controls how the browser preloads the video. When unset, the Web Awesome default (metadata) applies.
@@ -61,9 +73,21 @@ public class WaVideo : ComponentBase
     [Parameter] public WaVideoPreload? Preload { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Src"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultSrc = "";
+
+    /// <summary>
     /// The URL of the video source. For multiple formats, place <c>source</c> elements in the default slot instead.
     /// </summary>
     [Parameter] public string? Src { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Poster"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultPoster = "";
 
     /// <summary>
     /// Poster image URL shown before the video plays.
@@ -71,14 +95,32 @@ public class WaVideo : ComponentBase
     [Parameter] public string? Poster { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Thumbnails"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultThumbnails = "";
+
+    /// <summary>
     /// A URL pointing to a WebVTT file for timeline thumbnail previews.
     /// </summary>
     [Parameter] public string? Thumbnails { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Title"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultTitle = "";
+
+    /// <summary>
     /// The video's title.
     /// </summary>
     [Parameter] public string? Title { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="IconLibrary"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultIconLibrary = "system";
 
     /// <summary>
     /// Icon library used for all built-in control icons.
@@ -116,14 +158,32 @@ public class WaVideo : ComponentBase
     [Parameter] public bool AutoplayOnVisible { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Volume"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const double DefaultVolume = 1;
+
+    /// <summary>
     /// The video's volume, between 0 and 1. When unset, the Web Awesome default (1) applies.
     /// </summary>
     [Parameter] public double? Volume { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Duration"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const double DefaultDuration = 0;
+
+    /// <summary>
     /// The total duration of the video in seconds.
     /// </summary>
     [Parameter] public double? Duration { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="CurrentTime"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const double DefaultCurrentTime = 0;
 
     /// <summary>
     /// The current playback position in seconds.
@@ -265,31 +325,28 @@ public class WaVideo : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-video");
+        var attributes = builder.OpenWaElement(this, 0, "wa-video");
 
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", Class);
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
-        builder.AddAttributeIfNotNull(10, "controls", Controls?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(11, "preload", Preload?.ToHtmlValue());
-        builder.AddAttributeIfNotNullOrEmpty(12, "src", Src);
-        builder.AddAttributeIfNotNullOrEmpty(13, "poster", Poster);
-        builder.AddAttributeIfNotNullOrEmpty(14, "thumbnails", Thumbnails);
-        builder.AddAttributeIfNotNullOrEmpty(15, "title", Title);
-        builder.AddAttributeIfNotNullOrEmpty(16, "icon-library", IconLibrary);
+        builder.AddAttributeIfNotNull(attributes, 10, "controls", Controls?.ToHtmlValue(), DefaultControls.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "preload", Preload?.ToHtmlValue(), DefaultPreload.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "src", Src, DefaultSrc);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "poster", Poster, DefaultPoster);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 14, "thumbnails", Thumbnails, DefaultThumbnails);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 15, "title", Title, DefaultTitle);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 16, "icon-library", IconLibrary, DefaultIconLibrary);
         builder.AddAttribute(17, "playing", Playing);
         builder.AddAttribute(18, "muted", Muted);
         builder.AddAttribute(19, "autoplay", Autoplay);
         builder.AddAttribute(20, "loop", Loop);
         builder.AddAttribute(21, "autoplay-muted", AutoplayMuted);
         builder.AddAttribute(22, "autoplay-on-visible", AutoplayOnVisible);
-        if (Volume.HasValue)
-            builder.AddAttribute(23, "volume", Volume.Value.ToString(CultureInfo.InvariantCulture));
-        if (Duration.HasValue)
-            builder.AddAttribute(24, "duration", Duration.Value.ToString(CultureInfo.InvariantCulture));
-        if (CurrentTime.HasValue)
-            builder.AddAttribute(25, "currentTime", CurrentTime.Value.ToString(CultureInfo.InvariantCulture));
+        builder.AddAttributeIfNotNull(attributes, 23, "volume", Volume, DefaultVolume);
+        builder.AddAttributeIfNotNull(attributes, 24, "duration", Duration, DefaultDuration);
+        builder.AddAttributeIfNotNull(attributes, 25, "currentTime", CurrentTime, DefaultCurrentTime);
 
         // native media events re-dispatched by wa-video on the host element; delivered through
         // Blazor's built-in non-bubbling event registration (no registerCustomEventType needed)

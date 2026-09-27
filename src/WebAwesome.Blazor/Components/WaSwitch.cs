@@ -13,6 +13,32 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaSwitch : WaInputBase<bool>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Hint"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultHint = "";
+
+    /// <summary>
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes
+    /// precedence when set.
+    /// </summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>
+    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? MarkupHint { get; set; }
+
+    #endregion
+
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
@@ -35,7 +61,8 @@ public class WaSwitch : WaInputBase<bool>
     #region ------ Events ------
 
     /// <summary>
-    /// Invoked when the switch's checked state changes.
+    /// Invoked with the new checked state when the user changes it (the element's change event), after the bound
+    /// value has been updated.
     /// </summary>
     [Parameter] public EventCallback<bool> OnCheckedChange { get; set; }
 
@@ -60,10 +87,14 @@ public class WaSwitch : WaInputBase<bool>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-switch");
+        var attributes = builder.OpenWaElement(this, 0, "wa-switch");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
+
+        // Add the form control attributes the element declares
+        builder.AddAttribute(8, "required", Required);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 13, "hint", Hint, DefaultHint);
 
         // Add switch-specific attributes
         builder.AddAttribute(20, "checked", BindConverter.FormatValue(CurrentValue));
@@ -82,8 +113,7 @@ public class WaSwitch : WaInputBase<bool>
         // Add common event handlers
         AddCommonEventHandlers(builder, 30);
 
-        // Add switch-specific event handlers
-        builder.AddAttributeIfHasDelegate(40, "onwa-change", OnCheckedChange);
+        // Add switch-specific event handlers; OnCheckedChange is invoked by the change handler above
         builder.AddAttributeIfHasDelegate(42, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
@@ -95,8 +125,8 @@ public class WaSwitch : WaInputBase<bool>
             builder.AddContent(50, ChildContent);
         }
 
-        // Add label and hint slots
-        AddLabelAndHintSlots(builder, 60);
+        // Add the hint slot; the element has no label slot (the label is the default slot)
+        AddLabelAndHintSlots(builder, 60, markupLabel: null, MarkupHint);
 
         builder.CloseElement();
     }
@@ -104,6 +134,12 @@ public class WaSwitch : WaInputBase<bool>
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out bool result, [NotNullWhen(false)] out string? validationErrorMessage)
         => throw new NotSupportedException($"This component does not parse string inputs. Bind to the '{nameof(CurrentValue)}' property, not '{nameof(CurrentValueAsString)}'.");
+
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "checked";
+
+    /// <inheritdoc />
+    protected override object? GetLiveValue() => CurrentValue;
 
     #endregion
 
@@ -153,12 +189,17 @@ public class WaSwitch : WaInputBase<bool>
     #region ------ Internals ------
 
     // reads the switch's real checked state via JS interop, since the "change" event's own value
-    // (Blazor reads .value for non-<input> elements) is a static placeholder, not the actual state
+    // (Blazor reads .value for non-<input> elements) is a static placeholder, not the actual state;
+    // then reports the new state through OnCheckedChange
     private async Task HandleCheckedChangedAsync(ChangeEventArgs args)
     {
         if (Element is null) return;
 
-        CurrentValue = await JSInterop.GetPropertyAsync<bool>(Element.Value, "checked");
+        var isChecked = await JSInterop.GetPropertyAsync<bool>(Element.Value, "checked");
+        MarkLiveValueSynced(isChecked);
+        CurrentValue = isChecked;
+
+        await OnCheckedChange.InvokeAsync(isChecked);
     }
 
     #endregion

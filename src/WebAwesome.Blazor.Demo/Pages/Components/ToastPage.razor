@@ -11,12 +11,14 @@
 </ExampleSection>
 
 <ExampleSection Title="Declarative Toast Items" Code="@DeclarativeExample">
-    <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => showDeclarativeItems = true)">Show toast items</WaButton>
+    <WaButton Appearance="WaAppearance.Filled" OnClick="ShowDeclarativeItems">Show toast items</WaButton>
     <WaToast>
-        @if (showDeclarativeItems)
+        @foreach (var item in declarativeItems)
         {
-            <WaToastItem Variant="WaVariant.Brand" IconName="bell" Duration="0">This is how a toast item looks!</WaToastItem>
-            <WaToastItem Variant="WaVariant.Success" IconName="circle-check">Your changes have been saved.</WaToastItem>
+            <WaToastItem @key="item" Variant="item.Variant" IconName="@item.IconName" Duration="item.Duration"
+                         OnAfterHide="@(() => declarativeItems.Remove(item))">
+                @item.Message
+            </WaToastItem>
         }
     </WaToast>
 </ExampleSection>
@@ -31,7 +33,8 @@
 @code {
     private WaToast? notificationToast;
     private WaToast? bottomToast;
-    private bool showDeclarativeItems;
+    private readonly List<DeclarativeToast> declarativeItems = [];
+    private int declarativeCounter;
 
     private async Task ShowNotificationAsync()
     {
@@ -42,6 +45,15 @@
     {
         if (bottomToast is not null) await bottomToast.CreateAsync("Hello from the bottom of the screen!");
     }
+
+    private void ShowDeclarativeItems()
+    {
+        // the model owns each item: it shows once rendered and leaves the model when it has hidden
+        declarativeItems.Add(new DeclarativeToast(++declarativeCounter, "This is how a toast item looks!", WaVariant.Brand, "bell", 0));
+        declarativeItems.Add(new DeclarativeToast(++declarativeCounter, "Your changes have been saved.", WaVariant.Success, "circle-check", null));
+    }
+
+    private sealed record DeclarativeToast(int Id, string Message, WaVariant Variant, string IconName, int? Duration);
 
     private const string ProgrammaticExample = """
         <WaButton Appearance="WaAppearance.Filled" OnClick="ShowNotificationAsync">Show notification</WaButton>
@@ -58,17 +70,29 @@
         """;
 
     private const string DeclarativeExample = """
-        <WaButton Appearance="WaAppearance.Filled" OnClick="@(() => showDeclarativeItems = true)">Show toast items</WaButton>
+        <WaButton Appearance="WaAppearance.Filled" OnClick="ShowDeclarativeItems">Show toast items</WaButton>
         <WaToast>
-            @if (showDeclarativeItems)
+            @foreach (var item in declarativeItems)
             {
-                <WaToastItem Variant="WaVariant.Brand" IconName="bell" Duration="0">This is how a toast item looks!</WaToastItem>
-                <WaToastItem Variant="WaVariant.Success" IconName="circle-check">Your changes have been saved.</WaToastItem>
+                <WaToastItem @key="item" Variant="item.Variant" IconName="@item.IconName" Duration="item.Duration"
+                             OnAfterHide="@(() => declarativeItems.Remove(item))">
+                    @item.Message
+                </WaToastItem>
             }
         </WaToast>
 
         @code {
-            private bool showDeclarativeItems;
+            private readonly List<DeclarativeToast> declarativeItems = [];
+            private int declarativeCounter;
+
+            private void ShowDeclarativeItems()
+            {
+                // the model owns each item: it shows once rendered and leaves the model when it has hidden
+                declarativeItems.Add(new DeclarativeToast(++declarativeCounter, "This is how a toast item looks!", WaVariant.Brand, "bell", 0));
+                declarativeItems.Add(new DeclarativeToast(++declarativeCounter, "Your changes have been saved.", WaVariant.Success, "circle-check", null));
+            }
+
+            private sealed record DeclarativeToast(int Id, string Message, WaVariant Variant, string IconName, int? Duration);
         }
         """;
 

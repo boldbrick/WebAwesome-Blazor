@@ -19,7 +19,7 @@ namespace WebAwesome.Blazor.Components;
 /// use the underlying element's change/input events together with JavaScript interop or a custom
 /// upload handler to read the selected files.
 /// </remarks>
-public class WaFileInput : ComponentBase, IFormValidation
+public class WaFileInput : ComponentBase, IFormValidation, IWaLabeledControl
 {
     #region ------ Dependency Injection ------
 
@@ -55,17 +55,36 @@ public class WaFileInput : ComponentBase, IFormValidation
 
     // File input properties
     /// <summary>
-    /// One or more comma-separated file types the input should accept.
+    /// The Web Awesome default of <see cref="Accept"/>: any file type, rendered as the empty attribute in place of null or an
+    /// empty list once the attribute has been rendered.
     /// </summary>
-    [Parameter] public string? Accept { get; set; }
+    public static readonly IReadOnlyList<string> DefaultAccept = [];
 
     /// <summary>
-    /// Plain-text hint rendered via the element's "hint" attribute. Ignored when <see cref="HintContent"/> is set.
+    /// The file types the input accepts, each an extension (<c>.pdf</c>), a MIME type (<c>image/png</c>) or a wildcard
+    /// MIME type (<c>image/*</c>), rendered separated by a comma like the native accept; null or empty accepts any file.
+    /// </summary>
+    [Parameter] public IReadOnlyList<string>? Accept { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Hint"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultHint = "";
+
+    /// <summary>
+    /// Plain-text hint rendered via the element's "hint" attribute; <see cref="MarkupHint"/> takes precedence when set.
     /// </summary>
     [Parameter] public string? Hint { get; set; }
 
     /// <summary>
-    /// Plain-text label rendered via the element's "label" attribute. Ignored when <see cref="LabelContent"/> is set.
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
+    /// Plain-text label rendered via the element's "label" attribute; <see cref="MarkupLabel"/> takes precedence when set.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
@@ -83,6 +102,12 @@ public class WaFileInput : ComponentBase, IFormValidation
     /// Marks the file input as required for form validation.
     /// </summary>
     [Parameter] public bool Required { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The file input's size.
@@ -121,13 +146,25 @@ public class WaFileInput : ComponentBase, IFormValidation
     [Parameter] public EventCallback<EventArgs> OnInput { get; set; }
 
     /// <summary>
-    /// Invoked when the control gains focus.
+    /// Invoked when the focus moves into the control. Bound to the bubbling, composed focusin event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusin"), because the focus lands in the element's shadow root,
+    /// where Blazor never sees the non-bubbling focus event.
     /// </summary>
+    /// <remarks>
+    /// A focus move inside the control's shadow root raises nothing; a move between the control and focusable
+    /// content slotted into it (e.g. a button in <see cref="DropzoneContent"/>) raises <see cref="OnBlur"/>
+    /// followed by <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     /// <summary>
-    /// Invoked when the control loses focus.
+    /// Invoked when the focus leaves the control. Bound to the bubbling, composed focusout event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusout").
     /// </summary>
+    /// <remarks>
+    /// Also raised, followed by <see cref="OnFocus"/>, when the focus moves between the control and focusable
+    /// content slotted into it; see <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
     /// <summary>
@@ -145,14 +182,14 @@ public class WaFileInput : ComponentBase, IFormValidation
     [Parameter] public RenderFragment? DropzoneContent { get; set; }
 
     /// <summary>
-    /// Rich markup rendered into the "label" slot; takes precedence over <see cref="Label"/> when set.
+    /// Rich markup label rendered into the element's "label" slot; takes precedence over <see cref="Label"/> when set.
     /// </summary>
-    [Parameter] public RenderFragment? LabelContent { get; set; }
+    [Parameter] public RenderFragment? MarkupLabel { get; set; }
 
     /// <summary>
-    /// Rich markup rendered into the "hint" slot; takes precedence over <see cref="Hint"/> when set.
+    /// Rich markup hint rendered into the element's "hint" slot; takes precedence over <see cref="Hint"/> when set.
     /// </summary>
-    [Parameter] public RenderFragment? HintContent { get; set; }
+    [Parameter] public RenderFragment? MarkupHint { get; set; }
 
     #endregion
 
@@ -161,7 +198,7 @@ public class WaFileInput : ComponentBase, IFormValidation
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-file-input");
+        var attributes = builder.OpenWaElement(this, 0, "wa-file-input");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -169,22 +206,23 @@ public class WaFileInput : ComponentBase, IFormValidation
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add file-input-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "accept", Accept);
-        builder.AddAttributeIfNotNullOrEmpty(11, "hint", Hint);
-        builder.AddAttributeIfNotNullOrEmpty(12, "label", Label);
+        builder.AddTokenListAttribute(attributes, 10, "accept", Accept, DefaultAccept, WaWireFormat.CommaSeparator, WaWireFormat.CommaSeparators);
+
+        // hint before label, unlike the shared label cluster renderer, so the attribute order stays as it was
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "hint", Hint, DefaultHint);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 12, "label", Label, DefaultLabel);
         builder.AddAttribute(13, "multiple", Multiple);
         builder.AddAttribute(14, "required", Required);
         builder.AddAttribute(18, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(15, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 15, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
         builder.AddAttributeIfNotNull(19, "capture", Capture?.ToHtmlValue());
-        builder.AddAttribute(16, "with-hint", WithHint);
-        builder.AddAttribute(17, "with-label", WithLabel);
+        FormControlRendering.AddWithHintAndLabelAttributes(builder, 16, this);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(30, "onchange", OnChange);
         builder.AddAttributeIfHasDelegate(31, "oninput", OnInput);
-        builder.AddAttributeIfHasDelegate(32, "onfocus", OnFocus);
-        builder.AddAttributeIfHasDelegate(33, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(32, "onfocusin", OnFocus);
+        builder.AddAttributeIfHasDelegate(33, "onfocusout", OnBlur);
         builder.AddAttributeIfHasDelegate(34, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
@@ -199,23 +237,8 @@ public class WaFileInput : ComponentBase, IFormValidation
             builder.CloseElement();
         }
 
-        // Add label slot content
-        if (LabelContent is not null)
-        {
-            builder.OpenElement(60, "span");
-            builder.AddAttribute(61, "slot", "label");
-            builder.AddContent(62, LabelContent);
-            builder.CloseElement();
-        }
-
-        // Add hint slot content
-        if (HintContent is not null)
-        {
-            builder.OpenElement(65, "span");
-            builder.AddAttribute(66, "slot", "hint");
-            builder.AddContent(67, HintContent);
-            builder.CloseElement();
-        }
+        // Add label and hint slot content
+        FormControlRendering.AddLabelAndHintSlots(builder, 60, this);
 
         builder.CloseElement();
     }

@@ -1,18 +1,114 @@
-﻿@page "/components/badge"
+@page "/components/badge"
 
 <PageTitle>Badge</PageTitle>
 
-<h1>Badge</h1>
-<p><code>&lt;wa-badge&gt;</code> wrapped by <code>WaBadge</code>.</p>
+<h1>Badge <ComponentBadges Tag="wa-badge" /></h1>
+<p>Badges draw attention to and display statuses or counts. <code>&lt;wa-badge&gt;</code> wrapped by <code>WaBadge</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
-    <WaBadge />
+    <WaBadge>Badge</WaBadge>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\badge.md) *@
+<ExampleSection Title="Variants" Code="@VariantsExample">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaBadge Variant="WaVariant.Brand">Brand</WaBadge>
+        <WaBadge Variant="WaVariant.Success">Success</WaBadge>
+        <WaBadge Variant="WaVariant.Neutral">Neutral</WaBadge>
+        <WaBadge Variant="WaVariant.Warning">Warning</WaBadge>
+        <WaBadge Variant="WaVariant.Danger">Danger</WaBadge>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaBadge Appearance="WaBadgeAppearance.Accent">Accent</WaBadge>
+        <WaBadge Appearance="WaBadgeAppearance.FilledOutlined">Filled outlined</WaBadge>
+        <WaBadge Appearance="WaBadgeAppearance.Filled">Filled</WaBadge>
+        <WaBadge Appearance="WaBadgeAppearance.Outlined">Outlined</WaBadge>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Pill Badges" Code="@PillExample">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaBadge Variant="WaVariant.Brand" Pill="true">Brand</WaBadge>
+        <WaBadge Variant="WaVariant.Success" Pill="true">Success</WaBadge>
+        <WaBadge Variant="WaVariant.Danger" Pill="false">Not a pill</WaBadge>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Drawing Attention" Code="@AttentionExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaBadge Variant="WaVariant.Brand" Pill="true" Attention="WaAttention.Pulse">1</WaBadge>
+        <WaBadge Variant="WaVariant.Danger" Pill="true" Attention="WaAttention.Bounce">3</WaBadge>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="With Icons" Code="@IconsExample">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaBadge Variant="WaVariant.Success" StartIconName="check">Approved</WaBadge>
+        <WaBadge Variant="WaVariant.Warning" EndIconName="triangle-exclamation">Pending</WaBadge>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="With Buttons" Code="@ButtonsExample">
+    <WaCluster Gap="GapSize.Gap_M">
+        <WaButton>Requests <WaBadge Pill="true">30</WaBadge></WaButton>
+        <WaButton>Warnings <WaBadge Variant="WaVariant.Warning" Pill="true">8</WaBadge></WaButton>
+    </WaCluster>
+</ExampleSection>
 
 <ApiTable Tag="wa-badge" />
 
 @code {
-    private const string DefaultExample = "<WaBadge />";
+    private const string DefaultExample = """
+        <WaBadge>Badge</WaBadge>
+        """;
+
+    private const string VariantsExample = """
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaBadge Variant="WaVariant.Brand">Brand</WaBadge>
+            <WaBadge Variant="WaVariant.Success">Success</WaBadge>
+            <WaBadge Variant="WaVariant.Neutral">Neutral</WaBadge>
+            <WaBadge Variant="WaVariant.Warning">Warning</WaBadge>
+            <WaBadge Variant="WaVariant.Danger">Danger</WaBadge>
+        </WaCluster>
+        """;
+
+    private const string AppearanceExample = """
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaBadge Appearance="WaBadgeAppearance.Accent">Accent</WaBadge>
+            <WaBadge Appearance="WaBadgeAppearance.FilledOutlined">Filled outlined</WaBadge>
+            <WaBadge Appearance="WaBadgeAppearance.Filled">Filled</WaBadge>
+            <WaBadge Appearance="WaBadgeAppearance.Outlined">Outlined</WaBadge>
+        </WaCluster>
+        """;
+
+    private const string PillExample = """
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaBadge Variant="WaVariant.Brand" Pill="true">Brand</WaBadge>
+            <WaBadge Variant="WaVariant.Success" Pill="true">Success</WaBadge>
+            <WaBadge Variant="WaVariant.Danger" Pill="false">Not a pill</WaBadge>
+        </WaCluster>
+        """;
+
+    private const string AttentionExample = """
+        <WaCluster Gap="GapSize.Gap_M">
+            <WaBadge Variant="WaVariant.Brand" Pill="true" Attention="WaAttention.Pulse">1</WaBadge>
+            <WaBadge Variant="WaVariant.Danger" Pill="true" Attention="WaAttention.Bounce">3</WaBadge>
+        </WaCluster>
+        """;
+
+    private const string IconsExample = """
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaBadge Variant="WaVariant.Success" StartIconName="check">Approved</WaBadge>
+            <WaBadge Variant="WaVariant.Warning" EndIconName="triangle-exclamation">Pending</WaBadge>
+        </WaCluster>
+        """;
+
+    private const string ButtonsExample = """
+        <WaCluster Gap="GapSize.Gap_M">
+            <WaButton>Requests <WaBadge Pill="true">30</WaBadge></WaButton>
+            <WaButton>Warnings <WaBadge Variant="WaVariant.Warning" Pill="true">8</WaBadge></WaButton>
+        </WaCluster>
+        """;
 }

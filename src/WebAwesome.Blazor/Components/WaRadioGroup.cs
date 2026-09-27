@@ -11,8 +11,17 @@ namespace WebAwesome.Blazor.Components;
 /// A radio group component that contains multiple radio buttons and functions as a single form control.
 /// Corresponds to the wa-radio-group Web Awesome component.
 /// </summary>
-public class WaRadioGroup : WaInputBase<string?>
+public class WaRadioGroup : WaLabeledInputBase<string?>
 {
+    #region ------ Form Control Properties ------
+
+    /// <summary>
+    /// Marks the input as required for form validation.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+
+    #endregion
+
     #region ------ Visual & Behavior Properties ------
 
     /// <summary>
@@ -21,26 +30,23 @@ public class WaRadioGroup : WaInputBase<string?>
     [Parameter] public string? Name { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Vertical;
+
+    /// <summary>
     /// The orientation in which to show radio items.
     /// </summary>
     [Parameter] public WaOrientation? Orientation { get; set; }
-
-    /// <summary>
-    /// Reserves space for the hint even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithHint { get; set; }
-
-    /// <summary>
-    /// Reserves space for the label even when it is not populated.
-    /// </summary>
-    [Parameter] public bool WithLabel { get; set; }
 
     #endregion
 
     #region ------ Events ------
 
     /// <summary>
-    /// Invoked when the radio group's selected value changes.
+    /// Invoked with the new selected value when the user changes the selection (the element's change event), after
+    /// the bound value has been updated.
     /// </summary>
     [Parameter] public EventCallback<string?> OnValueChange { get; set; }
 
@@ -65,27 +71,30 @@ public class WaRadioGroup : WaInputBase<string?>
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-radio-group");
+        var attributes = builder.OpenWaElement(this, 0, "wa-radio-group");
 
         // Add common attributes
         AddCommonAttributes(builder, 1);
 
+        // Add the form control attributes the element declares
+        builder.AddAttribute(8, "required", Required);
+        AddLabelAndHintAttributes(builder, 12);
+
         // Add radio group specific attributes
         builder.AddAttributeIfNotNullOrEmpty(20, "name", Name);
-        builder.AddAttributeIfNotNull(21, "orientation", Orientation?.ToHtmlValue());
-        builder.AddAttribute(22, "with-hint", WithHint);
-        builder.AddAttribute(23, "with-label", WithLabel);
+        builder.AddAttributeIfNotNull(attributes, 21, "orientation", Orientation?.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
+        AddWithHintAndLabelAttributes(builder, 14);
 
-        // Add value binding
+        // Add value binding; an explicit handler rather than a binder, so it can invoke OnValueChange after the
+        // value has been updated
         builder.AddAttribute(30, "value", CurrentValueAsString);
-        builder.AddAttribute(31, "onchange", EventCallback.Factory.CreateBinder<string?>(this, __value => CurrentValueAsString = __value, CurrentValueAsString));
+        builder.AddAttribute(31, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, HandleValueChangeAsync));
         builder.SetUpdatesAttributeName("value");
 
         // Add common event handlers
         AddCommonEventHandlers(builder, 40);
 
-        // Add radio group specific event handlers
-        builder.AddAttributeIfHasDelegate(50, "onwa-change", OnValueChange);
+        // Add radio group specific event handlers; OnValueChange is invoked by the change handler above
         builder.AddAttributeIfHasDelegate(52, "onwa-invalid", OnInvalid);
 
         // Add element reference capture
@@ -111,6 +120,9 @@ public class WaRadioGroup : WaInputBase<string?>
         return true;
     }
 
+    /// <inheritdoc />
+    protected override string? LiveValuePropertyName => "value";
+
     #endregion
 
     #region ------ Public Methods ------
@@ -127,6 +139,23 @@ public class WaRadioGroup : WaInputBase<string?>
 
         await JSInterop.InvokeMethodAsync(Element.Value, "focus");
     }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // handles the element's change event: assigns the selected value (recording it as the live value), then
+    // reports the updated value through OnValueChange
+    private async Task HandleValueChangeAsync(ChangeEventArgs args)
+    {
+        SetCurrentValueAsStringFromElement(args.GetStringValue());
+        await OnValueChange.InvokeAsync(CurrentValue);
+    }
+
+    // wa-radio-group declares no size default (it passes its size down to the radios), so removing the attribute
+    // restores the unset state and the size renders plainly
+    private protected override void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
+        => builder.AddAttributeIfNotNull(sequence, "size", Size?.ToHtmlValue());
 
     #endregion
 

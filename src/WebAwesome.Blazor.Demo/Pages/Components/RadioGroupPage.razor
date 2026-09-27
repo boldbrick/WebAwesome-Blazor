@@ -38,18 +38,20 @@
 </ExampleSection>
 
 <ExampleSection Title="Two-way Binding" Code="@BindingExample">
-    <WaRadioGroup Label="Select an option" @bind-Value="selected">
+    <WaRadioGroup Label="Select an option" @bind-Value="selected" OnValueChange="@(value => selectionChanges++)">
         <WaRadio Value="1">Option 1</WaRadio>
         <WaRadio Value="2">Option 2</WaRadio>
         <WaRadio Value="3">Option 3</WaRadio>
     </WaRadioGroup>
     <p>Selected: <strong>@selected</strong></p>
+    <p>OnValueChange calls: <strong>@selectionChanges</strong></p>
 </ExampleSection>
 
 <ApiTable Tag="wa-radio-group" />
 
 @code {
     private string? selected = "1";
+    private int selectionChanges;
     private string? defaultValue = "1";
     private string? hintValue = "1";
     private string? buttonValue = "1";
@@ -104,15 +106,17 @@
         """;
 
     private const string BindingExample = """
-        <WaRadioGroup Label="Select an option" @bind-Value="selected">
+        <WaRadioGroup Label="Select an option" @bind-Value="selected" OnValueChange="@(value => selectionChanges++)">
             <WaRadio Value="1">Option 1</WaRadio>
             <WaRadio Value="2">Option 2</WaRadio>
             <WaRadio Value="3">Option 3</WaRadio>
         </WaRadioGroup>
         <p>Selected: @selected</p>
+        <p>OnValueChange calls: @selectionChanges</p>
 
         @code {
             private string? selected = "1";
+            private int selectionChanges;
         }
         """;
 }

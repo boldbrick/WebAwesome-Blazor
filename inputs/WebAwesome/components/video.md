@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/video.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video -->
+<!-- Source: reference doc bundled in the Web Awesome 3.12.0 release zip (dist/skills/webawesome/references/components/video.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video -->
 
 # Video [Pro]
 
@@ -13,14 +13,14 @@ Videos are used to embed and play video content with custom controls and caption
 **[Get Video with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=video)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
--   Responsive [Layout Tools](https://webawesome.com/docs/utilities)
+-   [Native Styles](https://webawesome.com/docs/utilities/native)
+-   [CSS + Layout Utilities](https://webawesome.com/docs/utilities)
 -   Ever-Growing [Pattern Library](https://webawesome.com/docs/patterns)
 -   Unlimited Hosted Projects
 -   Pre-Built [Pro Themes](https://webawesome.com/docs/themes)
 -   Pro Theme Builder
 -   Pro Color Tools
--   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma) Newer additions to Web Awesome, like [`<wa-toast>`](https://webawesome.com/docs/components/toast), aren't included in the currently available kit, but a new version is in the works.  
-    Track its progress on GitHub.
+-   Official [Figma Design Kit](https://webawesome.com/docs/resources/figma)
 -   [WA Pro Perpetual License](https://webawesome.com/license/pro)
 -   Actual Humanâ„¢ Support
 
@@ -73,7 +73,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/video/video.js';
+import 'https://ka-f.webawesome.com/webawesome@3.12.0/components/video/video.js';
 ```
 
 \*\*npm\*\*
@@ -182,7 +182,6 @@ import WaVideo from '@awesome.me/webawesome/dist/react/video/index.js';
 | \`controls-overlay\` | The overlay wrapping timeline and controls bar. | \`::part(controls-overlay)\` |
 | \`poster-overlay\` | The poster image overlay. | \`::part(poster-overlay)\` |
 | \`poster-play-button\` | The play button on the poster overlay. | \`::part(poster-play-button)\` |
-| \`progress\` | The progress bar. | \`::part(progress)\` |
 | \`thumbnail\` | The thumbnail preview. | \`::part(thumbnail)\` |
 | \`timeline\` | The timeline/scrubber container. | \`::part(timeline)\` |
 | \`timeline-indicator\` | The timeline slider's filled indicator (forwarded from wa-slider). | \`::part(timeline-indicator)\` |

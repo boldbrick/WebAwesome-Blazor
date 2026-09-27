@@ -9,9 +9,10 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Forms;
 
 /// <summary>
-/// EditForm integration tests for WaRating: two-way binding of its non-nullable decimal Value (bound
-/// the same way as WaRange, directly over CurrentValue via CreateBinder&lt;decimal&gt;), and the
-/// DataAnnotations validation lifecycle.
+/// EditForm integration tests for WaRating: two-way binding of its non-nullable decimal Value, and the
+/// DataAnnotations validation lifecycle. The value arrives through the "numericchange" alias of the change event
+/// (HandleValueChange parses it with the invariant culture); these tests raise the alias with NumericChange, so
+/// they cover the C# half only (see NumericChangeExtensions for where the JS alias is checked).
 /// </summary>
 public class WaRatingEditFormTests : FormControlTestBase
 {
@@ -36,7 +37,7 @@ public class WaRatingEditFormTests : FormControlTestBase
         var model = new RatingModel { Stars = 3m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-rating").Change("4");
+        cut.Find("wa-rating").NumericChange("4");
 
         Assert.Equal(4m, model.Stars);
     }
@@ -48,7 +49,7 @@ public class WaRatingEditFormTests : FormControlTestBase
         var cut = RenderForm(model);
 
         // Range(1, 5) violated by zero
-        cut.Find("wa-rating").Change("0");
+        cut.Find("wa-rating").NumericChange("0");
 
         var cssClass = cut.Find("wa-rating").GetAttribute("class");
         Assert.Contains("modified", cssClass);
@@ -61,8 +62,8 @@ public class WaRatingEditFormTests : FormControlTestBase
         var model = new RatingModel { Stars = 3m };
         var cut = RenderForm(model);
 
-        cut.Find("wa-rating").Change("0");
-        cut.Find("wa-rating").Change("4");
+        cut.Find("wa-rating").NumericChange("0");
+        cut.Find("wa-rating").NumericChange("4");
 
         var cssClass = cut.Find("wa-rating").GetAttribute("class");
         Assert.Contains("modified", cssClass);

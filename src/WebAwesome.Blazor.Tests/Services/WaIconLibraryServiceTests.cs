@@ -30,7 +30,7 @@ public class WaIconLibraryServiceTests
     }
 
     [Fact]
-    public async Task RegisterFontAwesomeProAsync_WithValidKitCode_CallsJSInterop()
+    public async Task RegisterFontAwesomeProAsync_WithValidKitCode_SetsKitCode()
     {
         // Arrange
         const string kitCode = "test-kit-123";
@@ -38,9 +38,9 @@ public class WaIconLibraryServiceTests
         // Act
         await service.RegisterFontAwesomeProAsync(kitCode);
 
-        // Assert
-        mockJSInterop.Verify(x => x.RegisterIconLibraryAsync("fa-pro", It.Is<IconLibraryOptions>(
-            opts => opts.Resolver == $"https://kit.fontawesome.com/{kitCode}/{{family}}/{{variant}}/{{name}}.svg")), Times.Once);
+        // Assert - Web Awesome serves Pro icons from the default library once the kit code is set
+        mockJSInterop.Verify(x => x.SetKitCodeAsync(kitCode), Times.Once);
+        mockJSInterop.Verify(x => x.RegisterIconLibraryAsync(It.IsAny<string>(), It.IsAny<IconLibraryOptions>()), Times.Never);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class WaIconLibraryServiceTests
 
         // Assert
         mockJSInterop.Verify(x => x.RegisterIconLibraryAsync("heroicons", It.Is<IconLibraryOptions>(
-            opts => opts.Resolver == "https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/{variant}/{name}.svg")), Times.Once);
+            opts => opts.Resolver == "https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/{name}.svg")), Times.Once);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class WaIconLibraryServiceTests
 
         // Assert
         mockJSInterop.Verify(x => x.RegisterIconLibraryAsync("lucide", It.Is<IconLibraryOptions>(
-            opts => opts.Resolver == $"https://cdn.jsdelivr.net/npm/lucide@{version}/icons/{{name}}.svg")), Times.Once);
+            opts => opts.Resolver == $"https://cdn.jsdelivr.net/npm/lucide-static@{version}/icons/{{name}}.svg")), Times.Once);
     }
 
     [Fact]

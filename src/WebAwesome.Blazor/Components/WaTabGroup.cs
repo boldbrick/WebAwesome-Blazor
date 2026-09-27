@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -49,19 +49,35 @@ public class WaTabGroup : ComponentBase
 
     // Tab group properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Active"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultActive = "";
+
+    /// <summary>
     /// The name of the panel belonging to the currently active tab.
     /// </summary>
     [Parameter] public string? Active { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Placement"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaTabPlacement DefaultPlacement = WaTabPlacement.Top;
+
+    /// <summary>
     /// The placement of the tabs.
     /// </summary>
-    [Parameter] public WaTabPlacement Placement { get; set; } = WaTabPlacement.Top;
+    [Parameter] public WaTabPlacement Placement { get; set; } = DefaultPlacement;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Activation"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaActivation DefaultActivation = WaActivation.Auto;
 
     /// <summary>
     /// When <see cref="WaActivation.Auto"/>, navigating tabs with the arrow keys instantly shows the corresponding panel. When <see cref="WaActivation.Manual"/>, the tab receives focus but is not shown until the user presses spacebar or enter.
     /// </summary>
-    [Parameter] public WaActivation Activation { get; set; } = WaActivation.Auto;
+    [Parameter] public WaActivation Activation { get; set; } = DefaultActivation;
 
     /// <summary>
     /// Disables the scroll arrows that appear when tabs overflow the tab group's width.
@@ -108,15 +124,15 @@ public class WaTabGroup : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tab-group");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tab-group");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNullOrEmpty(4, "active", Active);
-        builder.AddAttribute(5, "placement", Placement.ToHtmlValue());
-        builder.AddAttribute(6, "activation", Activation.ToHtmlValue());
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 4, "active", Active, DefaultActive);
+        builder.AddDefaultedAttribute(attributes, 5, "placement", Placement.ToHtmlValue(), DefaultPlacement.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 6, "activation", Activation.ToHtmlValue(), DefaultActivation.ToHtmlValue());
         builder.AddAttribute(9, "without-scroll-controls", WithoutScrollControls);
 
         // Add event handlers; the element emits wa-tab-show/wa-tab-hide only (there is no
@@ -124,6 +140,9 @@ public class WaTabGroup : ComponentBase
         // by the same browser event as OnTabShow
         if (OnTabShow.HasDelegate || OnTabChange.HasDelegate)
             builder.AddAttribute(11, "onwa-tab-show", EventCallback.Factory.Create<WaTabChangeEventArgs>(this, HandleTabShownAsync));
+
+        // a nested tab group's wa-tab-show stops at its own wrapper (see Constants.WaEventAttributePrefix)
+        builder.AddOwnEventStopPropagation(11, "onwa-tab-show");
 
         builder.AddAttributeIfHasDelegate(12, "onwa-tab-hide", OnTabHide);
 

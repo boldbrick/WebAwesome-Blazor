@@ -2,6 +2,81 @@
 
 All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.12.0] — 2026-09-25
+
+Alignment with the Web Awesome 3.12.0 release, opening the **WA-3.12 train**. Upstream this is a small, additive release: `wa-dropdown-item` gains link attributes, and six components change only their CSS parts. This version of the bindings is still **breaking**: it fixes the defects reported in [GitHub issue #1](https://github.com/boldbrick/WebAwesome-Blazor/issues/1), makes every enum, event and default match Web Awesome, and replaces strings with .NET types wherever the value set or shape is known. Thanks to **@Eonasdan** for the report: all three points were confirmed and are fixed here.
+
+Most removed or renamed members never worked, so the compiler now points out code that was silently broken. See **[MIGRATION-3.12.0.md](MIGRATION-3.12.0.md)**; the section numbers below refer to it.
+
+### Breaking changes
+- **Enums match Web Awesome's value sets** (sections 1, 3):
+  - `WaRelativeTime`: `WaFormat` is replaced by `WaRelativeTimeFormat` (`Format`) and `WaRelativeTimeNumeric` (`Numeric`, was `bool`).
+  - New per-component enums where a shared one allowed invalid values: `WaDetailsAppearance`, `WaBadgeAppearance`, `WaListboxPlacement`, `WaTooltipSide` (also `WaRange.TooltipPlacement`, was `string?`), `WaPickerPlacement`, `WaDropdownItemVariant`, and `WaDateTimeTextStyle`, `WaDateTimeNumericStyle` and `WaTimeZoneNameStyle` on `WaFormatDate`.
+  - Removed members that emitted invalid values: `WaAppearance.Text`, `WaPlacement.Start`/`End`, `WaDropdownItemType.Radio`. Renamed: `WaRadioAppearance.Normal` → `Default`, `WaAutoSize.Width`/`Height` → `Horizontal`/`Vertical`. The unused `WaDropdownTrigger` and `WaTriggerType` enums are removed.
+  - `WaTrigger` is a `[Flags]` set with `Focus` added, and `WaTooltip.Trigger` is `WaTrigger?`. An explicit `Hover` now means hover only; leave it unset for Web Awesome's `hover focus`.
+- **Removed members that never worked** (sections 3, 4, 5, 7):
+  - callbacks for events Web Awesome never dispatches: `WaInput.OnPasswordToggle`/`OnPasswordVisibilityChange`, `WaCopyButton.OnSuccess` (use `OnCopy`), `WaDialog`/`WaDrawer.OnInitialFocus`, `WaOption.OnSelectedChange`, `WaRadio.OnCheckedChange`, `WaZoomableFrame.OnZoomChange` with `ZoomChangeEventArgs`
+  - parameters for attributes the element doesn't have: `WaRadio.Checked`, `WaTab.Closable`, `WaMutationObserver.Subtree`/`AttributeOldValue`/`CharacterDataOldValue`, `WaPopup.FlipBoundary`/`ShiftBoundary`/`AutoSizeBoundary`, `WaFormatNumber.Notation`/`CompactDisplay`/`UseGrouping` with the `WaNotation`/`WaCompactDisplay` enums
+  - content for slots the element doesn't have: `WaCheckbox`/`WaSwitch.MarkupLabel` (use `ChildContent`), `WaRating.MarkupLabel`/`MarkupHint`, `WaComparison.ChildContent`, `WaSlider.ChildContent` (use the new `ReferenceContent`)
+- **Form control parameters exist only where the element has the attribute or slot** (sections 6, 7): `Readonly`, `Required`, `MinLength`, `MaxLength`, `Autocomplete`, `Label`, `Hint`, `MarkupLabel` and `MarkupHint` moved from `WaInputBase` to the controls that support them, and are gone from the rest (e.g. `WaCheckbox.Label`, `WaSlider.Required`, `WaNumberInput.MinLength`). Razor markup that still sets one compiles and still does nothing; remove it. Derived components: `AddCommonAttributes` renders fewer attributes, and `AddLabelAndHintSlots` takes the fragments as arguments.
+- `WaFileInput.LabelContent`/`HintContent` are renamed `MarkupLabel`/`MarkupHint`, like on every other form control (section 9).
+- `WaCarousel.AddSlideAsync`/`RemoveSlideAsync` are removed: they moved or removed elements Blazor renders. Render the slides from a collection with `@key` and change the collection (section 16).
+- **Parameter defaults match Web Awesome's** (sections 2, 8): an unset parameter renders nothing. What you get by default changes for `WaTextArea.Rows` (4 rows; was `rows="0"`), `WaAnimation.Fill` (`auto`) and `Iterations` (infinite), `WaAnimatedImage.Play` (starts paused), `WaQrCode.ErrorCorrection` (`H`), the `WaCopyButton` labels (the element's localized ones) and `WaPopup.FlipFallbackStrategy` (`best-fit`); set the old value to keep the old behaviour. `WaPage.MobileBreakpoint`, `WaCallout.Variant`/`Appearance` and `WaDropdown.Distance` became nullable, and an explicit `Neutral`, `OutlinedFilled` or `8` now takes effect.
+- **Date and time values are .NET types** (section 10): `WaDateInput`, `WaDatePicker` and `WaKnownDate` bind `DateOnly?`, `WaTimeInput` binds `TimeOnly?`, and their `Min`/`Max`/`Today`, `WaDatePicker.FocusedDate`, `GoToDateAsync` and the date picker event args follow. `DisabledDates` and `DisabledDaysOfWeek` are sets of `DateOnly` and `DayOfWeek`. Range mode moved to the new `WaDateRangeInput` and `WaDateRangePicker`; `Mode`, `MinRange`, `MaxRange` and `WaDateSelectionMode` are removed from the single-date wrappers.
+- `WaRelativeTime.Date` and `WaFormatDate.Date` are `DateTimeOffset?`, and `WaRelativeTime.DateString` is removed. **Check `DateTime` values you pass:** one with an unspecified `Kind` (what EF Core returns for UTC columns) now takes the server's offset instead of being read as browser-local time (section 10).
+- **Closed value sets are enums** (section 11): `AutoCapitalize`, `EnterKeyHint` and `InputMode` on the text inputs, `Target` on `WaButton`/`WaBreadcrumbItem`/`WaDropdownItem`, `WaButton.FormMethod`/`FormEncType`, `WaPopup.FlipFallbackStrategy`/`Boundary`, `WaAccordion.HeadingLevel`, `WaZoomableFrame.ReferrerPolicy`/`Sandbox`, the `WaDataGridColumn` options, and `View`, `Phase` and `Side` on their event args. `AutoCorrect` is `bool?`.
+- `Step` on `WaInput`, `WaNumberInput` and `WaTimeInput` is the new `WaStep`: a number or `WaStep.Any` (section 12).
+- **Lists are collections, event payloads are records** (section 13): `Threshold`, `Data`, `ZoomLevels`, `FlipFallbackPlacements`, `GroupBy`, `Swatches`, `Accept` and `AttributeFilter` take collections; `WaSelect`/`WaCombobox.SelectedValues` is `IReadOnlyList<string>?`; `WaColorPicker` binds `string?`; `WaAnimation.Iterations` is `double?`. The mutation, resize, tree selection and content change events carry typed records instead of `object[]`.
+- `WaInput.Min`/`Max` are `string?`, with typed accessors such as `MinDecimal`, `MinDate` and `MinTime` (section 14). A future net11.0 target is planned to turn them into a C# union type.
+- **Rendered markup** (sections 3, 15): an attribute at Web Awesome's default is no longer rendered (e.g. no `type="text"` on `WaInput`), a rendered attribute that returns to its default is set to that default instead of removed, and `WaSize` renders `s`/`m`/`l` (Web Awesome deprecates `small`/`medium`/`large`). Only CSS selectors or tests that match these attributes are affected. Each default is a public `Default<Name>` constant on its wrapper.
+
+### New components
+- `WaDateRangeInput` and `WaDateRangePicker`: the range mode of `WaDateInput` and `WaDatePicker`, bound to the new `WaDateRange` value (`From`/`To` as `DateOnly?`), with `MinRange`/`MaxRange`.
+- `WaDayContent`: custom content for one day cell of `WaDatePicker`, `WaDateInput` and their range variants, placed in their new `ChildContent`. Web Awesome's JavaScript-only `dayContent` and `isDateDisabled` callbacks stay unsupported; use `WaDayContent` and `DisabledDates`.
+
+### Changed
+- `WaDropdownItem` gained `Href`, `Target`, `Rel` and `Download` (new in Web Awesome 3.12.0) for menu items that navigate or download.
+- New opt-in `Immediate` on `WaInput`, `WaTextArea` and `WaNumberInput` updates the bound value on every keystroke, before `OnInput` and key handlers run.
+- `WaPage.DisableSticky` (`WaPageSections` flags) turns off sticky positioning per page section.
+- Every slot Web Awesome declares has a `RenderFragment` parameter. New: the play/pause icons of `WaAnimatedImage`, `WaBreadcrumbItem.SeparatorContent`, `WaCard.ActionsContent`, the next/previous icons of `WaCarousel`, `WaDialog`/`WaDrawer.LabelContent`, the clear and password icons of `WaInput`, the clear/expand icons of `WaSelect`, `WaSlider.ReferenceContent`, the expand/collapse icons of `WaTree` and the zoom icons of `WaZoomableFrame`. A fragment wins over the matching icon-name parameter.
+- `WaRange` gained what `WaSlider` already had: `AutoFocus`, `TooltipDistance`, `WithHint`, `WithLabel`, `OnInvalid`, `FocusAsync`, `BlurAsync`, `StepUpAsync` and `StepDownAsync`.
+- New enum values: nine `WaIconAnimation` animations, `WaAnimationFill.Auto`, `WaAttention.None`, `WaInputType.DateTimeLocal`/`Time`, `WaCurrencyDisplay.NarrowSymbol`, `WaDisplay.Narrow`, `WaHourFormat.Auto` and `WaChartLegendPosition.ChartArea`.
+- `WaTextArea` derives from `WaInputBase<string?>` like the other text inputs and gains `OnKeyDown`/`OnKeyUp`/`OnKeyPress`.
+- Form controls share new base classes (`WaLabeledInputBase`, `WaPopupInputBase`, `WaSliderBase`, `WaDateInputBase`, `WaDatePickerBase`) and capability interfaces (`IWaLabeledControl`, `IWaPopupControl`, `IWaClearableControl`, `IWaAffixedControl`, `IWaCalendarOptions`). This is source-compatible. `ShowAsync`/`HideAsync` before the first render now throw the same way on every popup control.
+- Range-mode `WaSlider` no longer requires `@bind-Value`.
+- `wa-color-picker`, `wa-page`, `wa-radio-group`, `wa-slider` (`tooltip__content` → `tooltip__body`), `wa-textarea` and `wa-video` changed only their CSS parts. No wrapper exposes them, so there is no API change.
+
+### Fixed
+- C# value changes reach form controls after the user has edited them (issue #1), so resetting a model after submit, normalizing setters and "clear" buttons work: `WaInput`, `WaTextArea`, `WaNumberInput`, `WaColorPicker`, `WaDateInput`, `WaKnownDate`, `WaOtpInput`, `WaRadioGroup`, `WaTimeInput`, `WaSlider`, `WaRange`, `WaCheckbox` and `WaSwitch`.
+- `SetRangeTextAsync` on `WaInput`/`WaTextArea` updates the bound value (issue #1).
+- Building the library as a submodule under another solution no longer fails with NU5019/NU5030 (issue #1).
+- User edits of `WaSlider`, `WaRange` and `WaRating` reach `@bind-Value`, and range-mode `WaRange` updates `MinValue`/`MaxValue` and raises `OnMinValueChange`/`OnMaxValueChange`.
+- `@bind-SelectedValues` of `WaSelect`/`WaCombobox` in `Multiple` mode works in both directions.
+- Typed form controls no longer overwrite what the user is typing (seen with `WaKnownDate` on slow pages).
+- Callbacks that never fired now do: `WaCheckbox`/`WaSwitch.OnCheckedChange`, `WaRadioGroup.OnValueChange`, `WaSlider.OnValueChange`, `WaZoomableFrame.OnLoad`/`OnError`, `WaDropdownItem.OnFocus`/`OnBlur`, `WaColorPicker.OnShow`/`OnHide`/`OnAfterShow`/`OnAfterHide`, `WaIntersectionObserver.OnIntersect` and `WaCombobox.OnKeyDown`; `WaSelect.OnKeyDown` and `WaColorPicker.OnKeyDown` no longer miss keys.
+- `OnFocus`/`OnBlur` fire on the form controls, `WaButton` and `WaFileInput`. They now listen to `focusin`/`focusout`, so `FocusEventArgs.Type` is `"focusin"`/`"focusout"`, and moving between a control and its slotted content (radio to radio) raises `OnBlur` then `OnFocus`.
+- Setting `WaAnimatedImage.OnLoad`/`OnError` or `WaComparison.OnChange` no longer breaks rendering.
+- `WaRating.OnInput` is no longer bound, since `wa-rating` never dispatches `input`; use `@bind-Value` or `OnHover`.
+- `WaButton.FormNoValidate="false"` no longer disables validation, and `Spellcheck="false"` turns spell checking off on `WaInput`, `WaTextArea` and `WaCombobox`.
+- Numbers render in the invariant culture: under e.g. cs-CZ, `0.5` rendered as `0,5`, which Web Awesome can't parse. `WaNumberInput` also accepts the exponent form (`1e21`) the element reports for very large or small values.
+- `WaIconLibraryService` threw on every call; it now registers into the page's Web Awesome instance. `IconLibraryOptions.Resolver` is a required URL template (`{name}`, `{family}`, `{variant}`) and `Mutator` the path of a global function. `RegisterLucideAsync` and `RegisterHeroiconsAsync` use working icon sets, and `RegisterFontAwesomeProAsync` sets the kit code (new `WebAwesomeJSInterop.SetKitCodeAsync`), so drop `Library="fa-pro"`.
+- `WaMutationObserver`: `Attr="true"` watches all attributes, and `AttributeFilter` takes effect.
+- `WaPopup.RepositionAsync` no longer throws a `ReferenceError`.
+- `ReferenceContent` of `WaSlider`/`WaRange` places each label along the track instead of stacking them at its start.
+- `WaRelativeTime`/`WaFormatDate` with `Date` set back to null show the current time instead of 1 January 1970. "Now" comes from the registered `TimeProvider`; `AddWebAwesome` registers the system clock unless you register your own.
+- `WaRelativeTime` no longer fails when its parameters change before the element has loaded.
+- `WaTextArea` renders the correct `Size`, `Appearance` and `Resize` values (`xs`/`xl`, `filled-outlined`).
+- A declarative `WaToastItem` no longer crashes Blazor when it closes; remove it from the model in `OnAfterHide`.
+- A wrapper's callbacks no longer fire for the events of a component nested in it: a `WaSelect` closing inside a `WaDialog` no longer raises `WaDialog.OnHide` (which closed the dialog), and nested tab groups, tree items or details no longer reach the outer one's callbacks. A `@onwa-*` handler on a plain element no longer receives the events of wrappers inside it.
+
+### Library
+- Versioned reference docs refreshed to the `v3.12.0` tag. Test, parity and browser coverage now check the rendered attributes, slots and defaults of every wrapper and the delivery of every event callback; this found most of the fixes above.
+- Demo: all component pages are curated, with new Date Range Input and Date Range Picker pages and examples for per-day content and icon libraries.
+- Browser tests fail whenever Blazor shows its error UI; a new interaction sweep drives every control of every demo page, and each showcase has a flow spec. The Settings showcase shows its saved settings.
+
+### Public API
+- Baseline promoted; every difference is covered by the entries above.
+
 ## [3.11.0] — 2026-07-30
 
 Alignment with the Web Awesome 3.11.0 release, opening the **WA-3.11 train**. The largest additive upgrade of the 3.x line so far: three new components, including `WaDataGrid` — by far the biggest wrapper in the library. **No wrapper APIs were removed or renamed**, so no migration guide is needed.

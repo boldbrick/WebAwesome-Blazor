@@ -36,7 +36,7 @@
                 <ul>
                     @foreach (var (tag, component) in group.Components)
                     {
-                        <li><NavLink href="@($"components/{tag["wa-".Length..]}")">@component</NavLink><ComponentBadges Tag="@tag" /></li>
+                        <li><NavLink href="@($"components/{tag["wa-".Length..]}")">@component</NavLink><ComponentBadges Tag="@ComponentCategoryMap.RenderedTag(tag)" /></li>
                     }
                 </ul>
             }
@@ -105,7 +105,9 @@
         // the sidebar is driven by the API surface document, so it always matches the bound WA version;
         // components are grouped into the same categories Web Awesome uses in its own docs navigation
         var surface = await SurfaceService.GetSurfaceAsync();
+        // the wrapper pages (the range wrappers of the date elements) join the element pages
         componentGroups = surface.Components.Keys
+            .Concat(ComponentCategoryMap.WrapperPages.Keys)
             .Select(tag => (Tag: tag, Name: Humanize(tag), Category: ComponentCategoryMap.GetCategory(tag)))
             .GroupBy(c => c.Category)
             .OrderBy(g => Array.IndexOf(ComponentCategoryMap.CategoryOrder, g.Key) is var index && index >= 0 ? index : int.MaxValue)

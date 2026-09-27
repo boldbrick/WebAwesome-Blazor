@@ -33,19 +33,20 @@ public class WaCopyButtonIntegrationTests : BunitContext
     }
 
     [Fact]
-    public void Tooltip_DefaultsToFull()
+    public void Tooltip_DefaultsToFull_AndRendersNothingThere()
     {
         // WA 3.7.0 added the tooltip attribute (default 'full')
         var cut = Render<WaCopyButton>();
 
-        Assert.Equal("full", cut.Find("wa-copy-button").GetAttribute("tooltip"));
+        Assert.False(cut.Find("wa-copy-button").HasAttribute("tooltip"));
+        Assert.Equal(WaCopyButtonTooltip.Full, WaCopyButton.DefaultTooltip);
     }
 
     [Theory]
-    [InlineData(WaCopyButtonTooltip.Full, "full")]
+    [InlineData(WaCopyButtonTooltip.Full, null)]
     [InlineData(WaCopyButtonTooltip.Copy, "copy")]
     [InlineData(WaCopyButtonTooltip.None, "none")]
-    public void Tooltip_WhenSet_RendersExpectedAttribute(WaCopyButtonTooltip tooltip, string expected)
+    public void Tooltip_WhenSet_RendersExpectedAttribute(WaCopyButtonTooltip tooltip, string? expected)
     {
         var cut = Render<WaCopyButton>(parameters => parameters
             .Add(p => p.Tooltip, tooltip));

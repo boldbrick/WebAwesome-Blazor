@@ -1,0 +1,184 @@
+@page "/testing/events-pro"
+
+@* e2e harness for tools\e2e\tests\event-dispatch.spec.js - deliberately outside
+   /components/, so it is neither derived from api-surface.json nor linked from the sidebar; the sweep reaches it
+   through HARNESS_ROUTES in tools\e2e\tests\helpers\routes.js. The controls are Pro components: they upgrade only
+   with a Pro asset override (tools\demo\Set-WaProAssets.ps1), and the tests skip visibly otherwise *@
+
+<PageTitle>Testing: Pro Form Events</PageTitle>
+
+<h1>Pro Form Events Harness</h1>
+<p>This page is an end-to-end test harness for the Pro form controls: each wires its callbacks into the event log below, shows its bound model, and changes the model from C#.</p>
+
+<ExampleSection Title="Pro form controls">
+    <form id="pro-events-form" @onsubmit="() => log.Record(FormSubmitId)" @onsubmit:preventDefault>
+        <table>
+            <thead><tr><th>Wrapper</th><th>Control</th><th>Model</th><th>C# actions</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><code>WaCombobox</code> <ComponentBadges Tag="wa-combobox" /></td>
+                    <td>
+                        <WaCombobox @ref="combobox" Label="Fruit" WithClear="true" AllowCreate="true" data-testid="pro-combobox" @bind-Value="comboboxValue" @attributes="Common(nameof(WaCombobox))"
+                                    OnClear="() => log.Record(Id(nameof(WaCombobox), nameof(WaCombobox.OnClear)))"
+                                    OnShow="e => log.Record(Id(nameof(WaCombobox), nameof(WaCombobox.OnShow)), e)"
+                                    OnAfterShow="e => log.Record(Id(nameof(WaCombobox), nameof(WaCombobox.OnAfterShow)), e)"
+                                    OnHide="e => log.Record(Id(nameof(WaCombobox), nameof(WaCombobox.OnHide)), e)"
+                                    OnAfterHide="e => log.Record(Id(nameof(WaCombobox), nameof(WaCombobox.OnAfterHide)), e)"
+                                    OnCreate="e => log.Record(Id(nameof(WaCombobox), nameof(WaCombobox.OnCreate)), e)">
+                            <WaOption Value="apple">Apple</WaOption>
+                            <WaOption Value="banana">Banana</WaOption>
+                            <WaOption Value="cherry">Cherry</WaOption>
+                        </WaCombobox>
+                    </td>
+                    <td><code data-testid="pro-combobox-model">@comboboxValue</code></td>
+                    <td><WaButton Size="WaSize.Small" data-testid="pro-combobox-set" OnClick="@(() => comboboxValue = SetCombobox)">Set @SetCombobox</WaButton></td>
+                </tr>
+                <tr>
+                    <td><code>WaCombobox</code> (multiple)</td>
+                    <td>
+                        <WaCombobox Label="Toppings" Multiple="true" data-testid="pro-combobox-multiple" @bind-SelectedValues="comboboxToppings" ValueExpression="() => comboboxToppingsValue">
+                            <WaOption Value="cheese">Cheese</WaOption>
+                            <WaOption Value="ham">Ham</WaOption>
+                        </WaCombobox>
+                    </td>
+                    <td><code data-testid="pro-combobox-multiple-model">@string.Join(",", comboboxToppings ?? [])</code></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><code>WaDateInput</code> <ComponentBadges Tag="wa-date-input" /></td>
+                    <td>
+                        <WaDateInput @ref="dateInput" Label="Date" WithClear="true" data-testid="pro-date-input" @bind-Value="dateValue" @attributes="Common(nameof(WaDateInput))"
+                                     OnClear="() => log.Record(Id(nameof(WaDateInput), nameof(WaDateInput.OnClear)))"
+                                     OnShow="e => log.Record(Id(nameof(WaDateInput), nameof(WaDateInput.OnShow)), e)"
+                                     OnAfterShow="e => log.Record(Id(nameof(WaDateInput), nameof(WaDateInput.OnAfterShow)), e)"
+                                     OnHide="e => log.Record(Id(nameof(WaDateInput), nameof(WaDateInput.OnHide)), e)"
+                                     OnAfterHide="e => log.Record(Id(nameof(WaDateInput), nameof(WaDateInput.OnAfterHide)), e)" />
+                    </td>
+                    <td><code data-testid="pro-date-input-model">@DemoFormat.Iso(dateValue)</code></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><code>WaDatePicker</code> <ComponentBadges Tag="wa-date-picker" /></td>
+                    <td><WaDatePicker data-testid="pro-date-picker" FocusedDate="InitialDatePicker" @bind-Value="datePickerValue" OnInput="e => log.Record(Id(nameof(WaDatePicker), nameof(WaDatePicker.OnInput)), e)" /></td>
+                    <td><code data-testid="pro-date-picker-model">@DemoFormat.Iso(datePickerValue)</code></td>
+                    <td><WaButton Size="WaSize.Small" data-testid="pro-date-picker-set" OnClick="@(() => datePickerValue = SetDatePicker)">Set @DemoFormat.Iso(SetDatePicker)</WaButton></td>
+                </tr>
+                <tr>
+                    <td><code>WaFileInput</code> <ComponentBadges Tag="wa-file-input" /></td>
+                    <td>
+                        <WaFileInput @ref="fileInput" Label="Attachment" data-testid="pro-file-input"
+                                     OnChange="e => log.Record(Id(nameof(WaFileInput), nameof(WaFileInput.OnChange)), e)"
+                                     OnInput="e => log.Record(Id(nameof(WaFileInput), nameof(WaFileInput.OnInput)), e)"
+                                     OnFocus="e => log.Record(Id(nameof(WaFileInput), nameof(WaFileInput.OnFocus)), e)"
+                                     OnBlur="e => log.Record(Id(nameof(WaFileInput), nameof(WaFileInput.OnBlur)), e)"
+                                     OnInvalid="e => log.Record(Id(nameof(WaFileInput), nameof(WaFileInput.OnInvalid)), e)" />
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaButton Type="WaButtonType.Submit" Variant="WaVariant.Brand" data-testid="pro-submit">Submit</WaButton>
+            <WaButton Appearance="WaAppearance.Outlined" data-testid="pro-mark-invalid" OnClick="MarkAllInvalidAsync">Mark every control invalid</WaButton>
+            <code data-testid="pro-invalid-marked">@invalidMarked</code>
+        </WaCluster>
+    </form>
+</ExampleSection>
+
+<ExampleSection Title="Pro media">
+    @* a generated half-second silent WAV plays in a video element, so the media events need no network *@
+    <WaVideo Src="@silentClip" data-testid="pro-video" Style="max-width: 320px;"
+             OnLoadedMetadata="() => log.Record(Id(nameof(WaVideo), nameof(WaVideo.OnLoadedMetadata)))"
+             OnPlay="() => log.Record(Id(nameof(WaVideo), nameof(WaVideo.OnPlay)))"
+             OnTimeUpdate="() => log.Record(Id(nameof(WaVideo), nameof(WaVideo.OnTimeUpdate)))"
+             OnPause="() => log.Record(Id(nameof(WaVideo), nameof(WaVideo.OnPause)))"
+             OnEnded="() => log.Record(Id(nameof(WaVideo), nameof(WaVideo.OnEnded)))"
+             OnVolumeChange="() => log.Record(Id(nameof(WaVideo), nameof(WaVideo.OnVolumeChange)))" />
+</ExampleSection>
+
+<ExampleSection Title="Event log">
+    <EventLogView Log="log" />
+</ExampleSection>
+
+@code {
+    private const string SetCombobox = "cherry";
+    private static readonly DateOnly InitialDatePicker = new(2024, 3, 15);
+    private static readonly DateOnly SetDatePicker = new(2024, 3, 20);
+    private const string FormSubmitId = "form.submit";
+    private const string InvalidMessage = "Rejected by the e2e harness";
+
+    private readonly EventLog log = new();
+
+    private WaCombobox? combobox;
+    private WaDateInput? dateInput;
+    private WaFileInput? fileInput;
+    private bool invalidMarked;
+
+    private string? comboboxValue = "apple";
+    private IReadOnlyList<string>? comboboxToppings;
+
+    // multiple mode binds SelectedValues; InputBase still needs a ValueExpression for its unused Value
+    private string? comboboxToppingsValue = null;
+    private DateOnly? dateValue = new(2024, 1, 15);
+    private DateOnly? datePickerValue = InitialDatePicker;
+
+    private const int ClipSampleRate = 8000;
+    private const int ClipSamples = ClipSampleRate / 2;
+    private const byte SilentSample = 128;
+    private const int PcmFormat = 1;
+    private const int MonoChannels = 1;
+    private const int BitsPerSample = 8;
+    private const int FmtChunkSize = 16;
+    private const int RiffHeaderSize = 36;
+
+    private readonly string silentClip = CreateSilentClip();
+
+    private static string Id(string wrapper, string callback) => $"{wrapper}.{callback}";
+
+    // an 8 kHz, 8-bit mono PCM WAV of silence as a data URI
+    private static string CreateSilentClip()
+    {
+        using var stream = new System.IO.MemoryStream();
+        using var writer = new System.IO.BinaryWriter(stream);
+        writer.Write("RIFF"u8);
+        writer.Write(RiffHeaderSize + ClipSamples);
+        writer.Write("WAVEfmt "u8);
+        writer.Write(FmtChunkSize);
+        writer.Write((short)PcmFormat);
+        writer.Write((short)MonoChannels);
+        writer.Write(ClipSampleRate);
+        writer.Write(ClipSampleRate * MonoChannels * BitsPerSample / 8);
+        writer.Write((short)(MonoChannels * BitsPerSample / 8));
+        writer.Write((short)BitsPerSample);
+        writer.Write("data"u8);
+        writer.Write(ClipSamples);
+        for (var i = 0; i < ClipSamples; i++) writer.Write(SilentSample);
+        writer.Flush();
+        return "data:audio/wav;base64," + Convert.ToBase64String(stream.ToArray());
+    }
+
+    // the keyboard and input callbacks every WaInputBase control inherits, splatted onto the control's parameters
+    private Dictionary<string, object> Common(string wrapper) => new()
+    {
+        [nameof(WaInput.OnFocus)] = EventCallback.Factory.Create<FocusEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnFocus)), e)),
+        [nameof(WaInput.OnBlur)] = EventCallback.Factory.Create<FocusEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnBlur)), e)),
+        [nameof(WaInput.OnKeyDown)] = EventCallback.Factory.Create<KeyboardEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnKeyDown)), e)),
+        [nameof(WaInput.OnKeyUp)] = EventCallback.Factory.Create<KeyboardEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnKeyUp)), e)),
+        [nameof(WaInput.OnKeyPress)] = EventCallback.Factory.Create<KeyboardEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnKeyPress)), e)),
+        [nameof(WaInput.OnInput)] = EventCallback.Factory.Create<ChangeEventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnInput)), e)),
+        [nameof(WaInput.OnInvalid)] = EventCallback.Factory.Create<EventArgs>(this, e => log.Record(Id(wrapper, nameof(WaInput.OnInvalid)), e)),
+    };
+
+    // a custom validity error on every control makes the next submit fire the browser's invalid event on each
+    private async Task MarkAllInvalidAsync()
+    {
+        WebAwesome.Blazor.Base.IFormValidation?[] controls = [combobox, dateInput, fileInput];
+        foreach (var control in controls)
+        {
+            if (control != null) await control.SetCustomValidityAsync(InvalidMessage);
+        }
+
+        invalidMarked = true;
+    }
+}

@@ -145,6 +145,10 @@ You can force a section to behave like `.wa-dark` in light mode and like `.wa-li
 </wa-card>
 ```
 
+:::warning
+Avoid adding `wa-invert` (and other color scheme classes like `wa-light` and `wa-dark`) directly to a component. These classes reset the variant color tokens on the element they're applied to, which overrides the element's own variant styles.
+:::
+
 #### Detecting Color Scheme Preference
 
 While both light and dark mode styles are built-in to all themes, Web Awesome doesn't automatically detect the user's color scheme preference. We recommend doing this at the application level.
@@ -234,7 +238,7 @@ To create your own dark mode styles, scope your styles to these selectors:
 | `:where(:root)`       | The default scope, with low specificity so other theme classes can override it |
 | `.wa-light`           | Explicit light sections                                                        |
 | `.wa-dark`            | Explicit dark sections                                                         |
-| `.wa-invert`          | Flips the current color scheme on this element                                 |
+| `.wa-invert`          | Flips the current color scheme for the section it's applied to                 |
 | `.wa-dark .wa-invert` | An inverted descendant inside a dark section (becomes light)                   |
 
 For a complete list of all custom properties used for theming, refer to `src/styles/themes/default.css` in the project's source code.
@@ -298,7 +302,7 @@ Parts allow you to style _any_ standard CSS property, not just those exposed thr
 <wa-button class="gradient-button"> Gradient Button </wa-button>
 
 <style>
-  .gradient-button::part(base) {
+  .gradient-button::part(button) {
     background: linear-gradient(217deg, var(--wa-color-indigo-50), var(--wa-color-purple-50), var(--wa-color-red-50));
     border: solid 1px var(--wa-color-purple-50);
     transition:
@@ -306,12 +310,12 @@ Parts allow you to style _any_ standard CSS property, not just those exposed thr
       box-shadow 100ms;
   }
 
-  .gradient-button::part(base):hover {
+  .gradient-button::part(button):hover {
     box-shadow: var(--wa-shadow-m);
     transform: translateY(-3px);
   }
 
-  .gradient-button::part(base):active {
+  .gradient-button::part(button):active {
     box-shadow: inset var(--wa-shadow-s);
     transform: translateY(0);
   }
@@ -332,6 +336,14 @@ CSS parts have a few important advantages:
 - It encourages us to think more about how components are designed and how customizations should be allowed before users can take advantage of them. Once we opt a part into the component's API, it's guaranteed to be supported and can't be removed until a major version of the library is released.
 
 Most (but not all) components expose parts. You can find them in each component's API documentation under the "CSS Parts" section.
+
+#### The `base` part
+
+Components used to expose a generic `base` part for their outermost element. That name is deprecated in favor of a part named after the component itself, so `<wa-button>` exposes `button` and `<wa-details>` exposes `details`.
+
+Existing `::part(base)` selectors still work and will continue to until the next major version, so there's no rush to change them. New styles should target the component's own name. Deprecated parts appear muted in each component's CSS Parts table.
+
+Not every component has one. When a component's outer element is the host, style it directly instead — `wa-card { ... }` rather than a part.
 
 ### Custom Properties
 

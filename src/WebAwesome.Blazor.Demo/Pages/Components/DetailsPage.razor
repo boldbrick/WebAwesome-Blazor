@@ -1,4 +1,4 @@
-﻿@page "/components/details"
+@page "/components/details"
 
 <PageTitle>Details</PageTitle>
 
@@ -63,9 +63,44 @@
     </div>
 </ExampleSection>
 
+<ExampleSection Title="Toggle Events" Code="@ToggleEventsExample">
+    <WaDetails Summary="Watch me" data-testid="details-events"
+               OnToggle="@(e => { toggleCount++; lastToggle = e.IsOpen ? "open" : "closed"; })"
+               OnAfterShow="@(() => afterShowCount++)"
+               OnAfterHide="@(() => afterHideCount++)">
+        OnToggle fires when the details start to open or close and tells which, the after-events once the animation has finished.
+    </WaDetails>
+    <p data-testid="details-toggle-echo">OnToggle calls: @toggleCount (last: @lastToggle)</p>
+    <p data-testid="details-after-show-echo">OnAfterShow calls: @afterShowCount</p>
+    <p data-testid="details-after-hide-echo">OnAfterHide calls: @afterHideCount</p>
+</ExampleSection>
+
 <ApiTable Tag="wa-details" />
 
 @code {
+    private int toggleCount;
+    private string lastToggle = "none";
+    private int afterShowCount;
+    private int afterHideCount;
+
+    private const string ToggleEventsExample = """
+        <WaDetails Summary="Watch me"
+                   OnToggle="@(e => { toggleCount++; lastToggle = e.IsOpen ? "open" : "closed"; })"
+                   OnAfterShow="@(() => afterShowCount++)"
+                   OnAfterHide="@(() => afterHideCount++)">
+            ...
+        </WaDetails>
+        <p>OnToggle calls: @toggleCount (last: @lastToggle)</p>
+        <p>OnAfterShow calls: @afterShowCount</p>
+        <p>OnAfterHide calls: @afterHideCount</p>
+
+        @code {
+            private int toggleCount;
+            private string lastToggle = "none";
+            private int afterShowCount;
+            private int afterHideCount;
+        }
+        """;
     private const string DefaultExample = """
         <WaDetails Summary="Toggle Me">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore

@@ -1,9 +1,9 @@
-﻿@page "/components/scroller"
+@page "/components/scroller"
 
 <PageTitle>Scroller</PageTitle>
 
-<h1>Scroller</h1>
-<p><code>&lt;wa-scroller&gt;</code> wrapped by <code>WaScroller</code>.</p>
+<h1>Scroller <ComponentBadges Tag="wa-scroller" /></h1>
+<p>Scrollers make overflowing content scrollable, with shadows that hint at more content. <code>&lt;wa-scroller&gt;</code> wrapped by <code>WaScroller</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaScroller Style="max-width: 500px;">
@@ -16,7 +16,31 @@
     </WaScroller>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\scroller.md) *@
+<ExampleSection Title="Vertical" Code="@VerticalExample">
+    <WaScroller Orientation="WaOrientation.Vertical" Style="height: 160px; max-width: 500px;">
+        @for (var i = 1; i <= 12; i++)
+        {
+            <p style="margin: 0; padding: var(--wa-space-xs) var(--wa-space-s);">Line @i of a long list</p>
+        }
+    </WaScroller>
+</ExampleSection>
+
+<ExampleSection Title="Horizontal" Code="@HorizontalExample">
+    <WaScroller Orientation="WaOrientation.Horizontal" Style="max-width: 500px;">
+        <p style="white-space: nowrap; margin: 0; padding: var(--wa-space-s);">This sentence is far too long to fit, so the scroller lets it scroll sideways instead of wrapping it onto a second line.</p>
+    </WaScroller>
+</ExampleSection>
+
+<ExampleSection Title="Without Shadows or Scrollbar" Code="@PlainExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaScroller WithoutShadow="true" WithoutScrollbar="false" Style="max-width: 500px;">
+            <p style="white-space: nowrap; margin: 0; padding: var(--wa-space-s);">No shadows: the edges don't hint at the overflow, the scrollbar does.</p>
+        </WaScroller>
+        <WaScroller WithoutShadow="false" WithoutScrollbar="true" Style="max-width: 500px;">
+            <p style="white-space: nowrap; margin: 0; padding: var(--wa-space-s);">No scrollbar: only the shadows show that this line continues to the right.</p>
+        </WaScroller>
+    </WaStack>
+</ExampleSection>
 
 <ApiTable Tag="wa-scroller" />
 
@@ -24,9 +48,35 @@
     private const string DefaultExample = """
         <WaScroller Style="max-width: 500px;">
             <div style="display: flex; gap: 1rem; padding: 1rem;">
-                <div style="flex: 0 0 auto; width: 120px; height: 80px; background: var(--wa-color-neutral-fill-normal); border-radius: var(--wa-border-radius-m);">Item 1</div>
-                <!-- ...more items... -->
+                @for (var i = 1; i <= 8; i++)
+                {
+                    <div style="flex: 0 0 auto; width: 120px; height: 80px; ...">Item @i</div>
+                }
             </div>
+        </WaScroller>
+        """;
+
+    private const string VerticalExample = """
+        <WaScroller Orientation="WaOrientation.Vertical" Style="height: 160px; max-width: 500px;">
+            @for (var i = 1; i <= 12; i++)
+            {
+                <p>Line @i of a long list</p>
+            }
+        </WaScroller>
+        """;
+
+    private const string HorizontalExample = """
+        <WaScroller Orientation="WaOrientation.Horizontal" Style="max-width: 500px;">
+            <p style="white-space: nowrap;">This sentence is far too long to fit, so the scroller lets it scroll sideways instead of wrapping it onto a second line.</p>
+        </WaScroller>
+        """;
+
+    private const string PlainExample = """
+        <WaScroller WithoutShadow="true" WithoutScrollbar="false" Style="max-width: 500px;">
+            <p style="white-space: nowrap;">No shadows: the edges don't hint at the overflow, the scrollbar does.</p>
+        </WaScroller>
+        <WaScroller WithoutShadow="false" WithoutScrollbar="true" Style="max-width: 500px;">
+            <p style="white-space: nowrap;">No scrollbar: only the shadows show that this line continues to the right.</p>
         </WaScroller>
         """;
 }

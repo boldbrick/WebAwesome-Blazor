@@ -168,3 +168,17 @@ h1 .component-badges {
     right: 0.75rem;
     top: 0.5rem;
 }
+
+/* a small colored square that examples animate, resize or scroll; --demo-box-color picks the fill */
+.demo-box {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--wa-border-radius-m);
+    background: var(--demo-box-color, var(--wa-color-brand-fill-loud));
+}
+
+/* the class the intersection observer example adds while its box is visible */
+.demo-intersecting {
+    outline: 3px solid var(--wa-color-success-fill-loud);
+    outline-offset: 2px;
+}

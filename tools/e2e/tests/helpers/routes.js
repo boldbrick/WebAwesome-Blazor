@@ -3,7 +3,8 @@
 // that drives the demo's own navigation and API tables (src\WebAwesome.Blazor.Demo\wwwroot\data\api-surface.json),
 // so newly generated component pages are covered automatically. Layout routes have no such
 // generated manifest (WaCluster/WaFlank/... are hand-authored, not CEM-derived) and are kept
-// in sync manually with MainLayout.razor's LayoutLinks array.
+// in sync manually with MainLayout.razor's LayoutLinks array. Harness routes (e2e-only pages
+// outside the navigation) are hand-listed in HARNESS_ROUTES.
 const fs = require('fs');
 const path = require('path');
 
@@ -28,6 +29,31 @@ const SHOWCASE_ROUTES = [
   '/showcases/content',
 ];
 
+// Pages of wrappers rendering another wrapper's element in one of its modes (the range wrappers of wa-date-input
+// and wa-date-picker), which api-surface.json, keyed by element tag, cannot list; kept in sync manually with
+// ComponentCategoryMap.WrapperPages (src\WebAwesome.Blazor.Demo\Services\ComponentCategoryMap.cs).
+const WRAPPER_ROUTES = [
+  '/components/date-range-input',
+  '/components/date-range-picker',
+];
+
+// e2e harness pages (src\WebAwesome.Blazor.Demo\Pages\Testing): deliberately outside /components/,
+// so they are neither derived from api-surface.json nor linked from the sidebar - listed here so
+// the sweep still visits them
+const HARNESS_ROUTES = [
+  '/testing/value-sync',
+  '/testing/events-forms',
+  '/testing/events-overlays',
+  '/testing/events-content',
+  '/testing/events-pro',
+  '/testing/event-payloads',
+  '/testing/date-typing',
+  '/testing/day-content',
+  '/testing/sticky-attributes',
+  '/testing/toast-items',
+  '/testing/carousel-slides',
+];
+
 function getComponentRoutes() {
   const surfacePath = path.resolve(
     __dirname,
@@ -40,7 +66,7 @@ function getComponentRoutes() {
 }
 
 function getAllRoutes() {
-  return ['/', ...getComponentRoutes(), ...LAYOUT_ROUTES, ...SHOWCASE_ROUTES];
+  return ['/', ...getComponentRoutes(), ...WRAPPER_ROUTES, ...LAYOUT_ROUTES, ...SHOWCASE_ROUTES, ...HARNESS_ROUTES];
 }
 
-module.exports = { getComponentRoutes, getAllRoutes, LAYOUT_ROUTES, SHOWCASE_ROUTES };
+module.exports = { getComponentRoutes, getAllRoutes, WRAPPER_ROUTES, LAYOUT_ROUTES, SHOWCASE_ROUTES, HARNESS_ROUTES };

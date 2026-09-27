@@ -1,9 +1,12 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Tests.ApiParity;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
@@ -30,6 +33,32 @@ public class WaToastItemIntegrationTests : BunitContext
         Assert.False(element.HasAttribute("variant"));
     }
 
+    /// <summary>
+    /// The element carries the Blazor-owned marker, so the JS initializer hides it in place once it has hidden
+    /// instead of letting Web Awesome remove a node that Blazor still tracks; the browser half is toast-items.spec.js.
+    /// </summary>
+    [Fact]
+    public void Render_MarksElementAsBlazorOwned()
+    {
+        var cut = Render<WaToastItem>();
+
+        Assert.True(cut.Find("wa-toast-item").HasAttribute(BlazorOwnedAttribute));
+    }
+
+    /// <summary>
+    /// The marker the wrapper renders is the one the JS initializer looks for.
+    /// </summary>
+    [Fact]
+    public void BlazorOwnedAttribute_MatchesLibraryConstantAndJsInitializer()
+    {
+        var constant = typeof(Constants).GetField(BlazorOwnedConstantName, BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.NotNull(constant);
+        Assert.Equal(BlazorOwnedAttribute, (string?)constant.GetRawConstantValue());
+
+        var source = File.ReadAllText(Path.Combine(ApiParityData.WrapperProjectDirectory(), "wwwroot", JsInitializerEventRegistrations.FileName));
+        Assert.Contains($"const blazorOwnedAttribute = '{BlazorOwnedAttribute}';", source);
+    }
+
     [Fact]
     public void Parameters_WhenSet_RenderExpectedAttributes()
     {
@@ -40,7 +69,7 @@ public class WaToastItemIntegrationTests : BunitContext
 
         var element = cut.Find("wa-toast-item");
         Assert.Equal("0", element.GetAttribute("duration"));
-        Assert.Equal("large", element.GetAttribute("size"));
+        Assert.Equal("l", element.GetAttribute("size"));
         Assert.Equal("success", element.GetAttribute("variant"));
     }
 
@@ -61,31 +90,6 @@ public class WaToastItemIntegrationTests : BunitContext
 
         var icon = cut.Find("wa-icon[slot='icon']");
         Assert.Equal("circle-check", icon.GetAttribute("name"));
-    }
-
-    [Fact]
-    public void Events_WhenWired_ReceiveDomEvents()
-    {
-        var showCount = 0;
-        var afterShowCount = 0;
-        var hideCount = 0;
-        var afterHideCount = 0;
-        var cut = Render<WaToastItem>(parameters => parameters
-            .Add(p => p.OnShow, () => showCount++)
-            .Add(p => p.OnAfterShow, () => afterShowCount++)
-            .Add(p => p.OnHide, () => hideCount++)
-            .Add(p => p.OnAfterHide, () => afterHideCount++));
-
-        var element = cut.Find("wa-toast-item");
-        element.TriggerEvent("onwa-show", new EventArgs());
-        element.TriggerEvent("onwa-after-show", new EventArgs());
-        element.TriggerEvent("onwa-hide", new EventArgs());
-        element.TriggerEvent("onwa-after-hide", new EventArgs());
-
-        Assert.Equal(1, showCount);
-        Assert.Equal(1, afterShowCount);
-        Assert.Equal(1, hideCount);
-        Assert.Equal(1, afterHideCount);
     }
 
     [Fact]
@@ -111,4 +115,9 @@ public class WaToastItemIntegrationTests : BunitContext
     }
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+
+    // mirrors Constants.BlazorOwnedAttribute in the library (internal there, and InternalsVisibleTo applies to Debug
+    // builds only)
+    private const string BlazorOwnedAttribute = "data-wablazor-owned";
+    private const string BlazorOwnedConstantName = "BlazorOwnedAttribute";
 }

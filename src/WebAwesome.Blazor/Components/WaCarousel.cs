@@ -13,6 +13,28 @@ namespace WebAwesome.Blazor.Components;
 /// A carousel component that displays content slides along a horizontal or vertical axis.
 /// Corresponds to the wa-carousel Web Awesome component.
 /// </summary>
+/// <remarks>
+/// <para>
+/// The slides are <see cref="WaCarouselItem"/> components in <see cref="ChildContent"/>. To add or remove slides
+/// dynamically, render them from a collection with <c>@foreach</c> and <c>@key</c> and change the collection; the
+/// element picks the change up by itself (pagination, navigation and, with <see cref="Loop"/>, its clones of the
+/// slides follow):
+/// </para>
+/// <code>
+/// &lt;WaCarousel Pagination="true" Navigation="true"&gt;
+///     @foreach (var photo in photos)
+///     {
+///         &lt;WaCarouselItem @key="photo.Id"&gt;&lt;img src="@photo.Url" alt="@photo.Title" /&gt;&lt;/WaCarouselItem&gt;
+///     }
+/// &lt;/WaCarousel&gt;
+/// </code>
+/// <para>
+/// Removing the active slide from the collection works as well: the carousel keeps the active index, so the slide
+/// after the removed one shows. When the removed slide was the last one, the new last slide shows, or the first one
+/// when <see cref="Loop"/> is set; <see cref="OnSlideChange"/> reports that change. Web Awesome's imperative
+/// <c>addSlide()</c> and <c>removeSlide()</c> are not wrapped: they move or remove elements Blazor renders.
+/// </para>
+/// </remarks>
 public class WaCarousel : ComponentBase
 {
     #region ------ Injected Services ------
@@ -48,9 +70,14 @@ public class WaCarousel : ComponentBase
 
     // Carousel properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Orientation"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaOrientation DefaultOrientation = WaOrientation.Horizontal;
+
+    /// <summary>
     /// The orientation in which the carousel lays out its slides.
     /// </summary>
-    [Parameter] public WaOrientation Orientation { get; set; } = WaOrientation.Horizontal;
+    [Parameter] public WaOrientation Orientation { get; set; } = DefaultOrientation;
 
     /// <summary>
     /// Shows the carousel's pagination indicators.
@@ -78,20 +105,35 @@ public class WaCarousel : ComponentBase
     [Parameter] public bool Autoplay { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="AutoplayInterval"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultAutoplayInterval = 3000;
+
+    /// <summary>
     /// The amount of time, in milliseconds, between each automatic scroll.
     /// </summary>
-    [Parameter] public int AutoplayInterval { get; set; } = 3000;
+    [Parameter] public int AutoplayInterval { get; set; } = DefaultAutoplayInterval;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="SlidesPerPage"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultSlidesPerPage = 1;
 
     /// <summary>
     /// How many slides are shown at a given time.
     /// </summary>
-    [Parameter] public int SlidesPerPage { get; set; } = 1;
+    [Parameter] public int SlidesPerPage { get; set; } = DefaultSlidesPerPage;
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="SlidesPerMove"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const int DefaultSlidesPerMove = 1;
 
     /// <summary>
     /// The number of slides the carousel advances when scrolling. Useful when <see cref="SlidesPerPage"/> is greater
     /// than one. It cannot be higher than <see cref="SlidesPerPage"/>.
     /// </summary>
-    [Parameter] public int SlidesPerMove { get; set; } = 1;
+    [Parameter] public int SlidesPerMove { get; set; } = DefaultSlidesPerMove;
 
     #endregion
 
@@ -112,12 +154,22 @@ public class WaCarousel : ComponentBase
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Icon rendered into the next-icon slot, replacing the default next navigation icon.
+    /// Optional next icon to use instead of the default, rendered into the element's "next-icon" slot. Works best with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? NextIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="NextIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? NextIconName { get; set; }
 
     /// <summary>
-    /// Icon rendered into the previous-icon slot, replacing the default previous navigation icon.
+    /// Optional previous icon to use instead of the default, rendered into the element's "previous-icon" slot. Works best with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? PreviousIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="PreviousIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? PreviousIconName { get; set; }
 
@@ -128,21 +180,21 @@ public class WaCarousel : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-carousel");
+        var attributes = builder.OpenWaElement(this, 0, "wa-carousel");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttribute(4, "orientation", Orientation.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "orientation", Orientation.ToHtmlValue(), DefaultOrientation.ToHtmlValue());
         builder.AddAttribute(5, "pagination", Pagination);
         builder.AddAttribute(6, "navigation", Navigation);
         builder.AddAttribute(7, "mouse-dragging", MouseDragging);
         builder.AddAttribute(8, "loop", Loop);
         builder.AddAttribute(9, "autoplay", Autoplay);
-        builder.AddAttribute(10, "autoplay-interval", AutoplayInterval);
-        builder.AddAttribute(11, "slides-per-page", SlidesPerPage);
-        builder.AddAttribute(12, "slides-per-move", SlidesPerMove);
+        builder.AddNumberAttribute(attributes, 10, "autoplay-interval", AutoplayInterval, DefaultAutoplayInterval);
+        builder.AddNumberAttribute(attributes, 11, "slides-per-page", SlidesPerPage, DefaultSlidesPerPage);
+        builder.AddNumberAttribute(attributes, 12, "slides-per-move", SlidesPerMove, DefaultSlidesPerMove);
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(15, "onwa-slide-change", OnSlideChange);
@@ -156,9 +208,31 @@ public class WaCarousel : ComponentBase
             builder.AddContent(30, ChildContent);
         }
 
-        // Add navigation icon slots
-        builder.AddIconSlot(40, "next-icon", NextIconName);
-        builder.AddIconSlot(45, "previous-icon", PreviousIconName);
+        // Add next icon slot content
+        if (NextIconContent is not null)
+        {
+            builder.OpenElement(40, "span");
+            builder.AddAttribute(41, "slot", "next-icon");
+            builder.AddContent(42, NextIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(43, "next-icon", NextIconName);
+        }
+
+        // Add previous icon slot content
+        if (PreviousIconContent is not null)
+        {
+            builder.OpenElement(50, "span");
+            builder.AddAttribute(51, "slot", "previous-icon");
+            builder.AddContent(52, PreviousIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(53, "previous-icon", PreviousIconName);
+        }
 
         builder.CloseElement();
     }
@@ -202,39 +276,6 @@ public class WaCarousel : ComponentBase
             throw new InvalidOperationException("Cannot navigate to next slide: component has not been rendered yet.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "next");
-    }
-
-    /// <summary>
-    /// Adds a carousel item as the last real slide.
-    /// </summary>
-    /// <param name="slide">The element reference of the <see cref="WaCarouselItem"/> to add, e.g. its
-    /// <see cref="WaCarouselItem.Element"/>.</param>
-    /// <remarks>
-    /// In Blazor the normal way to add slides is declaratively, by including additional
-    /// <see cref="WaCarouselItem"/> components in <see cref="ChildContent"/>. This method is provided for
-    /// parity with the Web Awesome element API and imperative scenarios where a slide is created outside the
-    /// carousel's own render tree.
-    /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task AddSlideAsync(ElementReference slide)
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot add slide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "addSlide", slide);
-    }
-
-    /// <summary>
-    /// Removes the real slide at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the slide to remove</param>
-    /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
-    public async Task RemoveSlideAsync(int index)
-    {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot remove slide: component has not been rendered yet.");
-
-        await JSInterop.InvokeMethodAsync(Element.Value, "removeSlide", index);
     }
 
     #endregion

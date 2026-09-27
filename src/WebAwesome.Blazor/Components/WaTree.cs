@@ -40,13 +40,18 @@ public class WaTree : ComponentBase
 
     // Tree properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Selection"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaTreeSelection DefaultSelection = WaTreeSelection.Single;
+
+    /// <summary>
     /// The selection behavior of the tree. <see cref="WaTreeSelection.Single"/> allows only one node to be
     /// selected at a time. <see cref="WaTreeSelection.Multiple"/> displays checkboxes and allows more than one
     /// node to be selected. <see cref="WaTreeSelection.Leaf"/> allows only leaf nodes to be selected.
     /// <see cref="WaTreeSelection.LeafMultiple"/> allows multiple leaf nodes to be selected while parent nodes
     /// only expand and collapse.
     /// </summary>
-    [Parameter] public WaTreeSelection Selection { get; set; } = WaTreeSelection.Single;
+    [Parameter] public WaTreeSelection Selection { get; set; } = DefaultSelection;
 
     #endregion
 
@@ -67,12 +72,22 @@ public class WaTree : ComponentBase
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Icon rendered into the expand-icon slot for every item, replacing the default expand icon.
+    /// The icon to show on every item when it is expanded, rendered into the element's "expand-icon" slot. Works best with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? ExpandIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="ExpandIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? ExpandIconName { get; set; }
 
     /// <summary>
-    /// Icon rendered into the collapse-icon slot for every item, replacing the default collapse icon.
+    /// The icon to show on every item when it is collapsed, rendered into the element's "collapse-icon" slot. Works best with a wa-icon.
+    /// </summary>
+    [Parameter] public RenderFragment? CollapseIconContent { get; set; }
+
+    /// <summary>
+    /// Convenience alternative to <see cref="CollapseIconContent"/>; ignored when the fragment is set.
     /// </summary>
     [Parameter] public string? CollapseIconName { get; set; }
 
@@ -83,7 +98,7 @@ public class WaTree : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-tree");
+        var attributes = builder.OpenWaElement(this, 0, "wa-tree");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -91,7 +106,7 @@ public class WaTree : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add tree-specific attributes
-        builder.AddAttribute(4, "selection", Selection.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 4, "selection", Selection.ToHtmlValue(), DefaultSelection.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(10, "onwa-selection-change", OnSelectionChange);
@@ -105,9 +120,31 @@ public class WaTree : ComponentBase
             builder.AddContent(20, ChildContent);
         }
 
-        // Add icon slots
-        builder.AddIconSlot(30, "expand-icon", ExpandIconName);
-        builder.AddIconSlot(35, "collapse-icon", CollapseIconName);
+        // Add expand icon slot content
+        if (ExpandIconContent is not null)
+        {
+            builder.OpenElement(30, "span");
+            builder.AddAttribute(31, "slot", "expand-icon");
+            builder.AddContent(32, ExpandIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(33, "expand-icon", ExpandIconName);
+        }
+
+        // Add collapse icon slot content
+        if (CollapseIconContent is not null)
+        {
+            builder.OpenElement(40, "span");
+            builder.AddAttribute(41, "slot", "collapse-icon");
+            builder.AddContent(42, CollapseIconContent);
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.AddIconSlot(43, "collapse-icon", CollapseIconName);
+        }
 
         builder.CloseElement();
     }

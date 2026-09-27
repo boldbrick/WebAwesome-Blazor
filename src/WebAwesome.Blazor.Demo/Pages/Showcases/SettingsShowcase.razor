@@ -120,6 +120,11 @@
                 <WaText Variant="TextVariant.Caption">
                     Editing section: <strong>@(activeSection ?? "general")</strong> — changes are saved automatically
                 </WaText>
+                <WaText Variant="TextVariant.Caption" Element="div">
+                    Saved settings: @workspaceName · @LanguageName · week starts on @weekStart · @density density ·
+                    auto-save @(autoSave ? "on" : "off") · notifications: @NotificationSummary ·
+                    API key expires after @keyExpiration days@(restrictIps ? ", allowed IP ranges only" : "")
+                </WaText>
             </div>
         </Footer>
     </WaPage>
@@ -138,4 +143,25 @@
     private string? apiKey = "nova_live_your_api_key_here"; // placeholder only, never a real credential
     private string? keyExpiration = "90";
     private bool restrictIps;
+
+    // the display name of the selected language option
+    private string LanguageName => language switch
+    {
+        "cs" => "Čeština",
+        "de" => "Deutsch",
+        _ => "English"
+    };
+
+    // the notification types switched on, or "none"
+    private string NotificationSummary
+    {
+        get
+        {
+            var enabled = new[] { (notifyMentions, "mentions"), (notifyReviews, "review results"), (notifyDigest, "weekly digest") }
+                .Where(type => type.Item1)
+                .Select(type => type.Item2)
+                .ToArray();
+            return enabled.Length > 0 ? string.Join(", ", enabled) : "none";
+        }
+    }
 }

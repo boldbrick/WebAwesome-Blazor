@@ -1,20 +1,68 @@
-﻿@page "/components/progress-ring"
+@page "/components/progress-ring"
 
 <PageTitle>Progress Ring</PageTitle>
 
-<h1>Progress Ring</h1>
-<p><code>&lt;wa-progress-ring&gt;</code> wrapped by <code>WaProgressRing</code>.</p>
+<h1>Progress Ring <ComponentBadges Tag="wa-progress-ring" /></h1>
+<p>Progress rings show the progress of a determinate operation in a circular fashion. <code>&lt;wa-progress-ring&gt;</code> wrapped by <code>WaProgressRing</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaProgressRing Value="75">75%</WaProgressRing>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\progress-ring.md) *@
+<ExampleSection Title="Label" Code="@LabelExample">
+    <WaProgressRing Value="40" Label="Profile completeness" />
+</ExampleSection>
+
+<ExampleSection Title="Size and Track Width" Code="@SizeExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+        <WaProgressRing Value="50" Label="Small" Style="--size: 3rem;" />
+        <WaProgressRing Value="50" Label="Thick track" Style="--size: 6rem; --track-width: 12px; --indicator-width: 12px;" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Colors" Code="@ColorsExample">
+    <WaProgressRing Value="90" Label="Storage used" Style="--track-color: var(--wa-color-danger-fill-quiet); --indicator-color: var(--wa-color-danger-fill-loud);">90%</WaProgressRing>
+</ExampleSection>
+
+<ExampleSection Title="Dynamic Values" Code="@DynamicExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+        <WaProgressRing Value="progress" Label="Task progress">@progress%</WaProgressRing>
+        <WaButton Size="WaSize.Small" OnClick="() => progress = progress >= 100 ? 0 : progress + 25">Advance</WaButton>
+    </WaCluster>
+</ExampleSection>
 
 <ApiTable Tag="wa-progress-ring" />
 
 @code {
+    private int progress;
+
     private const string DefaultExample = """
         <WaProgressRing Value="75">75%</WaProgressRing>
+        """;
+
+    private const string LabelExample = """
+        <WaProgressRing Value="40" Label="Profile completeness" />
+        """;
+
+    private const string SizeExample = """
+        <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+            <WaProgressRing Value="50" Label="Small" Style="--size: 3rem;" />
+            <WaProgressRing Value="50" Label="Thick track" Style="--size: 6rem; --track-width: 12px; --indicator-width: 12px;" />
+        </WaCluster>
+        """;
+
+    private const string ColorsExample = """
+        <WaProgressRing Value="90" Label="Storage used" Style="--track-color: var(--wa-color-danger-fill-quiet); --indicator-color: var(--wa-color-danger-fill-loud);">90%</WaProgressRing>
+        """;
+
+    private const string DynamicExample = """
+        <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+            <WaProgressRing Value="progress" Label="Task progress">@progress%</WaProgressRing>
+            <WaButton Size="WaSize.Small" OnClick="() => progress = progress >= 100 ? 0 : progress + 25">Advance</WaButton>
+        </WaCluster>
+
+        @code {
+            private int progress;
+        }
         """;
 }

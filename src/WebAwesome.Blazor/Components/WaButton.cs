@@ -48,14 +48,32 @@ public class WaButton : ComponentBase, IFormValidation
 
     // Visual & behavior properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaVariant DefaultVariant = WaVariant.Neutral;
+
+    /// <summary>
     /// The button's theme variant. Defaults to <c>neutral</c> if not within another element with a variant.
     /// </summary>
     [Parameter] public WaVariant? Variant { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Appearance"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaAppearance DefaultAppearance = WaAppearance.Accent;
+
+    /// <summary>
     /// The button's visual appearance.
     /// </summary>
     [Parameter] public WaAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The button's size.
@@ -97,6 +115,12 @@ public class WaButton : ComponentBase, IFormValidation
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Type"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const WaButtonType DefaultType = WaButtonType.Button;
+
+    /// <summary>
     /// The type of button. The default is <see cref="WaButtonType.Button"/> rather than <c>submit</c>, which is the
     /// opposite of how native <c>&lt;button&gt;</c> elements behave.
     /// </summary>
@@ -112,7 +136,7 @@ public class WaButton : ComponentBase, IFormValidation
     /// <summary>
     /// Tells the browser where to open the link. Only used when <see cref="Href"/> is present.
     /// </summary>
-    [Parameter] public string? Target { get; set; }
+    [Parameter] public WaLinkTarget? Target { get; set; }
 
     /// <summary>
     /// Tells the browser to download the linked file as this filename. Only used when <see cref="Href"/> is present.
@@ -142,12 +166,12 @@ public class WaButton : ComponentBase, IFormValidation
     /// <summary>
     /// Used to override the form owner's <c>enctype</c> attribute.
     /// </summary>
-    [Parameter] public string? FormEncType { get; set; }
+    [Parameter] public WaFormEncType? FormEncType { get; set; }
 
     /// <summary>
     /// Used to override the form owner's <c>method</c> attribute.
     /// </summary>
-    [Parameter] public string? FormMethod { get; set; }
+    [Parameter] public WaFormMethod? FormMethod { get; set; }
 
     /// <summary>
     /// Used to override the form owner's <c>novalidate</c> attribute.
@@ -181,13 +205,24 @@ public class WaButton : ComponentBase, IFormValidation
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     /// <summary>
-    /// Invoked when the button gains focus.
+    /// Invoked when the focus moves into the button. Bound to the bubbling, composed focusin event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusin"), because the focus lands on the native button in the
+    /// element's shadow root, where Blazor never sees the non-bubbling focus event.
     /// </summary>
+    /// <remarks>
+    /// A focus move inside the button's shadow root raises nothing; a move between the button and focusable
+    /// content slotted into it raises <see cref="OnBlur"/> followed by <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnFocus { get; set; }
 
     /// <summary>
-    /// Invoked when the button loses focus.
+    /// Invoked when the focus leaves the button. Bound to the bubbling, composed focusout event (so
+    /// <see cref="FocusEventArgs.Type"/> is "focusout").
     /// </summary>
+    /// <remarks>
+    /// Also raised, followed by <see cref="OnFocus"/>, when the focus moves between the button and focusable
+    /// content slotted into it; see <see cref="OnFocus"/>.
+    /// </remarks>
     [Parameter] public EventCallback<FocusEventArgs> OnBlur { get; set; }
 
     /// <summary>
@@ -231,33 +266,33 @@ public class WaButton : ComponentBase, IFormValidation
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-button");
+        var attributes = builder.OpenWaElement(this, 0, "wa-button");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass());
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
-        builder.AddAttributeIfNotNull(4, "variant", Variant?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(5, "appearance", Appearance?.ToHtmlValue());
-        builder.AddAttributeIfNotNull(6, "size", Size?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 4, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 5, "appearance", Appearance?.ToHtmlValue(), DefaultAppearance.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 6, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
         builder.AddAttribute(7, "pill", Pill);
         builder.AddAttribute(8, "with-caret", WithCaret);
         builder.AddAttribute(9, "loading", Loading);
         builder.AddAttribute(10, "disabled", Disabled);
-        builder.AddAttributeIfNotNull(11, "type", Type?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 11, "type", Type?.ToHtmlValue(), DefaultType.ToHtmlValue());
 
         // Link behavior attributes
         builder.AddAttributeIfNotNullOrEmpty(12, "href", Href);
-        builder.AddAttributeIfNotNullOrEmpty(13, "target", Target);
+        builder.AddAttributeIfNotNull(13, "target", Target?.ToHtmlValue());
         builder.AddAttributeIfNotNullOrEmpty(14, "download", Download);
         builder.AddAttributeIfNotNullOrEmpty(15, "rel", Rel);
 
         // Form-submission attributes
         builder.AddAttributeIfNotNullOrEmpty(16, "form", Form);
         builder.AddAttributeIfNotNullOrEmpty(17, "formaction", FormAction);
-        builder.AddAttributeIfNotNullOrEmpty(18, "formenctype", FormEncType);
-        builder.AddAttributeIfNotNullOrEmpty(19, "formmethod", FormMethod);
-        builder.AddAttributeIfNotNull(60, "formnovalidate", FormNoValidate);
+        builder.AddAttributeIfNotNull(18, "formenctype", FormEncType?.ToHtmlValue());
+        builder.AddAttributeIfNotNull(19, "formmethod", FormMethod?.ToHtmlValue());
+        builder.AddBooleanAttribute(60, "formnovalidate", FormNoValidate);
         builder.AddAttributeIfNotNullOrEmpty(61, "formtarget", FormTarget);
         builder.AddAttributeIfNotNullOrEmpty(62, "name", Name);
         builder.AddAttributeIfNotNullOrEmpty(63, "value", Value);
@@ -269,9 +304,9 @@ public class WaButton : ComponentBase, IFormValidation
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);
 
-        builder.AddAttributeIfHasDelegate(21, "onfocus", OnFocus);
+        builder.AddAttributeIfHasDelegate(21, "onfocusin", OnFocus);
 
-        builder.AddAttributeIfHasDelegate(22, "onblur", OnBlur);
+        builder.AddAttributeIfHasDelegate(22, "onfocusout", OnBlur);
 
         builder.AddAttributeIfHasDelegate(24, "onwa-invalid", OnInvalid);
 

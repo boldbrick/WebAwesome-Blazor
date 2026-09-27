@@ -50,8 +50,14 @@ public class WaDialog : ComponentBase
 
     // Dialog properties
     /// <summary>
+    /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultLabel = "";
+
+    /// <summary>
     /// The dialog's label as displayed in the header. A relevant label is required for proper accessibility. If you
-    /// need to display HTML, use <see cref="HeaderActionsContent"/> or a custom header instead.
+    /// need to display HTML, use <see cref="LabelContent"/> instead.
     /// </summary>
     [Parameter] public string? Label { get; set; }
 
@@ -95,6 +101,12 @@ public class WaDialog : ComponentBase
     /// </summary>
     [Parameter] public RenderFragment? HeaderActionsContent { get; set; }
 
+    /// <summary>
+    /// The dialog's label as rich content, rendered into the element's "label" slot; takes precedence over
+    /// <see cref="Label"/> when set.
+    /// </summary>
+    [Parameter] public RenderFragment? LabelContent { get; set; }
+
     #endregion
 
     #region ------ Events ------
@@ -109,11 +121,6 @@ public class WaDialog : ComponentBase
     /// result in destructive behavior such as data loss.
     /// </summary>
     [Parameter] public EventCallback<EventArgs> OnHide { get; set; }
-
-    /// <summary>
-    /// Invoked when the dialog sets initial focus after opening.
-    /// </summary>
-    [Parameter] public EventCallback<EventArgs> OnInitialFocus { get; set; }
 
     /// <summary>
     /// Invoked after the dialog opens and all animations are complete.
@@ -132,7 +139,7 @@ public class WaDialog : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-dialog");
+        var attributes = builder.OpenWaElement(this, 0, "wa-dialog");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -140,7 +147,7 @@ public class WaDialog : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add dialog-specific attributes
-        builder.AddAttributeIfNotNullOrEmpty(10, "label", Label);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 10, "label", Label, DefaultLabel);
         builder.AddAttribute(11, "open", Open);
         builder.AddAttribute(12, "without-header", WithoutHeader);
         builder.AddAttribute(13, "light-dismiss", LightDismiss);
@@ -151,14 +158,21 @@ public class WaDialog : ComponentBase
 
         builder.AddAttributeIfHasDelegate(21, "onwa-hide", OnHide);
 
-        builder.AddAttributeIfHasDelegate(22, "onwa-initial-focus", OnInitialFocus);
-
         builder.AddAttributeIfHasDelegate(50, "onwa-after-show", OnAfterShow);
 
         builder.AddAttributeIfHasDelegate(51, "onwa-after-hide", OnAfterHide);
 
         // Add element reference capture
         builder.AddElementReferenceCapture(23, __dialogReference => Element = __dialogReference);
+
+        // Add label slot content
+        if (LabelContent is not null)
+        {
+            builder.OpenElement(25, "span");
+            builder.AddAttribute(26, "slot", "label");
+            builder.AddContent(27, LabelContent);
+            builder.CloseElement();
+        }
 
         // Add header actions slot content
         if (HeaderActionsContent is not null)

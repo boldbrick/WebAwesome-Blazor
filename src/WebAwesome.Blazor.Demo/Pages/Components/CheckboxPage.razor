@@ -25,14 +25,25 @@
 </ExampleSection>
 
 <ExampleSection Title="Hint &amp; Two-way Binding" Code="@HintExample">
-    <WaCheckbox Hint="What should the user know about the checkbox?" @bind-Value="agreed">Accept terms</WaCheckbox>
+    <WaCheckbox Hint="What should the user know about the checkbox?" @bind-Value="agreed" OnCheckedChange="@(isChecked => checkedChanges++)">Accept terms</WaCheckbox>
     <p>Agreed: <strong>@agreed</strong></p>
+    <p>OnCheckedChange calls: <strong>@checkedChanges</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Programmatic Value / Reset" Code="@ProgrammaticExample">
+    <WaCheckbox data-testid="checkbox-sync" @bind-Value="subscribed">Subscribe to the newsletter</WaCheckbox>
+    <p>Model: <code data-testid="checkbox-sync-model">@subscribed</code></p>
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaButton Size="WaSize.Small" data-testid="checkbox-sync-set" OnClick="SetSubscribed">Set to checked</WaButton>
+        <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="checkbox-sync-reset" OnClick="ResetSubscribed">Reset</WaButton>
+    </WaCluster>
 </ExampleSection>
 
 <ApiTable Tag="wa-checkbox" />
 
 @code {
     private bool agreed;
+    private int checkedChanges;
     private bool defaultChecked;
     private bool checkedValue = true;
     private bool indeterminateValue;
@@ -40,6 +51,11 @@
     private bool smallValue;
     private bool mediumValue;
     private bool largeValue;
+    private bool subscribed;
+
+    private void SetSubscribed() => subscribed = true;
+
+    private void ResetSubscribed() => subscribed = false;
 
     private const string DefaultExample = """
         <WaCheckbox @bind-Value="defaultChecked">Checkbox</WaCheckbox>
@@ -80,11 +96,30 @@
         """;
 
     private const string HintExample = """
-        <WaCheckbox Hint="What should the user know about the checkbox?" @bind-Value="agreed">Accept terms</WaCheckbox>
+        <WaCheckbox Hint="What should the user know about the checkbox?" @bind-Value="agreed" OnCheckedChange="@(isChecked => checkedChanges++)">Accept terms</WaCheckbox>
         <p>Agreed: @agreed</p>
+        <p>OnCheckedChange calls: @checkedChanges</p>
 
         @code {
             private bool agreed;
+            private int checkedChanges;
+        }
+        """;
+
+    private const string ProgrammaticExample = """
+        <WaCheckbox data-testid="checkbox-sync" @bind-Value="subscribed">Subscribe to the newsletter</WaCheckbox>
+        <p>Model: <code data-testid="checkbox-sync-model">@subscribed</code></p>
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaButton Size="WaSize.Small" data-testid="checkbox-sync-set" OnClick="SetSubscribed">Set to checked</WaButton>
+            <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="checkbox-sync-reset" OnClick="ResetSubscribed">Reset</WaButton>
+        </WaCluster>
+
+        @code {
+            private bool subscribed;
+
+            private void SetSubscribed() => subscribed = true;
+
+            private void ResetSubscribed() => subscribed = false;
         }
         """;
 }

@@ -1,48 +1,22 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
-using WebAwesome.Blazor.Extensions;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for WaTabGroup component using the new JS interop infrastructure
+/// Interop tests for WaTabGroup.ShowTabAsync: it rejects a missing panel name, throws before the first render,
+/// and afterwards sets the element's active property to the panel through the interop module (recorded, see
+/// RecordingJSRuntime).
 /// </summary>
 public class WaTabGroupIntegrationTests : IDisposable
 {
-    private readonly ServiceProvider serviceProvider;
-    private readonly WaTabGroup tabGroupComponent;
-
-    public WaTabGroupIntegrationTests()
-    {
-        var services = new ServiceCollection();
-        services.AddWebAwesome();
-        services.AddSingleton<IJSRuntime, TestJSRuntime>();
-        serviceProvider = services.BuildServiceProvider();
-
-        tabGroupComponent = new WaTabGroup();
-
-        // Inject dependencies manually for testing
-        var jsInterop = serviceProvider.GetRequiredService<WebAwesomeJSInterop>();
-        var propertyInfo = typeof(WaTabGroup).GetProperty("JSInterop",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        propertyInfo?.SetValue(tabGroupComponent, jsInterop);
-    }
-
     [Fact]
     public async Task ShowTabAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            tabGroupComponent.ShowTabAsync("tab1"));
+            runtime.CreateUnrendered<WaTabGroup>().ShowTabAsync(PanelName));
 
         Assert.Contains("Cannot show tab: component has not been rendered yet", exception.Message);
     }
@@ -50,91 +24,39 @@ public class WaTabGroupIntegrationTests : IDisposable
     [Fact]
     public async Task ShowTabAsync_WithNullPanelName_ThrowsArgumentNullException()
     {
-        // Arrange
-        SetupElementReference();
-
-        // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            tabGroupComponent.ShowTabAsync(null!));
+            runtime.CreateRendered<WaTabGroup>().ShowTabAsync(null!));
     }
 
     [Fact]
     public async Task ShowTabAsync_WithEmptyPanelName_ThrowsArgumentNullException()
     {
-        // Arrange
-        SetupElementReference();
-
-        // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            tabGroupComponent.ShowTabAsync(""));
+            runtime.CreateRendered<WaTabGroup>().ShowTabAsync(string.Empty));
     }
 
     [Fact]
-    public async Task ShowTabAsync_WithValidElement_CallsJSInterop()
+    public async Task ShowTabAsync_WithValidElement_SetsTheActiveProperty()
     {
-        // Arrange
-        SetupElementReference();
+        await runtime.CreateRendered<WaTabGroup>().ShowTabAsync(PanelName);
 
-        // Act - This should not throw because we have a test JSRuntime
-        await tabGroupComponent.ShowTabAsync("panel1");
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
+        Assert.Equal(PanelName, runtime.Module.AssertSetProperty("active"));
     }
 
-    private void SetupElementReference()
+    #region ------ Implementation of IDisposable ------
+
+    public void Dispose()
     {
-        // Simulate element being rendered by setting Element property
-        var elementRef = new ElementReference("test-tab-group-element");
-        var elementProperty = typeof(WaTabGroup).GetProperty("Element",
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        elementProperty?.SetValue(tabGroupComponent, elementRef);
-    }
-
-    #region ------ Test JSRuntime ------
-
-    private class TestJSRuntime : IJSRuntime
-    {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Simulate module import returning a mock module
-            if (identifier == "import")
-            {
-                return ValueTask.FromResult((TValue)(object)new TestJSObjectReference());
-            }
-
-            throw new NotImplementedException($"Test runtime does not implement {identifier}");
-        }
-
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
-    }
-
-    private class TestJSObjectReference : IJSObjectReference
-    {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Return default values for testing
-            return ValueTask.FromResult(default(TValue)!);
-        }
-
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return ValueTask.CompletedTask;
-        }
+        runtime.Dispose();
     }
 
     #endregion
 
-    public void Dispose()
-    {
-        serviceProvider?.Dispose();
-    }
+    #region ------ Internals ------
+
+    private const string PanelName = "panel1";
+
+    private readonly RecordingJSRuntime runtime = new();
+
+    #endregion
 }

@@ -54,7 +54,7 @@ public class WaCarouselItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-carousel-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-carousel-item");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);

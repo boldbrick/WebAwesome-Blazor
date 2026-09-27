@@ -3,7 +3,7 @@
 <PageTitle>Carousel</PageTitle>
 
 <h1>Carousel <ComponentBadges Tag="wa-carousel" /></h1>
-<p><code>&lt;wa-carousel&gt;</code> wrapped by <code>WaCarousel</code>.</p>
+<p>Carousels show a series of <a href="components/carousel-item"><code>WaCarouselItem</code></a> slides along a horizontal or vertical axis. <code>&lt;wa-carousel&gt;</code> wrapped by <code>WaCarousel</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaCarousel Pagination="true" Navigation="true">
@@ -19,11 +19,79 @@
     </WaCarousel>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\carousel.md) *@
+<ExampleSection Title="Looping and Mouse Dragging" Code="@LoopExample">
+    <WaCarousel Loop="true" MouseDragging="true" Pagination="true" Navigation="false">
+        @foreach (var color in Colors)
+        {
+            <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 160px;"></div></WaCarouselItem>
+        }
+    </WaCarousel>
+</ExampleSection>
+
+<ExampleSection Title="Autoplay" Code="@AutoplayExample">
+    <WaCarousel Autoplay="true" AutoplayInterval="2500" Loop="true" Pagination="true">
+        @foreach (var color in Colors)
+        {
+            <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 160px;"></div></WaCarouselItem>
+        }
+    </WaCarousel>
+</ExampleSection>
+
+<ExampleSection Title="Multiple Slides per Page" Code="@MultipleExample">
+    <WaCarousel SlidesPerPage="3" SlidesPerMove="2" Navigation="true" Pagination="true" Style="--aspect-ratio: 3/1;">
+        @for (var i = 1; i <= 7; i++)
+        {
+            <WaCarouselItem><div style="background: var(--wa-color-neutral-fill-normal); height: 100%; display: grid; place-items: center;">Slide @i</div></WaCarouselItem>
+        }
+    </WaCarousel>
+</ExampleSection>
+
+<ExampleSection Title="Vertical Scrolling" Code="@VerticalExample">
+    <WaCarousel Orientation="WaOrientation.Vertical" Pagination="true" Navigation="true" Style="--aspect-ratio: 16/9; max-width: 420px;">
+        @foreach (var color in Colors)
+        {
+            <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 100%;"></div></WaCarouselItem>
+        }
+    </WaCarousel>
+</ExampleSection>
+
+<ExampleSection Title="Custom Navigation Icons" Code="@IconsExample">
+    <WaStack Gap="GapSize.Gap_L">
+        <WaCarousel Navigation="true" PreviousIconName="circle-arrow-left" NextIconName="circle-arrow-right">
+            @foreach (var color in Colors)
+            {
+                <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 120px;"></div></WaCarouselItem>
+            }
+        </WaCarousel>
+        <WaCarousel Navigation="true">
+            <PreviousIconContent><WaIcon Name="chevron-left" Label="Previous slide" /></PreviousIconContent>
+            <NextIconContent><WaIcon Name="chevron-right" Label="Next slide" /></NextIconContent>
+            <ChildContent>
+                @foreach (var color in Colors)
+                {
+                    <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 120px;"></div></WaCarouselItem>
+                }
+            </ChildContent>
+        </WaCarousel>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Tracking the Slide" Code="@SlideChangeExample">
+    <WaCarousel Navigation="true" Pagination="true" OnSlideChange="e => slide = e.Index">
+        @foreach (var color in Colors)
+        {
+            <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 120px;"></div></WaCarouselItem>
+        }
+    </WaCarousel>
+    <p>Showing slide <strong>@(slide + 1)</strong> of @Colors.Length</p>
+</ExampleSection>
 
 <ApiTable Tag="wa-carousel" />
 
 @code {
+    private static readonly string[] Colors = ["brand", "success", "warning", "danger"];
+    private int slide;
+
     private const string DefaultExample = """
         <WaCarousel Pagination="true" Navigation="true">
             <WaCarouselItem>
@@ -36,5 +104,72 @@
                 <div style="background: var(--wa-color-warning-fill-loud); height: 200px;"></div>
             </WaCarouselItem>
         </WaCarousel>
+        """;
+
+    private const string LoopExample = """
+        <WaCarousel Loop="true" MouseDragging="true" Pagination="true" Navigation="false">
+            @foreach (var color in Colors)
+            {
+                <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 160px;"></div></WaCarouselItem>
+            }
+        </WaCarousel>
+
+        @code {
+            private static readonly string[] Colors = ["brand", "success", "warning", "danger"];
+        }
+        """;
+
+    private const string AutoplayExample = """
+        <WaCarousel Autoplay="true" AutoplayInterval="2500" Loop="true" Pagination="true">
+            @foreach (var color in Colors)
+            {
+                <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 160px;"></div></WaCarouselItem>
+            }
+        </WaCarousel>
+        """;
+
+    private const string MultipleExample = """
+        <WaCarousel SlidesPerPage="3" SlidesPerMove="2" Navigation="true" Pagination="true" Style="--aspect-ratio: 3/1;">
+            @for (var i = 1; i <= 7; i++)
+            {
+                <WaCarouselItem><div style="...; height: 100%;">Slide @i</div></WaCarouselItem>
+            }
+        </WaCarousel>
+        """;
+
+    private const string VerticalExample = """
+        <WaCarousel Orientation="WaOrientation.Vertical" Pagination="true" Navigation="true" Style="--aspect-ratio: 16/9; max-width: 420px;">
+            @foreach (var color in Colors)
+            {
+                <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 100%;"></div></WaCarouselItem>
+            }
+        </WaCarousel>
+        """;
+
+    private const string IconsExample = """
+        <WaCarousel Navigation="true" PreviousIconName="circle-arrow-left" NextIconName="circle-arrow-right">
+            ...
+        </WaCarousel>
+        <WaCarousel Navigation="true">
+            <PreviousIconContent><WaIcon Name="chevron-left" Label="Previous slide" /></PreviousIconContent>
+            <NextIconContent><WaIcon Name="chevron-right" Label="Next slide" /></NextIconContent>
+            <ChildContent>
+                ...
+            </ChildContent>
+        </WaCarousel>
+        """;
+
+    private const string SlideChangeExample = """
+        <WaCarousel Navigation="true" Pagination="true" OnSlideChange="e => slide = e.Index">
+            @foreach (var color in Colors)
+            {
+                <WaCarouselItem><div style="background: var(--wa-color-@(color)-fill-loud); height: 120px;"></div></WaCarouselItem>
+            }
+        </WaCarousel>
+        <p>Showing slide @(slide + 1) of @Colors.Length</p>
+
+        @code {
+            private int slide;
+        }
         """;
 }

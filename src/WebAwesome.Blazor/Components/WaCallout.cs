@@ -40,19 +40,31 @@ public class WaCallout : ComponentBase
 
     // Callout properties
     /// <summary>
-    /// The callout's theme variant. Defaults to <c>brand</c> if not within another element with a variant.
+    /// The Web Awesome default of <see cref="Variant"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
     /// </summary>
-    [Parameter] public WaVariant Variant { get; set; } = WaVariant.Neutral;
+    public const WaVariant DefaultVariant = WaVariant.Brand;
 
     /// <summary>
-    /// The callout's visual appearance.
+    /// The callout's theme variant. Null (the default) leaves the element's default: brand, unless the callout is
+    /// within another element with a variant.
     /// </summary>
-    [Parameter] public WaAppearance Appearance { get; set; } = WaAppearance.OutlinedFilled;
+    [Parameter] public WaVariant? Variant { get; set; }
+
+    /// <summary>
+    /// The callout's visual appearance. Null (the default) leaves the element's own styling.
+    /// </summary>
+    [Parameter] public WaAppearance? Appearance { get; set; }
+
+    /// <summary>
+    /// The Web Awesome default of <see cref="Size"/>, which renders no attribute until the parameter first differs from it.
+    /// </summary>
+    public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
     /// The callout's size.
     /// </summary>
-    [Parameter] public WaSize Size { get; set; } = WaSize.Medium;
+    [Parameter] public WaSize Size { get; set; } = DefaultSize;
 
     #endregion
 
@@ -80,7 +92,7 @@ public class WaCallout : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-callout");
+        var attributes = builder.OpenWaElement(this, 0, "wa-callout");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -88,12 +100,9 @@ public class WaCallout : ComponentBase
         builder.AddAttributeIfNotNullOrEmpty(3, "style", Style);
 
         // Add callout-specific attributes
-        if (Variant != WaVariant.Neutral)
-            builder.AddAttribute(10, "variant", Variant.ToHtmlValue());
-        if (Appearance != WaAppearance.OutlinedFilled)
-            builder.AddAttribute(11, "appearance", Appearance.ToHtmlValue());
-        if (Size != WaSize.Medium)
-            builder.AddAttribute(12, "size", Size.ToHtmlValue());
+        builder.AddAttributeIfNotNull(attributes, 10, "variant", Variant?.ToHtmlValue(), DefaultVariant.ToHtmlValue());
+        builder.AddAttributeIfNotNull(11, "appearance", Appearance?.ToHtmlValue());
+        builder.AddDefaultedAttribute(attributes, 12, "size", Size.ToHtmlValue(), DefaultSize.ToHtmlValue());
 
         // Add element reference capture
         builder.AddElementReferenceCapture(13, __calloutReference => Element = __calloutReference);

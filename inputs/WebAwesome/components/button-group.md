@@ -1,14 +1,19 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.11.0 release zip (dist/skills/webawesome/references/components/button-group.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/button-group -->
+---
+title: Button Group
+layout: component
+category: Actions
+synonyms:
+  - button bar
+  - toolbar
+  - action group
+  - segmented control
+use-cases:
+  - toggle group
+  - split button
+  - grouped actions
+---
 
-# Button Group
-
-`<wa-button-group>`
-
-Stable [Actions](https://webawesome.com/docs/components/?category=actions) [Since 2.0](https://webawesome.com/docs/resources/changelog#wa_200)
-
-Button groups combine related buttons into a single visual unit. Use them for toolbars, segmented controls, or any set of actions that belong together.
-
-```html
+```html {.example}
 <wa-button-group label="Alignment">
   <wa-button appearance="filled">Left</wa-button>
   <wa-button appearance="filled">Center</wa-button>
@@ -16,65 +21,10 @@ Button groups combine related buttons into a single visual unit. Use them for to
 </wa-button-group>
 ```
 
-**Give every button group a `label`.**  
+:::warning
+<strong>Give every button group a `label`.</strong><br />
 It isn't shown on screen, but assistive devices announce it so people know what the grouped buttons control.
-
-## API
-
-### Importing
-
-If you're using the autoloader or a hosted project, components load on demand — no manual import needed. To cherry-pick a component manually, use one of the following snippets.
-
-\*\*CDN\*\*
-
-Import this component directly from the CDN:
-
-```js
-import 'https://ka-f.webawesome.com/webawesome@3.11.0/components/button-group/button-group.js';
-```
-
-\*\*npm\*\*
-
-After installing Web Awesome via npm, import this component:
-
-```js
-import '@awesome.me/webawesome/dist/components/button-group/button-group.js';
-```
-
-\*\*Self-Hosted\*\*
-
-If you're self-hosting Web Awesome, import this component from your server:
-
-```js
-import './webawesome/dist/components/button-group/button-group.js';
-```
-
-\*\*React\*\*
-
-To import this component for React 18 or below, use the following code:
-
-```js
-import WaButtonGroup from '@awesome.me/webawesome/dist/react/button-group/index.js';
-```
-
-### Slots
-
-| Name | Description |
-| --- | --- |
-| (default) | \`\` One or more elements to display in the button group. |
-
-### Attributes & Properties
-
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`label\` label | \`string\` A label to use for the button group. This won't be displayed on the screen, but it will be announced by assistive devices when interacting with the control and is strongly recommended. Type Default '' | |
-| \`orientation\` orientation | \`'horizontal' \\| 'vertical'\` The button group's orientation. Type Default 'horizontal' | |
-
-### CSS Parts
-
-| Name | Description | CSS selector |
-| --- | --- | --- |
-| \`base\` | Deprecated. Style the host element instead. | \`::part(base)\` |
+:::
 
 ## Examples
 
@@ -82,7 +32,7 @@ import WaButtonGroup from '@awesome.me/webawesome/dist/react/button-group/index.
 
 Set the `orientation` attribute to `vertical` to stack the buttons instead of placing them side by side.
 
-```html
+```html {.example}
 <wa-button-group orientation="vertical" label="Options">
   <wa-button appearance="filled">Top</wa-button>
   <wa-button appearance="filled">Middle</wa-button>
@@ -94,7 +44,7 @@ Set the `orientation` attribute to `vertical` to stack the buttons instead of pl
 
 Add the `pill` attribute to each button to round the group's outer edges.
 
-```html
+```html {.example}
 <wa-button-group label="Alignment">
   <wa-button appearance="filled" size="m" pill>Left</wa-button>
   <wa-button appearance="filled" size="m" pill>Center</wa-button>
@@ -104,9 +54,9 @@ Add the `pill` attribute to each button to round the group's outer edges.
 
 ### Dropdowns
 
-Place a [dropdown](https://webawesome.com/docs/components/dropdown) anywhere in the group to attach a menu of related actions.
+Place a [dropdown](/docs/components/dropdown) anywhere in the group to attach a menu of related actions.
 
-```html
+```html {.example}
 <wa-button-group label="Options">
   <wa-button appearance="filled">Edit</wa-button>
   <wa-dropdown>
@@ -123,7 +73,7 @@ Place a [dropdown](https://webawesome.com/docs/components/dropdown) anywhere in 
 
 Pair a primary button with a dropdown to make a split button. Give the dropdown trigger an accessible label so people using assistive devices know what it opens.
 
-```html
+```html {.example}
 <wa-button-group label="Save">
   <wa-button appearance="filled" variant="brand">Save</wa-button>
   <wa-dropdown placement="bottom-end">
@@ -139,9 +89,9 @@ Pair a primary button with a dropdown to make a split button. Give the dropdown 
 
 ### Tooltips
 
-Pair each button with a [tooltip](https://webawesome.com/docs/components/tooltip) to explain what it does on hover and focus.
+Pair each button with a [tooltip](/docs/components/tooltip) to explain what it does on hover and focus.
 
-```html
+```html {.example}
 <wa-button-group label="Alignment">
   <wa-button appearance="filled" id="button-left">Left</wa-button>
   <wa-button appearance="filled" id="button-center">Center</wa-button>
@@ -157,7 +107,7 @@ Pair each button with a [tooltip](https://webawesome.com/docs/components/tooltip
 
 Combine several button groups into a toolbar of related action sets. Use icon-only buttons with `label` for compact controls, and tooltips to name each one.
 
-```html
+```html {.example}
 <div class="button-group-toolbar wa-cluster">
   <wa-button-group label="History">
     <wa-button appearance="filled" id="undo-button"
@@ -205,9 +155,9 @@ Combine several button groups into a toolbar of related action sets. Use icon-on
 
 ### Native Buttons
 
-Button groups also work with native `<button>` elements when [Native Styles](https://webawesome.com/docs/utilities/native) are included.
+Button groups also work with native `<button>` elements when [Native Styles](/docs/utilities/native) are included.
 
-```html
+```html {.example}
 <wa-button-group label="Alignment">
   <button class="wa-filled">Left</button>
   <button class="wa-filled">Center</button>

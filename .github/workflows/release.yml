@@ -103,6 +103,6 @@ jobs:
           $tag = "${{ github.ref_name }}"
           $version = $tag.Substring("wa-blazor-".Length)
           gh release create $tag (Get-ChildItem *.nupkg, *.snupkg | ForEach-Object { $_.FullName }) `
-            --title "Web Awesome Blazor Bindings $version" `
+            --title "WA Blazor $version" `
             --notes "See the [changelog](https://github.com/${{ github.repository }}/blob/master/docs/CHANGELOG.md) for details." `
             --verify-tag

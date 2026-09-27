@@ -1,26 +1,102 @@
-﻿@page "/components/rating"
+@page "/components/rating"
 
 <PageTitle>Rating</PageTitle>
 
-<h1>Rating</h1>
-<p><code>&lt;wa-rating&gt;</code> wrapped by <code>WaRating</code>.</p>
+<h1>Rating <ComponentBadges Tag="wa-rating" /></h1>
+<p>Ratings give users a way to quickly view and provide feedback. <code>&lt;wa-rating&gt;</code> wrapped by <code>WaRating</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaRating @bind-Value="value" />
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\rating.md) *@
+<ExampleSection Title="Label" Code="@LabelExample">
+    <WaRating Label="Rate this recipe" @bind-Value="recipe" />
+    <p>Your rating: <strong>@recipe</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Maximum Value" Code="@MaxExample">
+    <WaRating Label="Rating out of ten" Max="10" @bind-Value="tenScale" />
+</ExampleSection>
+
+<ExampleSection Title="Precision" Code="@PrecisionExample">
+    <WaRating Label="Half stars" Precision="0.5M" @bind-Value="halves" />
+</ExampleSection>
+
+<ExampleSection Title="Sizes" Code="@SizesExample">
+    <WaStack Gap="GapSize.Gap_S">
+        <WaRating Label="Small" Size="WaSize.Small" @bind-Value="small" />
+        <WaRating Label="Medium" Size="WaSize.Medium" @bind-Value="medium" />
+        <WaRating Label="Large" Size="WaSize.Large" @bind-Value="large" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Readonly and Disabled" Code="@ReadonlyExample">
+    <WaStack Gap="GapSize.Gap_S">
+        <WaRating Label="Average rating" Readonly="true" @bind-Value="average" Precision="0.1M" />
+        <WaRating Label="Disabled rating" Disabled="true" @bind-Value="disabled" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Detecting Hover" Code="@HoverExample">
+    <WaRating Label="Rate your experience" @bind-Value="experience" OnHover="e => hovered = e.Phase == HoverEnd ? null : e.Value" />
+    <p>@(hovered is null ? "Hover over the stars." : $"You would rate {hovered} of 5.")</p>
+</ExampleSection>
 
 <ApiTable Tag="wa-rating" />
 
 @code {
+    // the phase of the wa-hover event that ends the hover
+    private const WaRatingHoverPhase HoverEnd = WaRatingHoverPhase.End;
+
     private decimal value = 3;
+    private decimal recipe = 4;
+    private decimal tenScale = 7;
+    private decimal halves = 2.5M;
+    private decimal small = 3;
+    private decimal medium = 3;
+    private decimal large = 3;
+    private decimal average = 4.3M;
+    private decimal disabled = 2;
+    private decimal experience;
+    private decimal? hovered;
 
     private const string DefaultExample = """
         <WaRating @bind-Value="value" />
 
         @code {
             private decimal value = 3;
+        }
+        """;
+
+    private const string LabelExample = """
+        <WaRating Label="Rate this recipe" @bind-Value="recipe" />
+        <p>Your rating: @recipe</p>
+        """;
+
+    private const string MaxExample = """<WaRating Label="Rating out of ten" Max="10" @bind-Value="tenScale" />""";
+
+    private const string PrecisionExample = """<WaRating Label="Half stars" Precision="0.5M" @bind-Value="halves" />""";
+
+    private const string SizesExample = """
+        <WaRating Label="Small" Size="WaSize.Small" @bind-Value="small" />
+        <WaRating Label="Medium" Size="WaSize.Medium" @bind-Value="medium" />
+        <WaRating Label="Large" Size="WaSize.Large" @bind-Value="large" />
+        """;
+
+    private const string ReadonlyExample = """
+        <WaRating Label="Average rating" Readonly="true" @bind-Value="average" Precision="0.1M" />
+        <WaRating Label="Disabled rating" Disabled="true" @bind-Value="disabled" />
+        """;
+
+    private const string HoverExample = """
+        <WaRating Label="Rate your experience" @bind-Value="experience" OnHover="e => hovered = e.Phase == HoverEnd ? null : e.Value" />
+        <p>@(hovered is null ? "Hover over the stars." : $"You would rate {hovered} of 5.")</p>
+
+        @code {
+            private const WaRatingHoverPhase HoverEnd = WaRatingHoverPhase.End;
+
+            private decimal experience;
+            private decimal? hovered;
         }
         """;
 }

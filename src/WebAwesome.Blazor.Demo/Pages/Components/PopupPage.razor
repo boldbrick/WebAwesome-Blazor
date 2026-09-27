@@ -1,9 +1,9 @@
-﻿@page "/components/popup"
+@page "/components/popup"
 
 <PageTitle>Popup</PageTitle>
 
-<h1>Popup</h1>
-<p><code>&lt;wa-popup&gt;</code> wrapped by <code>WaPopup</code>.</p>
+<h1>Popup <ComponentBadges Tag="wa-popup" /></h1>
+<p>Popup is a utility that anchors floating content to another element; tooltips, dropdowns and pickers are built on it. <code>&lt;wa-popup&gt;</code> wrapped by <code>WaPopup</code>.</p>
 
 <ExampleSection Title="Default" Code="@DefaultExample">
     <WaPopup Active="true" Placement="WaPlacement.Top">
@@ -18,11 +18,91 @@
     </WaPopup>
 </ExampleSection>
 
-@* TODO: curated examples - translate from the Web Awesome docs (inputs\WebAwesome\components\popup.md) *@
+<ExampleSection Title="Placement, Distance and Skidding" Code="@PlacementExample">
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.End" Style="margin-bottom: 7rem;">
+        <WaSelect Label="Placement" @bind-Value="PlacementSelection" Style="width: 12rem;">
+            @foreach (var placement in Enum.GetValues<WaPlacement>())
+            {
+                <WaOption Value="@placement.ToString()">@placement</WaOption>
+            }
+        </WaSelect>
+        <WaSwitch @bind-Value="active">Active</WaSwitch>
+    </WaCluster>
+    <div style="display: flex; justify-content: center; padding: 4rem;">
+        <WaPopup Active="active" Placement="placement" Distance="8.5" Skidding="-4">
+            <AnchorContent><span class="demo-box" style="display: inline-block;"></span></AnchorContent>
+            <ChildContent><div class="demo-box" style="--demo-box-color: var(--wa-color-success-fill-loud); width: 80px;"></div></ChildContent>
+        </WaPopup>
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Arrows" Code="@ArrowExample">
+    <WaCluster Gap="GapSize.Gap_3XL" Style="padding: 3rem 1rem;">
+        @foreach (var arrowPlacement in Enum.GetValues<WaArrowPlacement>())
+        {
+            <WaPopup Active="true" Placement="WaPlacement.Top" Arrow="true" ArrowPlacement="arrowPlacement" ArrowPadding="4" Distance="8" Style="--arrow-color: var(--wa-color-neutral-fill-loud);">
+                <AnchorContent><WaButton Size="WaSize.Small">@arrowPlacement</WaButton></AnchorContent>
+                <ChildContent><div style="background: var(--wa-color-neutral-fill-loud); color: var(--wa-color-neutral-on-loud); padding: var(--wa-space-2xs) var(--wa-space-s); border-radius: var(--wa-border-radius-s); width: 110px;">Arrow</div></ChildContent>
+            </WaPopup>
+        }
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Syncing the Size" Code="@SyncExample">
+    <WaCluster Gap="GapSize.Gap_3XL" Style="padding-bottom: 6rem;">
+        @foreach (var sync in Enum.GetValues<WaSync>())
+        {
+            <WaPopup Active="true" Placement="WaPlacement.Bottom" Sync="sync" Distance="4">
+                <AnchorContent><WaButton Style="width: 140px; height: 48px;">Sync @sync</WaButton></AnchorContent>
+                <ChildContent><div style="background: var(--wa-color-brand-fill-quiet); min-width: 40px; min-height: 24px; height: 100%;"></div></ChildContent>
+            </WaPopup>
+        }
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Flip, Shift and Auto Size" Code="@FlipExample">
+    <p>Scroll the box: the popup flips to the other side, shifts to stay inside it, and shrinks when neither helps.</p>
+    <div style="height: 160px; overflow: auto; border: 1px dashed var(--wa-color-surface-border); position: relative;">
+        <div style="height: 480px; width: 150%; padding: 180px 60px;">
+            <WaPopup Active="true" Placement="WaPlacement.Top" Flip="true" FlipPadding="4" FlipFallbackPlacements="@(new[] { WaPlacement.Bottom, WaPlacement.Top })"
+                     FlipFallbackStrategy="WaFlipFallbackStrategy.BestFit" Shift="true" ShiftPadding="4" AutoSize="WaAutoSize.Vertical" AutoSizePadding="8" HoverBridge="false">
+                <AnchorContent><WaButton>Scroll me</WaButton></AnchorContent>
+                <ChildContent><div style="background: var(--wa-color-warning-fill-loud); padding: var(--wa-space-s); width: 180px; height: 120px; overflow: auto;">Flips, shifts and auto-sizes</div></ChildContent>
+            </WaPopup>
+        </div>
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Hover Bridge" Code="@HoverBridgeExample">
+    <p>With a hover bridge, the gap between anchor and popup counts as hovering both, so a hover menu does not close while the pointer crosses it.</p>
+    <WaCluster Gap="GapSize.Gap_3XL" Style="padding-bottom: 5rem;">
+        <WaPopup Active="true" Placement="WaPlacement.Bottom" Distance="16" HoverBridge="true" AutoSize="WaAutoSize.None">
+            <AnchorContent><WaButton>With bridge</WaButton></AnchorContent>
+            <ChildContent><div class="demo-box"></div></ChildContent>
+        </WaPopup>
+        <WaPopup Active="true" Placement="WaPlacement.Bottom" Distance="16" HoverBridge="false" AutoSize="WaAutoSize.Both" Sync="WaSync.None">
+            <AnchorContent><WaButton>Without bridge</WaButton></AnchorContent>
+            <ChildContent><div class="demo-box"></div></ChildContent>
+        </WaPopup>
+    </WaCluster>
+</ExampleSection>
 
 <ApiTable Tag="wa-popup" />
 
 @code {
+    private WaPlacement placement = WaPlacement.Top;
+    private bool active = true;
+
+    // the select's string value, parsed into the placement
+    private string? PlacementSelection
+    {
+        get => placement.ToString();
+        set
+        {
+            if (Enum.TryParse<WaPlacement>(value, out var parsed)) placement = parsed;
+        }
+    }
+
     private const string DefaultExample = """
         <WaPopup Active="true" Placement="WaPlacement.Top">
             <AnchorContent>
@@ -33,6 +113,78 @@
                     Popup content
                 </div>
             </ChildContent>
+        </WaPopup>
+        """;
+
+    private const string PlacementExample = """
+        <WaSelect Label="Placement" @bind-Value="PlacementSelection">
+            @foreach (var placement in Enum.GetValues<WaPlacement>())
+            {
+                <WaOption Value="@placement.ToString()">@placement</WaOption>
+            }
+        </WaSelect>
+        <WaSwitch @bind-Value="active">Active</WaSwitch>
+
+        <WaPopup Active="active" Placement="placement" Distance="8.5" Skidding="-4">
+            <AnchorContent><span class="demo-box" style="display: inline-block;"></span></AnchorContent>
+            <ChildContent><div class="demo-box" style="--demo-box-color: var(--wa-color-success-fill-loud); width: 80px;"></div></ChildContent>
+        </WaPopup>
+
+        @code {
+            private WaPlacement placement = WaPlacement.Top;
+            private bool active = true;
+
+            private string? PlacementSelection
+            {
+                get => placement.ToString();
+                set
+                {
+                    if (Enum.TryParse<WaPlacement>(value, out var parsed)) placement = parsed;
+                }
+            }
+        }
+        """;
+
+    private const string ArrowExample = """
+        @foreach (var arrowPlacement in Enum.GetValues<WaArrowPlacement>())
+        {
+            <WaPopup Active="true" Placement="WaPlacement.Top" Arrow="true" ArrowPlacement="arrowPlacement" ArrowPadding="4" Distance="8" Style="--arrow-color: var(--wa-color-neutral-fill-loud);">
+                <AnchorContent><WaButton Size="WaSize.Small">@arrowPlacement</WaButton></AnchorContent>
+                <ChildContent><div style="...">Arrow</div></ChildContent>
+            </WaPopup>
+        }
+        """;
+
+    private const string SyncExample = """
+        @foreach (var sync in Enum.GetValues<WaSync>())
+        {
+            <WaPopup Active="true" Placement="WaPlacement.Bottom" Sync="sync" Distance="4">
+                <AnchorContent><WaButton Style="width: 140px; height: 48px;">Sync @sync</WaButton></AnchorContent>
+                <ChildContent><div style="..."></div></ChildContent>
+            </WaPopup>
+        }
+        """;
+
+    private const string FlipExample = """
+        <div style="height: 160px; overflow: auto; position: relative;">
+            <div style="height: 480px; width: 150%; padding: 180px 60px;">
+                <WaPopup Active="true" Placement="WaPlacement.Top" Flip="true" FlipPadding="4" FlipFallbackPlacements="@(new[] { WaPlacement.Bottom, WaPlacement.Top })"
+                         FlipFallbackStrategy="WaFlipFallbackStrategy.BestFit" Shift="true" ShiftPadding="4" AutoSize="WaAutoSize.Vertical" AutoSizePadding="8" HoverBridge="false">
+                    <AnchorContent><WaButton>Scroll me</WaButton></AnchorContent>
+                    <ChildContent><div style="width: 180px; height: 120px; overflow: auto;">Flips, shifts and auto-sizes</div></ChildContent>
+                </WaPopup>
+            </div>
+        </div>
+        """;
+
+    private const string HoverBridgeExample = """
+        <WaPopup Active="true" Placement="WaPlacement.Bottom" Distance="16" HoverBridge="true" AutoSize="WaAutoSize.None">
+            <AnchorContent><WaButton>With bridge</WaButton></AnchorContent>
+            <ChildContent><div class="demo-box"></div></ChildContent>
+        </WaPopup>
+        <WaPopup Active="true" Placement="WaPlacement.Bottom" Distance="16" HoverBridge="false" AutoSize="WaAutoSize.Both" Sync="WaSync.None">
+            <AnchorContent><WaButton>Without bridge</WaButton></AnchorContent>
+            <ChildContent><div class="demo-box"></div></ChildContent>
         </WaPopup>
         """;
 }

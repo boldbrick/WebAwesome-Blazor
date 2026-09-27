@@ -47,6 +47,12 @@ public class WaBreadcrumbItem : ComponentBase
     [Parameter] public string? Href { get; set; }
 
     /// <summary>
+    /// The Web Awesome default of <see cref="Rel"/>: what the element holds while the parameter is null, and what
+    /// is rendered in its place once the attribute has been rendered.
+    /// </summary>
+    public const string DefaultRel = "noreferrer noopener";
+
+    /// <summary>
     /// The <c>rel</c> attribute to use when <see cref="Href"/> is set.
     /// </summary>
     [Parameter] public string? Rel { get; set; }
@@ -54,7 +60,7 @@ public class WaBreadcrumbItem : ComponentBase
     /// <summary>
     /// Tells the browser where to open the link when <see cref="Href"/> is set.
     /// </summary>
-    [Parameter] public string? Target { get; set; }
+    [Parameter] public WaLinkTarget? Target { get; set; }
 
     #endregion
 
@@ -74,6 +80,12 @@ public class WaBreadcrumbItem : ComponentBase
     /// Content to display at the end of the breadcrumb item
     /// </summary>
     [Parameter] public RenderFragment? EndContent { get; set; }
+
+    /// <summary>
+    /// The separator to use for this breadcrumb item only, rendered into the element's "separator" slot; to change it
+    /// for all items, use <see cref="WaBreadcrumb.SeparatorContent"/> instead.
+    /// </summary>
+    [Parameter] public RenderFragment? SeparatorContent { get; set; }
 
     /// <summary>
     /// Convenience alternative to <see cref="StartContent"/>; ignored when the fragment is set.
@@ -101,7 +113,7 @@ public class WaBreadcrumbItem : ComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.OpenElement(0, "wa-breadcrumb-item");
+        var attributes = builder.OpenWaElement(this, 0, "wa-breadcrumb-item");
 
         // Add common attributes
         builder.AddMultipleAttributes(1, AdditionalAttributes);
@@ -110,8 +122,8 @@ public class WaBreadcrumbItem : ComponentBase
 
         // Add breadcrumb item-specific attributes
         builder.AddAttributeIfNotNullOrEmpty(10, "href", Href);
-        builder.AddAttributeIfNotNullOrEmpty(11, "rel", Rel);
-        builder.AddAttributeIfNotNullOrEmpty(12, "target", Target);
+        builder.AddAttributeIfNotNullOrEmpty(attributes, 11, "rel", Rel, DefaultRel);
+        builder.AddAttributeIfNotNull(12, "target", Target?.ToHtmlValue());
 
         // Add event handlers
         builder.AddAttributeIfHasDelegate(20, "onclick", OnClick);
@@ -149,6 +161,15 @@ public class WaBreadcrumbItem : ComponentBase
         else
         {
             builder.AddIconSlot(70, "end", EndIconName);
+        }
+
+        // Add separator slot content
+        if (SeparatorContent is not null)
+        {
+            builder.OpenElement(80, "span");
+            builder.AddAttribute(81, "slot", "separator");
+            builder.AddContent(82, SeparatorContent);
+            builder.CloseElement();
         }
 
         builder.CloseElement();

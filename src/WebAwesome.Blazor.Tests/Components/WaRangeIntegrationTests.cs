@@ -1,48 +1,23 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 using System;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
-using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
-using WebAwesome.Blazor.Extensions;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Integration tests for WaRange component using the new JS interop infrastructure
+/// Interop tests for WaRange.SetValueFormatterAsync: it rejects a missing function, throws before the first
+/// render, and afterwards sets the element's valueFormatter property to the function through the interop module
+/// (recorded, see RecordingJSRuntime); and for the focus/blur/stepUp/stepDown methods it shares with WaSlider.
 /// </summary>
 public class WaRangeIntegrationTests : IDisposable
 {
-    private readonly ServiceProvider serviceProvider;
-    private readonly WaRange rangeComponent;
-
-    public WaRangeIntegrationTests()
-    {
-        var services = new ServiceCollection();
-        services.AddWebAwesome();
-        services.AddSingleton<IJSRuntime, TestJSRuntime>();
-        serviceProvider = services.BuildServiceProvider();
-
-        rangeComponent = new WaRange();
-
-        // Inject dependencies manually for testing (WaRange inherits from WaInputBase)
-        var jsInterop = serviceProvider.GetRequiredService<WebAwesomeJSInterop>();
-        var propertyInfo = typeof(WaRange).BaseType!.GetProperty("JSInterop",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        propertyInfo?.SetValue(rangeComponent, jsInterop);
-    }
-
     [Fact]
     public async Task SetValueFormatterAsync_WithNullElement_ThrowsInvalidOperationException()
     {
-        // Arrange - component not rendered yet, Element is null
-
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            rangeComponent.SetValueFormatterAsync("value => value.toFixed(2)"));
+            runtime.CreateUnrendered<WaRange>().SetValueFormatterAsync(Formatter));
 
         Assert.Contains("Cannot set value formatter: component has not been rendered yet", exception.Message);
     }
@@ -50,92 +25,72 @@ public class WaRangeIntegrationTests : IDisposable
     [Fact]
     public async Task SetValueFormatterAsync_WithNullFunction_ThrowsArgumentNullException()
     {
-        // Arrange
-        SetupElementReference();
-
-        // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            rangeComponent.SetValueFormatterAsync(null!));
+            runtime.CreateRendered<WaRange>().SetValueFormatterAsync(null!));
     }
 
     [Fact]
     public async Task SetValueFormatterAsync_WithEmptyFunction_ThrowsArgumentNullException()
     {
-        // Arrange
-        SetupElementReference();
-
-        // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            rangeComponent.SetValueFormatterAsync(""));
+            runtime.CreateRendered<WaRange>().SetValueFormatterAsync(string.Empty));
     }
 
     [Fact]
-    public async Task SetValueFormatterAsync_WithValidElement_CallsJSInterop()
+    public async Task SetValueFormatterAsync_WithValidElement_SetsTheValueFormatterProperty()
     {
-        // Arrange
-        SetupElementReference();
-        var jsFunction = "function(value) { return value + '%'; }";
+        await runtime.CreateRendered<WaRange>().SetValueFormatterAsync(Formatter);
 
-        // Act - This should not throw because we have a test JSRuntime
-        await rangeComponent.SetValueFormatterAsync(jsFunction);
-
-        // Assert - Test passed if no exception was thrown
-        Assert.True(true);
+        Assert.Equal(Formatter, runtime.Module.AssertSetProperty("valueFormatter"));
     }
 
-    private void SetupElementReference()
+    [Theory]
+    [MemberData(nameof(ElementMethods))]
+    public async Task ElementMethods_WithValidElement_InvokeTheElementMethod(string methodName, Func<WaRange, Task> invoke)
     {
-        // Simulate element being rendered by setting Element property
-        var elementRef = new ElementReference("test-range-element");
-        var elementProperty = typeof(WaRange).GetProperty("Element",
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        elementProperty?.SetValue(rangeComponent, elementRef);
+        // Act - WaRange gained these from WaSliderBase in 3.12.0 (WaSlider had them, WaRange did not)
+        await invoke(runtime.CreateRendered<WaRange>());
+
+        // Assert
+        Assert.Empty(runtime.Module.AssertInvokedMethod(methodName));
     }
 
-    #region ------ Test JSRuntime ------
-
-    private class TestJSRuntime : IJSRuntime
+    [Theory]
+    [MemberData(nameof(ElementMethods))]
+    public async Task ElementMethods_WithNullElement_ThrowInvalidOperationException(string methodName, Func<WaRange, Task> invoke)
     {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Simulate module import returning a mock module
-            if (identifier == "import")
-            {
-                return ValueTask.FromResult((TValue)(object)new TestJSObjectReference());
-            }
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => invoke(runtime.CreateUnrendered<WaRange>()));
 
-            throw new NotImplementedException($"Test runtime does not implement {identifier}");
-        }
-
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
+        // Assert - thrown before any interop call, so the element method was not invoked
+        Assert.Contains("component has not been rendered yet", exception.Message);
+        Assert.DoesNotContain(runtime.Module.Invocations, i => i.Args.Contains(methodName));
     }
 
-    private class TestJSObjectReference : IJSObjectReference
+    /// <summary>
+    /// The element methods WaRange invokes, with the wrapper call invoking each.
+    /// </summary>
+    public static TheoryData<string, Func<WaRange, Task>> ElementMethods => new()
     {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
-        {
-            // Return default values for testing
-            return ValueTask.FromResult(default(TValue)!);
-        }
+        { "focus", range => range.FocusAsync() },
+        { "blur", range => range.BlurAsync() },
+        { "stepUp", range => range.StepUpAsync() },
+        { "stepDown", range => range.StepDownAsync() },
+    };
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
-        {
-            return InvokeAsync<TValue>(identifier, args);
-        }
+    #region ------ Implementation of IDisposable ------
 
-        public ValueTask DisposeAsync()
-        {
-            return ValueTask.CompletedTask;
-        }
+    public void Dispose()
+    {
+        runtime.Dispose();
     }
 
     #endregion
 
-    public void Dispose()
-    {
-        serviceProvider?.Dispose();
-    }
+    #region ------ Internals ------
+
+    private const string Formatter = "function(value) { return value + '%'; }";
+
+    private readonly RecordingJSRuntime runtime = new();
+
+    #endregion
 }
