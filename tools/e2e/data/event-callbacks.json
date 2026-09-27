@@ -1690,6 +1690,74 @@
       ]
     },
     {
+      "id": "WaTagInput.OnBlur",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "focusout"
+      ]
+    },
+    {
+      "id": "WaTagInput.OnClear",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "wa-clear"
+      ]
+    },
+    {
+      "id": "WaTagInput.OnCreate",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "wa-create"
+      ]
+    },
+    {
+      "id": "WaTagInput.OnFocus",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "focusin"
+      ]
+    },
+    {
+      "id": "WaTagInput.OnInput",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaTagInput.OnInvalid",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaTagInput.OnKeyDown",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "keydown"
+      ]
+    },
+    {
+      "id": "WaTagInput.OnKeyPress",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaTagInput.OnKeyUp",
+      "tag": "wa-tag-input",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaTagInput.ValueChanged",
+      "tag": "wa-tag-input",
+      "handlers": []
+    },
+    {
       "id": "WaTextArea.OnBlur",
       "tag": "wa-textarea",
       "handlers": [

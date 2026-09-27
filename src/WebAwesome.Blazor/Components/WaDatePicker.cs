@@ -4,7 +4,7 @@ using WebAwesome.Blazor.Base;
 namespace WebAwesome.Blazor.Components;
 
 /// <summary>
-/// An experimental standalone calendar for selecting a single date. Unlike <see cref="WaDateInput"/> it is not a
+/// A standalone calendar for selecting a single date. Unlike <see cref="WaDateInput"/> it is not a
 /// form-associated control; bind its value with <c>@bind-Value</c>.
 /// Corresponds to the wa-date-picker Web Awesome component.
 /// </summary>

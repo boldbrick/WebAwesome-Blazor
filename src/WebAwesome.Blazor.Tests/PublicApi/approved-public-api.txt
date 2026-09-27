@@ -4113,6 +4113,71 @@ namespace WebAwesome.Blazor.Components
         public bool WithRemove { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
     }
+    public class WaTagInput : WebAwesome.Blazor.Base.WaLabeledInputBase<System.Collections.Generic.IReadOnlyList<string>?>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaClearableControl
+    {
+        public const WebAwesome.Blazor.Components.WaInputAppearance DefaultAppearance = 0;
+        public const string DefaultDelimiter = ",";
+        public const string DefaultPlaceholder = "";
+        public const bool DefaultSpellcheck = true;
+        public WaTagInput() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool AllowDuplicates { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaInputAppearance? Appearance { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaAutoCapitalize? AutoCapitalize { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool? AutoCorrect { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Autocomplete { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Delimiter { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? EndContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? EndIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaEnterKeyHint? EnterKeyHint { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Components.WaInputMode? InputMode { get; set; }
+        protected override string? LiveValuePropertyName { get; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MaxTags { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public int? MinTags { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback OnClear { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<WebAwesome.Blazor.Components.WaCreateEventArgs> OnCreate { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.EventCallback<System.EventArgs> OnInvalid { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Pill { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? Placeholder { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Readonly { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool Required { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool? Spellcheck { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? StartIconName { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public bool WithClear { get; set; }
+        public System.Threading.Tasks.Task BlurAsync() { }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.Task FocusAsync() { }
+        protected override string? FormatValueAsString(System.Collections.Generic.IReadOnlyList<string>? value) { }
+        protected override object? GetLiveValue() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        protected override void OnParametersSet() { }
+        protected override bool TryParseValueFromString(string? value, out System.Collections.Generic.IReadOnlyList<string>? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
+    }
     public class WaTextArea : WebAwesome.Blazor.Base.WaLabeledInputBase<string?>
     {
         public const WebAwesome.Blazor.Components.WaInputAppearance DefaultAppearance = 0;

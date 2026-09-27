@@ -179,14 +179,24 @@ Only status changes, so the work is the six XML summaries listed above.
 
 ## Phase 4 — Intentional deviations (`parity-config.json`)
 
-`wa-tag-input` component entry, each list item with its own `ignoreReasons` key:
-- `ignoredAttributes`: `name` (from the bound field), `custom-error` (custom validity is imperative)
+`wa-tag-input` component entry, each list item with its own `ignoreReasons` key (as implemented):
+- `ignoredAttributes`: `name` (from the bound field), `custom-error` (custom validity is imperative), `value`
+  (the live array property instead of the delimiter-separated default). The plan first used
+  `unrenderedAttributes` for `value`. Because of the naming convention, that still paired the `Value`
+  parameter with the `value` attribute in the list-separator check. The attribute is exposed through no
+  parameter, which is what `ignoredAttributes` means.
 - `ignoredEvents`: `change` (the value binder)
 - `ignoredMethods`: `formStateRestoreCallback` (browser callback)
-- `unrenderedAttributes`: `value` (live array property instead of the delimiter-separated default)
-- `onOffAttributes`: `autocorrect`; `trueFalseAttributes`: `spellcheck`
+- `onOffAttributes`: `autocorrect`. There is no `trueFalseAttributes` entry for `spellcheck`: its default is
+  `true`, so the CEM-default rule covers it and the entry would be stale.
 - `attributeOverrides`: `autocapitalize` → `AutoCapitalize`, `autocorrect` → `AutoCorrect`, `enterkeyhint` →
-  `EnterKeyHint`, `inputmode` → `InputMode`, `max-tags`/`min-tags` only if the convention differs
+  `EnterKeyHint`, `inputmode` → `InputMode`. `max-tags`/`min-tags` follow the convention.
+- The shared `unreachableEnumUnionValues` `WaSize` entry (deprecated `small`/`medium`/`large`) lists
+  `wa-tag-input:size` too.
+
+The empty-list convention follows the `WaSelect`/`WaCombobox` precedent. `Value` is null until the model or
+the user sets tags, and it becomes an empty list, not null, once the user removes the last tag. A parsed
+empty string binds null.
 
 ## Phase 5 — Tests and docs
 

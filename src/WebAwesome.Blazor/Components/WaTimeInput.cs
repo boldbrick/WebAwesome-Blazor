@@ -8,7 +8,7 @@ using WebAwesome.Blazor.Base;
 namespace WebAwesome.Blazor.Components;
 
 /// <summary>
-/// An experimental time picker with segmented text entry and a column-based popup, bound to a time of day.
+/// A time picker with segmented text entry and a column-based popup, bound to a time of day.
 /// Corresponds to the wa-time-input Web Awesome component.
 /// </summary>
 /// <remarks>
