@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.12.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
+<!-- Source: reference doc bundled in the Web Awesome 3.13.0 release zip (dist/skills/webawesome/references/components/video-playlist.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/video-playlist -->
 
 # Video Playlist [Pro]
 
@@ -6,11 +6,13 @@
 
 `<wa-video-playlist>`
 
-ProIncluded with Web Awesome Pro Experimental [Media](https://webawesome.com/docs/components/?category=media) [Since 3.7](https://webawesome.com/docs/resources/changelog#wa_370)
+ProIncluded with Web Awesome Pro Stable [Media](https://webawesome.com/docs/components/?category=media) [Since 3.7](https://webawesome.com/docs/resources/changelog#wa_370)
 
 Video playlists wrap multiple [`<wa-video>`](https://webawesome.com/docs/components/video) elements into a playlist with navigation controls.
 
-**[Get Video Playlist with Web Awesome Pro!](https://webawesome.com/purchase?from=pro-docs&component=video-playlist)** Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
+**[Get Video Playlist with Web Awesome Pro!](https://webawesome.com/pro?from=pro-docs&component=video-playlist)**
+
+Subscribing to Web Awesome Pro gives you every Pro component, plus premium themes, color tools, team collaboration, and more.
 
 -   Pro [Components](https://webawesome.com/docs/components)
 -   [Native Styles](https://webawesome.com/docs/utilities/native)
@@ -73,7 +75,7 @@ If you're using the autoloader or a hosted project, components load on demand â€
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.12.0/components/video-playlist/video-playlist.js';
+import 'https://ka-f.webawesome.com/webawesome@3.13.0/components/video-playlist/video-playlist.js';
 ```
 
 \*\*npm\*\*
