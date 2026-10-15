@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 
 namespace WebAwesome.Blazor.Models;
@@ -27,8 +28,8 @@ public class WebAwesomeOptions
     public WaAssetSource AssetSource { get; set; } = WaAssetSource.Cdn;
 
     /// <summary>
-    /// Web Awesome version used to resolve CDN URLs. Defaults to the library's own version,
-    /// which tracks the bound Web Awesome release one-to-one.
+    /// Web Awesome version used to resolve CDN URLs. Defaults to the Web Awesome version the library binds:
+    /// the first three parts of the package version (package 3.14.0.1 binds Web Awesome 3.14.0).
     /// </summary>
     public string? Version { get; set; }
 
@@ -61,7 +62,7 @@ public class WebAwesomeOptions
 
     /// <summary>
     /// Resolves the effective Web Awesome version: the explicitly configured <see cref="Version"/>,
-    /// or the library's own version.
+    /// or the Web Awesome version the library binds.
     /// </summary>
     /// <returns>The version string used in CDN URLs</returns>
     public string ResolveVersion() => Version ?? LibraryVersion;
@@ -80,9 +81,38 @@ public class WebAwesomeOptions
 
     #region ------ Internals ------
 
+    /// <summary>
+    /// Derives the bound Web Awesome version from a package version. The first three parts are the Web Awesome
+    /// version; a fourth numeric part is a revision of the bindings and is dropped together with its prerelease
+    /// suffix, which belongs to that revision ("3.14.0.1-beta.1" binds "3.14.0"). A three-part version keeps its
+    /// prerelease suffix, which is the Web Awesome prerelease ("3.0.0-beta.6"). Build metadata is always dropped.
+    /// </summary>
+    /// <param name="packageVersion">Package version, e.g. the informational version "3.14.0.1+abc123"</param>
+    /// <returns>The Web Awesome version used in CDN URLs, e.g. "3.14.0"</returns>
+    internal static string ToWebAwesomeVersion(string packageVersion)
+    {
+        // strip build metadata appended by CI builds (e.g. "3.0.0-beta.6+abc123")
+        var plusIndex = packageVersion.IndexOf(BuildMetadataSeparator);
+        var version = plusIndex < 0 ? packageVersion : packageVersion[..plusIndex];
+
+        // a fourth numeric part marks a bindings revision: keep only the Web Awesome part
+        var dashIndex = version.IndexOf(PrereleaseSeparator);
+        var parts = (dashIndex < 0 ? version : version[..dashIndex]).Split(VersionPartSeparator);
+        var isRevision = parts.Length == WebAwesomeVersionPartCount + 1
+            && uint.TryParse(parts[^1], NumberStyles.None, CultureInfo.InvariantCulture, out _);
+        return isRevision ? string.Join(VersionPartSeparator, parts, 0, WebAwesomeVersionPartCount) : version;
+    }
+
     private const string DefaultCdnBaseUrl = "https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@{version}/dist-cdn";
 
-    // the library version tracks the bound Web Awesome release; informational version carries the full semver
+    private const char BuildMetadataSeparator = '+';
+    private const char PrereleaseSeparator = '-';
+    private const char VersionPartSeparator = '.';
+
+    // major.minor.patch of the bound Web Awesome release
+    private const int WebAwesomeVersionPartCount = 3;
+
+    // the Web Awesome part of the package version; the informational version carries the full package version
     private static readonly string LibraryVersion = ResolveLibraryVersion();
 
     private static string ResolveLibraryVersion()
@@ -91,9 +121,7 @@ public class WebAwesomeOptions
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
         if (string.IsNullOrEmpty(informational)) throw new InvalidOperationException("Library version could not be determined");
 
-        // strip build metadata appended by CI builds (e.g. "3.0.0-beta.6+abc123")
-        var plusIndex = informational.IndexOf('+');
-        return plusIndex < 0 ? informational : informational[..plusIndex];
+        return ToWebAwesomeVersion(informational);
     }
 
     private string ResolveBaseUrl()

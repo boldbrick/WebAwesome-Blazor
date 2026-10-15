@@ -1,6 +1,6 @@
 # Web Awesome Blazor Bindings
 
-Strongly-typed Blazor wrappers for the [Web Awesome](https://webawesome.com) web components — idiomatic C# parameters and enums, EditForm/validation integration, named slots as render fragments, minimal JS interop. MIT-licensed. Versions follow Web Awesome releases one-to-one.
+Strongly-typed Blazor wrappers for the [Web Awesome](https://webawesome.com) web components — idiomatic C# parameters and enums, EditForm/validation integration, named slots as render fragments, minimal JS interop. MIT-licensed. The first three version parts are the bound Web Awesome version; a fourth part marks a bindings revision.
 
 ## Install
 

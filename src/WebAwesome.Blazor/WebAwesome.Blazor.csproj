@@ -11,7 +11,7 @@
   <PropertyGroup>
     <PackageId>WebAwesome.Blazor</PackageId>
     <Title>Web Awesome Blazor Bindings</Title>
-    <Description>Strongly-typed Blazor wrappers for the Web Awesome web components: idiomatic C# parameters and enums, EditForm and validation integration, named slots as render fragments, and a minimal JS interop surface. MIT-licensed; versions follow Web Awesome releases one-to-one.</Description>
+    <Description>Strongly-typed Blazor wrappers for the Web Awesome web components: idiomatic C# parameters and enums, EditForm and validation integration, named slots as render fragments, and a minimal JS interop surface. MIT-licensed; the first three version parts are the bound Web Awesome version, a fourth part marks a bindings revision.</Description>
     <Authors>BoldBrick</Authors>
     <PackageTags>blazor;webawesome;web-awesome;shoelace;web-components;components;ui;razor</PackageTags>
     <PackageProjectUrl>https://github.com/boldbrick/WebAwesome-Blazor</PackageProjectUrl>
