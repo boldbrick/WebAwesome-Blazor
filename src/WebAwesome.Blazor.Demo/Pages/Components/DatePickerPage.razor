@@ -1,4 +1,5 @@
 @page "/components/date-picker"
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Date Picker</PageTitle>
 
@@ -23,7 +24,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Per-day Content" Code="@DayContentExample">
-    <p><code>WaDayContent</code> children replace the label of their date's day cell (the element's <code>day-YYYY-MM-DD</code> slot); the cell stays clickable. Content added or removed later shows up too. Web Awesome's JavaScript-only <code>dayContent</code> callback isn't supported: render one <code>WaDayContent</code> per date instead.</p>
+    <p><code>WaDayContent</code> children replace the label of their date's day cell (the element's <code>day-YYYY-MM-DD</code> slot); the cell stays clickable. Content added or removed later shows up too. For content that follows a rule for every day, see the next example.</p>
     <WaDatePicker Style="max-width: 300px;" FocusedDate="HolidayMonth" @bind-Value="holidayValue">
         @foreach (var holiday in SeasonHolidays)
         {
@@ -35,6 +36,17 @@
         }
     </WaDatePicker>
     <p><WaButton Size="WaSize.Small" OnClick="ToggleParty">@(partyPlanned ? "Cancel the office party" : "Plan the office party")</WaButton></p>
+</ExampleSection>
+
+<ExampleSection Title="Rules &amp; Day Content with JavaScript" Code="@FunctionsExample">
+    <p>
+        <code>IsDateDisabledFunction</code> and <code>DayContentFunction</code> take JavaScript functions that the
+        calendar calls for every day it renders, here exports of the collocated <code>DatePickerPage.razor.js</code>: the
+        second Tuesday of each month is a maintenance day and cannot be picked, and the 1st and the 15th show as pay days.
+        <code>ShadowStyles</code> styles the class of the day content in the calendar's shadow root.
+    </p>
+    <WaDatePicker Style="max-width: 300px;" @bind-Value="bookingValue" IsDateDisabledFunction="maintenanceDay"
+                  DayContentFunction="payDay" ShadowStyles="@PayDayStyles" />
 </ExampleSection>
 
 <ApiTable Tag="wa-date-picker" />
@@ -60,6 +72,14 @@
     private bool partyPlanned;
 
     private void ToggleParty() => partyPlanned = !partyPlanned;
+
+    private DateOnly? bookingValue;
+
+    // the JavaScript file next to this page; Blazor serves a collocated .razor.js file at the page's path
+    private const string CalendarModule = "./Pages/Components/DatePickerPage.razor.js";
+    private readonly WaJsFunction maintenanceDay = WaJsFunction.Module(CalendarModule, "secondTuesday");
+    private readonly WaJsFunction payDay = WaJsFunction.Module(CalendarModule, "payDay").WithArgs(new { days = new[] { 1, 15 } });
+    private const string PayDayStyles = ".pay-day { font-weight: var(--wa-font-weight-bold); text-decoration: underline; }";
 
     private const string DefaultExample = """
         <WaDatePicker Style="max-width: 300px;" @bind-Value="defaultValue" />
@@ -127,6 +147,32 @@
             private bool partyPlanned;
 
             private void ToggleParty() => partyPlanned = !partyPlanned;
+        }
+        """;
+
+    private const string FunctionsExample = """
+        <WaDatePicker Style="max-width: 300px;" @bind-Value="bookingValue" IsDateDisabledFunction="maintenanceDay"
+                      DayContentFunction="payDay" ShadowStyles="@PayDayStyles" />
+
+        @code {
+            private DateOnly? bookingValue;
+
+            // the JavaScript file next to this page; Blazor serves a collocated .razor.js file at the page's path
+            private const string CalendarModule = "./Pages/Components/DatePickerPage.razor.js";
+            private readonly WaJsFunction maintenanceDay = WaJsFunction.Module(CalendarModule, "secondTuesday");
+            private readonly WaJsFunction payDay = WaJsFunction.Module(CalendarModule, "payDay").WithArgs(new { days = new[] { 1, 15 } });
+
+            // styles for the class of the day content in the calendar's shadow root
+            private const string PayDayStyles = ".pay-day { font-weight: var(--wa-font-weight-bold); text-decoration: underline; }";
+        }
+
+        // DatePickerPage.razor.js, next to DatePickerPage.razor; each function gets a Date at local midnight and ctx
+        export function secondTuesday(date) {
+          return date.getDay() === 2 && date.getDate() > 7 && date.getDate() <= 14;
+        }
+
+        export function payDay(date, ctx) {
+          return ctx.args.days.includes(date.getDate()) ? `<span class="pay-day">${date.getDate()}</span>` : null;
         }
         """;
 }

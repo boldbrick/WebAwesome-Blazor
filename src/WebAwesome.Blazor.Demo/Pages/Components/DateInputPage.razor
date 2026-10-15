@@ -1,4 +1,5 @@
 @page "/components/date-input"
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Date Input</PageTitle>
 
@@ -29,7 +30,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Per-day Content" Code="@DayContentExample">
-    <p><code>WaDayContent</code> children replace the label of their date's day cell in the popup calendar (the element forwards its <code>day-YYYY-MM-DD</code> slots to it); the cell stays clickable. Content added or removed later shows up too. Web Awesome's JavaScript-only <code>dayContent</code> callback isn't supported: render one <code>WaDayContent</code> per date instead.</p>
+    <p><code>WaDayContent</code> children replace the label of their date's day cell in the popup calendar (the element forwards its <code>day-YYYY-MM-DD</code> slots to it); the cell stays clickable. Content added or removed later shows up too. For a rule that applies to every day, see the next example.</p>
     <WaDateInput Label="Holiday season" Today="SeasonToday" @bind-Value="seasonValue">
         @foreach (var holiday in SeasonHolidays)
         {
@@ -41,6 +42,16 @@
         }
     </WaDateInput>
     <p><WaButton Size="WaSize.Small" OnClick="ToggleParty">@(partyPlanned ? "Cancel the office party" : "Plan the office party")</WaButton></p>
+</ExampleSection>
+
+<ExampleSection Title="Disabled Days with JavaScript" Code="@FunctionsExample">
+    <p>
+        <code>IsDateDisabledFunction</code> takes a JavaScript function that the popup calendar calls for every day it
+        renders, here an export of the collocated <code>DateInputPage.razor.js</code>: an appointment can be booked only on
+        the weekdays in <code>ctx.args</code>, which come from C#.
+    </p>
+    <WaDateInput Label="Appointment" Hint="Appointments on Tuesdays and Thursdays only." @bind-Value="appointmentValue"
+                 IsDateDisabledFunction="openingDays" />
 </ExampleSection>
 
 <ApiTable Tag="wa-date-input" />
@@ -59,6 +70,30 @@
     private bool partyPlanned;
 
     private void ToggleParty() => partyPlanned = !partyPlanned;
+
+    private DateOnly? appointmentValue;
+
+    // disables every day except the opening days (0 is Sunday, as JavaScript counts)
+    private readonly WaJsFunction openingDays = WaJsFunction.Module("./Pages/Components/DateInputPage.razor.js", "closedDay")
+        .WithArgs(new { openDays = new[] { 2, 4 } });
+
+    private const string FunctionsExample = """
+        <WaDateInput Label="Appointment" Hint="Appointments on Tuesdays and Thursdays only." @bind-Value="appointmentValue"
+                     IsDateDisabledFunction="openingDays" />
+
+        @code {
+            private DateOnly? appointmentValue;
+
+            // disables every day except the opening days (0 is Sunday, as JavaScript counts)
+            private readonly WaJsFunction openingDays = WaJsFunction.Module("./Pages/Components/DateInputPage.razor.js", "closedDay")
+                .WithArgs(new { openDays = new[] { 2, 4 } });
+        }
+
+        // DateInputPage.razor.js, next to DateInputPage.razor; the function gets a Date at local midnight and ctx
+        export function closedDay(date, ctx) {
+          return !ctx.args.openDays.includes(date.getDay());
+        }
+        """;
 
     private const string DayContentExample = """
         <WaDateInput Label="Holiday season" Today="SeasonToday" @bind-Value="seasonValue">

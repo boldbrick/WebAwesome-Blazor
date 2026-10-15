@@ -91,6 +91,15 @@ public class WaDataGrid : ComponentBase
     [Parameter] public IReadOnlyList<WaDataGridColumn>? Columns { get; set; }
 
     /// <summary>
+    /// CSS rules for the output of the column functions (<see cref="WaDataGridColumn.Formatter"/> and
+    /// <see cref="WaDataGridColumn.AggregatedFormatter"/>), adopted into the grid's shadow root as a constructed
+    /// stylesheet and replaced only when the text changes. It is for styling your own function output, for example a
+    /// class that a formatter sets, not Web Awesome's internals: style those with <c>::part</c> and the CSS custom
+    /// properties.
+    /// </summary>
+    [Parameter] public string? ShadowStyles { get; set; }
+
+    /// <summary>
     /// An accessible label for the grid.
     /// </summary>
     [Parameter] public string? Label { get; set; }
@@ -491,6 +500,7 @@ public class WaDataGrid : ComponentBase
             await PushColumnsAsync(SerializeColumns());
         }
 
+        await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -834,6 +844,9 @@ public class WaDataGrid : ComponentBase
 
     // the column JSON of the last push
     private string? pushedColumnsJson;
+
+    // the shadow styles last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
 
     #endregion
 }

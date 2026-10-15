@@ -413,6 +413,67 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
+    /// Assigns a function-valued member of a Web Awesome element from the JSON of a <see cref="WaJsFunction"/>
+    /// descriptor. The browser waits until the element is defined, resolves the reference, registers the Web Awesome
+    /// elements it declares, and assigns the member. Null restores the element's own value of the member. A reference
+    /// that does not resolve is logged and leaves the element's own value. The same JSON again assigns nothing.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="member">The JavaScript member, for example "getTag"</param>
+    /// <param name="descriptorJson">The JSON of the descriptor, or null to remove the function</param>
+    /// <returns>A task that completes when the member is assigned</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SetElementFunctionAsync(ElementReference elementReference, string member, string? descriptorJson)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setElementFunction", elementReference, member, descriptorJson, ConfiguredLoaderUrl());
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the function member '{member}': {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Adopts CSS text into the shadow root of a Web Awesome element as a constructed stylesheet, once the element is
+    /// defined and has rendered. A new text replaces the sheet's content; null removes the sheet.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="cssText">The CSS text, or null to remove the styles</param>
+    /// <returns>A task that completes when the styles are adopted</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SetShadowStylesAsync(ElementReference elementReference, string? cssText)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setShadowStyles", elementReference, cssText);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the shadow styles: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
     /// Invokes a parameterless method on a Web Awesome element once its custom element is defined, and does nothing
     /// before: an element whose module is still loading has none of its methods yet, and its upgrade renders it from
     /// its current attributes anyway. For refreshes a wrapper requests on every parameter change.

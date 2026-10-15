@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -84,6 +85,26 @@ public class WaRating : WaInputBase<decimal>
 
     #endregion
 
+    #region ------ Function Members ------
+
+    /// <summary>
+    /// The JavaScript function that renders each symbol (the element's <c>getSymbol</c>). It is called as
+    /// <c>(value, isSelected, ctx)</c>: the value the symbol stands for (1 to <see cref="Max"/>), whether it is shown as
+    /// selected, and <c>ctx</c> with <c>args</c> (the <see cref="WaJsFunction.WithArgs"/> value) and <c>element</c>. It
+    /// returns a string of trusted HTML, for example a <c>wa-icon</c>. When null, the element's stars apply. Declare the
+    /// Web Awesome elements it renders with <see cref="WaJsFunction.Uses"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? GetSymbolFunction { get; set; }
+
+    /// <summary>
+    /// CSS rules for the output of <see cref="GetSymbolFunction"/>, adopted into the element's shadow root as a
+    /// constructed stylesheet and replaced only when the text changes. It is for styling your own function output, not
+    /// Web Awesome's internals: style those with <c>::part</c> and the CSS custom properties.
+    /// </summary>
+    [Parameter] public string? ShadowStyles { get; set; }
+
+    #endregion
+
     #region ------ Events ------
 
     /// <summary>
@@ -159,6 +180,19 @@ public class WaRating : WaInputBase<decimal>
         return false;
     }
 
+    /// <summary>
+    /// Pushes <see cref="GetSymbolFunction"/> and <see cref="ShadowStyles"/> to the element when they changed.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first time the component has rendered</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        await jsProperties.PushFunctionAsync(JSInterop, Element, GetSymbolMember, GetSymbolFunction);
+        await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
+    }
+
     #endregion
 
     #region ------ Public Methods ------
@@ -190,26 +224,39 @@ public class WaRating : WaInputBase<decimal>
     }
 
     /// <summary>
-    /// Sets a custom symbol function for rendering icons.
+    /// Sent JavaScript source text to the element's <c>getSymbol</c>, which the element cannot call. Use
+    /// <see cref="GetSymbolFunction"/> instead.
     /// </summary>
-    /// <param name="jsFunction">JavaScript function string that returns HTML for the symbol</param>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    /// <param name="jsFunction">JavaScript source text, which is not sent</param>
+    /// <returns>A task that always fails</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
-    public async Task SetSymbolFunctionAsync(string jsFunction)
+    /// <exception cref="NotSupportedException">Thrown always otherwise: the replacement is <see cref="GetSymbolFunction"/></exception>
+    // TODO WA 3.15.0 train: remove this obsolete member (replaced by GetSymbolFunction)
+    [Obsolete(SetSymbolFunctionObsoleteMessage)]
+    public Task SetSymbolFunctionAsync(string jsFunction)
     {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot set symbol function: component has not been rendered yet.");
+        // the element would throw a TypeError on its next render, so the string is never sent
+        Exception failure = Element == null
+            ? new InvalidOperationException("Cannot set symbol function: component has not been rendered yet.")
+            : string.IsNullOrEmpty(jsFunction)
+                ? new ArgumentNullException(nameof(jsFunction))
+                : new NotSupportedException(SetSymbolFunctionObsoleteMessage);
 
-        if (string.IsNullOrEmpty(jsFunction))
-            throw new ArgumentNullException(nameof(jsFunction));
-
-        await JSInterop.SetPropertyAsync(Element.Value, "getSymbol", jsFunction);
+        return Task.FromException(failure);
     }
 
     #endregion
 
     #region ------ Internals ------
+
+    // the function-valued member of wa-rating
+    private const string GetSymbolMember = "getSymbol";
+
+    private const string SetSymbolFunctionObsoleteMessage = "JavaScript source text cannot become the function that wa-rating calls, so the element failed to render. Use GetSymbolFunction with a WaJsFunction reference. This method throws NotSupportedException and is removed in the 3.15.0 train.";
+
+    // the function member and the shadow styles last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
 
     // handles the change event, whose value the numericchange alias delivers as a JS-formatted number; leaves the
     // model unchanged when the value cannot be parsed

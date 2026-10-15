@@ -1,4 +1,5 @@
 @page "/components/rating"
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Rating</PageTitle>
 
@@ -42,6 +43,14 @@
     <p>@(hovered is null ? "Hover over the stars." : $"You would rate {hovered} of 5.")</p>
 </ExampleSection>
 
+<ExampleSection Title="Custom Symbols with JavaScript" Code="@CustomSymbolsExample">
+    <p>
+        <code>GetSymbolFunction</code> renders each symbol with a JavaScript function, here an export of the collocated
+        <code>RatingPage.razor.js</code> that returns a heart icon. The icon name comes from C# through <code>WithArgs</code>.
+    </p>
+    <WaRating Label="How much do you like it?" @bind-Value="likes" GetSymbolFunction="heartSymbol" />
+</ExampleSection>
+
 <ApiTable Tag="wa-rating" />
 
 @code {
@@ -59,6 +68,11 @@
     private decimal disabled = 2;
     private decimal experience;
     private decimal? hovered;
+    private decimal likes = 4;
+
+    // a solid or a regular icon for each symbol; the icon name comes from C#
+    private readonly WaJsFunction heartSymbol = WaJsFunction.Module("./Pages/Components/RatingPage.razor.js", "iconSymbol")
+        .WithArgs(new { icon = "heart" });
 
     private const string DefaultExample = """
         <WaRating @bind-Value="value" />
@@ -97,6 +111,24 @@
 
             private decimal experience;
             private decimal? hovered;
+        }
+        """;
+
+    private const string CustomSymbolsExample = """
+        <WaRating Label="How much do you like it?" @bind-Value="likes" GetSymbolFunction="heartSymbol" />
+
+        @code {
+            private decimal likes = 4;
+
+            // a solid or a regular icon for each symbol; the icon name comes from C#
+            private readonly WaJsFunction heartSymbol = WaJsFunction.Module("./Pages/Components/RatingPage.razor.js", "iconSymbol")
+                .WithArgs(new { icon = "heart" });
+        }
+
+        // RatingPage.razor.js, next to RatingPage.razor; wa-rating expects a string of trusted HTML
+        export function iconSymbol(value, isSelected, ctx) {
+          const variant = isSelected ? 'solid' : 'regular';
+          return `<wa-icon name="${ctx.args.icon}" variant="${variant}"></wa-icon>`;
         }
         """;
 }

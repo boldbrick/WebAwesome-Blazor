@@ -1,5 +1,6 @@
 using Bunit;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Extensions;
 using Xunit;
 
 namespace WebAwesome.Blazor.Tests.Components;
@@ -123,4 +124,15 @@ public class WaPaginationIntegrationTests : BunitContext
         Assert.Equal("first", cut.Find("span[slot='first-icon']").TextContent);
         Assert.Empty(cut.FindAll("wa-icon[slot='first-icon']"));
     }
+
+    #region ------ Constructors ------
+
+    public WaPaginationIntegrationTests()
+    {
+        // the wrapper pushes its function member through the interop service
+        Services.AddWebAwesome();
+        JSInterop.Mode = JSRuntimeMode.Loose;
+    }
+
+    #endregion
 }
