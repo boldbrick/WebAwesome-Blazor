@@ -3,6 +3,8 @@
  * Provides JavaScript functionality for Web Awesome Blazor components
  */
 
+import { findGlobalFunction, isFunctionDescriptor, resolveFunction } from './webawesome-functions.js';
+
 /**
  * Sets a custom validation message on a Web Awesome form control element
  * @param {HTMLElement} element - The Web Awesome form control element
@@ -290,13 +292,128 @@ function createIconResolver(template) {
 }
 
 function resolveGlobalFunction(path) {
-    const members = path.split('.');
-    const owner = members.slice(0, -1).reduce((scope, member) => scope?.[member], globalThis);
-    const target = owner?.[members[members.length - 1]];
-    if (typeof target !== 'function') {
+    const target = findGlobalFunction(path);
+    if (!target) {
         throw new Error(`Icon library mutator '${path}' is not a global function`);
     }
 
-    // keep the owner as "this", as a call through the dotted path would
-    return target.bind(owner);
+    return target;
+}
+
+/*
+ * Data grid columns
+ *
+ * A column member that takes a function arrives as a WaJsFunction descriptor (see webawesome-functions.js). Before the
+ * columns are assigned, every descriptor is resolved into its function, and the Web Awesome elements the functions
+ * declare (WaJsFunction.Uses) are registered, because the autoloader does not see the cells in the grid's shadow root.
+ * After the grid has rendered, discover(grid.shadowRoot) registers the elements no function declared; an element
+ * defined later upgrades in place. A reference that does not resolve leaves its member out, so the column shows raw
+ * values (or the built-in sort) and the grid keeps working.
+ */
+
+// the column members that take a function (upstream DataGridColumn): the number of arguments the grid passes before
+// ctx, whether the function renders cell content, and the argument that holds the row of the cell
+const dataGridColumnFunctions = {
+    formatter: { arity: 2, renders: true, rowArgument: 1 },
+    aggregatedFormatter: { arity: 2, renders: true },
+    comparator: { arity: 4, renders: false },
+};
+
+// grid element -> its last push: the column JSON and, once resolved, the columns (a newer push replaces the entry)
+const dataGridColumns = new WeakMap();
+
+// the longest wait for the registration of the declared elements before the columns are assigned; an element that is
+// defined later upgrades in place
+const preloadTimeoutMs = 3000;
+
+/**
+ * Assigns the columns of a wa-data-grid from their JSON, with the function references resolved. The same JSON again for
+ * the same grid assigns nothing, so the grid does not render every cell again.
+ * @param {HTMLElement} element - The wa-data-grid element
+ * @param {string} columnsJson - The JSON array of the column definitions
+ * @param {string|null} configuredEntryPointUrl - Web Awesome entry point configured in .NET, used when the page has no Web Awesome script tag
+ */
+export async function setDataGridColumns(element, columnsJson, configuredEntryPointUrl) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    if (dataGridColumns.get(element)?.json === columnsJson) return;
+
+    const push = { json: columnsJson, columns: JSON.parse(columnsJson) };
+    dataGridColumns.set(element, push);
+
+    const tags = new Set();
+    const resolutions = [];
+    let rendersContent = false;
+    push.columns.forEach((column, index) => {
+        for (const [member, signature] of Object.entries(dataGridColumnFunctions)) {
+            const descriptor = column[member];
+            if (!isFunctionDescriptor(descriptor)) continue;
+
+            // the member is assigned once it resolves, and stays out when it does not
+            delete column[member];
+            descriptor.uses?.forEach(tag => tags.add(tag));
+            rendersContent ||= signature.renders;
+
+            // the column id as the grid computes it (its columnId: id, else field, else col-<index>)
+            const columnId = column.id ?? column.field ?? `col-${index}`;
+            resolutions.push(resolveFunction(descriptor, {
+                element,
+                member,
+                label: `data grid column "${columnId}" ${member}`,
+                arity: signature.arity,
+                context: { column: columnId, grid: element },
+                rowKey: signature.rowArgument === undefined ? undefined : callArgs => dataGridRowKey(element, callArgs[signature.rowArgument]),
+            }).then(target => {
+                if (target) column[member] = target;
+            }));
+        }
+    });
+
+    if (resolutions.length > 0) {
+        await Promise.all([preloadTags([...tags], configuredEntryPointUrl), ...resolutions]);
+
+        // a newer push replaced this one while the references resolved
+        if (dataGridColumns.get(element) !== push) return;
+    }
+
+    element.columns = push.columns;
+    if (rendersContent) discoverShadowContent(element, configuredEntryPointUrl);
+}
+
+// the key of a row as the grid reads it (its getRowId: the row's own rowKey field)
+function dataGridRowKey(grid, row) {
+    const key = grid.rowKey;
+    return key && row != null ? row[key] ?? undefined : undefined;
+}
+
+// registers the given wa-* elements before they render: discover() reads the tags of a data-wa-preload attribute, also
+// on a detached element
+async function preloadTags(tags, configuredEntryPointUrl) {
+    if (tags.length === 0) return;
+
+    try {
+        const webAwesome = await importWebAwesome(configuredEntryPointUrl);
+        const carrier = document.createElement('div');
+        carrier.setAttribute('data-wa-preload', tags.join(' '));
+
+        // discover() ends with an animation frame, which a hidden page never runs
+        await Promise.race([webAwesome.discover(carrier), new Promise(resolve => setTimeout(resolve, preloadTimeoutMs))]);
+    } catch (error) {
+        console.error(`WebAwesome.Blazor: the elements ${tags.join(', ')} could not be registered: ${error.message}`);
+    }
+}
+
+// registers the undefined wa-* elements in the shadow root once the element has rendered
+function discoverShadowContent(element, configuredEntryPointUrl) {
+    customElements.whenDefined(element.localName)
+        .then(() => element.updateComplete)
+        .then(async () => {
+            if (!element.shadowRoot) return;
+
+            const webAwesome = await importWebAwesome(configuredEntryPointUrl);
+            await webAwesome.discover(element.shadowRoot);
+        })
+        .catch(error => console.error(`WebAwesome.Blazor: the elements in the cells of ${element.localName} could not be registered: ${error.message}`));
 }

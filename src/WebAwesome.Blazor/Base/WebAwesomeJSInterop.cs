@@ -382,6 +382,37 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
+    /// Assigns the columns of a wa-data-grid from their JSON. The browser resolves each <see cref="WaJsFunction"/>
+    /// descriptor into its function, registers the Web Awesome elements the functions declare, assigns the element's
+    /// <c>columns</c> property, and registers the elements the rendered cells use. A reference that does not resolve
+    /// is logged and left out. The same JSON again for the same element assigns nothing.
+    /// </summary>
+    /// <param name="elementReference">Reference to the wa-data-grid element</param>
+    /// <param name="columnsJson">The JSON array of the column definitions</param>
+    /// <returns>A task that completes when the columns are assigned</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SetDataGridColumnsAsync(ElementReference elementReference, string columnsJson)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setDataGridColumns", elementReference, columnsJson, ConfiguredLoaderUrl());
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the data grid columns: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
     /// Invokes a parameterless method on a Web Awesome element once its custom element is defined, and does nothing
     /// before: an element whose module is still loading has none of its methods yet, and its upgrade renders it from
     /// its current attributes anyway. For refreshes a wrapper requests on every parameter change.

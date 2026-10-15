@@ -19,10 +19,10 @@ namespace WebAwesome.Blazor.Components;
 /// <para>
 /// <see cref="Data"/> and <see cref="Columns"/> are JavaScript properties on the underlying element,
 /// not HTML attributes, and there is no declarative JSON child form. The wrapper pushes both through
-/// <see cref="WebAwesomeJSInterop.SetPropertyAsync"/> on first render. After that, it pushes <see cref="Data"/> on
-/// every parameter set, so a list changed in place reaches the element. It pushes <see cref="Columns"/> only when
-/// the list reference or the serialized column definitions changed, so a change in place of the list or of a column
-/// still reaches the element, but an unrelated parameter change does not update the columns again.
+/// JS interop on first render. After that, it pushes <see cref="Data"/> on every parameter set, so a list changed in
+/// place reaches the element. It pushes <see cref="Columns"/> only when the serialized column definitions changed:
+/// a change in place of the list or of a column reaches the element, but an unrelated parameter change, or a new list
+/// with the same definitions, does not make the grid render every cell again.
 /// </para>
 /// <para>
 /// The upstream <c>dataSource</c> property (an async request-to-response callback) cannot be marshaled
@@ -36,9 +36,10 @@ namespace WebAwesome.Blazor.Components;
 /// row's children; only the field-name (string) form is exposed as <see cref="ChildRows"/>.
 /// </para>
 /// <para>
-/// Rich per-cell rendering (the column <c>formatter</c>/<c>aggregatedFormatter</c> Lit templates) has no
-/// Blazor equivalent and is not exposed by <see cref="WaDataGridColumn"/>; only its JSON-expressible
-/// members are supported.
+/// Rich cell content comes from JavaScript: <see cref="WaDataGridColumn.Formatter"/>,
+/// <see cref="WaDataGridColumn.AggregatedFormatter"/> and <see cref="WaDataGridColumn.ComparatorFunction"/> take a
+/// <see cref="WaJsFunction"/> reference, which the browser resolves before it assigns the columns. A reference that does
+/// not resolve leaves its member out (the column shows raw values) and writes a <c>console.error</c>.
 /// </para>
 /// </remarks>
 public class WaDataGrid : ComponentBase
@@ -84,8 +85,8 @@ public class WaDataGrid : ComponentBase
     [Parameter] public IReadOnlyList<object>? Data { get; set; }
 
     /// <summary>
-    /// The column definitions. Pushed to the element's <c>columns</c> JavaScript property when the list reference
-    /// or the serialized definitions change; see the class remarks for why this isn't an HTML attribute.
+    /// The column definitions. Pushed to the element's <c>columns</c> JavaScript property when the serialized
+    /// definitions change; see the class remarks for why this isn't an HTML attribute.
     /// </summary>
     [Parameter] public IReadOnlyList<WaDataGridColumn>? Columns { get; set; }
 
@@ -806,12 +807,13 @@ public class WaDataGrid : ComponentBase
         await JSInterop.SetPropertyAsync(Element.Value, "data", Data ?? Array.Empty<object>());
     }
 
-    // a column push makes the element render every cell again, so a parameter set pushes the columns only when the
-    // list reference or the column JSON differs from the last push (the JSON catches a change in place)
+    // a column push makes the element render every cell again (and resolves the function references again), so a
+    // parameter set pushes the columns only when their JSON differs from the last push; the JSON catches a change in
+    // place, and a new list with the same definitions is not pushed
     private async Task PushColumnsIfChangedAsync()
     {
         var columnsJson = SerializeColumns();
-        if (ReferenceEquals(Columns, pushedColumns) && columnsJson == pushedColumnsJson) return;
+        if (columnsJson == pushedColumnsJson) return;
 
         await PushColumnsAsync(columnsJson);
     }
@@ -821,17 +823,16 @@ public class WaDataGrid : ComponentBase
         if (Element == null) return;
 
         // record the push before the await, so an overlapping parameter set does not push the same columns again
-        pushedColumns = Columns;
         pushedColumnsJson = columnsJson;
 
-        await JSInterop.SetPropertyAsync(Element.Value, "columns", Columns ?? Array.Empty<WaDataGridColumn>());
+        await JSInterop.SetDataGridColumnsAsync(Element.Value, columnsJson);
     }
 
+    // the JSON the element receives: unset members are left out, and a WaJsFunction is its descriptor
     private string SerializeColumns() =>
         JsonSerializer.Serialize(Columns ?? Array.Empty<WaDataGridColumn>(), JsonSerializerOptions.Web);
 
-    // the Columns reference and the column JSON of the last push
-    private IReadOnlyList<WaDataGridColumn>? pushedColumns;
+    // the column JSON of the last push
     private string? pushedColumnsJson;
 
     #endregion

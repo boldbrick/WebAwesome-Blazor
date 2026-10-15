@@ -1,0 +1,110 @@
+@page "/testing/js-functions"
+@using WebAwesome.Blazor.Models
+
+@* e2e harness for tools\e2e\tests\js-functions.spec.js - deliberately outside /components/, so it is neither derived
+   from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. The grids bind each kind of WaJsFunction reference to the function-valued column
+   members: a registered function (registered by the demo's JS initializer, WebAwesome.Blazor.Demo.lib.module.js), the
+   exports of the collocated JsFunctionsHarness.razor.js, and a global function. The references that do not resolve
+   render only with ?broken=true, because the sweeps fail on the console errors they write. *@
+
+<PageTitle>Testing: JavaScript Functions</PageTitle>
+
+<h1>JavaScript Functions Harness</h1>
+<p>This page is an end-to-end test harness for <code>WaJsFunction</code> references on the data grid column members <code>Formatter</code>, <code>AggregatedFormatter</code> and <code>ComparatorFunction</code>.</p>
+
+<ExampleSection Title="Registered, module and global functions">
+    <WaDataGrid data-testid="jf-people" Label="People" RowKey="id" Data="people" Columns="peopleColumns" />
+    <WaCluster Gap="GapSize.Gap_S" Style="margin-block-start: var(--wa-space-m);">
+        <WaButton data-testid="jf-same-columns" Size="WaSize.Small" OnClick="RecreateColumns">New list, same columns</WaButton>
+        <WaButton data-testid="jf-change-prefix" Size="WaSize.Small" OnClick="ChangePrefix">Change the prefix</WaButton>
+    </WaCluster>
+    <p>Column lists created: <strong data-testid="jf-column-lists">@columnLists</strong>, prefix: <strong>@prefix</strong>.</p>
+</ExampleSection>
+
+<ExampleSection Title="Aggregated formatter on a grouped grid">
+    <WaDataGrid data-testid="jf-teams" Label="Teams" RowKey="id" GroupBy="@(new[] { "team" })" Data="people" Columns="teamColumns" />
+</ExampleSection>
+
+@if (Broken)
+{
+    <ExampleSection Title="References that do not resolve">
+        <WaDataGrid data-testid="jf-broken" Label="Broken" RowKey="id" Data="people" Columns="brokenColumns" />
+    </ExampleSection>
+}
+
+@code {
+    /// <summary>
+    /// Renders the grid whose references do not resolve.
+    /// </summary>
+    [SupplyParameterFromQuery] public bool Broken { get; set; }
+
+    private sealed record PersonRow(int Id, string Name, string Team, string Priority, int Score, int Salary);
+
+    private readonly object[] people =
+    [
+        new PersonRow(1, "Ada", "Engineering", "low", 2, 100),
+        new PersonRow(2, "Grace", "Engineering", "high", 5, 200),
+        new PersonRow(3, "Alan", "Research", "medium", 4, 300),
+        new PersonRow(4, "Katherine", "Research", "high", 3, 400)
+    ];
+
+    // the collocated module of this page
+    private const string HarnessModule = "./Pages/Testing/JsFunctionsHarness.razor.js";
+
+    private const string InitialPrefix = "N:";
+    private const string ChangedPrefix = "P:";
+
+    private WaDataGridColumn[] peopleColumns = [];
+    private string prefix = InitialPrefix;
+    private int columnLists;
+
+    private readonly WaDataGridColumn[] teamColumns =
+    [
+        new() { Field = "name", Label = "Name" },
+        new() { Field = "team", Label = "Team" },
+        new()
+        {
+            Field = "salary", Label = "Salary", Aggregation = WaDataGridAggregation.Sum,
+            AggregatedFormatter = WaJsFunction.Module(HarnessModule, "groupTotal")
+        }
+    ];
+
+    private readonly WaDataGridColumn[] brokenColumns =
+    [
+        new() { Field = "name", Label = "Registered", Formatter = WaJsFunction.Registered("demo.notRegistered") },
+        new() { Id = "missing-module", Field = "team", Label = "Module", Formatter = WaJsFunction.Module("./Pages/Testing/missing.js", "cell") },
+        new() { Id = "missing-export", Field = "priority", Label = "Export", Formatter = WaJsFunction.Module(HarnessModule, "noSuchExport") },
+        new() { Id = "missing-global", Field = "score", Label = "Global", Formatter = WaJsFunction.Global("demoGrid.noSuchFunction") },
+        new() { Field = "salary", Label = "Other origin", ComparatorFunction = WaJsFunction.Module("https://example.com/cells.js", "bySalary") }
+    ];
+
+    /// <inheritdoc />
+    protected override void OnInitialized() => peopleColumns = CreatePeopleColumns();
+
+    // a new list with the same definitions: the grid must not push it again
+    private void RecreateColumns() => peopleColumns = CreatePeopleColumns();
+
+    private void ChangePrefix()
+    {
+        prefix = ChangedPrefix;
+        peopleColumns = CreatePeopleColumns();
+    }
+
+    private WaDataGridColumn[] CreatePeopleColumns()
+    {
+        columnLists++;
+        return
+        [
+            new() { Field = "name", Label = "Name", Formatter = WaJsFunction.Registered("demo.describeCell").WithArgs(new { prefix }) },
+            new() { Field = "team", Label = "Team", Formatter = WaJsFunction.Global("demoGrid.shout") },
+            new()
+            {
+                Field = "priority", Label = "Priority",
+                ComparatorFunction = WaJsFunction.Module(HarnessModule, "byListOrder").WithArgs(new { order = new[] { "high", "medium", "low" } })
+            },
+            // no Uses: the grid registers wa-rating through discover() on its shadow root after the render
+            new() { Field = "score", Label = "Score", Formatter = WaJsFunction.Module(HarnessModule, "ratingCell") }
+        ];
+    }
+}

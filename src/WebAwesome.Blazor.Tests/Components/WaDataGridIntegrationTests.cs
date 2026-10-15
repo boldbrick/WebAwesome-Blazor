@@ -14,8 +14,9 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// <summary>
 /// Integration tests for the new WaDataGrid (Pro) component introduced in Web Awesome 3.11.0.
 /// Covers attribute emission for the 25 declarative attributes, confirms Data/Columns are NOT
-/// rendered as attributes (they are pushed as JS properties via WebAwesomeJSInterop.SetPropertyAsync
-/// during OnAfterRenderAsync/OnParametersSetAsync), the three content slots, and guard clauses for the imperative
+/// rendered as attributes (they are pushed as JS properties during
+/// OnAfterRenderAsync/OnParametersSetAsync: the data through setProperty, the columns as their JSON through
+/// setDataGridColumns), the three content slots, and guard clauses for the imperative
 /// methods. The 14 events are covered by EventCallbackBindingParityTests (binding) and the e2e event-dispatch and
 /// event-payload specs (browser delivery and payload). bUnit cannot host a real wa-data-grid custom
 /// element, so these tests observe the interop boundary (the setProperty/invokeMethod calls the
@@ -129,6 +130,7 @@ public class WaDataGridIntegrationTests : BunitContext
     {
         var module = JSInterop.SetupModule(InteropModulePath);
         module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
 
         var data = new List<object> { new { id = 1, name = "Ada" } };
         var columns = new List<WaDataGridColumn> { new() { Field = "name", Label = "Name" } };
@@ -140,8 +142,9 @@ public class WaDataGridIntegrationTests : BunitContext
         var dataInvocation = Assert.Single(module.Invocations, i => i.Identifier == "setProperty" && Equals(i.Arguments[1], "data"));
         Assert.Same(data, dataInvocation.Arguments[2]);
 
-        var columnsInvocation = Assert.Single(module.Invocations, i => i.Identifier == "setProperty" && Equals(i.Arguments[1], "columns"));
-        Assert.Same(columns, columnsInvocation.Arguments[2]);
+        // the columns go as their JSON text, which the interop module parses and resolves before it assigns them
+        var columnsInvocation = Assert.Single(module.Invocations, i => i.Identifier == "setDataGridColumns");
+        Assert.Equal("[{\"field\":\"name\",\"label\":\"Name\"}]", columnsInvocation.Arguments[1]);
     }
 
     [Fact]
@@ -149,6 +152,7 @@ public class WaDataGridIntegrationTests : BunitContext
     {
         var module = JSInterop.SetupModule(InteropModulePath);
         module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
 
         var cut = Render<WaDataGrid>(parameters => parameters
             .Add(p => p.Data, new List<object>()));
@@ -165,6 +169,7 @@ public class WaDataGridIntegrationTests : BunitContext
     {
         var module = JSInterop.SetupModule(InteropModulePath);
         module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
         var data = new List<object> { new { id = 1, name = "Ada" } };
         var columns = new List<WaDataGridColumn> { new() { Field = "name", Label = "Name" } };
 
@@ -184,6 +189,7 @@ public class WaDataGridIntegrationTests : BunitContext
     {
         var module = JSInterop.SetupModule(InteropModulePath);
         module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
 
         var cut = Render<WaDataGrid>();
         cut.Render(parameters => parameters.Add(p => p.Label, "People"));
@@ -192,19 +198,51 @@ public class WaDataGridIntegrationTests : BunitContext
     }
 
     [Fact]
-    public void Columns_ArePushedAgain_WhenTheReferenceChanges()
+    public void Columns_AreNotPushedAgain_WhenANewListHasTheSameDefinitions()
     {
         var module = JSInterop.SetupModule(InteropModulePath);
         module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
 
-        var cut = Render<WaDataGrid>(parameters => parameters
-            .Add(p => p.Columns, new List<WaDataGridColumn> { new() { Field = "name" } }));
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, NameColumns(WaJsFunction.Registered("myapp.name").WithArgs(new { max = 5 }))));
 
-        var replacement = new List<WaDataGridColumn> { new() { Field = "name" } };
-        cut.Render(parameters => parameters.Add(p => p.Columns, replacement));
+        // a list created again on every render (for example inline in the markup), with equal function references
+        cut.Render(parameters => parameters.Add(p => p.Columns, NameColumns(WaJsFunction.Registered("myapp.name").WithArgs(new { max = 5 }))));
+        cut.Render(parameters => parameters.Add(p => p.Columns, NameColumns(WaJsFunction.Registered("myapp.name").WithArgs(new { max = 5 }))));
+
+        Assert.Equal(1, PushCount(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenANewListHasOtherDefinitions()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, NameColumns(null)));
+        cut.Render(parameters => parameters.Add(p => p.Columns, new List<WaDataGridColumn> { new() { Field = "email" } }));
 
         Assert.Equal(2, PushCount(module, "columns"));
-        Assert.Same(replacement, LastPush(module, "columns"));
+        Assert.Equal("[{\"field\":\"email\"}]", LastPush(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenAFunctionReferenceChanges()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+        var columns = NameColumns(WaJsFunction.Registered("myapp.name").WithArgs(new { max = 5 }));
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
+        columns[0].Formatter = columns[0].Formatter!.WithArgs(new { max = 6 });
+        cut.Render(parameters => parameters.Add(p => p.Columns, columns));
+        columns[0].ComparatorFunction = WaJsFunction.Module("./cells.js", "byName");
+        cut.Render(parameters => parameters.Add(p => p.Columns, columns));
+
+        Assert.Equal(3, PushCount(module, "columns"));
+        Assert.Contains("\"comparator\":", Assert.IsType<string>(LastPush(module, "columns")));
     }
 
     [Fact]
@@ -212,6 +250,7 @@ public class WaDataGridIntegrationTests : BunitContext
     {
         var module = JSInterop.SetupModule(InteropModulePath);
         module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
         var columns = new List<WaDataGridColumn> { new() { Field = "name", Label = "Name" } };
 
         var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
@@ -221,7 +260,7 @@ public class WaDataGridIntegrationTests : BunitContext
 
         // one push for the first render, one for the change; the parameter set after it changes nothing
         Assert.Equal(2, PushCount(module, "columns"));
-        Assert.Same(columns, LastPush(module, "columns"));
+        Assert.Equal("[{\"field\":\"name\",\"label\":\"Full name\"}]", LastPush(module, "columns"));
     }
 
     [Fact]
@@ -229,6 +268,7 @@ public class WaDataGridIntegrationTests : BunitContext
     {
         var module = JSInterop.SetupModule(InteropModulePath);
         module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
         var columns = new List<WaDataGridColumn> { new() { Field = "name" } };
 
         var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
@@ -395,11 +435,27 @@ public class WaDataGridIntegrationTests : BunitContext
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
 
-    // the number of setProperty calls the wrapper made for one JS property
-    private static int PushCount(BunitJSModuleInterop module, string propertyName) =>
-        module.Invocations.Count(i => i.Identifier == "setProperty" && Equals(i.Arguments[1], propertyName));
+    // the interop function of a JS property: the columns go through setDataGridColumns, which resolves the function
+    // references, every other property through setProperty
+    private const string ColumnsPropertyName = "columns";
+    private const string SetColumnsIdentifier = "setDataGridColumns";
 
-    // the value of the last setProperty call for one JS property
-    private static object? LastPush(BunitJSModuleInterop module, string propertyName) =>
-        module.Invocations.Last(i => i.Identifier == "setProperty" && Equals(i.Arguments[1], propertyName)).Arguments[2];
+    // the number of calls the wrapper made for one JS property
+    private static int PushCount(BunitJSModuleInterop module, string propertyName) =>
+        module.Invocations.Count(i => IsPush(i, propertyName));
+
+    // the value of the last call for one JS property (for the columns, their JSON text)
+    private static object? LastPush(BunitJSModuleInterop module, string propertyName)
+    {
+        var push = module.Invocations.Last(i => IsPush(i, propertyName));
+        return propertyName == ColumnsPropertyName ? push.Arguments[1] : push.Arguments[2];
+    }
+
+    private static bool IsPush(JSRuntimeInvocation invocation, string propertyName) => propertyName == ColumnsPropertyName
+        ? invocation.Identifier == SetColumnsIdentifier
+        : invocation.Identifier == "setProperty" && Equals(invocation.Arguments[1], propertyName);
+
+    // a new list with one name column and the given formatter
+    private static List<WaDataGridColumn> NameColumns(WaJsFunction? formatter) =>
+        [new() { Field = "name", Label = "Name", Formatter = formatter }];
 }

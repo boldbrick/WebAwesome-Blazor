@@ -58,6 +58,15 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   column's `FilterOptions` fill the set filter picker in their order, with their labels, and filter by their values;
   the pushed columns hold no null member; and a page render that leaves `Columns` unchanged does not push them again
   (the element keeps the same column array).
+- `tests\js-functions.spec.js` — `WaJsFunction` references. Without a grid (free CDN and Pro): the resolver of
+  `webawesome-functions.js` binds a function registered by the demo's JS initializer, a global function and a module
+  export with a trailing `ctx` at a fixed position, waits for a late registration, applies a context decorator, and
+  refuses a module of another origin; and the `Uses` declaration registers `wa-progress-bar`, which only a cell function
+  renders. With a grid (Pro): the collocated module of the "Custom Cell Rendering with JavaScript" example renders
+  upgraded badges and progress bars and its comparator sorts; on `/testing/js-functions` the formatters get `ctx.args`,
+  `ctx.rowKey`, `ctx.column` and `ctx.grid`, `discover()` registers an element no column declared, an
+  `AggregatedFormatter` renders group rows, a new list with the same column JSON is not pushed, and (with `?broken=true`)
+  references that do not resolve leave raw values, a working grid and one console error each.
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug

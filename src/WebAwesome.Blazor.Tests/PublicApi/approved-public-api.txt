@@ -5099,11 +5099,17 @@ namespace WebAwesome.Blazor.Models
     {
         public WaDataGridColumn() { }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("aggregatedFormatter")]
+        public WebAwesome.Blazor.Models.WaJsFunction? AggregatedFormatter { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridAggregation? Aggregation { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridAlign? Align { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public string? CellClass { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("comparator")]
+        public WebAwesome.Blazor.Models.WaJsFunction? ComparatorFunction { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public string? Field { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -5116,6 +5122,9 @@ namespace WebAwesome.Blazor.Models
         public double? Flex { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public string? Footer { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("formatter")]
+        public WebAwesome.Blazor.Models.WaJsFunction? Formatter { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridAlign? HeaderAlign { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -5227,6 +5236,31 @@ namespace WebAwesome.Blazor.Models
         public System.Collections.Generic.IReadOnlyList<object>? SelectedKeys { get; set; }
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
         public int Version { get; set; }
+    }
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaJsFunctionJsonConverter))]
+    public sealed class WaJsFunction : System.IEquatable<WebAwesome.Blazor.Models.WaJsFunction>
+    {
+        public const string DefaultExportName = "default";
+        public bool AllowCrossOrigin { get; }
+        public System.Text.Json.JsonElement? Args { get; }
+        public string? ExportName { get; }
+        public WebAwesome.Blazor.Models.WaJsFunctionKind Kind { get; }
+        public string Reference { get; }
+        public System.Collections.Generic.IReadOnlyList<string> Tags { get; }
+        public bool Equals(WebAwesome.Blazor.Models.WaJsFunction? other) { }
+        public override int GetHashCode() { }
+        public override string ToString() { }
+        public WebAwesome.Blazor.Models.WaJsFunction Uses(params string[] tags) { }
+        public WebAwesome.Blazor.Models.WaJsFunction WithArgs(object args) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Global(string path) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Module(string url, string exportName = "default", bool allowCrossOrigin = false) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Registered(string name) { }
+    }
+    public enum WaJsFunctionKind
+    {
+        Registered = 0,
+        Module = 1,
+        Global = 2,
     }
     public class WaVideoState : System.IEquatable<WebAwesome.Blazor.Models.WaVideoState>
     {
