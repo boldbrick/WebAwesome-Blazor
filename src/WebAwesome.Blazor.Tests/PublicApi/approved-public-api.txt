@@ -5138,8 +5138,12 @@ namespace WebAwesome.Blazor.Models
     public class IconLibraryOptions
     {
         public IconLibraryOptions() { }
+        [System.Obsolete("Use MutatorFunction with WaJsFunction.Global(path), or with a registered or modul" +
+            "e function. This property is removed in the 3.15.0 train.")]
         public string? Mutator { get; set; }
+        public WebAwesome.Blazor.Models.WaJsFunction? MutatorFunction { get; set; }
         public string? Resolver { get; set; }
+        public WebAwesome.Blazor.Models.WaJsFunction? ResolverFunction { get; set; }
         public bool SpriteSheet { get; set; }
     }
     public enum WaAssetSource

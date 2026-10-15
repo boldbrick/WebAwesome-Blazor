@@ -15,6 +15,7 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 - `WaDataGridFormatters.ActionLink` raises a cell action: bind `@onwablazor-cell-action` on `WaDataGrid` to receive `WaDataGridCellActionEventArgs` (`GetRow<T>()`, `GetPayload<T>()`). A click that raises an action does not raise `OnCellClick`.
 - JavaScript functions for the function-valued members of Web Awesome, as `WaJsFunction` parameters: `GetTagFunction` (`WaSelect`, `WaCombobox`), `FilterFunction` (`WaCombobox`), `GetSymbolFunction` (`WaRating`), `ValueFormatterFunction` (`WaSlider`, `WaRange`), `IsDateDisabledFunction` and `DayContentFunction` (the date pickers and date inputs), and `HrefTemplateFunction` (`WaPagination`; set it or `HrefTemplate`, not both). The browser calls the function, with no round-trip to .NET.
 - `ShadowStyles` on `WaDataGrid`, `WaSelect`, `WaCombobox`, `WaRating`, the date pickers and the date inputs: CSS for the output of your own functions in the element's shadow root.
+- `IconLibraryOptions.ResolverFunction` and `MutatorFunction` take a `WaJsFunction`: a resolver for URLs that a URL template cannot express (it can return a Promise or a sprite reference), and a mutator from a module or a registered function. Set `Resolver` or `ResolverFunction`, not both.
 
 ### Changed
 - Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.
@@ -25,6 +26,7 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 - `WaSelect.SetGetTagFunctionAsync` and `WaSelect.GetTag`: use `GetTagFunction`. They are removed in 3.15.0.
 - `WaRating.SetSymbolFunctionAsync`: use `GetSymbolFunction`. It is removed in 3.15.0.
 - `SetValueFormatterAsync` of `WaSlider` and `WaRange`, and `WaSlider.ValueFormatter`: use `ValueFormatterFunction`. They are removed in 3.15.0.
+- `IconLibraryOptions.Mutator` (a global function path): use `MutatorFunction = WaJsFunction.Global(path)`. It is removed in 3.15.0.
 - **Next-release check:** the 3.15.0 train removes the members above (each has a `// TODO WA 3.15.0 train` comment), under a `### Breaking changes` heading with a migration guide.
 
 ### Fixed

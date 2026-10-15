@@ -46,7 +46,7 @@ test('registered icon libraries resolve through the page Web Awesome instance', 
   await expect.poll(() => hasDrawnSvg(heroicons)).toBe(true);
   await expect.poll(() => hasDrawnSvg(tabler)).toBe(true);
 
-  // the mutator named from .NET ("demoIcons.thinStroke") ran on the Tabler svg
+  // the mutator referred to from .NET (WaJsFunction.Global("demoIcons.thinStroke")) ran on the Tabler svg
   await expect.poll(() => tabler.evaluate(el => el.shadowRoot?.querySelector('svg')?.getAttribute('stroke-width')))
     .toBe('1.25');
 
@@ -64,6 +64,23 @@ test('registered icon libraries resolve through the page Web Awesome instance', 
   });
   await expect.poll(() => hasDrawnSvg(page.locator('wa-icon[data-testid="late-lucide"]'))).toBe(true);
   expect(await hasDrawnSvg(page.locator('wa-icon[data-testid="late-tabler"]'))).toBe(false);
+
+  expect(errors).toEqual([]);
+});
+
+test('a library with a resolver function and a mutator function from the page module draws its icons', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+
+  const filledHeart = page.locator('wa-icon[data-testid="icon-bootstrap-fill"]');
+  expect(await hasDrawnSvg(filledHeart)).toBe(false);
+
+  await page.locator('wa-button[data-testid="icon-bootstrap-register"]').click();
+  await expect(page.getByTestId('icon-bootstrap-status')).toHaveText('Registered bootstrap');
+
+  // the resolver mapped the fill variant to the "-fill" file, and the mutator colored the filled icon from C#
+  await expect.poll(() => hasDrawnSvg(filledHeart)).toBe(true);
+  expect(await filledHeart.evaluate(el => el.shadowRoot?.querySelector('svg')?.getAttribute('fill'))).toBe('crimson');
 
   expect(errors).toEqual([]);
 });

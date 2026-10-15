@@ -16,6 +16,10 @@ module.exports = defineConfig({
   use: {
     baseURL,
     trace: 'retain-on-failure',
+    // a fake audio output: the media clock of a playing element runs on the audio sink, and a real sink can stall
+    // (the "Remote Audio" device of a Windows RDP session keeps currentTime at 0), so media tests must not depend on
+    // the machine's audio devices
+    launchOptions: { args: ['--disable-audio-output'] },
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },

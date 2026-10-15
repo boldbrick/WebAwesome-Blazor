@@ -212,12 +212,14 @@ public class WebAwesomeJSInterop
     /// replaces that library, and rendered icons of the library re-resolve.
     /// </summary>
     /// <param name="name">Name of the icon library, referenced by <c>WaIcon.Library</c></param>
-    /// <param name="options">Configuration options for the library; <see cref="IconLibraryOptions.Resolver"/> is required</param>
+    /// <param name="options">Configuration options for the library; exactly one of
+    /// <see cref="IconLibraryOptions.Resolver"/> and <see cref="IconLibraryOptions.ResolverFunction"/> is required</param>
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="ArgumentNullException">Thrown when name is null or empty, or options is null</exception>
-    /// <exception cref="ArgumentException">Thrown when the options have no resolver URL template</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the registration fails, e.g. Web Awesome is not loaded
-    /// or the mutator does not name a global function</exception>
+    /// <exception cref="ArgumentException">Thrown when the options have no resolver, or both a resolver URL template
+    /// and a resolver function, or both the obsolete mutator path and a mutator function</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the registration fails, e.g. Web Awesome is not loaded,
+    /// the resolver function does not resolve, or the obsolete mutator path does not name a global function</exception>
     public virtual async Task RegisterIconLibraryAsync(string name, IconLibraryOptions options)
     {
         if (string.IsNullOrEmpty(name))
@@ -226,8 +228,7 @@ public class WebAwesomeJSInterop
         if (options == null)
             throw new ArgumentNullException(nameof(options));
 
-        if (string.IsNullOrEmpty(options.Resolver))
-            throw new ArgumentException("An icon library requires a resolver URL template", nameof(options));
+        ValidateIconLibraryOptions(name, options);
 
         try
         {
@@ -547,6 +548,22 @@ public class WebAwesomeJSInterop
     #region ------ Internals ------
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+
+    // a resolver is either a URL template or a function, and a mutator either the obsolete global path or a function
+    private static void ValidateIconLibraryOptions(string name, IconLibraryOptions options)
+    {
+        var hasTemplate = !string.IsNullOrEmpty(options.Resolver);
+        if (!hasTemplate && options.ResolverFunction is null)
+            throw new ArgumentException($"Icon library '{name}' requires a resolver: set {nameof(IconLibraryOptions.Resolver)} (a URL template) or {nameof(IconLibraryOptions.ResolverFunction)}.", nameof(options));
+
+        if (hasTemplate && options.ResolverFunction is not null)
+            throw new ArgumentException($"Icon library '{name}' has both {nameof(IconLibraryOptions.Resolver)} and {nameof(IconLibraryOptions.ResolverFunction)}; set only one of them.", nameof(options));
+
+#pragma warning disable CS0618 // the obsolete mutator path stays valid until its removal, but not together with its replacement
+        if (!string.IsNullOrEmpty(options.Mutator) && options.MutatorFunction is not null)
+            throw new ArgumentException($"Icon library '{name}' has both {nameof(IconLibraryOptions.Mutator)} and {nameof(IconLibraryOptions.MutatorFunction)}; set only {nameof(IconLibraryOptions.MutatorFunction)}.", nameof(options));
+#pragma warning restore CS0618
+    }
 
     // initial default icon family of Web Awesome, reported while the JS runtime is disconnected
     private const string WebAwesomeDefaultIconFamily = "classic";

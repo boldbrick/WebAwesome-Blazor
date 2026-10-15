@@ -190,26 +190,48 @@ const webAwesomeEntryPointFileNames = ['webawesome.loader.js', 'webawesome.js', 
 const iconResolverPlaceholder = /\{(name|family|variant)\}/g;
 let webAwesomeModule = null;
 
+// the icon library members that take a function (upstream IconLibrary): the number of arguments wa-icon passes before
+// ctx. The resolver gets (name, family, variant, autoWidth) and returns a URL or a Promise of one; the mutator gets
+// (svg, hostElement).
+// NOTE checked against WA 3.14.0: the arities match components/icon/library.d.ts; recheck them on each upgrade (watch list)
+const iconLibraryFunctions = {
+    resolver: { arity: 4 },
+    mutator: { arity: 2 },
+};
+
 /**
  * Registers an icon library with Web Awesome
  * @param {string|null} configuredEntryPointUrl - Web Awesome entry point configured in .NET, used when the page has no Web Awesome script tag
  * @param {string} name - Library name, referenced by wa-icon's library attribute
- * @param {{resolver: string, mutator?: string|null, spriteSheet?: boolean}} options - URL template with {name}, {family} and {variant}
- *        placeholders, optional global mutator function path (e.g. "myApp.icons.mutate") and the sprite sheet flag
+ * @param {{resolver?: string|null, resolverFunction?: object|null, mutator?: string|null, mutatorFunction?: object|null, spriteSheet?: boolean}} options -
+ *        the resolver as a URL template with {name}, {family} and {variant} placeholders or as a WaJsFunction descriptor,
+ *        the mutator as a WaJsFunction descriptor (or the obsolete global function path, e.g. "myApp.icons.mutate"),
+ *        and the sprite sheet flag
  */
 export async function registerIconLibrary(configuredEntryPointUrl, name, options) {
     if (!name) {
         throw new Error('Icon library name cannot be null or empty');
     }
 
-    if (!options?.resolver) {
-        throw new Error(`Icon library '${name}' requires a resolver URL template`);
+    const resolverDescriptor = isFunctionDescriptor(options?.resolverFunction) ? options.resolverFunction : null;
+    if (!options?.resolver && !resolverDescriptor) {
+        throw new Error(`Icon library '${name}' requires a resolver URL template or a resolver function`);
     }
 
-    const webAwesome = await importWebAwesome(configuredEntryPointUrl);
+    const [webAwesome, resolver, mutator] = await Promise.all([
+        importWebAwesome(configuredEntryPointUrl),
+        resolverDescriptor ? resolveIconLibraryFunction(name, 'resolver', resolverDescriptor) : createIconResolver(options.resolver),
+        resolveIconMutator(name, options),
+    ]);
+
+    // a library without a resolver draws no icon, so the registration fails (resolveFunction logged the reason)
+    if (!resolver) {
+        throw new Error(`Icon library '${name}': the resolver function does not resolve (see the console error)`);
+    }
+
     webAwesome.registerIconLibrary(name, {
-        resolver: createIconResolver(options.resolver),
-        mutator: options.mutator ? resolveGlobalFunction(options.mutator) : undefined,
+        resolver,
+        mutator,
         spriteSheet: options.spriteSheet === true
     });
 }
@@ -289,6 +311,28 @@ function createIconResolver(template) {
         const values = { name, family, variant };
         return template.replace(iconResolverPlaceholder, (placeholder, key) => values[key] ?? '');
     };
+}
+
+// a function member of an icon library: ctx holds args and the library name; there is no element of the member
+function resolveIconLibraryFunction(name, member, descriptor) {
+    return resolveFunction(descriptor, {
+        element: undefined,
+        member,
+        label: `icon library "${name}" ${member}`,
+        arity: iconLibraryFunctions[member].arity,
+        context: { library: name },
+    });
+}
+
+// the mutator function, the function of the obsolete global path, or undefined; a mutator function that does not
+// resolve leaves the library without a mutator (resolveFunction logged the reason)
+async function resolveIconMutator(name, options) {
+    if (isFunctionDescriptor(options.mutatorFunction)) {
+        return resolveIconLibraryFunction(name, 'mutator', options.mutatorFunction);
+    }
+
+    // TODO WA 3.15.0 train: remove the obsolete global path (IconLibraryOptions.Mutator)
+    return options.mutator ? resolveGlobalFunction(options.mutator) : undefined;
 }
 
 function resolveGlobalFunction(path) {

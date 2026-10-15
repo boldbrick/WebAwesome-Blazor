@@ -15,6 +15,15 @@ function registerDemoFunctions() {
       return `${String(value).toUpperCase()}!`;
     },
   };
+
+  // the icon library harness (/testing/icon-library): a resolver that returns a Promise of a data URL, a circle in the
+  // color of ctx.args, after a short delay
+  registerFunction('demo.iconUrlAsync', async (name, family, variant, autoWidth, ctx) => {
+    await new Promise(resolve => setTimeout(resolve, 10));
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="${ctx.args.color}" stroke="black"`
+      + ` data-name="${name}" data-library="${ctx.library}"><circle cx="8" cy="8" r="7"/></svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  });
 }
 
 // Blazor Web (blazor.web.js, the server host)

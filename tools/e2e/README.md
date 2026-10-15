@@ -75,6 +75,12 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   longer break the element (the test failed before the fix with `TypeError: this.getTag is not a function`). Pro: the
   `WaCombobox` tags and filter, the disabled days and day content of `WaDatePicker`, `WaDateInput` and
   `WaDateRangeInput` (in the shadow root of the input's own calendar too), and `ShadowStyles` on a `WaDataGrid` cell.
+- `tests\icon-library-functions.spec.js` — `IconLibraryOptions.ResolverFunction` and `MutatorFunction`
+  (`/testing/icon-library`, functions from the collocated `IconLibraryHarness.razor.js`, data URL icons and the local
+  sprite `wwwroot\fragments\icon-sprite.svg`, so no network): a module resolver gets `(name, family, variant,
+  autoWidth)` and `ctx` (`args`, `library`); a registered resolver returns a Promise; a sprite sheet resolver fills the
+  `<use>` element; module and global mutators change the SVG; the obsolete `Mutator` path still works; a resolver that
+  does not resolve fails the registration, and a mutator that does not resolve is left out. Free CDN.
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug
@@ -160,6 +166,10 @@ npm test
 ```
 
 Set `DEMO_BASE_URL` if the demo is running on a different port than `http://localhost:5000`.
+
+Chromium runs with `--disable-audio-output` (`playwright.config.js`): a fake audio sink drives the media clock. A real
+sink can stall: the "Remote Audio" device of a Windows RDP session keeps `currentTime` of a playing clip at 0, so the
+`WaVideo` `OnEnded` case failed there.
 
 The same suite also runs against the server-hosted demo variant (interactive server render
 mode over a SignalR circuit) — both hosting models should stay green:
