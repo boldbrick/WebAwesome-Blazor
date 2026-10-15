@@ -393,7 +393,20 @@
     [
         new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150, Filterable = true },
         new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
-        new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set },
+        new()
+        {
+            Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set,
+            // the picker shows these options in this order, with their labels, and also a value that no row has
+            FilterOptions =
+            [
+                new("Africa"),
+                new("Americas", "North and South America"),
+                new("Asia"),
+                new("Europe"),
+                new("Oceania", "Australia and Oceania"),
+                new("Antarctica")
+            ]
+        },
         new() { Field = "population", Label = "Population", Align = WaDataGridAlign.End, Width = 160, Filterable = true, FilterType = WaDataGridFilterType.NumberRange }
     ];
 
@@ -634,7 +647,20 @@
             [
                 new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150, Filterable = true },
                 new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
-                new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set },
+                new()
+                {
+                    Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set,
+                    // the picker shows these options in this order, with their labels, and also a value that no row has
+                    FilterOptions =
+                    [
+                        new("Africa"),
+                        new("Americas", "North and South America"),
+                        new("Asia"),
+                        new("Europe"),
+                        new("Oceania", "Australia and Oceania"),
+                        new("Antarctica")
+                    ]
+                },
                 new() { Field = "population", Label = "Population", Align = WaDataGridAlign.End, Width = 160, Filterable = true, FilterType = WaDataGridFilterType.NumberRange }
             ];
         }

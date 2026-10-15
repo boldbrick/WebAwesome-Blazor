@@ -161,6 +161,84 @@ public class WaDataGridIntegrationTests : BunitContext
     }
 
     [Fact]
+    public void Columns_AreNotPushedAgain_WhenAParameterSetLeavesThemUnchanged()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        var data = new List<object> { new { id = 1, name = "Ada" } };
+        var columns = new List<WaDataGridColumn> { new() { Field = "name", Label = "Name" } };
+
+        var cut = Render<WaDataGrid>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.Columns, columns));
+        cut.Render(parameters => parameters.Add(p => p.Label, "People"));
+        cut.Render(parameters => parameters.Add(p => p.Columns, columns));
+
+        Assert.Equal(1, PushCount(module, "columns"));
+        // the data keeps its contract: every parameter set pushes it, so a list changed in place reaches the element
+        Assert.Equal(3, PushCount(module, "data"));
+    }
+
+    [Fact]
+    public void Columns_WithoutAList_AreNotPushedAgain_WhenAParameterSetLeavesThemUnset()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+
+        var cut = Render<WaDataGrid>();
+        cut.Render(parameters => parameters.Add(p => p.Label, "People"));
+
+        Assert.Equal(1, PushCount(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenTheReferenceChanges()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+
+        var cut = Render<WaDataGrid>(parameters => parameters
+            .Add(p => p.Columns, new List<WaDataGridColumn> { new() { Field = "name" } }));
+
+        var replacement = new List<WaDataGridColumn> { new() { Field = "name" } };
+        cut.Render(parameters => parameters.Add(p => p.Columns, replacement));
+
+        Assert.Equal(2, PushCount(module, "columns"));
+        Assert.Same(replacement, LastPush(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenAColumnChangesInPlace()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        var columns = new List<WaDataGridColumn> { new() { Field = "name", Label = "Name" } };
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
+        columns[0].Label = "Full name";
+        cut.Render(parameters => parameters.Add(p => p.Label, "People"));
+        cut.Render(parameters => parameters.Add(p => p.Label, "Staff"));
+
+        // one push for the first render, one for the change; the parameter set after it changes nothing
+        Assert.Equal(2, PushCount(module, "columns"));
+        Assert.Same(columns, LastPush(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenTheListChangesInPlace()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        var columns = new List<WaDataGridColumn> { new() { Field = "name" } };
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
+        columns.Add(new WaDataGridColumn { Field = "email" });
+        cut.Render(parameters => parameters.Add(p => p.Columns, columns));
+
+        Assert.Equal(2, PushCount(module, "columns"));
+    }
+
+    [Fact]
     public void Slots_WhenProvided_RenderIntoNamedSlots()
     {
         var cut = Render<WaDataGrid>(parameters => parameters
@@ -316,4 +394,12 @@ public class WaDataGridIntegrationTests : BunitContext
     }
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+
+    // the number of setProperty calls the wrapper made for one JS property
+    private static int PushCount(BunitJSModuleInterop module, string propertyName) =>
+        module.Invocations.Count(i => i.Identifier == "setProperty" && Equals(i.Arguments[1], propertyName));
+
+    // the value of the last setProperty call for one JS property
+    private static object? LastPush(BunitJSModuleInterop module, string propertyName) =>
+        module.Invocations.Last(i => i.Identifier == "setProperty" && Equals(i.Arguments[1], propertyName)).Arguments[2];
 }

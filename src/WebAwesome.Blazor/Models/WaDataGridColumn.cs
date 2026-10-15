@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using WebAwesome.Blazor.Components;
 
 namespace WebAwesome.Blazor.Models;
@@ -20,39 +22,46 @@ public class WaDataGridColumn
     /// Dot-path accessor into the row object, e.g. <c>user.name</c>. Doubles as the column id when
     /// <see cref="Id"/> is omitted.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Field { get; set; }
 
     /// <summary>
     /// Explicit column id. Required for columns without a <see cref="Field"/> (e.g. an actions or
     /// computed column).
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Id { get; set; }
 
     /// <summary>
     /// Header text.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Label { get; set; }
 
     /// <summary>
     /// Horizontal alignment of the cell content. Null leaves the element's default, start.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaDataGridAlign? Align { get; set; }
 
     /// <summary>
     /// Horizontal alignment of the header content. Defaults
     /// to <see cref="Align"/>.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaDataGridAlign? HeaderAlign { get; set; }
 
     /// <summary>
     /// Whether the column can be sorted. Defaults to true for columns with a <see cref="Field"/>.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Sortable { get; set; }
 
     /// <summary>
     /// When true, this column's first sort click sorts descending (defaults to the grid-level
     /// <c>sort-desc-first</c>).
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SortDescFirst { get; set; }
 
     /// <summary>
@@ -60,74 +69,99 @@ public class WaDataGridColumn
     /// <see cref="WaDataGridSortFn.Alphanumeric"/>. Ignored when a custom comparator is provided, which the wrapper
     /// does not support.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaDataGridSortFn? SortFn { get; set; }
 
     /// <summary>
     /// Where null and undefined values sort (<see cref="WaDataGridSortUndefined"/>). Omit to leave them in place,
     /// which is the element's default.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaDataGridSortUndefined? SortUndefined { get; set; }
 
     /// <summary>
     /// Whether the global search box matches this column. Defaults to true for columns with a
     /// <see cref="Field"/>.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Searchable { get; set; }
 
     /// <summary>
     /// Whether the column shows a per-column filter input.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Filterable { get; set; }
 
     /// <summary>
     /// How the column's filter matches; null leaves the element's default, <see cref="WaDataGridFilterType.Text"/>.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaDataGridFilterType? FilterType { get; set; }
+
+    /// <summary>
+    /// The options shown in a <see cref="WaDataGridFilterType.Set"/>, <see cref="WaDataGridFilterType.IncludesAny"/>
+    /// or <see cref="WaDataGridFilterType.IncludesAll"/> filter picker, replacing the facets the grid computes from its
+    /// rows. Each option filters by its value, displays its label (defaults to the value), and shows its count next to
+    /// it when provided. Options render in the order given. Required for a value picker in server mode, where the grid
+    /// only holds one page and can't derive the distinct values itself; also useful client-side to control ordering or
+    /// include values no loaded row has. Null leaves the computed facets.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyList<WaDataGridFilterOption>? FilterOptions { get; set; }
 
     /// <summary>
     /// Whether the column starts hidden.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Hidden { get; set; }
 
     /// <summary>
     /// Whether the user can toggle the column's visibility in the columns menu. Defaults to true.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Hideable { get; set; }
 
     /// <summary>
     /// Whether the column can be resized. Overrides the grid-level <c>resizable</c> setting.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Resizable { get; set; }
 
     /// <summary>
     /// Whether the column can be drag-reordered. Defaults to the grid-level <c>reorderable</c> setting.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Movable { get; set; }
 
     /// <summary>
     /// Whether the column can be pinned to an edge. Defaults to the grid-level <c>pinnable</c> setting.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Pinnable { get; set; }
 
     /// <summary>
     /// Pins the column to an edge initially. The user can still unpin it
     /// (when <see cref="Pinnable"/>); use the grid's <c>PinColumnAsync</c> method for programmatic control.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaDataGridPinSide? Pinned { get; set; }
 
     /// <summary>
     /// Initial column width in pixels. Ignored when <see cref="Flex"/> is set.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Width { get; set; }
 
     /// <summary>
     /// Minimum column width in pixels (resize and flex clamp).
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? MinWidth { get; set; }
 
     /// <summary>
     /// Maximum column width in pixels (resize and flex clamp).
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? MaxWidth { get; set; }
 
     /// <summary>
@@ -135,23 +169,27 @@ public class WaDataGridColumn
     /// flex columns (respecting <see cref="MinWidth"/>/<see cref="MaxWidth"/>) instead of using a fixed
     /// <see cref="Width"/>.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Flex { get; set; }
 
     /// <summary>
     /// Static footer text. The function form (aggregating the filtered rows across every page) is not
     /// marshalable and is not supported.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Footer { get; set; }
 
     /// <summary>
     /// A built-in aggregation applied on grouped rows. The custom function form is not marshalable and is not
     /// supported.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaDataGridAggregation? Aggregation { get; set; }
 
     /// <summary>
     /// A static CSS class (or space-separated classes) applied to every cell in the column. The
     /// per-cell function form is not marshalable and is not supported.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? CellClass { get; set; }
 }

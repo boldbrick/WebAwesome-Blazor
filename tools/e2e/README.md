@@ -54,6 +54,10 @@ actually renders the page and a real user interaction fires a real DOM event. Se
 - `tests\extensions-package.spec.js` — the demo loads the JS initializer of the optional `WebAwesome.Blazor.Extensions`
   package (`_content/WebAwesome.Blazor.Extensions/...lib.module.js` answers 200). It proves the static web asset chain
   from the package to the host, which fails silently otherwise. It passes against both demo hosts.
+- `tests\data-grid-columns.spec.js` — the `WaDataGrid` column model as the element receives it (Pro): the region
+  column's `FilterOptions` fill the set filter picker in their order, with their labels, and filter by their values;
+  the pushed columns hold no null member; and a page render that leaves `Columns` unchanged does not push them again
+  (the element keeps the same column array).
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug

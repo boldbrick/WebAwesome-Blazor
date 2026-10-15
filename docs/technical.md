@@ -120,6 +120,8 @@ Rules:
 
 - **Interop is a last resort.** Prefer attribute binding; add an `XxxAsync` method only for element methods the CEM documents (or allowlisted in `parity-config.json` `extraElementMethods` with a reason — these allowlisted names are invisible to the CEM diff and must be re-verified against upstream source every upgrade). Never call methods that merely duplicate an attribute (`show()`/`hide()` vs. an `Open` parameter).
 - Method wrappers guard a null `Element` (component not yet rendered).
+- **A model sent as JSON leaves out its unset members.** Mark each nullable member of a model that goes to the element (the data grid column model, `WaDataGridFilterOption`) with `[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]`, so the element applies its own default. Use the attribute, not serializer options: the options of the Blazor JS interop have no global ignore condition. `WaDataGridColumnJsonTests` reads the JSON the interop sends.
+- **A JS property that makes the element render again is pushed only on change.** `WaDataGrid` pushes `columns` on its first render, and later only when the `Columns` reference or the serialized columns differ from the last push (the JSON catches a change in place). `data` is pushed on every parameter set, so a list changed in place reaches the element.
 - New .NET JS-interop APIs replace the module only if they can address a DOM element directly; `ElementReference` is not an `IJSObjectReference`, so the module stays (standing verdict: `tasks\WA-3.0\WAB-7\net10-blazor-evaluation.md`).
 
 ## Dependencies

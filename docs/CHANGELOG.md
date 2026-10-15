@@ -4,8 +4,13 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 
 ## [Unreleased]
 
+### Added
+- `WaDataGridColumn.FilterOptions` (a list of `WaDataGridFilterOption`) sets the options of a set filter picker: values, labels, counts and order. Use it for a value picker in server mode.
+
 ### Changed
 - Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.
+- `WaDataGrid` sends `Columns` to the element again only when the list or a column changes, not on every render. A change in place still reaches the element.
+- `WaDataGridColumn` leaves unset members out of the JSON it sends to the element.
 
 ## [3.14.0] — 2026-09-27
 
