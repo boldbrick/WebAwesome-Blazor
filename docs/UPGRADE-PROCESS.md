@@ -14,6 +14,8 @@ temp\download\webawesome_<ver>.zip
                        └── expected-api-surface.json → parity tests (red/green driver)
 ```
 
+The pipeline covers the bindings package `WebAwesome.Blazor` only. The optional package `WebAwesome.Blazor.Extensions` (behavior upstream Web Awesome does not have, see `docs\technical.md`, "Package split") does not follow the CEM: the parity harness, the change report and the demo surface do not see it. An upgrade must still build and test it, because it depends on the bindings and ships with the same version; the solution-wide build and test steps include it.
+
 The pipeline is orchestrated by the **`/wa-upgrade` skill** (`.claude\skills\wa-upgrade\SKILL.md`). The skill runs forked (`context: fork`) under the dedicated **`wa-orchestrator`** agent with the **Opus model pinned**, so the whole upgrade executes in an isolated context regardless of the invoking session's model, and delegates to:
 
 | Piece | Location | Role |

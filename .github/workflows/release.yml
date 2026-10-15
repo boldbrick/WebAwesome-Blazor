@@ -69,6 +69,22 @@ jobs:
       - name: Test
         run: dotnet test WebAwesome.slnx --no-build /p:Configuration=Release
 
+      # one release ships both packages with one version: WebAwesome.Blazor and the optional
+      # WebAwesome.Blazor.Extensions (which depends on it) - fail before publishing when one is missing,
+      # because the steps below upload, push and attach every *.nupkg/*.snupkg they find
+      - name: Guard packages
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref }}".Substring("refs/tags/wa-blazor-".Length)
+          $missing = @('WebAwesome.Blazor', 'WebAwesome.Blazor.Extensions') |
+            ForEach-Object { "output/packages/Release/$_.$version.nupkg", "output/packages/Release/$_.$version.snupkg" } |
+            Where-Object { -not (Test-Path $_) }
+          if ($missing) {
+            Write-Error "Packages missing: $($missing -join ', ')"
+            exit 1
+          }
+          Write-Output "Both packages present for version $version"
+
       # Note a step that "uses" ignores the default working directory
       - name: Upload package artifact
         uses: actions/upload-artifact@v7

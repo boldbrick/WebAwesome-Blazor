@@ -51,6 +51,9 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   emits surfaces here (Web Awesome throws, e.g. a `RangeError` from `Intl`, or warns, e.g. a deprecated
   size). It is also the first line of defense against the "wrapper throws on first render" class of
   bug (e.g. the `wa-resize-observer` "initialize" crash).
+- `tests\extensions-package.spec.js` — the demo loads the JS initializer of the optional `WebAwesome.Blazor.Extensions`
+  package (`_content/WebAwesome.Blazor.Extensions/...lib.module.js` answers 200). It proves the static web asset chain
+  from the package to the host, which fails silently otherwise. It passes against both demo hosts.
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug

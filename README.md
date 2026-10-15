@@ -4,7 +4,7 @@
 [![release](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/release.yml/badge.svg)](https://github.com/boldbrick/WebAwesome-Blazor/actions/workflows/release.yml)
 [![NuGet](https://img.shields.io/nuget/v/WebAwesome.Blazor.svg)](https://www.nuget.org/packages/WebAwesome.Blazor)
 
-Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web components ([GitHub](https://github.com/shoelace-style/webawesome)), providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. No additional application logic and no additional / extension components.
+Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web components ([GitHub](https://github.com/shoelace-style/webawesome)), providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. The main package adds no application logic and no extension components; optional extras ship in a separate package, `WebAwesome.Blazor.Extensions`.
 
 > **Status**
 > - Active train: **WA 3.14**
@@ -32,10 +32,11 @@ Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web
 
 📦 **Clean packaging.** Multi-targeted `net9.0`/`net10.0`, XML IntelliSense docs on every public member (missing docs fail the build), symbol packages (snupkg) with SourceLink, deterministic CI builds.
 
-🎯 **Pure bindings, no lock-in.** By deliberate architectural decision, the package contains no application logic, no extension components, and redistributes no Web Awesome Pro source — you bring WA assets via CDN or self-hosting, exactly as upstream documents.
+🎯 **Pure bindings, no lock-in.** By deliberate architectural decision, the main package contains no application logic, no extension components, and redistributes no Web Awesome Pro source — you bring WA assets via CDN or self-hosting, exactly as upstream documents. Extras that add behavior Web Awesome does not have are opt-in, in a [separate package](#extensions-package-optional).
 
 ## Package
 - NuGet: `WebAwesome.Blazor` *(published from release tags)*
+- NuGet: `WebAwesome.Blazor.Extensions` — optional extras, same version *(published from the same release tags)*
 - [Changelog](docs/CHANGELOG.md) — keyed to Web Awesome versions, breaking changes called out per release
 
 ## Requirements
@@ -150,6 +151,18 @@ Supported components:
 - Currently includes: `WaButton`, `WaCheckbox`, `WaColorPicker`, `WaInput`, `WaRadio`, `WaRadioGroup`, `WaSelect`, `WaSlider`, `WaSwitch`, `WaTextarea`
 - Future form controls will be automatically supported without requiring updates to this library
 
+## Extensions package (optional)
+`WebAwesome.Blazor` binds what Web Awesome has: its components, attributes, events, slots and methods, and the behavior its documentation describes. A feature that adds behavior Web Awesome does not have goes into the separate package **`WebAwesome.Blazor.Extensions`** instead, so the main package stays pure bindings.
+
+```bash
+ dotnet add package WebAwesome.Blazor.Extensions
+```
+
+- Opt-in: an app that does not reference it gets nothing from it.
+- Same version as `WebAwesome.Blazor`, on which it depends with a floor of that version. Use the same version of both packages.
+- The Blazor runtime loads its JavaScript automatically (a JS initializer); no setup beyond `WebAwesome.Blazor` is necessary.
+- It does not follow Web Awesome's custom-elements manifest, so the API parity suite does not check it. Its own tests and a public API snapshot do.
+
 ## Version alignment
 We align binding versions to WA versions:
 - The first three version parts are the bound Web Awesome version, including a WA prerelease suffix (`3.0.0-beta.6`).
@@ -189,7 +202,7 @@ We align binding versions to WA versions:
 
 The repo uses a single-output-directory build system and produces nugets into `src/output/packages/<Configuration>`.
 
-> CI packs on tags named `wa-blazor-*` and attaches the `.nupkg` to the GitHub Release.
+> CI packs on tags named `wa-blazor-*` and attaches both `.nupkg` files (`WebAwesome.Blazor` and `WebAwesome.Blazor.Extensions`) to the GitHub Release.
 
 ## Demo
 A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every component with source-visible examples, grouped into the same categories Web Awesome's own documentation uses. It is deployed to GitHub Pages on every merge to `main`: **<https://boldbrick.github.io/WebAwesome-Blazor/>**. It doubles as a manual regression harness for upgrades and is swept by automated Playwright tests (`tools/e2e`).
@@ -204,7 +217,7 @@ A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every 
 ## Roadmap (contributions welcome!)
 - Ride the release train to current Web Awesome (3.1 → 3.14.x) via the automated upgrade pipeline
 
-> **Non-goal:** app-level convenience components (toast dispatch services, confirm dialogs, dark-mode toggles). It is an architectural decision that this library ships pure bindings only — no extensions will be bundled.
+> **Non-goal of `WebAwesome.Blazor`:** app-level convenience components (toast dispatch services, confirm dialogs, dark-mode toggles). It is an architectural decision that the main package ships pure bindings only — no extensions will be bundled into it. Features that add behavior upstream Web Awesome does not have go into the optional [`WebAwesome.Blazor.Extensions`](#extensions-package-optional) package.
 
 ## License
 MIT — see `LICENSE.md`.

@@ -28,6 +28,12 @@ Development is hosted in PlasticSCM (a.k.a. Unity VCS) on hierarchical branches;
 - Supplemental improvements: demo app, API docs, samples, tests
 - **Not**: wrapper work for a new Web Awesome release (new components, version upgrades) — that arrives via the maintainers' automated upgrade pipeline; file an issue instead if a release seems overdue
 
+### Where extras go
+The repository ships two packages with one version (see [docs/technical.md](docs/technical.md), "Package split"):
+- `src/WebAwesome.Blazor` — the bindings. A change that binds an upstream member, or a behavior that the Web Awesome documentation describes, goes here.
+- `src/WebAwesome.Blazor.Extensions` — optional extras. A feature that adds behavior that upstream Web Awesome does not have goes here, with its tests in `src/WebAwesome.Blazor.Extensions.Tests`. It extends the bindings through their public API only, never through a subclass of a wrapper or a new wrapper parameter.
+- If you are not sure where a change goes, open an issue first.
+
 ## Before you start
 1. **Pick the right branch**
    - Active WA train (e.g., 3.0): open PR to `master-WA-3.0`.

@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebAwesome.Blazor\WebAwesome.Blazor.csproj" />
+    <!-- optional extras (behavior upstream Web Awesome does not have); its JS initializer loads with the demo -->
+    <ProjectReference Include="..\WebAwesome.Blazor.Extensions\WebAwesome.Blazor.Extensions.csproj" />
   </ItemGroup>
 
 </Project>
