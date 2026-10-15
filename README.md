@@ -163,6 +163,42 @@ Supported components:
 - The Blazor runtime loads its JavaScript automatically (a JS initializer); no setup beyond `WebAwesome.Blazor` is necessary.
 - It does not follow Web Awesome's custom-elements manifest, so the API parity suite does not check it. Its own tests and a public API snapshot do.
 
+### Data grid cell presets
+`WaDataGridFormatters` and `WaDataGridComparators` (namespace `WebAwesome.Blazor.Extensions.DataGrid`) give `WaDataGrid` columns rich cells from C#, with no JavaScript of your own: numbers, currencies, dates, lookups, badges, tags, icons, links, and sort orders. Each factory returns a `WaJsFunction` for `Formatter` or `ComparatorFunction`. A state badge:
+
+```razor
+@using WebAwesome.Blazor.Extensions.DataGrid
+
+<WaDataGrid Data="orders" Columns="columns" RowKey="id" @onwablazor-cell-action="HandleCellAction" />
+
+@code {
+    private readonly WaDataGridColumn[] columns =
+    [
+        new() { Field = "id", Label = "Order", Formatter = WaDataGridFormatters.ActionLink("open", "#{id}") },
+        new()
+        {
+            Field = "state", Label = "State",
+            Formatter = WaDataGridFormatters.Badge<OrderState>(state => state switch
+            {
+                OrderState.Shipped => WaVariant.Success,
+                OrderState.Cancelled => WaVariant.Danger,
+                _ => WaVariant.Neutral,
+            }, label: state => Resources.ResourceManager.GetString($"OrderState_{state}")),
+            ComparatorFunction = WaDataGridComparators.Ordinal<OrderState>()
+        },
+        new() { Field = "total", Label = "Total", Formatter = WaDataGridFormatters.Currency("EUR") },
+        new() { Field = "due", Label = "Due", Formatter = WaDataGridFormatters.Date(WaDataGridDateStyle.Medium) },
+    ];
+
+    private void HandleCellAction(WaDataGridCellActionEventArgs e)
+        => Navigation.NavigateTo($"/orders/{e.GetRow<OrderRow>()!.Id}");
+}
+```
+
+- Text presets return text, so the CSV export holds the formatted text; badges, tags, icons and links are elements. The culture is `CultureInfo.CurrentCulture` when the factory runs, or the `culture` you pass.
+- Keep the column list in a field: the grid sends the columns again only when their JSON changes.
+- A `DateOnly` value shows its calendar day in every time zone; for an instant, use UTC or `DateTimeOffset` in the row and set `timeZone`.
+
 ## Version alignment
 We align binding versions to WA versions:
 - The first three version parts are the bound Web Awesome version, including a WA prerelease suffix (`3.0.0-beta.6`).

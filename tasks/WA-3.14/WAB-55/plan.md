@@ -65,3 +65,48 @@ references" (WAB-54). This ticket answers the consumer question "how do we show 
   holds the formatted text of the string presets; a badge autoloads; the action link reaches `OnCellAction` and does not
   raise `OnCellClick`; keyboard Enter on the action link; a `DateOnly` value shows its calendar day in a time zone west
   of UTC; the `@onwablazor-cell-action` attribute reaches the element through `AdditionalAttributes`.
+
+## Result
+
+- Changesets on `/main/WA-3.14/WAB-55`: cs:355 (plan), cs:356 (code, tests, demo, harness, e2e, API baseline), and the
+  last check-in (docs, this result).
+- Public API (Extensions, namespace `WebAwesome.Blazor.Extensions.DataGrid`): `WaDataGridFormatters` (22 factories,
+  `DefaultTrueIconName`, `DefaultFalseIconName`, `DefaultListSeparator`), `WaDataGridComparators` (`Ordinal(string[])`,
+  `Ordinal(IEnumerable<string>)`, `Ordinal<TEnum>`), `WaDataGridCellActionEventArgs` (`GetRow<T>`, `GetPayload<T>`,
+  `UnknownRowIndex`), `EventHandlers` (`CellActionEventName`, `CellActionAttributeName`), `WaDataGridIcon`, and the enums
+  `WaDataGridDateStyle`, `WaDataGridNumberNotation`, `WaDataGridSignDisplay`, `WaDataGridPercentScale`,
+  `WaDataGridDurationUnit`, `WaDataGridDurationStyle`. Baseline `approved-extensions-public-api.txt` promoted. No change
+  in the main package.
+- JavaScript: `wwwroot\data-grid-presets.js` (22 preset functions, `raiseCellAction`, `cellActionArgs`); the initializer
+  registers the presets in `beforeWebStart`/`beforeStart` and the event type in `afterWebStarted`/`afterStarted`.
+- Verification: Debug and Release builds green, 0 warnings. Tests: Extensions 108 on net9.0 and 108 on net10.0 (101
+  new), main 1352 and 1352, in Debug and in Release. E2E, WebAssembly demo on port 5100: with the local Pro dist
+  (`temp\wa-src\3.14.0`) 412 passed; on the free CDN 354 passed and 58 skipped, which matches `expected-skips.json`
+  (six new skips, `minimumTests` 410). Server host with the Pro dist: `cell-presets`, `js-functions` and
+  `extensions-package` specs, 15 passed. A mutation that removes the D4 `stopPropagation` makes the action test fail.
+  The Extensions nupkg holds `staticwebassets/data-grid-presets.js`.
+- Performance: one Intl formatter per column; creating one per cell costs about 125 µs a cell in Node 24, the cached
+  formatter a few µs (mostly `Intl.format` itself).
+
+## Deviations and findings
+
+- The `[EventHandler]` declaration is on a class named `EventHandlers`, not `WaDataGridEventHandlers`: the Razor compiler
+  reads the attribute only from public classes with that name. With another name, Razor passed
+  `@onwablazor-cell-action="Handler"` on as a text attribute (seen in the browser and in the generated code). With the
+  name, the forwarding through `WaDataGrid.AdditionalAttributes` works on both hosts (design: "unverified").
+- `ActionLink` is the `Action` form of `Link` and renders a `button` with link styles, not an `a`: it performs an
+  action, and the grid's keyboard navigation lets Enter and Space through to a button only.
+- Web Awesome behavior, recorded (no workaround): the grid's `GridNavigationController` consumes Enter on cell content
+  that is not a button or a form control, so Enter on a focused `a` in a cell raises `wa-cell-click` and does not follow
+  the link. Recheck on the next upgrade (`TOGGLE_TAGS`).
+- R3 answered for the presets: the Blazor router intercepts a relative `Link` in the grid's shadow root (no page load).
+- The event bridge gets `rowIndex` from the cell's `data-row-index` and dispatches at once, instead of the click pairing
+  of design 9.3 (that pairing is for `data-wablazor-action`, WAB-59). A microtask could not end the mark: after each
+  listener of a user click the browser runs the microtasks, before the cell's own click listener.
+- `Currency` takes the fixed code and the row field in one factory (`currency`, `currencyField`; at least one).
+
+## Open points
+
+- Enter on a `Link` in a cell (Web Awesome keyboard navigation, above): report upstream if the owner agrees.
+- The node cache helps only within the grid's own renders (sort, scroll): `WaDataGrid` pushes `data` on every parameter
+  set, which gives new row objects (phase 0 rule).
