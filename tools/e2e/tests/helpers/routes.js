@@ -53,6 +53,7 @@ const HARNESS_ROUTES = [
   '/testing/toast-items',
   '/testing/carousel-slides',
   '/testing/js-functions',
+  '/testing/cell-presets',
 ];
 
 function getComponentRoutes() {

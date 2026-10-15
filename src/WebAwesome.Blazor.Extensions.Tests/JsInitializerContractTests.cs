@@ -6,9 +6,10 @@ namespace WebAwesome.Blazor.Extensions.Tests;
 
 /// <summary>
 /// The Blazor runtime loads a package's JS initializer only when the file is wwwroot\&lt;PackageId&gt;.lib.module.js,
-/// and calls only the exported functions with the names it knows: afterWebStarted for Blazor Web
-/// (blazor.web.js) and afterStarted for the classic hosts. A wrong file name or a missing export fails silently in
-/// the browser, so the later features of the package would never start.
+/// and calls only the exported functions with the names it knows: beforeWebStart and afterWebStarted for Blazor Web
+/// (blazor.web.js), beforeStart and afterStarted for the classic hosts. A wrong file name or a missing export fails
+/// silently in the browser: the preset functions would not be registered, or the cell action event would not reach
+/// .NET.
 /// </summary>
 public class JsInitializerContractTests
 {
@@ -19,7 +20,9 @@ public class JsInitializerContractTests
     }
 
     [Theory]
+    [InlineData("beforeWebStart")]
     [InlineData("afterWebStarted")]
+    [InlineData("beforeStart")]
     [InlineData("afterStarted")]
     public void Initializer_ExportsTheStartCallback(string name)
     {

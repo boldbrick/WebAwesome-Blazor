@@ -1,0 +1,111 @@
+namespace WebAwesome.Blazor.Extensions.DataGrid
+{
+    [Microsoft.AspNetCore.Components.EventHandler("onwablazor-cell-action", typeof(WebAwesome.Blazor.Extensions.DataGrid.WaDataGridCellActionEventArgs), true, true)]
+    public static class EventHandlers
+    {
+        public const string CellActionAttributeName = "onwablazor-cell-action";
+        public const string CellActionEventName = "wablazor-cell-action";
+    }
+    public class WaDataGridCellActionEventArgs : System.EventArgs
+    {
+        public const int UnknownRowIndex = -1;
+        public WaDataGridCellActionEventArgs() { }
+        public string Action { get; set; }
+        public string Column { get; set; }
+        public System.Text.Json.JsonElement? Payload { get; set; }
+        public System.Collections.Generic.IReadOnlyDictionary<string, object>? Row { get; set; }
+        public int RowIndex { get; set; }
+        public System.Text.Json.JsonElement? RowKey { get; set; }
+        public object? Value { get; set; }
+        public T? GetPayload<T>(System.Text.Json.JsonSerializerOptions? options = null) { }
+        public T? GetRow<T>(System.Text.Json.JsonSerializerOptions? options = null) { }
+    }
+    public static class WaDataGridComparators
+    {
+        public static WebAwesome.Blazor.Models.WaJsFunction Ordinal(System.Collections.Generic.IEnumerable<string> values) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Ordinal(params string[] values) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Ordinal<TEnum>(params TEnum[] order)
+            where TEnum :  struct, System.Enum { }
+    }
+    public enum WaDataGridDateStyle
+    {
+        Full = 0,
+        Long = 1,
+        Medium = 2,
+        Short = 3,
+    }
+    public enum WaDataGridDurationStyle
+    {
+        Long = 0,
+        Short = 1,
+        Narrow = 2,
+        Digital = 3,
+    }
+    public enum WaDataGridDurationUnit
+    {
+        Seconds = 0,
+        Milliseconds = 1,
+    }
+    public static class WaDataGridFormatters
+    {
+        public const string DefaultFalseIconName = "xmark";
+        public const string DefaultListSeparator = ", ";
+        public const string DefaultTrueIconName = "check";
+        public static WebAwesome.Blazor.Models.WaJsFunction ActionLink(string action, string? textTemplate = null, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Badge(System.Collections.Generic.IReadOnlyDictionary<string, WebAwesome.Blazor.Components.WaVariant> variants, WebAwesome.Blazor.Components.WaVariant? fallback = default, WebAwesome.Blazor.Components.WaBadgeAppearance? appearance = default, bool pill = false, System.Collections.Generic.IReadOnlyDictionary<string, string>? labels = null, System.Collections.Generic.IReadOnlyDictionary<string, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridIcon>? icons = null, string? nullText = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Badge<TEnum>(System.Func<TEnum, WebAwesome.Blazor.Components.WaVariant> variant, System.Func<TEnum, string?>? label = null, System.Func<TEnum, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridIcon?>? icon = null, WebAwesome.Blazor.Components.WaVariant? fallback = default, WebAwesome.Blazor.Components.WaBadgeAppearance? appearance = default, bool pill = false, string? nullText = null)
+            where TEnum :  struct, System.Enum { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Boolean(string trueText, string falseText, string? nullText = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction BooleanIcon(string trueLabel, string falseLabel, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridIcon? trueIcon = null, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridIcon? falseIcon = null, WebAwesome.Blazor.Components.WaVariant? trueColor = default, WebAwesome.Blazor.Components.WaVariant? falseColor = default, string? nullText = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Bytes(WebAwesome.Blazor.Components.WaByteUnit? unit = default, WebAwesome.Blazor.Components.WaDisplay? display = default, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Currency(string? currency = null, string? currencyField = null, int? minFractionDigits = default, int? maxFractionDigits = default, WebAwesome.Blazor.Components.WaCurrencyDisplay? currencyDisplay = default, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridSignDisplay? signDisplay = default, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Date(WebAwesome.Blazor.Extensions.DataGrid.WaDataGridDateStyle? dateStyle = default, string? timeZone = null, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction DateTime(WebAwesome.Blazor.Extensions.DataGrid.WaDataGridDateStyle? dateStyle = default, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridDateStyle? timeStyle = default, string? timeZone = null, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Duration(WebAwesome.Blazor.Extensions.DataGrid.WaDataGridDurationUnit? unit = default, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridDurationStyle? style = default, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Email(string? textTemplate = null, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Icon(System.Collections.Generic.IReadOnlyDictionary<string, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridIcon> icons, System.Collections.Generic.IReadOnlyDictionary<string, string>? labels = null, System.Collections.Generic.IReadOnlyDictionary<string, WebAwesome.Blazor.Components.WaVariant>? colors = null, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridIcon? fallback = null, string? nullText = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Link(string hrefTemplate, string? textTemplate = null, WebAwesome.Blazor.Components.WaLinkTarget? target = default, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction List(string? separator = null, string? nullText = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Lookup(System.Collections.Generic.IReadOnlyDictionary<string, string> labels, string? fallback = null, string? nullText = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Lookup<TEnum>(System.Func<TEnum, string?> label, string? fallback = null, string? nullText = null)
+            where TEnum :  struct, System.Enum { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Number(int? minFractionDigits = default, int? maxFractionDigits = default, bool? useGrouping = default, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridNumberNotation? notation = default, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridSignDisplay? signDisplay = default, string? unit = null, WebAwesome.Blazor.Components.WaDisplay? unitDisplay = default, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Percent(WebAwesome.Blazor.Extensions.DataGrid.WaDataGridPercentScale? scale = default, int? minFractionDigits = default, int? maxFractionDigits = default, WebAwesome.Blazor.Extensions.DataGrid.WaDataGridSignDisplay? signDisplay = default, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Phone(string? textTemplate = null, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction RelativeTime(WebAwesome.Blazor.Components.WaRelativeTimeNumeric? numeric = default, WebAwesome.Blazor.Components.WaRelativeTimeFormat? style = default, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Tag(System.Collections.Generic.IReadOnlyDictionary<string, WebAwesome.Blazor.Components.WaVariant>? variants = null, WebAwesome.Blazor.Components.WaVariant? fallback = default, WebAwesome.Blazor.Components.WaBadgeAppearance? appearance = default, bool pill = false, WebAwesome.Blazor.Components.WaSize? size = default, System.Collections.Generic.IReadOnlyDictionary<string, string>? labels = null, string? nullText = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Tags(System.Collections.Generic.IReadOnlyDictionary<string, WebAwesome.Blazor.Components.WaVariant>? variants = null, WebAwesome.Blazor.Components.WaVariant? fallback = default, WebAwesome.Blazor.Components.WaBadgeAppearance? appearance = default, bool pill = false, WebAwesome.Blazor.Components.WaSize? size = default, System.Collections.Generic.IReadOnlyDictionary<string, string>? labels = null, string? nullText = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Template(string template, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Time(WebAwesome.Blazor.Extensions.DataGrid.WaDataGridDateStyle? timeStyle = default, string? timeZone = null, string? nullText = null, System.Globalization.CultureInfo? culture = null) { }
+    }
+    public sealed class WaDataGridIcon : System.IEquatable<WebAwesome.Blazor.Extensions.DataGrid.WaDataGridIcon>
+    {
+        public WaDataGridIcon(string name) { }
+        public string? Family { get; init; }
+        public string? Library { get; init; }
+        public string Name { get; }
+        public string? Variant { get; init; }
+        [return: System.Diagnostics.CodeAnalysis.NotNullIfNotNull("name")]
+        public static WebAwesome.Blazor.Extensions.DataGrid.WaDataGridIcon? op_Implicit(string? name) { }
+    }
+    public enum WaDataGridNumberNotation
+    {
+        Standard = 0,
+        Scientific = 1,
+        Engineering = 2,
+        Compact = 3,
+    }
+    public enum WaDataGridPercentScale
+    {
+        Fraction = 0,
+        Percent = 1,
+    }
+    public enum WaDataGridSignDisplay
+    {
+        Auto = 0,
+        Always = 1,
+        ExceptZero = 2,
+        Negative = 3,
+        Never = 4,
+    }
+}

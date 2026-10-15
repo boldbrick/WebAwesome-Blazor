@@ -9,6 +9,10 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 - `WaJsFunction` refers to a JavaScript function from C#: a function that the app registers by name, an export of an ES module (for example a collocated `.razor.js` file), or a global function. `WithArgs` gives the function options, and `Uses` declares the Web Awesome elements that it renders.
 - `WaDataGridColumn.Formatter`, `AggregatedFormatter` and `ComparatorFunction` take a `WaJsFunction`: rich cell content, group row content and a custom sort order. A reference that does not resolve shows raw values and writes a console error.
 - The module `_content/WebAwesome.Blazor/webawesome-functions.js` exports `registerFunction` (for `WaJsFunction.Registered`) and `registerContextDecorator`.
+- New package `WebAwesome.Blazor.Extensions` (same version as `WebAwesome.Blazor`) for features that Web Awesome does not have. Its types are in `WebAwesome.Blazor.Extensions.DataGrid`.
+- Data grid cell presets, configured in C# only: `WaDataGridFormatters` formats numbers, currencies, percentages, dates, times, relative times, bytes, durations, lookups, booleans, templates and lists as text, and renders badges, tags, icons, links, e-mail and phone links. Typed `Badge<TEnum>` and `Lookup<TEnum>` key the maps by the JSON form of the enum.
+- `WaDataGridComparators.Ordinal` sorts a column in a given order, for example the states of a workflow.
+- `WaDataGridFormatters.ActionLink` raises a cell action: bind `@onwablazor-cell-action` on `WaDataGrid` to receive `WaDataGridCellActionEventArgs` (`GetRow<T>()`, `GetPayload<T>()`). A click that raises an action does not raise `OnCellClick`.
 
 ### Changed
 - Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.
