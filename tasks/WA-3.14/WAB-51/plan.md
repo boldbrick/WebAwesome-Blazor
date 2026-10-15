@@ -51,3 +51,27 @@ Design: `tasks\WA-3.14\WAB-49\datagrid-cell-rendering-design.md`, section 17.3, 
 - The existing `ResolveVersion_Default_UsesLibraryVersion` test proves the end result: the package
   is 3.14.0.1 and the default CDN version equals `targetWaVersion` 3.14.0.
 - Preflight in docs-only mode (`-SkipBuild -SkipE2E`) proves the gates accept 3.14.0.1.
+
+## Result
+
+- Changesets on `/main/WA-3.14/WAB-51`: cs:334-335 (plan), cs:336 (code, tests, demo), cs:337 (preflight,
+  skills, comments), cs:338 (README, CONTRIBUTING, UPGRADE-PROCESS, CHANGELOG).
+- Code: `src\Version.props` 3.14.0.1. `WebAwesomeOptions.ToWebAwesomeVersion` (internal) gives the
+  default CDN version 3.14.0. The demo `WaVersionInfo` uses `new WebAwesomeOptions().ResolveVersion()`.
+  No public API change (the snapshot test is green).
+- Preflight gates: new `assembly-version` gate, stricter `version-props` (version shape). The gates
+  `parity-version`, `surface-version`, `readme-cdn-version` and the default Pro dist use the Web
+  Awesome version 3.14.0. The gates `changelog-entry`, `changelog-unreleased-folded`, `migration-doc`
+  and `nupkg-dependency-floors` keep the package version (the nuspec is
+  `WebAwesome.Blazor.3.14.0.1.nuspec`).
+- Verification: Debug and Release builds green, 0 warnings. Tests 1274 passed on net9.0 and 1274 on
+  net10.0, in Debug and in Release. Preflight `-SkipBuild -SkipE2E`: 12 gates OK. The two changelog
+  gates fail as expected until the release step folds `[Unreleased]` into `[3.14.0.1]`; a simulation
+  of the folded changelog passes them. E2E not run: no gate change needs it.
+- Deviation: a prerelease suffix after a fourth part is dropped (`3.14.0.1-beta.1` -> `3.14.0`), not
+  kept (see Decisions).
+- `/wa-upgrade` release gate: a released patch or bindings revision on the previous subtrunk must reach
+  `/main` before the next train (as in the design, section 17.3, and the owner rule for sequential
+  patch promotion). Pending, unreleased patch work still does not block.
+- Open points: `.github\workflows\release.yml` needs no change (the tag guard compares the full
+  version). `tools\upgrade\*.ps1` read no package version, so they did not change.
