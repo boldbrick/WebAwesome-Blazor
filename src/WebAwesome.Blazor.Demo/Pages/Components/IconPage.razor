@@ -81,7 +81,7 @@
 </ExampleSection>
 
 <ExampleSection Title="Icon Libraries" Code="@IconLibrariesExample">
-    <p>Register libraries at runtime with <code>WaIconLibraryService</code>. The icons below reference their library before it exists and draw as soon as it's registered. A custom library takes a URL template with <code>{name}</code>, <code>{family}</code> and <code>{variant}</code> placeholders, and optionally the name of a global JavaScript mutator function.</p>
+    <p>Register libraries at runtime with <code>WaIconLibraryService</code>. The icons below reference their library before it exists and draw as soon as it's registered. A custom library takes a URL template with <code>{name}</code>, <code>{family}</code> and <code>{variant}</code> placeholders, and optionally a JavaScript mutator function, here a global one (<code>WaJsFunction.Global</code>).</p>
     <WaCluster Gap="GapSize.Gap_S">
         <WaButton Size="WaSize.Small" data-testid="icon-libraries-register" OnClick="RegisterLibrariesAsync">Register libraries</WaButton>
         <WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" data-testid="icon-libraries-unregister" OnClick="UnregisterTablerAsync">Unregister Tabler</WaButton>
@@ -91,6 +91,23 @@
         <WaIcon Library="lucide" Name="feather" Label="Lucide feather" data-testid="icon-lucide" />
         <WaIcon Library="heroicons" Name="cog-6-tooth" Label="Heroicons cog" data-testid="icon-heroicons" />
         <WaIcon Library="tabler" Name="brand-github" Label="Tabler GitHub" data-testid="icon-tabler" />
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="Resolver &amp; Mutator Functions" Code="@LibraryFunctionsExample">
+    <p>
+        When a URL template is not enough, <code>ResolverFunction</code> gives the library a JavaScript function that
+        returns the URL (or a Promise of it), and <code>MutatorFunction</code> changes each SVG after it loads. Both are
+        exports of the collocated <code>IconPage.razor.js</code>; the version and the color come from C# through
+        <code>WithArgs</code>.
+    </p>
+    <WaButton Size="WaSize.Small" data-testid="icon-bootstrap-register" OnClick="RegisterBootstrapAsync">Register Bootstrap Icons</WaButton>
+    <p><code data-testid="icon-bootstrap-status">@bootstrapStatus</code></p>
+    <div class="wa-cluster" style="font-size: 1.5em;">
+        <WaIcon Library="bootstrap" Name="heart" Label="Heart" />
+        <WaIcon Library="bootstrap" Name="heart" Variant="fill" Label="Filled heart" data-testid="icon-bootstrap-fill" />
+        <WaIcon Library="bootstrap" Name="star" Label="Star" />
+        <WaIcon Library="bootstrap" Name="star" Variant="fill" Label="Filled star" />
     </div>
 </ExampleSection>
 
@@ -110,10 +127,17 @@
     private const string TablerLibrary = "tabler";
     private const string TablerResolver = "https://cdn.jsdelivr.net/npm/@tabler/icons@2.47.0/icons/{name}.svg";
     private const string TablerMutator = "demoIcons.thinStroke";
+    private const string BootstrapLibrary = "bootstrap";
+    private const string BootstrapVersion = "1.11.3";
+    private const string FilledColor = "crimson";
     private const string SharpFamily = "sharp";
     private const string ClassicFamily = "classic";
 
+    // the collocated module of this page
+    private const string IconPageModule = "./Pages/Components/IconPage.razor.js";
+
     private string libraryStatus = "Not registered";
+    private string bootstrapStatus = "Not registered";
     private string defaultFamily = "(not read yet)";
 
     private async Task RegisterLibrariesAsync()
@@ -125,13 +149,30 @@
             await IconLibraries.RegisterIconLibraryAsync(TablerLibrary, new IconLibraryOptions
             {
                 Resolver = TablerResolver,
-                Mutator = TablerMutator
+                MutatorFunction = WaJsFunction.Global(TablerMutator)
             });
             libraryStatus = "Registered lucide, heroicons, tabler";
         }
         catch (InvalidOperationException ex)
         {
             libraryStatus = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task RegisterBootstrapAsync()
+    {
+        try
+        {
+            await IconLibraries.RegisterIconLibraryAsync(BootstrapLibrary, new IconLibraryOptions
+            {
+                ResolverFunction = WaJsFunction.Module(IconPageModule, "bootstrapIconUrl").WithArgs(new { version = BootstrapVersion }),
+                MutatorFunction = WaJsFunction.Module(IconPageModule, "colorFilled").WithArgs(new { color = FilledColor })
+            });
+            bootstrapStatus = "Registered bootstrap";
+        }
+        catch (InvalidOperationException ex)
+        {
+            bootstrapStatus = $"Error: {ex.Message}";
         }
     }
 
@@ -165,9 +206,41 @@
                 {
                     Resolver = "https://cdn.jsdelivr.net/npm/@tabler/icons@2.47.0/icons/{name}.svg",
                     // window.demoIcons.thinStroke = svg => svg.setAttribute('stroke-width', '1.25')
-                    Mutator = "demoIcons.thinStroke"
+                    MutatorFunction = WaJsFunction.Global("demoIcons.thinStroke")
                 });
             }
+        }
+        """;
+
+    private const string LibraryFunctionsExample = """
+        @inject WaIconLibraryService IconLibraries
+
+        <WaButton OnClick="RegisterBootstrapAsync">Register Bootstrap Icons</WaButton>
+
+        <WaIcon Library="bootstrap" Name="heart" Label="Heart" />
+        <WaIcon Library="bootstrap" Name="heart" Variant="fill" Label="Filled heart" />
+
+        @code {
+            private async Task RegisterBootstrapAsync()
+            {
+                await IconLibraries.RegisterIconLibraryAsync("bootstrap", new IconLibraryOptions
+                {
+                    ResolverFunction = WaJsFunction.Module("./Pages/Components/IconPage.razor.js", "bootstrapIconUrl")
+                        .WithArgs(new { version = "1.11.3" }),
+                    MutatorFunction = WaJsFunction.Module("./Pages/Components/IconPage.razor.js", "colorFilled")
+                        .WithArgs(new { color = "crimson" })
+                });
+            }
+        }
+
+        // IconPage.razor.js, next to IconPage.razor
+        export function bootstrapIconUrl(name, family, variant, autoWidth, ctx) {
+          const file = variant === 'fill' ? `${name}-fill` : name;
+          return `https://cdn.jsdelivr.net/npm/bootstrap-icons@${ctx.args.version}/icons/${file}.svg`;
+        }
+
+        export function colorFilled(svg, icon, ctx) {
+          if (icon.variant === 'fill') svg.setAttribute('fill', ctx.args.color);
         }
         """;
 

@@ -1,0 +1,7 @@
+<!-- e2e sprite sheet of the icon library harness (/testing/icon-library): a wa-icon of a library with SpriteSheet
+     renders <use href="fragments/icon-sprite.svg#star"> -->
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="star" viewBox="0 0 16 16">
+    <path d="M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12.2 3.7 14.5l.8-4.9L1 6.2l4.8-.7z"/>
+  </symbol>
+</svg>
