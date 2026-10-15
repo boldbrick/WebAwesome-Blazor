@@ -64,11 +64,13 @@
     <Product>Web Awesome Blazor bindings</Product>
     <Copyright>Copyright © 2025–$([System.DateTime]::Today.Year) $(Company) and contributors</Copyright>
 
-    <!-- version numbers - these flow SDK-style projects -->
-    <Version>3.14.0</Version>
-    <AssemblyVersion>3.14.0.0</AssemblyVersion>
-    <FileVersion>3.14.0.0</FileVersion>
-    <!-- full semver, readable at runtime (WebAwesomeOptions derives the default CDN version from it) -->
+    <!-- version numbers - these flow SDK-style projects; the first three parts are the bound Web Awesome
+         version, an optional fourth part is a revision of the bindings (3.14.0.1) -->
+    <Version>3.14.0.1</Version>
+    <AssemblyVersion>3.14.0.1</AssemblyVersion>
+    <FileVersion>3.14.0.1</FileVersion>
+    <!-- full version, readable at runtime (WebAwesomeOptions derives the default CDN version from its
+         first three parts) -->
     <InformationalVersion>$(Version)</InformationalVersion>
 
     <!-- supported languages -->

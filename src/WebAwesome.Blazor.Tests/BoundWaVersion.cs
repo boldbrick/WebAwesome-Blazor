@@ -7,8 +7,8 @@ namespace WebAwesome.Blazor.Tests;
 /// <summary>
 /// Central source of the bound Web Awesome version for tests. Reads targetWaVersion from
 /// ApiParity\parity-config.json (copied to the test output), which the release preflight gates
-/// against src\Version.props — so no test hard-codes the version and upgrades bump it in exactly
-/// one place.
+/// against the first three parts of the version in src\Version.props (a fourth part is a bindings
+/// revision) — so no test hard-codes the version and upgrades bump it in exactly one place.
 /// </summary>
 public static class BoundWaVersion
 {
