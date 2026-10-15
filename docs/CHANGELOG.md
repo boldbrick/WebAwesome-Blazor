@@ -6,10 +6,13 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 
 ### Added
 - `WaDataGridColumn.FilterOptions` (a list of `WaDataGridFilterOption`) sets the options of a set filter picker: values, labels, counts and order. Use it for a value picker in server mode.
+- `WaJsFunction` refers to a JavaScript function from C#: a function that the app registers by name, an export of an ES module (for example a collocated `.razor.js` file), or a global function. `WithArgs` gives the function options, and `Uses` declares the Web Awesome elements that it renders.
+- `WaDataGridColumn.Formatter`, `AggregatedFormatter` and `ComparatorFunction` take a `WaJsFunction`: rich cell content, group row content and a custom sort order. A reference that does not resolve shows raw values and writes a console error.
+- The module `_content/WebAwesome.Blazor/webawesome-functions.js` exports `registerFunction` (for `WaJsFunction.Registered`) and `registerContextDecorator`.
 
 ### Changed
 - Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.
-- `WaDataGrid` sends `Columns` to the element again only when the list or a column changes, not on every render. A change in place still reaches the element.
+- `WaDataGrid` sends `Columns` to the element again only when a column definition changes: not on every render, and not for a new list with the same definitions. A change in place still reaches the element.
 - `WaDataGridColumn` leaves unset members out of the JSON it sends to the element.
 
 ## [3.14.0] — 2026-09-27

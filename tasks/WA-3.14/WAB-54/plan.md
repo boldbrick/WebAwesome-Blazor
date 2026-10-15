@@ -56,3 +56,45 @@ WAB-58 (other grid members) build on this ticket.
 - E2E (free CDN and Pro): the resolver without a grid (registry, late registration, global path, module, cross-origin
   refusal) and the `Uses` preload of a tag that nothing else on the page uses.
 - Performance: per-call cost of the binding wrapper against a direct call.
+
+## Result
+
+- Changesets on `/main/WA-3.14/WAB-54`: cs:350 (plan), cs:351 (code, tests, API baseline), cs:352 (demo, harness, e2e),
+  and the last check-in (docs, this result).
+- Public API: `WaJsFunction` (`Registered`, `Module(url, exportName = "default", allowCrossOrigin = false)`, `Global`,
+  `WithArgs`, `Uses`, `DefaultExportName`, `Kind`, `Reference`, `ExportName`, `AllowCrossOrigin`, `Args`, `Tags`, value
+  equality, `ToString` = descriptor), `WaJsFunctionKind`, and `WaDataGridColumn.Formatter`, `AggregatedFormatter`,
+  `ComparatorFunction`. Baseline promoted.
+- JavaScript: new public module `webawesome-functions.js` (registry, `registerFunction`, `registerContextDecorator`,
+  `callArguments`, `resolveFunction`, `isFunctionDescriptor`, `findGlobalFunction`). `webawesome-interop.js`:
+  `setDataGridColumns`; the icon library mutator uses `findGlobalFunction`.
+- Verification: Debug and Release builds green, 0 warnings. Tests: main 1352 on net9.0 and 1352 on net10.0 (69 new),
+  Extensions 7 and 7, in Debug and in Release. E2E on the WebAssembly demo (port 5100): with the local Pro dist
+  (`temp\wa-src\3.14.0`) 404 passed; on the free CDN 352 passed and 52 skipped (the listed skips, five new). The server
+  host with the Pro dist: `js-functions`, `data-grid-columns` and `extensions-package` specs, 10 passed. A mutation that
+  skips the `Uses` preload makes the free-CDN `Uses` test fail.
+- Performance (R7), Node 24, 10,000 rows, one formatter: a direct call 15-24 ns, the wrapper with `ctx.args` 37-46 ns, with
+  `ctx.rowKey` 66-94 ns, with one decorator 49-68 ns. The first version (rest parameters and a spread call) cost about
+  200 ns; fixed parameters per arity removed most of it. A visible window of about 400 cells costs about 20 µs per render.
+
+## Deviations and decisions to note
+
+- The resolver is in `webawesome-functions.js`, next to the registry, not in `webawesome-interop.js` (design 4). The
+  interop module keeps the element work (`setDataGridColumns`) and imports the resolver.
+- The public module is `webawesome-functions.js`, not `webawesome-datagrid.js` (design 8.2): section 17.1 makes the
+  registry general for all wrappers.
+- The cross-origin opt-in is a parameter of `Module`. C# cannot know the page origin, so C# rejects only unsafe schemes;
+  the browser checks the origin.
+- The column JSON goes to JavaScript as text (one serialization in C#, also used for the change check). The JSON tests now
+  read the argument of `setDataGridColumns`.
+- Convention in `docs\technical.md`: apps prefix their registered names (`myapp.`), the packages use `wab.`.
+- `ctx.args` is `undefined` when `WithArgs` was not called. An exception that the function throws is not caught.
+
+## Open points
+
+- R1: the formatter, aggregatedFormatter and comparator signatures (the arity in `dataGridColumnFunctions`) must be
+  checked on each upgrade. Add them to the `/wa-upgrade` watch list (owner or WAB-56).
+- `discover(grid.shadowRoot)` sees only the rows rendered at the push; a tag that first appears in rows rendered later
+  needs `Uses` (documented).
+- R2 (a Lit `TemplateResult` from the app's copy of Lit) is not verified; the presets and the demo use DOM nodes.
+- The other function members (`footer`, `cellClass`, `value`, `filterFn`, `aggregation`, grid members) are WAB-58.
