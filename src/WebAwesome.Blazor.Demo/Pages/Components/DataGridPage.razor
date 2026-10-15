@@ -9,10 +9,9 @@
     column footers, pagination, CSV export and full keyboard navigation.
     <code>&lt;wa-data-grid&gt;</code> wrapped by <code>WaDataGrid</code>. Rows and columns are JavaScript
     properties rather than attributes, so <code>Data</code> and <code>Columns</code> are supplied as typed
-    C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Upstream's
-    per-cell <code>formatter</code> is a JavaScript function or Lit template and cannot cross the interop
-    boundary, so cells render their raw values; format the value in your row data when you need control
-    over how it reads.
+    C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Cells render
+    their raw values; for rich cell content, a column refers to a small JavaScript function with
+    <code>WaJsFunction</code> (see "Custom Cell Rendering with JavaScript" below).
 </p>
 
 <ExampleSection Title="Columns" Code="@ColumnsExample">
@@ -123,6 +122,10 @@
     </WaDataGrid>
     <WaDivider />
     <p>Served <strong>@serverRows.Length</strong> of <strong>@serverTotal</strong> matching orders in @serverRequestCount request(s).</p>
+</ExampleSection>
+
+<ExampleSection Title="Custom Cell Rendering with JavaScript" Code="@CellRenderingExample">
+    <WaDataGrid Label="Sprint tasks" RowKey="id" Data="sprintTasks" Columns="taskColumns" />
 </ExampleSection>
 
 <ExampleSection Title="Responding to Cell Clicks" Code="@CellClickExample">
@@ -525,6 +528,40 @@
         new() { Field = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 120 }
     ];
 
+    private sealed record TaskRow(int Id, string Title, string Status, int Progress);
+
+    private readonly object[] sprintTasks =
+    [
+        new TaskRow(1, "Design the onboarding flow", "done", 100),
+        new TaskRow(2, "Build the settings page", "doing", 60),
+        new TaskRow(3, "Migrate the billing data", "blocked", 35),
+        new TaskRow(4, "Write the release notes", "todo", 0),
+        new TaskRow(5, "Review the accessibility audit", "doing", 80)
+    ];
+
+    // the JavaScript file next to this page; Blazor serves a collocated .razor.js file at the page's path
+    private const string TaskCellsModule = "./Pages/Components/DataGridPage.razor.js";
+
+    private readonly WaDataGridColumn[] taskColumns =
+    [
+        new() { Field = "title", Label = "Task", Flex = 2, MinWidth = 220 },
+        new()
+        {
+            Field = "status", Label = "Status", Width = 140,
+            // a badge per status, and a sort in workflow order; the maps come from C# as ctx.args
+            Formatter = WaJsFunction.Module(TaskCellsModule, "statusBadge")
+                .WithArgs(new { variants = new { todo = "neutral", doing = "brand", blocked = "danger", done = "success" } })
+                .Uses("wa-badge"),
+            ComparatorFunction = WaJsFunction.Module(TaskCellsModule, "byWorkflowOrder")
+                .WithArgs(new { order = new[] { "todo", "doing", "blocked", "done" } })
+        },
+        new()
+        {
+            Field = "progress", Label = "Progress", Width = 200,
+            Formatter = WaJsFunction.Module(TaskCellsModule, "progressBar").Uses("wa-progress-bar")
+        }
+    ];
+
     private sealed record ExpenseRow(int Id, string Description, string Category, decimal Amount);
 
     private readonly object[] expenses =
@@ -828,6 +865,67 @@
                 serverRows = matches.Skip(e.Page * e.PageSize).Take(e.PageSize).Cast<object>().ToArray();
                 serverLoading = false;
             }
+        }
+        """;
+
+    private const string CellRenderingExample = """
+        <WaDataGrid Label="Sprint tasks" RowKey="id" Data="sprintTasks" Columns="taskColumns" />
+
+        @code {
+            private sealed record TaskRow(int Id, string Title, string Status, int Progress);
+
+            private readonly object[] sprintTasks =
+            [
+                new TaskRow(1, "Design the onboarding flow", "done", 100),
+                new TaskRow(2, "Build the settings page", "doing", 60),
+                new TaskRow(3, "Migrate the billing data", "blocked", 35),
+                new TaskRow(4, "Write the release notes", "todo", 0),
+                new TaskRow(5, "Review the accessibility audit", "doing", 80)
+            ];
+
+            // the JavaScript file next to this page; Blazor serves a collocated .razor.js file at the page's path
+            private const string TaskCellsModule = "./Pages/Components/DataGridPage.razor.js";
+
+            private readonly WaDataGridColumn[] taskColumns =
+            [
+                new() { Field = "title", Label = "Task", Flex = 2, MinWidth = 220 },
+                new()
+                {
+                    Field = "status", Label = "Status", Width = 140,
+                    // a badge per status, and a sort in workflow order; the maps come from C# as ctx.args
+                    Formatter = WaJsFunction.Module(TaskCellsModule, "statusBadge")
+                        .WithArgs(new { variants = new { todo = "neutral", doing = "brand", blocked = "danger", done = "success" } })
+                        .Uses("wa-badge"),
+                    ComparatorFunction = WaJsFunction.Module(TaskCellsModule, "byWorkflowOrder")
+                        .WithArgs(new { order = new[] { "todo", "doing", "blocked", "done" } })
+                },
+                new()
+                {
+                    Field = "progress", Label = "Progress", Width = 200,
+                    Formatter = WaJsFunction.Module(TaskCellsModule, "progressBar").Uses("wa-progress-bar")
+                }
+            ];
+        }
+
+        // DataGridPage.razor.js, next to DataGridPage.razor
+        // each function gets the grid's arguments and a trailing ctx (ctx.args holds the WithArgs value)
+
+        export function statusBadge(value, row, ctx) {
+          const badge = document.createElement('wa-badge');
+          badge.variant = ctx.args.variants[value] ?? 'neutral';
+          badge.textContent = value;
+          return badge;
+        }
+
+        export function byWorkflowOrder(a, b, rowA, rowB, ctx) {
+          return ctx.args.order.indexOf(a) - ctx.args.order.indexOf(b);
+        }
+
+        export function progressBar(value) {
+          const bar = document.createElement('wa-progress-bar');
+          bar.value = value;
+          bar.textContent = `${value}%`;
+          return bar;
         }
         """;
 
