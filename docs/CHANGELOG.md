@@ -13,11 +13,22 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 - Data grid cell presets, configured in C# only: `WaDataGridFormatters` formats numbers, currencies, percentages, dates, times, relative times, bytes, durations, lookups, booleans, templates and lists as text, and renders badges, tags, icons, links, e-mail and phone links. Typed `Badge<TEnum>` and `Lookup<TEnum>` key the maps by the JSON form of the enum.
 - `WaDataGridComparators.Ordinal` sorts a column in a given order, for example the states of a workflow.
 - `WaDataGridFormatters.ActionLink` raises a cell action: bind `@onwablazor-cell-action` on `WaDataGrid` to receive `WaDataGridCellActionEventArgs` (`GetRow<T>()`, `GetPayload<T>()`). A click that raises an action does not raise `OnCellClick`.
+- JavaScript functions for the function-valued members of Web Awesome, as `WaJsFunction` parameters: `GetTagFunction` (`WaSelect`, `WaCombobox`), `FilterFunction` (`WaCombobox`), `GetSymbolFunction` (`WaRating`), `ValueFormatterFunction` (`WaSlider`, `WaRange`), `IsDateDisabledFunction` and `DayContentFunction` (the date pickers and date inputs), and `HrefTemplateFunction` (`WaPagination`; set it or `HrefTemplate`, not both). The browser calls the function, with no round-trip to .NET.
+- `ShadowStyles` on `WaDataGrid`, `WaSelect`, `WaCombobox`, `WaRating`, the date pickers and the date inputs: CSS for the output of your own functions in the element's shadow root.
 
 ### Changed
 - Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.
 - `WaDataGrid` sends `Columns` to the element again only when a column definition changes: not on every render, and not for a new list with the same definitions. A change in place still reaches the element.
 - `WaDataGridColumn` leaves unset members out of the JSON it sends to the element.
+
+### Deprecated
+- `WaSelect.SetGetTagFunctionAsync` and `WaSelect.GetTag`: use `GetTagFunction`. They are removed in 3.15.0.
+- `WaRating.SetSymbolFunctionAsync`: use `GetSymbolFunction`. It is removed in 3.15.0.
+- `SetValueFormatterAsync` of `WaSlider` and `WaRange`, and `WaSlider.ValueFormatter`: use `ValueFormatterFunction`. They are removed in 3.15.0.
+- **Next-release check:** the 3.15.0 train removes the members above (each has a `// TODO WA 3.15.0 train` comment), under a `### Breaking changes` heading with a migration guide.
+
+### Fixed
+- `WaSelect.SetGetTagFunctionAsync` and `WaRating.SetSymbolFunctionAsync` sent JavaScript source text, so the element failed to render. They now send nothing and throw `NotSupportedException` with the replacement. `SetValueFormatterAsync`, which had no effect, now sends nothing.
 
 ## [3.14.0] — 2026-09-27
 

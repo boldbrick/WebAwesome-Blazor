@@ -71,3 +71,43 @@ D10 and D11 (section 15). Package: `WebAwesome.Blazor` only. Base: WAB-54 (`WaJs
   select and rating methods break the element; then each member in a real element (free CDN: select, rating, slider,
   range, pagination; Pro with self-skip: combobox, date picker, date input, date range input, data grid `ShadowStyles`),
   `ShadowStyles` on a select tag and a grid cell, and a member set back to null restores the default.
+
+## Result
+
+- Changesets on `/main/WA-3.14/WAB-56`: cs:360 (plan), cs:361 (code, tests, demo, harness, e2e, API baseline), and the
+  last check-in (docs, this result).
+- Defect proven first: `element-functions.spec.js` failed on the unchanged code with
+  `TypeError: this.getTag is not a function` after `SetGetTagFunctionAsync`; it passes now.
+- Public API: `GetTagFunction` (`WaSelect`, `WaCombobox`), `WaCombobox.FilterFunction`, `WaRating.GetSymbolFunction`,
+  `WaSliderBase.ValueFormatterFunction`, `IsDateDisabledFunction` and `DayContentFunction` (`WaDatePickerBase`,
+  `WaDateInputBase`), `WaPagination.HrefTemplateFunction` and its `JSInterop`, `ShadowStyles` (`WaDataGrid`, `WaSelect`,
+  `WaCombobox`, `WaRating`, `WaDatePickerBase`, `WaDateInputBase`), the `OnAfterRenderAsync`/`OnParametersSet`
+  overrides; `[Obsolete]` on `WaSelect.SetGetTagFunctionAsync`, `WaSelect.GetTag`, `WaRating.SetSymbolFunctionAsync`,
+  `WaSliderBase.SetValueFormatterAsync`, `WaSlider.ValueFormatter`. Baseline promoted.
+- JavaScript (`webawesome-interop.js`): `setElementFunction` with the `elementFunctions` arity table, `setShadowStyles`
+  with `nestedShadowHosts`; `discoverShadowContent` also discovers the nested calendar of `wa-date-input`. Both exports
+  return at once and finish in the browser, so a Pro element that never loads cannot hold the interop call.
+- Verification: Debug and Release builds green, 0 warnings. Tests: main 1379 on net9.0 and 1379 on net10.0 (27 new),
+  Extensions 108 and 108, in Debug and in Release. E2E, WebAssembly demo on port 5100: free CDN 360 passed and 62 skipped
+  (the listed skips, four new; `minimumTests` 420); local Pro dist (`temp\wa-src\3.14.0`) 421 passed and one failure,
+  `event-dispatch` WaVideo `OnEnded`, which this machine cannot play (the media clock stays at 0 with no audio output;
+  unrelated to this ticket). Server host, free CDN: `element-functions`, `js-functions` and `sweep` specs, 128 passed and
+  9 skipped. Pro override cleared afterwards.
+
+## Deviations and findings
+
+- The C# helper is `Base\WaJsPropertyPush` (functions and shadow styles); the JS side has one function per concern
+  (`setElementFunction`, `setShadowStyles`), as the design asks for `ShadowStyles`.
+- `ShadowStyles` of `WaDateInput`/`WaDateRangeInput` is adopted by the input's own shadow root and by the shadow root of
+  its inner `wa-date-picker`, where the day cells render. Without the second root the styles would not reach the cells.
+- `WaDateRangePicker` gains the members through `WaDatePickerBase` (as `WaDateRangeInput` through `WaDateInputBase`).
+- Demo examples on nine pages (select with `ShadowStyles`, combobox, rating, slider, date picker, date input, date range
+  picker, date range input, pagination), each with a collocated `.razor.js`.
+- The four "in WA 3.0" notes now read `// NOTE checked against WA 3.14.0: ...`; the arity tables carry the same note.
+- `RenderedWrapperCatalog.RequiredParameters` is internal now (reused by `ElementJsPropertyTests`).
+
+## Open points
+
+- The interaction sweep fails on the server host for unrelated pages (SignalR "Server timeout" under the page clock);
+  only the WebAssembly host runs it cleanly. Not caused by this ticket.
+- The `WaVideo` dispatch case needs an audio output device on the test machine.

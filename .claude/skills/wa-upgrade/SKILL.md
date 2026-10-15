@@ -75,6 +75,19 @@ Notes:
 2. For every component the script reports as **NEEDS CAPTURE** (no bundled reference and no existing doc to carry forward), fetch its doc page from the reported `https://webawesome.com/docs/components/<name>` URL, convert it to markdown, and save it as `inputs\WebAwesome\components\<name>.md` with the source URL noted in a comment at the top (format: see `components\combobox.md`).
 3. Check in the documentation refresh as its own changeset (comment: `Web Awesome <target> documentation added`) — this keeps the doc diff reproducible per `inputs\README.md`.
 
+**Carry forward or close the version notes** (`docs\UPGRADE-PROCESS.md`, "Pending workarounds to re-verify every upgrade" and "Version notes in code and the watch list"). Record each outcome in the plan document:
+1. Search `docs\CHANGELOG.md` (the `[Unreleased]` section and the most recent release entry) for "Next-release check" notes. Close each item that the target fixes, or carry it forward.
+2. Search the code for version notes:
+   ```powershell
+   Get-ChildItem src, tools -Recurse -Include *.cs, *.razor, *.js, *.ps1 |
+       Where-Object FullName -notmatch '\\(bin|obj|output|node_modules|test-results)\\|wwwroot\\webawesome\\' |
+       Select-String -CaseSensitive -Pattern '\b(TODO|NOTE)\b.*\bWA \d+\.\d+'
+   ```
+   - `// TODO WA <version> train: ...` due at the target train: plan the work for Phase 4. Keep a later one.
+   - `// NOTE checked against WA <version>: ...`: check the fact against the target's CEM and source. If it is still true, change the version to the target in Phase 4; if not, plan the code change.
+3. Plan the removal of every `[Obsolete]` member whose message names the target train (Phase 4), with its tests, its `TODO` and its CHANGELOG note. The removal is breaking: Phase 5 writes the `### Breaking changes` heading and `docs\MIGRATION-<target>.md`.
+4. Watch list: compare each entry of `dataGridColumnFunctions` and `elementFunctions` in `src\WebAwesome.Blazor\wwwroot\webawesome-interop.js` (the number of arguments before `ctx`) with the member's type in `temp\wa-src\<target>\dist\components\<name>\<name>.d.ts`. Plan a fix for a changed arity, a `<Name>Function` parameter and an entry for a new function-valued member, and the removal of a removed one.
+
 **Pro-source rule (hard):** everything extracted from the Pro release zips stays under `temp\` (ignored by Plastic and git), with exactly two sanctioned exceptions ever checked in: the API surface JSON (names, types, defaults, doc descriptions — no implementation code) and the bundled reference **documentation** markdown (`dist/skills/webawesome/references/components/*.md`, used by `Sync-WaDocs.ps1` to fill `inputs\WebAwesome` gaps — publicly documented content, owner-approved). Plan documents and migration guides may describe APIs but must never embed upstream JS/TS/CSS source.
 
 Produce the plan document `tasks\WA-<major.minor>\WAB-<n>\upgrade-v<current>-to-v<target>-plan.md` (n = this upgrade's JIRA task from Phase 1; create the task folder if missing) and check it in on the task branch together with its folder, following the structure of `tasks\WA-3.0\WAB-4\upgrade-v3-beta-4-to-beta-6-plan.md`: phased change list (breaking → new components → enhancements), per-file actions, validation checklist, risks.
