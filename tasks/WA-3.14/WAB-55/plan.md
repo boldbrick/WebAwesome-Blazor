@@ -70,7 +70,7 @@ references" (WAB-54). This ticket answers the consumer question "how do we show 
 
 - Changesets on `/main/WA-3.14/WAB-55`: cs:355 (plan), cs:356 (code, tests, demo, harness, e2e, API baseline), and the
   last check-in (docs, this result).
-- Public API (Extensions, namespace `WebAwesome.Blazor.Extensions.DataGrid`): `WaDataGridFormatters` (22 factories,
+- Public API (Extensions, namespace `WebAwesome.Blazor.Extensions.DataGrid`): `WaDataGridFormatters` (24 factory methods,
   `DefaultTrueIconName`, `DefaultFalseIconName`, `DefaultListSeparator`), `WaDataGridComparators` (`Ordinal(string[])`,
   `Ordinal(IEnumerable<string>)`, `Ordinal<TEnum>`), `WaDataGridCellActionEventArgs` (`GetRow<T>`, `GetPayload<T>`,
   `UnknownRowIndex`), `EventHandlers` (`CellActionEventName`, `CellActionAttributeName`), `WaDataGridIcon`, and the enums
