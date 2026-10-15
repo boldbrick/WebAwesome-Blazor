@@ -167,6 +167,10 @@ npm test
 
 Set `DEMO_BASE_URL` if the demo is running on a different port than `http://localhost:5000`.
 
+Chromium runs with `--disable-audio-output` (`playwright.config.js`): a fake audio sink drives the media clock. A real
+sink can stall: the "Remote Audio" device of a Windows RDP session keeps `currentTime` of a playing clip at 0, so the
+`WaVideo` `OnEnded` case failed there.
+
 The same suite also runs against the server-hosted demo variant (interactive server render
 mode over a SignalR circuit) — both hosting models should stay green:
 
