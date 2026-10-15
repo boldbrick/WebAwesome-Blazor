@@ -24,7 +24,7 @@ Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web
 
 ✅ **Machine-verified completeness.** A reflection-based API parity suite checks every wrapper against Web Awesome's published custom-elements manifest — attributes, slots, events. "Did we miss a parameter?" is a red/green test signal, not a code-review hope. 229 automated tests plus a Playwright-based end-to-end sweep of the demo app back every release.
 
-🚄 **Built to track Web Awesome releases fast.** A CEM-driven upgrade pipeline diffs upstream API surfaces, generates change reports, and drives wrapper updates and tests (see [docs/UPGRADE-PROCESS.md](docs/UPGRADE-PROCESS.md)). Package versions are **identical** to the Web Awesome version they bind — no parallel version scheme to decode.
+🚄 **Built to track Web Awesome releases fast.** A CEM-driven upgrade pipeline diffs upstream API surfaces, generates change reports, and drives wrapper updates and tests (see [docs/UPGRADE-PROCESS.md](docs/UPGRADE-PROCESS.md)). The first three parts of the package version **are** the Web Awesome version it binds; a fourth part only marks a revision of the bindings (`3.14.0.1`) — no parallel version scheme to decode.
 
 📐 **Covers what others skip.** Web Awesome's CSS-only layout system ships as components too (`WaStack`, `WaCluster`, `WaFlank`, `WaGrid`, …), alongside utility elements like `WaFormatDate`, `WaFormatNumber`, and the observer components.
 
@@ -89,7 +89,7 @@ By default it loads the matching Web Awesome version from the official CDN. Ever
 ```
 
 #### Advanced: static asset tags
-In standalone WebAssembly apps `index.html` is static, so add the equivalent tags directly (adjust the version to the release you use — it always matches this package's version):
+In standalone WebAssembly apps `index.html` is static, so add the equivalent tags directly (use the Web Awesome version that your package binds — the first three parts of the package version):
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.14.0/dist-cdn/styles/webawesome.css" />
@@ -151,7 +151,10 @@ Supported components:
 - Future form controls will be automatically supported without requiring updates to this library
 
 ## Version alignment
-We align binding versions to WA versions. Use the **same** semantic version when possible; for prereleases we follow WA suffixes.
+We align binding versions to WA versions:
+- The first three version parts are the bound Web Awesome version, including a WA prerelease suffix (`3.0.0-beta.6`).
+- An optional fourth part is a **revision of the bindings**: changes to the bindings only, for the same Web Awesome release. `3.14.0.1` binds Web Awesome `3.14.0`. NuGet sorts `3.14.0` < `3.14.0.1` < `3.14.1`.
+- A new Web Awesome release resets the revision (`3.14.0.1` → `3.15.0`). The default CDN version is always the Web Awesome version (`3.14.0`).
 
 | Web Awesome | Bindings Tag                          | Branch (GitHub)       |
 |-------------|----------------------------------------|-----------------------|
@@ -159,6 +162,7 @@ We align binding versions to WA versions. Use the **same** semantic version when
 | 3.0.0-beta.6| `wa-blazor-3.0.0-beta.6`     | `master` (promoted)     |
 | 3.0 train   | rolling prereleases → tags as above    | `master-WA-3.0`         |
 | 3.0 patches | `wa-blazor-3.0.x` tagged on the subtrunk | `master-WA-3.0`       |
+| 3.14.0 (bindings revision) | `wa-blazor-3.14.0.1` tagged on the subtrunk | `master-WA-3.14` |
 
 > Development happens in PlasticSCM on hierarchical branches (`/main`, `/main/WA-3.0`); the GitHub mirror is produced by GitSync, whose fixed naming maps `/main` → `master` and flattens hierarchy with dashes (`/main/WA-3.0` → `master-WA-3.0`).
 
@@ -166,7 +170,7 @@ We align binding versions to WA versions. Use the **same** semantic version when
 - Active development stays in a **subtrunk**: `/main/WA-<ver>` (e.g., `/main/WA-3.0`).
 - When ready, we *promote* the subtrunk to `/main` and **tag** (e.g., `wa-blazor-3.0.0`).
 - A new subtrunk (minor `WA-3.<x+1>` or major `WA-4.0`) is branched **from `/main`**, and only after the previous train's release has been promoted to `/main`.
-- **Patch releases** (e.g., `3.0.1`) stay on the train's subtrunk: developed and tagged there, never promoted to `/main`. A fix that matters to newer trains is merged from the older subtrunk directly into the newer one (e.g., `/main/WA-3.0` → `/main/WA-3.1`).
+- **Patch releases** (e.g., `3.0.1`) and **bindings revisions** (e.g., `3.14.0.1`) stay on the train's subtrunk: developed and tagged there, never promoted to `/main` by themselves. Before the next train starts, the subtrunk is merged into `/main`. A fix that matters to newer trains is merged from the older subtrunk directly into the newer one (e.g., `/main/WA-3.0` → `/main/WA-3.1`).
 
 **Monotonic merge rule**
 `/main` only accepts merges from the **current** active subtrunk or a **newer** one. After `/main` merges from `WA-N+1`, it **no longer** accepts merges from `WA-N`.

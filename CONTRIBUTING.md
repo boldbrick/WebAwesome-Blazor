@@ -7,7 +7,7 @@ Thanks for helping improve **Web Awesome Blazor Bindings**! This document explai
 - **Bugfixes for a released train** also target that train's subtrunk (e.g., 3.0.x fixes → `master-WA-3.0`) — there are no separate release branches.
 - New/breaking work goes to the next subtrunk (e.g., `master-WA-3.1` or `master-WA-4.0`).
 - **Web Awesome version upgrades are maintainer work** (automated pipeline, see [docs/UPGRADE-PROCESS.md](docs/UPGRADE-PROCESS.md)) — please don't send PRs implementing a new WA release.
-- `<major.minor>.0` releases are cut by promoting the subtrunk to the main line and tagging `wa-blazor-<version>`; **patch releases** (`x.y.z`) are tagged directly on the train's subtrunk.
+- `<major.minor>.0` releases are cut by promoting the subtrunk to the main line and tagging `wa-blazor-<version>`; **patch releases** (`x.y.z`) and **bindings revisions** (`x.y.z.r`) are tagged directly on the train's subtrunk.
 
 ## Repository topology
 
@@ -19,9 +19,9 @@ Development is hosted in PlasticSCM (a.k.a. Unity VCS) on hierarchical branches;
 
 **Monotonic promotion rule**: once the main line has merged from train `N+1`, it no longer accepts merges from train `N`.
 
-**New-train rule**: a new subtrunk (`WA-3.<x+1>`, `WA-4.0`) is branched **from the main line**, never from the previous subtrunk, and only after the previous train's release has been promoted to the main line. Pending patch work (e.g., `3.0.1` on `master-WA-3.0`) is the one allowed exception.
+**New-train rule**: a new subtrunk (`WA-3.<x+1>`, `WA-4.0`) is branched **from the main line**, never from the previous subtrunk, and only after the previous train's release has been promoted to the main line. A released patch or bindings revision on the previous subtrunk is merged into the main line first, so the new train carries it. Pending, unreleased patch work (e.g., `3.0.1` on `master-WA-3.0`) is the one allowed exception.
 
-**Patch releases**: developed and tagged (`wa-blazor-x.y.z`) on the train's subtrunk — the main line is not involved. When a fix matters to newer trains, it is merged from the older subtrunk directly into the newer one (e.g., `master-WA-3.0` → `master-WA-3.1`).
+**Patch releases and bindings revisions**: developed and tagged (`wa-blazor-x.y.z`, `wa-blazor-x.y.z.r`) on the train's subtrunk — they are never promoted to the main line by themselves. When a fix matters to newer trains, it is merged from the older subtrunk directly into the newer one (e.g., `master-WA-3.0` → `master-WA-3.1`).
 
 ## What to contribute
 - Bug fixes or parity corrections for existing wrappers
@@ -65,8 +65,9 @@ Development is hosted in PlasticSCM (a.k.a. Unity VCS) on hierarchical branches;
 5. Maintainers periodically **promote** the subtrunk to `main` and tag a release.
 
 ## Versioning & tags
-- We tag releases as `wa-blazor-<version>`, e.g., `wa-blazor-3.0.0-beta.4`.
-- `<major.minor>.0` releases are tagged on the main line (after promotion); patch releases are tagged on the train's subtrunk.
+- The first three version parts are the bound Web Awesome version (with its prerelease suffix, if any). An optional fourth part is a revision of the bindings: changes to the bindings only, for the same Web Awesome release (`3.14.0.1` binds Web Awesome `3.14.0`). A new Web Awesome release resets it (`3.15.0`).
+- We tag releases as `wa-blazor-<version>`, e.g., `wa-blazor-3.0.0-beta.4`, `wa-blazor-3.14.0.1`.
+- `<major.minor>.0` releases are tagged on the main line (after promotion); patch releases and bindings revisions are tagged on the train's subtrunk.
 - NuGet packages are produced from tags in CI.
 
 ## Development environment

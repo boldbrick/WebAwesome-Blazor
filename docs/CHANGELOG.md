@@ -1,6 +1,11 @@
 # Changelog
 
-All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
+All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
+
+## [Unreleased]
+
+### Changed
+- Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.
 
 ## [3.14.0] — 2026-09-27
 
