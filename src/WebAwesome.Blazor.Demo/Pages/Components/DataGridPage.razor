@@ -1,4 +1,6 @@
 @page "/components/data-grid"
+@using System.Text.Json.Serialization
+@using WebAwesome.Blazor.Extensions.DataGrid
 @using WebAwesome.Blazor.Models
 
 <PageTitle>Data Grid</PageTitle>
@@ -11,7 +13,8 @@
     properties rather than attributes, so <code>Data</code> and <code>Columns</code> are supplied as typed
     C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Cells render
     their raw values; for rich cell content, a column refers to a small JavaScript function with
-    <code>WaJsFunction</code> (see "Custom Cell Rendering with JavaScript" below).
+    <code>WaJsFunction</code> (see "Custom Cell Rendering with JavaScript" below), or to a cell preset of the
+    <code>WebAwesome.Blazor.Extensions</code> package, configured in C# only (see "Extensions: Cell Presets").
 </p>
 
 <ExampleSection Title="Columns" Code="@ColumnsExample">
@@ -128,6 +131,20 @@
     <WaDataGrid Label="Sprint tasks" RowKey="id" Data="sprintTasks" Columns="taskColumns" />
 </ExampleSection>
 
+<ExampleSection Title="Extensions: Cell Presets" Code="@CellPresetsExample">
+    <WaCallout Variant="WaVariant.Brand" IconName="puzzle-piece" Style="margin-block-end: var(--wa-space-m);">
+        This example uses the <strong>WebAwesome.Blazor.Extensions</strong> package, which adds behavior upstream
+        Web Awesome does not have. <code>WaDataGridFormatters</code> and <code>WaDataGridComparators</code> configure
+        badges, numbers, currencies, dates, lookups, icons, sort orders and links in C#, with no JavaScript of your own.
+        <code>@@onwablazor-cell-action</code> receives the actions of cell content, such as the order links.
+    </WaCallout>
+    <WaDataGrid Label="Orders" RowKey="id" Data="presetOrders" Columns="presetColumns"
+                OnCellClick="HandlePresetCellClick" @onwablazor-cell-action="HandlePresetCellAction" />
+    <WaDivider />
+    <p data-testid="preset-cell-action">@(presetActionMessage ?? "Click an order number to raise its \"open\" action.")</p>
+    <p data-testid="preset-cell-click">@(presetClickMessage ?? "Click any other cell to raise OnCellClick.")</p>
+</ExampleSection>
+
 <ExampleSection Title="Responding to Cell Clicks" Code="@CellClickExample">
     <WaDataGrid Label="Countries" RowKey="code" Data="countries" Columns="cellClickColumns" OnCellClick="HandleCellClick" />
     <WaDivider />
@@ -166,6 +183,8 @@
     private string? searchTerm;
     private int filterCount;
     private string? cellClickMessage;
+    private string? presetActionMessage;
+    private string? presetClickMessage;
     private string? csvPreview;
     private int copiedRows;
 
@@ -196,6 +215,18 @@
     private void HandleCellClick(WaDataGridCellClickEventArgs e)
     {
         cellClickMessage = $"Clicked the \"{e.Column}\" cell of row {e.RowIndex}; its value is {e.Value}.";
+    }
+
+    // the order links raise the "open" action; a click on them does not raise OnCellClick
+    private void HandlePresetCellAction(WaDataGridCellActionEventArgs e)
+    {
+        var order = e.GetRow<PresetOrderRow>();
+        presetActionMessage = $"Action \"{e.Action}\" for order {e.RowKey} (display row {e.RowIndex}): {order?.Customer}, {order?.State}.";
+    }
+
+    private void HandlePresetCellClick(WaDataGridCellClickEventArgs e)
+    {
+        presetClickMessage = $"OnCellClick: the \"{e.Column}\" cell of display row {e.RowIndex}.";
     }
 
     // server mode: the grid asks for the rows it needs, we fetch them and hand back Data, Total and Loading
@@ -559,6 +590,53 @@
         {
             Field = "progress", Label = "Progress", Width = 200,
             Formatter = WaJsFunction.Module(TaskCellsModule, "progressBar").Uses("wa-progress-bar")
+        }
+    ];
+
+    // the JSON converter makes the browser see the state names, which the alphabetic sort would order wrongly
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    private enum OrderState { New, Processing, Shipped, Cancelled }
+
+    private sealed record PresetOrderRow(int Id, string Customer, OrderState State, int Items, decimal Total, DateOnly Due, string Region, bool Paid);
+
+    private readonly object[] presetOrders =
+    [
+        new PresetOrderRow(1001, "Ada Lovelace", OrderState.Shipped, 3, 129.90m, new DateOnly(2026, 10, 2), "EU", true),
+        new PresetOrderRow(1002, "Grace Hopper", OrderState.Processing, 12, 1480m, new DateOnly(2026, 10, 18), "NA", false),
+        new PresetOrderRow(1003, "Alan Turing", OrderState.New, 1, 19.99m, new DateOnly(2026, 10, 21), "EU", false),
+        new PresetOrderRow(1004, "Katherine Johnson", OrderState.Cancelled, 5, 315.50m, new DateOnly(2026, 9, 30), "NA", true),
+        new PresetOrderRow(1005, "Hedy Lamarr", OrderState.Processing, 2, 74m, new DateOnly(2026, 10, 25), "APAC", true)
+    ];
+
+    private readonly WaDataGridColumn[] presetColumns =
+    [
+        new() { Field = "id", Label = "Order", Width = 110, Formatter = WaDataGridFormatters.ActionLink("open", "#{id}") },
+        new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 170 },
+        new()
+        {
+            Field = "state", Label = "State", Width = 140,
+            // a state badge, from C# only; the sort follows the workflow, not the alphabet
+            Formatter = WaDataGridFormatters.Badge<OrderState>(state => state switch
+            {
+                OrderState.Processing => WaVariant.Brand,
+                OrderState.Shipped => WaVariant.Success,
+                OrderState.Cancelled => WaVariant.Danger,
+                _ => WaVariant.Neutral,
+            }),
+            ComparatorFunction = WaDataGridComparators.Ordinal<OrderState>()
+        },
+        new() { Field = "items", Label = "Items", Align = WaDataGridAlign.End, Width = 90, Formatter = WaDataGridFormatters.Number() },
+        new() { Field = "total", Label = "Total", Align = WaDataGridAlign.End, Width = 130, Formatter = WaDataGridFormatters.Currency("EUR") },
+        new() { Field = "due", Label = "Due", Width = 140, Formatter = WaDataGridFormatters.Date(WaDataGridDateStyle.Medium) },
+        new()
+        {
+            Field = "region", Label = "Region", Width = 150,
+            Formatter = WaDataGridFormatters.Lookup(new Dictionary<string, string> { ["EU"] = "Europe", ["NA"] = "North America", ["APAC"] = "Asia-Pacific" })
+        },
+        new()
+        {
+            Field = "paid", Label = "Paid", Width = 90, Align = WaDataGridAlign.Center,
+            Formatter = WaDataGridFormatters.BooleanIcon("Paid", "Not paid", trueColor: WaVariant.Success, falseColor: WaVariant.Danger)
         }
     ];
 
@@ -926,6 +1004,79 @@
           bar.value = value;
           bar.textContent = `${value}%`;
           return bar;
+        }
+        """;
+
+    private const string CellPresetsExample = """
+        @* package WebAwesome.Blazor.Extensions; @using WebAwesome.Blazor.Extensions.DataGrid *@
+        <WaDataGrid Label="Orders" RowKey="id" Data="presetOrders" Columns="presetColumns"
+                    OnCellClick="HandlePresetCellClick" @onwablazor-cell-action="HandlePresetCellAction" />
+        <WaDivider />
+        <p>@(presetActionMessage ?? "Click an order number to raise its \"open\" action.")</p>
+        <p>@(presetClickMessage ?? "Click any other cell to raise OnCellClick.")</p>
+
+        @code {
+            private string? presetActionMessage;
+            private string? presetClickMessage;
+
+            // the JSON converter makes the browser see the state names, which the alphabetic sort would order wrongly
+            [JsonConverter(typeof(JsonStringEnumConverter))]
+            private enum OrderState { New, Processing, Shipped, Cancelled }
+
+            private sealed record PresetOrderRow(int Id, string Customer, OrderState State, int Items, decimal Total, DateOnly Due, string Region, bool Paid);
+
+            private readonly object[] presetOrders =
+            [
+                new PresetOrderRow(1001, "Ada Lovelace", OrderState.Shipped, 3, 129.90m, new DateOnly(2026, 10, 2), "EU", true),
+                new PresetOrderRow(1002, "Grace Hopper", OrderState.Processing, 12, 1480m, new DateOnly(2026, 10, 18), "NA", false),
+                new PresetOrderRow(1003, "Alan Turing", OrderState.New, 1, 19.99m, new DateOnly(2026, 10, 21), "EU", false),
+                new PresetOrderRow(1004, "Katherine Johnson", OrderState.Cancelled, 5, 315.50m, new DateOnly(2026, 9, 30), "NA", true),
+                new PresetOrderRow(1005, "Hedy Lamarr", OrderState.Processing, 2, 74m, new DateOnly(2026, 10, 25), "APAC", true)
+            ];
+
+            private readonly WaDataGridColumn[] presetColumns =
+            [
+                new() { Field = "id", Label = "Order", Width = 110, Formatter = WaDataGridFormatters.ActionLink("open", "#{id}") },
+                new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 170 },
+                new()
+                {
+                    Field = "state", Label = "State", Width = 140,
+                    // a state badge, from C# only; the sort follows the workflow, not the alphabet
+                    Formatter = WaDataGridFormatters.Badge<OrderState>(state => state switch
+                    {
+                        OrderState.Processing => WaVariant.Brand,
+                        OrderState.Shipped => WaVariant.Success,
+                        OrderState.Cancelled => WaVariant.Danger,
+                        _ => WaVariant.Neutral,
+                    }),
+                    ComparatorFunction = WaDataGridComparators.Ordinal<OrderState>()
+                },
+                new() { Field = "items", Label = "Items", Align = WaDataGridAlign.End, Width = 90, Formatter = WaDataGridFormatters.Number() },
+                new() { Field = "total", Label = "Total", Align = WaDataGridAlign.End, Width = 130, Formatter = WaDataGridFormatters.Currency("EUR") },
+                new() { Field = "due", Label = "Due", Width = 140, Formatter = WaDataGridFormatters.Date(WaDataGridDateStyle.Medium) },
+                new()
+                {
+                    Field = "region", Label = "Region", Width = 150,
+                    Formatter = WaDataGridFormatters.Lookup(new Dictionary<string, string> { ["EU"] = "Europe", ["NA"] = "North America", ["APAC"] = "Asia-Pacific" })
+                },
+                new()
+                {
+                    Field = "paid", Label = "Paid", Width = 90, Align = WaDataGridAlign.Center,
+                    Formatter = WaDataGridFormatters.BooleanIcon("Paid", "Not paid", trueColor: WaVariant.Success, falseColor: WaVariant.Danger)
+                }
+            ];
+
+            // the order links raise the "open" action; a click on them does not raise OnCellClick
+            private void HandlePresetCellAction(WaDataGridCellActionEventArgs e)
+            {
+                var order = e.GetRow<PresetOrderRow>();
+                presetActionMessage = $"Action \"{e.Action}\" for order {e.RowKey} (display row {e.RowIndex}): {order?.Customer}, {order?.State}.";
+            }
+
+            private void HandlePresetCellClick(WaDataGridCellClickEventArgs e)
+            {
+                presetClickMessage = $"OnCellClick: the \"{e.Column}\" cell of display row {e.RowIndex}.";
+            }
         }
         """;
 
