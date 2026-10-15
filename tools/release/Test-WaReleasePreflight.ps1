@@ -1,7 +1,8 @@
 # Test-WaReleasePreflight.ps1
 # Automated release-preflight gates for WebAwesome.Blazor (see .claude\skills\wa-release-preflight\SKILL.md).
 # Verifies everything that can be checked without VCS/ticketing context:
-#   version alignment, changelog/migration doc shape, builds, tests, nupkg dependency floors, browser e2e.
+#   version alignment, changelog/migration doc shape, builds, tests, nupkg dependency floors, the two
+#   packages (WebAwesome.Blazor and WebAwesome.Blazor.Extensions at one version), browser e2e.
 # Windows PowerShell 5.1 compatible; ASCII only (5.1 misparses BOM-less non-ASCII scripts).
 #
 # Usage (from anywhere):
@@ -24,7 +25,7 @@
 
 param(
     [switch]$SkipE2E,   # skip the Playwright sweep (demo server lifecycle)
-    [switch]$SkipBuild, # skip builds/tests/nuspec gates (docs-only quick check)
+    [switch]$SkipBuild, # skip builds/tests/package gates (docs-only quick check)
     [string]$ProDist,   # run the Pro e2e pass against this self-hosted Pro dist (default: temp\wa-src\<version>)
     [switch]$ProE2E,    # like -ProDist, with the path taken from $env:WA_PRO_DIST
     [switch]$SkipProE2E, # skip the Pro e2e pass (it runs by default when the local Pro build exists)
@@ -193,20 +194,79 @@ if (-not $SkipBuild) {
         Add-Gate ("test-{0}" -f $config.ToLower()) ($testOk -and $skipped -eq 0) ("exit {0}, skipped-frameworks {1}: {2}" -f $LASTEXITCODE, $skipped, $totals)
     }
 
-    # nupkg dependency floors: every shipped dependency must sit on a base major (x.0.0)
-    $nuspecPath = "src\output\obj\Release\WebAwesome.Blazor\WebAwesome.Blazor.$version.nuspec"
-    if (Test-Path $nuspecPath) {
+    # the release ships two packages with one version: the bindings and the optional Extensions package
+    $mainId = 'WebAwesome.Blazor'
+    $extensionsId = 'WebAwesome.Blazor.Extensions'
+    $packageIds = @($mainId, $extensionsId)
+    $packageDir = 'src\output\packages\Release'
+    function Get-NuspecPath([string]$id) { return ("src\output\obj\Release\{0}\{0}.{1}.nuspec" -f $id, $version) }
+
+    # nupkg dependency floors: every shipped dependency must sit on a base major (x.0.0); the dependency of the
+    # Extensions package on WebAwesome.Blazor is the exception (floor = package version, extensions-package gate)
+    $offenders = @()
+    $missingNuspecs = @()
+    foreach ($id in $packageIds) {
+        $nuspecPath = Get-NuspecPath $id
+        if (-not (Test-Path $nuspecPath)) { $missingNuspecs += $nuspecPath; continue }
         [xml]$nuspec = Get-Content $nuspecPath
-        $deps = @($nuspec.package.metadata.dependencies.group | ForEach-Object { $_.dependency })
-        $offenders = @($deps | Where-Object { $_.version -notmatch '^\d+\.0\.0$' } | ForEach-Object { "{0} {1}" -f $_.id, $_.version })
-        $detail = 'all shipped dependencies floored at x.0.0'
-        if ($offenders.Count -gt 0) { $detail = 'non-floored: ' + ($offenders -join ', ') }
-        Add-Gate 'nupkg-dependency-floors' ($offenders.Count -eq 0) $detail
-    } else {
-        Add-Gate 'nupkg-dependency-floors' $false ("nuspec not found at {0}" -f $nuspecPath)
+        $deps = @($nuspec.package.metadata.dependencies.group | ForEach-Object { $_.dependency } | Where-Object { $_ -and $_.id -ne $mainId })
+        $offenders += @($deps | Where-Object { $_.version -notmatch '^\d+\.0\.0$' } | ForEach-Object { "{0}: {1} {2}" -f $id, $_.id, $_.version })
     }
+    $detail = 'all shipped dependencies floored at x.0.0'
+    if ($offenders.Count -gt 0) { $detail = 'non-floored: ' + ($offenders -join ', ') }
+    if ($missingNuspecs.Count -gt 0) { $detail = 'nuspec not found: ' + ($missingNuspecs -join ', ') }
+    Add-Gate 'nupkg-dependency-floors' (($offenders.Count -eq 0) -and ($missingNuspecs.Count -eq 0)) $detail
+
+    # Extensions package: both nupkgs exist at the package version, the Extensions package depends on
+    # WebAwesome.Blazor with a floor equal to the package version in every framework group, and it ships its
+    # JS initializer as a static web asset with the JS module trait, so the Blazor runtime loads it
+    $extensionsProblems = @()
+    foreach ($id in $packageIds) {
+        $nupkgPath = Join-Path $packageDir ("{0}.{1}.nupkg" -f $id, $version)
+        if (-not (Test-Path $nupkgPath)) { $extensionsProblems += ("missing {0}" -f $nupkgPath) }
+    }
+
+    $extensionsNuspecPath = Get-NuspecPath $extensionsId
+    if (Test-Path $extensionsNuspecPath) {
+        [xml]$extensionsNuspec = Get-Content $extensionsNuspecPath
+        $groups = @($extensionsNuspec.package.metadata.dependencies.group | Where-Object { $_ })
+        if ($groups.Count -eq 0) { $extensionsProblems += 'Extensions nuspec has no dependency groups' }
+        foreach ($group in $groups) {
+            $sibling = @($group.dependency | Where-Object { $_ -and $_.id -eq $mainId })
+            $floor = ($sibling | ForEach-Object { $_.version }) -join ', '
+            if ($sibling.Count -ne 1 -or $sibling[0].version -ne $version) {
+                $extensionsProblems += ("{0}: {1} floor '{2}', expected '{3}'" -f $group.targetFramework, $mainId, $floor, $version)
+            }
+        }
+    } else {
+        $extensionsProblems += ("nuspec not found at {0}" -f $extensionsNuspecPath)
+    }
+
+    $extensionsNupkgPath = Join-Path $packageDir ("{0}.{1}.nupkg" -f $extensionsId, $version)
+    if (Test-Path $extensionsNupkgPath) {
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $extensionsNupkgPath).Path)
+        try {
+            # the packed file name may carry the fingerprint of the static web asset
+            $initializer = @($zip.Entries | Where-Object { $_.FullName -match '^staticwebassets/WebAwesome\.Blazor\.Extensions(\.[0-9a-z]+)?\.lib\.module\.js$' })
+            if ($initializer.Count -ne 1) { $extensionsProblems += 'JS initializer not packed under staticwebassets/' }
+            $assetProps = $zip.GetEntry('build/Microsoft.AspNetCore.StaticWebAssets.props')
+            $isModule = $false
+            if ($assetProps) {
+                $reader = New-Object System.IO.StreamReader($assetProps.Open())
+                try { $isModule = $reader.ReadToEnd().Contains('<AssetTraitValue>JSLibraryModule</AssetTraitValue>') } finally { $reader.Dispose() }
+            }
+            if (-not $isModule) { $extensionsProblems += 'static web asset props do not declare the JS initializer (JSLibraryModule)' }
+        } finally {
+            $zip.Dispose()
+        }
+    }
+
+    $detail = ("{0} and {1} {2}; {1} depends on {0} >= {2}; JS initializer packed" -f $mainId, $extensionsId, $version)
+    if ($extensionsProblems.Count -gt 0) { $detail = $extensionsProblems -join '; ' }
+    Add-Gate 'extensions-package' ($extensionsProblems.Count -eq 0) $detail
 } else {
-    Write-Host 'Builds/tests/nuspec gates skipped (-SkipBuild).'
+    Write-Host 'Builds/tests/package gates skipped (-SkipBuild).'
 }
 
 # --- gate: browser e2e sweep --------------------------------------------------
