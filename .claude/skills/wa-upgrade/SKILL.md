@@ -14,17 +14,19 @@ Execute a **no-touch upgrade** of the WebAwesome.Blazor bindings to a new Web Aw
 
 Invocation arguments: `$ARGUMENTS`
 
-- `<target-version>` — e.g. `3.1.0`. `next` (or no argument) means: the **lowest** version in `temp\download\webawesome_*.zip` that is greater than the current version in `src\Version.props`.
+- `<target-version>` — e.g. `3.1.0`. `next` (or no argument) means: the **lowest** version in `temp\download\webawesome_*.zip` that is greater than the current Web Awesome version (see **Current version** below).
 - `--publish` — after everything is green and checked in, also merge the task branch to the subtrunk.
 - `--dry-run` — stop at the end of Phase 2 (analysis); produce and check in the plan document only.
 
-**Version ordering:** compare versions by SemVer 2.0 precedence — numeric major.minor.patch (so `3.2.0 < 3.10.0`), and a pre-release suffix precedes its release (`3.0.0-beta.6 < 3.0.0`). Never compare version strings lexically.
+**Current version:** the `<Version>` in `src\Version.props` is the package version. Its first three parts are the bound Web Awesome version; an optional fourth numeric part is a bindings revision (`3.14.0.1` binds Web Awesome `3.14.0`). A prerelease suffix after a fourth part belongs to the revision (`3.14.0.1-beta.1` binds `3.14.0`); a suffix after three parts is the Web Awesome prerelease (`3.0.0-beta.6`). Everywhere this skill says *current version*, it means this Web Awesome version, never the package version: in the `next` selection, the gradual-upgrade rule, `Export-WaApiSurface.ps1 -Version <current>`, the plan document name and the baseline note.
+
+**Version ordering:** compare Web Awesome versions by SemVer 2.0 precedence — numeric major.minor.patch (so `3.2.0 < 3.10.0`), and a pre-release suffix precedes its release (`3.0.0-beta.6 < 3.0.0`). Never compare version strings lexically. Drop the bindings revision before you compare: with `Version.props` at `3.14.0.1`, the current version is `3.14.0`, so `next` finds `3.15.0` (and `3.14.0` itself is not a target).
 
 **Gradual-upgrade rule (hard):** never skip a downloaded release. If the requested target is not the immediate next downloaded version above the current one, refuse and state which version must be done first.
 
 **Train rule:** `<major.minor>` in branch, epic, and folder names is taken from the **target** version, matching the existing casing convention (`/main/WA-3.0`). If the subtrunk `/main/WA-<major.minor>` does not exist yet:
 
-1. **Release gate (hard):** a new train may only start once the previous train has been **released** — the head of the previous train's subtrunk merged (promoted) into `/main`, so that the version in `src\Version.props` at the head of `/main` equals the previous train's released version. Verify this via `infra-ops:plastic-ops`. If the previous subtrunk carries unreleased, unmerged version work, **refuse to create the new train** and report what is pending — promotion of a subtrunk to `/main` is a deliberate owner release step, never done by this pipeline. Sole exception: pending **patch** work (`x.y.z`, `z > 0`, on top of a version already released to `/main`) on the previous subtrunk does not block a new train; note it in the report.
+1. **Release gate (hard):** a new train may only start once the previous train has been **released** — the head of the previous train's subtrunk merged (promoted) into `/main`, so that the version in `src\Version.props` at the head of `/main` equals the latest version released on the previous subtrunk (for example `3.14.0.1` after a bindings revision). Verify this via `infra-ops:plastic-ops`. If the previous subtrunk carries unreleased, unmerged version work, **refuse to create the new train** and report what is pending — promotion of a subtrunk to `/main` is a deliberate owner release step, never done by this pipeline. Released **patch** (`x.y.z`, `z > 0`) and **bindings revision** (`x.y.z.r`) versions follow the same gate: the owner merges the previous subtrunk into `/main` before the new train starts, so the new train carries them. Pending, unreleased patch or revision work on the previous subtrunk does not block a new train; note it in the report.
 2. Set up the train in this exact order, so every changeset lands on the branch it belongs to:
    1. Create the new subtrunk **off `/main`** — never off the previous train's subtrunk — and switch to it.
    2. Create `tasks\WA-<major.minor>\` and check it in **on the subtrunk** as its first changeset (Plastic versions directories as first-class items, so the empty epic folder commits fine).
@@ -33,11 +35,11 @@ Invocation arguments: `$ARGUMENTS`
 
    Also create the matching WAB epic (`Web Awesome <major.minor>`).
 
-**Patch release rule:** a patch release is developed on its train's existing subtrunk (e.g. `3.0.1` on `/main/WA-3.0`) and released by labeling `wa-blazor-<x.y.z>` **on that subtrunk** — `/main` is not involved and receives only `<major.minor>.0` promotions. A fix that matters to newer trains is merged from the older subtrunk **directly into** the newer one (e.g. `/main/WA-3.0` → `/main/WA-3.1`), skipping `/main`.
+**Patch release rule:** a patch release (e.g. `3.0.1`) or a bindings revision (e.g. `3.14.0.1`, changes to the bindings only, no new Web Awesome release) is developed on its train's existing subtrunk (`/main/WA-3.0`, `/main/WA-3.14`) and released by labeling `wa-blazor-<version>` **on that subtrunk** — it is never promoted to `/main` by itself; `/main` receives `<major.minor>.0` promotions, and the subtrunk merge before the next train (release gate). A fix that matters to newer trains is merged from the older subtrunk **directly into** the newer one (e.g. `/main/WA-3.0` → `/main/WA-3.1`), skipping `/main`. This pipeline never creates a bindings revision: it only binds new Web Awesome releases.
 
 ## Phase 0 — Preflight
 
-1. Read current version from `src\Version.props` (`<Version>` property). Determine target version per the rules above; verify `temp\download\webawesome_<target>.zip` exists.
+1. Read the current version from `src\Version.props` (`<Version>` property; drop a bindings revision, see **Current version**). Determine target version per the rules above; verify `temp\download\webawesome_<target>.zip` exists.
 2. Via the `infra-ops:plastic-ops` skill (plastic-operator agent): confirm the workspace is **clean** and get the current branch. The upgrade must start from the subtrunk `/main/WA-<major.minor>` (per the train rule) — with one exception: if already on **this upgrade's own task branch** (from an earlier interrupted or dry run) with no pending changes, stay there and skip branch creation in Phase 1. If on any other task branch with no pending changes, switch to the subtrunk. If the workspace is dirty, stop and report.
 3. Baseline: `dotnet build src/WebAwesome.slnx -p:Configuration=Debug` and `dotnet test src/WebAwesome.slnx` must be green before any change. If not, stop and report.
 
@@ -65,7 +67,7 @@ tools\upgrade\Compare-WaApiSurface.ps1 `
 ```
 
 Notes:
-- **Baseline note:** if the current version has no zip (e.g. a beta), use the surface snapshot `src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json` as `-FromPath` — but **only after confirming its `version` field equals the current version** in `Version.props`. If it does not match, no valid diff baseline exists: skip the compare step, state so in the plan document, and rely on the armed parity tests (Phase 3) as the sole worklist.
+- **Baseline note:** if the current version has no zip (e.g. a beta), use the surface snapshot `src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json` as `-FromPath` — but **only after confirming its `version` field equals the current version** (the Web Awesome version of `Version.props`). If it does not match, no valid diff baseline exists: skip the compare step, state so in the plan document, and rely on the armed parity tests (Phase 3) as the sole worklist.
 - The JSON change report is the authoritative worklist; the CEM descriptions usually suffice. For components whose semantics are unclear, consult the extracted sources under `temp\wa-src\<target>\dist\components\<name>\*.d.ts` (never copy their contents anywhere outside `temp\`) or the documentation refreshed below.
 
 **Refresh `inputs\WebAwesome`** (versioned reference documentation, see `inputs\README.md`):
@@ -83,8 +85,8 @@ If `--dry-run`, stop here — but leave a clean, resumable state: check in the p
 
 1. Copy `temp\wa-api\surface_<target>.json` over `src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json`.
 2. In `src\WebAwesome.Blazor.Tests\ApiParity\parity-config.json`: set `targetWaVersion` to the target and `"enabled": true`. (While it is `false`, the surface-dependent parity tests report Skipped, and the release preflight fails.)
-3. Bump `src\Version.props` (`Version`, and `AssemblyVersion`/`FileVersion` when the major/minor/patch changes; `InformationalVersion` derives from `Version` automatically) and the version references in `README.md`.
-4. Demo app sync: update the Web Awesome CDN version in `src\WebAwesome.Blazor.Demo\wwwroot\index.html` to `<target>`, and copy the target surface over `src\WebAwesome.Blazor.Demo\wwwroot\data\api-surface.json` (it drives the demo navigation and API tables).
+3. Bump `src\Version.props`: `Version` = `<target>` (three parts — a new Web Awesome release resets the bindings revision, so `3.14.0.1` becomes `3.15.0`), `AssemblyVersion`/`FileVersion` = the numeric part of `<target>` padded to four parts (`3.15.0.0`); `InformationalVersion` derives from `Version` automatically. Also bump the version references in `README.md`.
+4. Demo app sync: copy the target surface over `src\WebAwesome.Blazor.Demo\wwwroot\data\api-surface.json` (it drives the demo navigation and API tables). The demo hosts take the CDN version from `WebAwesomeOptions` (the Web Awesome version of the package); never pin a `webawesome@<version>` URL in `index.html` or `App.razor` (the preflight gate `demo-no-hardcoded-cdn` fails on it).
 5. Run `dotnet test` — the failing **ApiSurfaceParityTests** now enumerate every gap. This is the red/green driver: the upgrade is code-complete when they pass.
 
 ## Phase 4 — Implement

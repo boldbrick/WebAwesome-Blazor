@@ -15,8 +15,9 @@
 # no longer exists, and on fewer tests than the mode's minimumTests.
 # A second pass runs against a self-hosted Pro dist (the extracted Pro package root or its dist-cdn
 # folder): it generates the ignored asset override with tools\demo\Set-WaProAssets.ps1, runs the "pro"
-# mode, and clears the override again. By default it uses the local Pro build of the target version,
-# temp\wa-src\<Version.props version> (extracted from the release zip by the upgrade pipeline), and
+# mode, and clears the override again. By default it uses the local Pro build of the bound Web Awesome
+# version, temp\wa-src\<first three parts of the Version.props version> (extracted from the release zip
+# by the upgrade pipeline; a fourth version part is a bindings revision, see README "Version alignment"), and
 # prints a WARNING - not a failure - when that folder does not exist, so the Pro components go
 # unverified in the browser. -ProDist <path> points it at another dist, -ProE2E takes the path from
 # WA_PRO_DIST, and -SkipProE2E turns the pass off. No Pro URL or token is needed or committed.
@@ -69,13 +70,29 @@ if ([string]::IsNullOrEmpty($plasticUser)) {
 
 # --- gate: version alignment ------------------------------------------------
 [xml]$props = Get-Content src\Version.props
-$version = ($props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+$versionGroup = $props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1
+$version = $versionGroup.Version
 Write-Host ("Version.props version: {0}" -f $version)
-Add-Gate 'version-props' (-not [string]::IsNullOrEmpty($version)) ("Version = {0}" -f $version)
+# package version = bound Web Awesome version (major.minor.patch, with the Web Awesome prerelease suffix)
+# or a bindings revision of it as a fourth numeric part (3.14.0.1, optionally with its own prerelease suffix)
+$versionShape = '^\d+\.\d+\.\d+(\.\d+)?(-[0-9A-Za-z.-]+)?$'
+Add-Gate 'version-props' ((-not [string]::IsNullOrEmpty($version)) -and ($version -match $versionShape)) ("Version = {0}" -f $version)
+
+# the bound Web Awesome version: the first three parts; a fourth part is a bindings revision and is dropped
+# with its prerelease suffix, which belongs to the revision (same rule as WebAwesomeOptions.ToWebAwesomeVersion)
+$waVersion = $version
+if ($version -match '^(\d+\.\d+\.\d+)\.\d+(-.*)?$') { $waVersion = $Matches[1] }
+Write-Host ("Bound Web Awesome version: {0}" -f $waVersion)
+
+# assembly and file versions are the numeric parts of the package version, padded to four (3.14.0 -> 3.14.0.0)
+$numericVersion = ($version -split '-')[0]
+if (@($numericVersion -split '\.').Count -eq 3) { $numericVersion = $numericVersion + '.0' }
+$assemblyOk = ($versionGroup.AssemblyVersion -eq $numericVersion) -and ($versionGroup.FileVersion -eq $numericVersion)
+Add-Gate 'assembly-version' $assemblyOk ("AssemblyVersion = {0}, FileVersion = {1}, expected {2}" -f $versionGroup.AssemblyVersion, $versionGroup.FileVersion, $numericVersion)
 
 $parity = Get-Content src\WebAwesome.Blazor.Tests\ApiParity\parity-config.json -Raw | ConvertFrom-Json
 Add-Gate 'parity-armed' ($parity.enabled -eq $true) ("enabled = {0}" -f $parity.enabled)
-Add-Gate 'parity-version' ($parity.targetWaVersion -eq $version) ("targetWaVersion = {0}" -f $parity.targetWaVersion)
+Add-Gate 'parity-version' ($parity.targetWaVersion -eq $waVersion) ("targetWaVersion = {0}" -f $parity.targetWaVersion)
 
 # known defects awaiting an owner decision are no gate, but their number is shown at every release
 $parityDefects = 0
@@ -88,10 +105,10 @@ Write-Host ("Known defects (owner decisions pending): {0} parity-config.json kno
 $surfaceHead = (Get-Content src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json -TotalCount 5) -join ' '
 $surfaceVersion = ''
 if ($surfaceHead -match '"version"\s*:\s*"([^"]+)"') { $surfaceVersion = $Matches[1] }
-Add-Gate 'surface-version' ($surfaceVersion -eq $version) ("expected-api-surface version = {0}" -f $surfaceVersion)
+Add-Gate 'surface-version' ($surfaceVersion -eq $waVersion) ("expected-api-surface version = {0}" -f $surfaceVersion)
 
 $readme = Get-Content README.md -Raw
-Add-Gate 'readme-cdn-version' ($readme.Contains("webawesome@$version")) ("README CDN snippet references webawesome@{0}" -f $version)
+Add-Gate 'readme-cdn-version' ($readme.Contains("webawesome@$waVersion")) ("README CDN snippet references webawesome@{0}" -f $waVersion)
 
 # demo asset tags are emitted by WebAwesomeAssets from configuration and default to the library
 # version, so demo/version alignment is structural; the gate instead verifies nothing reintroduced
@@ -363,9 +380,9 @@ if (-not $SkipE2E) {
     }
 
     # by default the Pro pass uses the local Pro build of the target version, when there is one
-    $defaultProDist = Join-Path $repoRoot ('temp\wa-src\{0}' -f $version)
+    $defaultProDist = Join-Path $repoRoot ('temp\wa-src\{0}' -f $waVersion)
     $proDistIsDefault = $false
-    if (-not $SkipProE2E -and -not $ProDist -and -not $ProE2E -and -not [string]::IsNullOrEmpty($version) -and (Test-Path $defaultProDist)) {
+    if (-not $SkipProE2E -and -not $ProDist -and -not $ProE2E -and -not [string]::IsNullOrEmpty($waVersion) -and (Test-Path $defaultProDist)) {
         $ProDist = $defaultProDist
         $proDistIsDefault = $true
     }
@@ -396,8 +413,8 @@ if (-not $SkipE2E) {
                 if ($null -eq $savedProDist) { Remove-Item env:WA_PRO_DIST -ErrorAction SilentlyContinue }
             }
         } else {
-            $script:proWarning = ('Pro e2e pass NOT run: no local Pro build of {0} at {1}' -f $version, $defaultProDist)
-            Write-Warning ('Pro e2e pass NOT run: no local Pro build of {0} at {1}. The Pro components (combobox, date input/picker, file input, video, video playlist, data grid) are not verified in the browser. Extract the Pro release zip there (the wa-upgrade pipeline does), or pass -ProDist <path> / -ProE2E with WA_PRO_DIST; -SkipProE2E silences this warning.' -f $version, $defaultProDist)
+            $script:proWarning = ('Pro e2e pass NOT run: no local Pro build of {0} at {1}' -f $waVersion, $defaultProDist)
+            Write-Warning ('Pro e2e pass NOT run: no local Pro build of {0} at {1}. The Pro components (combobox, date input/picker, file input, video, video playlist, data grid) are not verified in the browser. Extract the Pro release zip there (the wa-upgrade pipeline does), or pass -ProDist <path> / -ProE2E with WA_PRO_DIST; -SkipProE2E silences this warning.' -f $waVersion, $defaultProDist)
         }
     }
 } else {

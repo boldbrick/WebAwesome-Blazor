@@ -26,7 +26,7 @@ and the GitHub mirror) from one of two supply channels:
 
 Precedence when several are set: WA_PRO_DIST, then WA_PRO_CDN_BASE, then the explicit URL pair.
 With -Clear, the generated file and the copied dist folder are removed and the demo falls back
-to the committed default (free CDN, library version).
+to the committed default (free CDN, the library's bound WA version).
 
 The override is generated in two places, one per demo host: the WebAssembly host fetches
 wwwroot\appsettings.Local.json over HTTP at startup, while the server host
