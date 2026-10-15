@@ -58,3 +58,26 @@ Later tickets (WAB-55, WAB-59, WAB-60) add the features.
 - Pack: inspect the produced `.nuspec` and `.nupkg` (dependency floor, `staticwebassets` entry).
 - Preflight `-SkipE2E`: the new gate is green.
 - E2E: a spec checks that the demo loads the Extensions initializer.
+
+## Result
+
+- Changesets on `/main/WA-3.14/WAB-52`: cs:341 (plan), cs:342 (package, tests, solution, demo), cs:343 (preflight,
+  release workflow, e2e), cs:344 (docs, skills, this result).
+- Package: `WebAwesome.Blazor.Extensions.3.14.0.1.nupkg` and `.snupkg`. The nuspec depends on `WebAwesome.Blazor`
+  `3.14.0.1` in the `net9.0` and `net10.0` groups. The nupkg has
+  `staticwebassets/WebAwesome.Blazor.Extensions.<fingerprint>.lib.module.js` with the trait `JSLibraryModule`.
+- No public API (the approved baseline is empty). No CHANGELOG line.
+- Verification: Debug and Release builds green, 0 warnings. Tests: Extensions 7 on net9.0 and 7 on net10.0, main
+  1274 on net9.0 and 1274 on net10.0, in Debug and in Release. Preflight (Windows PowerShell 5.1, `-SkipE2E`):
+  `nupkg-dependency-floors` and `extensions-package` OK; the expected failures are `workspace-clean` (before the
+  check-in) and the two changelog gates (until the release fold). A scratch layout with a wrong floor, a missing
+  nupkg and a nupkg without the initializer makes `extensions-package` fail with each reason.
+- E2E (free CDN, WebAssembly demo on port 5100): 394 tests, 349 passed, 45 skipped (the listed Pro skips). The new
+  spec also passes against the server host. The published WebAssembly demo (`demo.yml` command) lists the
+  initializer in `dotnet.js`. No Pro pass: no grid or Pro code changed.
+- Deviations: the Extensions baseline is `approved-extensions-public-api.txt`, not `approved-public-api.txt`. Both
+  test projects build into one output folder (`output\bin\<config>\Tests\<tfm>`), so the same file name would
+  overwrite or delete the baseline of the main test project.
+- Open points: the nuget.org Trusted Publishing policy must allow the new package ID before the first release
+  (owner). The namespace `WebAwesome.Blazor.Extensions` is shared with the main package
+  (`ServiceCollectionExtensions`); later tickets must not reuse a type name of the main package in it.

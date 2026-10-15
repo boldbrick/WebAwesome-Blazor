@@ -10,6 +10,15 @@ The engineering standards and practices for authoring and maintaining the Web Aw
 - **Completeness**: every documented attribute, event, slot, and method of the bound Web Awesome version has a wrapper counterpart (mechanically enforced — see the parity suite in `docs\UPGRADE-PROCESS.md`). Intentional deviations are recorded in `parity-config.json` with a reason, never silently.
 - **Every element wrapper** exposes `[Parameter(CaptureUnmatchedValues = true)] AdditionalAttributes` pass-through and captures `ElementReference? Element`.
 
+## Package split
+
+The repository ships two packages with one version (design: `tasks\WA-3.14\WAB-49\datagrid-cell-rendering-design.md`, section 17.1):
+
+- **`WebAwesome.Blazor`** (`src\WebAwesome.Blazor`) gets every feature that binds an upstream member, or a behavior that the upstream documentation describes. It stays pure bindings (the README non-goal), and it knows nothing about the Extensions package.
+- **`WebAwesome.Blazor.Extensions`** (`src\WebAwesome.Blazor.Extensions`, tests in `src\WebAwesome.Blazor.Extensions.Tests`) gets every feature that adds behavior that upstream does not have. It connects to the bindings only through their public API and its own JS initializer `wwwroot\WebAwesome.Blazor.Extensions.lib.module.js`: no subclass of a wrapper, no new wrapper parameter. Its custom event types are registered and bound there too (`[EventHandler]` in Extensions, the event passed through the wrapper's `AdditionalAttributes`).
+- **One version.** Both projects take their version from `src\Version.props`. The Extensions package depends on `WebAwesome.Blazor` with a floor of its own version (a `ProjectReference`, which pack turns into that dependency); the release preflight gate `extensions-package` checks it in the nuspec.
+- **No manifest.** The Extensions package does not follow the custom-elements manifest: the API parity suite reads only `WebAwesome.Blazor`. Its public API snapshot (`approved-extensions-public-api.txt`) and its own tests cover it, and every upgrade builds and tests it with the rest of the solution.
+
 ## Render tree discipline
 
 - **Constant sequence numbers, never `sequence++`.** Incrementing sequence numbers defeats Blazor's diffing and produces false-positive DOM changes. Number statically with gaps between sections (attributes, events, element ref, slots); gaps are fine. When a helper method builds a portion, pass it a constant base and number `sequence + 0`, `sequence + 1`, … inside.
@@ -102,7 +111,7 @@ A slot whose name Web Awesome builds from data, one per value (`wa-date-input`/`
 
 ## JavaScript interop
 
-The entire JS surface is deliberately two small files; there are no per-component JS modules, no `document.getElementById` lookups, and no library-generated element ids:
+The entire JS surface of `WebAwesome.Blazor` is deliberately two small files (the Extensions package brings its own initializer, see "Package split"); there are no per-component JS modules, no `document.getElementById` lookups, and no library-generated element ids:
 
 - **`webawesome-interop.js`** — an ES module lazily imported by the `WebAwesomeJSInterop` service (`Base\WebAwesomeJSInterop.cs`). Everything is driven by `ElementReference`: generic `invokeMethod` / `getProperty` / `setProperty`, `setCustomValidity`, `signalDefaultSlotChange` (see "Dynamic slots"), and Web Awesome's module-level helpers (icon library registration, default icon family, kit code). Those helpers are imported from the entry point the page itself loaded (its Web Awesome script tag, or the configured `WebAwesomeOptions` loader URL when there is none): the registry is module state, and another copy or version of Web Awesome would hold a registry no `wa-icon` reads. `InteropModuleContractTests` checks that every invoked identifier is exported. `JSDisconnectedException` is swallowed (returning a default where a value is expected) — circuits legitimately disconnect.
 - **`WebAwesome.Blazor.lib.module.js`** — the Blazor JS initializer, auto-loaded by the runtime, whose jobs are custom-event registration, the relay of events Blazor cannot receive where Web Awesome dispatches them (see the event delivery contract above), and keeping Blazor-owned toast items in the DOM until Blazor removes them (DOM ownership, above).
