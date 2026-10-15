@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -155,16 +156,29 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
 
     #endregion
 
-    #region ------ JavaScript Interop Properties ------
+    #region ------ Function Members ------
 
     /// <summary>
-    /// Custom tag generation function for multiple selection mode.
-    /// Note: This requires JavaScript interop to implement.
+    /// The JavaScript function that renders the tag of each selected option when <see cref="Multiple"/> is true (the
+    /// element's <c>getTag</c>). It is called as <c>(option, index, ctx)</c>: the <c>wa-option</c> element, the index of
+    /// the tag, and <c>ctx</c> with <c>args</c> (the <see cref="WaJsFunction.WithArgs"/> value) and <c>element</c>. It
+    /// returns an element, a Lit template, or a string of trusted HTML (escape the option's text yourself). When null,
+    /// the element's own tags apply. Declare the Web Awesome elements it renders with <see cref="WaJsFunction.Uses"/>.
     /// </summary>
-    /// <remarks>
-    /// In the actual implementation, this would be a JavaScript function that gets called
-    /// for each selected option to generate custom tag markup.
-    /// </remarks>
+    [Parameter] public WaJsFunction? GetTagFunction { get; set; }
+
+    /// <summary>
+    /// CSS rules for the output of <see cref="GetTagFunction"/>, adopted into the element's shadow root as a constructed
+    /// stylesheet and replaced only when the text changes. It is for styling your own function output, not Web Awesome's
+    /// internals: style those with <c>::part</c> and the CSS custom properties.
+    /// </summary>
+    [Parameter] public string? ShadowStyles { get; set; }
+
+    /// <summary>
+    /// A custom tag function that nothing reads.
+    /// </summary>
+    // TODO WA 3.15.0 train: remove this obsolete member (replaced by GetTagFunction)
+    [Obsolete(GetTagObsoleteMessage)]
     public Func<WaOption, int, string>? GetTag { get; set; }
 
     #endregion
@@ -296,6 +310,9 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
 
         if (firstRender && Multiple && liveSelectedValues.Length > 0 && Element is not null)
             await JSInterop.SyncPropertyAsync(Element.Value, MultipleValueProperty, liveSelectedValues);
+
+        await jsProperties.PushFunctionAsync(JSInterop, Element, GetTagMember, GetTagFunction);
+        await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
     }
 
     #endregion
@@ -326,8 +343,17 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
 
     private const string MultipleValueProperty = "value";
 
+    // the function-valued member of wa-select
+    private const string GetTagMember = "getTag";
+
+    private const string SetGetTagFunctionObsoleteMessage = "JavaScript source text cannot become the function that wa-select calls, so the element failed to render. Use GetTagFunction with a WaJsFunction reference. This method throws NotSupportedException and is removed in the 3.15.0 train.";
+    private const string GetTagObsoleteMessage = "Nothing reads this property. Use GetTagFunction with a WaJsFunction reference. This property is removed in the 3.15.0 train.";
+
     // the selection last pushed to or received from the element in multiple selection mode
     private string[] liveSelectedValues = [];
+
+    // the function member and the shadow styles last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
 
     #endregion
 
@@ -335,21 +361,26 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
 
 
     /// <summary>
-    /// Sets the custom tag generation function for multiple selection mode.
+    /// Sent JavaScript source text to the element's <c>getTag</c>, which the element cannot call. Use
+    /// <see cref="GetTagFunction"/> instead.
     /// </summary>
-    /// <param name="jsFunction">JavaScript function string that generates custom HTML for each selected option</param>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    /// <param name="jsFunction">JavaScript source text, which is not sent</param>
+    /// <returns>A task that always fails</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
-    public async Task SetGetTagFunctionAsync(string jsFunction)
+    /// <exception cref="NotSupportedException">Thrown always otherwise: the replacement is <see cref="GetTagFunction"/></exception>
+    // TODO WA 3.15.0 train: remove this obsolete member (replaced by GetTagFunction)
+    [Obsolete(SetGetTagFunctionObsoleteMessage)]
+    public Task SetGetTagFunctionAsync(string jsFunction)
     {
-        if (Element == null)
-            throw new InvalidOperationException("Cannot set get tag function: component has not been rendered yet.");
+        // the element would throw a TypeError on its next render, so the string is never sent
+        Exception failure = Element == null
+            ? new InvalidOperationException("Cannot set get tag function: component has not been rendered yet.")
+            : string.IsNullOrEmpty(jsFunction)
+                ? new ArgumentNullException(nameof(jsFunction))
+                : new NotSupportedException(SetGetTagFunctionObsoleteMessage);
 
-        if (string.IsNullOrEmpty(jsFunction))
-            throw new ArgumentNullException(nameof(jsFunction));
-
-        await JSInterop.SetPropertyAsync(Element.Value, "getTag", jsFunction);
+        return Task.FromException(failure);
     }
 
     /// <summary>

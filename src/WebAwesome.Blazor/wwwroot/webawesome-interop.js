@@ -313,6 +313,7 @@ function resolveGlobalFunction(path) {
 
 // the column members that take a function (upstream DataGridColumn): the number of arguments the grid passes before
 // ctx, whether the function renders cell content, and the argument that holds the row of the cell
+// NOTE checked against WA 3.14.0: the arities match data-grid.d.ts; recheck them on each upgrade (watch list)
 const dataGridColumnFunctions = {
     formatter: { arity: 2, renders: true, rowArgument: 1 },
     aggregatedFormatter: { arity: 2, renders: true },
@@ -405,15 +406,227 @@ async function preloadTags(tags, configuredEntryPointUrl) {
     }
 }
 
-// registers the undefined wa-* elements in the shadow root once the element has rendered
+// registers the undefined wa-* elements in the shadow roots of an element once it has rendered
 function discoverShadowContent(element, configuredEntryPointUrl) {
-    customElements.whenDefined(element.localName)
-        .then(() => element.updateComplete)
-        .then(async () => {
-            if (!element.shadowRoot) return;
+    renderedShadowRoots(element)
+        .then(async roots => {
+            if (roots.length === 0) return;
 
             const webAwesome = await importWebAwesome(configuredEntryPointUrl);
-            await webAwesome.discover(element.shadowRoot);
+            for (const root of roots) await webAwesome.discover(root);
         })
-        .catch(error => console.error(`WebAwesome.Blazor: the elements in the cells of ${element.localName} could not be registered: ${error.message}`));
+        .catch(error => console.error(`WebAwesome.Blazor: the elements in the shadow root of ${element.localName} could not be registered: ${error.message}`));
+}
+
+/*
+ * Shadow roots
+ *
+ * A function member renders its output in the shadow root of its element, or of an element in that shadow root:
+ * wa-date-input renders its day cells in the shadow root of its own wa-date-picker. The rendered output there gets the
+ * autoload discovery and the shadow styles of the wrapper.
+ */
+
+// tag -> the element in its shadow root whose shadow root also renders the output of the function members
+const nestedShadowHosts = {
+    'wa-date-input': 'wa-date-picker',
+};
+
+// the shadow roots of an element and of its nested host, once the element is defined and has rendered
+async function renderedShadowRoots(element) {
+    await customElements.whenDefined(element.localName);
+    await element.updateComplete;
+
+    const roots = element.shadowRoot ? [element.shadowRoot] : [];
+    const nestedTag = nestedShadowHosts[element.localName];
+    const nested = nestedTag ? element.shadowRoot?.querySelector(nestedTag) : null;
+    if (nested) {
+        await customElements.whenDefined(nestedTag);
+        await nested.updateComplete;
+        if (nested.shadowRoot) roots.push(nested.shadowRoot);
+    }
+
+    return roots;
+}
+
+/*
+ * Shadow styles
+ *
+ * The CSS text of a wrapper's ShadowStyles goes into one constructed stylesheet per element, which is adopted by the
+ * element's shadow roots (above). A new text replaces the content of the same sheet; an empty text removes the sheet.
+ * The styles are for the output of the app's own functions; Web Awesome's own parts are styled with ::part and the
+ * CSS custom properties.
+ */
+
+// element -> { css, sheet, roots }: the last text, its sheet (null while there is no text) and the roots holding it
+const shadowStyles = new WeakMap();
+
+/**
+ * Adopts CSS text into the shadow roots of an element as one constructed stylesheet, once the element is defined and
+ * has rendered. The same text again changes nothing; a new text replaces the content of the sheet; null or an empty
+ * text removes the sheet.
+ * @param {HTMLElement} element - The Web Awesome element
+ * @param {string|null} cssText - The CSS text, or null to remove the styles
+ */
+export function setShadowStyles(element, cssText) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    const css = cssText || null;
+    const state = shadowStyles.get(element) ?? { css: null, sheet: null, roots: [] };
+    if (state.css === css) return;
+
+    state.css = css;
+    shadowStyles.set(element, state);
+
+    if (css === null) {
+        removeSheet(state);
+        return;
+    }
+
+    if (state.sheet) {
+        state.sheet.replaceSync(css);
+        return;
+    }
+
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(css);
+    state.sheet = sheet;
+
+    // not awaited: an element whose module never loads (a Pro element on the free CDN) must not hold the interop call
+    adoptSheet(element, state, sheet)
+        .catch(error => console.error(`WebAwesome.Blazor: the shadow styles of ${element.localName} could not be adopted: ${error.message}`));
+}
+
+async function adoptSheet(element, state, sheet) {
+    const roots = await renderedShadowRoots(element);
+
+    // a newer push replaced or removed this sheet while the element rendered
+    if (state.sheet !== sheet) return;
+
+    for (const root of roots) root.adoptedStyleSheets = [...root.adoptedStyleSheets, sheet];
+    state.roots = roots;
+}
+
+function removeSheet(state) {
+    const sheet = state.sheet;
+    state.sheet = null;
+    for (const root of state.roots) root.adoptedStyleSheets = root.adoptedStyleSheets.filter(s => s !== sheet);
+    state.roots = [];
+}
+
+/*
+ * Element function members
+ *
+ * A wrapper parameter of type WaJsFunction (WaSelect.GetTagFunction, and so on) arrives as a descriptor (see
+ * webawesome-functions.js) and is assigned to the element property once it resolves. The wrapper sends a member only
+ * when its descriptor changed. Before the first assignment the element's own value of the member is kept, so a member
+ * set back to null gets it again: the element's default renderer, or the empty hrefTemplate.
+ */
+
+// tag -> member -> the number of arguments the element passes (ctx follows them) and whether the function renders its
+// output in the shadow root (then the declared elements are registered before the assignment, and the rendered output
+// is discovered after it).
+// NOTE checked against WA 3.14.0: the members and arities match the components' .d.ts files; recheck them on each
+// upgrade (watch list)
+const elementFunctions = {
+    'wa-select': {
+        getTag: { arity: 2, renders: true },
+    },
+    'wa-combobox': {
+        getTag: { arity: 2, renders: true },
+        filter: { arity: 2, renders: false },
+    },
+    'wa-rating': {
+        getSymbol: { arity: 2, renders: true },
+    },
+    'wa-slider': {
+        valueFormatter: { arity: 1, renders: false },
+    },
+    'wa-date-picker': {
+        isDateDisabled: { arity: 1, renders: false },
+        dayContent: { arity: 1, renders: true },
+    },
+    'wa-date-input': {
+        isDateDisabled: { arity: 1, renders: false },
+        dayContent: { arity: 1, renders: true },
+    },
+    'wa-pagination': {
+        hrefTemplate: { arity: 1, renders: false },
+    },
+};
+
+// element -> member -> { json, original, kept, assigned }: the last descriptor JSON, the element's own value before the
+// first assignment (kept once it is read), and the function assigned (undefined while none is)
+const elementFunctionState = new WeakMap();
+
+/**
+ * Assigns a function-valued member of a Web Awesome element from its WaJsFunction descriptor, once the element is
+ * defined. The same JSON again for the same member changes nothing. Null restores the element's own value of the member,
+ * if the element still holds the assigned function. A reference that does not resolve writes one console.error and
+ * leaves the element's own value.
+ * @param {HTMLElement} element - The Web Awesome element
+ * @param {string} member - The member, for example 'getTag'
+ * @param {string|null} descriptorJson - The JSON of the descriptor, or null to remove the function
+ * @param {string|null} configuredEntryPointUrl - Web Awesome entry point configured in .NET, used when the page has no Web Awesome script tag
+ */
+export function setElementFunction(element, member, descriptorJson, configuredEntryPointUrl) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    const signature = elementFunctions[element.localName]?.[member];
+    if (!signature) {
+        throw new Error(`${element.localName} has no function member '${member}'`);
+    }
+
+    let members = elementFunctionState.get(element);
+    if (!members) {
+        members = new Map();
+        elementFunctionState.set(element, members);
+    }
+
+    const state = members.get(member) ?? { json: null, original: undefined, assigned: undefined, kept: false };
+    if (state.json === descriptorJson) return;
+
+    state.json = descriptorJson;
+    members.set(member, state);
+
+    // not awaited: an element whose module never loads (a Pro element on the free CDN) must not hold the interop call
+    assignElementFunction(element, member, signature, state, descriptorJson, configuredEntryPointUrl)
+        .catch(error => console.error(`WebAwesome.Blazor: the ${element.localName} ${member} could not be assigned: ${error.message}`));
+}
+
+async function assignElementFunction(element, member, signature, state, descriptorJson, configuredEntryPointUrl) {
+    await customElements.whenDefined(element.localName);
+
+    let target;
+    if (descriptorJson !== null) {
+        const descriptor = JSON.parse(descriptorJson);
+        const [resolved] = await Promise.all([
+            resolveFunction(descriptor, { element, member, label: `${element.localName} ${member}`, arity: signature.arity }),
+            signature.renders ? preloadTags(descriptor.uses ?? [], configuredEntryPointUrl) : undefined,
+        ]);
+        target = resolved;
+    }
+
+    // a newer push replaced this one while the reference resolved
+    if (state.json !== descriptorJson) return;
+
+    if (target) {
+        if (!state.kept) {
+            state.original = element[member];
+            state.kept = true;
+        }
+
+        element[member] = target;
+        state.assigned = target;
+        if (signature.renders) discoverShadowContent(element, configuredEntryPointUrl);
+        return;
+    }
+
+    // no function (removed, or a reference that does not resolve): the element's own value again, unless something
+    // else assigned the member meanwhile (an attribute of the same property, for example)
+    if (state.assigned !== undefined && element[member] === state.assigned) element[member] = state.original;
+    state.assigned = undefined;
 }

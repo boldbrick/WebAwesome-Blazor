@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -172,6 +173,34 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     /// Callback for when SelectedValues changes in multiple selection mode.
     /// </summary>
     [Parameter] public EventCallback<IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
+
+    #endregion
+
+    #region ------ Function Members ------
+
+    /// <summary>
+    /// The JavaScript function that renders the tag of each selected option when <see cref="Multiple"/> is true (the
+    /// element's <c>getTag</c>). It is called as <c>(option, index, ctx)</c>: the <c>wa-option</c> element, the index of
+    /// the tag, and <c>ctx</c> with <c>args</c> (the <see cref="WaJsFunction.WithArgs"/> value) and <c>element</c>. It
+    /// returns an element, a Lit template, or a string of trusted HTML (escape the option's text yourself). When null,
+    /// the element's own tags apply. Declare the Web Awesome elements it renders with <see cref="WaJsFunction.Uses"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? GetTagFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that decides whether an option matches the typed text (the element's <c>filter</c>). It
+    /// is called as <c>(option, query, ctx)</c>: the <c>wa-option</c> element, the text in the input, and <c>ctx</c> with
+    /// <c>args</c> and <c>element</c>; it returns true to show the option. When null, the element shows the options
+    /// whose label contains the text (case-insensitive). The element ignores it in <see cref="Server"/> mode.
+    /// </summary>
+    [Parameter] public WaJsFunction? FilterFunction { get; set; }
+
+    /// <summary>
+    /// CSS rules for the output of <see cref="GetTagFunction"/>, adopted into the element's shadow root as a constructed
+    /// stylesheet and replaced only when the text changes. It is for styling your own function output, not Web Awesome's
+    /// internals: style those with <c>::part</c> and the CSS custom properties.
+    /// </summary>
+    [Parameter] public string? ShadowStyles { get; set; }
 
     #endregion
 
@@ -436,6 +465,10 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
             pendingLoadingClear = false;
             await JSInterop.SetPropertyAsync(Element.Value, "loading", false);
         }
+
+        await jsProperties.PushFunctionAsync(JSInterop, Element, GetTagMember, GetTagFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, FilterMember, FilterFunction);
+        await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
     }
 
     #endregion
@@ -443,6 +476,13 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     #region ------ Internals ------
 
     private const string MultipleValueProperty = "value";
+
+    // the function-valued members of wa-combobox
+    private const string GetTagMember = "getTag";
+    private const string FilterMember = "filter";
+
+    // the function members and the shadow styles last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
 
     // the selection last pushed to or received from the element in multiple selection mode
     private string[] liveSelectedValues = [];

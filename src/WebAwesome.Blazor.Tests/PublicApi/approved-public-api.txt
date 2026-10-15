@@ -68,6 +68,8 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? DayContentFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool DisableFuture { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool DisablePast { get; set; }
@@ -85,6 +87,8 @@ namespace WebAwesome.Blazor.Base
         public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? IsDateDisabledFunction { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public System.DateOnly? Max { get; set; }
@@ -110,6 +114,8 @@ namespace WebAwesome.Blazor.Base
         public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -143,6 +149,8 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? DayContentFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool DisableFuture { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool DisablePast { get; set; }
@@ -161,6 +169,8 @@ namespace WebAwesome.Blazor.Base
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? HeaderContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? IsDateDisabledFunction { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -186,6 +196,8 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
@@ -208,6 +220,7 @@ namespace WebAwesome.Blazor.Base
         public System.Threading.Tasks.Task FocusAsync() { }
         public System.Threading.Tasks.Task GoToDateAsync(System.DateOnly date) { }
         public System.Threading.Tasks.Task GoToTodayAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
     }
     public abstract class WaInputBase<TValue> : Microsoft.AspNetCore.Components.Forms.InputBase<TValue>, WebAwesome.Blazor.Base.IFormValidation
     {
@@ -350,12 +363,18 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaTooltipSide? TooltipPlacement { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? ValueFormatterFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool WithMarkers { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithTooltip { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        [System.Obsolete("wa-slider ignores JavaScript source text, so this method had no effect and sends " +
+            "nothing now. Use ValueFormatterFunction with a WaJsFunction reference. This meth" +
+            "od is removed in the 3.15.0 train.")]
         public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
         public System.Threading.Tasks.Task StepDownAsync() { }
         public System.Threading.Tasks.Task StepUpAsync() { }
@@ -1253,6 +1272,10 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public int? FilterDebounce { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? FilterFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? GetTagFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputMode? InputMode { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1289,6 +1312,8 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<System.Collections.Generic.IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Server { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool? Spellcheck { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1503,6 +1528,8 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaDataGridSelectable? Selectable { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Server { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -3202,6 +3229,10 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? HrefTemplate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? HrefTemplateFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? LastIconContent { get; set; }
@@ -3236,6 +3267,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithoutNav { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        protected override void OnParametersSet() { }
     }
     public enum WaPaginationAppearance
     {
@@ -3631,6 +3664,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal DefaultValue { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? GetSymbolFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int Max { get; set; }
@@ -3644,10 +3679,16 @@ namespace WebAwesome.Blazor.Components
         public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
         protected override string? FormatValueAsString(decimal value) { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        [System.Obsolete("JavaScript source text cannot become the function that wa-rating calls, so the el" +
+            "ement failed to render. Use GetSymbolFunction with a WaJsFunction reference. Thi" +
+            "s method throws NotSupportedException and is removed in the 3.15.0 train.")]
         public System.Threading.Tasks.Task SetSymbolFunctionAsync(string jsFunction) { }
         protected override bool TryParseValueFromString(string? value, out decimal result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
@@ -3809,7 +3850,11 @@ namespace WebAwesome.Blazor.Components
         public string? EndIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
+        [System.Obsolete("Nothing reads this property. Use GetTagFunction with a WaJsFunction reference. Th" +
+            "is property is removed in the 3.15.0 train.")]
         public System.Func<WebAwesome.Blazor.Components.WaOption, int, string>? GetTag { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? GetTagFunction { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
@@ -3832,6 +3877,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.Collections.Generic.IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? StartIconName { get; set; }
@@ -3843,6 +3890,9 @@ namespace WebAwesome.Blazor.Components
         protected override object? GetLiveValue() { }
         protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
         protected override void OnParametersSet() { }
+        [System.Obsolete("JavaScript source text cannot become the function that wa-select calls, so the el" +
+            "ement failed to render. Use GetTagFunction with a WaJsFunction reference. This m" +
+            "ethod throws NotSupportedException and is removed in the 3.15.0 train.")]
         public System.Threading.Tasks.Task SetGetTagFunctionAsync(string jsFunction) { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
@@ -3884,6 +3934,8 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<decimal?> MinValueChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<decimal?> OnValueChange { get; set; }
+        [System.Obsolete("Nothing reads this property. Use ValueFormatterFunction with a WaJsFunction refer" +
+            "ence. This property is removed in the 3.15.0 train.")]
         public System.Func<decimal, string>? ValueFormatter { get; set; }
         protected override string? FormatValueAsString(decimal? value) { }
         protected override object? GetLiveValue() { }

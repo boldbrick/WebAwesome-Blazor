@@ -67,6 +67,14 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   `ctx.rowKey`, `ctx.column` and `ctx.grid`, `discover()` registers an element no column declared, an
   `AggregatedFormatter` renders group rows, a new list with the same column JSON is not pushed, and (with `?broken=true`)
   references that do not resolve leave raw values, a working grid and one console error each.
+- `tests\element-functions.spec.js` — the function-valued members of the element wrappers and `ShadowStyles`
+  (`/testing/element-functions`, functions from the collocated `ElementFunctionsHarness.razor.js`). Free CDN: the
+  `WaSelect` tags from `GetTagFunction` with `ctx.args` and `ctx.element`, styled by `ShadowStyles` (changed in place),
+  and the element's own tags again once the function is removed; the `WaRating` symbols; the `WaSlider` and `WaRange`
+  value text; the `WaPagination` links; and the obsolete `SetGetTagFunctionAsync`/`SetSymbolFunctionAsync`, which no
+  longer break the element (the test failed before the fix with `TypeError: this.getTag is not a function`). Pro: the
+  `WaCombobox` tags and filter, the disabled days and day content of `WaDatePicker`, `WaDateInput` and
+  `WaDateRangeInput` (in the shadow root of the input's own calendar too), and `ShadowStyles` on a `WaDataGrid` cell.
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug

@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -12,6 +15,15 @@ namespace WebAwesome.Blazor.Components;
 /// </summary>
 public class WaPagination : ComponentBase
 {
+    #region ------ Dependency Injection ------
+
+    /// <summary>
+    /// JavaScript interop service used to set the function member of the underlying element.
+    /// </summary>
+    [Inject] protected WebAwesomeJSInterop JSInterop { get; set; } = default!;
+
+    #endregion
+
     #region ------ Public Properties ------
 
     /// <summary>
@@ -106,10 +118,17 @@ public class WaPagination : ComponentBase
     /// placeholder for the page number, e.g. <c>/products?page={page}</c>.
     /// </summary>
     /// <remarks>
-    /// The upstream attribute also accepts a JavaScript function <c>(page: number) =&gt; string</c>. Functions
-    /// cannot cross the Blazor interop boundary, so only the string template form is exposed here.
+    /// The function form of the upstream property is <see cref="HrefTemplateFunction"/>; set one of the two.
     /// </remarks>
     [Parameter] public string? HrefTemplate { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that builds the URL of a page item (the function form of the element's
+    /// <c>hrefTemplate</c>), so the items render as links. It is called as <c>(page, ctx)</c>: the page number, and
+    /// <c>ctx</c> with <c>args</c> (the <see cref="WaJsFunction.WithArgs"/> value) and <c>element</c>; it returns the URL.
+    /// Set either this or <see cref="HrefTemplate"/>: both write the same element property.
+    /// </summary>
+    [Parameter] public WaJsFunction? HrefTemplateFunction { get; set; }
 
     /// <summary>
     /// The Web Awesome default of <see cref="Label"/>: what the element holds while the parameter is null, and what
@@ -326,9 +345,38 @@ public class WaPagination : ComponentBase
         builder.CloseElement();
     }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">Thrown when both <see cref="HrefTemplate"/> and
+    /// <see cref="HrefTemplateFunction"/> are set</exception>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (!string.IsNullOrEmpty(HrefTemplate) && HrefTemplateFunction is not null)
+            throw new InvalidOperationException($"{nameof(WaPagination)}: set either {nameof(HrefTemplate)} or {nameof(HrefTemplateFunction)}, not both; they write the same element property.");
+    }
+
+    /// <summary>
+    /// Pushes <see cref="HrefTemplateFunction"/> to the element when it changed.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first time the component has rendered</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        await jsProperties.PushFunctionAsync(JSInterop, Element, HrefTemplateMember, HrefTemplateFunction);
+    }
+
     #endregion
 
     #region ------ Internals ------
+
+    // the function form of wa-pagination's hrefTemplate
+    private const string HrefTemplateMember = "hrefTemplate";
+
+    // the function member last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
 
     /// <summary>
     /// Gets the CSS class string combining user classes

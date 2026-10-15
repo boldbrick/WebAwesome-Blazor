@@ -1,4 +1,5 @@
 @page "/components/select"
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Select</PageTitle>
 
@@ -67,6 +68,22 @@
     </WaSelect>
 </ExampleSection>
 
+<ExampleSection Title="Custom Tags with JavaScript" Code="@CustomTagsExample">
+    <p>
+        In multiple selection mode, <code>GetTagFunction</code> renders each selected option's tag with a JavaScript
+        function, here an export of the collocated <code>SelectPage.razor.js</code>. The tags render in the select's
+        shadow root, so <code>ShadowStyles</code> styles the function's own classes there.
+    </p>
+    <WaSelect Label="Pick your toppings" Multiple="true" @bind-Value="toppingValue"
+              SelectedValues="@toppings" SelectedValuesChanged="@(v => toppings = v)"
+              GetTagFunction="toppingTag" ShadowStyles="@ToppingTagStyles">
+        <WaOption Value="cheese">Cheese</WaOption>
+        <WaOption Value="mushrooms">Mushrooms</WaOption>
+        <WaOption Value="olives">Olives</WaOption>
+        <WaOption Value="peppers">Peppers</WaOption>
+    </WaSelect>
+</ExampleSection>
+
 <ApiTable Tag="wa-select" />
 
 @code {
@@ -81,6 +98,14 @@
     private string? mediumValue = "option-1";
     private string? largeValue = "option-1";
     private string? destinationValue;
+    private string? toppingValue;
+    private IReadOnlyList<string>? toppings = ["cheese", "olives"];
+
+    // a tag per topping with its emoji (ctx.args) before the label; the select loads wa-tag itself
+    private readonly WaJsFunction toppingTag = WaJsFunction.Module("./Pages/Components/SelectPage.razor.js", "toppingTag")
+        .WithArgs(new { emoji = new { cheese = "🧀", mushrooms = "🍄", olives = "🫒", peppers = "🫑" } });
+
+    private const string ToppingTagStyles = ".topping-emoji { margin-inline-end: var(--wa-space-2xs); }";
 
     private const string DefaultExample = """
         <WaSelect Label="Select one" Placeholder="Select one" @bind-Value="defaultValue">
@@ -160,6 +185,41 @@
         @code {
             private string? multipleValue;
             private IReadOnlyList<string>? selectedValues = ["option-1", "option-2"];
+        }
+        """;
+
+    private const string CustomTagsExample = """
+        <WaSelect Label="Pick your toppings" Multiple="true" @bind-Value="toppingValue"
+                  SelectedValues="@toppings" SelectedValuesChanged="@(v => toppings = v)"
+                  GetTagFunction="toppingTag" ShadowStyles="@ToppingTagStyles">
+            <WaOption Value="cheese">Cheese</WaOption>
+            <WaOption Value="mushrooms">Mushrooms</WaOption>
+            <WaOption Value="olives">Olives</WaOption>
+            <WaOption Value="peppers">Peppers</WaOption>
+        </WaSelect>
+
+        @code {
+            private string? toppingValue;
+            private IReadOnlyList<string>? toppings = ["cheese", "olives"];
+
+            // a tag per topping with its emoji (ctx.args) before the label; the select loads wa-tag itself
+            private readonly WaJsFunction toppingTag = WaJsFunction.Module("./Pages/Components/SelectPage.razor.js", "toppingTag")
+                .WithArgs(new { emoji = new { cheese = "🧀", mushrooms = "🍄", olives = "🫒", peppers = "🫑" } });
+
+            // styles for the function's own classes in the select's shadow root
+            private const string ToppingTagStyles = ".topping-emoji { margin-inline-end: var(--wa-space-2xs); }";
+        }
+
+        // SelectPage.razor.js, next to SelectPage.razor
+        export function toppingTag(option, index, ctx) {
+          const emoji = document.createElement('span');
+          emoji.className = 'topping-emoji';
+          emoji.textContent = ctx.args.emoji[option.value] ?? '';
+
+          const tag = document.createElement('wa-tag');
+          tag.size = ctx.element.size;
+          tag.append(emoji, option.label);
+          return tag;
         }
         """;
 

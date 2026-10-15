@@ -488,9 +488,13 @@ internal static class RenderedWrapperCatalog
         return value is MulticastDelegate || (value != null && IsEventCallbackType(value.GetType()));
     }
 
-    // the parameters a component cannot render without: InputBase requires a ValueExpression (normally
-    // supplied by @bind-Value), which is pointed at a field of a throwaway holder here
-    private static IEnumerable<(string Name, object Value)> RequiredParameters(Type componentType)
+    /// <summary>
+    /// The parameters a component cannot render without: InputBase requires a ValueExpression (normally supplied by
+    /// @bind-Value), which is pointed at a field of a throwaway holder here.
+    /// </summary>
+    /// <param name="componentType">Concrete component type</param>
+    /// <returns>The required parameters with their values</returns>
+    internal static IEnumerable<(string Name, object Value)> RequiredParameters(Type componentType)
     {
         var inputBase = FindGenericBase(componentType, typeof(InputBase<>));
         if (inputBase == null) yield break;

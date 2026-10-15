@@ -1,4 +1,5 @@
 @page "/components/date-range-picker"
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Date Range Picker</PageTitle>
 
@@ -18,12 +19,32 @@
     <WaDateRangePicker Style="max-width: 300px;" MinRange="2" MaxRange="7" @bind-Value="trip" />
 </ExampleSection>
 
+<ExampleSection Title="Day Content with JavaScript" Code="@PricesExample">
+    <p>
+        <code>DayContentFunction</code> renders every day cell with a JavaScript function, here an export of the collocated
+        <code>DateRangePickerPage.razor.js</code> that shows the price of a night under the day number. The prices come
+        from C#, and <code>ShadowStyles</code> styles the function's classes in the calendar's shadow root.
+    </p>
+    <WaDateRangePicker Style="max-width: 560px;" Months="2" @bind-Value="booking" DayContentFunction="nightPrice"
+                       ShadowStyles="@NightPriceStyles" />
+</ExampleSection>
+
 <ApiTable Tag="wa-date-picker" />
 
 @code {
     private WaDateRange? stay;
     private WaDateRange? sprint = new(new DateOnly(2026, 5, 11), new DateOnly(2026, 5, 18));
     private WaDateRange? trip;
+    private WaDateRange? booking;
+
+    // the price of a night by day of the week (0 is Sunday, as JavaScript counts)
+    private readonly WaJsFunction nightPrice = WaJsFunction.Module("./Pages/Components/DateRangePickerPage.razor.js", "nightPrice")
+        .WithArgs(new { prices = new[] { 120, 90, 90, 90, 100, 140, 160 } });
+
+    private const string NightPriceStyles = """
+        .night { display: flex; flex-direction: column; line-height: 1.1; }
+        .night-price { font-size: var(--wa-font-size-2xs); color: var(--wa-color-text-quiet); }
+        """;
 
     private const string DefaultExample = """
         <WaDateRangePicker Style="max-width: 560px;" Months="2" @bind-Value="stay" />
@@ -49,4 +70,29 @@
             private WaDateRange? trip;
         }
         """;
+
+    private const string PricesExample = """"
+        <WaDateRangePicker Style="max-width: 560px;" Months="2" @bind-Value="booking" DayContentFunction="nightPrice"
+                           ShadowStyles="@NightPriceStyles" />
+
+        @code {
+            private WaDateRange? booking;
+
+            // the price of a night by day of the week (0 is Sunday, as JavaScript counts)
+            private readonly WaJsFunction nightPrice = WaJsFunction.Module("./Pages/Components/DateRangePickerPage.razor.js", "nightPrice")
+                .WithArgs(new { prices = new[] { 120, 90, 90, 90, 100, 140, 160 } });
+
+            // styles for the function's classes in the calendar's shadow root
+            private const string NightPriceStyles = """
+                .night { display: flex; flex-direction: column; line-height: 1.1; }
+                .night-price { font-size: var(--wa-font-size-2xs); color: var(--wa-color-text-quiet); }
+                """;
+        }
+
+        // DateRangePickerPage.razor.js, next to DateRangePickerPage.razor; the function gets a Date and ctx
+        export function nightPrice(date, ctx) {
+          const price = ctx.args.prices[date.getDay()];
+          return `<span class="night">${date.getDate()}<span class="night-price">€${price}</span></span>`;
+        }
+        """";
 }
