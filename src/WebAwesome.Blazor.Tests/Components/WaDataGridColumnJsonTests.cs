@@ -1,7 +1,8 @@
-using Microsoft.JSInterop;
-using Microsoft.JSInterop.Infrastructure;
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Text.Json;
+using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
 using WebAwesome.Blazor.Models;
 using Xunit;
@@ -9,13 +10,19 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// The JSON of the data grid column model as the JS interop sends it to the element's <c>columns</c> property. A test
-/// <see cref="JSRuntime"/> records the argument JSON of the call, which is the exact text Blazor passes to JavaScript,
-/// so the checks see the interop's own serializer options (which have no global ignore condition) and not the web
-/// defaults of a test.
+/// The JSON of the data grid column model as <see cref="WaDataGrid"/> sends it to the element: the column JSON text is
+/// the argument of the interop's <c>setDataGridColumns</c>, which parses it, resolves the function references and
+/// assigns the element's <c>columns</c> property. The checks read that argument, so they see exactly what the browser
+/// receives.
 /// </summary>
-public class WaDataGridColumnJsonTests
+public class WaDataGridColumnJsonTests : BunitContext
 {
+    public WaDataGridColumnJsonTests()
+    {
+        Services.AddScoped<WebAwesomeJSInterop>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
+    }
+
     [Fact]
     public void Column_WithOnlyAField_SendsOnlyThatMember()
     {
@@ -54,7 +61,10 @@ public class WaDataGridColumnJsonTests
             Flex = 1.5,
             Footer = "Total",
             Aggregation = WaDataGridAggregation.Count,
-            CellClass = "region"
+            CellClass = "region",
+            Formatter = WaJsFunction.Registered("myapp.region"),
+            AggregatedFormatter = WaJsFunction.Registered("myapp.regionCount"),
+            ComparatorFunction = WaJsFunction.Registered("myapp.byRegion")
         };
 
         using var document = JsonDocument.Parse(SentColumnsJson(column));
@@ -68,6 +78,25 @@ public class WaDataGridColumnJsonTests
             names.Add(property.Name);
 
         Assert.Equal(ExpectedMemberNames, names);
+    }
+
+    [Fact]
+    public void FunctionMembers_SendTheirDescriptorsUnderTheUpstreamKeys()
+    {
+        var json = SentColumnsJson(new WaDataGridColumn
+        {
+            Field = "state",
+            Formatter = WaJsFunction.Module("./Pages/Orders.razor.js", "stateCell").WithArgs(new { ShowIcon = true }).Uses("wa-badge"),
+            AggregatedFormatter = WaJsFunction.Registered("myapp.stateCount"),
+            ComparatorFunction = WaJsFunction.Global("myApp.byState")
+        });
+
+        Assert.Equal(
+            "[{\"field\":\"state\","
+            + "\"formatter\":{\"$wab\":\"fn\",\"ref\":{\"kind\":\"module\",\"url\":\"./Pages/Orders.razor.js\",\"export\":\"stateCell\"},\"args\":{\"showIcon\":true},\"uses\":[\"wa-badge\"]},"
+            + "\"aggregatedFormatter\":{\"$wab\":\"fn\",\"ref\":{\"kind\":\"registered\",\"name\":\"myapp.stateCount\"}},"
+            + "\"comparator\":{\"$wab\":\"fn\",\"ref\":{\"kind\":\"global\",\"path\":\"myApp.byState\"}}}]",
+            json);
     }
 
     [Fact]
@@ -97,41 +126,27 @@ public class WaDataGridColumnJsonTests
 
     #region ------ Internals ------
 
-    // the camelCase names of every JSON-expressible DataGridColumn member, in the declaration order of the model
+    private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+
+    // the camelCase names of every DataGridColumn member the model binds, in the declaration order of the model
     private static readonly string[] ExpectedMemberNames =
     [
         "field", "id", "label", "align", "headerAlign", "sortable", "sortDescFirst", "sortFn", "sortUndefined",
         "searchable", "filterable", "filterType", "filterOptions", "hidden", "hideable", "resizable", "movable",
-        "pinnable", "pinned", "width", "minWidth", "maxWidth", "flex", "footer", "aggregation", "cellClass"
+        "pinnable", "pinned", "width", "minWidth", "maxWidth", "flex", "footer", "aggregation", "cellClass",
+        "formatter", "aggregatedFormatter", "comparator"
     ];
 
-    // the JSON of the columns argument of a setProperty call, as the interop sends it
-    private static string SentColumnsJson(params WaDataGridColumn[] columns)
+    // the column JSON of the grid's first push, as the interop sends it to setDataGridColumns
+    private string SentColumnsJson(params WaDataGridColumn[] columns)
     {
-        var runtime = new RecordingJSRuntime();
-        IReadOnlyList<WaDataGridColumn> value = columns;
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
 
-        // the call never completes (no JavaScript answers it); the argument JSON is recorded synchronously
-        _ = runtime.InvokeVoidAsync("setProperty", "columns", value);
+        Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
 
-        Assert.NotNull(runtime.LastArgsJson);
-        using var document = JsonDocument.Parse(runtime.LastArgsJson);
-        return document.RootElement[1].GetRawText();
-    }
-
-    // a JS runtime without JavaScript: it records the argument JSON of each call
-    private sealed class RecordingJSRuntime : JSRuntime
-    {
-        public string? LastArgsJson { get; private set; }
-
-        protected override void BeginInvokeJS(long taskId, string identifier, string? argsJson, JSCallResultType resultType, long targetInstanceId)
-        {
-            LastArgsJson = argsJson;
-        }
-
-        protected override void EndInvokeDotNet(DotNetInvocationInfo invocationInfo, in DotNetInvocationResult invocationResult)
-        {
-        }
+        var push = Assert.Single(module.Invocations, i => i.Identifier == "setDataGridColumns");
+        return Assert.IsType<string>(push.Arguments[1]);
     }
 
     #endregion

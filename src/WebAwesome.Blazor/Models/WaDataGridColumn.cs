@@ -9,12 +9,12 @@ namespace WebAwesome.Blazor.Models;
 /// <c>columns</c> JavaScript property.
 /// </summary>
 /// <remarks>
-/// Covers the JSON-expressible members of Web Awesome's <c>DataGridColumn</c> interface. Function-valued
-/// members cannot cross the JS interop boundary and are intentionally omitted: <c>value</c> (a computed
-/// cell-value accessor), <c>filterFn</c> and <c>comparator</c> (custom predicates), <c>formatter</c> and
-/// <c>aggregatedFormatter</c> (Lit template or DOM cell renderers), and the function forms of
-/// <see cref="Footer"/>, <see cref="Aggregation"/>, and <see cref="CellClass"/> (only their string forms
-/// are exposed).
+/// Covers the JSON-expressible members of Web Awesome's <c>DataGridColumn</c> interface, and the function-valued
+/// members <see cref="Formatter"/>, <see cref="AggregatedFormatter"/> and <see cref="ComparatorFunction"/> as
+/// <see cref="WaJsFunction"/> references, which the browser resolves into the functions. Not yet exposed: <c>value</c>
+/// (a computed cell-value accessor), <c>filterFn</c> (a custom predicate), and the function forms of
+/// <see cref="Footer"/>, <see cref="Aggregation"/>, and <see cref="CellClass"/> (only their string forms are
+/// exposed).
 /// </remarks>
 public class WaDataGridColumn
 {
@@ -66,8 +66,7 @@ public class WaDataGridColumn
 
     /// <summary>
     /// The built-in comparison strategy used when sorting this column; null leaves the element's default,
-    /// <see cref="WaDataGridSortFn.Alphanumeric"/>. Ignored when a custom comparator is provided, which the wrapper
-    /// does not support.
+    /// <see cref="WaDataGridSortFn.Alphanumeric"/>. Ignored when <see cref="ComparatorFunction"/> is set.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaDataGridSortFn? SortFn { get; set; }
@@ -192,4 +191,39 @@ public class WaDataGridColumn
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? CellClass { get; set; }
+
+    /// <summary>
+    /// A JavaScript function that renders the cell content, the column's <c>formatter</c>. Its signature is
+    /// <c>(value, row, ctx) =&gt; string | Node | TemplateResult</c>: a string renders as escaped text, a <c>Node</c> or
+    /// a Lit <c>TemplateResult</c> as rich content. It runs on every render of the cell, so a new <c>Node</c> replaces
+    /// the previous one; return the same <c>Node</c> to keep its DOM state. It changes only what the cell shows: sort,
+    /// filter and search use the raw value, and CSV export and copy use its output only when it is a string. Declare
+    /// the Web Awesome elements it renders with <see cref="WaJsFunction.Uses"/>. <c>ctx</c> holds <c>args</c>,
+    /// <c>element</c> and <c>grid</c> (the grid element), <c>column</c> (the column id) and <c>rowKey</c> (the row's
+    /// value of the grid's <c>RowKey</c> field). Null renders the raw value.
+    /// </summary>
+    [JsonPropertyName("formatter")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public WaJsFunction? Formatter { get; set; }
+
+    /// <summary>
+    /// A JavaScript function that renders the aggregated cell of a group row (with the grid's <c>GroupBy</c> and the
+    /// column's <see cref="Aggregation"/>), the column's <c>aggregatedFormatter</c>. Its signature is
+    /// <c>(value, rows, ctx) =&gt; string | Node | TemplateResult</c>: the aggregate value and the group's data rows.
+    /// <c>ctx</c> holds the members of <see cref="Formatter"/> except <c>rowKey</c>. Null renders the aggregate through
+    /// <see cref="Formatter"/> (with the group's first row), or as text.
+    /// </summary>
+    [JsonPropertyName("aggregatedFormatter")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public WaJsFunction? AggregatedFormatter { get; set; }
+
+    /// <summary>
+    /// A JavaScript function that compares two cell values for client-side sorting, the column's <c>comparator</c>. Its
+    /// signature is <c>(a, b, rowA, rowB, ctx) =&gt; number</c>: a negative, zero or positive number for ascending
+    /// order (the grid applies the descending direction itself). It takes precedence over <see cref="SortFn"/>.
+    /// <c>ctx</c> holds the members of <see cref="Formatter"/> except <c>rowKey</c>. Null uses the built-in sort.
+    /// </summary>
+    [JsonPropertyName("comparator")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public WaJsFunction? ComparatorFunction { get; set; }
 }
