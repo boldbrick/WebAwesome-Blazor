@@ -14,6 +14,21 @@ internal static class PresetScripts
     public const string PresetsFileName = "data-grid-presets.js";
 
     /// <summary>
+    /// The HTML of the static Razor templates: the one HTML parse of the package.
+    /// </summary>
+    public const string TemplatesFileName = "data-grid-templates.js";
+
+    /// <summary>
+    /// The request handlers of ctx.invoke.
+    /// </summary>
+    public const string RequestsFileName = "data-grid-requests.js";
+
+    /// <summary>
+    /// The ctx helpers of data grid functions.
+    /// </summary>
+    public const string ContextFileName = "data-grid-context.js";
+
+    /// <summary>
     /// The JS initializer of the package.
     /// </summary>
     public const string InitializerFileName = ExtensionsPackage.AssemblyName + ".lib.module.js";

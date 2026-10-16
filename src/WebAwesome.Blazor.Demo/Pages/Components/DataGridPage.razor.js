@@ -50,3 +50,22 @@ export function billingDetail(row) {
   detail.textContent = `${row.item}: ${row.hours} h at ${row.rate} per hour`;
   return detail;
 }
+
+// Function of the "Extensions: Values from .NET" example (package WebAwesome.Blazor.Extensions): the stock of each item
+// comes from the OnRequest handler of the WaDataGridRequestHandler around the grid. A grid function is synchronous, so
+// the cell shows "Checking…" first and renders again when the answer arrives. The answers are kept by row key: the grid
+// gets new row objects whenever the page pushes its Data again.
+const stockAnswers = new Map();
+
+export function stockCell(value, row, ctx) {
+  let answer = stockAnswers.get(ctx.rowKey);
+  if (!answer) {
+    answer = { text: null };
+    stockAnswers.set(ctx.rowKey, answer);
+    ctx.invoke('stock')
+      .then(stock => { answer.text = `${stock} in stock`; }, error => { answer.text = error.message; })
+      .then(() => ctx.grid.requestUpdate());
+  }
+
+  return answer.text ?? ctx.cache('pending', () => ctx.h('span', { style: 'color: var(--wa-color-text-quiet)' }, 'Checking…'));
+}

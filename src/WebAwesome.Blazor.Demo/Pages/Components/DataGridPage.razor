@@ -2,6 +2,7 @@
 @using System.Text.Json.Serialization
 @using WebAwesome.Blazor.Extensions.DataGrid
 @using WebAwesome.Blazor.Models
+@inject IServiceProvider Services
 
 <PageTitle>Data Grid</PageTitle>
 
@@ -14,7 +15,7 @@
     C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Cells render
     their raw values; for rich cell content, a column refers to a small JavaScript function with
     <code>WaJsFunction</code> (see "Custom Cell Rendering with JavaScript" below; footers, computed values, classes and detail panels in "More JavaScript Members"), or to a cell preset of the
-    <code>WebAwesome.Blazor.Extensions</code> package, configured in C# only (see "Extensions: Cell Presets", and "Extensions: Actions &amp; Rules" for buttons, menus, switches, class rules and footer sums).
+    <code>WebAwesome.Blazor.Extensions</code> package, configured in C# only (see "Extensions: Cell Presets", and "Extensions: Actions &amp; Rules" for buttons, menus, switches, class rules and footer sums). Cell functions can ask .NET for values ("Extensions: Values from .NET"), and cells can be written in Razor as static HTML ("Extensions: Razor Cell Templates").
 </p>
 
 <ExampleSection Title="Columns" Code="@ColumnsExample">
@@ -158,6 +159,30 @@
     <p data-testid="subscription-action">@(subscriptionMessage ?? "Turn a subscription off, or use the actions of a row.")</p>
 </ExampleSection>
 
+<ExampleSection Title="Extensions: Values from .NET" Code="@RequestsExample">
+    <WaCallout Variant="WaVariant.Brand" IconName="puzzle-piece" Style="margin-block-end: var(--wa-space-m);">
+        A cell function asks .NET with <code>ctx.invoke(action, payload)</code> and gets a Promise. Put the grid inside a
+        <code>WaDataGridRequestHandler</code>; its <code>OnRequest</code> returns the answer, or throws
+        <code>WaDataGridRequestException</code> to reject it. The cell shows a pending state first and renders again
+        when the answer arrives.
+    </WaCallout>
+    <WaDataGridRequestHandler OnRequest="HandleStockRequestAsync">
+        <WaDataGrid data-testid="request-grid" Label="Warehouse" RowKey="sku" Data="warehouseItems" Columns="warehouseColumns" />
+    </WaDataGridRequestHandler>
+</ExampleSection>
+
+<ExampleSection Title="Extensions: Razor Cell Templates" Code="@RazorTemplatesExample">
+    <WaCallout Variant="WaVariant.Brand" IconName="puzzle-piece" Style="margin-block-end: var(--wa-space-m);">
+        <code>WaDataGridRazorTemplates</code> renders Razor markup to static HTML for each row, and the column shows it.
+        The HTML is static: use <code>data-wablazor-action</code> for buttons, not <code>@@onclick</code>. Each row costs
+        one render per template on each data push, so keep it for small pages.
+    </WaCallout>
+    <WaDataGrid data-testid="template-grid" Label="Deployments" RowKey="id" Data="deploymentRows" Columns="deploymentColumns"
+                @onwablazor-cell-action="HandleDeploymentAction" />
+    <WaDivider />
+    <p data-testid="template-action">@(deploymentMessage ?? "Restart a deployment.")</p>
+</ExampleSection>
+
 <ExampleSection Title="Responding to Cell Clicks" Code="@CellClickExample">
     <WaDataGrid Label="Countries" RowKey="code" Data="countries" Columns="cellClickColumns" OnCellClick="HandleCellClick" />
     <WaDivider />
@@ -199,6 +224,7 @@
     private string? presetActionMessage;
     private string? presetClickMessage;
     private string? subscriptionMessage;
+    private string? deploymentMessage;
     private string? csvPreview;
     private int copiedRows;
 
@@ -257,6 +283,22 @@
         }
 
         subscriptionMessage = $"Action \"{e.Action}\" for {subscription.Customer}.";
+    }
+
+    // the stock of a warehouse item, as a slow service would give it; the cell shows "Checking…" meanwhile
+    private async Task<object?> HandleStockRequestAsync(WaDataGridCellActionEventArgs request)
+    {
+        var item = request.GetRow<WarehouseItem>() ?? throw new WaDataGridRequestException("Unknown item");
+        await Task.Delay(StockLookupDelayMs);
+        if (!warehouseStock.TryGetValue(item.Sku, out var stock) || stock == 0) throw new WaDataGridRequestException("Sold out");
+        return stock;
+    }
+
+    // the template's button raises the "restart" action with data-wablazor-action
+    private void HandleDeploymentAction(WaDataGridCellActionEventArgs e)
+    {
+        var deployment = e.GetRow<Deployment>();
+        deploymentMessage = $"Action \"{e.Action}\" for {deployment?.Service} ({deployment?.Environment}).";
     }
 
     // server mode: the grid asks for the rows it needs, we fetch them and hand back Data, Total and Loading
@@ -757,6 +799,66 @@
             ], WaSize.Small, WaAppearance.Plain)
         }
     ];
+
+    // "Extensions: Values from .NET": the stock column asks .NET (stockCell in DataGridPage.razor.js)
+    private const int StockLookupDelayMs = 600;
+
+    private sealed record WarehouseItem(string Sku, string Product, string Location);
+
+    private readonly object[] warehouseItems =
+    [
+        new WarehouseItem("A-100", "Standing desk", "Prague"),
+        new WarehouseItem("B-200", "Office chair", "Brno"),
+        new WarehouseItem("C-300", "Desk lamp", "Prague")
+    ];
+
+    private readonly Dictionary<string, int> warehouseStock = new() { ["A-100"] = 12, ["B-200"] = 0, ["C-300"] = 3 };
+
+    private readonly WaDataGridColumn[] warehouseColumns =
+    [
+        new() { Field = "sku", Label = "SKU", Width = 100 },
+        new() { Field = "product", Label = "Product", Flex = 2, MinWidth = 160 },
+        new() { Field = "location", Label = "Location", Width = 120 },
+        new() { Id = "stock", Label = "Stock", Width = 140, Formatter = WaJsFunction.Module(TaskCellsModule, "stockCell") }
+    ];
+
+    // "Extensions: Razor Cell Templates": a badge and a button in Razor, rendered to HTML for each row
+    private sealed record Deployment(int Id, string Service, string Environment, string State);
+
+    private static WaVariant StateVariant(string state) => state switch
+    {
+        "running" => WaVariant.Success,
+        "failed" => WaVariant.Danger,
+        _ => WaVariant.Neutral,
+    };
+
+    private static readonly WaDataGridRazorTemplates<Deployment> deploymentTemplates = new WaDataGridRazorTemplates<Deployment>()
+        .Add("state", deployment => @<WaBadge Variant="@StateVariant(deployment.State)" Pill="true">@deployment.State</WaBadge>)
+        .Add("actions", deployment => @<WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" StartIconName="rotate-right"
+                                                 data-wablazor-action="restart">Restart</WaButton>);
+
+    private readonly Deployment[] deployments =
+    [
+        new Deployment(1, "api", "production", "running"),
+        new Deployment(2, "worker", "production", "failed"),
+        new Deployment(3, "web", "staging", "stopped")
+    ];
+
+    private readonly WaDataGridColumn[] deploymentColumns =
+    [
+        new() { Field = "service", Label = "Service", Flex = 1, MinWidth = 120 },
+        new() { Field = "environment", Label = "Environment", Width = 140 },
+        new() { Id = "state", Field = "state", Label = "State", Width = 120, Formatter = deploymentTemplates.Formatter("state", "wa-badge") },
+        new() { Id = "actions", Label = "Actions", Width = 140, Formatter = deploymentTemplates.Formatter("actions", "wa-button", "wa-icon") }
+    ];
+
+    private IReadOnlyList<object>? deploymentRows;
+
+    // the HTML of the templates for each row: render again when the rows change
+    protected override async Task OnInitializedAsync()
+    {
+        deploymentRows = await deploymentTemplates.RenderAsync(Services, deployments);
+    }
 
     #endregion
 
@@ -1307,6 +1409,118 @@
                 }
 
                 subscriptionMessage = $"Action \"{e.Action}\" for {subscription.Customer}.";
+            }
+        }
+        """;
+
+    private const string RequestsExample = """
+        @* package WebAwesome.Blazor.Extensions; @using WebAwesome.Blazor.Extensions.DataGrid *@
+        <WaDataGridRequestHandler OnRequest="HandleStockRequestAsync">
+            <WaDataGrid Label="Warehouse" RowKey="sku" Data="warehouseItems" Columns="warehouseColumns" />
+        </WaDataGridRequestHandler>
+
+        @code {
+            private sealed record WarehouseItem(string Sku, string Product, string Location);
+
+            private readonly object[] warehouseItems =
+            [
+                new WarehouseItem("A-100", "Standing desk", "Prague"),
+                new WarehouseItem("B-200", "Office chair", "Brno"),
+                new WarehouseItem("C-300", "Desk lamp", "Prague")
+            ];
+
+            private readonly Dictionary<string, int> warehouseStock = new() { ["A-100"] = 12, ["B-200"] = 0, ["C-300"] = 3 };
+
+            private readonly WaDataGridColumn[] warehouseColumns =
+            [
+                new() { Field = "sku", Label = "SKU", Width = 100 },
+                new() { Field = "product", Label = "Product", Flex = 2, MinWidth = 160 },
+                new() { Field = "location", Label = "Location", Width = 120 },
+                new() { Id = "stock", Label = "Stock", Width = 140, Formatter = WaJsFunction.Module(TaskCellsModule, "stockCell") }
+            ];
+
+            // the answer of ctx.invoke('stock'); WaDataGridRequestException rejects the Promise with its message
+            private async Task<object?> HandleStockRequestAsync(WaDataGridCellActionEventArgs request)
+            {
+                var item = request.GetRow<WarehouseItem>() ?? throw new WaDataGridRequestException("Unknown item");
+                await Task.Delay(600);   // a slow service
+                if (!warehouseStock.TryGetValue(item.Sku, out var stock) || stock == 0) throw new WaDataGridRequestException("Sold out");
+                return stock;
+            }
+        }
+
+        // DataGridPage.razor.js: the cell shows "Checking…" first and renders again when the answer arrives; the
+        // answers are kept by row key, because the grid gets new row objects whenever the page pushes its Data again
+        const stockAnswers = new Map();
+
+        export function stockCell(value, row, ctx) {
+          let answer = stockAnswers.get(ctx.rowKey);
+          if (!answer) {
+            answer = { text: null };
+            stockAnswers.set(ctx.rowKey, answer);
+            ctx.invoke('stock')
+              .then(stock => { answer.text = `${stock} in stock`; }, error => { answer.text = error.message; })
+              .then(() => ctx.grid.requestUpdate());
+          }
+
+          return answer.text ?? ctx.cache('pending', () => ctx.h('span', { style: 'color: var(--wa-color-text-quiet)' }, 'Checking…'));
+        }
+        """;
+
+    private const string RazorTemplatesExample = """
+        @* package WebAwesome.Blazor.Extensions; @using WebAwesome.Blazor.Extensions.DataGrid *@
+        @inject IServiceProvider Services
+
+        <WaDataGrid Label="Deployments" RowKey="id" Data="deploymentRows" Columns="deploymentColumns"
+                    @onwablazor-cell-action="HandleDeploymentAction" />
+        <WaDivider />
+        <p>@(deploymentMessage ?? "Restart a deployment.")</p>
+
+        @code {
+            private sealed record Deployment(int Id, string Service, string Environment, string State);
+
+            private static WaVariant StateVariant(string state) => state switch
+            {
+                "running" => WaVariant.Success,
+                "failed" => WaVariant.Danger,
+                _ => WaVariant.Neutral,
+            };
+
+            // static HTML: Razor encodes the text; a button raises its action with data-wablazor-action, not @onclick
+            private static readonly WaDataGridRazorTemplates<Deployment> deploymentTemplates = new WaDataGridRazorTemplates<Deployment>()
+                .Add("state", deployment => @<WaBadge Variant="@StateVariant(deployment.State)" Pill="true">@deployment.State</WaBadge>)
+                .Add("actions", deployment => @<WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" StartIconName="rotate-right"
+                                                         data-wablazor-action="restart">Restart</WaButton>);
+
+            private readonly Deployment[] deployments =
+            [
+                new Deployment(1, "api", "production", "running"),
+                new Deployment(2, "worker", "production", "failed"),
+                new Deployment(3, "web", "staging", "stopped")
+            ];
+
+            // declare the elements of a template: the cells are in the grid's shadow root, where the autoloader does not look
+            private readonly WaDataGridColumn[] deploymentColumns =
+            [
+                new() { Field = "service", Label = "Service", Flex = 1, MinWidth = 120 },
+                new() { Field = "environment", Label = "Environment", Width = 140 },
+                new() { Id = "state", Field = "state", Label = "State", Width = 120, Formatter = deploymentTemplates.Formatter("state", "wa-badge") },
+                new() { Id = "actions", Label = "Actions", Width = 140, Formatter = deploymentTemplates.Formatter("actions", "wa-button", "wa-icon") }
+            ];
+
+            private IReadOnlyList<object>? deploymentRows;
+            private string? deploymentMessage;
+
+            // one render per row and template: render again when the rows change
+            protected override async Task OnInitializedAsync()
+            {
+                deploymentRows = await deploymentTemplates.RenderAsync(Services, deployments);
+            }
+
+            private void HandleDeploymentAction(WaDataGridCellActionEventArgs e)
+            {
+                var deployment = e.GetRow<Deployment>();
+                deploymentMessage = $"Action \"{e.Action}\" for {deployment?.Service} ({deployment?.Environment}).";
             }
         }
         """;

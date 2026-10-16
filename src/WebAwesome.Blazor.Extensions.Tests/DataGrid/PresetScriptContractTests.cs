@@ -56,15 +56,46 @@ public class PresetScriptContractTests
     {
         foreach (var path in PresetScripts.All())
         {
-            var code = string.Join('\n', File.ReadAllLines(path).Where(line => !line.TrimStart().StartsWith("//") && !line.TrimStart().StartsWith('*')));
+            // the one HTML parse of the package, the Razor template HTML in a <template> element (checked below)
+            var code = string.Join('\n', File.ReadAllLines(path)
+                .Where(line => !line.TrimStart().StartsWith("//") && !line.TrimStart().StartsWith('*'))
+                .Where(line => !(Path.GetFileName(path) == PresetScripts.TemplatesFileName && line.Trim() == TemplateParseLine)));
             Assert.False(code.Contains(member), $"{Path.GetFileName(path)} uses {member}");
         }
+    }
+
+    [Fact]
+    public void RazorTemplates_AreParsedOnceInAnInertTemplateElement()
+    {
+        // the HTML comes from the Razor renderer of the app (text encoded); a <template> parses it into an inert
+        // document, so no script runs and no element upgrades while it is parsed
+        var templates = PresetScripts.Read(PresetScripts.TemplatesFileName);
+
+        Assert.Single(Regex.Matches(templates, Regex.Escape(TemplateParseLine)));
+        Assert.Matches(@"template = document\.createElement\('template'\);\s*template\.innerHTML = html;", templates);
+        Assert.Contains("document.importNode(parsedTemplate(html).content, true)", templates);
+        Assert.Matches(@"import \{ templateNode \} from '\./data-grid-templates\.js';", PresetScripts.Read(PresetScripts.PresetsFileName));
+    }
+
+    [Fact]
+    public void RazorTemplateProperty_IsTheSameInCSharpAndInJavaScript()
+    {
+        var presets = PresetScripts.Read(PresetScripts.PresetsFileName);
+        var name = Regex.Match(presets, @"export const templateHtmlProperty = '([^']+)';");
+        var type = ExtensionsPackage.Assembly.GetType(RazorTemplateRowTypeName, throwOnError: true)!;
+
+        Assert.True(name.Success, "data-grid-presets.js does not export templateHtmlProperty");
+        Assert.Equal((string)type.GetField("HtmlProperty")!.GetRawConstantValue()!, name.Groups[1].Value);
+        // the sanitized row of a cell action or a request leaves the HTML out
+        Assert.Contains("if (row) delete row[templateHtmlProperty];", presets);
     }
 
     #region ------ Internals ------
 
     private const string PresetNamesTypeName = "WebAwesome.Blazor.Extensions.DataGrid.PresetNames";
     private const string PrefixFieldName = "Prefix";
+    private const string RazorTemplateRowTypeName = "WebAwesome.Blazor.Extensions.DataGrid.RazorTemplateRow";
+    private const string TemplateParseLine = "template.innerHTML = html;";
 
     // the constants of PresetNames (internal; InternalsVisibleTo applies to Debug builds only, so read by reflection)
     private static string[] PresetNamesOfTheFactories()
