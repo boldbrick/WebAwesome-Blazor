@@ -79,3 +79,49 @@ Base: WAB-55 (presets, node cache, cell action bridge, D4), WAB-58 (the grid fun
   `/testing/lit-cells`, the demo example. The free CDN tests: the presets and helpers without a grid.
 - Performance: R7 in Node 24 (decorated `ctx`), and the 10,000-row grid with 8 preset columns (`/testing/cell-actions?perf=true`)
   scrolled in Chromium with a long-task observer.
+
+## Result
+
+- Changesets on `/main/WA-3.14/WAB-59`: cs:375 (plan), cs:376 (code, tests, API baseline, harnesses, e2e, demo), and the
+  last check-in (docs, this result).
+- Public API (Extensions, `WebAwesome.Blazor.Extensions.DataGrid`): `WaDataGridFormatters.Button`, `Actions` (2),
+  `Menu` (2), `Switch`, `Checkbox`, `ProgressBar`, `ProgressRing`, `Rating`, `Avatar`, `Image`, `ColorSwatch`,
+  `Sparkline`, `Trend`, `DataBar`, `CopyButton`, the constants `DefaultToggleAction`, `DefaultMenuLabel`,
+  `DefaultTrendUpIconName`, `DefaultTrendDownIconName`; `WaDataGridComparators.Collation`; the new types
+  `WaDataGridAction`, `WaDataGridThreshold`, `WaDataGridCondition`, `WaDataGridClassRule`, `WaDataGridClassRules`,
+  `WaDataGridFooters`, `WaDataGridSearch`, `WaDataGridFilterOptions`, `WaDataGridRows`, `WaDataGridDetailField` and the
+  enum `WaDataGridCollationSensitivity`. Baseline `approved-extensions-public-api.txt` promoted.
+- JavaScript: `data-grid-context.js` (new, the ctx decorator), `data-grid-presets.js` (the bridge per grid with the
+  declarative actions and the control clicks, 22 new presets), the initializer registers the decorator.
+- Main package (the hook): `resolveFunction` gives `rowArgument` to the context decorators (`webawesome-functions.js`),
+  and `webawesome-interop.js` passes it for the column and element members. No C# change, no API change.
+- Verification: Debug and Release builds green, 0 warnings. Tests: main 1397 on net9.0 and 1397 on net10.0, Extensions
+  151 and 151 (43 new), in Debug and in Release. E2E, WebAssembly demo on port 5100: with the local Pro dist
+  (`temp\wa-src\3.14.0`) 452 passed; on the free CDN 372 passed and 80 skipped, exactly the listed skips (8 new;
+  `minimumTests` 449). Server host with the Pro dist: `cell-actions`, `cell-presets` and `extensions-package`, 18 passed.
+  Pro override cleared afterwards.
+- Risks: R2 a `TemplateResult` of `lit@3.3.1` renders in a cell, with `@click` and a declarative action; R4 Tab moves into
+  the buttons of a cell, Enter and Space click a focused `wa-button`; R6 a `wa-dropdown` in a pinned column and in the
+  last row opens fully in the viewport and its item reaches the bridge. No upstream defect found.
+- Performance: R7 in Node 24 over 10,000 rows: the wrapper costs about 65 ns per call with and without the helpers
+  registered (a direct call 21 ns); `ctx.format.number` about 0.9 µs (1.9 µs with a new options literal). The 10,000-row
+  grid with eight preset columns, scrolled 6 s at 120 px per frame plus four jumps in Chromium: no long task, frame p50
+  16.7 ms, p95 16.8 ms, longest 34 ms, 144 cells rendered.
+
+## Deviations and decisions to note
+
+- `WaDataGridCondition.EqualTo` instead of `Equals` (a static `Equals` hides `object.Equals`).
+- Factory classes per grid member: `WaDataGridClassRules.Cell`/`Row`, `WaDataGridFooters`, `WaDataGridSearch.Formatted`,
+  `WaDataGridFilterOptions` (C# only), `WaDataGridRows.DetailFields`/`SelectableField`.
+- `Image` takes `srcTemplate` (null: the cell value is the URL) and `altTemplate`, not `SrcField`/`AltField`.
+- `ctx.emit` has an optional third argument (an element or an event) for the row index; without it the index is -1.
+- D4 also covers clicks on the controls of a preset that raise no action themselves (a menu trigger, a copy button,
+  the click before a switch or checkbox `change`).
+- The footer aggregates and `DataBar` work on numbers only (a date column has no `Min`/`Max` footer).
+- `DefaultMenuLabel` is English ("More actions"): no Web Awesome default exists for it; `menuLabel` overrides it.
+
+## Open points
+
+- `DefaultMenuLabel`: the owner may want a localized default instead of the English constant.
+- R2 and the keyboard results (R4) depend on the grid's Lit and `GridNavigationController`: recheck on each upgrade.
+- `ctx.invoke` and the static Razor templates are WAB-60.
