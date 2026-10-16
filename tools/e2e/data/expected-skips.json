@@ -2,7 +2,7 @@
   "description": "Release gate policy for the Playwright suite (tools\\release\\Test-WaReleasePreflight.ps1). Every skipped test must be listed for the asset mode the pass runs in, with a reason; any other skip fails the gate, and so does a listed test that ran or no longer exists. The pass must also run at least minimumTests tests (raise it when tests are added, lower it only on purpose). Test keys are '<spec file> > <describe titles> > <test title>'.",
   "modes": {
     "free-cdn": {
-      "minimumTests": 427,
+      "minimumTests": 437,
       "expectedSkips": [
         {
           "test": "pro-assets.spec.js > Pro components upgrade when a Pro asset override is active",
@@ -245,6 +245,46 @@
           "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
+          "test": "grid-functions.spec.js > grid functions: a value function drives sort, search and the CSV export",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > grid functions: a footer function sums the filtered rows",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > grid functions: cellClass and rowClass functions set classes that ShadowStyles styles",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > grid functions: a filter function decides the column filter",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > grid functions: selectableRows locks a row",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > grid functions: a search function replaces the global search",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > grid functions: rowDetail renders a detail panel on expand",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > grid functions: a custom aggregation fills the group rows",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > grid functions: a childRows function builds a tree",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "grid-functions.spec.js > data grid page: the \"More JavaScript Members\" example computes, sums, marks and details the lines",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
           "test": "showcase-dashboard.spec.js > dashboard showcase: the pagination drives the rows of the data grid",
           "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
@@ -255,7 +295,7 @@
       ]
     },
     "pro": {
-      "minimumTests": 427,
+      "minimumTests": 437,
       "expectedSkips": []
     }
   }

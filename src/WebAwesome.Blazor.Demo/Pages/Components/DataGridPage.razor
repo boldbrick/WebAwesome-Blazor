@@ -13,7 +13,7 @@
     properties rather than attributes, so <code>Data</code> and <code>Columns</code> are supplied as typed
     C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Cells render
     their raw values; for rich cell content, a column refers to a small JavaScript function with
-    <code>WaJsFunction</code> (see "Custom Cell Rendering with JavaScript" below), or to a cell preset of the
+    <code>WaJsFunction</code> (see "Custom Cell Rendering with JavaScript" below; footers, computed values, classes and detail panels in "More JavaScript Members"), or to a cell preset of the
     <code>WebAwesome.Blazor.Extensions</code> package, configured in C# only (see "Extensions: Cell Presets").
 </p>
 
@@ -129,6 +129,11 @@
 
 <ExampleSection Title="Custom Cell Rendering with JavaScript" Code="@CellRenderingExample">
     <WaDataGrid Label="Sprint tasks" RowKey="id" Data="sprintTasks" Columns="taskColumns" />
+</ExampleSection>
+
+<ExampleSection Title="More JavaScript Members" Code="@MoreFunctionsExample">
+    <WaDataGrid Label="Billed work" RowKey="id" Data="invoiceItems" Columns="billingColumns"
+                RowDetailFunction="billingDetail" ShadowStyles="@BillingStyles" />
 </ExampleSection>
 
 <ExampleSection Title="Extensions: Cell Presets" Code="@CellPresetsExample">
@@ -593,6 +598,31 @@
         }
     ];
 
+    // the classes that the functions set are in the grid's shadow root, so ShadowStyles styles them
+    private const string BillingStyles = ".over-budget { color: var(--wa-color-danger-on-quiet); font-weight: var(--wa-font-weight-bold); }";
+
+    private readonly WaJsFunction billingDetail = WaJsFunction.Module(TaskCellsModule, "billingDetail");
+
+    private readonly WaDataGridColumn[] billingColumns =
+    [
+        new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
+        new()
+        {
+            Field = "hours", Label = "Hours", Align = WaDataGridAlign.End, Width = 110,
+            // a class for the cells over the budget in ctx.args, and the sum of the filtered rows in the footer
+            CellClassFunction = WaJsFunction.Module(TaskCellsModule, "overBudget").WithArgs(new { budget = 40 }),
+            FooterFunction = WaJsFunction.Module(TaskCellsModule, "sumOfHours")
+        },
+        new() { Field = "rate", Label = "Rate", Align = WaDataGridAlign.End, Width = 110 },
+        new()
+        {
+            // a computed value sorts, searches and exports like a field; give the column an Id
+            Id = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 130,
+            ValueFunction = WaJsFunction.Module(TaskCellsModule, "amount"),
+            FooterFunction = WaJsFunction.Module(TaskCellsModule, "sumOfAmounts")
+        }
+    ];
+
     // the JSON converter makes the browser see the state names, which the alphabetic sort would order wrongly
     [JsonConverter(typeof(JsonStringEnumConverter))]
     private enum OrderState { New, Processing, Shipped, Cancelled }
@@ -807,7 +837,7 @@
         <WaDataGrid Label="Invoice" RowKey="id" Data="invoiceItems" Columns="invoiceColumns" />
 
         @code {
-            @* footers take static text; upstream's row-aggregating footer function cannot be marshaled *@
+            @* static footer text; for a footer computed from the rows, see FooterFunction in "More JavaScript Members" *@
             private readonly WaDataGridColumn[] invoiceColumns =
             [
                 new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
@@ -1004,6 +1034,62 @@
           bar.value = value;
           bar.textContent = `${value}%`;
           return bar;
+        }
+        """;
+
+    private const string MoreFunctionsExample = """
+        <WaDataGrid Label="Billed work" RowKey="id" Data="invoiceItems" Columns="billingColumns"
+                    RowDetailFunction="billingDetail" ShadowStyles="@BillingStyles" />
+
+        @code {
+            // the classes that the functions set are in the grid's shadow root, so ShadowStyles styles them
+            private const string BillingStyles = ".over-budget { color: var(--wa-color-danger-on-quiet); font-weight: var(--wa-font-weight-bold); }";
+
+            private readonly WaJsFunction billingDetail = WaJsFunction.Module(TaskCellsModule, "billingDetail");
+
+            private readonly WaDataGridColumn[] billingColumns =
+            [
+                new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
+                new()
+                {
+                    Field = "hours", Label = "Hours", Align = WaDataGridAlign.End, Width = 110,
+                    // a class for the cells over the budget in ctx.args, and the sum of the filtered rows in the footer
+                    CellClassFunction = WaJsFunction.Module(TaskCellsModule, "overBudget").WithArgs(new { budget = 40 }),
+                    FooterFunction = WaJsFunction.Module(TaskCellsModule, "sumOfHours")
+                },
+                new() { Field = "rate", Label = "Rate", Align = WaDataGridAlign.End, Width = 110 },
+                new()
+                {
+                    // a computed value sorts, searches and exports like a field; give the column an Id
+                    Id = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 130,
+                    ValueFunction = WaJsFunction.Module(TaskCellsModule, "amount"),
+                    FooterFunction = WaJsFunction.Module(TaskCellsModule, "sumOfAmounts")
+                }
+            ];
+        }
+
+        // DataGridPage.razor.js, next to DataGridPage.razor
+
+        export function overBudget(value, row, ctx) {
+          return value > ctx.args.budget ? 'over-budget' : '';
+        }
+
+        export function amount(row) {
+          return row.hours * row.rate;
+        }
+
+        export function sumOfHours(rows) {
+          return String(rows.reduce((sum, row) => sum + row.hours, 0));
+        }
+
+        export function sumOfAmounts(rows) {
+          return String(rows.reduce((sum, row) => sum + amount(row), 0));
+        }
+
+        export function billingDetail(row) {
+          const detail = document.createElement('p');
+          detail.textContent = `${row.item}: ${row.hours} h at ${row.rate} per hour`;
+          return detail;
         }
         """;
 

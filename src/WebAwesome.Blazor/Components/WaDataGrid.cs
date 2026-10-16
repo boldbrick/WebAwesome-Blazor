@@ -25,21 +25,21 @@ namespace WebAwesome.Blazor.Components;
 /// with the same definitions, does not make the grid render every cell again.
 /// </para>
 /// <para>
-/// The upstream <c>dataSource</c> property (an async request-to-response callback) cannot be marshaled
-/// across JS interop and is not exposed. Use server mode instead: set <see cref="Server"/>, handle
+/// The upstream <c>dataSource</c> property (an async request-to-response callback) is not bound, because server mode
+/// covers it with a .NET handler: set <see cref="Server"/>, handle
 /// <see cref="OnDataRequest"/> to fetch the current page (its args carry the active sort, filters,
 /// search term, page, and page size), then assign <see cref="Data"/>, <see cref="Total"/>, and
 /// <see cref="Loading"/> yourself.
 /// </para>
 /// <para>
-/// The upstream <c>child-rows</c> property accepts either a field name or a function that computes a
-/// row's children; only the field-name (string) form is exposed as <see cref="ChildRows"/>.
-/// </para>
-/// <para>
-/// Rich cell content comes from JavaScript: <see cref="WaDataGridColumn.Formatter"/>,
-/// <see cref="WaDataGridColumn.AggregatedFormatter"/> and <see cref="WaDataGridColumn.ComparatorFunction"/> take a
-/// <see cref="WaJsFunction"/> reference, which the browser resolves before it assigns the columns. A reference that does
-/// not resolve leaves its member out (the column shows raw values) and writes a <c>console.error</c>.
+/// Rich cell content, footers, computed values, filters, aggregations and classes come from JavaScript: the
+/// function-valued members of <see cref="WaDataGridColumn"/> take a <see cref="WaJsFunction"/> reference, which the
+/// browser resolves before it assigns the columns. The grid-level function members are parameters of their own:
+/// <see cref="RowClassFunction"/>, <see cref="RowDetailFunction"/>, <see cref="SearchFunction"/>,
+/// <see cref="SelectableRowsFunction"/> and <see cref="ChildRowsFunction"/>, pushed to the element only when they
+/// change. A reference that does not resolve leaves its member out (the grid uses its default) and writes a
+/// <c>console.error</c>. The grid renders the function output in its shadow root: <see cref="ShadowStyles"/> styles
+/// it, and <see cref="WaJsFunction.Uses"/> declares its Web Awesome elements.
 /// </para>
 /// </remarks>
 public class WaDataGrid : ComponentBase
@@ -91,11 +91,13 @@ public class WaDataGrid : ComponentBase
     [Parameter] public IReadOnlyList<WaDataGridColumn>? Columns { get; set; }
 
     /// <summary>
-    /// CSS rules for the output of the column functions (<see cref="WaDataGridColumn.Formatter"/> and
-    /// <see cref="WaDataGridColumn.AggregatedFormatter"/>), adopted into the grid's shadow root as a constructed
-    /// stylesheet and replaced only when the text changes. It is for styling your own function output, for example a
-    /// class that a formatter sets, not Web Awesome's internals: style those with <c>::part</c> and the CSS custom
-    /// properties.
+    /// CSS rules for the output of the JavaScript functions (the cells of <see cref="WaDataGridColumn.Formatter"/> and
+    /// <see cref="WaDataGridColumn.AggregatedFormatter"/>, the footer of <see cref="WaDataGridColumn.FooterFunction"/>,
+    /// the detail panel of <see cref="RowDetailFunction"/>, and the classes of
+    /// <see cref="WaDataGridColumn.CellClassFunction"/> and <see cref="RowClassFunction"/>), adopted into the grid's
+    /// shadow root as a constructed stylesheet and replaced only when the text changes. It is for styling your own
+    /// function output, for example a class that a formatter sets, not Web Awesome's internals: style those with
+    /// <c>::part</c> and the CSS custom properties.
     /// </summary>
     [Parameter] public string? ShadowStyles { get; set; }
 
@@ -254,10 +256,57 @@ public class WaDataGrid : ComponentBase
     /// and selection.
     /// </summary>
     /// <remarks>
-    /// Upstream also accepts a function form (<c>(row) =&gt; Row[]</c>); only the field-name string form
-    /// can be authored declaratively and is exposed here.
+    /// The function form of the upstream property is <see cref="ChildRowsFunction"/>; set one of the two.
     /// </remarks>
     [Parameter] public string? ChildRows { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that returns the child rows of a row for tree data, the function form of the element's
+    /// <c>childRows</c>. It is called as <c>(row, ctx)</c> and returns an array of rows, or undefined for none. Set
+    /// either this or <see cref="ChildRows"/>: both write the same element property, and the wrapper throws
+    /// <see cref="InvalidOperationException"/> when both are set. <c>ctx</c> holds <c>args</c> (the
+    /// <see cref="WaJsFunction.WithArgs"/> value), <c>element</c> and <c>grid</c> (the grid element) and <c>rowKey</c>
+    /// (the row's value of the <see cref="RowKey"/> field).
+    /// </summary>
+    /// <remarks>
+    /// Web Awesome 3.14.0 reads <c>childRows</c> only when the grid receives its data. The browser resolves the function
+    /// after the first push of <see cref="Data"/>, so the tree shows from the next push: every parameter set of the grid
+    /// pushes <see cref="Data"/>, for example a new list.
+    /// </remarks>
+    [Parameter] public WaJsFunction? ChildRowsFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that returns extra CSS classes for a row, the element's <c>rowClass</c>, for example to
+    /// flag overdue rows. It is called as <c>(row, ctx)</c> and returns space-separated classes, or a falsy value for
+    /// none; group rows are skipped. The row is in the grid's shadow root, so style the classes with
+    /// <see cref="ShadowStyles"/>. <c>ctx</c> holds the members of <see cref="ChildRowsFunction"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? RowClassFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that renders the detail panel of an expanded row, the element's <c>rowDetail</c>. When it
+    /// is set, each row shows an expand toggle. It is called as <c>(row, ctx)</c> and returns a string (escaped text), a
+    /// <c>Node</c> or a Lit <c>TemplateResult</c>. The panel renders in the grid's shadow root when the row expands, so
+    /// declare its Web Awesome elements with <see cref="WaJsFunction.Uses"/> and style it with
+    /// <see cref="ShadowStyles"/>. <c>ctx</c> holds the members of <see cref="ChildRowsFunction"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? RowDetailFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript predicate of the global search box, the element's <c>searchFn</c>. It is called as
+    /// <c>(value, searchTerm, row, ctx)</c> for each searchable column and returns true to keep the row; a row matches
+    /// when any searchable column matches. Client mode only. <c>ctx</c> holds the members of
+    /// <see cref="ChildRowsFunction"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? SearchFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript predicate that decides whether a row can be selected, the element's <c>selectableRows</c>. It is
+    /// called as <c>(row, ctx)</c>; false locks the row: its checkbox is disabled, and select-all and range selection
+    /// skip it. Null makes every row selectable (subject to <see cref="Selectable"/>). <c>ctx</c> holds the members of
+    /// <see cref="ChildRowsFunction"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? SelectableRowsFunction { get; set; }
 
     /// <summary>
     /// Enables drag-to-resize for columns (can be overridden per column).
@@ -480,6 +529,23 @@ public class WaDataGrid : ComponentBase
     }
 
     /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">Thrown when both <see cref="ChildRows"/> and
+    /// <see cref="ChildRowsFunction"/> are set, or when a column sets both the static and the function form of one
+    /// member</exception>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (!string.IsNullOrEmpty(ChildRows) && ChildRowsFunction is not null)
+            throw new InvalidOperationException($"{nameof(WaDataGrid)}: set either {nameof(ChildRows)} or {nameof(ChildRowsFunction)}, not both; they write the same element property.");
+
+        if (Columns is null) return;
+
+        for (var index = 0; index < Columns.Count; index++)
+            Columns[index].ThrowIfBothFormsAreSet(index);
+    }
+
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (Element != null)
@@ -501,6 +567,11 @@ public class WaDataGrid : ComponentBase
         }
 
         await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, ChildRowsMember, ChildRowsFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, RowClassMember, RowClassFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, RowDetailMember, RowDetailFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, SearchFunctionMember, SearchFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, SelectableRowsMember, SelectableRowsFunction);
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -845,8 +916,15 @@ public class WaDataGrid : ComponentBase
     // the column JSON of the last push
     private string? pushedColumnsJson;
 
-    // the shadow styles last pushed to the element
+    // the shadow styles and the function members last pushed to the element
     private readonly WaJsPropertyPush jsProperties = new();
+
+    // the function-valued members of wa-data-grid (elementFunctions in webawesome-interop.js)
+    private const string ChildRowsMember = "childRows";
+    private const string RowClassMember = "rowClass";
+    private const string RowDetailMember = "rowDetail";
+    private const string SearchFunctionMember = "searchFn";
+    private const string SelectableRowsMember = "selectableRows";
 
     #endregion
 }

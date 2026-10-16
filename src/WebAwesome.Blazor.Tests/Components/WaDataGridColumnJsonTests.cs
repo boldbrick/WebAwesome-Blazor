@@ -1,5 +1,6 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using WebAwesome.Blazor.Base;
@@ -64,7 +65,9 @@ public class WaDataGridColumnJsonTests : BunitContext
             CellClass = "region",
             Formatter = WaJsFunction.Registered("myapp.region"),
             AggregatedFormatter = WaJsFunction.Registered("myapp.regionCount"),
-            ComparatorFunction = WaJsFunction.Registered("myapp.byRegion")
+            ComparatorFunction = WaJsFunction.Registered("myapp.byRegion"),
+            ValueFunction = WaJsFunction.Registered("myapp.regionName"),
+            FilterFunction = WaJsFunction.Registered("myapp.regionFilter")
         };
 
         using var document = JsonDocument.Parse(SentColumnsJson(column));
@@ -100,6 +103,78 @@ public class WaDataGridColumnJsonTests : BunitContext
     }
 
     [Fact]
+    public void FunctionForms_SendTheirDescriptorsUnderTheKeysOfTheStaticForms()
+    {
+        var json = SentColumnsJson(new WaDataGridColumn
+        {
+            Id = "total",
+            ValueFunction = WaJsFunction.Registered("myapp.lineTotal"),
+            FilterFunction = WaJsFunction.Registered("myapp.atLeast"),
+            FooterFunction = WaJsFunction.Registered("myapp.sum").Uses("wa-badge"),
+            AggregationFunction = WaJsFunction.Registered("myapp.range"),
+            CellClassFunction = WaJsFunction.Registered("myapp.sign").WithArgs(new { Threshold = 0 })
+        });
+
+        Assert.Equal(
+            "[{\"id\":\"total\","
+            + "\"footer\":{\"$wab\":\"fn\",\"ref\":{\"kind\":\"registered\",\"name\":\"myapp.sum\"},\"uses\":[\"wa-badge\"]},"
+            + "\"aggregation\":{\"$wab\":\"fn\",\"ref\":{\"kind\":\"registered\",\"name\":\"myapp.range\"}},"
+            + "\"cellClass\":{\"$wab\":\"fn\",\"ref\":{\"kind\":\"registered\",\"name\":\"myapp.sign\"},\"args\":{\"threshold\":0}},"
+            + "\"value\":{\"$wab\":\"fn\",\"ref\":{\"kind\":\"registered\",\"name\":\"myapp.lineTotal\"}},"
+            + "\"filterFn\":{\"$wab\":\"fn\",\"ref\":{\"kind\":\"registered\",\"name\":\"myapp.atLeast\"}}}]",
+            json);
+    }
+
+    [Fact]
+    public void StaticForms_SendTheirValuesUnderTheSameKeys()
+    {
+        var json = SentColumnsJson(new WaDataGridColumn
+        {
+            Field = "amount",
+            Footer = "Total",
+            Aggregation = WaDataGridAggregation.UniqueCount,
+            CellClass = "money"
+        });
+
+        Assert.Equal("[{\"field\":\"amount\",\"footer\":\"Total\",\"aggregation\":\"uniqueCount\",\"cellClass\":\"money\"}]", json);
+    }
+
+    [Theory]
+    [MemberData(nameof(BothFormsCases))]
+    public void Column_WithBothFormsOfOneMember_Throws(WaDataGridColumn column, string staticForm, string functionForm)
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Render<WaDataGrid>(p => p.Add(c => c.Columns, [new WaDataGridColumn { Field = "name" }, column])));
+
+        Assert.Contains("\"amount\"", exception.Message);
+        Assert.Contains(staticForm, exception.Message);
+        Assert.Contains(functionForm, exception.Message);
+    }
+
+    [Fact]
+    public void Column_WithBothFormsOfOneMember_InAParameterSet_Throws()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+        var grid = Render<WaDataGrid>(p => p.Add(c => c.Columns, [new WaDataGridColumn { Field = "amount", Footer = "Total" }]));
+
+        var conflicting = new WaDataGridColumn { Field = "amount", Footer = "Total", FooterFunction = WaJsFunction.Registered("myapp.sum") };
+        Assert.Throws<InvalidOperationException>(() => grid.Render(p => p.Add(c => c.Columns, [conflicting])));
+
+        // the conflicting columns never reach the element
+        Assert.Single(module.Invocations, i => i.Identifier == "setDataGridColumns");
+    }
+
+    /// <summary>
+    /// A column with the static and the function form of one member, with the names of both forms.
+    /// </summary>
+    public static TheoryData<WaDataGridColumn, string, string> BothFormsCases() => new()
+    {
+        { new WaDataGridColumn { Field = "amount", Footer = "Total", FooterFunction = WaJsFunction.Registered("myapp.sum") }, nameof(WaDataGridColumn.Footer), nameof(WaDataGridColumn.FooterFunction) },
+        { new WaDataGridColumn { Field = "amount", Aggregation = WaDataGridAggregation.Sum, AggregationFunction = WaJsFunction.Registered("myapp.range") }, nameof(WaDataGridColumn.Aggregation), nameof(WaDataGridColumn.AggregationFunction) },
+        { new WaDataGridColumn { Field = "amount", CellClass = "money", CellClassFunction = WaJsFunction.Registered("myapp.sign") }, nameof(WaDataGridColumn.CellClass), nameof(WaDataGridColumn.CellClassFunction) },
+    };
+
+    [Fact]
     public void FilterOptions_SendValueLabelAndCount_AndLeaveOutUnsetOnes()
     {
         var json = SentColumnsJson(new WaDataGridColumn
@@ -128,13 +203,14 @@ public class WaDataGridColumnJsonTests : BunitContext
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
 
-    // the camelCase names of every DataGridColumn member the model binds, in the declaration order of the model
+    // the camelCase names of every DataGridColumn member the model binds, in the declaration order of the model (a member
+    // with a static and a function form keeps the position of its static form)
     private static readonly string[] ExpectedMemberNames =
     [
         "field", "id", "label", "align", "headerAlign", "sortable", "sortDescFirst", "sortFn", "sortUndefined",
         "searchable", "filterable", "filterType", "filterOptions", "hidden", "hideable", "resizable", "movable",
         "pinnable", "pinned", "width", "minWidth", "maxWidth", "flex", "footer", "aggregation", "cellClass",
-        "formatter", "aggregatedFormatter", "comparator"
+        "formatter", "aggregatedFormatter", "comparator", "value", "filterFn"
     ];
 
     // the column JSON of the grid's first push, as the interop sends it to setDataGridColumns

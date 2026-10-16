@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using WebAwesome.Blazor.Components;
@@ -9,12 +10,13 @@ namespace WebAwesome.Blazor.Models;
 /// <c>columns</c> JavaScript property.
 /// </summary>
 /// <remarks>
-/// Covers the JSON-expressible members of Web Awesome's <c>DataGridColumn</c> interface, and the function-valued
-/// members <see cref="Formatter"/>, <see cref="AggregatedFormatter"/> and <see cref="ComparatorFunction"/> as
-/// <see cref="WaJsFunction"/> references, which the browser resolves into the functions. Not yet exposed: <c>value</c>
-/// (a computed cell-value accessor), <c>filterFn</c> (a custom predicate), and the function forms of
-/// <see cref="Footer"/>, <see cref="Aggregation"/>, and <see cref="CellClass"/> (only their string forms are
-/// exposed).
+/// Covers every member of Web Awesome's <c>DataGridColumn</c> interface. The function-valued members take a
+/// <see cref="WaJsFunction"/> reference, which the browser resolves into the function before the grid receives the
+/// column: <see cref="Formatter"/>, <see cref="AggregatedFormatter"/>, <see cref="ComparatorFunction"/>,
+/// <see cref="ValueFunction"/> and <see cref="FilterFunction"/>, and the function forms <see cref="FooterFunction"/>,
+/// <see cref="AggregationFunction"/> and <see cref="CellClassFunction"/> of <see cref="Footer"/>,
+/// <see cref="Aggregation"/> and <see cref="CellClass"/>. Set either the static or the function form of one member:
+/// <see cref="WaDataGrid"/> throws <see cref="InvalidOperationException"/> when both are set.
 /// </remarks>
 public class WaDataGridColumn
 {
@@ -172,24 +174,24 @@ public class WaDataGridColumn
     public double? Flex { get; set; }
 
     /// <summary>
-    /// Static footer text. The function form (aggregating the filtered rows across every page) is not
-    /// marshalable and is not supported.
+    /// Static footer text. A visible column with a footer adds a pinned footer row. For content computed from the rows,
+    /// use <see cref="FooterFunction"/>; set one of the two.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore]
     public string? Footer { get; set; }
 
     /// <summary>
-    /// A built-in aggregation applied on grouped rows. The custom function form is not marshalable and is not
-    /// supported.
+    /// A built-in aggregation applied on grouped rows. For a custom aggregation, use <see cref="AggregationFunction"/>;
+    /// set one of the two.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore]
     public WaDataGridAggregation? Aggregation { get; set; }
 
     /// <summary>
-    /// A static CSS class (or space-separated classes) applied to every cell in the column. The
-    /// per-cell function form is not marshalable and is not supported.
+    /// A static CSS class (or space-separated classes) applied to every cell in the column. For a class per cell, use
+    /// <see cref="CellClassFunction"/>; set one of the two.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore]
     public string? CellClass { get; set; }
 
     /// <summary>
@@ -226,4 +228,102 @@ public class WaDataGridColumn
     [JsonPropertyName("comparator")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public WaJsFunction? ComparatorFunction { get; set; }
+
+    /// <summary>
+    /// A JavaScript function that computes the cell value from the row, the column's <c>value</c>. Its signature is
+    /// <c>(row, ctx) =&gt; unknown</c>. Unlike <see cref="Formatter"/>, which only changes what the cell shows, the
+    /// computed value drives sort, filter, search, copy and the CSV export. It takes precedence over
+    /// <see cref="Field"/>, so give the column an <see cref="Id"/>. <c>ctx</c> holds the members of
+    /// <see cref="Formatter"/>. Null reads the value from <see cref="Field"/>.
+    /// </summary>
+    [JsonPropertyName("value")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public WaJsFunction? ValueFunction { get; set; }
+
+    /// <summary>
+    /// A JavaScript predicate for the column filter, the column's <c>filterFn</c>. Its signature is
+    /// <c>(value, filterValue, row, ctx) =&gt; boolean</c>: the cell value, the active filter value and the row; true
+    /// keeps the row. It applies only when <see cref="Filterable"/> is true, takes precedence over
+    /// <see cref="FilterType"/>, and runs on the client only. <c>ctx</c> holds the members of <see cref="Formatter"/>.
+    /// Null uses the filter of <see cref="FilterType"/>.
+    /// </summary>
+    [JsonPropertyName("filterFn")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public WaJsFunction? FilterFunction { get; set; }
+
+    /// <summary>
+    /// A JavaScript function that renders the footer cell of the column, the function form of the column's
+    /// <c>footer</c>. Its signature is <c>(rows, ctx) =&gt; string | Node | TemplateResult</c>: the filtered rows across
+    /// every page (the top-level rows of tree data, the data rows of a grouped grid, the loaded page in server mode). The
+    /// footer renders in the grid's shadow root: declare its Web Awesome elements with <see cref="WaJsFunction.Uses"/>,
+    /// and style its classes with <see cref="WaDataGrid.ShadowStyles"/>. <c>ctx</c> holds the members of
+    /// <see cref="Formatter"/> except <c>rowKey</c>. Set this or <see cref="Footer"/>, not both: the grid throws
+    /// <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [JsonIgnore]
+    public WaJsFunction? FooterFunction { get; set; }
+
+    /// <summary>
+    /// A JavaScript function that aggregates the column on group rows (with the grid's <c>GroupBy</c>), the function form
+    /// of the column's <c>aggregation</c>. Its signature is <c>(values, rows, ctx) =&gt; unknown</c>: the values and the
+    /// data rows of the group. The aggregate renders through <see cref="AggregatedFormatter"/>, else through
+    /// <see cref="Formatter"/>. <c>ctx</c> holds the members of <see cref="Formatter"/> except <c>rowKey</c>. Set this or
+    /// <see cref="Aggregation"/>, not both: the grid throws <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [JsonIgnore]
+    public WaJsFunction? AggregationFunction { get; set; }
+
+    /// <summary>
+    /// A JavaScript function that returns the CSS class (or space-separated classes) of one cell, the function form of
+    /// the column's <c>cellClass</c>. Its signature is <c>(value, row, ctx) =&gt; string</c>. The cells are in the
+    /// grid's shadow root, so style the classes with <see cref="WaDataGrid.ShadowStyles"/>. <c>ctx</c> holds the members
+    /// of <see cref="Formatter"/>. Set this or <see cref="CellClass"/>, not both: the grid throws
+    /// <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [JsonIgnore]
+    public WaJsFunction? CellClassFunction { get; set; }
+
+    #region ------ Internals ------
+
+    /// <summary>
+    /// Throws when the static and the function form of one upstream member are both set, because both write the same
+    /// member of the column.
+    /// </summary>
+    /// <param name="columnIndex">The position of the column in the list, for the message</param>
+    /// <exception cref="InvalidOperationException">Thrown when both forms of one member are set</exception>
+    internal void ThrowIfBothFormsAreSet(int columnIndex)
+    {
+        ThrowIfBoth(columnIndex, Footer is not null, nameof(Footer), FooterFunction is not null, nameof(FooterFunction));
+        ThrowIfBoth(columnIndex, Aggregation is not null, nameof(Aggregation), AggregationFunction is not null, nameof(AggregationFunction));
+        ThrowIfBoth(columnIndex, CellClass is not null, nameof(CellClass), CellClassFunction is not null, nameof(CellClassFunction));
+    }
+
+    private void ThrowIfBoth(int columnIndex, bool staticSet, string staticName, bool functionSet, string functionName)
+    {
+        if (!staticSet || !functionSet) return;
+
+        var column = Id ?? Field ?? $"#{columnIndex}";
+        throw new InvalidOperationException(
+            $"{nameof(WaDataGridColumn)} \"{column}\": set either {staticName} or {functionName}, not both; they write the same column member.");
+    }
+
+    // the upstream footer: the static text or the function (one JSON key for two members)
+    [JsonInclude]
+    [JsonPropertyName("footer")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private object? FooterValue => (object?)FooterFunction ?? Footer;
+
+    // the upstream aggregation: the built-in name or the function
+    [JsonInclude]
+    [JsonPropertyName("aggregation")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private object? AggregationValue => (object?)AggregationFunction ?? Aggregation;
+
+    // the upstream cellClass: the static classes or the function
+    [JsonInclude]
+    [JsonPropertyName("cellClass")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private object? CellClassValue => (object?)CellClassFunction ?? CellClass;
+
+    #endregion
 }

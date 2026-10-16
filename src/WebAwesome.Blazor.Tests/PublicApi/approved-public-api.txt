@@ -1456,6 +1456,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? ChildRows { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? ChildRowsFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridColumn>? Columns { get; set; }
@@ -1523,9 +1525,17 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Resizable { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? RowClassFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? RowDetailFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? RowKey { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? SearchFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDataGridSelectable? Selectable { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? SelectableRowsFunction { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Server { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1564,6 +1574,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task<WebAwesome.Blazor.Models.WaDataGridState> GetStateAsync() { }
         public System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyDictionary<string, object>>> GetVisibleRowsAsync() { }
         protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        protected override void OnParametersSet() { }
         protected override System.Threading.Tasks.Task OnParametersSetAsync() { }
         public System.Threading.Tasks.Task PinColumnAsync(string columnId, string? side) { }
         public System.Threading.Tasks.Task ReloadAsync() { }
@@ -5157,17 +5168,24 @@ namespace WebAwesome.Blazor.Models
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         [System.Text.Json.Serialization.JsonPropertyName("aggregatedFormatter")]
         public WebAwesome.Blazor.Models.WaJsFunction? AggregatedFormatter { get; set; }
-        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonIgnore]
         public WebAwesome.Blazor.Components.WaDataGridAggregation? Aggregation { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public WebAwesome.Blazor.Models.WaJsFunction? AggregationFunction { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridAlign? Align { get; set; }
-        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string? CellClass { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public WebAwesome.Blazor.Models.WaJsFunction? CellClassFunction { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         [System.Text.Json.Serialization.JsonPropertyName("comparator")]
         public WebAwesome.Blazor.Models.WaJsFunction? ComparatorFunction { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public string? Field { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("filterFn")]
+        public WebAwesome.Blazor.Models.WaJsFunction? FilterFunction { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridFilterOption>? FilterOptions { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -5176,8 +5194,10 @@ namespace WebAwesome.Blazor.Models
         public bool? Filterable { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public double? Flex { get; set; }
-        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string? Footer { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public WebAwesome.Blazor.Models.WaJsFunction? FooterFunction { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         [System.Text.Json.Serialization.JsonPropertyName("formatter")]
         public WebAwesome.Blazor.Models.WaJsFunction? Formatter { get; set; }
@@ -5213,6 +5233,9 @@ namespace WebAwesome.Blazor.Models
         public WebAwesome.Blazor.Components.WaDataGridSortUndefined? SortUndefined { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Sortable { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("value")]
+        public WebAwesome.Blazor.Models.WaJsFunction? ValueFunction { get; set; }
         [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public int? Width { get; set; }
     }

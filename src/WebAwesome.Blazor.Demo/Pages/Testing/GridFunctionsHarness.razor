@@ -1,0 +1,113 @@
+@page "/testing/grid-functions"
+@using WebAwesome.Blazor.Models
+
+@* e2e harness for tools\e2e\tests\grid-functions.spec.js - deliberately outside /components/, so it is neither derived
+   from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. The grids bind the function-valued members of WaDataGrid and WaDataGridColumn that
+   WaDataGrid phase 2 added (computed value, footer, cell and row classes, column filter, custom aggregation, search,
+   selectable rows, row detail, child rows) to the exports of the collocated GridFunctionsHarness.razor.js. wa-data-grid
+   is a Pro component. *@
+
+<PageTitle>Testing: Grid Functions</PageTitle>
+
+<h1>Grid Functions Harness</h1>
+<p>This page is an end-to-end test harness for the function-valued members of <code>WaDataGrid</code> and <code>WaDataGridColumn</code>.</p>
+
+<ExampleSection Title="Value, footer, classes, filter and selectable rows">
+    <WaDataGrid data-testid="gf-orders" Label="Order lines" RowKey="id" WithSearch="true"
+                Selectable="WaDataGridSelectable.Multiple" Data="orderLines" Columns="orderColumns"
+                RowClassFunction="@WaJsFunction.Module(HarnessModule, "bigOrderRow").WithArgs(new { minimum = 300 })"
+                SelectableRowsFunction="@WaJsFunction.Module(HarnessModule, "unlockedRow")"
+                ShadowStyles="@OrderStyles" />
+</ExampleSection>
+
+<ExampleSection Title="Search function and row detail">
+    <WaDataGrid data-testid="gf-search" Label="Customers" RowKey="id" WithSearch="true" Data="orderLines" Columns="searchColumns"
+                SearchFunction="@WaJsFunction.Module(HarnessModule, "foldedSearch")"
+                RowDetailFunction="@WaJsFunction.Module(HarnessModule, "orderDetail").Uses("wa-tag")"
+                ShadowStyles="@DetailStyles" />
+</ExampleSection>
+
+<ExampleSection Title="Custom aggregation on a grouped grid">
+    <WaDataGrid data-testid="gf-groups" Label="Regions" RowKey="id" GroupBy="@(new[] { "region" })" Data="orderLines" Columns="groupColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Child rows from a function">
+    <WaDataGrid data-testid="gf-tree" Label="Folders" RowKey="id" Data="folders" Columns="folderColumns"
+                ChildRowsFunction="@WaJsFunction.Module(HarnessModule, "childrenOf").WithArgs(new { children = folderChildren })" />
+    <WaButton data-testid="gf-reload-folders" Size="WaSize.Small" Style="margin-block-start: var(--wa-space-m);" OnClick="ReloadFolders">Reload the folders</WaButton>
+</ExampleSection>
+
+@code {
+    private sealed record OrderLine(int Id, string Customer, string Product, int Quantity, decimal Price, string Region, bool Locked);
+
+    private sealed record Folder(int Id, string Name);
+
+    // the collocated module of this page
+    private const string HarnessModule = "./Pages/Testing/GridFunctionsHarness.razor.js";
+
+    private const string OrderStyles = ".gf-low { color: rgb(200, 0, 0); } .gf-big { font-style: italic; }";
+    private const string DetailStyles = ".gf-detail { color: rgb(0, 100, 0); }";
+
+    private readonly object[] orderLines =
+    [
+        new OrderLine(1, "José Álvarez", "Desk", 2, 150m, "EU", false),
+        new OrderLine(2, "Ada Lovelace", "Chair", 10, 45m, "EU", false),
+        new OrderLine(3, "Grace Hopper", "Lamp", 3, 20m, "NA", false),
+        new OrderLine(4, "Alan Turing", "Monitor", 1, 250m, "EU", true),
+        new OrderLine(5, "Katherine Johnson", "Cable", 25, 4m, "NA", false),
+        new OrderLine(6, "Hedy Lamarr", "Keyboard", 4, 30m, "APAC", false)
+    ];
+
+    private readonly WaDataGridColumn[] orderColumns =
+    [
+        new() { Field = "customer", Label = "Customer" },
+        new()
+        {
+            Field = "quantity", Label = "Quantity", Filterable = true,
+            CellClassFunction = WaJsFunction.Module(HarnessModule, "lowQuantityClass").WithArgs(new { low = 3 }),
+            FilterFunction = WaJsFunction.Module(HarnessModule, "atLeast")
+        },
+        new() { Field = "price", Label = "Price" },
+        new()
+        {
+            Id = "total", Label = "Total",
+            ValueFunction = WaJsFunction.Module(HarnessModule, "lineTotal"),
+            FooterFunction = WaJsFunction.Module(HarnessModule, "totalFooter").Uses("wa-badge")
+        },
+        new() { Field = "region", Label = "Region" }
+    ];
+
+    private readonly WaDataGridColumn[] searchColumns =
+    [
+        new() { Field = "customer", Label = "Customer" },
+        new() { Field = "product", Label = "Product" }
+    ];
+
+    private readonly WaDataGridColumn[] groupColumns =
+    [
+        new() { Field = "customer", Label = "Customer" },
+        new() { Field = "region", Label = "Region" },
+        new() { Field = "quantity", Label = "Quantity", AggregationFunction = WaJsFunction.Module(HarnessModule, "range") }
+    ];
+
+    private object[] folders = CreateFolders();
+
+    // NOTE checked against WA 3.14.0: wa-data-grid reads childRows only when it receives data, and the function arrives
+    // after the first Data push, so the tree shows from the next Data push; a new list makes one
+    private void ReloadFolders() => folders = CreateFolders();
+
+    private static object[] CreateFolders() => [new Folder(1, "src"), new Folder(2, "docs")];
+
+    // the children of each folder by its row key; childrenOf reads them through ctx.args and ctx.rowKey
+    private readonly Dictionary<string, Folder[]> folderChildren = new()
+    {
+        ["1"] = [new Folder(11, "app.js"), new Folder(12, "lib.js")],
+        ["2"] = [new Folder(21, "readme.md")]
+    };
+
+    private readonly WaDataGridColumn[] folderColumns =
+    [
+        new() { Field = "name", Label = "Name" }
+    ];
+}
