@@ -57,6 +57,8 @@ const HARNESS_ROUTES = [
   '/testing/element-functions',
   '/testing/icon-library',
   '/testing/grid-functions',
+  '/testing/cell-actions',
+  '/testing/lit-cells',
 ];
 
 function getComponentRoutes() {

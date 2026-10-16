@@ -77,4 +77,82 @@ internal static class PresetNames
 
     /// <summary>A sort by the position of the value in a list.</summary>
     public const string Ordinal = Prefix + "ordinal";
+
+    /// <summary>A wa-button that raises a cell action.</summary>
+    public const string Button = Prefix + "button";
+
+    /// <summary>Several action buttons, and a menu for the rest.</summary>
+    public const string Actions = Prefix + "actions";
+
+    /// <summary>A menu of actions behind one trigger button.</summary>
+    public const string Menu = Prefix + "menu";
+
+    /// <summary>A wa-switch that raises a cell action when it changes.</summary>
+    public const string Switch = Prefix + "switch";
+
+    /// <summary>A wa-checkbox that raises a cell action when it changes.</summary>
+    public const string Checkbox = Prefix + "checkbox";
+
+    /// <summary>A wa-progress-bar.</summary>
+    public const string ProgressBar = Prefix + "progressBar";
+
+    /// <summary>A wa-progress-ring.</summary>
+    public const string ProgressRing = Prefix + "progressRing";
+
+    /// <summary>A read-only wa-rating.</summary>
+    public const string Rating = Prefix + "rating";
+
+    /// <summary>A wa-avatar.</summary>
+    public const string Avatar = Prefix + "avatar";
+
+    /// <summary>An img element.</summary>
+    public const string Image = Prefix + "image";
+
+    /// <summary>A color swatch.</summary>
+    public const string ColorSwatch = Prefix + "colorSwatch";
+
+    /// <summary>A wa-sparkline.</summary>
+    public const string Sparkline = Prefix + "sparkline";
+
+    /// <summary>A number with a trend icon and color.</summary>
+    public const string Trend = Prefix + "trend";
+
+    /// <summary>A horizontal bar for a number.</summary>
+    public const string DataBar = Prefix + "dataBar";
+
+    /// <summary>A wa-copy-button.</summary>
+    public const string CopyButton = Prefix + "copyButton";
+
+    /// <summary>A sort of text with Intl.Collator.</summary>
+    public const string Collation = Prefix + "collation";
+
+    /// <summary>The class of a cell by rules.</summary>
+    public const string CellClassRules = Prefix + "cellClassRules";
+
+    /// <summary>The class of a row by rules.</summary>
+    public const string RowClassRules = Prefix + "rowClassRules";
+
+    /// <summary>An aggregate of a column in its footer.</summary>
+    public const string FooterAggregate = Prefix + "footerAggregate";
+
+    /// <summary>The global search that also compares the labels of lookup and badge columns.</summary>
+    public const string SearchFormatted = Prefix + "searchFormatted";
+
+    /// <summary>A detail panel with a list of fields.</summary>
+    public const string DetailFields = Prefix + "detailFields";
+
+    /// <summary>The rows that a field marks as selectable.</summary>
+    public const string SelectableField = Prefix + "selectableField";
+
+    /// <summary>
+    /// The text presets whose output does not depend on the row: they can format a value inside another preset (a
+    /// footer, a trend, a data bar, a detail field).
+    /// </summary>
+    public static readonly string[] TextFormats = [Number, Currency, Percent, Date, DateTime, Time, RelativeTime, Bytes, Duration, Lookup, Boolean, List];
+
+    /// <summary>
+    /// The presets whose arguments hold the display texts of values (<c>labels</c>): the global search and the filter
+    /// options can use them.
+    /// </summary>
+    public static readonly string[] Labeled = [Lookup, Badge, Tag, Tags, Icon];
 }

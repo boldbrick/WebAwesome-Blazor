@@ -24,6 +24,11 @@
     <WaDataGrid data-testid="cp-texts" Label="Other texts" RowKey="id" Data="textRows" Columns="textColumns" />
 </ExampleSection>
 
+<ExampleSection Title="Progress, rating, avatar, image, color, sparkline, trend, data bar and copy">
+    <WaDataGrid data-testid="cp-more" Label="Projects" RowKey="id" Data="projects" Columns="projectColumns"
+                OnCellClick="HandleCellClick" />
+</ExampleSection>
+
 <ExampleSection Title="Visual presets, links and cell actions">
     <WaDataGrid data-testid="cp-visual" Label="Tickets" RowKey="id" Data="tickets" Columns="ticketColumns"
                 OnCellClick="HandleCellClick" @onwablazor-cell-action="HandleCellAction" />
@@ -60,6 +65,40 @@
         bool Paid, string Slug, string Email, string Phone);
 
     private object[] textRows = [];
+
+    private sealed record ProjectRow(int Id, string Name, double Progress, int Score, string Owner, string? Photo, string? Initials,
+        string Color, double[] Sales, string SalesTrend, double Change, double Budget, string Key);
+
+    private readonly object[] projects =
+    [
+        new ProjectRow(1, "Atlas", 0.25, 3, "Ada Lovelace", "fragments/icon-sprite.svg", "AL", "#ff8800", [3, 5, 4, 8], "positive", 0.125, 1200, "KEY-ATLAS"),
+        new ProjectRow(2, "Borealis", 0.9, 5, "Grace Hopper", null, "GH", "rebeccapurple", [8, 6, 5, 2], "negative", -0.05, 300, "KEY-BOREALIS"),
+        new ProjectRow(3, "Cirrus", 0.5, 4, "Alan Turing", null, null, "not a color", [], "neutral", 0, 600, "KEY-CIRRUS")
+    ];
+
+    private readonly WaDataGridColumn[] projectColumns =
+    [
+        new() { Field = "name", Label = "Name", Width = 110 },
+        new()
+        {
+            Field = "progress", Label = "Progress bar", Width = 150,
+            Formatter = WaDataGridFormatters.ProgressBar(showLabel: true, culture: English,
+                thresholds: [new WaDataGridThreshold(0.8, WaVariant.Success), new WaDataGridThreshold(0, WaVariant.Warning)])
+        },
+        new() { Id = "ring", Field = "progress", Label = "Progress ring", Width = 120, Formatter = WaDataGridFormatters.ProgressRing(culture: English) },
+        new() { Field = "score", Label = "Rating", Width = 150, Formatter = WaDataGridFormatters.Rating(max: 5, culture: English) },
+        new()
+        {
+            Field = "owner", Label = "Avatar", Width = 200,
+            Formatter = WaDataGridFormatters.Avatar(imageField: "photo", initialsField: "initials", shape: WaAvatarShape.Rounded, showLabel: true, size: "1.75rem")
+        },
+        new() { Id = "image", Field = "photo", Label = "Image", Width = 90, Formatter = WaDataGridFormatters.Image(altTemplate: "Photo of {owner}", width: 24, height: 24, nullText: NoneText) },
+        new() { Field = "color", Label = "Color", Width = 160, Formatter = WaDataGridFormatters.ColorSwatch(showText: true) },
+        new() { Field = "sales", Label = "Sparkline", Width = 140, Formatter = WaDataGridFormatters.Sparkline(trendField: "salesTrend", nullText: NoneText, culture: English) },
+        new() { Field = "change", Label = "Trend", Width = 120, Formatter = WaDataGridFormatters.Trend(WaDataGridFormatters.Percent(maxFractionDigits: 1, signDisplay: WaDataGridSignDisplay.ExceptZero, culture: English)) },
+        new() { Field = "budget", Label = "Data bar", Width = 170, Formatter = WaDataGridFormatters.DataBar(variant: WaVariant.Success, showValue: true, format: WaDataGridFormatters.Currency("EUR", culture: English)) },
+        new() { Field = "key", Label = "Copy", Width = 200, Formatter = WaDataGridFormatters.CopyButton(showValue: true) }
+    ];
 
     private readonly object[] tickets =
     [

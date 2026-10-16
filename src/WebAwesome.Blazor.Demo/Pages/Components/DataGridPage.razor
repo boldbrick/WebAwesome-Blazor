@@ -14,7 +14,7 @@
     C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Cells render
     their raw values; for rich cell content, a column refers to a small JavaScript function with
     <code>WaJsFunction</code> (see "Custom Cell Rendering with JavaScript" below; footers, computed values, classes and detail panels in "More JavaScript Members"), or to a cell preset of the
-    <code>WebAwesome.Blazor.Extensions</code> package, configured in C# only (see "Extensions: Cell Presets").
+    <code>WebAwesome.Blazor.Extensions</code> package, configured in C# only (see "Extensions: Cell Presets", and "Extensions: Actions &amp; Rules" for buttons, menus, switches, class rules and footer sums).
 </p>
 
 <ExampleSection Title="Columns" Code="@ColumnsExample">
@@ -150,6 +150,14 @@
     <p data-testid="preset-cell-click">@(presetClickMessage ?? "Click any other cell to raise OnCellClick.")</p>
 </ExampleSection>
 
+<ExampleSection Title="Extensions: Actions &amp; Rules" Code="@ActionsRulesExample">
+    <WaDataGrid Label="Subscriptions" RowKey="id" Data="subscriptions" Columns="subscriptionColumns"
+                RowClassFunction="subscriptionRowClass" ShadowStyles="@SubscriptionStyles"
+                @onwablazor-cell-action="HandleSubscriptionAction" />
+    <WaDivider />
+    <p data-testid="subscription-action">@(subscriptionMessage ?? "Turn a subscription off, or use the actions of a row.")</p>
+</ExampleSection>
+
 <ExampleSection Title="Responding to Cell Clicks" Code="@CellClickExample">
     <WaDataGrid Label="Countries" RowKey="code" Data="countries" Columns="cellClickColumns" OnCellClick="HandleCellClick" />
     <WaDivider />
@@ -190,6 +198,7 @@
     private string? cellClickMessage;
     private string? presetActionMessage;
     private string? presetClickMessage;
+    private string? subscriptionMessage;
     private string? csvPreview;
     private int copiedRows;
 
@@ -232,6 +241,22 @@
     private void HandlePresetCellClick(WaDataGridCellClickEventArgs e)
     {
         presetClickMessage = $"OnCellClick: the \"{e.Column}\" cell of display row {e.RowIndex}.";
+    }
+
+    // the switch shows its new state at once: update the row and push the data, or push it unchanged to reject the change
+    private void HandleSubscriptionAction(WaDataGridCellActionEventArgs e)
+    {
+        var subscription = e.GetRow<Subscription>();
+        if (subscription is null) return;
+
+        if (e.Action == WaDataGridFormatters.DefaultToggleAction && e.GetPayload<TogglePayload>() is { } toggle)
+        {
+            subscriptions = subscriptions.Select(s => s.Id == subscription.Id ? s with { Active = toggle.Checked } : s).ToArray();
+            subscriptionMessage = $"{subscription.Customer} is {(toggle.Checked ? "active" : "paused")} now.";
+            return;
+        }
+
+        subscriptionMessage = $"Action \"{e.Action}\" for {subscription.Customer}.";
     }
 
     // server mode: the grid asks for the rows it needs, we fetch them and hand back Data, Total and Loading
@@ -686,6 +711,51 @@
         new() { Field = "description", Label = "Description", Flex = 2, MinWidth = 200 },
         new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 140 },
         new() { Field = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 120 }
+    ];
+
+    // Extensions: actions and rules; the classes are in the grid's shadow root, so ShadowStyles styles them
+    private const string SubscriptionStyles = ".large-team { font-weight: var(--wa-font-weight-bold); } .paused { color: var(--wa-color-text-quiet); }";
+
+    private sealed record Subscription(int Id, string Customer, int Seats, decimal Monthly, bool Active);
+
+    private sealed record TogglePayload(bool Checked);
+
+    private Subscription[] subscriptions =
+    [
+        new Subscription(1, "Northwind", 120, 2400m, true),
+        new Subscription(2, "Contoso", 25, 500m, true),
+        new Subscription(3, "Fabrikam", 8, 160m, false),
+        new Subscription(4, "Tailspin", 64, 1280m, true)
+    ];
+
+    private readonly WaJsFunction subscriptionRowClass = WaDataGridClassRules.Row(new WaDataGridClassRule("paused", WaDataGridCondition.IsFalse) { Field = "active" });
+
+    private readonly WaDataGridColumn[] subscriptionColumns =
+    [
+        new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 150 },
+        new()
+        {
+            Field = "seats", Label = "Seats", Align = WaDataGridAlign.End, Width = 100,
+            CellClassFunction = WaDataGridClassRules.Cell(new WaDataGridClassRule("large-team", WaDataGridCondition.GreaterThan(50))),
+            FooterFunction = WaDataGridFooters.Sum()
+        },
+        new()
+        {
+            Field = "monthly", Label = "Monthly", Align = WaDataGridAlign.End, Width = 140,
+            Formatter = WaDataGridFormatters.Currency("EUR"),
+            FooterFunction = WaDataGridFooters.Sum(WaDataGridFormatters.Currency("EUR"))
+        },
+        new() { Field = "active", Label = "Active", Width = 100, Formatter = WaDataGridFormatters.Switch("Active: {customer}") },
+        new()
+        {
+            Id = "actions", Label = "Actions", Width = 120,
+            Formatter = WaDataGridFormatters.Actions(
+            [
+                new WaDataGridAction("edit", "Edit") { Icon = "pen" },
+                new WaDataGridAction("invoice", "Send invoice") { InMenu = true },
+                new WaDataGridAction("cancel", "Cancel subscription") { InMenu = true, Variant = WaVariant.Danger }
+            ], WaSize.Small, WaAppearance.Plain)
+        }
     ];
 
     #endregion
@@ -1162,6 +1232,81 @@
             private void HandlePresetCellClick(WaDataGridCellClickEventArgs e)
             {
                 presetClickMessage = $"OnCellClick: the \"{e.Column}\" cell of display row {e.RowIndex}.";
+            }
+        }
+        """;
+
+    private const string ActionsRulesExample = """
+        @* package WebAwesome.Blazor.Extensions; @using WebAwesome.Blazor.Extensions.DataGrid *@
+        <WaDataGrid Label="Subscriptions" RowKey="id" Data="subscriptions" Columns="subscriptionColumns"
+                    RowClassFunction="subscriptionRowClass" ShadowStyles="@SubscriptionStyles"
+                    @onwablazor-cell-action="HandleSubscriptionAction" />
+        <WaDivider />
+        <p>@(subscriptionMessage ?? "Turn a subscription off, or use the actions of a row.")</p>
+
+        @code {
+            // the classes are in the grid's shadow root, so ShadowStyles styles them
+            private const string SubscriptionStyles = ".large-team { font-weight: var(--wa-font-weight-bold); } .paused { color: var(--wa-color-text-quiet); }";
+
+            private string? subscriptionMessage;
+
+            private sealed record Subscription(int Id, string Customer, int Seats, decimal Monthly, bool Active);
+
+            private sealed record TogglePayload(bool Checked);
+
+            private Subscription[] subscriptions =
+            [
+                new Subscription(1, "Northwind", 120, 2400m, true),
+                new Subscription(2, "Contoso", 25, 500m, true),
+                new Subscription(3, "Fabrikam", 8, 160m, false),
+                new Subscription(4, "Tailspin", 64, 1280m, true)
+            ];
+
+            // the first rule that matches gives the class
+            private readonly WaJsFunction subscriptionRowClass = WaDataGridClassRules.Row(new WaDataGridClassRule("paused", WaDataGridCondition.IsFalse) { Field = "active" });
+
+            private readonly WaDataGridColumn[] subscriptionColumns =
+            [
+                new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 150 },
+                new()
+                {
+                    Field = "seats", Label = "Seats", Align = WaDataGridAlign.End, Width = 100,
+                    CellClassFunction = WaDataGridClassRules.Cell(new WaDataGridClassRule("large-team", WaDataGridCondition.GreaterThan(50))),
+                    FooterFunction = WaDataGridFooters.Sum()
+                },
+                new()
+                {
+                    Field = "monthly", Label = "Monthly", Align = WaDataGridAlign.End, Width = 140,
+                    Formatter = WaDataGridFormatters.Currency("EUR"),
+                    FooterFunction = WaDataGridFooters.Sum(WaDataGridFormatters.Currency("EUR"))
+                },
+                new() { Field = "active", Label = "Active", Width = 100, Formatter = WaDataGridFormatters.Switch("Active: {customer}") },
+                new()
+                {
+                    Id = "actions", Label = "Actions", Width = 120,
+                    Formatter = WaDataGridFormatters.Actions(
+                    [
+                        new WaDataGridAction("edit", "Edit") { Icon = "pen" },
+                        new WaDataGridAction("invoice", "Send invoice") { InMenu = true },
+                        new WaDataGridAction("cancel", "Cancel subscription") { InMenu = true, Variant = WaVariant.Danger }
+                    ], WaSize.Small, WaAppearance.Plain)
+                }
+            ];
+
+            // the switch shows its new state at once: update the row and push the data, or push it unchanged to reject the change
+            private void HandleSubscriptionAction(WaDataGridCellActionEventArgs e)
+            {
+                var subscription = e.GetRow<Subscription>();
+                if (subscription is null) return;
+
+                if (e.Action == WaDataGridFormatters.DefaultToggleAction && e.GetPayload<TogglePayload>() is { } toggle)
+                {
+                    subscriptions = subscriptions.Select(s => s.Id == subscription.Id ? s with { Active = toggle.Checked } : s).ToArray();
+                    subscriptionMessage = $"{subscription.Customer} is {(toggle.Checked ? "active" : "paused")} now.";
+                    return;
+                }
+
+                subscriptionMessage = $"Action \"{e.Action}\" for {subscription.Customer}.";
             }
         }
         """;

@@ -145,6 +145,31 @@ public enum WaDataGridDurationStyle
 }
 
 /// <summary>
+/// Which differences between two texts count in a sort (<c>Intl.Collator</c> <c>sensitivity</c>).
+/// </summary>
+public enum WaDataGridCollationSensitivity
+{
+    /// <summary>
+    /// Only different base letters count: "a" equals "á" and "A".
+    /// </summary>
+    Base,
+
+    /// <summary>
+    /// Base letters and accents count: "a" differs from "á", but equals "A".
+    /// </summary>
+    Accent,
+
+    /// <summary>
+    /// Base letters and case count: "a" differs from "A", but equals "á".
+    /// </summary>
+    Case,
+
+    /// <summary>
+    /// Base letters, accents, case and other differences count.
+    /// </summary>
+    Variant
+}
+/// <summary>
 /// The JavaScript option values of the data grid enums of the Extensions package.
 /// </summary>
 internal static class WaDataGridEnumExtensions
@@ -245,6 +270,23 @@ internal static class WaDataGridEnumExtensions
             WaDataGridDurationStyle.Narrow => "narrow",
             WaDataGridDurationStyle.Digital => "digital",
             _ => throw new ArgumentOutOfRangeException(nameof(style), style, null)
+        };
+    }
+
+    /// <summary>
+    /// The <c>Intl.Collator</c> value of a sensitivity.
+    /// </summary>
+    /// <param name="sensitivity">The sensitivity</param>
+    /// <returns>The option value</returns>
+    public static string ToJsValue(this WaDataGridCollationSensitivity sensitivity)
+    {
+        return sensitivity switch
+        {
+            WaDataGridCollationSensitivity.Base => "base",
+            WaDataGridCollationSensitivity.Accent => "accent",
+            WaDataGridCollationSensitivity.Case => "case",
+            WaDataGridCollationSensitivity.Variant => "variant",
+            _ => throw new ArgumentOutOfRangeException(nameof(sensitivity), sensitivity, null)
         };
     }
 }

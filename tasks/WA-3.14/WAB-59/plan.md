@@ -77,5 +77,5 @@ Base: WAB-55 (presets, node cache, cell action bridge, D4), WAB-58 (the grid fun
   presets, D4, R4, R6, declarative actions, `ctx` helpers in formatter, rowDetail and footer, rules, footers, search, filter
   options, detail fields, selectable field), the remaining visual presets on `/testing/cell-presets`, R2 on
   `/testing/lit-cells`, the demo example. The free CDN tests: the presets and helpers without a grid.
-- Performance: R7 in Node 24 (decorated `ctx`), and the 10,000-row grid with 8 preset columns (`/testing/cell-actions?perf=1`)
+- Performance: R7 in Node 24 (decorated `ctx`), and the 10,000-row grid with 8 preset columns (`/testing/cell-actions?perf=true`)
   scrolled in Chromium with a long-task observer.

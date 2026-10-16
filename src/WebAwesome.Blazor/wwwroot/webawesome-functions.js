@@ -81,7 +81,9 @@ export function registerFunction(name, fn) {
  * resolved function, before its first call (and again when the decorator list changes), as decorator(proto, binding).
  * proto is the prototype of every ctx of that function: define methods or getters on it, which read the call through
  * this (this.args, this.element, this[callArguments], ...). binding describes the function: { element, member, label,
- * reference, args }. A decorator must not throw; an error is logged and the decorator is skipped.
+ * reference, args, rowArgument }; rowArgument is the index of the call argument that holds the row (undefined for a
+ * member without a row, for example a column footer). A decorator must not throw; an error is logged and the decorator
+ * is skipped.
  * @param {(proto: object, binding: object) => void} decorator - The decorator
  * @returns {() => void} A function that removes the decorator
  */
@@ -122,7 +124,8 @@ export function isFunctionDescriptor(value) {
  *        label - the member for messages, for example 'data grid column "state" formatter';
  *        arity - the number of arguments the element passes; ctx always follows them (optional: after the actual ones);
  *        context - more ctx members, for example { column, grid } (optional);
- *        rowKey - (callArgs) => the key of the row of a call, read lazily as ctx.rowKey (optional)
+ *        rowKey - (callArgs) => the key of the row of a call, read lazily as ctx.rowKey (optional);
+ *        rowArgument - the index of the argument that holds the row of a call, given to the decorators (optional)
  * @returns {Promise<Function|undefined>} The function, or undefined when the reference does not resolve: one
  *          console.error names the member and the reference, and the caller leaves the member out
  */
@@ -288,6 +291,7 @@ function bindFunction(target, descriptor, binding) {
         label: binding.label,
         reference: descriptor.ref,
         args: descriptor.args,
+        rowArgument: binding.rowArgument,
     });
 
     function Context(callArgs) {
