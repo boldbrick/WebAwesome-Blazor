@@ -7,8 +7,8 @@
 // - it registers the data grid preset functions (data-grid-presets.js) in the shared function registry of
 //   WebAwesome.Blazor (webawesome-functions.js), under the names that the C# factories WaDataGridFormatters and
 //   WaDataGridComparators refer to (WaJsFunction.Registered), before Blazor starts, so they exist before the first grid;
-// - it registers the ctx helpers of data grid functions (data-grid-context.js: ctx.emit, ctx.h, ctx.preset, ctx.format,
-//   ctx.cache) as a context decorator, in the same step;
+// - it registers the ctx helpers of data grid functions (data-grid-context.js: ctx.emit, ctx.invoke, ctx.h, ctx.preset,
+//   ctx.format, ctx.cache) as a context decorator, in the same step;
 // - it registers the cell action event (`wablazor-cell-action`) with Blazor.registerCustomEventType, so that
 //   `@onwablazor-cell-action` on a WaDataGrid (declared by EventHandlers, passed to the element through the
 //   wrapper's additional attributes) reaches .NET as WaDataGridCellActionEventArgs.

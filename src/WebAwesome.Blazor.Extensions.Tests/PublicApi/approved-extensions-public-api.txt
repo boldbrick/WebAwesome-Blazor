@@ -200,6 +200,30 @@ namespace WebAwesome.Blazor.Extensions.DataGrid
         Fraction = 0,
         Percent = 1,
     }
+    public sealed class WaDataGridRazorTemplates<TRow>
+    {
+        public WaDataGridRazorTemplates() { }
+        public System.Collections.Generic.IReadOnlyCollection<string> Keys { get; }
+        public WebAwesome.Blazor.Extensions.DataGrid.WaDataGridRazorTemplates<TRow> Add(string key, Microsoft.AspNetCore.Components.RenderFragment<TRow> template) { }
+        public WebAwesome.Blazor.Models.WaJsFunction Formatter(string key, params string[] uses) { }
+        public System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<object>> RenderAsync(System.IServiceProvider services, System.Collections.Generic.IEnumerable<TRow> rows, System.Threading.CancellationToken cancellationToken = default) { }
+    }
+    public class WaDataGridRequestException : System.Exception
+    {
+        public WaDataGridRequestException(string message) { }
+        public WaDataGridRequestException(string message, System.Exception? innerException) { }
+    }
+    public class WaDataGridRequestHandler : Microsoft.AspNetCore.Components.ComponentBase, System.IAsyncDisposable
+    {
+        public WaDataGridRequestHandler() { }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public System.Func<WebAwesome.Blazor.Extensions.DataGrid.WaDataGridCellActionEventArgs, System.Threading.Tasks.Task<object?>>? OnRequest { get; set; }
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        public System.Threading.Tasks.ValueTask DisposeAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+    }
     public static class WaDataGridRows
     {
         public static WebAwesome.Blazor.Models.WaJsFunction DetailFields(params WebAwesome.Blazor.Extensions.DataGrid.WaDataGridDetailField[] fields) { }

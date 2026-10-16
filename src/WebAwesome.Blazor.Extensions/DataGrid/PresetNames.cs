@@ -145,6 +145,12 @@ internal static class PresetNames
     public const string SelectableField = Prefix + "selectableField";
 
     /// <summary>
+    /// The HTML of a static Razor template (<see cref="WaDataGridRazorTemplates{TRow}"/>), cloned into the cell. The
+    /// name <c>template</c> belongs to the text template preset.
+    /// </summary>
+    public const string RazorTemplate = Prefix + "razorTemplate";
+
+    /// <summary>
     /// The text presets whose output does not depend on the row: they can format a value inside another preset (a
     /// footer, a trend, a data bar, a detail field).
     /// </summary>

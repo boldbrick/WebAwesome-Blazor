@@ -1,0 +1,183 @@
+@page "/testing/cell-requests"
+@using System.Text.Json
+@using WebAwesome.Blazor.Extensions.DataGrid
+@using WebAwesome.Blazor.Models
+@inject IServiceProvider Services
+
+@* e2e harness for tools\e2e\tests\cell-requests.spec.js - deliberately outside /components/, reached by the sweep
+   through HARNESS_ROUTES in tools\e2e\tests\helpers\routes.js. Phase 3 of WebAwesome.Blazor.Extensions: requests from
+   grid content to .NET (ctx.invoke, WaDataGridRequestHandler) and static Razor cell templates (WaDataGridRazorTemplates).
+   The probe section works without a grid, so its tests also run on the free CDN; the grids need the Pro wa-data-grid. *@
+
+<PageTitle>Testing: Cell Requests</PageTitle>
+
+<h1>Cell Requests Harness</h1>
+<p>This page is an end-to-end test harness for <code>ctx.invoke</code> and the static Razor cell templates.</p>
+
+<WaDataGridRequestHandler OnRequest="HandleRequestAsync">
+    <ExampleSection Title="A request probe without a grid">
+        <div data-testid="cr-probe">The request module finds the handler through the ancestors of this element.</div>
+    </ExampleSection>
+
+    <ExampleSection Title="ctx.invoke in a cell, a detail panel and a footer">
+        <WaButton data-testid="cr-replace" Size="WaSize.Small" OnClick="ReplaceGrid">Replace the grid element</WaButton>
+        <WaButton data-testid="cr-reload" Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="ReloadProducts">Push new data</WaButton>
+        <WaDataGrid @key="gridGeneration" data-testid="cr-grid" Label="Products" RowKey="id" Data="products" Columns="productColumns"
+                    RowDetailFunction="@WaJsFunction.Module(HarnessModule, "productDetail")" />
+        <p>Requests received: <strong data-testid="cr-request-count">@requestCount</strong></p>
+        <p>Grid generation: <strong data-testid="cr-generation">@gridGeneration</strong></p>
+    </ExampleSection>
+</WaDataGridRequestHandler>
+
+<ExampleSection Title="A probe without a handler">
+    <div data-testid="cr-orphan">No WaDataGridRequestHandler holds this element.</div>
+</ExampleSection>
+
+<ExampleSection Title="Static Razor templates">
+    <WaButton data-testid="crt-advance" Size="WaSize.Small" OnClick="AdvanceTicketsAsync">Advance the first ticket</WaButton>
+    <WaDataGrid data-testid="crt-grid" Label="Tickets" RowKey="id" Data="ticketRows" Columns="ticketColumns"
+                OnCellClick="HandleTicketCellClick" @onwablazor-cell-action="HandleTicketAction" />
+    <p>Cell action: <strong data-testid="crt-action">@ticketAction</strong></p>
+    <p>Cell clicks received: <strong data-testid="crt-click-count">@ticketClickCount</strong></p>
+</ExampleSection>
+
+@code {
+    private const string NoneText = "none";
+
+    // the time .NET takes for a price, so that the pending state of a cell is visible
+    private const int PriceDelayMs = 400;
+
+    // the collocated module of this page
+    private const string HarnessModule = "./Pages/Testing/CellRequestsHarness.razor.js";
+
+    private sealed record Product(int Id, string Name, int Stock);
+
+    private sealed record Ticket(int Id, string Title, string State);
+
+    private sealed record DelayPayload(int Ms, string Value);
+
+    private sealed record ReasonPayload(string Reason);
+
+    private int requestCount;
+    private int gridGeneration;
+    private int productVersion;
+    private string ticketAction = NoneText;
+    private int ticketClickCount;
+
+    private object[] products = Products(0);
+
+    private readonly WaDataGridColumn[] productColumns =
+    [
+        new() { Field = "id", Label = "Id", Width = 70 },
+        new() { Field = "name", Label = "Name", Width = 140 },
+        new()
+        {
+            Id = "price", Label = "Price", Width = 160,
+            Formatter = WaJsFunction.Module(HarnessModule, "priceCell"),
+            FooterFunction = WaJsFunction.Module(HarnessModule, "priceFooter")
+        }
+    ];
+
+    private static readonly WaDataGridRazorTemplates<Ticket> ticketTemplates = new WaDataGridRazorTemplates<Ticket>()
+        .Add("state", ticket => @<WaBadge Variant="@(ticket.State == "open" ? WaVariant.Brand : WaVariant.Success)">@ticket.State</WaBadge>)
+        .Add("open", ticket => @<WaButton Size="WaSize.Small" data-wablazor-action="open"
+                                          data-wablazor-action-payload="@JsonSerializer.Serialize(new { title = ticket.Title })">Open #@ticket.Id</WaButton>)
+        .Add("title", ticket => @<span class="crt-title" title="@ticket.Title">@ticket.Title</span>);
+
+    private readonly WaDataGridColumn[] ticketColumns =
+    [
+        new() { Field = "id", Label = "Id", Width = 70 },
+        new() { Id = "title", Field = "title", Label = "Title", Width = 220, Formatter = ticketTemplates.Formatter("title") },
+        new() { Id = "state", Field = "state", Label = "State", Width = 120, Formatter = ticketTemplates.Formatter("state", "wa-badge") },
+        new() { Id = "open", Label = "Open", Width = 140, Formatter = ticketTemplates.Formatter("open", "wa-button") }
+    ];
+
+    private Ticket[] tickets =
+    [
+        new Ticket(1, "Printer <jammed>", "open"),
+        new Ticket(2, "VPN access", "closed"),
+        new Ticket(3, "New laptop", "open")
+    ];
+
+    private IReadOnlyList<object>? ticketRows;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ticketRows = await ticketTemplates.RenderAsync(Services, tickets);
+    }
+
+    private static object[] Products(int version) =>
+    [
+        new Product(1, "Desk", 4 + version),
+        new Product(2, "Chair", 0),
+        new Product(3, "Lamp", 12)
+    ];
+
+    // the requests of the probe, the cells, the detail panel and the footer
+    private async Task<object?> HandleRequestAsync(WaDataGridCellActionEventArgs request)
+    {
+        requestCount++;
+        StateHasChanged();
+
+        switch (request.Action)
+        {
+            case "echo":
+                return new
+                {
+                    request.Action,
+                    request.Column,
+                    RowKey = request.RowKey?.GetRawText(),
+                    Payload = request.Payload?.GetRawText(),
+                    request.RowIndex,
+                    RowKeys = request.Row?.Keys.Order().ToArray()
+                };
+            case "delay":
+                var delay = request.GetPayload<DelayPayload>()!;
+                await Task.Delay(delay.Ms);
+                return delay.Value;
+            case "fail":
+                throw new WaDataGridRequestException($"Not allowed: {request.GetPayload<ReasonPayload>()?.Reason}");
+            case "crash":
+                throw new InvalidOperationException("internal detail");
+            case "price":
+                var product = request.GetRow<Product>()!;
+                await Task.Delay(PriceDelayMs);
+                if (product.Stock == 0) throw new WaDataGridRequestException("Sold out");
+                return new { amount = product.Id * 10 + product.Stock, currency = "EUR" };
+            case "stock":
+                return request.GetRow<Product>()?.Stock;
+            case "total":
+                return products.Cast<Product>().Sum(p => p.Stock);
+            default:
+                throw new WaDataGridRequestException($"Unknown request '{request.Action}'.");
+        }
+    }
+
+    private void ReplaceGrid()
+    {
+        gridGeneration++;
+    }
+
+    private void ReloadProducts()
+    {
+        productVersion++;
+        products = Products(productVersion);
+    }
+
+    private async Task AdvanceTicketsAsync()
+    {
+        tickets = tickets.Select(ticket => ticket.Id == 1 ? ticket with { State = "closed" } : ticket).ToArray();
+        ticketRows = await ticketTemplates.RenderAsync(Services, tickets);
+    }
+
+    private void HandleTicketAction(WaDataGridCellActionEventArgs e)
+    {
+        var ticket = e.GetRow<Ticket>();
+        ticketAction = $"{e.Action}|{e.Column}|{e.RowKey}|{e.Payload?.GetRawText()}|{ticket?.Title}|{e.Row?.ContainsKey("$wabTemplateHtml")}";
+    }
+
+    private void HandleTicketCellClick(WaDataGridCellClickEventArgs e)
+    {
+        ticketClickCount++;
+    }
+}

@@ -22,6 +22,8 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 - Extensions: visual cell presets `ProgressBar`, `ProgressRing`, `Rating`, `Avatar`, `Image`, `ColorSwatch`, `Sparkline`, `Trend`, `DataBar` and `CopyButton`.
 - Extensions: `WaDataGridClassRules` (cell and row classes by conditions), `WaDataGridFooters` (sum, average, min, max, count), `WaDataGridComparators.Collation`, `WaDataGridSearch.Formatted` (the search also finds lookup and badge labels), `WaDataGridFilterOptions`, and `WaDataGridRows.DetailFields` and `SelectableField`.
 - Extensions: your own grid functions get `ctx.emit`, `ctx.h`, `ctx.preset`, `ctx.format` and `ctx.cache`, and an element with `data-wablazor-action` (optional `data-wablazor-action-payload`) raises a cell action when clicked. A Lit template of your own Lit 3 renders in a cell.
+- Extensions: `ctx.invoke(action, payload)` asks .NET from a cell, a detail panel or a footer and returns a Promise; wrap the grid in `WaDataGridRequestHandler` and answer in `OnRequest` (throw `WaDataGridRequestException` to reject with a message).
+- Extensions: `WaDataGridRazorTemplates<TRow>` shows cells written in Razor (for example a `WaBadge`) as static HTML; buttons use `data-wablazor-action`. Meant for server mode and small pages: each row renders once per template on each data push.
 
 ### Changed
 - Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.

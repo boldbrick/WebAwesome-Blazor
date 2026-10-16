@@ -59,6 +59,7 @@ const HARNESS_ROUTES = [
   '/testing/grid-functions',
   '/testing/cell-actions',
   '/testing/lit-cells',
+  '/testing/cell-requests',
 ];
 
 function getComponentRoutes() {

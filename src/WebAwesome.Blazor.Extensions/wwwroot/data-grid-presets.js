@@ -25,7 +25,11 @@
  *   that raises an action, hits a declarative action (data-wablazor-action) or hits a control of a preset does not
  *   reach Blazor as wa-cell-click (decision D4): a wa-cell-click listener on the grid host stops its propagation, so
  *   listeners on the grid element still see it, but Blazor, which listens on the document, does not.
+ * - The razorTemplate preset shows the HTML of a static Razor template that .NET rendered for the row; the one HTML parse
+ *   of the package is in data-grid-templates.js.
  */
+
+import { templateNode } from './data-grid-templates.js';
 
 const logPrefix = 'WebAwesome.Blazor.Extensions:';
 
@@ -1744,6 +1748,27 @@ function selectableField(row, ctx) {
 }
 
 /* ------------------------------------------------------------------------------------------------------------------
+ * Static Razor templates (design section 10)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+/**
+ * The row property that holds the HTML of the Razor templates of a row, by template key (RazorTemplateRow.HtmlProperty
+ * in C#). No column reads it.
+ */
+export const templateHtmlProperty = '$wabTemplateHtml';
+
+// the cell of a Razor template column: a copy of the HTML that .NET rendered for the row (WaDataGridRazorTemplates), kept
+// per row object and column while the HTML stays the same; data-wablazor-action in it raises cell actions
+function razorTemplate(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    const html = row !== null && typeof row === 'object' ? lookup(lookup(row, templateHtmlProperty), args.key) : undefined;
+    if (typeof html !== 'string' || html === '') return nullTextOf(args);
+
+    ensureCellActionBridge(ctx.grid);
+    return cachedNode(row, args, [html], () => templateNode(html));
+}
+
+/* ------------------------------------------------------------------------------------------------------------------
  * Event arguments and the preset table
  * ------------------------------------------------------------------------------------------------------------------ */
 
@@ -1776,8 +1801,18 @@ function sanitize(value, depth) {
  * @returns {object} { column, action, rowKey, row, value, payload, rowIndex }
  */
 export function cellActionArgs(event) {
-    const detail = event.detail ?? {};
+    return cellActionPayload(event.detail ?? {});
+}
+
+/**
+ * The .NET payload of a cell action or a request (WaDataGridCellActionEventArgs): a JSON-safe copy of the detail. The
+ * row leaves out the HTML of the Razor templates, which only the cells need.
+ * @param {object} detail - { column, action, rowKey, row, value, payload, rowIndex }
+ * @returns {object} { column, action, rowKey, row, value, payload, rowIndex }
+ */
+export function cellActionPayload(detail) {
     const row = detail.row !== null && typeof detail.row === 'object' && !Array.isArray(detail.row) ? sanitize(detail.row, rowDepth) : null;
+    if (row) delete row[templateHtmlProperty];
     const rowKey = typeof detail.rowKey === 'string' || typeof detail.rowKey === 'number' ? detail.rowKey : null;
     return {
         column: detail.column == null ? '' : String(detail.column),
@@ -1838,6 +1873,7 @@ export const presets = Object.freeze({
     'wab.dataGrid.searchFormatted': searchFormatted,
     'wab.dataGrid.detailFields': detailFields,
     'wab.dataGrid.selectableField': selectableField,
+    'wab.dataGrid.razorTemplate': razorTemplate,
 });
 
 /**
@@ -1853,4 +1889,4 @@ export const textPresetNames = Object.freeze([
     'list',
 ]);
 
-export { cachedNode, reportOnce, isAllowedUrl };
+export { cachedNode, reportOnce, isAllowedUrl, rowIndexOf, unknownRowIndex };

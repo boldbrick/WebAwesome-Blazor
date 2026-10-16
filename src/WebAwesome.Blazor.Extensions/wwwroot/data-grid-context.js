@@ -7,6 +7,8 @@
  * sections 8.4 and 9.3.
  *
  *   ctx.emit(action, payload?, source?)  - raises a cell action (@onwablazor-cell-action) for the row of the call
+ *   ctx.invoke(action, payload?, source?) - asks the .NET handler (WaDataGridRequestHandler) and returns a Promise of its
+ *                                          answer (data-grid-requests.js)
  *   ctx.h(tag, props?, ...children)      - a small DOM builder; text is always set as text, never parsed as HTML
  *   ctx.preset(name, options?)           - calls a cell preset ('badge', 'currency', ...) for the value of the call
  *   ctx.format.number(value, options?)   - the text presets as plain functions (number, currency, date, ...)
@@ -19,7 +21,9 @@
 import { callArguments } from '../WebAwesome.Blazor/webawesome-functions.js';
 import {
     presets, presetPrefix, textPresetNames, raiseCellAction, ensureCellActionBridge, cachedNode, reportOnce, isAllowedUrl,
+    cellActionPayload, rowIndexOf, unknownRowIndex,
 } from './data-grid-presets.js';
+import { invokeCellRequest } from './data-grid-requests.js';
 
 // the element whose members get the helpers
 const gridTag = 'wa-data-grid';
@@ -88,6 +92,25 @@ export function decorateContext(proto, binding) {
                     value: valueOf(call) ?? null,
                     payload: payload ?? null,
                 }, source);
+            },
+        },
+        invoke: {
+            value: function invoke(action, payload, source) {
+                if (typeof action !== 'string' || action === '') {
+                    return Promise.reject(new TypeError(`WebAwesome.Blazor.Extensions: ctx.invoke needs an action id (the ${binding.label})`));
+                }
+
+                // the request is a JSON-safe copy of the call as it is now; the row can change before .NET answers
+                const call = this[callArguments];
+                return invokeCellRequest(grid, cellActionPayload({
+                    column: this.column ?? '',
+                    action,
+                    rowKey: rowArgument === undefined ? null : this.rowKey ?? null,
+                    row: rowOf(call),
+                    value: valueOf(call) ?? null,
+                    payload: payload ?? null,
+                    rowIndex: source ? rowIndexOf(source) : unknownRowIndex,
+                }));
             },
         },
         h: {

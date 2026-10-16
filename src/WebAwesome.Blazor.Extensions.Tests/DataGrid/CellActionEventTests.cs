@@ -72,8 +72,11 @@ public class CellActionEventTests
     public void EventArgsPayload_HasAKeyForEachProperty()
     {
         var presets = PresetScripts.Read(PresetScripts.PresetsFileName);
-        var body = Regex.Match(presets, @"export function cellActionArgs\(event\) \{(?<body>.*?)\n\}", RegexOptions.Singleline);
-        Assert.True(body.Success, "data-grid-presets.js does not export cellActionArgs");
+        Assert.Matches(@"export function cellActionArgs\(event\) \{\s*return cellActionPayload\(event\.detail \?\? \{\}\);\s*\}", presets);
+
+        // the payload of an event and of a request of ctx.invoke (both are WaDataGridCellActionEventArgs in .NET)
+        var body = Regex.Match(presets, @"export function cellActionPayload\(detail\) \{(?<body>.*?)\n\}", RegexOptions.Singleline);
+        Assert.True(body.Success, "data-grid-presets.js does not export cellActionPayload");
 
         var returned = Regex.Match(body.Groups["body"].Value, @"return \{(?<keys>.*?)\};", RegexOptions.Singleline).Groups["keys"].Value;
         var keys = Regex.Matches(returned, @"^\s*(\w+)(?=[,:])", RegexOptions.Multiline).Select(match => match.Groups[1].Value).ToHashSet();

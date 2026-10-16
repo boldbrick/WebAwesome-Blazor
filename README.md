@@ -198,7 +198,7 @@ Supported components:
 - Text presets return text, so the CSV export holds the formatted text; badges, tags, icons and links are elements. The culture is `CultureInfo.CurrentCulture` when the factory runs, or the `culture` you pass.
 - Keep the column list in a field: the grid sends the columns again only when their JSON changes.
 - A `DateOnly` value shows its calendar day in every time zone; for an instant, use UTC or `DateTimeOffset` in the row and set `timeZone`.
-- Also in the package: buttons, action menus, switches and checkboxes that raise `@onwablazor-cell-action`; progress, rating, avatar, image, sparkline, trend and data bar cells; class rules, footer sums, a collation sort, a search over lookup labels, detail panels and selectable rows; and, for your own cell functions, the `ctx` helpers (`ctx.emit`, `ctx.h`, `ctx.preset`, `ctx.format`, `ctx.cache`) and `data-wablazor-action`. The package readme lists them.
+- Also in the package: buttons, action menus, switches and checkboxes that raise `@onwablazor-cell-action`; progress, rating, avatar, image, sparkline, trend and data bar cells; class rules, footer sums, a collation sort, a search over lookup labels, detail panels and selectable rows; and, for your own cell functions, the `ctx` helpers (`ctx.emit`, `ctx.invoke`, `ctx.h`, `ctx.preset`, `ctx.format`, `ctx.cache`) and `data-wablazor-action`; `WaDataGridRequestHandler`, which answers `ctx.invoke` requests in .NET; and `WaDataGridRazorTemplates`, which shows cells written in Razor as static HTML. The package readme lists them.
 
 ## Version alignment
 We align binding versions to WA versions:
