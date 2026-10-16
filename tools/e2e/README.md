@@ -89,6 +89,14 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   `RowDetailFunction` panel with an upgraded tag on expand; an `AggregationFunction` on a grouped grid; a
   `ChildRowsFunction` tree from `ctx.args` and `ctx.rowKey` on the first render (the data waits for the function, as
   WA 3.14.0 reads `childRows` only with the data). Pro only.
+- `tests\cell-actions.spec.js` — the phase 2 extras of `WebAwesome.Blazor.Extensions` (`/testing/cell-actions` with the
+  collocated `CellActionsHarness.razor.js`, `/testing/lit-cells`, and the "Extensions: Actions & Rules" example of
+  `/components/data-grid`): the `ctx` helpers without a grid (free CDN); with Pro assets, the interactive presets
+  (`Button`, `Actions`, `Menu`, `Switch`, `Checkbox`) raise `@onwablazor-cell-action` and not `OnCellClick` (D4), Tab,
+  Enter and Space in an action cell (R4), a menu in a pinned column and in the last row (R6), `ctx.emit`, `ctx.h` and
+  `data-wablazor-action` in a cell, a detail panel and a footer, a Lit template of the app's own Lit (R2), and the class
+  rules, footers, collation, formatted search, filter options, detail fields and selectable field. `cell-presets.spec.js`
+  covers the other presets (the DOM of all of them without a grid on the free CDN).
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug

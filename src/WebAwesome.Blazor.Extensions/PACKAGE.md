@@ -54,7 +54,46 @@ Set up `WebAwesome.Blazor` first, as its package readme shows. The Blazor runtim
 - **Enums**: `Badge<TEnum>`, `Lookup<TEnum>` and `Ordinal<TEnum>` key their maps by the JSON form of each value: the number, or the name when the enum has a `[JsonConverter]` attribute such as `JsonStringEnumConverter`.
 - **Cell actions**: bind `@onwablazor-cell-action` on `WaDataGrid` (import the namespace). The handler gets `WaDataGridCellActionEventArgs`: `Action`, `Column`, `RowKey`, `Row`, `Value`, `RowIndex`, `GetRow<T>()` and `GetPayload<T>()`. A click that raises an action does not raise `OnCellClick`. The event is a notification: update your data when the action changes a row.
 - **Links**: `Link` URL-encodes each placeholder value and allows only relative URLs and the http, https, mailto and tel schemes. The grid uses Enter on a cell for its keyboard navigation, so use `ActionLink` (a button) for an action that the keyboard must reach.
+- **More visual presets**: `ProgressBar`, `ProgressRing` (with color thresholds), `Rating` (read-only), `Avatar`, `Image` (relative, http and https URLs only), `ColorSwatch`, `Sparkline`, `Trend`, `DataBar` (fixed limits, or computed from the loaded rows; in server mode, set `min` and `max`) and `CopyButton`.
+- **Interactive presets**: `Button`, `Actions` (icon buttons and a menu, with `HiddenField` and `DisabledField` per row), `Menu`, `Switch` and `Checkbox`. A switch or checkbox sends `{ "checked": bool }` as the payload and shows the new state at once: update your row in the handler and push `Data` again (push it unchanged to reject the change).
+- **Other grid members**: `WaDataGridClassRules.Cell`/`Row` (classes by conditions, for `CellClassFunction` and `RowClassFunction`; style them with `ShadowStyles`), `WaDataGridFooters` (`Sum`, `Average`, `Min`, `Max`, `Count`), `WaDataGridComparators.Collation(culture)`, `WaDataGridSearch.Formatted(columns)` (the search also finds lookup and badge labels), `WaDataGridFilterOptions` (filter options from labels), `WaDataGridRows.DetailFields` and `WaDataGridRows.SelectableField`.
 - Keep the column list in a field: the grid sends the columns again only when their JSON changes.
+
+```razor
+new() { Field = "active", Label = "Active", Formatter = WaDataGridFormatters.Switch("Active: {customer}") },
+new()
+{
+    Field = "monthly", Label = "Monthly", Formatter = WaDataGridFormatters.Currency("EUR"),
+    CellClassFunction = WaDataGridClassRules.Cell(new WaDataGridClassRule("high", WaDataGridCondition.GreaterThan(1000))),
+    FooterFunction = WaDataGridFooters.Sum(WaDataGridFormatters.Currency("EUR"), "Total")
+},
+new()
+{
+    Id = "actions", Label = "Actions",
+    Formatter = WaDataGridFormatters.Actions(
+    [
+        new WaDataGridAction("edit", "Edit") { Icon = "pen" },
+        new WaDataGridAction("cancel", "Cancel") { InMenu = true, Variant = WaVariant.Danger }
+    ])
+},
+```
+
+## Your own cell functions
+
+A `WaJsFunction` of your own (for example an export of a collocated `Page.razor.js`) gets these `ctx` helpers when the package is installed:
+
+- `ctx.emit(action, payload)` raises a cell action for the row of the call (also in a detail panel or a footer).
+- `ctx.h(tag, props, ...children)` builds DOM safely: text is always text, an `on*` function is a listener, `action: "edit"` adds a click that raises the action.
+- `ctx.preset("badge", options)`, `ctx.format.currency(value, options)`, `ctx.cache(key, create)`.
+- An element with `data-wablazor-action="edit"` (and optionally `data-wablazor-action-payload` with JSON) raises the action when it is clicked in a cell. This also works in a Lit template.
+
+```js
+export function orderCell(value, row, ctx) {
+  return ctx.h('span', {},
+    ctx.preset('badge', { variants: { open: 'brand', closed: 'neutral' } }),
+    ctx.h('button', { type: 'button', action: 'approve' }, 'Approve'));
+}
+```
 
 ## Links
 

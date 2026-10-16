@@ -33,8 +33,11 @@ public class PresetScriptContractTests
     {
         var initializer = PresetScripts.Read(PresetScripts.InitializerFileName);
 
-        Assert.Matches(@"import \{ registerFunction \} from '\.\./WebAwesome\.Blazor/webawesome-functions\.js';", initializer);
+        Assert.Matches(@"import \{ registerFunction, registerContextDecorator \} from '\.\./WebAwesome\.Blazor/webawesome-functions\.js';", initializer);
         Assert.Matches(@"for \(const \[name, preset\] of Object\.entries\(presets\)\) \{\s*registerFunction\(name, preset\);", initializer);
+        // the ctx helpers (ctx.emit, ctx.h, ...) are a context decorator, registered in the same step as the presets
+        Assert.Matches(@"import \{ decorateContext \} from '\./data-grid-context\.js';", initializer);
+        Assert.Matches(@"registerFunction\(name, preset\);\s*\}\s*registerContextDecorator\(decorateContext\);", initializer);
         foreach (var callback in new[] { "beforeWebStart", "beforeStart" })
         {
             Assert.Matches($@"export function {callback}\(\) \{{\s*registerPresets\(\);", initializer);

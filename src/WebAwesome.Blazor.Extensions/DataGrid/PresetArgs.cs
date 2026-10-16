@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using WebAwesome.Blazor.Components;
 using WebAwesome.Blazor.Models;
 
@@ -121,10 +122,90 @@ internal sealed class PresetArgs
     /// <returns>The icon object, or null when the icon is null</returns>
     public static object? IconOrNull(WaDataGridIcon? icon) => icon is null ? null : IconOf(icon);
 
+    /// <summary>
+    /// The object that a composite preset reads for the text format of a value: the name of a text preset and its
+    /// arguments.
+    /// </summary>
+    /// <param name="format">A text preset of <see cref="WaDataGridFormatters"/>, or null</param>
+    /// <param name="parameterName">The parameter name for exceptions</param>
+    /// <returns>The format object (<c>{ name, args }</c>), or null when the format is null</returns>
+    /// <exception cref="ArgumentException">Thrown when the reference is not a text preset that formats a value without
+    /// its row</exception>
+    public static object? TextFormatOrNull(WaJsFunction? format, string parameterName)
+    {
+        if (format is null) return null;
+        if (format.Kind != WaJsFunctionKind.Registered || !PresetNames.TextFormats.Contains(format.Reference, StringComparer.Ordinal))
+            throw new ArgumentException($"The format must be a text preset of {nameof(WaDataGridFormatters)} such as Number, Currency, Percent, Date or Lookup, not {format}.", parameterName);
+
+        var result = new Dictionary<string, object> { [FormatNameKey] = format.Reference };
+        if (format.Args is { } args) result[FormatArgsKey] = args;
+        return result;
+    }
+
+    /// <summary>
+    /// Checks an action id: non-empty, without leading or trailing whitespace and without control characters.
+    /// </summary>
+    /// <param name="action">The action id</param>
+    /// <param name="parameterName">The parameter name for exceptions</param>
+    /// <exception cref="ArgumentException">Thrown when the action id is not valid</exception>
+    public static void ValidateActionId(string action, string parameterName)
+    {
+        if (string.IsNullOrWhiteSpace(action) || action.Trim().Length != action.Length || action.Any(char.IsControl))
+            throw new ArgumentException($"'{action}' is not a valid action id: it must be non-empty, without leading or trailing whitespace and without control characters.", parameterName);
+    }
+
+    /// <summary>
+    /// Checks a text that the browser shows or reads: not null, with no control characters.
+    /// </summary>
+    /// <param name="text">The text</param>
+    /// <param name="parameterName">The parameter name for exceptions</param>
+    /// <exception cref="ArgumentException">Thrown when the text is null, empty or has a control character</exception>
+    public static void ValidateLabel(string text, string parameterName)
+    {
+        if (string.IsNullOrWhiteSpace(text) || text.Any(char.IsControl))
+            throw new ArgumentException("A label must be a non-empty text without control characters.", parameterName);
+    }
+
+    /// <summary>
+    /// Reads the display texts (<c>labels</c>) and the lookup fallback text from the arguments of a preset that has
+    /// them (<see cref="PresetNames.Labeled"/>).
+    /// </summary>
+    /// <param name="formatter">The formatter reference</param>
+    /// <returns>The labels and the fallback text, or null when the reference is not such a preset or has no labels</returns>
+    public static (Dictionary<string, string> Labels, string? Fallback)? LabelsOf(WaJsFunction? formatter)
+    {
+        if (formatter is null || formatter.Kind != WaJsFunctionKind.Registered
+            || !PresetNames.Labeled.Contains(formatter.Reference, StringComparer.Ordinal)
+            || formatter.Args is not { ValueKind: JsonValueKind.Object } args
+            || !args.TryGetProperty(LabelsKey, out var labels) || labels.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var label in labels.EnumerateObject())
+        {
+            if (label.Value.ValueKind == JsonValueKind.String) map[label.Name] = label.Value.GetString()!;
+        }
+
+        // a lookup shows its fallback text for a value without a label; the fallback of a badge is a variant
+        string? fallback = null;
+        if (formatter.Reference == PresetNames.Lookup && args.TryGetProperty(FallbackKey, out var fallbackText) && fallbackText.ValueKind == JsonValueKind.String)
+            fallback = fallbackText.GetString();
+
+        return (map, fallback);
+    }
+
     #region ------ Internals ------
 
     private const string CultureKey = "culture";
     private const string NullTextKey = "nullText";
+
+    // the text format object of the composite presets, and the option names of the labeled presets
+    private const string FormatNameKey = "name";
+    private const string FormatArgsKey = "args";
+    private const string LabelsKey = "labels";
+    private const string FallbackKey = "fallback";
 
     // the icon object of design section 6.3: name, family, variant, library
     private const string IconNameKey = "name";

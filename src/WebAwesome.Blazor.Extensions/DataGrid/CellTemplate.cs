@@ -25,6 +25,11 @@ internal static class CellTemplate
     public static readonly string[] LinkSchemes = ["http", "https", "mailto", "tel"];
 
     /// <summary>
+    /// The URL schemes that an image may have; a relative URL is allowed too.
+    /// </summary>
+    public static readonly string[] ImageSchemes = ["http", "https"];
+
+    /// <summary>
     /// Checks a text template.
     /// </summary>
     /// <param name="template">The template</param>
@@ -46,19 +51,19 @@ internal static class CellTemplate
     /// character, has an unmatched brace, a placeholder that is not a field path, a format, or another scheme</exception>
     public static void ValidateUrl(string template, string parameterName)
     {
-        if (!string.IsNullOrEmpty(template) && template.Any(c => char.IsWhiteSpace(c) || char.IsControl(c)))
-            throw new ArgumentException($"'{template}' is not a valid URL template: it must not contain whitespace or control characters.", parameterName);
+        ValidateUrl(template, parameterName, LinkSchemes);
+    }
 
-        var (prefix, literal) = Parse(template, parameterName, allowFormats: false);
-
-        // the text before the first placeholder, and all literal text joined: an empty placeholder value joins the
-        // literal parts, so "java{x}script:" must fail as "javascript:" does
-        foreach (var text in new[] { prefix, literal })
-        {
-            var scheme = SchemePattern.Match(text);
-            if (scheme.Success && !LinkSchemes.Contains(scheme.Groups[1].Value, StringComparer.OrdinalIgnoreCase))
-                throw new ArgumentException($"'{template}' is not a valid URL template: only a relative URL or the schemes {string.Join(", ", LinkSchemes)} are allowed.", parameterName);
-        }
+    /// <summary>
+    /// Checks the URL template of an image: as <see cref="ValidateUrl(string, string)"/>, with the schemes http and
+    /// https only.
+    /// </summary>
+    /// <param name="template">The template, for example <c>/photos/{id}.jpg</c></param>
+    /// <param name="parameterName">The parameter name for exceptions</param>
+    /// <exception cref="ArgumentException">Thrown when the template is not valid or names another scheme</exception>
+    public static void ValidateImageUrl(string template, string parameterName)
+    {
+        ValidateUrl(template, parameterName, ImageSchemes);
     }
 
     /// <summary>
@@ -74,6 +79,23 @@ internal static class CellTemplate
     }
 
     #region ------ Internals ------
+
+    private static void ValidateUrl(string template, string parameterName, string[] schemes)
+    {
+        if (!string.IsNullOrEmpty(template) && template.Any(c => char.IsWhiteSpace(c) || char.IsControl(c)))
+            throw new ArgumentException($"'{template}' is not a valid URL template: it must not contain whitespace or control characters.", parameterName);
+
+        var (prefix, literal) = Parse(template, parameterName, allowFormats: false);
+
+        // the text before the first placeholder, and all literal text joined: an empty placeholder value joins the
+        // literal parts, so "java{x}script:" must fail as "javascript:" does
+        foreach (var text in new[] { prefix, literal })
+        {
+            var scheme = SchemePattern.Match(text);
+            if (scheme.Success && !schemes.Contains(scheme.Groups[1].Value, StringComparer.OrdinalIgnoreCase))
+                throw new ArgumentException($"'{template}' is not a valid URL template: only a relative URL or the schemes {string.Join(", ", schemes)} are allowed.", parameterName);
+        }
+    }
 
     private const char OpenBrace = '{';
     private const char CloseBrace = '}';

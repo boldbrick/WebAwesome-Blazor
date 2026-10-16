@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using WebAwesome.Blazor.Models;
 
@@ -65,10 +66,33 @@ public static class WaDataGridComparators
         return Ordinal(values.Select(EnumKeys.Of));
     }
 
+    /// <summary>
+    /// Sorts text with the rules of a language (<c>Intl.Collator</c>). The built-in sort compares character codes, so
+    /// accented letters sort after "z", and in Czech "ch" does not sort after "h". A null value sorts as an empty text.
+    /// </summary>
+    /// <param name="culture">The culture of the sort rules; <see cref="CultureInfo.CurrentCulture"/> when null</param>
+    /// <param name="sensitivity">Which differences count; the default of the culture (usually all) when null</param>
+    /// <param name="numeric">Whether digits sort as numbers ("2" before "10")</param>
+    /// <param name="ignorePunctuation">Whether punctuation is ignored</param>
+    /// <returns>The comparator reference</returns>
+    public static WaJsFunction Collation(CultureInfo? culture = null, WaDataGridCollationSensitivity? sensitivity = null,
+        bool numeric = false, bool ignorePunctuation = false)
+    {
+        return new PresetArgs()
+            .SetCulture(culture)
+            .Set(SensitivityKey, sensitivity?.ToJsValue())
+            .Set(NumericKey, numeric ? true : null)
+            .Set(IgnorePunctuationKey, ignorePunctuation ? true : null)
+            .ToFunction(PresetNames.Collation);
+    }
+
     #region ------ Internals ------
 
-    // the option name that the comparator in data-grid-presets.js reads
+    // the option names that the comparators in data-grid-presets.js read
     private const string ValuesKey = "values";
+    private const string SensitivityKey = "sensitivity";
+    private const string NumericKey = "numeric";
+    private const string IgnorePunctuationKey = "ignorePunctuation";
 
     #endregion
 }

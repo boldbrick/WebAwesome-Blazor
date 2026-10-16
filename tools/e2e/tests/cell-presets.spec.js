@@ -15,7 +15,10 @@ const DATA_GRID_PAGE = '/components/data-grid';
 // the names the Extensions initializer registers (PresetNames.cs)
 const PRESET_NAMES = [
   'number', 'currency', 'percent', 'date', 'dateTime', 'time', 'relativeTime', 'bytes', 'duration', 'lookup', 'boolean',
-  'template', 'list', 'badge', 'tag', 'tags', 'icon', 'link', 'actionLink', 'email', 'phone', 'ordinal',
+  'template', 'list', 'badge', 'tag', 'tags', 'icon', 'link', 'actionLink', 'email', 'phone', 'ordinal', 'button', 'actions',
+  'menu', 'switch', 'checkbox', 'progressBar', 'progressRing', 'rating', 'avatar', 'image', 'colorSwatch', 'sparkline', 'trend',
+  'dataBar', 'copyButton', 'collation', 'cellClassRules', 'rowClassRules', 'footerAggregate', 'searchFormatted', 'detailFields',
+  'selectableField',
 ].map(name => `wab.dataGrid.${name}`);
 
 // Intl puts no-break spaces into some formats (cs-CZ groups, the space before AM/PM); the tests compare plain spaces
@@ -110,6 +113,97 @@ test('cell presets: the Extensions initializer registers every preset, and the p
   expect(result.markup, 'a text preset returns text, not markup').toBe('<img src=x onerror=alert(1)>');
 });
 
+test('cell presets: the phase 2 presets build their DOM, rules, footers, search and sort without a grid', async ({ page }) => {
+  await page.goto(HARNESS);
+  await page.waitForSelector('.demo-shell');
+
+  const result = await page.evaluate(() => {
+    const registry = /** @type {any} */ (globalThis)[Symbol.for('WebAwesome.Blazor.functions')];
+    const preset = (/** @type {string} */ name) => registry.functions.get(`wab.dataGrid.${name}`);
+    const grid = document.createElement('div');
+    const ctx = (/** @type {any} */ args, extra = {}) => ({ args, column: 'c', grid, ...extra });
+    const describe = (/** @type {any} */ node) => typeof node === 'string' ? `text:${node}`
+      : `${node.localName}[${[...node.attributes].filter(a => a.name !== 'style').map(a => `${a.name}=${a.value}`).join(' ')}]${node.textContent ? `"${node.textContent}"` : ''}`;
+    const row = { id: 1, locked: true, name: 'Ada', photo: 'javascript:alert(1)', trend: 'negative', canSelect: false };
+
+    const rules = { rules: [
+      { class: 'null', when: 'isNull' },
+      { class: 'eq', when: 'equals', value: '2' },
+      { class: 'in', when: 'in', values: ['a', 'b'] },
+      { class: 'lt', when: 'lessThan', value: 0, type: 'number' },
+      { class: 'between', when: 'between', min: 10, max: 20, type: 'number' },
+      { class: 'gt-date', when: 'greaterThan', value: '2026-01-01', type: 'date' },
+      { class: 'true', when: 'isTrue' },
+      { class: 'false', when: 'isFalse' },
+      { class: 'match', when: 'matches', pattern: '^x', ignoreCase: true },
+    ] };
+    const cellClass = (/** @type {any} */ value) => preset('cellClassRules')(value, {}, ctx(rules));
+    const footerGrid = { columns: [{ field: 'amount' }, { id: 'double', value: (/** @type {any} */ r) => r.amount * 2 }] };
+    const rows = [{ amount: 1 }, { amount: 2.5 }, { amount: 'n/a' }, { amount: 4 }];
+    const footer = (/** @type {string} */ aggregate, column = 'amount', extra = {}) =>
+      preset('footerAggregate')(rows, { args: { aggregate, culture: 'en-US', ...extra }, column, grid: footerGrid });
+    const search = (/** @type {any} */ value, /** @type {string} */ term, /** @type {any} */ searchRow) => preset('searchFormatted')(value, term, searchRow,
+      ctx({ columns: [{ field: 'region', labels: { PA: 'Pardubice' } }, { field: 'tags', labels: { u: 'Urgent' } }] }));
+    const collation = ctx({ culture: 'cs-CZ' });
+    const names = ['Zlín', 'Chrudim', 'Hlinsko', null, 'Cvikov'].sort((a, b) => preset('collation')(a, b, {}, {}, collation));
+
+    return {
+      button: describe(preset('button')(5, { id: 5 }, ctx({ action: 'edit', label: 'Edit #{id}', icon: { name: 'pen' }, size: 's', culture: 'en-US' }))),
+      disabled: describe(preset('button')(5, row, ctx({ action: 'edit', disabledField: 'locked' }))),
+      hidden: preset('button')(5, row, ctx({ action: 'edit', hiddenField: 'locked', nullText: '-' })),
+      actions: [...preset('actions')(1, row, ctx({ items: [{ id: 'view', label: 'View', icon: { name: 'eye' } }, { id: 'delete', label: 'Delete', hiddenField: 'locked' }, { id: 'more', label: 'More', inMenu: true }], menuLabel: 'Menu' })).children].map(describe),
+      menu: [...preset('menu')(1, row, ctx({ items: [{ id: 'open', label: 'Open' }, { id: 'remove', label: 'Remove', variant: 'danger', disabledField: 'locked' }], menuLabel: 'Menu' })).children].map(describe),
+      toggle: describe(preset('switch')(true, row, ctx({ label: 'Active: {name}', disabledField: 'locked', culture: 'en-US' }))),
+      progress: describe(preset('progressBar')(0.85, {}, ctx({ culture: 'en-US', thresholds: [{ from: 0.8, variant: 'success' }] }))),
+      rating: describe(preset('rating')(3.5, {}, ctx({ max: 5, precision: 0.5, culture: 'en-US' }))),
+      avatar: describe(preset('avatar')('Ada', row, ctx({ imageField: 'photo' }))),
+      image: preset('image')('javascript:alert(1)', row, ctx({ nullText: '-' })),
+      imageTemplate: describe(preset('image')(null, { id: 'a b' }, ctx({ src: '/photos/{id}.png', alt: 'Photo {id}' }))),
+      swatch: describe(preset('colorSwatch')('red', {}, ctx({}))),
+      noColor: preset('colorSwatch')('url(javascript:x)', {}, ctx({})),
+      sparkline: describe(preset('sparkline')([1, '2', 'x', 3], row, ctx({ trendField: 'trend', culture: 'en-US' }))),
+      trend: describe(preset('trend')(-0.5, {}, ctx({ culture: 'en-US', negativeVariant: 'danger', downIcon: { name: 'arrow-trend-down' } }))),
+      dataBar: describe(preset('dataBar')(25, {}, ctx({ min: 0, max: 100, culture: 'en-US' }))),
+      copy: describe(preset('copyButton')('KEY-1', {}, ctx({}))),
+      classes: [null, 2, 'b', -1, 15, '2026-06-01', true, false, 'Xyz', 'other'].map(cellClass),
+      rowClass: preset('rowClassRules')({ state: 'b' }, ctx({ rules: [{ class: 'r', when: 'in', values: ['b'], field: 'state' }] })),
+      footers: [footer('sum'), footer('average'), footer('min'), footer('max'), footer('count'), footer('sum', 'double', { label: 'Total' }),
+        footer('sum', 'amount', { format: { name: 'wab.dataGrid.currency', args: { culture: 'en-US', currency: 'EUR' } } })],
+      search: [search('x', 'pard', { region: 'PA' }), search('Ada', 'ad', {}), search('x', 'urg', { tags: ['u'] }), search('x', 'zzz', { region: 'PA' })],
+      names,
+      detail: [...preset('detailFields')({ name: 'Ada', due: '2026-10-15' }, ctx({ nullText: '-', fields: [{ label: 'Name', field: 'name' }, { label: 'Due', field: 'due', format: { name: 'wab.dataGrid.date', args: { culture: 'en-US' } } }, { label: 'Note', field: 'note' }] })).children].map(node => node.textContent),
+      selectable: [preset('selectableField')(row, ctx({ field: 'canSelect' })), preset('selectableField')({ canSelect: true }, ctx({ field: 'canSelect' }))],
+    };
+  });
+
+  expect(result.button).toBe('wa-button[size=s]"Edit #5"');
+  expect(result.disabled).toBe('wa-button[disabled=]"5"');
+  expect(result.hidden).toBe('-');
+  expect(result.actions, 'an icon action shows its icon with the label as the name; a hidden action is left out').toEqual([
+    'wa-button[]', 'wa-dropdown[]"More"',
+  ]);
+  expect(result.menu).toEqual(['wa-button[slot=trigger]', 'wa-dropdown-item[value=open]"Open"', 'wa-dropdown-item[value=remove variant=danger disabled=]"Remove"']);
+  expect(result.toggle, 'the label is the accessible name').toBe('wa-switch[checked= disabled=]"Active: Ada"');
+  expect(result.progress).toBe('wa-progress-bar[value=85 label=85%]');
+  expect(result.rating).toBe('wa-rating[readonly= value=3.5 max=5 precision=0.5 label=3.5 / 5]');
+  expect(result.avatar, 'an image URL with another scheme is left out').toBe('wa-avatar[label=Ada]');
+  expect(result.image).toBe('-');
+  expect(result.imageTemplate, 'the placeholder value is URL-encoded').toBe('img[src=/photos/a%20b.png alt=Photo a b loading=lazy]');
+  expect(result.swatch).toBe('span[role=img aria-label=red]');
+  expect(result.noColor, 'a value that is not a CSS color shows as text').toBe('url(javascript:x)');
+  expect(result.sparkline).toBe('wa-sparkline[data=1 2 3 label=1, 2, 3 trend=negative]');
+  expect(result.trend).toBe('span[]"-0.5"');
+  expect(result.dataBar).toBe('div[role=img aria-label=25]');
+  expect(result.copy).toBe('wa-copy-button[value=KEY-1]');
+  expect(result.classes, 'the first rule that matches gives the class').toEqual(['null', 'eq', 'in', 'lt', 'between', 'gt-date', 'true', 'false', 'match', '']);
+  expect(result.rowClass).toBe('r');
+  expect(result.footers, 'values that are not numbers are left out; a value function counts').toEqual(['7.5', '2.5', '1', '4', '4', 'Total 15', '€7.50']);
+  expect(result.search).toEqual([true, true, true, false]);
+  expect(result.names, 'the Czech order: "ch" after "h"').toEqual([null, 'Cvikov', 'Hlinsko', 'Chrudim', 'Zlín']);
+  expect(result.detail).toEqual(['Name', 'Ada', 'Due', '10/15/2026', 'Note', '-']);
+  expect(result.selectable).toEqual([false, true]);
+});
+
 test.describe('in a time zone west of UTC', () => {
   test.use({ timezoneId: 'America/Los_Angeles' });
 
@@ -198,6 +292,54 @@ test('cell presets: visual presets render upgraded elements with accessible name
     'a href=tel:5550103 upgraded=true | 555-0103',
     'a href=tel:5550104 upgraded=true | 555 0104',
   ]);
+});
+
+test('cell presets: progress, rating, avatar, image, color, sparkline, trend, data bar and copy presets render upgraded elements', async ({ page }) => {
+  const grid = await openGrid(page, HARNESS, '[data-testid="cp-more"]', 11);
+
+  await expect.poll(() => describeElements(grid, 'progress', 'wa-progress-bar', ['value', 'label'])).toEqual([
+    'wa-progress-bar value=25 label=25% upgraded=true | 25%',
+    'wa-progress-bar value=90 label=90% upgraded=true | 90%',
+    'wa-progress-bar value=50 label=50% upgraded=true | 50%',
+  ]);
+  expect(await grid.evaluate(el => [...(el.shadowRoot?.querySelectorAll('[data-col-id="progress"] wa-progress-bar') ?? [])]
+    .map(bar => /** @type {HTMLElement} */ (bar).style.getPropertyValue('--indicator-color'))), 'the threshold colors')
+    .toEqual(['var(--wa-color-warning-fill-loud)', 'var(--wa-color-success-fill-loud)', 'var(--wa-color-warning-fill-loud)']);
+  expect(await describeElements(grid, 'ring', 'wa-progress-ring', ['value', 'label'])).toHaveLength(3);
+  expect(await describeElements(grid, 'score', 'wa-rating', ['value', 'readonly', 'label'])).toEqual([
+    'wa-rating value=3 readonly= label=3 / 5 upgraded=true | ', 'wa-rating value=5 readonly= label=5 / 5 upgraded=true | ',
+    'wa-rating value=4 readonly= label=4 / 5 upgraded=true | ',
+  ]);
+  expect(await describeElements(grid, 'owner', 'wa-avatar', ['label', 'image', 'initials', 'shape'])).toEqual([
+    'wa-avatar label=Ada Lovelace image=fragments/icon-sprite.svg initials=AL shape=rounded upgraded=true | ',
+    'wa-avatar label=Grace Hopper initials=GH shape=rounded upgraded=true | ',
+    'wa-avatar label=Alan Turing shape=rounded upgraded=true | ',
+  ]);
+  expect((await cellTexts(grid)).owner, 'the name shows next to the avatar').toEqual(['Ada Lovelace', 'Grace Hopper', 'Alan Turing']);
+  expect(await describeElements(grid, 'image', 'img', ['src', 'alt', 'width'])).toEqual(['img src=fragments/icon-sprite.svg alt=Photo of Ada Lovelace width=24 upgraded=true | ']);
+  expect(await describeElements(grid, 'color', 'span > span:first-child', [])).toHaveLength(2);
+  expect((await cellTexts(grid)).color).toEqual(['#ff8800', 'rebeccapurple', 'not a color']);
+  expect(await describeElements(grid, 'sales', 'wa-sparkline', ['data', 'trend', 'label'])).toEqual([
+    'wa-sparkline data=3 5 4 8 trend=positive label=3, 5, 4, 8 upgraded=true | ',
+    'wa-sparkline data=8 6 5 2 trend=negative label=8, 6, 5, 2 upgraded=true | ',
+  ]);
+  expect((await cellTexts(grid)).change, 'the trend text with its format').toEqual(['+12.5%', '-5%', '0%']);
+  expect(await describeElements(grid, 'change', 'wa-icon', ['name'])).toEqual(['wa-icon name=arrow-trend-up upgraded=true | ', 'wa-icon name=arrow-trend-down upgraded=true | ']);
+  expect(await describeElements(grid, 'budget', 'div[role="img"]', ['aria-label'])).toEqual([
+    'div aria-label=€1,200.00 upgraded=true | €1,200.00', 'div aria-label=€300.00 upgraded=true | €300.00', 'div aria-label=€600.00 upgraded=true | €600.00',
+  ]);
+  expect(await grid.evaluate(el => [...(el.shadowRoot?.querySelectorAll('[data-col-id="budget"] div[role="img"] > div > div') ?? [])]
+    .map(bar => /** @type {HTMLElement} */ (bar).style.inlineSize)), 'the limits come from the loaded rows').toEqual(['100%', '25%', '50%']);
+  expect(await describeElements(grid, 'key', 'wa-copy-button', ['value'])).toEqual([
+    'wa-copy-button value=KEY-ATLAS upgraded=true | ', 'wa-copy-button value=KEY-BOREALIS upgraded=true | ', 'wa-copy-button value=KEY-CIRRUS upgraded=true | ',
+  ]);
+
+  // a click on the copy button does not raise OnCellClick
+  const clicks = await page.getByTestId('cp-click-count').textContent();
+  await grid.locator('wa-copy-button').first().click();
+  await grid.locator('[part~="cell"][data-col-id="name"]').first().click();
+  await expect(page.getByTestId('cp-click')).toHaveText('name|0');
+  await expect(page.getByTestId('cp-click-count')).toHaveText(String(Number(clicks) + 1));
 });
 
 test('cell presets: an action link raises OnCellAction, not OnCellClick, by click and by Enter', async ({ page }) => {

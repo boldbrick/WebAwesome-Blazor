@@ -416,6 +416,7 @@ export async function setDataGridColumns(element, columnsJson, configuredEntryPo
                 label: `data grid column "${columnId}" ${member}`,
                 arity: signature.arity,
                 context: { column: columnId, grid: element },
+                rowArgument: signature.rowArgument,
                 rowKey: signature.rowArgument === undefined ? undefined : callArgs => dataGridRowKey(element, callArgs[signature.rowArgument]),
             }).then(target => {
                 if (target) column[member] = target;
@@ -726,6 +727,7 @@ async function assignElementFunction(element, member, signature, state, descript
                 label: `${element.localName} ${member}`,
                 arity: signature.arity,
                 context: contexts?.context(element),
+                rowArgument: signature.rowArgument,
                 rowKey: contexts && signature.rowArgument !== undefined ? callArgs => contexts.rowKey(element, callArgs[signature.rowArgument]) : undefined,
             }),
             signature.renders ? preloadTags(descriptor.uses ?? [], configuredEntryPointUrl) : undefined,

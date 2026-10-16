@@ -726,15 +726,15 @@ Owner answers recorded on 2026-10-15.
 
 ## 16. Risks to verify in a prototype
 
-| # | Risk | Check |
-|---|---|---|
-| R1 | Upstream changes the formatter contract or the cell click handler (F3, F5). The grid is experimental. | Add both to the CEM and parity watch list of the `/wa-upgrade` pipeline. |
-| R2 | A Lit template from the app's copy of Lit does not render in the Lit of the grid | Render one template from `lit@3` in a grid cell |
-| R3 | Blazor enhanced navigation does not intercept an anchor in a shadow root | Click a `Link` preset and watch for a full page load |
-| R4 | The roving focus of the grid blocks Tab to buttons in a cell | Keyboard test of the `Actions` preset |
-| R5 | `discover(shadowRoot)` after each push costs too much on large grids | Measure. If necessary, run it only when the set of declared tags changes. |
-| R6 | `wa-dropdown` in a cell opens in a clipped area, or its click does not reach the cell | Test the `Menu` preset in a pinned column and in the last row |
-| R7 | `ctx` for each call costs too much | The 10,000-row budget (section 11.5) |
+| # | Risk | Check | Result (WA 3.14.0) |
+|---|---|---|---|
+| R1 | Upstream changes the formatter contract or the cell click handler (F3, F5). The grid is experimental. | Add both to the CEM and parity watch list of the `/wa-upgrade` pipeline. | On the watch list (WAB-54, WAB-56). |
+| R2 | A Lit template from the app's copy of Lit does not render in the Lit of the grid | Render one template from `lit@3` in a grid cell | Renders (WAB-59): a `TemplateResult` of `lit@3.3.1` from the CDN, with a working `@click` and a declarative action (`cell-actions.spec.js`). |
+| R3 | Blazor enhanced navigation does not intercept an anchor in a shadow root | Click a `Link` preset and watch for a full page load | The router intercepts it (WAB-55). |
+| R4 | The roving focus of the grid blocks Tab to buttons in a cell | Keyboard test of the `Actions` preset | No block (WAB-59): Tab moves into the buttons of a cell, Enter and Space click a focused `wa-button`. |
+| R5 | `discover(shadowRoot)` after each push costs too much on large grids | Measure. If necessary, run it only when the set of declared tags changes. | Runs once per column push only (WAB-54). |
+| R6 | `wa-dropdown` in a cell opens in a clipped area, or its click does not reach the cell | Test the `Menu` preset in a pinned column and in the last row | Opens fully in the viewport, and its item reaches the bridge (WAB-59). |
+| R7 | `ctx` for each call costs too much | The 10,000-row budget (section 11.5) | No (WAB-54, WAB-59): about 65 ns per call with the helpers registered; 10,000 rows with eight preset columns scroll with no long task. |
 
 ## 17. Package split, general function binding, and the ticket plan
 

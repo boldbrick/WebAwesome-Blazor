@@ -2,7 +2,7 @@
   "description": "Release gate policy for the Playwright suite (tools\\release\\Test-WaReleasePreflight.ps1). Every skipped test must be listed for the asset mode the pass runs in, with a reason; any other skip fails the gate, and so does a listed test that ran or no longer exists. The pass must also run at least minimumTests tests (raise it when tests are added, lower it only on purpose). Test keys are '<spec file> > <describe titles> > <test title>'.",
   "modes": {
     "free-cdn": {
-      "minimumTests": 437,
+      "minimumTests": 449,
       "expectedSkips": [
         {
           "test": "pro-assets.spec.js > Pro components upgrade when a Pro asset override is active",
@@ -201,6 +201,38 @@
           "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
+          "test": "cell-presets.spec.js > cell presets: progress, rating, avatar, image, color, sparkline, trend, data bar and copy presets render upgraded elements",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "cell-actions.spec.js > interactive presets: buttons, actions, a menu, a switch and a checkbox raise their actions, not OnCellClick",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "cell-actions.spec.js > keyboard (R4): Tab reaches the buttons of an action cell, and Enter and Space click a focused button",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "cell-actions.spec.js > menu (R6): a menu in a pinned column and in the last row opens fully, and its item reaches the bridge",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "cell-actions.spec.js > ctx helpers and declarative actions raise actions from a cell, a detail panel and a footer",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "cell-actions.spec.js > rule presets: class rules, footers, collation, formatted search, filter options, detail fields and selectable rows",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "cell-actions.spec.js > Lit (R2): a template of the app's own Lit renders in a cell, and its @click and declarative action reach the bridge",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
+          "test": "cell-actions.spec.js > data grid page: the \"Extensions: Actions & Rules\" example toggles, marks, sums and receives the menu action",
+          "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
+        },
+        {
           "test": "data-grid-columns.spec.js > data grid: FilterOptions fill the set filter picker with their labels and filter by their values",
           "reason": "wa-data-grid is Pro and never upgrades from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
@@ -295,7 +327,7 @@
       ]
     },
     "pro": {
-      "minimumTests": 437,
+      "minimumTests": 449,
       "expectedSkips": []
     }
   }

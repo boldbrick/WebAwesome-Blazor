@@ -38,7 +38,7 @@ namespace WebAwesome.Blazor.Extensions.DataGrid;
 /// or <see cref="DateTimeOffset"/> in the row, and set <c>timeZone</c> for the display.
 /// </para>
 /// </remarks>
-public static class WaDataGridFormatters
+public static partial class WaDataGridFormatters
 {
     /// <summary>
     /// The icon of true values of <see cref="BooleanIcon"/> when no icon is given.
@@ -570,8 +570,7 @@ public static class WaDataGridFormatters
     public static WaJsFunction ActionLink(string action, string? textTemplate = null, string? nullText = null,
         CultureInfo? culture = null)
     {
-        if (string.IsNullOrWhiteSpace(action) || action.Trim().Length != action.Length || action.Any(char.IsControl))
-            throw new ArgumentException($"'{action}' is not a valid action id: it must be non-empty, without leading or trailing whitespace and without control characters.", nameof(action));
+        PresetArgs.ValidateActionId(action, nameof(action));
 
         return TextArgs(textTemplate, nullText, culture)
             .Set(ActionKey, action)

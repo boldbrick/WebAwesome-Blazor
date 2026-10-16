@@ -8,7 +8,11 @@
  * like the grid member it binds, with one trailing ctx: a formatter as (value, row, ctx), a comparator as
  * (a, b, rowA, rowB, ctx). ctx.args is one object per resolved column function, so it keys the caches of a column.
  *
- * Rules (design: tasks/WA-3.14/WAB-49/datagrid-cell-rendering-design.md, sections 6, 7.3, 9 and 11):
+ * The table also holds the presets of the other function members (WaDataGridClassRules, WaDataGridFooters,
+ * WaDataGridSearch, WaDataGridRows): cellClass and rowClass rules, footer aggregates, the formatted search, the detail
+ * fields and the selectable field. The ctx helpers of custom functions (ctx.emit, ctx.h, ...) are in data-grid-context.js.
+ *
+ * Rules (design: tasks/WA-3.14/WAB-49/datagrid-cell-rendering-design.md, sections 6, 7, 9 and 11):
  * - A text preset returns a string, so the CSV export and the copy of rows hold the formatted text. A visual preset
  *   returns an element and keeps it per row object and column while the value stays the same, so the element keeps its
  *   state when the grid renders again; new data from .NET brings new row objects, which empties the cache.
@@ -18,9 +22,9 @@
  * - A link URL comes from a C# template; each placeholder value is URL-encoded, and a URL whose scheme is not http,
  *   https, mailto or tel (or relative) renders as plain text.
  * - Content that raises a cell action dispatches `wablazor-cell-action` on the grid host (bubbles, composed). A click
- *   that raises an action does not reach Blazor as wa-cell-click (decision D4): a wa-cell-click listener on the grid
- *   host stops its propagation, so listeners on the grid element still see it, but Blazor, which listens on the
- *   document, does not.
+ *   that raises an action, hits a declarative action (data-wablazor-action) or hits a control of a preset does not
+ *   reach Blazor as wa-cell-click (decision D4): a wa-cell-click listener on the grid host stops its propagation, so
+ *   listeners on the grid element still see it, but Blazor, which listens on the document, does not.
  */
 
 const logPrefix = 'WebAwesome.Blazor.Extensions:';
@@ -834,50 +838,173 @@ function phone(value, row, ctx) {
     return linkOrText(row, args, `tel:${dialable.replaceAll('#', '%23')}`, text);
 }
 
-// grid -> the token of the click that raised an action; the wa-cell-click of that click is stopped (decision D4)
-const pendingActionClicks = new WeakMap();
-const guardedGrids = new WeakSet();
-let actionClickToken = 0;
+/*
+ * The cell action bridge (design 9.2-9.4). Per grid, a capture listener on the shadow root keeps the click in flight. A
+ * click that raises an action, that hits a declarative action (data-wablazor-action), or that hits a control a preset
+ * renders (a menu trigger, a switch) does not reach Blazor as wa-cell-click (decision D4): a wa-cell-click listener on
+ * the grid host stops the propagation of that event, so Blazor, which listens on the document, does not see it, while
+ * listeners on the grid element still do. The click ends when it reaches the host, or one task later.
+ */
 
-// Installs the listeners on the grid host once: wa-cell-click of a click that raised an action stops at the host, so
-// Blazor (a listener on the document) does not see it, and the mark ends when the click reaches the host.
-function guardCellClicks(grid) {
-    if (guardedGrids.has(grid)) return;
-    guardedGrids.add(grid);
+// the attributes of a declarative action in the output of a custom function (design 9.3, decision D5)
+const actionAttribute = 'data-wablazor-action';
+const actionPayloadAttribute = 'data-wablazor-action-payload';
 
-    grid.addEventListener('wa-cell-click', event => {
-        if (!pendingActionClicks.has(grid)) return;
-        pendingActionClicks.delete(grid);
-        event.stopPropagation();
-    });
-    grid.addEventListener('click', () => pendingActionClicks.delete(grid));
-}
+// grid -> { click }: the click in flight in the grid's shadow root ({ action, raised, consumed }), or null
+const bridges = new WeakMap();
 
 /**
- * Raises a cell action: dispatches `wablazor-cell-action` on the grid element, and stops the wa-cell-click of the same
- * click before it reaches Blazor.
+ * Installs the cell action bridge of a grid once: the listeners that apply decision D4 and pair a declarative action
+ * with the wa-cell-click of its click. Call it when content that can raise an action is created, before the first
+ * click; the presets and the ctx helpers do.
  * @param {HTMLElement} grid - The wa-data-grid element
- * @param {object} detail - { column, action, rowKey, row, value, payload }
- * @param {Element} source - The element in the cell that raised the action; its cell gives the row index
+ * @returns {object|undefined} The bridge state, or undefined without a grid
  */
-export function raiseCellAction(grid, detail, source) {
-    guardCellClicks(grid);
+export function ensureCellActionBridge(grid) {
+    if (!grid || typeof grid.addEventListener !== 'function') return undefined;
 
-    // the click goes on to the cell, which dispatches wa-cell-click, and then to the host; a task later at the latest,
-    // the mark ends, so that a later wa-cell-click of another interaction reaches Blazor
-    const token = ++actionClickToken;
-    pendingActionClicks.set(grid, token);
+    let bridge = bridges.get(grid);
+    if (bridge) return bridge;
+
+    bridge = { click: null };
+    bridges.set(grid, bridge);
+    grid.addEventListener('wa-cell-click', event => pairCellClick(grid, bridge, event));
+    grid.addEventListener('click', () => endClick(bridge));
+    watchShadowRoot(grid, bridge);
+    return bridge;
+}
+
+// the capture listener on the grid's shadow root, once the grid has one
+function watchShadowRoot(grid, bridge) {
+    const listen = root => root.addEventListener('click', event => beginClick(root, bridge, event), { capture: true });
+    if (grid.shadowRoot) {
+        listen(grid.shadowRoot);
+        return;
+    }
+
+    const tag = grid.localName;
+    if (!tag?.includes('-')) return;
+    customElements.whenDefined(tag)
+        .then(() => grid.updateComplete)
+        .then(() => {
+            if (grid.shadowRoot) listen(grid.shadowRoot);
+        })
+        .catch(() => { /* an element that never upgrades raises no actions */ });
+}
+
+function beginClick(root, bridge, event) {
+    const click = { action: declarativeAction(root, event), raised: false, consumed: false };
+    bridge.click = click;
+
+    // a click whose propagation something stopped never reaches the host: end it one task later at the latest
     setTimeout(() => {
-        if (pendingActionClicks.get(grid) === token) pendingActionClicks.delete(grid);
+        if (bridge.click === click) bridge.click = null;
     });
+}
 
-    const cell = source.closest('[data-row-index]');
+// the nearest element with a declarative action on the path of a click inside the shadow root, as { action, payload }
+function declarativeAction(root, event) {
+    for (const target of event.composedPath()) {
+        if (target === root) return null;
+        if (!(target instanceof Element) || !target.hasAttribute(actionAttribute)) continue;
+
+        const action = target.getAttribute(actionAttribute);
+        if (!action) return null;
+
+        return { action, payload: readActionPayload(target), source: target };
+    }
+
+    return null;
+}
+
+function readActionPayload(element) {
+    const text = element.getAttribute(actionPayloadAttribute);
+    if (text === null) return null;
+
+    try {
+        return JSON.parse(text);
+    } catch {
+        reportOnce(`the ${actionPayloadAttribute} of the action '${element.getAttribute(actionAttribute)}' is not JSON; the action has no payload.`);
+        return null;
+    }
+}
+
+// the wa-cell-click of the click in flight: a declarative action takes its column, row, value and row index; a click
+// that raised an action stops here (D4)
+function pairCellClick(grid, bridge, event) {
+    const click = bridge.click;
+    if (!click) return;
+
+    if (click.action && !click.consumed) {
+        click.consumed = true;
+        click.raised = true;
+        const detail = event.detail ?? {};
+        dispatchCellAction(grid, {
+            column: detail.column,
+            action: click.action.action,
+            rowKey: rowKeyOf(grid, detail.row),
+            row: detail.row ?? null,
+            value: detail.value,
+            payload: click.action.payload,
+        }, detail.rowIndex);
+    }
+
+    if (click.raised) event.stopPropagation();
+}
+
+function endClick(bridge) {
+    const click = bridge.click;
+    bridge.click = null;
+    if (click?.action && !click.consumed) {
+        console.warn(`${logPrefix} the declarative action '${click.action.action}' was dropped: its click raised no wa-cell-click (a detail panel, a footer or a group row). Use ctx.emit there.`);
+    }
+}
+
+// the key of a row as the grid reads it (its rowKey field)
+function rowKeyOf(grid, row) {
+    const key = grid?.rowKey;
+    return key && row !== null && typeof row === 'object' ? row[key] ?? null : null;
+}
+
+function rowIndexOf(source) {
+    const element = source instanceof Event ? source.composedPath().find(target => target instanceof Element) : source;
+    const cell = element instanceof Element ? element.closest('[data-row-index]') : null;
     const rowIndex = cell ? Number(cell.getAttribute('data-row-index')) : unknownRowIndex;
+    return Number.isInteger(rowIndex) ? rowIndex : unknownRowIndex;
+}
+
+function dispatchCellAction(grid, detail, rowIndex) {
     grid.dispatchEvent(new CustomEvent(cellActionEventName, {
         bubbles: true,
         composed: true,
         detail: { ...detail, rowIndex: Number.isInteger(rowIndex) ? rowIndex : unknownRowIndex },
     }));
+}
+
+/**
+ * Marks the click in flight of a grid as a click on a control (a menu trigger, a switch), so that its wa-cell-click does
+ * not reach Blazor (D4). Call it from a click listener of the control.
+ * @param {HTMLElement} grid - The wa-data-grid element
+ */
+export function markControlClick(grid) {
+    const bridge = bridges.get(grid);
+    if (bridge?.click) bridge.click.raised = true;
+}
+
+/**
+ * Raises a cell action: dispatches `wablazor-cell-action` on the grid element. When a click in the grid raised it, the
+ * wa-cell-click of that click does not reach Blazor (D4).
+ * @param {HTMLElement} grid - The wa-data-grid element
+ * @param {object} detail - { column, action, rowKey, row, value, payload }
+ * @param {Element|Event} [source] - The element in the cell that raised the action, or its event; its cell gives the
+ *        row index (-1 without it)
+ */
+export function raiseCellAction(grid, detail, source) {
+    if (!grid) return;
+
+    const bridge = ensureCellActionBridge(grid);
+    if (bridge?.click) bridge.click.raised = true;
+    dispatchCellAction(grid, detail, source ? rowIndexOf(source) : unknownRowIndex);
 }
 
 function actionLink(value, row, ctx) {
@@ -886,6 +1013,7 @@ function actionLink(value, row, ctx) {
     if (text === null || text === '') return nullTextOf(args);
 
     const { grid, column, rowKey } = ctx;
+    ensureCellActionBridge(grid);
     return cachedNode(row, args, [value, text], () => {
         // a button: the element performs an action, it does not navigate
         const button = document.createElement('button');
@@ -922,6 +1050,697 @@ function ordinal(a, b, rowA, rowB, ctx) {
     const textA = a === null || a === undefined ? '' : String(a);
     const textB = b === null || b === undefined ? '' : String(b);
     return textA < textB ? -1 : textA > textB ? 1 : 0;
+}
+
+function textOf(value) {
+    return value === null || value === undefined ? '' : String(value);
+}
+
+function collation(a, b, rowA, rowB, ctx) {
+    const args = ctx.args ?? noOptions;
+    const collator = columnCached(args, 'collator', () => {
+        const options = {};
+        if (args.sensitivity) options.sensitivity = args.sensitivity;
+        if (args.numeric) options.numeric = true;
+        if (args.ignorePunctuation) options.ignorePunctuation = true;
+        return createFormat(Intl.Collator, args, options, 'collation');
+    });
+
+    return collator.compare(textOf(a), textOf(b));
+}
+
+/* ------------------------------------------------------------------------------------------------------------------
+ * Interactive presets: buttons, actions, menus, switches and checkboxes (design 6.4)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+// the icon of the menu trigger, and the default action of a switch or a checkbox (WaDataGridFormatters in C#)
+const menuIconName = 'ellipsis-vertical';
+const defaultToggleAction = 'toggle';
+
+// the style of a group of controls in one cell, and of a text that only assistive technology reads
+const controlGroupStyle = 'display: inline-flex; align-items: center; gap: var(--wa-space-2xs);';
+const visuallyHiddenStyle = 'position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; '
+    + 'clip: rect(0 0 0 0); white-space: nowrap; border: 0;';
+
+// a counter for the ids that connect a wa-tooltip with its button in the grid's shadow root
+let tooltipIdCounter = 0;
+
+// whether a row field on a dotted path holds a true value (DisabledField, HiddenField)
+function rowFlag(row, path) {
+    return !!path && !!readPath(row, path.split('.'));
+}
+
+// the element of a group of controls, or the single control
+function groupOf(nodes) {
+    if (nodes.length === 1) return nodes[0];
+
+    const group = document.createElement('span');
+    group.setAttribute('style', controlGroupStyle);
+    group.append(...nodes);
+    return group;
+}
+
+// Creates a wa-button that runs onClick unless it is disabled. With iconOnly, the label is the accessible name of the
+// icon; else the icon is in the start slot and the label is the text.
+function createButton(spec, onClick) {
+    const button = document.createElement('wa-button');
+    if (spec.variant) button.setAttribute('variant', spec.variant);
+    if (spec.appearance) button.setAttribute('appearance', spec.appearance);
+    if (spec.size) button.setAttribute('size', spec.size);
+    if (spec.disabled) button.setAttribute('disabled', '');
+
+    if (spec.icon) {
+        const icon = createIcon(spec.icon);
+        if (spec.iconOnly) icon.setAttribute('label', spec.label);
+        else icon.setAttribute('slot', 'start');
+        button.append(icon);
+    }
+
+    if (!spec.icon || !spec.iconOnly) button.append(document.createTextNode(spec.label));
+    button.addEventListener('click', () => {
+        if (!button.disabled && !button.hasAttribute('disabled')) onClick(button);
+    });
+    return button;
+}
+
+// a wa-tooltip for a button; both go into the same container, so the id resolves in the same shadow root
+function createTooltip(button, text) {
+    const id = `wablazor-action-${++tooltipIdCounter}`;
+    button.setAttribute('id', id);
+    const tooltip = document.createElement('wa-tooltip');
+    tooltip.setAttribute('for', id);
+    tooltip.textContent = text;
+    return tooltip;
+}
+
+// the detail of an action of a cell: its column, row and value
+function actionDetail(ctx, row, value, action, payload) {
+    return { column: ctx.column, action, rowKey: ctx.rowKey ?? null, row, value, payload: payload ?? null };
+}
+
+function button(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    if (rowFlag(row, args.hiddenField)) return nullTextOf(args);
+
+    const label = args.label ? renderTemplate(args.label, row, args) : (isEmpty(value) ? null : String(value));
+    if (!label) return nullTextOf(args);
+
+    const disabled = rowFlag(row, args.disabledField);
+    const { grid } = ctx;
+    ensureCellActionBridge(grid);
+    return cachedNode(row, args, [value, label, disabled], () => createButton(
+        { label, icon: args.icon, iconOnly: args.iconOnly, variant: args.variant, appearance: args.appearance, size: args.size, disabled },
+        source => raiseCellAction(grid, actionDetail(ctx, row, value, args.action), source)));
+}
+
+// the actions of a row: the items that are not hidden, each with its disabled state
+function visibleActions(items, row) {
+    return (items ?? [])
+        .filter(item => !rowFlag(row, item.hiddenField))
+        .map(item => ({ ...item, disabled: rowFlag(row, item.disabledField) }));
+}
+
+// the key of the node of a list of actions: the visible items and their disabled states
+function actionsKey(items) {
+    return items.map(item => `${item.id}${item.disabled ? ':disabled' : ''}`).join('|');
+}
+
+// Creates a wa-dropdown with a trigger button and one wa-dropdown-item per action. The selection raises the action of
+// the item; a click on the trigger or in the menu does not raise OnCellClick (D4).
+function createMenu(grid, items, args, onSelect) {
+    const dropdown = document.createElement('wa-dropdown');
+    const trigger = document.createElement('wa-button');
+    trigger.setAttribute('slot', 'trigger');
+    if (args.appearance) trigger.setAttribute('appearance', args.appearance);
+    if (args.size) trigger.setAttribute('size', args.size);
+    const icon = createIcon(menuIconName);
+    icon.setAttribute('label', args.menuLabel ?? '');
+    trigger.append(icon);
+    dropdown.append(trigger);
+
+    for (const item of items) {
+        const element = document.createElement('wa-dropdown-item');
+        element.setAttribute('value', item.id);
+        if (item.variant === 'danger') element.setAttribute('variant', 'danger');
+        if (item.disabled) element.setAttribute('disabled', '');
+        if (item.icon) {
+            const itemIcon = createIcon(item.icon);
+            itemIcon.setAttribute('slot', 'icon');
+            element.append(itemIcon);
+        }
+
+        element.append(document.createTextNode(item.label));
+        dropdown.append(element);
+    }
+
+    dropdown.addEventListener('click', () => markControlClick(grid));
+    dropdown.addEventListener('wa-select', event => {
+        const item = event.detail?.item;
+        const id = item?.getAttribute?.('value');
+        if (id && !item.disabled) onSelect(id, item);
+    });
+    return dropdown;
+}
+
+function actions(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    const items = visibleActions(args.items, row);
+    if (items.length === 0) return nullTextOf(args);
+
+    const { grid } = ctx;
+    ensureCellActionBridge(grid);
+    return cachedNode(row, args, [actionsKey(items)], () => {
+        const raise = (id, source) => raiseCellAction(grid, actionDetail(ctx, row, value, id), source);
+        const nodes = [];
+        for (const item of items.filter(item => !item.inMenu)) {
+            const control = createButton(
+                { label: item.label, icon: item.icon, iconOnly: !!item.icon, variant: item.variant, appearance: args.appearance, size: args.size, disabled: item.disabled },
+                source => raise(item.id, source));
+            nodes.push(control);
+            if (item.tooltip) nodes.push(createTooltip(control, item.tooltip));
+        }
+
+        const menuItems = items.filter(item => item.inMenu);
+        if (menuItems.length > 0) nodes.push(createMenu(grid, menuItems, args, raise));
+        return groupOf(nodes);
+    });
+}
+
+function menu(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    const items = visibleActions(args.items, row);
+    if (items.length === 0) return nullTextOf(args);
+
+    const { grid } = ctx;
+    ensureCellActionBridge(grid);
+    return cachedNode(row, args, [actionsKey(items)], () =>
+        createMenu(grid, items, args, (id, source) => raiseCellAction(grid, actionDetail(ctx, row, value, id), source)));
+}
+
+// A wa-switch or wa-checkbox for a boolean value. The change raises the action with { checked }; the click before it
+// does not raise OnCellClick. The element shows the new state at once: the app updates its row and pushes the data
+// (design 9.5), and data with the old state shows the old state again.
+function togglePreset(tagName) {
+    return (value, row, ctx) => {
+        const args = ctx.args ?? noOptions;
+        const checked = value === true || value === 'true';
+        const disabled = rowFlag(row, args.disabledField);
+        const label = args.label ? renderTemplate(args.label, row, args) ?? '' : '';
+        const { grid } = ctx;
+        ensureCellActionBridge(grid);
+        return cachedNode(row, args, [checked, disabled, label], () => {
+            const element = document.createElement(tagName);
+            if (checked) element.setAttribute('checked', '');
+            if (disabled) element.setAttribute('disabled', '');
+            if (args.size) element.setAttribute('size', args.size);
+            if (label) {
+                const text = document.createElement('span');
+                if (!args.showLabel) text.setAttribute('style', visuallyHiddenStyle);
+                text.textContent = label;
+                element.append(text);
+            }
+
+            element.addEventListener('click', () => markControlClick(grid));
+            element.addEventListener('change', () => raiseCellAction(grid,
+                actionDetail(ctx, row, value, args.action ?? defaultToggleAction, { checked: !!element.checked }), element));
+            return element;
+        });
+    };
+}
+
+/* ------------------------------------------------------------------------------------------------------------------
+ * More visual presets (design 6.3)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+// the URL schemes an image may have; a relative URL resolves to the scheme of the page
+const imageProtocols = ['http:', 'https:'];
+
+function isAllowedImageUrl(src) {
+    try {
+        return imageProtocols.includes(new URL(src, document.baseURI).protocol);
+    } catch {
+        return false;
+    }
+}
+
+// the variant of a value by thresholds ({ from, variant }, ascending): the last threshold the value reaches
+function thresholdVariant(thresholds, n) {
+    let variant;
+    for (const threshold of thresholds ?? []) {
+        if (n >= threshold.from) variant = threshold.variant;
+    }
+
+    return variants.includes(variant) ? variant : undefined;
+}
+
+// a progress element (wa-progress-bar or wa-progress-ring) for a value in the scale of the column
+function progressPreset(tagName) {
+    return (value, row, ctx) => {
+        const args = ctx.args ?? noOptions;
+        if (isEmpty(value)) return nullTextOf(args);
+
+        const n = toNumber(value);
+        if (!Number.isFinite(n)) return String(value);
+
+        const fraction = args.scale === 'percent' ? n / 100 : n;
+        const text = percentFormat(args).format(fraction);
+        return cachedNode(row, args, [n], () => {
+            const element = document.createElement(tagName);
+            element.setAttribute('value', String(Math.min(100, Math.max(0, fraction * 100))));
+            element.setAttribute('label', text);
+            if (args.showLabel) element.textContent = text;
+            const variant = thresholdVariant(args.thresholds, n);
+            if (variant) element.style.setProperty('--indicator-color', `var(--wa-color-${variant}-fill-loud)`);
+            return element;
+        });
+    };
+}
+
+function rating(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    if (isEmpty(value)) return nullTextOf(args);
+
+    const n = toNumber(value);
+    if (!Number.isFinite(n)) return String(value);
+
+    return cachedNode(row, args, [n], () => {
+        const element = document.createElement('wa-rating');
+        element.setAttribute('readonly', '');
+        element.setAttribute('value', String(n));
+        if (args.max !== undefined) element.setAttribute('max', String(args.max));
+        if (args.precision !== undefined) element.setAttribute('precision', String(args.precision));
+        if (args.size) element.setAttribute('size', args.size);
+        const max = args.max ?? 5;
+        element.setAttribute('label', `${plainNumberFormat(args).format(n)} / ${plainNumberFormat(args).format(max)}`);
+        return element;
+    });
+}
+
+function avatar(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    const labelValue = args.labelField ? readPath(row, args.labelField.split('.')) : value;
+    const imageValue = args.imageField ? readPath(row, args.imageField.split('.')) : undefined;
+    const initialsValue = args.initialsField ? readPath(row, args.initialsField.split('.')) : undefined;
+    if (isEmpty(labelValue) && isEmpty(imageValue) && isEmpty(initialsValue)) return nullTextOf(args);
+
+    const label = textOf(labelValue);
+    let image = textOf(imageValue);
+    if (image && !isAllowedImageUrl(image)) {
+        reportOnce(`an avatar image with a scheme other than http or https is left out (${image.slice(0, 40)}).`);
+        image = '';
+    }
+
+    const initials = textOf(initialsValue);
+    return cachedNode(row, args, [label, image, initials], () => {
+        const element = document.createElement('wa-avatar');
+        if (label) element.setAttribute('label', label);
+        if (image) element.setAttribute('image', image);
+        if (initials) element.setAttribute('initials', initials);
+        if (args.shape) element.setAttribute('shape', args.shape);
+        if (args.size) element.style.setProperty('--size', args.size);
+        if (!args.showLabel || !label) return element;
+
+        const text = document.createElement('span');
+        text.textContent = label;
+        return groupOf([element, text]);
+    });
+}
+
+function image(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    const src = args.src ? buildHref(args.src, row, args) : (isEmpty(value) ? null : String(value));
+    if (!src) return nullTextOf(args);
+
+    if (!isAllowedImageUrl(src)) {
+        reportOnce(`an image URL with a scheme other than http or https is left out (${src.slice(0, 40)}).`);
+        return nullTextOf(args);
+    }
+
+    const alt = args.alt ? renderTemplate(args.alt, row, args) ?? '' : '';
+    return cachedNode(row, args, [src, alt], () => {
+        const element = document.createElement('img');
+        element.setAttribute('src', src);
+        element.setAttribute('alt', alt);
+        element.setAttribute('loading', 'lazy');
+        if (args.width !== undefined) element.setAttribute('width', String(args.width));
+        if (args.height !== undefined) element.setAttribute('height', String(args.height));
+        element.setAttribute('style', 'vertical-align: middle; object-fit: cover;');
+        return element;
+    });
+}
+
+function colorSwatch(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    if (isEmpty(value)) return nullTextOf(args);
+
+    const color = String(value);
+    if (typeof CSS === 'undefined' || !CSS.supports('color', color)) return color;
+
+    return cachedNode(row, args, [color], () => {
+        const swatch = document.createElement('span');
+        swatch.setAttribute('style', 'display: inline-block; inline-size: 1em; block-size: 1em; vertical-align: middle; '
+            + 'border-radius: var(--wa-border-radius-s); border: 1px solid var(--wa-color-neutral-border-normal);');
+        swatch.style.setProperty('background-color', color);
+        if (!args.showText) {
+            swatch.setAttribute('role', 'img');
+            swatch.setAttribute('aria-label', color);
+            return swatch;
+        }
+
+        const text = document.createElement('span');
+        text.textContent = color;
+        return groupOf([swatch, text]);
+    });
+}
+
+// the trends of wa-sparkline
+const sparklineTrends = ['positive', 'negative', 'neutral'];
+
+function sparkline(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    const values = (Array.isArray(value) ? value : []).map(toNumber).filter(Number.isFinite);
+    if (values.length === 0) return nullTextOf(args);
+
+    const data = values.join(' ');
+    const rowTrend = args.trendField ? readPath(row, args.trendField.split('.')) : undefined;
+    const trend = sparklineTrends.includes(rowTrend) ? rowTrend : args.trend;
+    const label = args.label ? renderTemplate(args.label, row, args) ?? data : values.map(n => plainNumberFormat(args).format(n)).join(', ');
+    return cachedNode(row, args, [data, trend, label], () => {
+        const element = document.createElement('wa-sparkline');
+        element.setAttribute('data', data);
+        element.setAttribute('label', label);
+        if (trend) element.setAttribute('trend', trend);
+        if (args.appearance) element.setAttribute('appearance', args.appearance);
+        if (args.curve) element.setAttribute('curve', args.curve);
+        return element;
+    });
+}
+
+// the text of a value with a text preset of the C# factories ({ name, args }), else with the plain number format
+function formatWith(format, value, row, args) {
+    const preset = format ? presets[format.name] : undefined;
+    if (preset) return preset(value, row, { args: format.args ?? noOptions });
+
+    const n = toNumber(value);
+    return Number.isFinite(n) ? plainNumberFormat(args).format(n) : textOf(value);
+}
+
+function trend(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    if (isEmpty(value)) return nullTextOf(args);
+
+    const n = toNumber(value);
+    if (!Number.isFinite(n)) return String(value);
+
+    const text = args.format
+        ? formatWith(args.format, n, row, args)
+        : columnCached(args, 'trend', () => createFormat(Intl.NumberFormat, args, { signDisplay: 'exceptZero' }, 'trend')).format(n);
+    const direction = Math.sign(n);
+    return cachedNode(row, args, [n, text], () => {
+        const element = document.createElement('span');
+        element.setAttribute('style', controlGroupStyle);
+        const variant = direction > 0 ? args.positiveVariant : direction < 0 ? args.negativeVariant : undefined;
+        if (variants.includes(variant)) element.style.setProperty('color', `var(--wa-color-${variant}-on-quiet)`);
+
+        // the text carries the value and its sign, so the icon is decoration
+        const iconSpec = direction > 0 ? args.upIcon : direction < 0 ? args.downIcon : undefined;
+        if (iconSpec) element.append(createIcon(iconSpec));
+        element.append(document.createTextNode(text));
+        return element;
+    });
+}
+
+// the column of a grid by the id the grid computes (id, else field, else col-<index>)
+function findColumn(grid, columnId) {
+    const columns = Array.isArray(grid?.columns) ? grid.columns : [];
+    return columns.find((column, index) => (column.id ?? column.field ?? `col-${index}`) === columnId);
+}
+
+// the value of a column for a row: its value function, else its field
+function columnValue(column, row) {
+    if (typeof column?.value === 'function') return column.value(row);
+    return column?.field ? readPath(row, String(column.field).split('.')) : undefined;
+}
+
+// the finite numbers of a column over rows
+function columnNumbers(column, rows) {
+    const numbers = [];
+    for (const row of rows ?? []) {
+        const n = toNumber(columnValue(column, row));
+        if (Number.isFinite(n)) numbers.push(n);
+    }
+
+    return numbers;
+}
+
+// the limits of a data bar: fixed, or the lowest and highest value of the loaded rows (grid.data), kept per data array
+function dataBarLimits(args, ctx) {
+    if (args.min !== undefined && args.max !== undefined) return { min: args.min, max: args.max };
+
+    const grid = ctx.grid;
+    const data = grid?.data;
+    const cached = columnCached(args, 'dataBar:limits', () => ({ data: undefined, min: 0, max: 0 }));
+    if (cached.data !== data) {
+        const numbers = columnNumbers(findColumn(grid, ctx.column), data);
+        cached.data = data;
+        cached.min = numbers.length > 0 ? Math.min(0, ...numbers) : 0;
+        cached.max = numbers.length > 0 ? Math.max(...numbers) : 0;
+    }
+
+    return { min: args.min ?? cached.min, max: args.max ?? cached.max };
+}
+
+function dataBar(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    if (isEmpty(value)) return nullTextOf(args);
+
+    const n = toNumber(value);
+    if (!Number.isFinite(n)) return String(value);
+
+    const { min, max } = dataBarLimits(args, ctx);
+    const share = max > min ? Math.min(1, Math.max(0, (n - min) / (max - min))) : 0;
+    const text = formatWith(args.format, n, row, args);
+    return cachedNode(row, args, [n, min, max, text], () => {
+        const container = document.createElement('div');
+        container.setAttribute('style', 'display: flex; align-items: center; gap: var(--wa-space-xs); inline-size: 100%;');
+        container.setAttribute('role', 'img');
+        container.setAttribute('aria-label', text);
+
+        const track = document.createElement('div');
+        track.setAttribute('style', 'flex: 1 1 auto; block-size: 0.75em; background: var(--wa-color-neutral-fill-quiet); '
+            + 'border-radius: var(--wa-border-radius-s); overflow: hidden;');
+        const bar = document.createElement('div');
+        bar.setAttribute('style', 'block-size: 100%;');
+        bar.style.setProperty('inline-size', `${(share * 100).toFixed(2)}%`);
+        bar.style.setProperty('background', `var(--wa-color-${variants.includes(args.variant) ? args.variant : 'brand'}-fill-loud)`);
+        track.append(bar);
+        container.append(track);
+
+        if (args.showValue) {
+            const label = document.createElement('span');
+            label.setAttribute('aria-hidden', 'true');
+            label.textContent = text;
+            container.append(label);
+        }
+
+        return container;
+    });
+}
+
+function copyButton(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    if (isEmpty(value)) return nullTextOf(args);
+
+    const text = String(value);
+    const { grid } = ctx;
+    ensureCellActionBridge(grid);
+    return cachedNode(row, args, [text], () => {
+        const element = document.createElement('wa-copy-button');
+        element.setAttribute('value', text);
+        if (args.copyLabel) element.setAttribute('copy-label', args.copyLabel);
+        if (args.successLabel) element.setAttribute('success-label', args.successLabel);
+        element.addEventListener('click', () => markControlClick(grid));
+        if (!args.showValue) return element;
+
+        const label = document.createElement('span');
+        label.textContent = text;
+        return groupOf([label, element]);
+    });
+}
+
+/* ------------------------------------------------------------------------------------------------------------------
+ * Rules, footers, search, detail panels and row selection (design 7)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+// a value that can be compared with a bound of a rule: a number, or the time of a date (a DateOnly as UTC midnight)
+function comparable(value, type) {
+    if (type === 'date') return readDate(value)?.date.getTime() ?? NaN;
+    return toNumber(value);
+}
+
+// Compiles one rule of a class rule list into { className, path, test }. The C# factories write the rules
+// (WaDataGridCondition): { class, when, value?, values?, min?, max?, type?, pattern?, ignoreCase?, field? }.
+function compileRule(rule) {
+    const path = rule.field ? String(rule.field).split('.') : null;
+    let test;
+    switch (rule.when) {
+        case 'equals':
+            test = value => value !== null && value !== undefined && String(value) === rule.value;
+            break;
+        case 'in': {
+            const keys = new Set(rule.values ?? []);
+            test = value => value !== null && value !== undefined && keys.has(String(value));
+            break;
+        }
+        case 'lessThan': {
+            const bound = comparable(rule.value, rule.type);
+            test = value => comparable(value, rule.type) < bound;
+            break;
+        }
+        case 'greaterThan': {
+            const bound = comparable(rule.value, rule.type);
+            test = value => comparable(value, rule.type) > bound;
+            break;
+        }
+        case 'between': {
+            const min = comparable(rule.min, rule.type);
+            const max = comparable(rule.max, rule.type);
+            test = value => {
+                const n = comparable(value, rule.type);
+                return n >= min && n <= max;
+            };
+            break;
+        }
+        case 'isNull':
+            test = value => value === null || value === undefined;
+            break;
+        case 'isTrue':
+            test = value => value === true;
+            break;
+        case 'isFalse':
+            test = value => value === false;
+            break;
+        case 'matches': {
+            let pattern = null;
+            try {
+                pattern = new RegExp(rule.pattern, rule.ignoreCase ? 'i' : '');
+            } catch (error) {
+                reportOnce(`the class rule pattern '${rule.pattern}' is not a valid regular expression (${error.message}); the rule never matches.`);
+            }
+
+            test = value => pattern !== null && value !== null && value !== undefined && pattern.test(String(value));
+            break;
+        }
+        default:
+            reportOnce(`the class rule condition '${rule.when}' is unknown; the rule never matches.`);
+            test = () => false;
+    }
+
+    return { className: String(rule.class ?? ''), path, test };
+}
+
+function compiledRules(args) {
+    return columnCached(args, 'rules', () => (args.rules ?? []).map(compileRule));
+}
+
+function cellClassRules(value, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    for (const rule of compiledRules(args)) {
+        if (rule.test(rule.path ? readPath(row, rule.path) : value)) return rule.className;
+    }
+
+    return '';
+}
+
+function rowClassRules(row, ctx) {
+    const args = ctx.args ?? noOptions;
+    for (const rule of compiledRules(args)) {
+        if (rule.path && rule.test(readPath(row, rule.path))) return rule.className;
+    }
+
+    return null;
+}
+
+// the aggregates of the footer preset over the numbers of a column
+const aggregates = {
+    sum: numbers => numbers.reduce((sum, n) => sum + n, 0),
+    average: numbers => numbers.length > 0 ? numbers.reduce((sum, n) => sum + n, 0) / numbers.length : NaN,
+    min: numbers => numbers.length > 0 ? Math.min(...numbers) : NaN,
+    max: numbers => numbers.length > 0 ? Math.max(...numbers) : NaN,
+};
+
+function footerAggregate(rows, ctx) {
+    const args = ctx.args ?? noOptions;
+    const list = Array.isArray(rows) ? rows : [];
+    const result = args.aggregate === 'count'
+        ? list.length
+        : (aggregates[args.aggregate] ?? aggregates.sum)(columnNumbers(findColumn(ctx.grid, ctx.column), list));
+    if (!Number.isFinite(result)) return nullTextOf(args);
+
+    const text = formatWith(args.format, result, null, args);
+    return args.label ? `${args.label} ${text}` : text;
+}
+
+// Whether the label of a value of one of the columns of the search preset contains the term. An array value (tags)
+// matches when one of its items does.
+function labelsContain(columns, row, needle) {
+    for (const column of columns) {
+        const value = readPath(row, column.path);
+        for (const item of Array.isArray(value) ? value : [value]) {
+            if (isEmpty(item)) continue;
+            const label = lookup(column.labels, String(item)) ?? column.fallback;
+            if (typeof label === 'string' && label.toLowerCase().includes(needle)) return true;
+        }
+    }
+
+    return false;
+}
+
+function searchFormatted(value, searchTerm, row, ctx) {
+    const args = ctx.args ?? noOptions;
+    const needle = String(searchTerm ?? '').toLowerCase();
+    if (needle === '') return true;
+
+    // the default search of the grid: the raw value contains the term, without case
+    if (!isEmpty(value) && String(value).toLowerCase().includes(needle)) return true;
+    if (row === null || typeof row !== 'object') return false;
+
+    // the grid calls the function once per searchable column of a row: the labels of the row are compared once per term
+    const columns = columnCached(args, 'search:columns', () => (args.columns ?? []).map(column => ({ ...column, path: String(column.field).split('.') })));
+    const results = columnCached(args, 'search:results', () => new WeakMap());
+    const cached = results.get(row);
+    if (cached?.needle === needle) return cached.result;
+
+    const result = labelsContain(columns, row, needle);
+    results.set(row, { needle, result });
+    return result;
+}
+
+function detailFields(row, ctx) {
+    const args = ctx.args ?? noOptions;
+    return cachedNode(row, args, [], () => {
+        const list = document.createElement('dl');
+        list.setAttribute('style', 'display: grid; grid-template-columns: max-content 1fr; gap: var(--wa-space-2xs) var(--wa-space-m); '
+            + 'margin: 0; padding: var(--wa-space-s) var(--wa-space-m);');
+        for (const field of args.fields ?? []) {
+            const term = document.createElement('dt');
+            term.setAttribute('style', 'font-weight: var(--wa-font-weight-semibold);');
+            term.textContent = field.label;
+
+            const value = readPath(row, String(field.field).split('.'));
+            const description = document.createElement('dd');
+            description.setAttribute('style', 'margin: 0;');
+            description.textContent = isEmpty(value) ? nullTextOf(args) : field.format ? textOf(formatWith(field.format, value, row, args)) : textOf(value);
+            list.append(term, description);
+        }
+
+        return list;
+    });
+}
+
+function selectableField(row, ctx) {
+    const args = ctx.args ?? noOptions;
+    return rowFlag(row, args.field);
 }
 
 /* ------------------------------------------------------------------------------------------------------------------
@@ -996,5 +1815,42 @@ export const presets = Object.freeze({
     'wab.dataGrid.actionLink': actionLink,
     'wab.dataGrid.email': email,
     'wab.dataGrid.phone': phone,
+    'wab.dataGrid.button': button,
+    'wab.dataGrid.actions': actions,
+    'wab.dataGrid.menu': menu,
+    'wab.dataGrid.switch': togglePreset('wa-switch'),
+    'wab.dataGrid.checkbox': togglePreset('wa-checkbox'),
+    'wab.dataGrid.progressBar': progressPreset('wa-progress-bar'),
+    'wab.dataGrid.progressRing': progressPreset('wa-progress-ring'),
+    'wab.dataGrid.rating': rating,
+    'wab.dataGrid.avatar': avatar,
+    'wab.dataGrid.image': image,
+    'wab.dataGrid.colorSwatch': colorSwatch,
+    'wab.dataGrid.sparkline': sparkline,
+    'wab.dataGrid.trend': trend,
+    'wab.dataGrid.dataBar': dataBar,
+    'wab.dataGrid.copyButton': copyButton,
     'wab.dataGrid.ordinal': ordinal,
+    'wab.dataGrid.collation': collation,
+    'wab.dataGrid.cellClassRules': cellClassRules,
+    'wab.dataGrid.rowClassRules': rowClassRules,
+    'wab.dataGrid.footerAggregate': footerAggregate,
+    'wab.dataGrid.searchFormatted': searchFormatted,
+    'wab.dataGrid.detailFields': detailFields,
+    'wab.dataGrid.selectableField': selectableField,
 });
+
+/**
+ * The prefix of the registered preset names.
+ */
+export const presetPrefix = 'wab.dataGrid.';
+
+/**
+ * The text presets that format a value without its row: ctx.format offers them as plain functions (short names).
+ */
+export const textPresetNames = Object.freeze([
+    'number', 'currency', 'percent', 'date', 'dateTime', 'time', 'relativeTime', 'bytes', 'duration', 'lookup', 'boolean',
+    'list',
+]);
+
+export { cachedNode, reportOnce, isAllowedUrl };

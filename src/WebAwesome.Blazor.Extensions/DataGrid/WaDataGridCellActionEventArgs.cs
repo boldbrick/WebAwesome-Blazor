@@ -5,9 +5,12 @@ using System.Text.Json;
 namespace WebAwesome.Blazor.Extensions.DataGrid;
 
 /// <summary>
-/// Event arguments of a cell action: content in a data grid cell (for example the button of
-/// <see cref="WaDataGridFormatters.ActionLink"/>) asks the app to do something with its row. Bind the event with
-/// <c>@onwablazor-cell-action</c> on <c>WaDataGrid</c>; the grid passes the attribute to its element.
+/// Event arguments of a cell action: content in a data grid cell asks the app to do something with its row. The
+/// interactive presets raise it (<see cref="WaDataGridFormatters.ActionLink"/>, <c>Button</c>, <c>Actions</c>,
+/// <c>Menu</c>, <c>Switch</c>, <c>Checkbox</c>), and so do custom functions: <c>ctx.emit(action, payload)</c>,
+/// <c>ctx.h(tag, { action })</c>, or an element with <c>data-wablazor-action="id"</c> (and optionally
+/// <c>data-wablazor-action-payload</c> with JSON) that is clicked. Bind the event with <c>@onwablazor-cell-action</c>
+/// on <c>WaDataGrid</c>; the grid passes the attribute to its element.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -15,14 +18,15 @@ namespace WebAwesome.Blazor.Extensions.DataGrid;
 /// give a value back to the cell. When the handler changes the row, update the data of the grid.
 /// </para>
 /// <para>
-/// A click that raises an action does not raise <c>OnCellClick</c> of the grid: the event bridge stops that
-/// <c>wa-cell-click</c> before Blazor sees it. JavaScript listeners on the grid element still receive it.
+/// A click that raises an action, or a click on a control of a preset (a menu trigger, a switch, a copy button), does
+/// not raise <c>OnCellClick</c> of the grid: the event bridge stops that <c>wa-cell-click</c> before Blazor sees it.
+/// JavaScript listeners on the grid element still receive it.
 /// </para>
 /// </remarks>
 public class WaDataGridCellActionEventArgs : EventArgs
 {
     /// <summary>
-    /// The id of the column of the cell.
+    /// The id of the column of the cell; empty for the content of a detail panel.
     /// </summary>
     public string Column { get; set; } = string.Empty;
 
@@ -49,8 +53,8 @@ public class WaDataGridCellActionEventArgs : EventArgs
     public object? Value { get; set; }
 
     /// <summary>
-    /// The data that the content of the cell sends with the action; null when there is none. Use
-    /// <see cref="GetPayload{T}"/> to read it as a type.
+    /// The data that the content of the cell sends with the action, for example <c>{ "checked": true }</c> of a switch;
+    /// null when there is none. Use <see cref="GetPayload{T}"/> to read it as a type.
     /// </summary>
     public JsonElement? Payload { get; set; }
 
