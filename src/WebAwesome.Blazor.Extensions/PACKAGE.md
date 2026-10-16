@@ -95,6 +95,78 @@ export function orderCell(value, row, ctx) {
 }
 ```
 
+## Values from .NET in a cell (`ctx.invoke`)
+
+`ctx.invoke(action, payload)` sends a request from a cell function, a detail panel or a footer to .NET and returns a Promise. Put the grid inside a `WaDataGridRequestHandler`:
+
+```razor
+<WaDataGridRequestHandler OnRequest="HandleRequestAsync">
+    <WaDataGrid Data="items" Columns="columns" RowKey="sku" />
+</WaDataGridRequestHandler>
+
+@code {
+    private async Task<object?> HandleRequestAsync(WaDataGridCellActionEventArgs request)
+    {
+        var item = request.GetRow<Item>() ?? throw new WaDataGridRequestException("Unknown item");
+        return await stockService.GetStockAsync(item.Sku);   // any JSON-serializable value
+    }
+}
+```
+
+- The Promise resolves with the returned value. `WaDataGridRequestException` rejects it with its message (write that message for the user). Another exception rejects it with the message of Blazor.
+- No handler around the grid, a handler without `OnRequest`, or a lost Blazor Server connection: the Promise rejects with a clear message. The handler can register after the first cells render; a request waits up to 2 seconds for it.
+- A grid function is synchronous. Show a pending state first, keep the answer, and render again when it arrives. Key the answers by the row key, not by the row object: `WaDataGrid` sends `Data` again on each parameter set, which gives new row objects.
+
+```js
+const answers = new Map();
+
+export function stockCell(value, row, ctx) {
+  let answer = answers.get(ctx.rowKey);
+  if (!answer) {
+    answer = { text: null };
+    answers.set(ctx.rowKey, answer);
+    ctx.invoke('stock')
+      .then(stock => { answer.text = `${stock} in stock`; }, error => { answer.text = error.message; })
+      .then(() => ctx.grid.requestUpdate());
+  }
+
+  return answer.text ?? ctx.cache('pending', () => ctx.h('span', {}, 'Checking…'));
+}
+```
+
+## Cells in Razor (`WaDataGridRazorTemplates`)
+
+Write a cell as Razor markup. .NET renders it to static HTML for each row, and the column shows the HTML:
+
+```razor
+@inject IServiceProvider Services
+
+<WaDataGrid Data="rows" Columns="columns" RowKey="id" @onwablazor-cell-action="HandleCellAction" />
+
+@code {
+    private static readonly WaDataGridRazorTemplates<Deployment> templates = new WaDataGridRazorTemplates<Deployment>()
+        .Add("state", d => @<WaBadge Variant="@VariantOf(d.State)">@d.State</WaBadge>)
+        .Add("actions", d => @<WaButton Size="WaSize.Small" data-wablazor-action="restart">Restart</WaButton>);
+
+    private readonly WaDataGridColumn[] columns =
+    [
+        new() { Field = "service", Label = "Service" },
+        new() { Id = "state", Label = "State", Formatter = templates.Formatter("state", "wa-badge") },
+        new() { Id = "actions", Label = "Actions", Formatter = templates.Formatter("actions", "wa-button") },
+    ];
+
+    private IReadOnlyList<object>? rows;
+
+    protected override async Task OnInitializedAsync() => rows = await templates.RenderAsync(Services, deployments);
+}
+```
+
+- **Static HTML.** Only `data-wablazor-action` (and `data-wablazor-action-payload`) makes the content interactive. `@onclick` does not work, and a component that needs JS interop after its render does not get it.
+- **Security.** Razor encodes text and attribute values. A `MarkupString` with user content is not safe.
+- **Cost.** `RenderAsync` renders each template once per row on each call, and the HTML adds to each row. Use it for server mode and small pages, not for thousands of rows. Call it again when the rows change.
+- **Elements.** Declare the `wa-*` elements of a template in `Formatter(key, ...)`: the cells are in the shadow root of the grid, where the autoloader does not look.
+- The HTML travels in a separate row property that no column reads, so sort, filter, search and the CSV export use the row values.
+
 ## Links
 
 - [Repository & documentation](https://github.com/boldbrick/WebAwesome-Blazor)

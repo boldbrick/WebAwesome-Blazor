@@ -28,8 +28,8 @@ declarative actions, D4). No change in the main package is planned.
 - **Handler type.** `Func<WaDataGridCellActionEventArgs, Task<object?>>? OnRequest`. The request reuses the cell action
   arguments (design 9.6): `Column`, `Action`, `RowKey`, `Row`, `Value`, `Payload`, `RowIndex`, `GetRow<T>`, `GetPayload<T>`.
 - **Errors.** A `WaDataGridRequestException` thrown by the handler rejects the Promise with its message (a message that
-  the app writes for the browser). Any other exception goes to Blazor's own JS interop error handling (logged on the
-  server; the browser gets Blazor's message, with details only when detailed errors are on). No handler, no `OnRequest`,
+  the app writes for the browser). Any other exception goes to Blazor's own JS interop error handling: the Promise
+  rejects with Blazor's message (the exception text on WebAssembly; on Blazor Server the details only with detailed errors). No handler, no `OnRequest`,
   a disposed reference or a disconnected circuit: the Promise rejects with a clear message.
 - **No handler yet.** The handler registration can arrive after the first cells render (the import of the module and
   the registration are asynchronous, two round trips on Blazor Server). `ctx.invoke` waits for a registration up to
@@ -68,3 +68,41 @@ declarative actions, D4). No change in the main package is planned.
   no handler, concurrent calls. Pro (self-skip on the free CDN): `ctx.invoke` from a formatter with a pending state that
   updates, a detail panel and a footer, a replaced grid element; a Razor template column with a `WaBadge` and a
   `data-wablazor-action` button (D4); the demo examples. Run on the WebAssembly and the Server host.
+
+## Result
+
+- Changesets on `/main/WA-3.14/WAB-60`: cs:379 (plan), cs:380 (code, tests, API baseline, harness, e2e, demo), and the
+  last check-in (docs, this result).
+- Public API (Extensions, `WebAwesome.Blazor.Extensions.DataGrid`): `WaDataGridRequestHandler` (`OnRequest`,
+  `ChildContent`, `DisposeAsync`), `WaDataGridRequestException`, `WaDataGridRazorTemplates<TRow>` (`Add`, `Formatter`,
+  `RenderAsync`, `Keys`). Baseline `approved-extensions-public-api.txt` promoted. No change in the main package.
+- JavaScript: `data-grid-requests.js` (new: handler registry, `invokeCellRequest`), `data-grid-templates.js` (new: the one
+  HTML parse), `data-grid-context.js` (`ctx.invoke`), `data-grid-presets.js` (`razorTemplate` preset,
+  `cellActionPayload`, which leaves the template HTML out of action and request payloads).
+- Verification: Debug and Release builds green, 0 warnings. Tests: main 1397 on net9.0 and 1397 on net10.0, Extensions
+  191 and 191 (40 new), in Debug and in Release. E2E, WebAssembly demo on port 5100: with the local Pro dist
+  (`temp\wa-src\3.14.0`) 459 passed; on the free CDN 375 passed and 84 skipped, exactly the listed skips (4 new;
+  `minimumTests` 455). Server host with the Pro dist: `cell-requests`, `cell-actions`, `cell-presets` and
+  `extensions-package`, 24 passed (the same specs on WebAssembly: 24 passed). Pro override cleared afterwards. The
+  Extensions nupkg holds both new scripts.
+
+## Deviations and findings
+
+- Request handler: a companion component that wraps the grids, not one next to the grid with `@ref` (the reference is
+  null until the page renders again) and not a registration API (disposal code and a new registration per replaced
+  grid element in each page). The browser keeps the reference per handler element and finds it from the grid element at
+  call time.
+- The preset name is `wab.dataGrid.razorTemplate`: `wab.dataGrid.template` is the text template preset of WAB-55.
+- `RenderAsync` takes the page's `IServiceProvider` and creates one `HtmlRenderer` per call: a long-lived renderer from DI
+  keeps every root component until it is disposed.
+- Another exception of the handler (not `WaDataGridRequestException`) rejects with Blazor's message: on WebAssembly that
+  includes the exception text; on Blazor Server only with detailed errors.
+- The pending-state pattern must key its answers by the row key: `WaDataGrid` pushes `Data` on every parameter set, so a
+  handler that renders the page gives the grid new row objects. A detail panel and a footer are built again on each
+  render, so their answers live outside their nodes. This is the open owner question about pushing `data` only on change.
+
+## Open points
+
+- `data` is pushed on every parameter set (owner question, see above); with a change-only push the `ctx.invoke` pattern
+  could key by the row object.
+- The template HTML travels JSON-escaped (`<` as `\u003C`) because the interop serializer escapes HTML characters.
