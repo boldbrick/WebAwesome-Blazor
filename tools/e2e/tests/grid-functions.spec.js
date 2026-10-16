@@ -176,10 +176,8 @@ test('grid functions: a childRows function builds a tree', async ({ page }) => {
   const grid = await openGrid(page, HARNESS, '[data-testid="gf-tree"]', 1);
   await expect.poll(() => columnTexts(grid, 'name')).toEqual(['src', 'docs']);
 
-  // NOTE checked against WA 3.14.0: the grid reads childRows only when it receives data, and the function arrives
-  // after the first Data push, so the tree shows from the next Data push (a new list from C#)
-  await expect.poll(() => grid.evaluate(el => typeof /** @type {any} */ (el).childRows), { message: 'the childRows function is assigned' }).toBe('function');
-  await page.getByTestId('gf-reload-folders').click();
+  // the first render: the wrapper assigns the data only after the childRows function has resolved, so the tree exists
+  // without a second Data push
   await expect(grid.locator('[part~="expand-button"]'), 'each folder has an expand toggle').toHaveCount(2);
   await grid.evaluate(el => /** @type {any} */ (el).expandAllRows());
   await expect.poll(() => columnTexts(grid, 'name'), { message: 'the children come from ctx.args by ctx.rowKey' })

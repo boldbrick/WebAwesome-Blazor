@@ -87,8 +87,8 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   filtered rows in an upgraded badge; `CellClassFunction` and `RowClassFunction` classes styled by `ShadowStyles`; a
   `FilterFunction`; `SelectableRowsFunction` locks a row for select-all; a `SearchFunction` ignores diacritics; a
   `RowDetailFunction` panel with an upgraded tag on expand; an `AggregationFunction` on a grouped grid; a
-  `ChildRowsFunction` tree from `ctx.args` and `ctx.rowKey` (from the next `Data` push, as WA 3.14.0 reads `childRows`
-  only with the data). Pro only.
+  `ChildRowsFunction` tree from `ctx.args` and `ctx.rowKey` on the first render (the data waits for the function, as
+  WA 3.14.0 reads `childRows` only with the data). Pro only.
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug

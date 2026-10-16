@@ -269,9 +269,10 @@ public class WaDataGrid : ComponentBase
     /// (the row's value of the <see cref="RowKey"/> field).
     /// </summary>
     /// <remarks>
-    /// Web Awesome 3.14.0 reads <c>childRows</c> only when the grid receives its data. The browser resolves the function
-    /// after the first push of <see cref="Data"/>, so the tree shows from the next push: every parameter set of the grid
-    /// pushes <see cref="Data"/>, for example a new list.
+    /// Web Awesome 3.14.0 reads <c>childRows</c> only when the grid receives its data. On the first render, the wrapper
+    /// assigns <see cref="Data"/> only after the function has resolved (or failed to resolve), so the tree shows at once.
+    /// A function that changes after that applies from the next push of <see cref="Data"/>: every parameter set of the
+    /// grid pushes it.
     /// </remarks>
     [Parameter] public WaJsFunction? ChildRowsFunction { get; set; }
 
@@ -560,18 +561,21 @@ public class WaDataGrid : ComponentBase
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            await PushDataAsync();
-            await PushColumnsAsync(SerializeColumns());
-        }
-
+        // the function members go first: on the first render, the data push waits in the browser until they have
+        // resolved, because the grid reads childRows only when it receives data
         await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
         await jsProperties.PushFunctionAsync(JSInterop, Element, ChildRowsMember, ChildRowsFunction);
         await jsProperties.PushFunctionAsync(JSInterop, Element, RowClassMember, RowClassFunction);
         await jsProperties.PushFunctionAsync(JSInterop, Element, RowDetailMember, RowDetailFunction);
         await jsProperties.PushFunctionAsync(JSInterop, Element, SearchFunctionMember, SearchFunction);
         await jsProperties.PushFunctionAsync(JSInterop, Element, SelectableRowsMember, SelectableRowsFunction);
+
+        if (firstRender)
+        {
+            await PushDataAsync();
+            await PushColumnsAsync(SerializeColumns());
+        }
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -885,7 +889,7 @@ public class WaDataGrid : ComponentBase
     {
         if (Element == null) return;
 
-        await JSInterop.SetPropertyAsync(Element.Value, "data", Data ?? Array.Empty<object>());
+        await JSInterop.SetDataGridDataAsync(Element.Value, Data ?? Array.Empty<object>());
     }
 
     // a column push makes the element render every cell again (and resolves the function references again), so a
