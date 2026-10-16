@@ -2,43 +2,39 @@
 
 All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [3.14.0.1] — 2026-10-16
+
+A revision of the bindings for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only, and the default CDN version stays 3.14.0. C# code can now refer to JavaScript functions for the function-valued Web Awesome members, the data grid renders rich cells, and the new `WebAwesome.Blazor.Extensions` package adds ready-made cell presets. There are no breaking changes: the obsolete members give compiler warnings only, and 3.15.0 removes them.
 
 ### Added
-- `WaDataGridColumn.FilterOptions` (a list of `WaDataGridFilterOption`) sets the options of a set filter picker: values, labels, counts and order. Use it for a value picker in server mode.
-- `WaJsFunction` refers to a JavaScript function from C#: a function that the app registers by name, an export of an ES module (for example a collocated `.razor.js` file), or a global function. `WithArgs` gives the function options, and `Uses` declares the Web Awesome elements that it renders.
-- `WaDataGridColumn.Formatter`, `AggregatedFormatter` and `ComparatorFunction` take a `WaJsFunction`: rich cell content, group row content and a custom sort order. A reference that does not resolve shows raw values and writes a console error.
-- The module `_content/WebAwesome.Blazor/webawesome-functions.js` exports `registerFunction` (for `WaJsFunction.Registered`) and `registerContextDecorator`.
-- New package `WebAwesome.Blazor.Extensions` (same version as `WebAwesome.Blazor`) for features that Web Awesome does not have. Its types are in `WebAwesome.Blazor.Extensions.DataGrid`.
-- Data grid cell presets, configured in C# only: `WaDataGridFormatters` formats numbers, currencies, percentages, dates, times, relative times, bytes, durations, lookups, booleans, templates and lists as text, and renders badges, tags, icons, links, e-mail and phone links. Typed `Badge<TEnum>` and `Lookup<TEnum>` key the maps by the JSON form of the enum.
-- `WaDataGridComparators.Ordinal` sorts a column in a given order, for example the states of a workflow.
-- `WaDataGridFormatters.ActionLink` raises a cell action: bind `@onwablazor-cell-action` on `WaDataGrid` to receive `WaDataGridCellActionEventArgs` (`GetRow<T>()`, `GetPayload<T>()`). A click that raises an action does not raise `OnCellClick`.
-- JavaScript functions for the function-valued members of Web Awesome, as `WaJsFunction` parameters: `GetTagFunction` (`WaSelect`, `WaCombobox`), `FilterFunction` (`WaCombobox`), `GetSymbolFunction` (`WaRating`), `ValueFormatterFunction` (`WaSlider`, `WaRange`), `IsDateDisabledFunction` and `DayContentFunction` (the date pickers and date inputs), and `HrefTemplateFunction` (`WaPagination`; set it or `HrefTemplate`, not both). The browser calls the function, with no round-trip to .NET.
+- `WaJsFunction` refers to a JavaScript function from C#: a function that the app registers by name (`registerFunction` of the module `_content/WebAwesome.Blazor/webawesome-functions.js`, which also exports `registerContextDecorator`), an export of an ES module (for example a collocated `.razor.js` file), or a global function. `WithArgs` gives the function options, and `Uses` declares the Web Awesome elements that it renders. The browser calls the function, with no round-trip to .NET.
+- `WaJsFunction` parameters for the function-valued members of Web Awesome: `GetTagFunction` (`WaSelect`, `WaCombobox`), `FilterFunction` (`WaCombobox`), `GetSymbolFunction` (`WaRating`), `ValueFormatterFunction` (`WaSlider`, `WaRange`), `IsDateDisabledFunction` and `DayContentFunction` (the date pickers and date inputs), and `HrefTemplateFunction` (`WaPagination`; set it or `HrefTemplate`, not both).
 - `ShadowStyles` on `WaDataGrid`, `WaSelect`, `WaCombobox`, `WaRating`, the date pickers and the date inputs: CSS for the output of your own functions in the element's shadow root.
 - `IconLibraryOptions.ResolverFunction` and `MutatorFunction` take a `WaJsFunction`: a resolver for URLs that a URL template cannot express (it can return a Promise or a sprite reference), and a mutator from a module or a registered function. Set `Resolver` or `ResolverFunction`, not both.
-- `WaDataGridColumn.ValueFunction` (a computed value for sort, filter, search, copy and CSV), `FilterFunction` (a custom column filter), and the function forms `FooterFunction`, `AggregationFunction` and `CellClassFunction`. Set the static form (`Footer`, `Aggregation`, `CellClass`) or the function form, not both.
+- `WaDataGridColumn` takes JavaScript functions: `Formatter` (rich cell content), `AggregatedFormatter` (group row content), `ComparatorFunction` (a custom sort order), `ValueFunction` (a computed value for sort, filter, search, copy and CSV), `FilterFunction` (a custom column filter), and the function forms `FooterFunction`, `AggregationFunction` and `CellClassFunction`. Set the static form (`Footer`, `Aggregation`, `CellClass`) or the function form, not both. A reference that does not resolve shows raw values and writes a console error.
+- `WaDataGridColumn.FilterOptions` (a list of `WaDataGridFilterOption`) sets the options of a set filter picker: values, labels, counts and order. Use it for a value picker in server mode.
 - `WaDataGrid.RowClassFunction`, `RowDetailFunction` (an expandable detail panel), `SearchFunction`, `SelectableRowsFunction` (lock rows) and `ChildRowsFunction` (set `ChildRows` or `ChildRowsFunction`, not both). A `ChildRowsFunction` that changes after the first render applies from the next `Data` push.
-- Extensions: interactive cell presets `Button`, `Actions` (`WaDataGridAction`: icon buttons and a menu, hidden or disabled per row), `Menu`, `Switch` and `Checkbox`. They raise `@onwablazor-cell-action`, not `OnCellClick`; a switch or checkbox sends `{ "checked": bool }`, so update the row and push `Data`.
-- Extensions: visual cell presets `ProgressBar`, `ProgressRing`, `Rating`, `Avatar`, `Image`, `ColorSwatch`, `Sparkline`, `Trend`, `DataBar` and `CopyButton`.
-- Extensions: `WaDataGridClassRules` (cell and row classes by conditions), `WaDataGridFooters` (sum, average, min, max, count), `WaDataGridComparators.Collation`, `WaDataGridSearch.Formatted` (the search also finds lookup and badge labels), `WaDataGridFilterOptions`, and `WaDataGridRows.DetailFields` and `SelectableField`.
+- New package `WebAwesome.Blazor.Extensions` for features that Web Awesome does not have, configured in C# only. It has the same version as `WebAwesome.Blazor`; use the same version of both. Its types are in `WebAwesome.Blazor.Extensions.DataGrid`.
+- Extensions: cell presets in `WaDataGridFormatters`: text formats for numbers, currencies, percentages, dates, times, relative times, bytes, durations, lookups, booleans, templates and lists; badges, tags, icons, links, e-mail and phone links; and the visual cells `ProgressBar`, `ProgressRing`, `Rating`, `Avatar`, `Image`, `ColorSwatch`, `Sparkline`, `Trend`, `DataBar` and `CopyButton`. Typed `Badge<TEnum>` and `Lookup<TEnum>` key the maps by the JSON form of the enum.
+- Extensions: the interactive cell presets `ActionLink`, `Button`, `Actions` (`WaDataGridAction`: icon buttons and a menu, hidden or disabled per row), `Menu`, `Switch` and `Checkbox` raise a cell action. Bind `@onwablazor-cell-action` on `WaDataGrid` to receive `WaDataGridCellActionEventArgs` (`GetRow<T>()`, `GetPayload<T>()`). A click that raises an action does not raise `OnCellClick`. A switch or checkbox sends `{ "checked": bool }`, so update the row and push `Data`.
+- Extensions: in Web Awesome 3.14.0, Enter on a `Link` in a cell raises `OnCellClick` and does not follow the link, because the grid's keyboard navigation takes Enter. Use `ActionLink` (a button) for an action that the keyboard must reach. **Next-release check:** recheck Enter on a link in a grid cell; if the grid follows the link, remove this note.
+- Extensions: `WaDataGridComparators.Ordinal` (a given order, for example the states of a workflow) and `Collation`, `WaDataGridClassRules` (cell and row classes by conditions), `WaDataGridFooters` (sum, average, min, max, count), `WaDataGridSearch.Formatted` (the search also finds lookup and badge labels), `WaDataGridFilterOptions`, and `WaDataGridRows.DetailFields` and `SelectableField`.
 - Extensions: your own grid functions get `ctx.emit`, `ctx.h`, `ctx.preset`, `ctx.format` and `ctx.cache`, and an element with `data-wablazor-action` (optional `data-wablazor-action-payload`) raises a cell action when clicked. A Lit template of your own Lit 3 renders in a cell.
 - Extensions: `ctx.invoke(action, payload)` asks .NET from a cell, a detail panel or a footer and returns a Promise; wrap the grid in `WaDataGridRequestHandler` and answer in `OnRequest` (throw `WaDataGridRequestException` to reject with a message).
 - Extensions: `WaDataGridRazorTemplates<TRow>` shows cells written in Razor (for example a `WaBadge`) as static HTML; buttons use `data-wablazor-action`. Meant for server mode and small pages: each row renders once per template on each data push.
 
 ### Changed
-- Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.
-- `WaDataGrid` sends `Columns` to the element again only when a column definition changes: not on every render, and not for a new list with the same definitions. A change in place still reaches the element.
-- `WaDataGridColumn` leaves unset members out of the JSON it sends to the element.
+- `WaDataGrid` sends `Columns` to the element again only when a column definition changes: not on every render, and not for a new list with the same definitions. A change in place still reaches the element. The JSON of a column leaves out unset members.
 
 ### Deprecated
 - `WaSelect.SetGetTagFunctionAsync` and `WaSelect.GetTag`: use `GetTagFunction`. They are removed in 3.15.0.
 - `WaRating.SetSymbolFunctionAsync`: use `GetSymbolFunction`. It is removed in 3.15.0.
 - `SetValueFormatterAsync` of `WaSlider` and `WaRange`, and `WaSlider.ValueFormatter`: use `ValueFormatterFunction`. They are removed in 3.15.0.
 - `IconLibraryOptions.Mutator` (a global function path): use `MutatorFunction = WaJsFunction.Global(path)`. It is removed in 3.15.0.
-- **Next-release check:** the 3.15.0 train removes the members above (each has a `// TODO WA 3.15.0 train` comment), under a `### Breaking changes` heading with a migration guide.
+- **Next-release check:** the 3.15.0 train removes the members above (each has a `// TODO WA 3.15.0 train` comment) as a breaking change, with a migration guide.
 
 ### Fixed
-- `WaSelect.SetGetTagFunctionAsync` and `WaRating.SetSymbolFunctionAsync` sent JavaScript source text, so the element failed to render. They now send nothing and throw `NotSupportedException` with the replacement. `SetValueFormatterAsync`, which had no effect, now sends nothing.
+- `WaSelect.SetGetTagFunctionAsync` and `WaRating.SetSymbolFunctionAsync` sent JavaScript source text, so the element failed to render. They now send nothing and throw `NotSupportedException`: use `GetTagFunction` and `GetSymbolFunction`. `SetValueFormatterAsync` of `WaSlider` and `WaRange`, which had no effect, now sends nothing: use `ValueFormatterFunction`.
 
 ## [3.14.0] — 2026-09-27
 
