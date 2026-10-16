@@ -83,18 +83,36 @@ there. `filterFn` applies only to a column with `filterable`. `value` takes prec
 ## Deviations and findings
 
 - **WA 3.14.0: `childRows` applies only with the data.** The grid's row model is keyed on `data` (table-core memo), so a
-  `childRows` value assigned after the data has no effect until the next data push. The function resolves in the
-  browser after the first `Data` push, so a `ChildRowsFunction` tree shows from the next `Data` push (any parameter set
-  of the grid). Recorded, not worked around (`no-wa-bug-workarounds`): a `NOTE checked against WA 3.14.0` in the arity
-  table, the remarks of `ChildRowsFunction`, `docs\technical.md`, the CHANGELOG line, and the e2e test reloads the data.
-  A string `ChildRows` changed at run time has the same limit.
+  `childRows` value assigned after the data has no effect until the next data push. The first version pushed `Data`
+  before the function had resolved, so the tree needed a second push. That order was our own root cause; the follow-up
+  below fixes it. A `ChildRowsFunction` (or a string `ChildRows`) that changes after the data stays the upstream limit:
+  recorded, not worked around (`NOTE checked against WA 3.14.0` in the arity table, the remarks, `docs\technical.md`).
 - A detail panel renders only when its row expands, after the `discover()` of the push: its elements need `Uses`
   (documented). The footer renders with the columns, so `discover()` sees it.
 - `ctx.grid` for the grid members duplicates `ctx.element`; it keeps one shape for the column and grid members, which
   the `ctx` decorators of WAB-59 can rely on.
 - Design 17.1 names the detail member `RowDetail`; the ticket and the `<Name>Function` rule give `RowDetailFunction`.
 
+## Follow-up: first-render order of ChildRowsFunction
+
+Owner decision: no data push again after a `childRows` change, but fix our own order on the first render. Work
+continued on `/main/WA-3.14/WAB-58` (Plastic lets the merged branch take new check-ins; the next merge takes only them).
+
+- `WaDataGrid.OnAfterRenderAsync` sends the function members and the shadow styles first, then (first render) the data
+  and the columns.
+- `webawesome-interop.js`: `setElementFunction` keeps the pending assignment per element (`pendingElementFunctions`).
+  The new export `setDataGridData(element, data)` assigns at once when nothing is pending; else it waits for the pending
+  assignments (`Promise.allSettled`, so a reference that does not resolve also ends the wait) and assigns the newest
+  push only. The call returns at once. `WaDataGrid` pushes `Data` through it (`WebAwesomeJSInterop.SetDataGridDataAsync`)
+  instead of `setProperty`.
+- The columns need no wait: the row model of the grid does not depend on them.
+- On the free CDN the grid never becomes defined, so a grid with function members never gets its data assigned there;
+  that changes nothing visible, because the element never renders.
+- Tests: `FirstRender_PushesTheFunctionMembersBeforeTheData` (bUnit, the order of the calls); the grid tests read
+  `setDataGridData`. The e2e test no longer reloads the data. Without the fix it failed (`expand-button` count 0, expected
+  2); with the fix it passes. The harness reload button is gone.
+- Verification: main 1397 tests per TFM, Extensions 108; Debug and Release builds green, 0 warnings. E2E with the local
+  Pro dist: the grid specs and the event specs, 96 passed. Free CDN full suite: 368 passed, 72 skipped (the listed skips).
 ## Open points
 
-- Owner: decide whether the binding should push the grid data again after a `childRows` assignment (a workaround of the
-  upstream limit above), or wait for an upstream fix; recheck on the 3.15.0 upgrade.
+- None from the follow-up. Recheck the `childRows` limit on the 3.15.0 upgrade (the NOTE).

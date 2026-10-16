@@ -17,7 +17,7 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 - `ShadowStyles` on `WaDataGrid`, `WaSelect`, `WaCombobox`, `WaRating`, the date pickers and the date inputs: CSS for the output of your own functions in the element's shadow root.
 - `IconLibraryOptions.ResolverFunction` and `MutatorFunction` take a `WaJsFunction`: a resolver for URLs that a URL template cannot express (it can return a Promise or a sprite reference), and a mutator from a module or a registered function. Set `Resolver` or `ResolverFunction`, not both.
 - `WaDataGridColumn.ValueFunction` (a computed value for sort, filter, search, copy and CSV), `FilterFunction` (a custom column filter), and the function forms `FooterFunction`, `AggregationFunction` and `CellClassFunction`. Set the static form (`Footer`, `Aggregation`, `CellClass`) or the function form, not both.
-- `WaDataGrid.RowClassFunction`, `RowDetailFunction` (an expandable detail panel), `SearchFunction`, `SelectableRowsFunction` (lock rows) and `ChildRowsFunction` (set `ChildRows` or `ChildRowsFunction`, not both). A `ChildRowsFunction` tree shows from the next `Data` push.
+- `WaDataGrid.RowClassFunction`, `RowDetailFunction` (an expandable detail panel), `SearchFunction`, `SelectableRowsFunction` (lock rows) and `ChildRowsFunction` (set `ChildRows` or `ChildRowsFunction`, not both). A `ChildRowsFunction` that changes after the first render applies from the next `Data` push.
 
 ### Changed
 - Version 3.14.0.1 is a bindings revision for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only. The default CDN version stays 3.14.0.

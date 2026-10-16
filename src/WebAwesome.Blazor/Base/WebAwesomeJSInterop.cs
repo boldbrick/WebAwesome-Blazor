@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Models;
 
@@ -406,6 +407,36 @@ public class WebAwesomeJSInterop
         catch (JSException ex)
         {
             throw new InvalidOperationException($"Failed to set the data grid columns: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Assigns the data of a wa-data-grid. While function members of the grid are still resolving in the browser, the
+    /// assignment waits for them, because the grid reads <c>childRows</c> only when it receives data; a newer push
+    /// replaces a waiting one. The call returns at once.
+    /// </summary>
+    /// <param name="elementReference">Reference to the wa-data-grid element</param>
+    /// <param name="data">The row objects</param>
+    /// <returns>A task that completes when the push was sent</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SetDataGridDataAsync(ElementReference elementReference, IReadOnlyList<object> data)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setDataGridData", elementReference, data);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the data grid data: {ex.Message}", ex);
         }
         catch (JSDisconnectedException)
         {

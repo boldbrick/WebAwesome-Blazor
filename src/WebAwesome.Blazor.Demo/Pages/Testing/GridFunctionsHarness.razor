@@ -35,7 +35,6 @@
 <ExampleSection Title="Child rows from a function">
     <WaDataGrid data-testid="gf-tree" Label="Folders" RowKey="id" Data="folders" Columns="folderColumns"
                 ChildRowsFunction="@WaJsFunction.Module(HarnessModule, "childrenOf").WithArgs(new { children = folderChildren })" />
-    <WaButton data-testid="gf-reload-folders" Size="WaSize.Small" Style="margin-block-start: var(--wa-space-m);" OnClick="ReloadFolders">Reload the folders</WaButton>
 </ExampleSection>
 
 @code {
@@ -91,13 +90,7 @@
         new() { Field = "quantity", Label = "Quantity", AggregationFunction = WaJsFunction.Module(HarnessModule, "range") }
     ];
 
-    private object[] folders = CreateFolders();
-
-    // NOTE checked against WA 3.14.0: wa-data-grid reads childRows only when it receives data, and the function arrives
-    // after the first Data push, so the tree shows from the next Data push; a new list makes one
-    private void ReloadFolders() => folders = CreateFolders();
-
-    private static object[] CreateFolders() => [new Folder(1, "src"), new Folder(2, "docs")];
+    private readonly object[] folders = [new Folder(1, "src"), new Folder(2, "docs")];
 
     // the children of each folder by its row key; childrenOf reads them through ctx.args and ctx.rowKey
     private readonly Dictionary<string, Folder[]> folderChildren = new()

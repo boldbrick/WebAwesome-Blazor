@@ -606,7 +606,8 @@ const elementFunctions = {
         hrefTemplate: { arity: 1, renders: false },
     },
     // NOTE checked against WA 3.14.0: the grid reads childRows only when it receives data (its row model is keyed on
-    // the data), so a childRows function assigned after the data applies from the next data push
+    // the data). The first data push waits for the pending function members (setDataGridData); a childRows change after
+    // the data applies from the next data push
     'wa-data-grid': {
         childRows: { arity: 1, renders: false, rowArgument: 0 },
         rowClass: { arity: 1, renders: false, rowArgument: 0 },
@@ -658,11 +659,59 @@ export function setElementFunction(element, member, descriptorJson, configuredEn
     state.json = descriptorJson;
     members.set(member, state);
 
-    // not awaited: an element whose module never loads (a Pro element on the free CDN) must not hold the interop call
-    assignElementFunction(element, member, signature, state, descriptorJson, configuredEntryPointUrl)
+    // not awaited: an element whose module never loads (a Pro element on the free CDN) must not hold the interop call;
+    // a data push of the element waits for it (setDataGridData)
+    const assignment = assignElementFunction(element, member, signature, state, descriptorJson, configuredEntryPointUrl)
         .catch(error => console.error(`WebAwesome.Blazor: the ${element.localName} ${member} could not be assigned: ${error.message}`));
+    trackPendingFunction(element, assignment);
 }
 
+// element -> the assignments of its function members that have not finished (a reference that does not resolve
+// finishes too, without a function)
+const pendingElementFunctions = new WeakMap();
+
+function trackPendingFunction(element, assignment) {
+    let pending = pendingElementFunctions.get(element);
+    if (!pending) {
+        pending = new Set();
+        pendingElementFunctions.set(element, pending);
+    }
+
+    pending.add(assignment);
+    assignment.finally(() => pending.delete(assignment));
+}
+
+// grid element -> its data push that waits for pending function members (a newer push replaces it)
+const deferredDataGridData = new WeakMap();
+
+/**
+ * Assigns the data of a wa-data-grid. While function members of the grid are still resolving (setElementFunction), the
+ * assignment waits for them, because the grid reads childRows only when it receives data. A newer push replaces a
+ * waiting one. Returns at once.
+ * @param {HTMLElement} element - The wa-data-grid element
+ * @param {Array} data - The row objects
+ */
+export function setDataGridData(element, data) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    const pending = pendingElementFunctions.get(element);
+    if (!pending || pending.size === 0) {
+        deferredDataGridData.delete(element);
+        element.data = data;
+        return;
+    }
+
+    const push = { data };
+    deferredDataGridData.set(element, push);
+    Promise.allSettled([...pending]).then(() => {
+        if (deferredDataGridData.get(element) !== push) return;
+
+        deferredDataGridData.delete(element);
+        element.data = push.data;
+    });
+}
 async function assignElementFunction(element, member, signature, state, descriptorJson, configuredEntryPointUrl) {
     await customElements.whenDefined(element.localName);
 
