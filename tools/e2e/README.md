@@ -81,6 +81,14 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   autoWidth)` and `ctx` (`args`, `library`); a registered resolver returns a Promise; a sprite sheet resolver fills the
   `<use>` element; module and global mutators change the SVG; the obsolete `Mutator` path still works; a resolver that
   does not resolve fails the registration, and a mutator that does not resolve is left out. Free CDN.
+- `tests\grid-functions.spec.js` — the function-valued members of `WaDataGrid` phase 2 (`/testing/grid-functions`,
+  functions from the collocated `GridFunctionsHarness.razor.js`, and the "More JavaScript Members" example of
+  `/components/data-grid`): a `ValueFunction` drives sort, search and the CSV export; a `FooterFunction` sums the
+  filtered rows in an upgraded badge; `CellClassFunction` and `RowClassFunction` classes styled by `ShadowStyles`; a
+  `FilterFunction`; `SelectableRowsFunction` locks a row for select-all; a `SearchFunction` ignores diacritics; a
+  `RowDetailFunction` panel with an upgraded tag on expand; an `AggregationFunction` on a grouped grid; a
+  `ChildRowsFunction` tree from `ctx.args` and `ctx.rowKey` (from the next `Data` push, as WA 3.14.0 reads `childRows`
+  only with the data). Pro only.
 - `tests\checkbox-switch-binding.spec.js` — regression test for the `WaCheckbox`/`WaSwitch`
   two-way binding bug (state never propagated back to Blazor).
 - `tests\custom-event-payload.spec.js` — regression test for the custom-event delivery bug

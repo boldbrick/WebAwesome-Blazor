@@ -110,6 +110,19 @@ public class ElementJsPropertyTests : BunitContext
         Assert.Contains(nameof(WaPagination.HrefTemplateFunction), exception.Message);
     }
 
+    [Fact]
+    public void DataGrid_WithChildRowsAndChildRowsFunction_Throws()
+    {
+        SetupInteropModule();
+
+        var exception = Assert.Throws<InvalidOperationException>(() => Render<WaDataGrid>(p => p
+            .Add(c => c.ChildRows, "children")
+            .Add(c => c.ChildRowsFunction, WaJsFunction.Registered("test.children"))));
+
+        Assert.Contains(nameof(WaDataGrid.ChildRows), exception.Message);
+        Assert.Contains(nameof(WaDataGrid.ChildRowsFunction), exception.Message);
+    }
+
     /// <summary>
     /// The function-valued parameters with the member of their element.
     /// </summary>
@@ -174,6 +187,11 @@ public class ElementJsPropertyTests : BunitContext
         new(typeof(WaDateRangeInput), nameof(WaDateRangeInput.IsDateDisabledFunction), "wa-date-input", "isDateDisabled"),
         new(typeof(WaDateRangeInput), nameof(WaDateRangeInput.DayContentFunction), "wa-date-input", "dayContent"),
         new(typeof(WaPagination), nameof(WaPagination.HrefTemplateFunction), "wa-pagination", "hrefTemplate"),
+        new(typeof(WaDataGrid), nameof(WaDataGrid.ChildRowsFunction), "wa-data-grid", "childRows"),
+        new(typeof(WaDataGrid), nameof(WaDataGrid.RowClassFunction), "wa-data-grid", "rowClass"),
+        new(typeof(WaDataGrid), nameof(WaDataGrid.RowDetailFunction), "wa-data-grid", "rowDetail"),
+        new(typeof(WaDataGrid), nameof(WaDataGrid.SearchFunction), "wa-data-grid", "searchFn"),
+        new(typeof(WaDataGrid), nameof(WaDataGrid.SelectableRowsFunction), "wa-data-grid", "selectableRows"),
     ];
 
     private static readonly Type[] ShadowStylesWrappers =

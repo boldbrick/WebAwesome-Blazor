@@ -22,3 +22,31 @@ export function progressBar(value) {
   bar.textContent = `${value}%`;
   return bar;
 }
+
+// Functions of the "More JavaScript Members" example: a class per cell, computed values, footers and a detail panel.
+
+// the class of an hours cell over the budget in ctx.args; ShadowStyles styles it
+export function overBudget(value, row, ctx) {
+  return value > ctx.args.budget ? 'over-budget' : '';
+}
+
+// the computed amount of a line: it sorts, searches and exports like a field
+export function amount(row) {
+  return row.hours * row.rate;
+}
+
+// the footers: the sums of the filtered rows
+export function sumOfHours(rows) {
+  return String(rows.reduce((sum, row) => sum + row.hours, 0));
+}
+
+export function sumOfAmounts(rows) {
+  return String(rows.reduce((sum, row) => sum + amount(row), 0));
+}
+
+// the detail panel of an expanded row
+export function billingDetail(row) {
+  const detail = document.createElement('p');
+  detail.textContent = `${row.item}: ${row.hours} h at ${row.rate} per hour`;
+  return detail;
+}

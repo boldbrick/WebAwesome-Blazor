@@ -356,12 +356,19 @@ function resolveGlobalFunction(path) {
  */
 
 // the column members that take a function (upstream DataGridColumn): the number of arguments the grid passes before
-// ctx, whether the function renders cell content, and the argument that holds the row of the cell
+// ctx, whether the function renders content in the shadow root, and the argument that holds the row of the call. A
+// member with a static form (footer, aggregation, cellClass) keeps a string under the same key: only a descriptor is
+// resolved.
 // NOTE checked against WA 3.14.0: the arities match data-grid.d.ts; recheck them on each upgrade (watch list)
 const dataGridColumnFunctions = {
     formatter: { arity: 2, renders: true, rowArgument: 1 },
     aggregatedFormatter: { arity: 2, renders: true },
     comparator: { arity: 4, renders: false },
+    value: { arity: 1, renders: false, rowArgument: 0 },
+    filterFn: { arity: 3, renders: false, rowArgument: 2 },
+    footer: { arity: 1, renders: true },
+    aggregation: { arity: 2, renders: false },
+    cellClass: { arity: 2, renders: false, rowArgument: 1 },
 };
 
 // grid element -> its last push: the column JSON and, once resolved, the columns (a newer push replaces the entry)
@@ -568,9 +575,9 @@ function removeSheet(state) {
  * set back to null gets it again: the element's default renderer, or the empty hrefTemplate.
  */
 
-// tag -> member -> the number of arguments the element passes (ctx follows them) and whether the function renders its
+// tag -> member -> the number of arguments the element passes (ctx follows them), whether the function renders its
 // output in the shadow root (then the declared elements are registered before the assignment, and the rendered output
-// is discovered after it).
+// is discovered after it), and the argument that holds the row of the call (for ctx.rowKey, see elementFunctionContexts).
 // NOTE checked against WA 3.14.0: the members and arities match the components' .d.ts files; recheck them on each
 // upgrade (watch list)
 const elementFunctions = {
@@ -598,6 +605,21 @@ const elementFunctions = {
     'wa-pagination': {
         hrefTemplate: { arity: 1, renders: false },
     },
+    // NOTE checked against WA 3.14.0: the grid reads childRows only when it receives data (its row model is keyed on
+    // the data), so a childRows function assigned after the data applies from the next data push
+    'wa-data-grid': {
+        childRows: { arity: 1, renders: false, rowArgument: 0 },
+        rowClass: { arity: 1, renders: false, rowArgument: 0 },
+        rowDetail: { arity: 1, renders: true, rowArgument: 0 },
+        searchFn: { arity: 3, renders: false, rowArgument: 2 },
+        selectableRows: { arity: 1, renders: false, rowArgument: 0 },
+    },
+};
+
+// tag -> the ctx members its function members get beyond args and element: context(element) adds fixed members, and
+// rowKey(element, row) reads the key of the row argument of a member that declares one
+const elementFunctionContexts = {
+    'wa-data-grid': { context: element => ({ grid: element }), rowKey: dataGridRowKey },
 };
 
 // element -> member -> { json, original, kept, assigned }: the last descriptor JSON, the element's own value before the
@@ -647,8 +669,16 @@ async function assignElementFunction(element, member, signature, state, descript
     let target;
     if (descriptorJson !== null) {
         const descriptor = JSON.parse(descriptorJson);
+        const contexts = elementFunctionContexts[element.localName];
         const [resolved] = await Promise.all([
-            resolveFunction(descriptor, { element, member, label: `${element.localName} ${member}`, arity: signature.arity }),
+            resolveFunction(descriptor, {
+                element,
+                member,
+                label: `${element.localName} ${member}`,
+                arity: signature.arity,
+                context: contexts?.context(element),
+                rowKey: contexts && signature.rowArgument !== undefined ? callArgs => contexts.rowKey(element, callArgs[signature.rowArgument]) : undefined,
+            }),
             signature.renders ? preloadTags(descriptor.uses ?? [], configuredEntryPointUrl) : undefined,
         ]);
         target = resolved;
