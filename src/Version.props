@@ -40,7 +40,7 @@
   <!-- Framework targeting: net10.0 (LTS) is the primary target, net9.0 kept for compatibility;
        applications target net10.0 only -->
   <!-- no RuntimeFrameworkVersion pinning: the baseline x.0.0 runtime of each target major applies,
-       consistent with the dependency floors policy (docs\technical.md) -->
+       consistent with the dependency floors policy (docs\technical\technical.md) -->
   <PropertyGroup Condition="'$(BbComponentGroup)' != 'Apps'">
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
   </PropertyGroup>

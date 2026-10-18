@@ -24,7 +24,7 @@ Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web
 
 ✅ **Machine-verified completeness.** A reflection-based API parity suite checks every wrapper against Web Awesome's published custom-elements manifest — attributes, slots, events. "Did we miss a parameter?" is a red/green test signal, not a code-review hope. 229 automated tests plus a Playwright-based end-to-end sweep of the demo app back every release.
 
-🚄 **Built to track Web Awesome releases fast.** A CEM-driven upgrade pipeline diffs upstream API surfaces, generates change reports, and drives wrapper updates and tests (see [docs/UPGRADE-PROCESS.md](docs/UPGRADE-PROCESS.md)). The first three parts of the package version **are** the Web Awesome version it binds; a fourth part only marks a revision of the bindings (`3.14.0.1`) — no parallel version scheme to decode.
+🚄 **Built to track Web Awesome releases fast.** A CEM-driven upgrade pipeline diffs upstream API surfaces, generates change reports, and drives wrapper updates and tests (see [docs/contributing/UPGRADE-PROCESS.md](docs/contributing/UPGRADE-PROCESS.md)). The first three parts of the package version **are** the Web Awesome version it binds; a fourth part only marks a revision of the bindings (`3.14.0.1`) — no parallel version scheme to decode.
 
 📐 **Covers what others skip.** Web Awesome's CSS-only layout system ships as components too (`WaStack`, `WaCluster`, `WaFlank`, `WaGrid`, …), alongside utility elements like `WaFormatDate`, `WaFormatNumber`, and the observer components.
 
@@ -227,7 +227,7 @@ We align binding versions to WA versions:
 
 ## Branches & contributions (high level)
 - **Open PRs to the active subtrunk** (on GitHub: `master-WA-3.0`); patch fixes for a shipped train target that same subtrunk, new/breaking work targets the next one (e.g., `master-WA-3.1`).
-- **Web Awesome version upgrades are maintainer work**, executed by the automated upgrade pipeline ([docs/UPGRADE-PROCESS.md](docs/UPGRADE-PROCESS.md)) — contributions are welcome for bug fixes and supplemental improvements (demo app, docs, tests), not for implementing WA releases.
+- **Web Awesome version upgrades are maintainer work**, executed by the automated upgrade pipeline ([docs/contributing/UPGRADE-PROCESS.md](docs/contributing/UPGRADE-PROCESS.md)) — contributions are welcome for bug fixes and supplemental improvements (demo app, docs, tests), not for implementing WA releases.
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Build & pack locally
@@ -240,6 +240,13 @@ We align binding versions to WA versions:
 The repo uses a single-output-directory build system and produces nugets into `src/output/packages/<Configuration>`.
 
 > CI packs on tags named `wa-blazor-*` and attaches both `.nupkg` files (`WebAwesome.Blazor` and `WebAwesome.Blazor.Extensions`) to the GitHub Release.
+
+**Docs bundle (maintainers).** A local Release build also bundles the docs into both packages under `docs/`: the API reference, a skill and, in the main package, the changelog, the technical documentation, the migration guides and the Web Awesome docs. Packages built on GitHub (nuget.org) carry no docs bundle. The maintainers publish the local packages to the internal NuGet feed before the tag push:
+- One-time setup: add the feed as a user-level NuGet source (`dotnet nuget add source <feed> --name <name>`, never in the repository), then run `dotnet tool restore`.
+- Release step: `& .\tools\release\Publish-WaLocalFeed.ps1 -Source <name>`, before the tag push.
+- Internal consumers map `WebAwesome.*` to the internal feed with `packageSourceMapping`, and clear a cached nuget.org copy of the same version.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md), "Maintainer setup and local release".
 
 ## Demo
 A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every component with source-visible examples, grouped into the same categories Web Awesome's own documentation uses. It is deployed to GitHub Pages on every merge to `main`: **<https://boldbrick.github.io/WebAwesome-Blazor/>**. It doubles as a manual regression harness for upgrades and is swept by automated Playwright tests (`tools/e2e`).
@@ -257,7 +264,7 @@ A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every 
 > **Non-goal of `WebAwesome.Blazor`:** app-level convenience components (toast dispatch services, confirm dialogs, dark-mode toggles). It is an architectural decision that the main package ships pure bindings only — no extensions will be bundled into it. Features that add behavior upstream Web Awesome does not have go into the optional [`WebAwesome.Blazor.Extensions`](#extensions-package-optional) package.
 
 ## License
-MIT — see `LICENSE.md`.
+MIT — see `LICENSE.md`. Third-party content in the packages: see `THIRD-PARTY-NOTICES.md`.
 
 ## Trademarks
 Web Awesome, Font Awesome, and any related marks are property of their respective owners. This project is an independent community binding and not affiliated with or endorsed by the Web Awesome authors.

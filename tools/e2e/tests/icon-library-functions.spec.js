@@ -2,7 +2,7 @@
 const { test, expect } = require('./helpers/test');
 const { waitForWaReady } = require('./helpers/wa-ready');
 
-// The function references of an icon library (IconLibraryOptions.ResolverFunction and MutatorFunction, docs\technical.md,
+// The function references of an icon library (IconLibraryOptions.ResolverFunction and MutatorFunction, docs\technical\technical.md,
 // "JavaScript function references") on the harness /testing/icon-library. Each button registers one library through
 // WaIconLibraryService; the resolver is a WaJsFunction that wa-icon calls as (name, family, variant, autoWidth, ctx),
 // the mutator one it calls as (svg, icon, ctx). The icons are data URLs and a local sprite sheet, so the spec needs no

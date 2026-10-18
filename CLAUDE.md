@@ -223,3 +223,28 @@ private readonly string apiKey = "sk_live_abc123def456...";
 // Good - placeholder in examples
 private const string EXAMPLE_API_KEY = "your_api_key_here"; // Configure in appsettings.json
 ```
+
+## Package documentation (DocPack)
+
+`docpack sync` copies the docs of every resolved NuGet package that ships them into
+`docs/dependencies/synced/<PackageId>/` and installs one developer skill per package as
+`pkg-<package-id>`. Both are not version-controlled. The catalog
+`docs/dependencies/synced/INDEX.md` lists the packages, one line each. Committed docs of other
+dependencies are in `docs/dependencies/vendored/<name>/`.
+
+Look up package documentation in this order:
+
+1. Working against a package: load its `pkg-<package-id>` skill.
+2. A symbol or a signature: Grep the page frontmatter under `docs/dependencies/synced/**/api` —
+   `fullName: "?Acme.Parsing.Parser` for a qualified name, `name: "?Parser` for a short one — then
+   Read one page.
+3. A concept within one package: the skill, then one page that `<PackageId>/INDEX.md` points to.
+4. Cross-cutting or unclear: `/docs-process:docs-gather`.
+
+- Read index pages first. Never read a whole package folder.
+- Never edit files under `docs/dependencies/synced/` or the `pkg-*` skills; sync replaces them.
+- When the synced docs are missing or stale, run `dotnet tool restore`, then
+  `dotnet tool run docpack -- sync`.
+- To browse the docs in a browser, run `/docpack:docpack-view`.
+- `PACKAGE-SKILL.md` beside a packable project is the source of that package's developer skill.
+  Review it like code; write or refresh it with `/docpack:docpack-skill <PackageId>`.

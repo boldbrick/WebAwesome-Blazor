@@ -19,7 +19,7 @@ namespace WebAwesome.Blazor.Base;
 /// stays clean), but once the attribute was rendered, a return to the default or to null renders the element default
 /// explicitly.
 /// The element default is not looked up: every call site passes it, as the wrapper's public
-/// <c>Default&lt;Name&gt;</c> constant (docs\technical.md, "Sticky attributes").
+/// <c>Default&lt;Name&gt;</c> constant (docs\technical\technical.md, "Sticky attributes").
 /// </para>
 /// <para>
 /// Exempt: attributes whose CEM default is no literal (null, undefined), where removal restores the unset state and

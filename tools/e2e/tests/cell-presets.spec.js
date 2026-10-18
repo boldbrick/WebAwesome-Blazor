@@ -3,7 +3,7 @@ const { test, expect } = require('./helpers/test');
 const { skipUnlessProUpgrades, WA_READY_TIMEOUT_MS } = require('./helpers/wa-ready');
 
 // The data grid cell presets of WebAwesome.Blazor.Extensions (WaDataGridFormatters, WaDataGridComparators) and the cell
-// action bridge (@onwablazor-cell-action, docs\technical.md "JavaScript function references" and the Extensions
+// action bridge (@onwablazor-cell-action, docs\technical\technical.md "JavaScript function references" and the Extensions
 // PACKAGE.md). Pages: the harness /testing/cell-presets (every preset with fixed cultures and time zones, OnCellClick
 // and @onwablazor-cell-action bound on the visual grid) and the "Extensions: Cell Presets" example of
 // /components/data-grid. The registry test runs on the free CDN too; the grid tests need the Pro wa-data-grid and skip

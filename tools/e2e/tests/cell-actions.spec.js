@@ -2,7 +2,7 @@
 const { test, expect } = require('./helpers/test');
 const { skipUnlessProUpgrades, WA_READY_TIMEOUT_MS } = require('./helpers/wa-ready');
 
-// The phase 2 extras of WebAwesome.Blazor.Extensions (docs\technical.md, "Cell presets and cell actions (Extensions)"):
+// The phase 2 extras of WebAwesome.Blazor.Extensions (docs\technical\technical.md, "Cell presets and cell actions (Extensions)"):
 // the ctx helpers (ctx.emit, ctx.h, ctx.preset, ctx.format, ctx.cache), the declarative actions (data-wablazor-action),
 // the interactive presets (Button, Actions, Menu, Switch, Checkbox), decision D4 for every action, the risks R2 (a Lit
 // template of the app's own Lit), R4 (the keyboard in an action cell) and R6 (a menu in a pinned column and in the last

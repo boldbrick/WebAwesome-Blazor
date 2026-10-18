@@ -67,7 +67,7 @@ In 3.14.0 `WaStep` is the new component wrapping `wa-step`. Code that still mean
 - `WaStepper`: `Active`, `Clickable`, `Linear`, `Orientation` (`WaStepperOrientation`), `Label`; `OnBeforeStepChange` and `OnStepChange` carry a `WaStepChangeEventArgs` with the `Name` of the step becoming active and the `PreviousName`. `OnBeforeStepChange` can't cancel the change from .NET, like the other cancelable Web Awesome events.
 - `WaStep`: `Name`, `Completed`, `Loading`, `Disabled`, `Variant`, `Attention`, `DescriptionContent`, and an icon through `IconContent` or the `IconName` shortcut.
 
-The other 3.14.0 additions (`WaCombobox` server mode, the `WaDivider` label, `WithLabel` on `WaDialog`/`WaDrawer`/`WaDivider`, `WaPage.Nonce`, and `Allow`/`Label`/`Name` on `WaZoomableFrame`) are opt-in and don't change existing behaviour; see the [changelog](CHANGELOG.md).
+The other 3.14.0 additions (`WaCombobox` server mode, the `WaDivider` label, `WithLabel` on `WaDialog`/`WaDrawer`/`WaDivider`, `WaPage.Nonce`, and `Allow`/`Label`/`Name` on `WaZoomableFrame`) are opt-in and don't change existing behaviour; see the [changelog](../CHANGELOG.md).
 
 ## Migration Checklist
 

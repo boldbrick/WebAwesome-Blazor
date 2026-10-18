@@ -2,7 +2,8 @@
 # Automated release-preflight gates for WebAwesome.Blazor (see .claude\skills\wa-release-preflight\SKILL.md).
 # Verifies everything that can be checked without VCS/ticketing context:
 #   version alignment, changelog/migration doc shape, builds, tests, nupkg dependency floors, the two
-#   packages (WebAwesome.Blazor and WebAwesome.Blazor.Extensions at one version), browser e2e.
+#   packages (WebAwesome.Blazor and WebAwesome.Blazor.Extensions at one version), the docs bundle of both
+#   packages (DocPack, local Release builds), browser e2e.
 # Windows PowerShell 5.1 compatible; ASCII only (5.1 misparses BOM-less non-ASCII scripts).
 #
 # Usage (from anywhere):
@@ -172,20 +173,35 @@ if ($changelog -match ('(?s)## \[' + [regex]::Escape($version) + '\](.*?)(\r?\n#
     }
 }
 if ($entryHasBreaking) {
-    Add-Gate 'migration-doc' (Test-Path ("docs\MIGRATION-{0}.md" -f $version)) ("breaking changes present, docs\MIGRATION-{0}.md required" -f $version)
+    Add-Gate 'migration-doc' (Test-Path ("docs\migration\MIGRATION-{0}.md" -f $version)) ("breaking changes present, docs\migration\MIGRATION-{0}.md required" -f $version)
 } else {
     Add-Gate 'migration-doc' $true 'no breaking changes declared, migration doc not required'
 }
 
 # --- gates: build, tests, package -------------------------------------------
 if (-not $SkipBuild) {
+    # the Release build bundles the package docs with the docpack tool pinned in .config\dotnet-tools.json
+    $restore = dotnet tool restore 2>&1
+    $restoreOk = ($LASTEXITCODE -eq 0)
+    if (-not $restoreOk) { $restore | Select-Object -Last 10 | ForEach-Object { Write-Host ("    {0}" -f $_) } }
+    Add-Gate 'tool-restore' $restoreOk ("dotnet tool restore exit {0}" -f $LASTEXITCODE)
+
     foreach ($config in 'Debug', 'Release') {
         $build = dotnet build src\WebAwesome.slnx -p:Configuration=$config 2>&1
         $buildOk = ($LASTEXITCODE -eq 0)
         $warnings = -1
-        $m = ($build | Select-String -Pattern '(\d+) Warning\(s\)' | Select-Object -First 1)
+        # the MSBuild summary line only: the docpack output has its own "<n> warning(s)" line for content checks
+        $m = ($build | Select-String -CaseSensitive -Pattern '^\s*(\d+) Warning\(s\)\s*$' | Select-Object -First 1)
         if ($m) { $warnings = [int]$m.Matches[0].Groups[1].Value }
         Add-Gate ("build-{0}" -f $config.ToLower()) ($buildOk -and $warnings -eq 0) ("exit {0}, warnings {1}" -f $LASTEXITCODE, $warnings)
+
+        # the Release pack bundles the package docs; docpack reports a broken link as "warning: <page>: link target ..."
+        # (UpstreamDocs.targets rewrites the upstream site links, so a new one after an upgrade needs a fix there)
+        if ($config -eq 'Release') {
+            $linkWarnings = @($build | ForEach-Object { $_.ToString() } | Where-Object { $_ -match 'warning: .*: link ' -and $_ -notmatch 'warning (CS|NU|MSB)\d' })
+            $linkWarnings | Select-Object -First 10 | ForEach-Object { Write-Host ("    {0}" -f $_.Trim()) }
+            Add-Gate 'docs-links' ($linkWarnings.Count -eq 0) ("docpack link warnings in the Release pack: {0}" -f $linkWarnings.Count)
+        }
 
         $test = dotnet test src\WebAwesome.slnx --no-build -p:Configuration=$config 2>&1
         $testOk = ($LASTEXITCODE -eq 0)
@@ -265,6 +281,45 @@ if (-not $SkipBuild) {
     $detail = ("{0} and {1} {2}; {1} depends on {0} >= {2}; JS initializer packed" -f $mainId, $extensionsId, $version)
     if ($extensionsProblems.Count -gt 0) { $detail = $extensionsProblems -join '; ' }
     Add-Gate 'extensions-package' ($extensionsProblems.Count -eq 0) $detail
+
+    # docs bundle (DocPack, local Release builds only): both packages carry docs/ with the API reference and the
+    # skill; the main package also carries docs/content/ with the changelog, every migration guide, the technical
+    # documentation and the upstream Web Awesome docs with their license, and nothing from ai\ or docs\contributing;
+    # the Extensions package has no content pages
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $docsProblems = @()
+    $docsSummary = @()
+    foreach ($id in $packageIds) {
+        $nupkgPath = Join-Path $packageDir ("{0}.{1}.nupkg" -f $id, $version)
+        if (-not (Test-Path $nupkgPath)) { $docsProblems += ("missing {0}" -f $nupkgPath); continue }
+        $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $nupkgPath).Path)
+        try { $docs = @($zip.Entries | ForEach-Object { $_.FullName } | Where-Object { $_.StartsWith('docs/') }) } finally { $zip.Dispose() }
+        if ($docs.Count -eq 0) {
+            $docsProblems += ("{0}: no docs/ folder (DocPack bundles in local Release builds only; run dotnet tool restore)" -f $id)
+            continue
+        }
+        if ($docs -notcontains 'docs/api/INDEX.md') { $docsProblems += ("{0}: no API reference (docs/api/INDEX.md)" -f $id) }
+        if ($docs -notcontains 'docs/SKILL.md') { $docsProblems += ("{0}: no skill (docs/SKILL.md)" -f $id) }
+        $content = @($docs | Where-Object { $_.StartsWith('docs/content/') })
+        if ($id -eq $mainId) {
+            $expected = @('docs/content/CHANGELOG.md', 'docs/content/web-awesome/LICENSE.md')
+            $expected += @(Get-ChildItem docs\migration -File -Filter 'MIGRATION-*.md' | ForEach-Object { 'docs/content/migration/' + $_.Name })
+            $expected += @(Get-ChildItem docs\technical -File -Recurse | ForEach-Object { 'docs/content/technical/' + $_.FullName.Substring((Resolve-Path docs\technical).Path.Length + 1).Replace('\', '/') })
+            $missing = @($expected | Where-Object { $content -notcontains $_ })
+            if ($missing.Count -gt 0) { $docsProblems += ("{0}: missing {1}" -f $id, ($missing -join ', ')) }
+            $upstream = @($content | Where-Object { $_.StartsWith('docs/content/web-awesome/') })
+            if ($upstream.Count -lt 2) { $docsProblems += ("{0}: no upstream Web Awesome pages under docs/content/web-awesome/" -f $id) }
+            $forbidden = @($content | Where-Object { $_ -match '/ai/|^docs/content/contributing/|UPGRADE-PROCESS\.md$' -or ($_.StartsWith('docs/content/web-awesome/') -and $_ -notmatch '\.md$') })
+            if ($forbidden.Count -gt 0) { $docsProblems += ("{0}: must not bundle {1}" -f $id, ($forbidden -join ', ')) }
+            $docsSummary += ("{0}: {1} files, {2} content ({3} upstream)" -f $id, $docs.Count, $content.Count, $upstream.Count)
+        } else {
+            if ($content.Count -gt 0) { $docsProblems += ("{0}: unexpected content pages ({1})" -f $id, $content.Count) }
+            $docsSummary += ("{0}: {1} files" -f $id, $docs.Count)
+        }
+    }
+    $detail = $docsSummary -join '; '
+    if ($docsProblems.Count -gt 0) { $detail = $docsProblems -join '; ' }
+    Add-Gate 'docs-bundle' ($docsProblems.Count -eq 0) $detail
 } else {
     Write-Host 'Builds/tests/package gates skipped (-SkipBuild).'
 }
