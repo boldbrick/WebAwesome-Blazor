@@ -230,4 +230,4 @@ tests. So a self-skipping test (a Pro component on the free CDN) must be added t
 - When you find and fix another bug this way, add a targeted regression test alongside the
   existing ones and log the root cause + workaround in `docs\CHANGELOG.md` so the `/wa-upgrade`
   pipeline knows to re-verify it against future Web Awesome releases (see
-  `docs\UPGRADE-PROCESS.md` → "Pending workarounds to re-verify every upgrade").
+  `docs\contributing\UPGRADE-PROCESS.md` → "Pending workarounds to re-verify every upgrade").

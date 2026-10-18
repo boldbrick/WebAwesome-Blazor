@@ -2,7 +2,7 @@
 const { test, expect } = require('./helpers/test');
 const { waitForWaReady, skipUnlessProUpgrades } = require('./helpers/wa-ready');
 
-// The function-valued members of the element wrappers and ShadowStyles (docs\technical.md, "JavaScript function
+// The function-valued members of the element wrappers and ShadowStyles (docs\technical\technical.md, "JavaScript function
 // references"), on the harness /testing/element-functions: each WaJsFunction parameter reaches its element as a
 // function with a trailing ctx (args, element), ShadowStyles styles the output of a function in the shadow root
 // (changed in place), a function set back to null gives the element its own renderer again, and the obsolete string

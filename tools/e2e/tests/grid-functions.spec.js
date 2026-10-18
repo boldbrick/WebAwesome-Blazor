@@ -2,7 +2,7 @@
 const { test, expect } = require('./helpers/test');
 const { skipUnlessProUpgrades, WA_READY_TIMEOUT_MS } = require('./helpers/wa-ready');
 
-// The function-valued members of WaDataGrid phase 2 (docs\technical.md, "JavaScript function references") in a real
+// The function-valued members of WaDataGrid phase 2 (docs\technical\technical.md, "JavaScript function references") in a real
 // wa-data-grid: the column members ValueFunction, FooterFunction, CellClassFunction, FilterFunction and
 // AggregationFunction, and the grid members RowClassFunction, RowDetailFunction, SearchFunction,
 // SelectableRowsFunction and ChildRowsFunction. Pages: the harness /testing/grid-functions (the exports of the

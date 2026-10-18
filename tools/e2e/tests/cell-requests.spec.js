@@ -2,7 +2,7 @@
 const { test, expect } = require('./helpers/test');
 const { skipUnlessProUpgrades, WA_READY_TIMEOUT_MS } = require('./helpers/wa-ready');
 
-// Phase 3 of WebAwesome.Blazor.Extensions (docs\technical.md, "Cell presets and cell actions (Extensions)"): requests
+// Phase 3 of WebAwesome.Blazor.Extensions (docs\technical\technical.md, "Cell presets and cell actions (Extensions)"): requests
 // from grid content to .NET (ctx.invoke, WaDataGridRequestHandler, data-grid-requests.js) and static Razor cell
 // templates (WaDataGridRazorTemplates, the razorTemplate preset). Pages: the harness /testing/cell-requests and the two
 // phase 3 examples of /components/data-grid. The request tests without a grid run on the free CDN too (a real .NET

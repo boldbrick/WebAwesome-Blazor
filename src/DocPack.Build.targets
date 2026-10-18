@@ -1,0 +1,128 @@
+<!-- DocPack v2 -->
+<!--
+  DocPack pack integration. Import from Directory.Build.targets:
+    <Import Project="$(MSBuildThisFileDirectory)DocPack.Build.targets" />
+  During pack, when DocPackEnabled is true (default: $(IsPackable)), runs
+  "$(DocPackCommand) bundle" and adds the bundle to the package under docs/.
+  Multi-targeting projects bundle the build output of the last TFM in TargetFrameworks.
+-->
+<Project>
+
+  <PropertyGroup Condition="'$(DocPackKind)' == 'site'">
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <!-- The assembly and XML documentation file of one inner (or single-target) build. -->
+  <Target Name="DocPackGetBuildOutput" Returns="@(_DocPackBuildOutput)">
+    <PropertyGroup>
+      <_DocPackDocumentationFile>@(DocFileItem->'%(FullPath)')</_DocPackDocumentationFile>
+    </PropertyGroup>
+    <ItemGroup>
+      <_DocPackBuildOutput Include="$(TargetPath)" DocumentationFile="$(_DocPackDocumentationFile)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- The package id and version of this project, for the dependencies of a referencing package. -->
+  <Target Name="DocPackGetPackageIdentity" DependsOnTargets="$(GetPackageVersionDependsOn)" Returns="@(_DocPackIdentity)">
+    <ItemGroup>
+      <_DocPackIdentity Include="$(PackageId)" Version="$(PackageVersion)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="DocPackBundle"
+          BeforeTargets="_GetPackageFiles"
+          Condition="'$(DocPackEnabled)' == 'true' or ('$(DocPackEnabled)' == '' and '$(IsPackable)' == 'true')">
+
+    <PropertyGroup>
+      <_DocPackIsSite>false</_DocPackIsSite>
+      <_DocPackIsSite Condition="'$(DocPackKind)' == 'site'">true</_DocPackIsSite>
+      <_DocPackOut>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'docpack'))</_DocPackOut>
+      <_DocPackTfms Condition="'$(TargetFramework)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(TargetFrameworks)', '[\s;]+$', ''))</_DocPackTfms>
+      <_DocPackLastTfm Condition="'$(_DocPackTfms)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(_DocPackTfms)', '^[\s\S]*;', '').Trim())</_DocPackLastTfm>
+    </PropertyGroup>
+
+    <!-- Build output: this build, or the last TFM's inner build of a multi-targeting project. -->
+    <MSBuild Condition="'$(_DocPackIsSite)' != 'true' and '$(_DocPackLastTfm)' != ''"
+             Projects="$(MSBuildProjectFullPath)"
+             Targets="DocPackGetBuildOutput"
+             Properties="TargetFramework=$(_DocPackLastTfm)">
+      <Output TaskParameter="TargetOutputs" ItemName="_DocPackInnerOutput" />
+    </MSBuild>
+    <PropertyGroup Condition="'$(_DocPackIsSite)' != 'true'">
+      <_DocPackAssembly Condition="'$(_DocPackLastTfm)' == ''">$(TargetPath)</_DocPackAssembly>
+      <_DocPackXml Condition="'$(_DocPackLastTfm)' == ''">@(DocFileItem->'%(FullPath)')</_DocPackXml>
+      <_DocPackAssembly Condition="'$(_DocPackLastTfm)' != ''">@(_DocPackInnerOutput->'%(FullPath)')</_DocPackAssembly>
+      <_DocPackXml Condition="'$(_DocPackLastTfm)' != ''">@(_DocPackInnerOutput->'%(DocumentationFile)')</_DocPackXml>
+    </PropertyGroup>
+
+    <!-- Package dependencies: the direct PackageReferences (version from Version, VersionOverride or
+         the central PackageVersion) and the package identity of each ProjectReference, leaving out
+         PrivateAssets="all" and implicit references. -->
+    <ItemGroup Condition="'$(_DocPackIsSite)' != 'true'">
+      <_DocPackPackageRef Include="@(PackageReference)" Condition="'%(PackageReference.PrivateAssets)' != 'all' and '%(PackageReference.IsImplicitlyDefined)' != 'true'" />
+      <_DocPackExplicitRef Include="@(_DocPackPackageRef)" Condition="'%(_DocPackPackageRef.Version)' != '' or '%(_DocPackPackageRef.VersionOverride)' != ''" />
+      <_DocPackExplicitRef Condition="'%(_DocPackExplicitRef.VersionOverride)' != ''">
+        <Version>%(_DocPackExplicitRef.VersionOverride)</Version>
+      </_DocPackExplicitRef>
+      <_DocPackCentralRef Include="@(_DocPackPackageRef)" Exclude="@(_DocPackExplicitRef)" />
+      <_DocPackOtherVersion Include="@(PackageVersion)" Exclude="@(_DocPackCentralRef)" />
+      <_DocPackCentralVersion Include="@(PackageVersion)" Exclude="@(_DocPackOtherVersion)" />
+      <_DocPackDependency Include="@(_DocPackExplicitRef);@(_DocPackCentralVersion)" />
+      <_DocPackProjectRef Include="@(ProjectReference)" Condition="'%(ProjectReference.PrivateAssets)' != 'all'" />
+    </ItemGroup>
+    <MSBuild Condition="'@(_DocPackProjectRef)' != ''"
+             Projects="@(_DocPackProjectRef)"
+             Targets="DocPackGetPackageIdentity"
+             SkipNonexistentProjects="true"
+             SkipNonexistentTargets="true"
+             RemoveProperties="TargetFramework;RuntimeIdentifier">
+      <Output TaskParameter="TargetOutputs" ItemName="_DocPackDependency" />
+    </MSBuild>
+
+    <!-- One argument per value; nothing is evaluated by the tool. -->
+    <PropertyGroup>
+      <_DocPackDescription>$(Description.Replace('&#13;', ' ').Replace('&#10;', ' ').Replace('&quot;', '\&quot;').Trim())</_DocPackDescription>
+      <_DocPackArgs>bundle --project &quot;$(MSBuildProjectFullPath)&quot; --package-id &quot;$(PackageId)&quot; --version &quot;$(PackageVersion)&quot; --kind $(DocPackKind) --out &quot;$(_DocPackOut)&quot;</_DocPackArgs>
+      <_DocPackArgs Condition="'$(_DocPackAssembly)' != ''">$(_DocPackArgs) --assembly &quot;$(_DocPackAssembly)&quot;</_DocPackArgs>
+      <_DocPackArgs Condition="'$(_DocPackXml)' != ''">$(_DocPackArgs) --xml &quot;$(_DocPackXml)&quot;</_DocPackArgs>
+      <_DocPackArgs Condition="'$(_DocPackDescription)' != ''">$(_DocPackArgs) --description &quot;$(_DocPackDescription)&quot;</_DocPackArgs>
+      <_DocPackArgs Condition="'$(RootNamespace)' != '' and '$(_DocPackIsSite)' != 'true'">$(_DocPackArgs) --root-namespace &quot;$(RootNamespace)&quot;</_DocPackArgs>
+      <_DocPackArgs Condition="'@(_DocPackDependency)' != ''">$(_DocPackArgs) @(_DocPackDependency->'--dependency &quot;%(Identity)=%(Version)&quot;', ' ')</_DocPackArgs>
+      <_DocPackArgs Condition="'$(DocPackApi)' == 'false' or '$(_DocPackIsSite)' == 'true'">$(_DocPackArgs) --no-api</_DocPackArgs>
+      <_DocPackArgs Condition="'$(DocPackSkill)' == 'false'">$(_DocPackArgs) --no-skill</_DocPackArgs>
+      <_DocPackArgs Condition="'$(DocPackOverview)' != ''">$(_DocPackArgs) --overview $(DocPackOverview)</_DocPackArgs>
+      <_DocPackArgs Condition="'@(DocPackContent)' != ''">$(_DocPackArgs) @(DocPackContent->'--content &quot;%(FullPath)|%(Title)&quot;', ' ')</_DocPackArgs>
+    </PropertyGroup>
+
+    <Exec Command="$(DocPackCommand) --version"
+          WorkingDirectory="$(MSBuildProjectDirectory)"
+          EchoOff="true"
+          IgnoreExitCode="true"
+          IgnoreStandardErrorWarningFormat="true"
+          StandardOutputImportance="low"
+          StandardErrorImportance="low">
+      <Output TaskParameter="ExitCode" PropertyName="_DocPackProbeExitCode" />
+    </Exec>
+    <Error Condition="'$(_DocPackProbeExitCode)' != '0'"
+           Code="DOCPACK001"
+           Text="DocPack: the command '$(DocPackCommand)' is not available, so the docs of $(PackageId) cannot be bundled. Run 'dotnet tool restore' in the repository (docpack is pinned in .config/dotnet-tools.json), set DocPackCommand, or set DocPackEnabled=false." />
+
+    <Exec Command="$(DocPackCommand) $(_DocPackArgs)"
+          WorkingDirectory="$(MSBuildProjectDirectory)"
+          IgnoreExitCode="true"
+          IgnoreStandardErrorWarningFormat="true"
+          StandardOutputImportance="high"
+          StandardErrorImportance="high">
+      <Output TaskParameter="ExitCode" PropertyName="_DocPackExitCode" />
+    </Exec>
+    <Error Condition="'$(_DocPackExitCode)' != '0'"
+           Code="DOCPACK002"
+           Text="DocPack: bundling the docs of $(PackageId) failed (exit code $(_DocPackExitCode)); see the docpack output above." />
+
+    <ItemGroup>
+      <_DocPackFile Include="$(_DocPackOut)\**\*" />
+      <None Include="@(_DocPackFile)" Pack="true" PackagePath="docs\%(_DocPackFile.RecursiveDir)%(_DocPackFile.Filename)%(_DocPackFile.Extension)" Visible="false" />
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -360,7 +360,7 @@ internal static class RenderedWrapperCatalog
     }
 
     // sub-components rendering content into a slot of the element wrapper hosting them, not an element of their own
-    // (docs\technical.md, "Dynamic slots"); they throw outside their host, so the catalog renders none of them on its
+    // (docs\technical\technical.md, "Dynamic slots"); they throw outside their host, so the catalog renders none of them on its
     // own: SlotParityTests renders each through its hosts' ChildContent, and their own tests cover the rest
     private static readonly IReadOnlySet<Type> HostedSlotContentComponents = new HashSet<Type> { typeof(WaDayContent) };
 

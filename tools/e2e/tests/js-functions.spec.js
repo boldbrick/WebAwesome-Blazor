@@ -2,7 +2,7 @@
 const { test, expect } = require('./helpers/test');
 const { skipUnlessProUpgrades, WA_READY_TIMEOUT_MS } = require('./helpers/wa-ready');
 
-// WaJsFunction references (docs\technical.md, "JavaScript function references"): the resolver of
+// WaJsFunction references (docs\technical\technical.md, "JavaScript function references"): the resolver of
 // _content/WebAwesome.Blazor/webawesome-functions.js on its own (free CDN and Pro), the Uses preload of a tag that only a
 // cell function renders (free CDN and Pro), and the data grid column members Formatter, AggregatedFormatter and
 // ComparatorFunction in a real wa-data-grid (Pro; the tests skip on the free CDN). Pages: the "Custom Cell Rendering

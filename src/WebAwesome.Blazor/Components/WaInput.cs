@@ -117,7 +117,7 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     // The min and max of wa-input are typed number | string (a number for a number input, an ISO date, time or local
     // date-time for the date and time types), which C# before 15 cannot express as one parameter type. Until then each
     // bound is a raw string plus one strongly typed accessor per value type; at most one of them may be set per bound.
-    // On net11.0 this becomes a C# 15 union type, a deliberate breaking change (docs\technical.md, Multi-targeting).
+    // On net11.0 this becomes a C# 15 union type, a deliberate breaking change (docs\technical\technical.md, Multi-targeting).
 
     /// <summary>
     /// The input's minimum value as the raw attribute text, for a format none of the typed accessors covers. Only

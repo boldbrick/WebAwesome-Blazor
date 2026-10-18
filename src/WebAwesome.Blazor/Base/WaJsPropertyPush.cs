@@ -9,7 +9,7 @@ namespace WebAwesome.Blazor.Base;
 /// Pushes the JavaScript properties of one wrapper's element that are no attributes: its function-valued members
 /// (<see cref="WaJsFunction"/> parameters) and its shadow styles. A push happens only when the value changed since the
 /// last push, because each push makes the element render again; an unset value that was never pushed sends nothing.
-/// Call it from <c>OnAfterRenderAsync</c>, when the element exists (docs\technical.md, "JavaScript function references").
+/// Call it from <c>OnAfterRenderAsync</c>, when the element exists (docs\technical\technical.md, "JavaScript function references").
 /// </summary>
 internal sealed class WaJsPropertyPush
 {

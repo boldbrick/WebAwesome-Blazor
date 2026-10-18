@@ -18,7 +18,7 @@ namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
 /// The function-valued members (<see cref="WaJsFunction"/> parameters) and the ShadowStyles of the element wrappers
-/// (docs\technical.md, "JavaScript function references"): every such parameter is listed here with the element member it
+/// (docs\technical\technical.md, "JavaScript function references"): every such parameter is listed here with the element member it
 /// binds, every listed member has an arity in the elementFunctions table of webawesome-interop.js (and the table lists
 /// nothing else), and each wrapper pushes a member or its shadow styles after a render only when the value changed: a
 /// set value, a changed value and a removal once each, an equal value and an unset value never. bUnit cannot host the

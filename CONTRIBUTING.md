@@ -6,7 +6,7 @@ Thanks for helping improve **Web Awesome Blazor Bindings**! This document explai
 - **Target PRs to the active subtrunk**: on GitHub `master-WA-<ver>` (currently `master-WA-3.0`).
 - **Bugfixes for a released train** also target that train's subtrunk (e.g., 3.0.x fixes → `master-WA-3.0`) — there are no separate release branches.
 - New/breaking work goes to the next subtrunk (e.g., `master-WA-3.1` or `master-WA-4.0`).
-- **Web Awesome version upgrades are maintainer work** (automated pipeline, see [docs/UPGRADE-PROCESS.md](docs/UPGRADE-PROCESS.md)) — please don't send PRs implementing a new WA release.
+- **Web Awesome version upgrades are maintainer work** (automated pipeline, see [docs/contributing/UPGRADE-PROCESS.md](docs/contributing/UPGRADE-PROCESS.md)) — please don't send PRs implementing a new WA release.
 - `<major.minor>.0` releases are cut by promoting the subtrunk to the main line and tagging `wa-blazor-<version>`; **patch releases** (`x.y.z`) and **bindings revisions** (`x.y.z.r`) are tagged directly on the train's subtrunk.
 
 ## Repository topology
@@ -29,7 +29,7 @@ Development is hosted in PlasticSCM (a.k.a. Unity VCS) on hierarchical branches;
 - **Not**: wrapper work for a new Web Awesome release (new components, version upgrades) — that arrives via the maintainers' automated upgrade pipeline; file an issue instead if a release seems overdue
 
 ### Where extras go
-The repository ships two packages with one version (see [docs/technical.md](docs/technical.md), "Package split"):
+The repository ships two packages with one version (see [docs/technical/technical.md](docs/technical/technical.md), "Package split"):
 - `src/WebAwesome.Blazor` — the bindings. A change that binds an upstream member, or a behavior that the Web Awesome documentation describes, goes here.
 - `src/WebAwesome.Blazor.Extensions` — optional extras. A feature that adds behavior that upstream Web Awesome does not have goes here, with its tests in `src/WebAwesome.Blazor.Extensions.Tests`. It extends the bindings through their public API only, never through a subclass of a wrapper or a new wrapper parameter.
 - If you are not sure where a change goes, open an issue first.
@@ -74,7 +74,46 @@ The repository ships two packages with one version (see [docs/technical.md](docs
 - The first three version parts are the bound Web Awesome version (with its prerelease suffix, if any). An optional fourth part is a revision of the bindings: changes to the bindings only, for the same Web Awesome release (`3.14.0.1` binds Web Awesome `3.14.0`). A new Web Awesome release resets it (`3.15.0`).
 - We tag releases as `wa-blazor-<version>`, e.g., `wa-blazor-3.0.0-beta.4`, `wa-blazor-3.14.0.1`.
 - `<major.minor>.0` releases are tagged on the main line (after promotion); patch releases and bindings revisions are tagged on the train's subtrunk.
-- NuGet packages are produced from tags in CI.
+- NuGet packages are produced from tags in CI. These packages (nuget.org) carry no docs bundle.
+
+## Maintainer setup and local release
+Maintainers also publish each release to the internal NuGet feed. Only these packages, from a local Release build, carry the docs bundle.
+
+One-time setup:
+1. Add the internal NuGet feed as a user-level NuGet source. Never add it to the repository, and never add a `nuget.config` to the repository:
+   ```powershell
+   dotnet nuget add source <feed> --name <name>
+   ```
+2. Restore the local tools (`docpack` and `docview`, pinned in `.config/dotnet-tools.json`):
+   ```powershell
+   dotnet tool restore
+   ```
+
+The docs bundle:
+- A local Release build bundles the docs into both packages under `docs/` (DocPack): the API reference and a skill.
+- The main package also contains `docs/content/`: the changelog, the technical documentation, the migration guides and the Web Awesome docs (`web-awesome/`, see `THIRD-PARTY-NOTICES.md`). `docs/contributing` and `inputs/WebAwesome/ai` are not bundled.
+- GitHub builds (nuget.org packages) and Debug builds have no docs bundle.
+
+Release step: after the release check-in and label, and before the tag push to the GitHub mirror, publish both packages:
+```powershell
+& .\tools\release\Publish-WaLocalFeed.ps1 -Source <name>
+```
+The script checks that the workspace is clean, runs `dotnet tool restore` and a Release build, checks the docs bundle of both packages, and pushes them with `--skip-duplicate`.
+
+Internal consumers:
+- Map `WebAwesome.*` to the internal feed with `packageSourceMapping` in your own `nuget.config`. Then NuGet takes these packages from the internal feed only:
+  ```xml
+  <packageSourceMapping>
+    <packageSource key="nuget.org">
+      <package pattern="*" />
+    </packageSource>
+    <!-- key: the name of your source for the internal feed -->
+    <packageSource key="internal-feed">
+      <package pattern="WebAwesome.*" />
+    </packageSource>
+  </packageSourceMapping>
+  ```
+- NuGet keeps one copy of each package version in the global packages folder. If it has a nuget.org copy of the same version, clear it first: delete `%USERPROFILE%\.nuget\packages\webawesome.blazor\<version>` (and `webawesome.blazor.extensions\<version>`), or run `dotnet nuget locals global-packages --clear`.
 
 ## Development environment
 - .NET 9 SDK

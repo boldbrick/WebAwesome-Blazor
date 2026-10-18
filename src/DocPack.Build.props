@@ -1,0 +1,18 @@
+<!-- DocPack v1 -->
+<!--
+  DocPack defaults. Import from Directory.Build.props:
+    <Import Project="$(MSBuildThisFileDirectory)DocPack.Build.props" />
+  A project overrides any value in its own PropertyGroup. DocPackEnabled defaults to
+  $(IsPackable); DocPack.Build.targets applies that default at pack time.
+-->
+<Project>
+
+  <PropertyGroup>
+    <DocPackApi Condition="'$(DocPackApi)' == ''">true</DocPackApi>
+    <DocPackSkill Condition="'$(DocPackSkill)' == ''">true</DocPackSkill>
+    <DocPackKind Condition="'$(DocPackKind)' == ''">package</DocPackKind>
+    <DocPackCommand Condition="'$(DocPackCommand)' == ''">dotnet tool run docpack</DocPackCommand>
+    <GenerateDocumentationFile Condition="'$(GenerateDocumentationFile)' == ''">true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>

@@ -41,6 +41,22 @@
     <None Include="PACKAGE.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <!-- the license notice of the bundled upstream docs ships with the docs bundle only -->
+  <ItemGroup Condition="'$(DocPackEnabled)' != 'false'">
+    <None Include="..\..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- package docs (DocPack, local Release builds only): the changelog, the technical documentation and the full
+       migration chain; docs\contributing is maintainer documentation and stays out of the package -->
+  <ItemGroup>
+    <DocPackContent Include="..\..\docs\CHANGELOG.md" Title="Changelog" />
+    <DocPackContent Include="..\..\docs\technical" Title="Technical documentation" />
+    <DocPackContent Include="..\..\docs\migration" Title="Migration guides" />
+  </ItemGroup>
+
+  <!-- the upstream Web Awesome docs (web-awesome/): staged from inputs\WebAwesome with working links -->
+  <Import Project="UpstreamDocs.targets" />
+
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>

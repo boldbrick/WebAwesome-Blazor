@@ -22,6 +22,7 @@ A revision of the bindings for Web Awesome 3.14.0: the fourth version part marks
 - Extensions: your own grid functions get `ctx.emit`, `ctx.h`, `ctx.preset`, `ctx.format` and `ctx.cache`, and an element with `data-wablazor-action` (optional `data-wablazor-action-payload`) raises a cell action when clicked. A Lit template of your own Lit 3 renders in a cell.
 - Extensions: `ctx.invoke(action, payload)` asks .NET from a cell, a detail panel or a footer and returns a Promise; wrap the grid in `WaDataGridRequestHandler` and answer in `OnRequest` (throw `WaDataGridRequestException` to reject with a message).
 - Extensions: `WaDataGridRazorTemplates<TRow>` shows cells written in Razor (for example a `WaBadge`) as static HTML; buttons use `data-wablazor-action`. Meant for server mode and small pages: each row renders once per template on each data push.
+- Local-feed packages bundle documentation under `docs/`: API reference, technical documentation, migration guides and the Web Awesome docs.
 
 ### Changed
 - `WaDataGrid` sends `Columns` to the element again only when a column definition changes: not on every render, and not for a new list with the same definitions. A change in place still reaches the element. The JSON of a column leaves out unset members.
@@ -38,7 +39,7 @@ A revision of the bindings for Web Awesome 3.14.0: the fourth version part marks
 
 ## [3.14.0] — 2026-09-27
 
-Alignment with the Web Awesome 3.14.0 release, opening the **WA-3.14 train**. Upstream this is additive: a new stepper, a server mode for the combobox, a divider label and a few new attributes. One rename in the bindings is **breaking**: the step value type `WaStep` becomes `WaValueStep`, so the wrapper of `wa-step` can be `WaStep`, like every other component. See **[MIGRATION-3.14.0.md](MIGRATION-3.14.0.md)**.
+Alignment with the Web Awesome 3.14.0 release, opening the **WA-3.14 train**. Upstream this is additive: a new stepper, a server mode for the combobox, a divider label and a few new attributes. One rename in the bindings is **breaking**: the step value type `WaStep` becomes `WaValueStep`, so the wrapper of `wa-step` can be `WaStep`, like every other component. See **[MIGRATION-3.14.0.md](migration/MIGRATION-3.14.0.md)**.
 
 ### Breaking changes
 - The step value of `WaInput`, `WaNumberInput` and `WaTimeInput` is renamed from `WaStep` to `WaValueStep` (`Step="WaValueStep.Any"`); numeric `Step` values are unaffected (section 1).
@@ -82,7 +83,7 @@ Alignment with the Web Awesome 3.13.0 release, opening the **WA-3.13 train**. A 
 
 Alignment with the Web Awesome 3.12.0 release, opening the **WA-3.12 train**. Upstream this is a small, additive release: `wa-dropdown-item` gains link attributes, and six components change only their CSS parts. This version of the bindings is still **breaking**: it fixes the defects reported in [GitHub issue #1](https://github.com/boldbrick/WebAwesome-Blazor/issues/1), makes every enum, event and default match Web Awesome, and replaces strings with .NET types wherever the value set or shape is known. Thanks to **@Eonasdan** for the report: all three points were confirmed and are fixed here.
 
-Most removed or renamed members never worked, so the compiler now points out code that was silently broken. See **[MIGRATION-3.12.0.md](MIGRATION-3.12.0.md)**; the section numbers below refer to it.
+Most removed or renamed members never worked, so the compiler now points out code that was silently broken. See **[MIGRATION-3.12.0.md](migration/MIGRATION-3.12.0.md)**; the section numbers below refer to it.
 
 ### Breaking changes
 - **Enums match Web Awesome's value sets** (sections 1, 3):
@@ -229,7 +230,7 @@ Alignment with the Web Awesome 3.10.0 release, opening the **WA-3.10 train**. A 
 
 ## [3.9.0] — 2026-07-24
 
-Alignment with the Web Awesome 3.9.0 release, opening the **WA-3.9 train**. A small additive upgrade: one new form-grouping component (`WaCheckboxGroup`) and one additive enum value on `WaTree`. **No wrapper APIs were removed or renamed.** See [MIGRATION-3.9.0.md](MIGRATION-3.9.0.md).
+Alignment with the Web Awesome 3.9.0 release, opening the **WA-3.9 train**. A small additive upgrade: one new form-grouping component (`WaCheckboxGroup`) and one additive enum value on `WaTree`. **No wrapper APIs were removed or renamed.** See [MIGRATION-3.9.0.md](migration/MIGRATION-3.9.0.md).
 
 ### Breaking changes
 - None to the wrapper API. The single entry flagged breaking in the upstream change report is a non-destructive enum widening (see below).
@@ -259,7 +260,7 @@ Alignment with the Web Awesome 3.9.0 release, opening the **WA-3.9 train**. A sm
 
 ## [3.8.0] — 2026-07-24
 
-Alignment with the Web Awesome 3.8.0 release, opening the **WA-3.8 train**. An additive upgrade: six new experimental components (an accordion pair and a date/time family), additive attributes on four existing components, and one upstream behavioral realignment (`wa-drawer` light-dismiss default). **No wrapper APIs were removed or renamed.** See [MIGRATION-3.8.0.md](MIGRATION-3.8.0.md).
+Alignment with the Web Awesome 3.8.0 release, opening the **WA-3.8 train**. An additive upgrade: six new experimental components (an accordion pair and a date/time family), additive attributes on four existing components, and one upstream behavioral realignment (`wa-drawer` light-dismiss default). **No wrapper APIs were removed or renamed.** See [MIGRATION-3.8.0.md](migration/MIGRATION-3.8.0.md).
 
 ### Breaking changes
 - None to the wrapper API. Two entries in the upstream change report are flagged breaking but are non-destructive for the wrappers (see below).
@@ -324,7 +325,7 @@ Alignment with the Web Awesome 3.7.0 release, opening the **WA-3.7 train**. An a
 
 ## [3.6.0] — 2026-07-24
 
-Alignment with the Web Awesome 3.6.0 release, opening the **WA-3.6 train**. A focused upgrade with **no new or removed components**: an expanded size scale, one new event on `WaNumberInput`, one removed `WaFileInput` slot, and the promotion of the chart family and several Pro components from experimental to stable. See [MIGRATION-3.6.0.md](MIGRATION-3.6.0.md).
+Alignment with the Web Awesome 3.6.0 release, opening the **WA-3.6 train**. A focused upgrade with **no new or removed components**: an expanded size scale, one new event on `WaNumberInput`, one removed `WaFileInput` slot, and the promotion of the chart family and several Pro components from experimental to stable. See [MIGRATION-3.6.0.md](migration/MIGRATION-3.6.0.md).
 
 ### Breaking changes
 - `wa-file-input` — slot `file-icon` removed upstream; `WaFileInput.FileIconContent` has been removed. Use `DropzoneContent` for custom dropzone visuals. (The 18 upstream `size` "breaking" entries are non-destructive for the wrappers — see below.)
@@ -490,7 +491,7 @@ Alignment with the Web Awesome 3.2.1 release. A pure version-alignment patch: no
 
 ## [3.2.0] — 2026-07-23
 
-Alignment with the Web Awesome 3.2.0 release. See [MIGRATION-3.2.0.md](MIGRATION-3.2.0.md) for the migration guide. A small, mostly additive upgrade: three new components, three new `WaIcon` attributes, and one behavioral breaking change to `WaQrCode` colors.
+Alignment with the Web Awesome 3.2.0 release. See [MIGRATION-3.2.0.md](migration/MIGRATION-3.2.0.md) for the migration guide. A small, mostly additive upgrade: three new components, three new `WaIcon` attributes, and one behavioral breaking change to `WaQrCode` colors.
 
 ### Breaking changes
 - `WaQrCode.Fill` and `WaQrCode.Background` changed from non-nullable `string` (defaulting to `"black"`/`"white"`, always emitted) to nullable `string?` (defaulting to `null`, emitted only when set). WA 3.2.0 changed both `wa-qr-code` attribute defaults from `'black'`/`'white'` to `''`, so an unset QR code now inherits theme colors instead of being forced to black-on-white. Set `Fill`/`Background` explicitly to keep the old look. (Upstream flags this as a breaking attribute change; it is the only one of the four upstream "breaking" default changes that alters the wrapper's public surface.)
@@ -517,7 +518,7 @@ Alignment with the Web Awesome 3.2.0 release. See [MIGRATION-3.2.0.md](MIGRATION
 
 ## [3.1.0] — 2026-07-22
 
-Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](MIGRATION-3.1.0.md) for the migration guide.
+Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](migration/MIGRATION-3.1.0.md) for the migration guide.
 
 ### Breaking changes
 - Removed `WaButtonGroup.Variant` — the `variant` attribute left the `wa-button-group` CEM in WA 3.1.0. Verified upstream (issue #1677, maintainer response): the group-level variant functionality had already been dropped earlier and the property lingered by mistake; the supported way is setting the variant on each button, which also allows mixing variants within a group.
@@ -544,7 +545,7 @@ Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](MIGRATION
 
 ## [3.0.0] — 2026-07-22
 
-Alignment with the Web Awesome 3.0.0 stable release, plus the browser-verified correctness sweep that made every `wa-*` event and imperative method actually work. See [MIGRATION-3.0.0.md](MIGRATION-3.0.0.md) for the migration guide.
+Alignment with the Web Awesome 3.0.0 stable release, plus the browser-verified correctness sweep that made every `wa-*` event and imperative method actually work. See [MIGRATION-3.0.0.md](migration/MIGRATION-3.0.0.md) for the migration guide.
 
 ### Breaking changes
 - `appearance` combined token renamed by WA 3.0.0: `WaAppearance.OutlinedFilled` now emits `filled-outlined` (was `outlined filled`) across `WaBadge`, `WaButton`, `WaCallout`, `WaDetails`, `WaTag`; `WaInputAppearance` gains the new `FilledOutlined` value for `WaInput`, `WaSelect`, `WaTextArea`. No C# signature change — only the emitted attribute token.
@@ -600,18 +601,18 @@ Every `extraElementMethods` allowlist entry was verified against the live WA 3.0
 
 ### Library
 - Comprehensive EditForm integration coverage (bUnit) for all 10 form controls (`src\WebAwesome.Blazor.Tests\Forms\`): binding, change propagation, DataAnnotations validation lifecycle, validation CSS classes, custom validity interop, common parameter rendering. Notable findings recorded during this work: `WaRange` and `WaSlider` both render the `wa-slider` tag (duplication to resolve at the next upgrade); `WaRange`/`WaRating` `TryParseValueFromString` overrides are unreachable through the actual `onchange` wiring; `WaColorPicker` is `WaInputBase<string>` while sibling string controls use `string?`.
-- Upgrade process extended with explicit coverage gates for newly added components and features (event-delivery contract, element-method audit, form-control test coverage, public API baseline promotion, showcase curation, browser verification) — see `docs\UPGRADE-PROCESS.md` "Coverage gates" and the updated `/wa-upgrade` skill phases.
+- Upgrade process extended with explicit coverage gates for newly added components and features (event-delivery contract, element-method audit, form-control test coverage, public API baseline promotion, showcase curation, browser verification) — see `docs\contributing\UPGRADE-PROCESS.md` "Coverage gates" and the updated `/wa-upgrade` skill phases.
 - Public API snapshot test (`PublicApiSnapshotTests` + `approved-public-api.txt` baseline, via PublicApiGenerator): catches accidental breaking changes between our releases; intentional changes are promoted into the baseline and mentioned here.
 - EditForm end-to-end integration tests (bUnit): two-way binding, DataAnnotations validation lifecycle, validation CSS class merging, `SetCustomValidityAsync` interop round-trip, and the WaCheckbox checked-state interop workaround.
 - Element-method invocation audit (`ElementMethodInvocationTests`): every JS element method a wrapper invokes must be CEM-documented, a native DOM method, or explicitly allowlisted with a reason in `parity-config.json` (`extraElementMethods`) — the class of bug behind the observer `disconnect`/`reconnect` → `stopObserver`/`startObserver` rename can no longer slip through silently; allowlisted entries must be re-verified against the target source on every upgrade.
 - Multi-targeting: the package now ships `net9.0` and `net10.0` assemblies; .NET 10 (LTS) is the primary supported target.
 - NuGet packaging: full package metadata, icon, package readme, symbol packages (snupkg), per-framework XML documentation for IntelliSense.
-- Automated upgrade pipeline: CEM-driven API diff tooling (`tools\upgrade\`), API-surface parity tests, and the `/wa-upgrade` orchestration skill (see `docs\UPGRADE-PROCESS.md`).
+- Automated upgrade pipeline: CEM-driven API diff tooling (`tools\upgrade\`), API-surface parity tests, and the `/wa-upgrade` orchestration skill (see `docs\contributing\UPGRADE-PROCESS.md`).
 - Repository hygiene: corrected README setup snippet (official `@awesome.me/webawesome` CDN), verified 3.0.0-beta.6 documentation inputs, corrected API parity baseline.
 - Test stack migrated to the current generations: xunit → `xunit.v3` 3.2.2, bUnit 1.40.0 → 2.7.2 (official .NET 10 support); transitive AngleSharp lifted to 1.5.2 (mXSS advisory CVE-2026-54570).
-- NuGet dependency policy (see `docs\technical.md`): the package's framework dependencies are floored at the base target majors (`9.0.0`/`10.0.0`) instead of pinning latest patches — consumers are no longer forced onto specific patch levels; test/tooling dependencies track latest stable.
+- NuGet dependency policy (see `docs\technical\technical.md`): the package's framework dependencies are floored at the base target majors (`9.0.0`/`10.0.0`) instead of pinning latest patches — consumers are no longer forced onto specific patch levels; test/tooling dependencies track latest stable.
 - Release engineering: CI split into branch verification (`build.yml`) and a tag-triggered release workflow (`release.yml`, `wa-blazor-*` tags) that rebuilds from the tag and publishes to nuget.org via Trusted Publishing behind a go-live gate; release/branching model codified (patch releases tagged on train subtrunks, new trains branch from the main line behind a release gate) — see `README.md` and `CONTRIBUTING.md`.
-- Repository restructuring: task-scoped working documents moved from `docs\prompts\` to `tasks\<epic>\<task>\`; durable wrapper technical standards extracted into `docs\technical.md`.
+- Repository restructuring: task-scoped working documents moved from `docs\prompts\` to `tasks\<epic>\<task>\`; durable wrapper technical standards extracted into `docs\technical\technical.md`.
 
 ## [3.0.0-beta.6] — 2026-07-18
 
@@ -631,7 +632,7 @@ Every `extraElementMethods` allowlist entry was verified against the live WA 3.0
 ### Library
 - Integration tests and breaking-change validation tests added.
 
-See [MIGRATION-3.0.0-beta.6.md](MIGRATION-3.0.0-beta.6.md) for the full migration guide.
+See [MIGRATION-3.0.0-beta.6.md](migration/MIGRATION-3.0.0-beta.6.md) for the full migration guide.
 
 ## [3.0.0-beta.4] — 2025-09-27
 
