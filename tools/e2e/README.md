@@ -196,6 +196,27 @@ cd tools\e2e
 $env:DEMO_BASE_URL = 'http://localhost:5100'; npm test
 ```
 
+## WA Inspector tests
+
+`inspector\*.spec.js` test the WA Inspector browser extension (`tools\wa-inspector\extension`) on the harness page
+`/testing/inspector`. They have their own config, `playwright.inspector.config.js` (one worker, base URL
+`http://localhost:5100`), and the standard suite and the release gate do not run them. Each test launches the full
+Chromium build (`channel: 'chromium'`, headless; the headless shell loads no extensions) in a persistent context with
+the extension loaded, opens the panel as a tab (`panel.html?tabId=<id>`) and drives it through its test hooks
+(`window.__waInspectorPanel`) and its DOM. The page fixture keeps the Blazor crash guard of `tests\helpers\test.js`.
+Covered: the element tree, the placement metadata, attribute overrides on a placement and on a source site that stay
+applied after a render, a navigation and a reload, the remap of a data-driven value, CSS custom properties, utility
+classes, theme tokens, comments, the numbered markers, the item status and the export files.
+
+Run them against Demo.Server with the metadata on:
+
+```powershell
+$env:WebAwesome__EmitInspectorMetadata = 'true'
+dotnet run --project src\WebAwesome.Blazor.Demo.Server --no-build --launch-profile http
+cd tools\e2e
+npm run test:inspector
+```
+
 ## Release gate
 
 `tools\release\Test-WaReleasePreflight.ps1` runs this suite itself: it starts the WebAssembly demo on a
