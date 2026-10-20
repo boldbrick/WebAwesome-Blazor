@@ -27,6 +27,7 @@ public class WaGrid : WaLayoutBase
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
         builder.OpenElement(0, "div");
+        WaInspectorMetadata.AddAttributes(builder, this, 0);
         builder.AddMultipleAttributes(1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(2, "class", GetCombinedCssClass("wa-grid"));
         builder.AddAttributeIfNotNullOrEmpty(3, "style", GetCombinedStyle());

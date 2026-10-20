@@ -30,6 +30,30 @@ public static class Constants
     internal const string BlazorOwnedAttribute = "data-wablazor-owned";
 
     /// <summary>
+    /// Inspector metadata attribute with the wrapper type name (for example "WaButton"), see
+    /// <see cref="WaInspectorMetadata"/>.
+    /// </summary>
+    internal const string InspectorComponentAttribute = "data-wablazor-component";
+
+    /// <summary>
+    /// Inspector metadata attribute with the readable component chain from the root to the wrapper, framework types
+    /// left out (for example "MainLayout>OrderPage>WaCard>WaButton").
+    /// </summary>
+    internal const string InspectorChainAttribute = "data-wablazor-chain";
+
+    /// <summary>
+    /// Inspector metadata attribute with the hash of the full placement path: the same for all instances that one
+    /// source position renders (a loop), different for the same markup at another position.
+    /// </summary>
+    internal const string InspectorPlacementAttribute = "data-wablazor-placement";
+
+    /// <summary>
+    /// Inspector metadata attribute with the hash of the last placement level only: the source site of the wrapper in
+    /// the component that renders it, the same wherever that component is used.
+    /// </summary>
+    internal const string InspectorSiteAttribute = "data-wablazor-site";
+
+    /// <summary>
     /// Prefix of the render-tree attribute names of Web Awesome's own events (e.g. "onwa-hide"). Web Awesome's events
     /// bubble, and Blazor delivers a bubbling event to every handler for it up the tree, so the wa-hide of a nested
     /// component (a WaSelect closing inside a WaDialog) would also invoke the outer wrapper's callback for the same
