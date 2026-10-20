@@ -1,0 +1,9 @@
+{
+  "name": "wa-inspector",
+  "version": "0.1.0",
+  "description": "Applies a change list that the WA Inspector browser extension exports (changes.json, changes.md and screenshots) to the source code of the reviewed Web Awesome app, with WebAwesome.Blazor or plain HTML.",
+  "author": {
+    "name": "BoldBrick"
+  },
+  "keywords": ["web-awesome", "blazor", "ui-review", "inspector"]
+}
