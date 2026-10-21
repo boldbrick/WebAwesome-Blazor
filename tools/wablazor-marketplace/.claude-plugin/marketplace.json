@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "wablazor-marketplace",
+  "description": "Claude Code plugins of the WebAwesome.Blazor repository.",
+  "owner": {
+    "name": "BoldBrick"
+  },
+  "plugins": [
+    {
+      "name": "wablazor",
+      "description": "The developer skills of WebAwesome.Blazor, for example wa-review-apply, which applies a WA Inspector change list to the source code of the reviewed app.",
+      "author": {
+        "name": "BoldBrick"
+      },
+      "source": "./plugins/wablazor",
+      "category": "development"
+    }
+  ]
+}

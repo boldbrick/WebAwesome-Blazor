@@ -34,6 +34,9 @@ Use one of these methods:
 The details pane shows the element: the tag, the text, the ancestors, and the Blazor component and chain. **Reveal**
 scrolls the page to the element. `×3` in the tree means that the same placement renders three instances.
 
+To resize the tree and the details on the Elements tab, drag the divider between them, or focus it and use the arrow
+keys. The inspector keeps the size for the stacked and the side-by-side layout. Double-click the divider to reset it.
+
 ## 3. Choose the scope
 
 Under **Apply to**, select which elements the change is for. The number shows the elements on the current page.
@@ -118,7 +121,7 @@ each item:
 ## 12. Give the export to the coding agent
 
 1. Open Claude Code in the repository of the app.
-2. Run `/wa-inspector:wa-review-apply` with the export folder (see
+2. Run `/wablazor:wa-review-apply` with the export folder (see
    [Hand-off to the coding agent](README.md#hand-off-to-the-coding-agent)).
 3. Read the report: done, changed differently, or not done, for each item.
 4. Restart or reload the app. Reload the page with the inspector open.

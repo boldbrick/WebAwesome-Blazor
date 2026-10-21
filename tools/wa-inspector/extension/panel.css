@@ -141,24 +141,64 @@ body:not(.mode-devtools) .devtools-only { display: none; }
 .status .warn { color: var(--warn); }
 .status .error { color: var(--danger); }
 
-main { flex: 1; min-height: 0; }
-
-.tab-page { height: 100%; overflow: auto; }
-
-.split {
-  display: grid;
-  grid-template-columns: minmax(220px, 40%) 1fr;
-  height: 100%;
+/* every box from body down to the two halves of the Elements tab has a bounded height (min-height: 0), so the
+   halves scroll on their own and never push the page longer than the panel */
+main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
-body.mode-side .split { grid-template-columns: 1fr; grid-template-rows: 40% 60%; }
+.tab-page { flex: 1; min-height: 0; overflow: auto; }
+
+#tab-elements { overflow: hidden; }
+
+/* the tree and the details side by side (split-columns) or stacked (split-rows); panel.js sets the class from the
+   panel mode and width, and the size of the tree half in --split-size */
+.split {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+.split.split-rows { flex-direction: column; }
 
 .tree-pane {
   display: flex;
   flex-direction: column;
+  flex: 0 0 var(--split-size, 40%);
+  min-width: 0;
   min-height: 0;
-  border-right: 1px solid var(--border);
+  overflow: hidden;
 }
+
+.splitter {
+  flex: 0 0 6px;
+  background: var(--bg-alt);
+  touch-action: none;
+}
+
+.split-columns > .splitter {
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  cursor: col-resize;
+}
+
+.split-rows > .splitter {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  cursor: row-resize;
+}
+
+.splitter:hover, .splitter.dragging { background: var(--bg-selected); }
+.splitter:focus-visible { outline: none; background: var(--accent); }
+
+/* no text selection and no hover effects in the halves while the divider moves */
+body.splitting { user-select: none; }
+body.splitting .split > :not(.splitter) { pointer-events: none; }
+body.splitting.split-rows-drag { cursor: row-resize; }
+body.splitting.split-columns-drag { cursor: col-resize; }
 
 .filter {
   margin: 4px;
@@ -170,6 +210,7 @@ body.mode-side .split { grid-template-columns: 1fr; grid-template-rows: 40% 60%;
 
 .tree {
   flex: 1;
+  min-height: 0;
   overflow: auto;
   padding-bottom: 24px;
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
@@ -215,7 +256,13 @@ body.mode-side .split { grid-template-columns: 1fr; grid-template-rows: 40% 60%;
   text-align: center;
 }
 
-.details { overflow: auto; padding: 8px 10px 32px; }
+.details {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 10px 32px;
+}
 
 .details h2 {
   margin: 0 0 2px;

@@ -174,7 +174,7 @@ The data grid presets of `WebAwesome.Blazor.Extensions` (namespace `WebAwesome.B
 
 ## Inspector metadata
 
-The wrappers can write placement metadata for the WA Inspector browser extension (`tools\wa-inspector`; usage, the attribute table and the matching rules in `docs\inspector\README.md`). The mechanism is `Base\WaInspectorMetadata.cs` (design `tasks\WA-3.14\WAB-62\plan.md`):
+The wrappers can write placement metadata for the WA Inspector browser extension (`tools\wa-inspector`; usage, the attribute table and the matching rules in `docs\inspector\README.md`). The skill that applies the exported change lists is `wa-review-apply` in the Claude Code plugin `wablazor` (`tools\wablazor-marketplace`). The mechanism is `Base\WaInspectorMetadata.cs` (design `tasks\WA-3.14\WAB-62\plan.md`):
 
 - **Opt-in, process-wide.** `WebAwesomeOptions.EmitInspectorMetadata` (configuration key `WebAwesome:EmitInspectorMetadata`) defaults to `false`. `AddWebAwesome` copies it to the static `WaInspectorMetadata.Enabled`, because a wrapper has no injected services to read options from. The setting belongs to the host's environment (development, test), not to a circuit. When it is off, a wrapper writes nothing and pays one flag check.
 - **Attributes.** `data-wablazor-component` (the wrapper type name without the generic arity), `data-wablazor-chain` (the application component types from the render root, without `Microsoft.*` and `System.*` types), `data-wablazor-placement` (a hash of the full path) and `data-wablazor-site` (a hash of the last level). The names are the `Constants.Inspector*Attribute` constants.

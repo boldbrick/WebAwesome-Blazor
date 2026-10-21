@@ -1,15 +1,15 @@
 # WA Inspector
 
-A browser extension for the UI review of Web Awesome elements, and a Claude Code plugin that applies the exported
-change list to the source code.
+A browser extension for the UI review of Web Awesome elements.
 
 | Folder or file | Content |
 |---|---|
 | `extension/` | The Chrome and Edge extension (Manifest V3, no build step). Load it with **Load unpacked**. |
 | `extension/metadata/wa-metadata.json` | The generated element metadata of the panel forms |
 | `Update-WaInspectorMetadata.ps1` | The generator of the element metadata |
-| `claude-plugin/` | The Claude Code plugin `wa-inspector` with the skill `wa-review-apply` |
-| `.claude-plugin/marketplace.json` | The local plugin marketplace `webawesome-blazor-tools` |
+
+The skill `wa-review-apply` applies the exported change list to the source code. It is in the Claude Code plugin
+`wablazor` of the marketplace [`tools/wablazor-marketplace`](../wablazor-marketplace/README.md).
 
 Documentation:
 

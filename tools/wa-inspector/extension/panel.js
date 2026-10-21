@@ -34,6 +34,13 @@ const RECONNECT_DELAY_MS = 500;
 const TOAST_MS = 3000;
 const EXPORT_FOLDER = 'wa-review';
 
+// the divider between the tree and the details: the halves stack in the side panel and below this panel width
+const SPLIT_STACK_BELOW_PX = 700;
+const SPLIT_DEFAULT_FRACTION = 0.4;
+const SPLIT_MIN_PANE_PX = 80;
+const SPLIT_KEY_STEP_PX = 16;
+const SPLIT_STORAGE_PREFIX = 'wai-panel:split:';
+
 const state = {
   tabId: null,
   port: null,
@@ -52,6 +59,14 @@ const state = {
   treeFilter: '',
   themeFilter: '',
   error: null,
+};
+
+// the divider of the Elements tab: 'rows' (stacked) or 'columns' (side by side), the share of the tree half, and the
+// running drag
+const split = {
+  orientation: null,
+  fraction: SPLIT_DEFAULT_FRACTION,
+  drag: null,
 };
 
 // -----------------------------------------------------------------------------------------------------------------
@@ -1061,6 +1076,125 @@ async function copyMarkdown() {
 }
 
 // -----------------------------------------------------------------------------------------------------------------
+// divider between the tree and the details
+
+// the stored share of the tree half for an orientation, or null; the storage can be blocked
+function readSplitFraction(orientation) {
+  try {
+    const value = Number(localStorage.getItem(SPLIT_STORAGE_PREFIX + orientation));
+    return value > 0 && value < 1 ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeSplitFraction(orientation, fraction) {
+  try {
+    if (fraction === null) localStorage.removeItem(SPLIT_STORAGE_PREFIX + orientation);
+    else localStorage.setItem(SPLIT_STORAGE_PREFIX + orientation, String(fraction));
+  } catch {
+    // the storage is blocked: the size stays for this panel only
+  }
+}
+
+// the length that the two halves share along the orientation (the split without the divider)
+function splitLength() {
+  const box = $('split').getBoundingClientRect();
+  const divider = $('splitter').getBoundingClientRect();
+  return split.orientation === 'rows' ? box.height - divider.height : box.width - divider.width;
+}
+
+function treePaneSize() {
+  const box = $('tree-pane').getBoundingClientRect();
+  return split.orientation === 'rows' ? box.height : box.width;
+}
+
+// keeps each half at least SPLIT_MIN_PANE_PX; when the panel is too small for that, the halves share it equally
+function clampSplitSize(size, length) {
+  if (length < 2 * SPLIT_MIN_PANE_PX) return length / 2;
+  return Math.min(Math.max(size, SPLIT_MIN_PANE_PX), length - SPLIT_MIN_PANE_PX);
+}
+
+function applySplit() {
+  const length = splitLength();
+  // the Elements tab is hidden: apply again when it shows (the resize observer sees it)
+  if (length <= 0) return;
+  const size = clampSplitSize(split.fraction * length, length);
+  $('split').style.setProperty('--split-size', `${size}px`);
+  $('splitter').setAttribute('aria-valuenow', String(Math.round(size / length * 100)));
+}
+
+function setSplitSize(size) {
+  const length = splitLength();
+  if (length <= 0) return;
+  split.fraction = clampSplitSize(size, length) / length;
+  applySplit();
+}
+
+// stacked in the side panel and in a narrow panel, side by side otherwise
+function updateSplitOrientation() {
+  const width = $('split').getBoundingClientRect().width;
+  if (!width) return;
+  const orientation = mode === 'side' || width < SPLIT_STACK_BELOW_PX ? 'rows' : 'columns';
+  if (orientation !== split.orientation) {
+    split.orientation = orientation;
+    split.fraction = readSplitFraction(orientation) ?? SPLIT_DEFAULT_FRACTION;
+    $('split').classList.toggle('split-rows', orientation === 'rows');
+    $('split').classList.toggle('split-columns', orientation === 'columns');
+    // a divider between stacked halves is a horizontal line
+    $('splitter').setAttribute('aria-orientation', orientation === 'rows' ? 'horizontal' : 'vertical');
+  }
+  applySplit();
+}
+
+function endSplitDrag(event) {
+  if (!split.drag || event.pointerId !== split.drag.pointerId) return;
+  split.drag = null;
+  $('splitter').classList.remove('dragging');
+  document.body.classList.remove('splitting', 'split-rows-drag', 'split-columns-drag');
+  writeSplitFraction(split.orientation, split.fraction);
+}
+
+function wireSplitter() {
+  const splitter = $('splitter');
+  const coordinate = event => (split.orientation === 'rows' ? event.clientY : event.clientX);
+
+  splitter.addEventListener('pointerdown', event => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    splitter.setPointerCapture(event.pointerId);
+    split.drag = { pointerId: event.pointerId, start: coordinate(event), size: treePaneSize() };
+    splitter.classList.add('dragging');
+    document.body.classList.add('splitting', `split-${split.orientation}-drag`);
+  });
+  splitter.addEventListener('pointermove', event => {
+    if (!split.drag || event.pointerId !== split.drag.pointerId) return;
+    setSplitSize(split.drag.size + coordinate(event) - split.drag.start);
+  });
+  splitter.addEventListener('pointerup', endSplitDrag);
+  splitter.addEventListener('pointercancel', endSplitDrag);
+  splitter.addEventListener('lostpointercapture', endSplitDrag);
+
+  splitter.addEventListener('keydown', event => {
+    const back = split.orientation === 'rows' ? 'ArrowUp' : 'ArrowLeft';
+    const forward = split.orientation === 'rows' ? 'ArrowDown' : 'ArrowRight';
+    if (event.key !== back && event.key !== forward) return;
+    event.preventDefault();
+    setSplitSize(treePaneSize() + (event.key === forward ? SPLIT_KEY_STEP_PX : -SPLIT_KEY_STEP_PX));
+    writeSplitFraction(split.orientation, split.fraction);
+  });
+
+  // a double-click goes back to the default size and forgets the stored one
+  splitter.addEventListener('dblclick', () => {
+    split.fraction = SPLIT_DEFAULT_FRACTION;
+    writeSplitFraction(split.orientation, null);
+    applySplit();
+  });
+
+  new ResizeObserver(() => updateSplitOrientation()).observe($('split'));
+}
+
+// -----------------------------------------------------------------------------------------------------------------
 // tabs and toolbar
 
 function showTab(tab) {
@@ -1127,6 +1261,7 @@ async function start() {
   document.body.classList.add(`mode-${mode}`);
   if (mode === 'devtools' && chrome.devtools.panels.themeName === 'dark') document.documentElement.classList.add('theme-dark');
   wireToolbar();
+  wireSplitter();
   showTab('elements');
 
   state.metadata = await (await fetch('metadata/wa-metadata.json')).json();

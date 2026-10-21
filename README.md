@@ -251,7 +251,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), "Maintainer setup and local release".
 ## Demo
 A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every component with source-visible examples, grouped into the same categories Web Awesome's own documentation uses. It is deployed to GitHub Pages on every merge to `main`: **<https://boldbrick.github.io/WebAwesome-Blazor/>**. It doubles as a manual regression harness for upgrades and is swept by automated Playwright tests (`tools/e2e`).
 
-**UI review.** The WA Inspector browser extension and its Claude Code plugin (`tools/wa-inspector`) review the Web Awesome elements of a running page and hand the change list to a coding agent: see [docs/inspector/README.md](docs/inspector/README.md).
+**UI review.** The WA Inspector browser extension (`tools/wa-inspector`) reviews the Web Awesome elements of a running page and hands the change list to a coding agent: see [docs/inspector/README.md](docs/inspector/README.md). The Claude Code plugin `wablazor` (`tools/wablazor-marketplace`) holds the developer skills of WebAwesome.Blazor, for example `/wablazor:wa-review-apply`, which applies the change list to the source code.
 
 ## Component coverage
 - **90 component wrappers** — one Blazor wrapper per WA 3.14.0 component, following WA naming (`WaButton` ↔ `wa-button`). Every public member carries XML documentation that ships in the package, so the full API reference is available as IntelliSense; for component behavior, use the [official Web Awesome docs](https://webawesome.com/docs) together with the [live demo](https://boldbrick.github.io/WebAwesome-Blazor/) for the Blazor-specific syntax.

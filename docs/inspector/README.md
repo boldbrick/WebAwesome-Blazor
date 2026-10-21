@@ -9,7 +9,7 @@ page in Chrome or Edge and uses the inspector to:
 - write a comment on any element;
 - export the change list with screenshots for a coding agent.
 
-A Claude Code plugin with the skill `wa-review-apply` applies the exported change list to the source code.
+The skill `wa-review-apply` of the Claude Code plugin `wablazor` applies the exported change list to the source code.
 
 For the steps of a review, read the [user guide](user-guide.md).
 
@@ -20,8 +20,8 @@ For the steps of a review, read the [user guide](user-guide.md).
 | Browser extension | `tools/wa-inspector/extension/` | Manifest V3, plain JavaScript, no build step |
 | Element metadata | `tools/wa-inspector/extension/metadata/wa-metadata.json` | The forms of the panel: attributes, CSS properties, parts, slots, utility classes, theme tokens |
 | Metadata generator | `tools/wa-inspector/Update-WaInspectorMetadata.ps1` | Makes the element metadata from the API surface and the Web Awesome release |
-| Claude Code plugin | `tools/wa-inspector/claude-plugin/` | The skill `wa-review-apply` |
-| Plugin marketplace | `tools/wa-inspector/.claude-plugin/marketplace.json` | The local marketplace `webawesome-blazor-tools` |
+| Claude Code plugin | `tools/wablazor-marketplace/plugins/wablazor/` | The plugin `wablazor` with the skill `wa-review-apply` |
+| Plugin marketplace | `tools/wablazor-marketplace/` | The local marketplace `wablazor-marketplace` and its publish script ([README](../../tools/wablazor-marketplace/README.md)) |
 | Placement metadata | `WebAwesomeOptions.EmitInspectorMetadata` in WebAwesome.Blazor | The `data-wablazor-*` attributes on the wrapper elements |
 | Browser tests | `tools/e2e/inspector/` | Playwright tests with the extension in Chromium |
 
@@ -73,6 +73,9 @@ One panel page runs in three hosts:
 | Side panel | Click the **WA Inspector** button in the browser toolbar | Follows the active tab of its window |
 | Tab | Open `chrome-extension://<extension id>/panel.html?tabId=<tab id>` | Inspects one tab. The browser tests use this mode. |
 
+On the Elements tab, the tree and the details are stacked in the side panel and in a narrow panel, and side
+by side in a wide panel. A divider between them sets their size (see the [user guide](user-guide.md#2-select-an-element)).
+
 ## Hand-off to the coding agent
 
 1. Click **Export** in the panel. The inspector writes a folder `Downloads/wa-review/<yyyy-MM-dd_HHmmss>/` with:
@@ -83,12 +86,14 @@ One panel page runs in three hosts:
 2. Install the Claude Code plugin once:
 
    ```
-   claude plugin marketplace add <repository>/tools/wa-inspector
-   claude plugin install wa-inspector@webawesome-blazor-tools
+   claude plugin marketplace add <repository>/tools/wablazor-marketplace
+   claude plugin install wablazor@wablazor-marketplace
    ```
 
+   If your team publishes the plugin into a shared marketplace folder, install it from there
+   (`tools/wablazor-marketplace/README.md`, "Publish into another marketplace").
 3. Open Claude Code in the repository of the reviewed app (the plugin works in every repository).
-4. Run the skill with the export folder, for example `/wa-inspector:wa-review-apply Downloads/wa-review/2026-10-20_143012`.
+4. Run the skill with the export folder, for example `/wablazor:wa-review-apply Downloads/wa-review/2026-10-20_143012`.
 5. Read the report of the agent. It tells for each item: done, changed differently and why, or not done and why.
 6. Restart or reload the app. Reload the page with the inspector open. Items whose attribute and class changes are
    now in the code show `applied` in the **Changes** tab.

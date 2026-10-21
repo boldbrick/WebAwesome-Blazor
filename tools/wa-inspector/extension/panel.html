@@ -27,11 +27,13 @@
   <div id="status" class="status"></div>
   <main>
     <section id="tab-elements" class="tab-page">
-      <div class="split">
-        <div class="tree-pane">
+      <div id="split" class="split split-columns">
+        <div id="tree-pane" class="tree-pane">
           <input id="tree-filter" class="filter" type="search" placeholder="Filter: tag, class, text, component">
           <div id="tree" class="tree"></div>
         </div>
+        <div id="splitter" class="splitter" role="separator" tabindex="0" aria-controls="tree-pane" aria-valuemin="0" aria-valuemax="100"
+          aria-label="Resize the tree and the details" title="Drag to resize. Arrow keys move the divider. Double-click resets it."></div>
         <div id="details" class="details"></div>
       </div>
     </section>
