@@ -198,7 +198,7 @@ $env:DEMO_BASE_URL = 'http://localhost:5100'; npm test
 
 ## WA Inspector tests
 
-`inspector\*.spec.js` test the WA Inspector browser extension (`tools\wa-inspector\extension`) on the harness page
+`inspector\*.spec.js` test the WA Inspector browser extension (`tools\wablazor-marketplace\plugins\wablazor\assets\wa-inspector-extension`) on the harness page
 `/testing/inspector`. They have their own config, `playwright.inspector.config.js` (one worker, base URL
 `http://localhost:5100`), and the standard suite and the release gate do not run them. Each test launches the full
 Chromium build (`channel: 'chromium'`, headless; the headless shell loads no extensions) in a persistent context with

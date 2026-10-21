@@ -17,20 +17,28 @@ For the steps of a review, read the [user guide](user-guide.md).
 
 | Part | Location | Function |
 |---|---|---|
-| Browser extension | `tools/wa-inspector/extension/` | Manifest V3, plain JavaScript, no build step |
-| Element metadata | `tools/wa-inspector/extension/metadata/wa-metadata.json` | The forms of the panel: attributes, CSS properties, parts, slots, utility classes, theme tokens |
+| Browser extension | `tools/wablazor-marketplace/plugins/wablazor/assets/wa-inspector-extension/` | Manifest V3, plain JavaScript, no build step. It ships with the plugin `wablazor`. |
+| Element metadata | `tools/wablazor-marketplace/plugins/wablazor/assets/wa-inspector-extension/metadata/wa-metadata.json` | The forms of the panel: attributes, CSS properties, parts, slots, utility classes, theme tokens |
 | Metadata generator | `tools/wa-inspector/Update-WaInspectorMetadata.ps1` | Makes the element metadata from the API surface and the Web Awesome release |
-| Claude Code plugin | `tools/wablazor-marketplace/plugins/wablazor/` | The plugin `wablazor` with the skill `wa-review-apply` |
+| Claude Code plugin | `tools/wablazor-marketplace/plugins/wablazor/` | The plugin `wablazor` with the extension and the skills `install-inspector` and `wa-review-apply` |
 | Plugin marketplace | `tools/wablazor-marketplace/` | The local marketplace `wablazor-marketplace` and its publish script ([README](../../tools/wablazor-marketplace/README.md)) |
 | Placement metadata | `WebAwesomeOptions.EmitInspectorMetadata` in WebAwesome.Blazor | The `data-wablazor-*` attributes on the wrapper elements |
 | Browser tests | `tools/e2e/inspector/` | Playwright tests with the extension in Chromium |
 
 ## Install the extension
 
+Install the Claude Code plugin `wablazor` first (see [Hand-off to the coding agent](#hand-off-to-the-coding-agent),
+step 2). Then run `/wablazor:install-inspector` in Claude Code on Windows. The skill copies the extension to
+`%LOCALAPPDATA%\WABlazor\wa-inspector-extension`, opens Chrome or Edge, puts the folder path on the clipboard and
+tells you the next steps on the extensions page. Run it again after a plugin update to update the extension.
+
+To install manually:
+
 1. Open `chrome://extensions` (Chrome) or `edge://extensions` (Edge).
 2. Turn on **Developer mode**.
 3. Click **Load unpacked**.
-4. Select the folder `tools/wa-inspector/extension`.
+4. Select the folder `tools/wablazor-marketplace/plugins/wablazor/assets/wa-inspector-extension`, or the folder
+   that `/wablazor:install-inspector` made.
 5. Reload the pages that were open before. The extension loads its content script when a page loads.
 
 The extension needs Chrome or Edge 116 or later. After an update of the extension files, click the reload button of
@@ -166,8 +174,9 @@ version, make the element metadata again and commit the result:
 
 The script reads the API surface and, by default, the extracted release under `temp/wa-src/<version>/dist`
 (`custom-elements.json`, `styles/utilities/*.css`, `styles/themes/default.css`). Use `-DistPath` for another
-release folder. It writes `tools/wa-inspector/extension/metadata/wa-metadata.json`. Keep the script ASCII-only.
-The upgrade process (`docs/contributing/UPGRADE-PROCESS.md`, Phase 3) includes this step.
+release folder. It writes `tools/wablazor-marketplace/plugins/wablazor/assets/wa-inspector-extension/metadata/wa-metadata.json`.
+Keep the script ASCII-only. The upgrade process (`docs/contributing/UPGRADE-PROCESS.md`, Phase 3) includes this step.
+Raise the version of the plugin `wablazor` and publish it, so that the users get the new metadata.
 
 ## Browser tests
 

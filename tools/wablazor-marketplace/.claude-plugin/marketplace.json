@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "wablazor",
-      "description": "The developer skills of WebAwesome.Blazor, for example wa-review-apply, which applies a WA Inspector change list to the source code of the reviewed app.",
+      "description": "The developer skills of WebAwesome.Blazor and the WA Inspector browser extension: install-inspector installs the extension, and wa-review-apply applies a WA Inspector change list to the source code of the reviewed app.",
       "author": {
         "name": "BoldBrick"
       },

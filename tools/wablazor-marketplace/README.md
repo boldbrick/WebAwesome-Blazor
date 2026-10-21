@@ -6,13 +6,15 @@ repository.
 | Folder or file | Content |
 |---|---|
 | `.claude-plugin/marketplace.json` | The marketplace manifest |
-| `plugins/wablazor/` | The plugin `wablazor`: the developer skills of WebAwesome.Blazor |
+| `plugins/wablazor/` | The plugin `wablazor`: the developer skills of WebAwesome.Blazor and the WA Inspector extension |
+| `plugins/wablazor/assets/wa-inspector-extension/` | The WA Inspector browser extension (the only copy in the repository) |
 | `Publish-WaBlazorPlugin.ps1` | Publishes the plugins into another marketplace folder |
 
 The plugin `wablazor` has these skills:
 
 | Skill | Invocation | Function |
 |---|---|---|
+| `install-inspector` | `/wablazor:install-inspector [Chrome \| Edge \| Both]` | Installs or updates the WA Inspector extension for Chrome or Edge on Windows. Only the user can run it. |
 | `wa-review-apply` | `/wablazor:wa-review-apply <export folder>` | Applies a WA Inspector change list to the source code of the reviewed app ([WA Inspector](../../docs/inspector/README.md)) |
 
 More skills will follow.
@@ -25,6 +27,8 @@ Add the marketplace once, and install the plugin:
 claude plugin marketplace add <repository>/tools/wablazor-marketplace
 claude plugin install wablazor@wablazor-marketplace
 ```
+
+Then run `/wablazor:install-inspector` to install the WA Inspector extension.
 
 After a change of the plugin files, run `claude plugin marketplace update wablazor-marketplace` and
 `claude plugin update wablazor@wablazor-marketplace`. Claude Code updates an installed plugin only when its version
@@ -56,7 +60,7 @@ The script:
 
 1. Raises the version in `plugin.json` when you give `-BumpVersion Major`, `Minor` or `Patch`.
 2. Validates each plugin with `claude plugin validate --strict` (`-SkipValidation` skips this step).
-3. Copies each plugin into the subfolder `<name>_v<version>` of the target. An existing subfolder with other files is
+3. Copies each plugin folder, with all its files (the `assets` folder included), into the subfolder `<name>_v<version>` of the target. An existing subfolder with other files is
    replaced, with a warning: the users get the change only with a new version.
 4. Writes one entry for each plugin into `.claude-plugin/marketplace.json` of the target: `name`, `source`
    (`./<name>_v<version>`), `version`, and `description` and `category` from the entry in this marketplace. The

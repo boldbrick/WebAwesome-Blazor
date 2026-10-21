@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Components.RenderTree;
 namespace WebAwesome.Blazor.Base;
 
 /// <summary>
-/// Dev-only placement metadata for the WA Inspector browser extension (tools\wa-inspector): when enabled, every
+/// Dev-only placement metadata for the WA Inspector browser extension (shipped with the Claude Code plugin in tools\wablazor-marketplace): when enabled, every
 /// wrapper writes its type name, its readable component chain and two placement hashes on its root element
 /// (<see cref="Constants.InspectorComponentAttribute"/>, <see cref="Constants.InspectorChainAttribute"/>,
 /// <see cref="Constants.InspectorPlacementAttribute"/>, <see cref="Constants.InspectorSiteAttribute"/>).

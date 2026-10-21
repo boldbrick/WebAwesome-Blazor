@@ -10,8 +10,9 @@ const { waitForWaReady } = require('../tests/helpers/wa-ready');
 // runs it headless. The panel opens as a normal tab, panel.html?tabId=<id of the demo page's tab>, and the tests
 // drive it through its test hooks (window.__waInspectorPanel) and its DOM.
 
-// the unpacked extension
-const EXTENSION_PATH = path.resolve(__dirname, '..', '..', 'wa-inspector', 'extension');
+// the unpacked extension (shipped in the assets of the Claude Code plugin wablazor)
+const EXTENSION_PATH = path.resolve(
+  __dirname, '..', '..', 'wablazor-marketplace', 'plugins', 'wablazor', 'assets', 'wa-inspector-extension');
 
 // the harness page of the inspector tests (src\WebAwesome.Blazor.Demo\Pages\Testing\InspectorHarness.razor)
 const HARNESS_ROUTE = '/testing/inspector';
