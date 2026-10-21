@@ -212,7 +212,7 @@ We align binding versions to WA versions:
 | 3.0.0-beta.6| `wa-blazor-3.0.0-beta.6`     | `master` (promoted)     |
 | 3.0 train   | rolling prereleases → tags as above    | `master-WA-3.0`         |
 | 3.0 patches | `wa-blazor-3.0.x` tagged on the subtrunk | `master-WA-3.0`       |
-| 3.14.0 (bindings revision) | `wa-blazor-3.14.0.1` tagged on the subtrunk | `master-WA-3.14` |
+| 3.14.0 (bindings revisions) | `wa-blazor-3.14.0.x` tagged on the subtrunk | `master-WA-3.14` |
 
 > Development happens in PlasticSCM on hierarchical branches (`/main`, `/main/WA-3.0`); the GitHub mirror is produced by GitSync, whose fixed naming maps `/main` → `master` and flattens hierarchy with dashes (`/main/WA-3.0` → `master-WA-3.0`).
 
