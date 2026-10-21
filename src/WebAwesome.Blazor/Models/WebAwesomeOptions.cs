@@ -61,6 +61,14 @@ public class WebAwesomeOptions
     public string? FontAwesomeKitCode { get; set; }
 
     /// <summary>
+    /// Whether the wrappers write placement metadata (data-wablazor-component, data-wablazor-chain,
+    /// data-wablazor-placement, data-wablazor-site) on their root elements, for the WA Inspector browser extension.
+    /// Defaults to false. Turn it on in development and test environments only: the metadata shows the names of the
+    /// application's components and costs some render time. The setting is process-wide.
+    /// </summary>
+    public bool EmitInspectorMetadata { get; set; }
+
+    /// <summary>
     /// Resolves the effective Web Awesome version: the explicitly configured <see cref="Version"/>,
     /// or the Web Awesome version the library binds.
     /// </summary>

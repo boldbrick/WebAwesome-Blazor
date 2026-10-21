@@ -5357,6 +5357,7 @@ namespace WebAwesome.Blazor.Models
         public WebAwesome.Blazor.Models.WaAssetSource AssetSource { get; set; }
         public string? BasePath { get; set; }
         public string CdnBaseUrl { get; set; }
+        public bool EmitInspectorMetadata { get; set; }
         public string? FontAwesomeKitCode { get; set; }
         public string? LoaderUrl { get; set; }
         public string? StylesheetUrl { get; set; }

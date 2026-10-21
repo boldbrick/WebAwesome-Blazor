@@ -1,0 +1,10 @@
+{
+  "name": "wablazor",
+  "version": "0.1.0",
+  "description": "The developer skills of WebAwesome.Blazor. install-inspector installs or updates the WA Inspector browser extension, which the published plugin bundles, for Chrome or Edge on Windows. wa-review-apply applies a change list that the extension exports (changes.json, changes.md and screenshots) to the source code of the reviewed Web Awesome app, with WebAwesome.Blazor or plain HTML. More skills will follow.",
+  "author": {
+    "name": "BoldBrick"
+  },
+  "license": "MIT",
+  "keywords": ["web-awesome", "blazor", "webawesome-blazor", "ui-review", "inspector"]
+}

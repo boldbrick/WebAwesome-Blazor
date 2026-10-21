@@ -212,7 +212,7 @@ We align binding versions to WA versions:
 | 3.0.0-beta.6| `wa-blazor-3.0.0-beta.6`     | `master` (promoted)     |
 | 3.0 train   | rolling prereleases → tags as above    | `master-WA-3.0`         |
 | 3.0 patches | `wa-blazor-3.0.x` tagged on the subtrunk | `master-WA-3.0`       |
-| 3.14.0 (bindings revision) | `wa-blazor-3.14.0.1` tagged on the subtrunk | `master-WA-3.14` |
+| 3.14.0 (bindings revisions) | `wa-blazor-3.14.0.x` tagged on the subtrunk | `master-WA-3.14` |
 
 > Development happens in PlasticSCM on hierarchical branches (`/main`, `/main/WA-3.0`); the GitHub mirror is produced by GitSync, whose fixed naming maps `/main` → `master` and flattens hierarchy with dashes (`/main/WA-3.0` → `master-WA-3.0`).
 
@@ -250,6 +250,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), "Maintainer setup and local release".
 
 ## Demo
 A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every component with source-visible examples, grouped into the same categories Web Awesome's own documentation uses. It is deployed to GitHub Pages on every merge to `main`: **<https://boldbrick.github.io/WebAwesome-Blazor/>**. It doubles as a manual regression harness for upgrades and is swept by automated Playwright tests (`tools/e2e`).
+
+**UI review.** The WA Inspector browser extension (`tools/wa-inspector`) reviews the Web Awesome elements of a running page and hands the change list to a coding agent: see [docs/inspector/README.md](docs/inspector/README.md). The Claude Code plugin `wablazor` (`tools/wablazor-marketplace`) holds the developer skills of WebAwesome.Blazor, for example `/wablazor:install-inspector`, which installs the extension that the published plugin bundles, and `/wablazor:wa-review-apply`, which applies the change list to the source code.
 
 ## Component coverage
 - **90 component wrappers** — one Blazor wrapper per WA 3.14.0 component, following WA naming (`WaButton` ↔ `wa-button`). Every public member carries XML documentation that ships in the package, so the full API reference is available as IntelliSense; for component behavior, use the [official Web Awesome docs](https://webawesome.com/docs) together with the [live demo](https://boldbrick.github.io/WebAwesome-Blazor/) for the Blazor-specific syntax.

@@ -2,6 +2,14 @@
 
 All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.14.0.2] — 2026-10-21
+
+A second revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. The wrappers can write placement metadata for the new WA Inspector, a browser extension for the UI review of a running page. There are no breaking changes.
+
+### Added
+- `WebAwesomeOptions.EmitInspectorMetadata` (configuration key `WebAwesome:EmitInspectorMetadata`, default `false`): the wrappers write `data-wablazor-*` placement metadata on their root elements for the WA Inspector. Turn it on in development and test environments only.
+- WA Inspector (`tools/wa-inspector`, not part of the packages): a Chrome and Edge extension to review the Web Awesome elements of a running page, change them live, comment and export a change list. The published Claude Code plugin `wablazor` (`tools/wablazor-marketplace`, the developer skills of WebAwesome.Blazor) bundles the extension: `/wablazor:install-inspector` installs it, and `/wablazor:wa-review-apply` applies the change list to the source code. See `docs/inspector/README.md`.
+
 ## [3.14.0.1] — 2026-10-16
 
 A revision of the bindings for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only, and the default CDN version stays 3.14.0. C# code can now refer to JavaScript functions for the function-valued Web Awesome members, the data grid renders rich cells, and the new `WebAwesome.Blazor.Extensions` package adds ready-made cell presets. There are no breaking changes: the obsolete members give compiler warnings only, and 3.15.0 removes them.

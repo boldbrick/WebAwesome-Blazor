@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "WA Inspector",
+  "version": "0.1.0",
+  "description": "Review the Web Awesome elements of a page: inspect, tune attributes, styles and theme live, comment, and export a change list for a coding agent.",
+  "minimum_chrome_version": "116",
+  "devtools_page": "devtools.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "downloads", "tabs", "sidePanel", "clipboardWrite"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "file:///*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "side_panel": {
+    "default_path": "panel.html?mode=side"
+  },
+  "action": {
+    "default_title": "WA Inspector"
+  }
+}

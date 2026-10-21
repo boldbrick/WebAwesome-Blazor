@@ -619,6 +619,7 @@ internal static class RenderTreeBuilderExtensions
     public static WaAttributeMemory OpenWaElement(this RenderTreeBuilder builder, object component, int sequence, string tag)
     {
         builder.OpenElement(sequence, tag);
+        WaInspectorMetadata.AddAttributes(builder, component, sequence);
         return WaAttributeMemory.Of(component);
     }
 

@@ -60,6 +60,7 @@ const HARNESS_ROUTES = [
   '/testing/cell-actions',
   '/testing/lit-cells',
   '/testing/cell-requests',
+  '/testing/inspector',
 ];
 
 function getComponentRoutes() {
