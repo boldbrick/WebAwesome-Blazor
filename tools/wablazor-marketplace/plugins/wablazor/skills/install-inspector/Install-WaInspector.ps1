@@ -3,8 +3,11 @@
     Installs or updates the WA Inspector browser extension for Chrome and Edge on Windows.
 
 .DESCRIPTION
-    The script copies the extension of the plugin wablazor (assets\wa-inspector-extension) to a stable folder,
-    by default %LOCALAPPDATA%\WABlazor\wa-inspector-extension. The stable folder keeps the id of the unpacked
+    The script copies the WA Inspector extension to a stable folder, by default
+    %LOCALAPPDATA%\WABlazor\wa-inspector-extension. The source is the extension that the published plugin wablazor
+    bundles (assets\wa-inspector-extension in the plugin folder), or the folder of -Source. A plugin installed from
+    the marketplace of a repository checkout has no bundled extension: give -Source then, for example
+    <repository>\tools\wa-inspector\extension of a WebAwesome.Blazor checkout. The stable folder keeps the id of the unpacked
     extension, and so the saved review sessions, across updates. On an update, the script replaces the content of
     the folder, so removed files go away.
 
@@ -27,7 +30,8 @@
     Copy the extension only. Do not open a browser and do not change the clipboard.
 
 .PARAMETER Source
-    The extension folder to install. Default: assets\wa-inspector-extension of the plugin that holds this script.
+    The extension folder to install. It must hold the manifest.json of the WA Inspector. Default: the bundled
+    extension, assets\wa-inspector-extension of the plugin that holds this script (only in a published plugin).
 
 .PARAMETER Destination
     The stable extension folder. Default: %LOCALAPPDATA%\WABlazor\wa-inspector-extension.
@@ -37,6 +41,9 @@
 
 .EXAMPLE
     .\Install-WaInspector.ps1 -Browser Edge -WhatIf
+
+.EXAMPLE
+    .\Install-WaInspector.ps1 -Browser Chrome -Source <repository>\tools\wa-inspector\extension
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param(
@@ -55,8 +62,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# the name in the manifest.json of the extension
+$extensionName = 'WA Inspector'
+
 # defaults here: Windows PowerShell 5.1 has no $PSScriptRoot in the default values of parameters
-if (-not $Source) { $Source = Join-Path $PSScriptRoot '..\..\assets\wa-inspector-extension' }
+$sourceGiven = [bool]$Source
+if (-not $Source) { $Source = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\assets\wa-inspector-extension')) }
 if (-not $Destination) { $Destination = Join-Path $env:LOCALAPPDATA 'WABlazor\wa-inspector-extension' }
 
 # the browsers: executable name, the extensions page and the usual install folders below the program folders
@@ -117,8 +128,20 @@ function Get-TreeHash([string] $Folder) {
 
 # --- Source and state ------------------------------------------------------------
 
-if (-not (Test-Path -LiteralPath (Join-Path $Source 'manifest.json') -PathType Leaf)) {
+if (-not $sourceGiven -and -not (Test-Path -LiteralPath $Source -PathType Container)) {
+    throw ('This plugin has no bundled extension ({0}). Only a published plugin bundles it. Give the extension ' +
+        'folder with -Source, for example <repository>\tools\wa-inspector\extension of a WebAwesome.Blazor checkout.') -f $Source
+}
+if (-not (Test-Path -LiteralPath $Source -PathType Container)) {
+    throw "The extension folder $Source does not exist."
+}
+$manifestFile = Join-Path $Source 'manifest.json'
+if (-not (Test-Path -LiteralPath $manifestFile -PathType Leaf)) {
     throw "The extension folder $Source has no manifest.json."
+}
+$manifestName = [string](([System.IO.File]::ReadAllText($manifestFile) | ConvertFrom-Json).name)
+if ($manifestName -ne $extensionName) {
+    throw "The manifest.json in $Source is not the manifest of the $extensionName extension (name: '$manifestName')."
 }
 $Source = (Resolve-Path -LiteralPath $Source).ProviderPath.TrimEnd('\')
 $newVersion = Get-ExtensionVersion $Source
@@ -143,8 +166,9 @@ foreach ($name in $browserInfo.Keys) {
 if ($ListBrowsers) {
     if ($installed.Count -eq 0) { Write-Output 'Installed browsers: none (Chrome or Edge not found)' }
     else { Write-Output ('Installed browsers: {0}' -f (@($installed.Keys) -join ', ')) }
+    Write-Output "Extension source: $Source"
     Write-Output "Extension folder: $Destination"
-    Write-Output ('State: {0} (installed version: {1}, plugin version: {2})' -f $state, $(if ($oldVersion) { $oldVersion } else { 'none' }), $newVersion)
+    Write-Output ('State: {0} (installed version: {1}, source version: {2})' -f $state, $(if ($oldVersion) { $oldVersion } else { 'none' }), $newVersion)
     return
 }
 

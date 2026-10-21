@@ -1,8 +1,7 @@
 // @ts-check
 const { defineConfig } = require('@playwright/test');
 
-// The browser tests of the WA Inspector extension
-// (tools\wablazor-marketplace\plugins\wablazor\assets\wa-inspector-extension), apart from the standard suite
+// The browser tests of the WA Inspector extension (tools\wa-inspector\extension), apart from the standard suite
 // (playwright.config.js): each test launches its own Chromium with the extension loaded (a persistent context,
 // inspector\fixtures.js), so the tests cannot share the standard browser fixture. They run against Demo.Server with
 // the inspector metadata on:

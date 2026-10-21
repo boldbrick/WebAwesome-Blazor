@@ -25,9 +25,9 @@ a skill applies an exported change list to the source code.
 | Part | Location | Notes |
 |---|---|---|
 | Placement metadata | `src/WebAwesome.Blazor/Base/WaInspectorMetadata.cs` | Opt-in through `WebAwesomeOptions.EmitInspectorMetadata` |
-| Extension (MV3, pure JS, no build step) | `tools/wablazor-marketplace/plugins/wablazor/assets/wa-inspector-extension/` | DevTools panel, standalone tab, side panel; ships with the plugin `wablazor` (A19) |
+| Extension (MV3, pure JS, no build step) | `tools/wa-inspector/extension/` | DevTools panel, standalone tab, side panel; the published plugin `wablazor` bundles it (A19) |
 | Metadata generator | `tools/wa-inspector/Update-WaInspectorMetadata.ps1` | CEM + utility CSS + theme tokens to one JSON |
-| Claude Code plugin | `tools/wablazor-marketplace/plugins/wablazor/` | Plugin `wablazor`, skills `install-inspector` and `wa-review-apply`; marketplace `tools/wablazor-marketplace/` |
+| Claude Code plugin | `tools/wablazor-marketplace/plugins/wablazor/` | Plugin `wablazor`, skills `install-inspector` and `wa-review-apply`; marketplace `tools/wablazor-marketplace/` with the bundle manifest `bundles.json` |
 | Browser tests | `tools/e2e/inspector/` | Own Playwright config, the extension loaded in Chromium |
 | Documentation | `docs/inspector/README.md`, `docs/inspector/user-guide.md` | Owner instruction 2026-10-20: docs under `docs\` with a simple user guide |
 
@@ -79,8 +79,8 @@ Basis rungs: 1 = owner instruction, 2 = owner constraint, 3 = repo rule, 4 = pat
 | A16 | Screenshots in tab mode | The export brings the inspected tab to the front while it takes the screenshots, then shows the panel tab again; background.js refuses to capture a hidden tab | 6 (`captureVisibleTab` takes the active tab of the window) | Tell the reviewer to use DevTools mode for an export | Low | High |
 | A17 | Removal of a non-boolean attribute (an override "(not set)", or the page value "not set" after an override is deleted) | The panel stores `kind` and `elementDefault` in each attribute operation; content.js writes the element default instead of a removal when the attribute is on a `wa-` element now and the default is a literal. It shows that value as "not set". Booleans keep present and absent. Operations without these fields (older sessions) remove the attribute | 3 (the sticky attribute rule, `WaAttributeMemory`) | Remove the attribute (Lit sets the property to null) | Low | High |
 | A18 | Publish into a shared marketplace folder | `tools/wablazor-marketplace/Publish-WaBlazorPlugin.ps1`, after the deploy scripts of the team: the target folder is required (`-Destination` or the environment variable `WABLAZOR_PLUGIN_MARKETPLACE`), with no default path; versioned folders `<name>_v<version>`; one `marketplace.json` entry per plugin; `-BumpVersion`; `-WhatIf`; `claude plugin validate --strict` on the plugin. Not taken: plugin imports (no plugin here uses them) and the side-by-side mode (`claude plugin validate` refuses two entries with the same name) | 1 (owner request 2026-10-21), 4 (team scripts) | A copy of the team scripts with their default target | Low | High |
-| A19 | Single source of the extension | The extension moved with `cm mv` into the plugin: `tools/wablazor-marketplace/plugins/wablazor/assets/wa-inspector-extension/`. The publish script copies the whole plugin folder, so the shared marketplace delivers the extension too. The generator stays in `tools/wa-inspector/` with its README: it is a maintenance tool and must not ship with the plugin | 1 (owner decision 2026-10-21) | The generator in the plugin folder (it would ship to the users); the generator next to the publish script (mixes two tools) | Low | High |
-| A20 | Local installation of the extension | User-only skill `/wablazor:install-inspector` (`disable-model-invocation: true`) with `Install-WaInspector.ps1`: copies the extension to `%LOCALAPPDATA%\WABlazor\wa-inspector-extension` (stable path: same unpacked extension id and saved sessions across updates), opens the extensions page of Chrome or Edge, puts the path on the clipboard, tells first install or update. It never loads the extension into a browser profile itself (the browsers allow that only by hand) | 1 (owner decision 2026-10-21) | Command-line `--load-extension` (it works only for one browser session) | Low | High |
+| A19 | Distribution of the extension with the plugin | The extension keeps its single source in `tools/wa-inspector/extension/`. The publish script bundles it into the published plugin: the bundle manifest `tools/wablazor-marketplace/bundles.json` (outside the plugins) maps `../wa-inspector/extension` to `assets/wa-inspector-extension` of the plugin `wablazor`. The script stages the plugin and its bundles in a temporary folder, validates the staged copy with `claude plugin validate --strict`, compares the staged copy with the target, and copies it to `<name>_v<version>`. The script logic has no repository-specific paths. A missing bundle source is an error. Replaces the first A19 (the extension moved into the plugin folder, owner correction 2026-10-21) | 1 (owner correction 2026-10-21: distributed with the plugin, not folded into it) | The extension in the plugin folder (cs:391); a copy of the extension in the repository | Low | High |
+| A20 | Local installation of the extension | User-only skill `/wablazor:install-inspector` (`disable-model-invocation: true`) with `Install-WaInspector.ps1`: copies the extension to `%LOCALAPPDATA%\WABlazor\wa-inspector-extension` (stable path: same unpacked extension id and saved sessions across updates), opens a new window of Chrome or Edge, puts the path on the clipboard, tells first install or update. The source is `${CLAUDE_PLUGIN_ROOT}/assets/wa-inspector-extension` of a published plugin; a plugin from the repository marketplace has no bundle, so the skill asks the user for the extension folder, checks its `manifest.json` (name `WA Inspector`) and gives it as `-Source`. Without a bundle and without `-Source`, the script stops with a clear message. It never loads the extension into a browser profile itself (the browsers allow that only by hand) | 1 (owner decision and correction 2026-10-21) | Command-line `--load-extension` (it works only for one browser session); a search for a repository checkout | Low | High |
 
 ## Unsupported (documented)
 
@@ -109,7 +109,7 @@ Basis rungs: 1 = owner instruction, 2 = owner constraint, 3 = repo rule, 4 = pat
   `AddWebAwesome` sets, and `Base\WaInspectorMetadata.cs`. `OpenWaElement`, `WaLayoutBase` and the layout wrappers
   with their own root element (`WaFlank`, `WaFrame`, `WaGrid`, `WaSplit`, `WaText`, `WaVisuallyHidden`) write the
   `data-wablazor-*` attributes. `WaInspectorMetadataTests`; public API snapshot updated.
-- **Extension.** `tools/wablazor-marketplace/plugins/wablazor/assets/wa-inspector-extension/` (MV3, plain JavaScript): DevTools panel, side panel and tab mode,
+- **Extension.** `tools/wa-inspector/extension/` (MV3, plain JavaScript): DevTools panel, side panel and tab mode,
   the element tree, the forms from `metadata/wa-metadata.json`, change-list items with numbers, colors and outlines,
   the session per origin, value remaps, theme tokens, comments, the export with screenshots.
 - **Panel split.** On the Elements tab, a divider between the tree and the details (`panel.html`, `panel.css`,
@@ -121,10 +121,11 @@ Basis rungs: 1 = owner instruction, 2 = owner constraint, 3 = repo rule, 4 = pat
   alignment": the tag row of the 3.14.0 bindings revisions is `wa-blazor-3.14.0.x`.
 - **Generator.** `tools/wa-inspector/Update-WaInspectorMetadata.ps1` (ASCII-only) makes the metadata from the API
   surface and the 3.14.0 release.
-- **Claude Code plugin.** `tools/wablazor-marketplace/plugins/wablazor/` (plugin `wablazor`) with the extension in
-  `assets/wa-inspector-extension/`, the skills `wa-review-apply` and `install-inspector` (with
-  `Install-WaInspector.ps1`), the marketplace file `tools/wablazor-marketplace/.claude-plugin/marketplace.json`, the publish
-  script `tools/wablazor-marketplace/Publish-WaBlazorPlugin.ps1` and `tools/wablazor-marketplace/README.md`.
+- **Claude Code plugin.** `tools/wablazor-marketplace/plugins/wablazor/` (plugin `wablazor`) with the skills
+  `wa-review-apply` and `install-inspector` (with `Install-WaInspector.ps1`), the marketplace file
+  `tools/wablazor-marketplace/.claude-plugin/marketplace.json`, the bundle manifest `tools/wablazor-marketplace/bundles.json`
+  (the published plugin gets the extension in `assets/wa-inspector-extension/`), the publish script
+  `tools/wablazor-marketplace/Publish-WaBlazorPlugin.ps1` and `tools/wablazor-marketplace/README.md`.
 - **Demo harness.** `/testing/inspector` (`Pages/Testing/InspectorHarness.razor`, `InspectorHarnessAction.razor`),
   in `HARNESS_ROUTES`, so the standard e2e sweep visits it too.
 - **Browser tests.** `tools/e2e/inspector/` (14 tests), `tools/e2e/playwright.inspector.config.js`,
@@ -159,6 +160,13 @@ Basis rungs: 1 = owner instruction, 2 = owner constraint, 3 = repo rule, 4 = pat
   `-WhatIf`, first installation, no-op rerun, update after a version change (a stale file was removed), update with
   the same version and other files, one real run that opened Edge. Chrome and Edge ignore `chrome://extensions` and
   `edge://extensions` on the command line, so the script opens a new window and tells the user to type the address.
+- After the move back and the bundling (A19 replaced, A20 updated): the inspector suite passed with the extension in
+  `tools/wa-inspector/extension/`, 14 passed (Demo.Server on port 5117). `claude plugin validate --strict` passes for
+  the plugin and the marketplace. `Publish-WaBlazorPlugin.ps1` ran in Windows PowerShell 5.1 and PowerShell 7 against
+  throwaway folders: first publication with the bundle, no-op rerun, a changed extension file reported as "same
+  version, other files", `-WhatIf` (also with `-BumpVersion`) changed no file, a missing bundle source stopped the
+  script. `Install-WaInspector.ps1` (with `-NoBrowser` and a throwaway destination) found the bundle of the published
+  copy; from the repository plugin folder it worked with `-Source` and stopped with a clear message without it.
 
 ### Deviations from the plan
 
@@ -170,8 +178,11 @@ Basis rungs: 1 = owner instruction, 2 = owner constraint, 3 = repo rule, 4 = pat
   `/wablazor:wa-review-apply`. `tools/wa-inspector/` keeps the extension, the generator and the README. The publish
   script was added (A14, A15, A18).
 - 2026-10-21, owner decision: the extension moved from `tools/wa-inspector/extension/` into the plugin
-  (`plugins/wablazor/assets/wa-inspector-extension/`, A19), and the skill `install-inspector` installs it (A20).
-  `tools/wa-inspector/` keeps the generator and the README.
+  (`plugins/wablazor/assets/wa-inspector-extension/`), and the skill `install-inspector` installs it (A20).
+- 2026-10-21, owner correction: the extension is distributed with the plugin, not folded into it. It moved back to
+  `tools/wa-inspector/extension/` with `cm mv`, its single source. The publish script bundles it into the published
+  plugin through `bundles.json` (A19, replaced). The skill `install-inspector` uses the bundled extension, or asks
+  the user for the extension folder when the plugin has no bundle (A20, updated).
 - The skill tells the coding agent to change part styles with app CSS `::part()`, not with `ShadowStyles`
   (`ShadowStyles` styles only the output of the app's own JavaScript functions).
 - The browser tests check the downloads through wrappers of `chrome.downloads.download` and `captureVisibleTab` in

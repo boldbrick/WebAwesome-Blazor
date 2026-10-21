@@ -6,9 +6,9 @@ repository.
 | Folder or file | Content |
 |---|---|
 | `.claude-plugin/marketplace.json` | The marketplace manifest |
-| `plugins/wablazor/` | The plugin `wablazor`: the developer skills of WebAwesome.Blazor and the WA Inspector extension |
-| `plugins/wablazor/assets/wa-inspector-extension/` | The WA Inspector browser extension (the only copy in the repository) |
-| `Publish-WaBlazorPlugin.ps1` | Publishes the plugins into another marketplace folder |
+| `plugins/wablazor/` | The plugin `wablazor`: the developer skills of WebAwesome.Blazor |
+| `bundles.json` | The bundle manifest: the files from outside a plugin folder that the published plugin gets |
+| `Publish-WaBlazorPlugin.ps1` | Publishes the plugins, with their bundles, into another marketplace folder |
 
 The plugin `wablazor` has these skills:
 
@@ -28,7 +28,9 @@ claude plugin marketplace add <repository>/tools/wablazor-marketplace
 claude plugin install wablazor@wablazor-marketplace
 ```
 
-Then run `/wablazor:install-inspector` to install the WA Inspector extension.
+Then run `/wablazor:install-inspector` to install the WA Inspector extension. A plugin from this marketplace has no
+bundled extension, so the skill asks you for the extension folder: give `tools/wa-inspector/extension` of the
+repository.
 
 After a change of the plugin files, run `claude plugin marketplace update wablazor-marketplace` and
 `claude plugin update wablazor@wablazor-marketplace`. Claude Code updates an installed plugin only when its version
@@ -59,13 +61,39 @@ Instead of `-Destination`, you can set the environment variable `WABLAZOR_PLUGIN
 The script:
 
 1. Raises the version in `plugin.json` when you give `-BumpVersion Major`, `Minor` or `Patch`.
-2. Validates each plugin with `claude plugin validate --strict` (`-SkipValidation` skips this step).
-3. Copies each plugin folder, with all its files (the `assets` folder included), into the subfolder `<name>_v<version>` of the target. An existing subfolder with other files is
-   replaced, with a warning: the users get the change only with a new version.
-4. Writes one entry for each plugin into `.claude-plugin/marketplace.json` of the target: `name`, `source`
+2. Stages each plugin in a temporary folder: a copy of the plugin folder plus its bundles from `bundles.json`.
+3. Validates the staged copy with `claude plugin validate --strict` (`-SkipValidation` skips this step).
+4. Copies the staged copy into the subfolder `<name>_v<version>` of the target. An existing subfolder with the same
+   files stays. An existing subfolder with other files is replaced, with a warning: the users get the change only
+   with a new version.
+5. Writes one entry for each plugin into `.claude-plugin/marketplace.json` of the target: `name`, `source`
    (`./<name>_v<version>`), `version`, and `description` and `category` from the entry in this marketplace. The
    entry of an older version is replaced. If the target has no `marketplace.json`, the script makes one.
-5. Validates the target marketplace with `claude plugin validate`.
+6. Validates the target marketplace with `claude plugin validate`.
+
+`-WhatIf` also stages and validates, and shows the bundle copies, but changes no file in the repository or in the
+target.
+
+### Bundles
+
+`bundles.json` adds files from outside a plugin folder to the published plugin. The repository keeps one source of
+each file, and the published plugin is complete without a repository checkout:
+
+```json
+{
+  "wablazor": [
+    { "source": "../wa-inspector/extension", "target": "assets/wa-inspector-extension" }
+  ]
+}
+```
+
+- The key is the plugin name.
+- `source` is a file or a folder, relative to this marketplace folder. A missing source stops the script.
+- `target` is relative to the plugin root. It must stay inside the plugin and must not exist in the plugin folder.
+
+The bundle of `wablazor` is the WA Inspector extension (`tools/wa-inspector/extension`). The skill
+`install-inspector` installs it from `assets/wa-inspector-extension` of the published plugin. A change of a bundle
+source changes the published plugin: when the extension changes, raise the plugin version before the next publish.
 
 The users of the target marketplace then run `claude plugin marketplace update <target marketplace name>` and
 install or update `wablazor@<target marketplace name>`.

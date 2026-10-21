@@ -1,0 +1,8 @@
+{
+  "wablazor": [
+    {
+      "source": "../wa-inspector/extension",
+      "target": "assets/wa-inspector-extension"
+    }
+  ]
+}

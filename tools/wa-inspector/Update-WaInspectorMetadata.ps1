@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Generates the element metadata of the WA Inspector extension (metadata\wa-metadata.json in the extension).
+    Generates the element metadata of the WA Inspector extension (extension\metadata\wa-metadata.json).
 
 .DESCRIPTION
     The inspector builds its forms from one JSON file:
@@ -10,9 +10,8 @@
     - the utility classes from dist\styles\utilities\*.css;
     - the theme tokens from dist\styles\themes\default.css.
     Run it after each Web Awesome upgrade, when the API surface has the new version.
-    The extension is in the assets of the Claude Code plugin wablazor:
-    tools\wablazor-marketplace\plugins\wablazor\assets\wa-inspector-extension. Publish a new plugin version after
-    a change of the metadata, so that the users get it.
+    The published Claude Code plugin wablazor bundles the extension: when the extension changes, raise the plugin
+    version before the next publish.
     Keep this script ASCII-only: Windows PowerShell 5.1 misparses BOM-less non-ASCII scripts.
 
 .PARAMETER DistPath
@@ -23,7 +22,7 @@
     The API surface JSON. Default: the committed expected-api-surface.json.
 
 .PARAMETER OutputPath
-    The metadata file to write. Default: metadata\wa-metadata.json in the extension folder of the plugin wablazor.
+    The metadata file to write. Default: extension\metadata\wa-metadata.json next to this script.
 
 .EXAMPLE
     .\tools\wa-inspector\Update-WaInspectorMetadata.ps1
@@ -39,9 +38,7 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 if (-not $SurfacePath) { $SurfacePath = Join-Path $repoRoot 'src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json' }
-if (-not $OutputPath) {
-    $OutputPath = Join-Path $repoRoot 'tools\wablazor-marketplace\plugins\wablazor\assets\wa-inspector-extension\metadata\wa-metadata.json'
-}
+if (-not $OutputPath) { $OutputPath = Join-Path $PSScriptRoot 'extension\metadata\wa-metadata.json' }
 
 $surface = Get-Content $SurfacePath -Raw | ConvertFrom-Json
 $version = $surface.version

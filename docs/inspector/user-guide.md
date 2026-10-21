@@ -5,9 +5,10 @@ the background, read the [overview](README.md).
 
 ## Before you start
 
-1. Install the extension: add the marketplace and install the Claude Code plugin `wablazor`, then run
-   `/wablazor:install-inspector` in Claude Code. To install manually with **Load unpacked**, see
-   [Install the extension](README.md#install-the-extension).
+1. Install the extension: install the Claude Code plugin `wablazor`, then run `/wablazor:install-inspector` in
+   Claude Code. The skill uses the extension that the published plugin bundles. From a marketplace in a repository
+   checkout, it asks you for the extension folder (`tools/wa-inspector/extension`). To install manually with
+   **Load unpacked**, see [Install the extension](README.md#install-the-extension).
 2. For a WebAwesome.Blazor app, start the app with the inspector metadata on (see
    [Turn on the Blazor metadata](README.md#turn-on-the-blazor-metadata)). The inspector also works without the
    metadata, but the locators are less exact.
