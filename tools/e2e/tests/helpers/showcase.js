@@ -2,6 +2,7 @@
 const { expect, blazorErrorUiProblems } = require('./test');
 const { waitForWaReady, WA_READY_TIMEOUT_MS } = require('./wa-ready');
 const { collectProblems } = require('./page-health');
+const { installPageClock } = require('./page-clock');
 
 // Shared steps of the showcase flows (showcase-*.spec.js): open a showcase with its problems collected and, where a
 // flow waits on the page's timers (toast durations, the dashboard refresh, autoplay), the page clock installed, and
@@ -19,7 +20,7 @@ const { collectProblems } = require('./page-health');
  */
 async function openShowcase(page, route, tags, options = {}) {
   const problems = collectProblems(page);
-  if (options.clock) await page.clock.install();
+  if (options.clock) await installPageClock(page);
   await page.goto(route);
   await page.waitForSelector('.demo-shell', { timeout: WA_READY_TIMEOUT_MS });
   await waitForWaReady(page, tags);

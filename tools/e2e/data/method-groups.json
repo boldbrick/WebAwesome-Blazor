@@ -1,0 +1,47 @@
+{
+  "description": "The component groups of the wrapper method suite (tools\\e2e\\tests\\methods-<group>.spec.js). Each group has one harness page (route), one spec and one case module (tests\\helpers\\method-cases\\<group>.js). Every wrapper of tools\\e2e\\data\\wrapper-methods.json must be in exactly one group; tools\\e2e\\tests\\method-coverage.spec.js checks it. A new wrapper with methods goes into the group that fits it best.",
+  "groups": [
+    {
+      "name": "forms-text",
+      "title": "Text and number inputs",
+      "route": "/testing/methods-forms-text",
+      "components": ["WaInput", "WaTextArea", "WaNumberInput", "WaOtpInput", "WaTagInput", "WaKnownDate"]
+    },
+    {
+      "name": "forms-choice",
+      "title": "Buttons, toggles, choices and sliders",
+      "route": "/testing/methods-forms-choice",
+      "components": ["WaButton", "WaCheckbox", "WaSwitch", "WaRadio", "WaRadioGroup", "WaRating", "WaSlider", "WaRange"]
+    },
+    {
+      "name": "pickers",
+      "title": "Popup pickers (free and Pro)",
+      "route": "/testing/methods-pickers",
+      "components": ["WaColorPicker", "WaSelect", "WaTimeInput", "WaDateInput", "WaDateRangeInput", "WaDatePicker", "WaDateRangePicker"]
+    },
+    {
+      "name": "overlays",
+      "title": "Overlays and toasts",
+      "route": "/testing/methods-overlays",
+      "components": ["WaDialog", "WaDrawer", "WaDropdown", "WaDropdownItem", "WaPopover", "WaPopup", "WaTooltip", "WaToast", "WaToastItem", "WaPage"]
+    },
+    {
+      "name": "navigation",
+      "title": "Navigation and disclosure",
+      "route": "/testing/methods-navigation",
+      "components": ["WaAccordion", "WaAccordionItem", "WaDetails", "WaTab", "WaTabGroup", "WaStepper", "WaCarousel", "WaTreeItem", "WaSplitPanel"]
+    },
+    {
+      "name": "media-content",
+      "title": "Media, animation, observers and content",
+      "route": "/testing/methods-media-content",
+      "components": ["WaAnimatedImage", "WaAnimation", "WaZoomableFrame", "WaVideo", "WaVideoPlaylist", "WaMarkdown", "WaMutationObserver", "WaResizeObserver", "WaRandomContent", "WaRelativeTime", "WaCopyButton"]
+    },
+    {
+      "name": "pro-data",
+      "title": "Pro data components",
+      "route": "/testing/methods-pro-data",
+      "components": ["WaDataGrid", "WaCombobox", "WaFileInput"]
+    }
+  ]
+}

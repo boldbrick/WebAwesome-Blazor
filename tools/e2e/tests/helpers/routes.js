@@ -4,7 +4,8 @@
 // so newly generated component pages are covered automatically. Layout routes have no such
 // generated manifest (WaCluster/WaFlank/... are hand-authored, not CEM-derived) and are kept
 // in sync manually with MainLayout.razor's LayoutLinks array. Harness routes (e2e-only pages
-// outside the navigation) are hand-listed in HARNESS_ROUTES.
+// outside the navigation) are hand-listed in HARNESS_ROUTES, plus the method suite's group pages
+// (tools\e2e\data\method-groups.json), each once its case module exists.
 const fs = require('fs');
 const path = require('path');
 
@@ -62,7 +63,18 @@ const HARNESS_ROUTES = [
   '/testing/cell-requests',
   '/testing/inspector',
   '/testing/grid-reload',
+  ...methodHarnessRoutes(),
 ];
+
+// the harness pages of the wrapper method suite: the route of every group in tools\e2e\data\method-groups.json that
+// has a case module (tests\helpers\method-cases\<group>.js), so a group's page joins the sweep with its cases
+function methodHarnessRoutes() {
+  const groupsPath = path.resolve(__dirname, '..', '..', 'data', 'method-groups.json');
+  const { groups } = JSON.parse(fs.readFileSync(groupsPath, 'utf8').replace(/^﻿/, ''));
+  return groups
+    .filter((/** @type {{ name: string }} */ g) => fs.existsSync(path.join(__dirname, 'method-cases', `${g.name}.js`)))
+    .map((/** @type {{ route: string }} */ g) => g.route);
+}
 
 function getComponentRoutes() {
   const surfacePath = path.resolve(

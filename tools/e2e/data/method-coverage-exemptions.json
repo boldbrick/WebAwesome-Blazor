@@ -1,0 +1,41 @@
+{
+  "description": "Methods of tools\\e2e\\data\\wrapper-methods.json that no browser case proves, each with the reason; checked by tools\\e2e\\tests\\method-coverage.spec.js (every method must be proven by a case of tests\\helpers\\method-cases\\<group>.js, by an external proof, or listed here - never both - and every entry must still name an existing method). A known defect is flagged \"knownDefect\": true, its reason starts with KNOWN DEFECT and \"defect\" names the ticket and finding (for example \"WAB-64 F1\"); each such entry needs an expected-failure case (knownDefects of a case module) that references its key. A temporary entry with \"pendingGroup\" exempts every unproven method of that group until the group's case module exists; the spec prints it as \"pending group <name>\", and the group's agent removes it together with adding the module.",
+  "exemptions": [
+    {
+      "key": "pending-group-forms-text",
+      "pendingGroup": "forms-text",
+      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
+      "methods": []
+    },
+    {
+      "key": "pending-group-forms-choice",
+      "pendingGroup": "forms-choice",
+      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
+      "methods": []
+    },
+    {
+      "key": "pending-group-pickers",
+      "pendingGroup": "pickers",
+      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
+      "methods": []
+    },
+    {
+      "key": "pending-group-overlays",
+      "pendingGroup": "overlays",
+      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
+      "methods": []
+    },
+    {
+      "key": "pending-group-navigation",
+      "pendingGroup": "navigation",
+      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
+      "methods": []
+    },
+    {
+      "key": "pending-group-media-content",
+      "pendingGroup": "media-content",
+      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
+      "methods": []
+    }
+  ]
+}

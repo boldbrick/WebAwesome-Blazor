@@ -34,6 +34,12 @@ public class ComponentSurface
     [JsonPropertyName("className")]
     public string ClassName { get; set; }
 
+    /// <summary>
+    /// true for a Web Awesome Pro component (its module is not on the free CDN).
+    /// </summary>
+    [JsonPropertyName("pro")]
+    public bool Pro { get; set; }
+
     [JsonPropertyName("attributes")]
     public Dictionary<string, AttributeSurface> Attributes { get; set; }
 

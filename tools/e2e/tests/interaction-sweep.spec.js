@@ -2,6 +2,7 @@
 const { test, expect, blazorErrorUiProblems } = require('./helpers/test');
 const { getAllRoutes, HARNESS_ROUTES } = require('./helpers/routes');
 const { WA_READY_TIMEOUT_MS } = require('./helpers/wa-ready');
+const { installPageClock } = require('./helpers/page-clock');
 const { PRO_TAGS, collectProblems, waitForAllWaReady } = require('./helpers/page-health');
 const {
   CONTENT_SELECTOR, SWEEP_ATTRIBUTE, INITIAL_ATTRIBUTE, CANDIDATE_SELECTOR, OVERLAY_SELECTOR, REVEALER_KINDS, TYPED_VALUES,
@@ -76,8 +77,8 @@ for (const route of ROUTES) {
     });
 
     // the fake clock must be installed before the app starts, so the timers the page sets up can be fast-forwarded;
-    // it runs on real time until the sweep jumps it
-    await page.clock.install();
+    // it runs on real time until the sweep jumps it (helpers\page-clock.js keeps it from ending a Demo.Server circuit)
+    await installPageClock(page);
     await page.goto(route, { waitUntil: 'load' });
     await page.waitForSelector('.demo-shell', { timeout: WA_READY_TIMEOUT_MS });
     const notReady = await waitForAllWaReady(page);
