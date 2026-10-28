@@ -39,7 +39,8 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
-    /// Invokes a method on a Web Awesome element and returns the result
+    /// Invokes a method on a Web Awesome element and returns the result. A call before the element is defined (its
+    /// module is still loading) waits in the browser for the definition.
     /// </summary>
     /// <typeparam name="T">The expected return type of the method</typeparam>
     /// <param name="elementReference">Reference to the Web Awesome element</param>
@@ -48,7 +49,8 @@ public class WebAwesomeJSInterop
     /// <returns>The result of the method call</returns>
     /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
     /// <exception cref="ArgumentNullException">Thrown when methodName is null</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the method call fails</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the method call fails, or when the element is still not
+    /// defined after the wait</exception>
     public async Task<T> InvokeMethodAsync<T>(ElementReference elementReference, string methodName, params object[] args)
     {
         if (elementReference.Id == null)
@@ -74,7 +76,8 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
-    /// Invokes a void method on a Web Awesome element
+    /// Invokes a void method on a Web Awesome element. A call before the element is defined (its module is still
+    /// loading) waits in the browser for the definition.
     /// </summary>
     /// <param name="elementReference">Reference to the Web Awesome element</param>
     /// <param name="methodName">Name of the method to invoke</param>
@@ -82,7 +85,8 @@ public class WebAwesomeJSInterop
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
     /// <exception cref="ArgumentNullException">Thrown when methodName is null</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the method call fails</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the method call fails, or when the element is still not
+    /// defined after the wait</exception>
     public async Task InvokeMethodAsync(ElementReference elementReference, string methodName, params object[] args)
     {
         if (elementReference.Id == null)

@@ -10,6 +10,9 @@ A second revision of the bindings for Web Awesome 3.14.0; the default CDN versio
 - `WebAwesomeOptions.EmitInspectorMetadata` (configuration key `WebAwesome:EmitInspectorMetadata`, default `false`): the wrappers write `data-wablazor-*` placement metadata on their root elements for the WA Inspector. Turn it on in development and test environments only.
 - WA Inspector (`tools/wa-inspector`, not part of the packages): a Chrome and Edge extension to review the Web Awesome elements of a running page, change them live, comment and export a change list. The published Claude Code plugin `wablazor` (`tools/wablazor-marketplace`, the developer skills of WebAwesome.Blazor) bundles the extension: `/wablazor:install-inspector` installs it, and `/wablazor:wa-review-apply` applies the change list to the source code. See `docs/inspector/README.md`.
 
+### Fixed
+- A wrapper method that calls an element method (for example `WaDataGrid.ReloadAsync` or `WaCombobox.ReloadAsync`) no longer fails with "Method '…' does not exist" when you call it soon after the first render: it waits until Web Awesome has loaded the element.
+
 ## [3.14.0.1] — 2026-10-16
 
 A revision of the bindings for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only, and the default CDN version stays 3.14.0. C# code can now refer to JavaScript functions for the function-valued Web Awesome members, the data grid renders rich cells, and the new `WebAwesome.Blazor.Extensions` package adds ready-made cell presets. There are no breaking changes: the obsolete members give compiler warnings only, and 3.15.0 removes them.
