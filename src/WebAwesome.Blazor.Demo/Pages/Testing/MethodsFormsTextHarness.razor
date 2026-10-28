@@ -1,0 +1,194 @@
+@page "/testing/methods-forms-text"
+@using System.Globalization
+
+@* e2e harness of the wrapper method suite, group "forms-text" (tools\e2e\tests\methods-forms-text.spec.js, cases in
+   tools\e2e\tests\helpers\method-cases\forms-text.js) - deliberately outside /components/; the sweep reaches it
+   through the method groups (tools\e2e\data\method-groups.json). Every MethodCall button calls one wrapper method from
+   .NET through the wrapper's @ref and shows the outcome. ?early=true also calls methods on the first render, while the
+   autoloader still imports the element modules. All elements of the group are free components. *@
+
+<PageTitle>Testing: Methods (text inputs)</PageTitle>
+
+<h1>Methods Harness: Text and Number Inputs</h1>
+<p>This page is an end-to-end test harness for the imperative methods of the text and number input wrappers.</p>
+
+<ExampleSection Title="WaInput (text)">
+    <div class="method-calls">
+        <MethodCall Id="input-focus" Action="() => input!.FocusAsync()" />
+        <MethodCall Id="input-blur" Action="() => input!.BlurAsync()" />
+        <MethodCall Id="input-select" Action="() => input!.SelectAsync()" />
+        <MethodCall Id="input-set-selection" Action="() => input!.SetSelectionRangeAsync(0, FirstWordLength, BackwardDirection)" />
+        <MethodCall Id="input-replace-selection" Action="() => input!.SetRangeTextAsync(SelectionReplacement)" />
+        <MethodCall Id="input-set-range" Action="() => input!.SetRangeTextAsync(RangeReplacement, SecondWordStart, SecondWordEnd, SelectModeSelect)" />
+        <MethodCall Id="input-text-step-up" Label="StepUpAsync on a text input" Action="() => input!.StepUpAsync()" />
+        <MethodCall Id="input-set-validity" Action="() => input!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="input-reset-validity" Action="() => input!.ResetValidityAsync()" />
+    </div>
+    <WaInput @ref="input" data-testid="input" Label="Greeting" @bind-Value="inputValue" />
+    <p>Bound value: <output data-testid="input-bound-value">@inputValue</output></p>
+</ExampleSection>
+
+<ExampleSection Title="WaInput (number and date types)">
+    <div class="method-calls">
+        <MethodCall Id="input-step-up" Action="() => numberTypeInput!.StepUpAsync()" />
+        <MethodCall Id="input-step-down" Action="() => numberTypeInput!.StepDownAsync()" />
+        <MethodCall Id="input-show-picker" Action="() => dateTypeInput!.ShowPickerAsync()" />
+    </div>
+    <WaInput @ref="numberTypeInput" data-testid="input-number" Label="Count" Type="WaInputType.Number" Step="NumberStep" @bind-Value="numberTypeValue" />
+    <WaInput @ref="dateTypeInput" data-testid="input-date" Label="Day" Type="WaInputType.Date" @bind-Value="dateTypeValue" />
+    <p>Bound count: <output data-testid="input-number-bound-value">@numberTypeValue</output></p>
+</ExampleSection>
+
+<ExampleSection Title="WaTextArea">
+    <div class="method-calls">
+        <MethodCall Id="textarea-focus" Action="() => textArea!.FocusAsync()" />
+        <MethodCall Id="textarea-blur" Action="() => textArea!.BlurAsync()" />
+        <MethodCall Id="textarea-select" Action="() => textArea!.SelectAsync()" />
+        <MethodCall Id="textarea-set-selection" Action="() => textArea!.SetSelectionRangeAsync(0, FirstWordLength, WaTextAreaSelectionDirection.Backward)" />
+        <MethodCall Id="textarea-replace-selection" Action="() => textArea!.SetRangeTextAsync(SelectionReplacement)" />
+        <MethodCall Id="textarea-set-range" Action="() => textArea!.SetRangeTextAsync(RangeReplacement, SecondWordStart, SecondWordEnd, WaTextAreaSelectMode.Select)" />
+        <MethodCall Id="textarea-set-validity" Action="() => textArea!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="textarea-reset-validity" Action="() => textArea!.ResetValidityAsync()" />
+    </div>
+    <WaTextArea @ref="textArea" data-testid="textarea" Label="Notes" @bind-Value="textAreaValue" />
+    <p>Bound value: <output data-testid="textarea-bound-value">@textAreaValue</output></p>
+</ExampleSection>
+
+<ExampleSection Title="WaTextArea (scroll position)">
+    <div class="method-calls">
+        <MethodCall Id="textarea-scroll-get" Function="async () => await scrollTextArea!.ScrollPositionAsync()" />
+        <MethodCall Id="textarea-scroll-set" Function="async () => await scrollTextArea!.ScrollPositionAsync(ScrollTop)" />
+    </div>
+    <WaTextArea @ref="scrollTextArea" data-testid="textarea-scroll" Label="Long text" Rows="ScrollRows" @bind-Value="longText" />
+</ExampleSection>
+
+<ExampleSection Title="WaNumberInput">
+    <div class="method-calls">
+        <MethodCall Id="number-focus" Action="() => numberInput!.FocusAsync()" />
+        <MethodCall Id="number-blur" Action="() => numberInput!.BlurAsync()" />
+        <MethodCall Id="number-select" Action="() => numberInput!.SelectAsync()" />
+        <MethodCall Id="number-step-up" Action="() => numberInput!.StepUpAsync()" />
+        <MethodCall Id="number-step-down" Action="() => numberInput!.StepDownAsync()" />
+        <MethodCall Id="number-set-validity" Action="() => numberInput!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="number-reset-validity" Action="() => numberInput!.ResetValidityAsync()" />
+    </div>
+    <WaNumberInput @ref="numberInput" data-testid="number-input" Label="Quantity" Step="NumberStep" @bind-Value="numberValue" />
+    <p>Bound value: <output data-testid="number-bound-value">@numberValue?.ToString(CultureInfo.InvariantCulture)</output></p>
+</ExampleSection>
+
+<ExampleSection Title="WaOtpInput">
+    <div class="method-calls">
+        <MethodCall Id="otp-focus" Action="() => otpInput!.FocusAsync()" />
+        <MethodCall Id="otp-blur" Action="() => otpInput!.BlurAsync()" />
+        <MethodCall Id="otp-select" Action="() => otpInput!.SelectAsync()" />
+        <MethodCall Id="otp-clear" Action="() => otpInput!.ClearAsync()" />
+        <MethodCall Id="otp-set-validity" Action="() => otpInput!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="otp-reset-validity" Action="() => otpInput!.ResetValidityAsync()" />
+    </div>
+    <WaOtpInput @ref="otpInput" data-testid="otp-input" Label="Code" Length="OtpLength" @bind-Value="otpValue" OnClear="() => otpClearCount++" />
+    <p>wa-clear events: <strong data-testid="otp-clear-count">@otpClearCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaTagInput">
+    <div class="method-calls">
+        <MethodCall Id="tag-focus" Action="() => tagInput!.FocusAsync()" />
+        <MethodCall Id="tag-blur" Action="() => tagInput!.BlurAsync()" />
+        <MethodCall Id="tag-set-validity" Action="() => tagInput!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="tag-reset-validity" Action="() => tagInput!.ResetValidityAsync()" />
+    </div>
+    <WaTagInput @ref="tagInput" data-testid="tag-input" Label="Tags" @bind-Value="tagValues" />
+</ExampleSection>
+
+<ExampleSection Title="WaKnownDate">
+    <div class="method-calls">
+        <MethodCall Id="known-date-focus" Action="() => knownDate!.FocusAsync()" />
+        <MethodCall Id="known-date-blur" Action="() => knownDate!.BlurAsync()" />
+        <MethodCall Id="known-date-set-validity" Action="() => knownDate!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="known-date-reset-validity" Action="() => knownDate!.ResetValidityAsync()" />
+    </div>
+    <WaKnownDate @ref="knownDate" data-testid="known-date" Label="Birthday" Locale="@KnownDateLocale" @bind-Value="knownDateValue" />
+</ExampleSection>
+
+<ExampleSection Title="Calls on the first render (?early=true)">
+    <p>Input focus: <output data-testid="early-input-focus">@earlyInputFocus</output></p>
+    <p>Number input step up: <output data-testid="early-number-step-up">@earlyNumberStepUp</output></p>
+</ExampleSection>
+
+@code {
+    private const string InitialText = "Hello world";
+    private const string SelectionReplacement = "Howdy";
+    private const string RangeReplacement = "there";
+    private const string BackwardDirection = "backward";
+    private const string SelectModeSelect = "select";
+    private const string ValidityMessage = "Check this field, please";
+    private const string KnownDateLocale = "en-US";
+    private const string NotCalled = "not called";
+    private const string DoneText = "done";
+    private const string ErrorPrefix = "error: ";
+    private const string LongTextLine = "A line of the long text";
+    private const int FirstWordLength = 5;
+    private const int SecondWordStart = 6;
+    private const int SecondWordEnd = 11;
+    private const int NumberStep = 2;
+    private const int InitialNumber = 4;
+    private const int OtpLength = 4;
+    private const string InitialOtp = "1234";
+    private const int ScrollRows = 3;
+    private const int LongTextLines = 30;
+    private const double ScrollTop = 40;
+
+    // many more lines than the rows, so the textarea scrolls
+    private string? longText = string.Join('\n', Enumerable.Range(1, LongTextLines).Select(line => $"{LongTextLine} {line}"));
+
+    private WaInput? input;
+    private WaInput? numberTypeInput;
+    private WaInput? dateTypeInput;
+    private WaTextArea? textArea;
+    private WaTextArea? scrollTextArea;
+    private WaNumberInput? numberInput;
+    private WaOtpInput? otpInput;
+    private WaTagInput? tagInput;
+    private WaKnownDate? knownDate;
+
+    private string? inputValue = InitialText;
+    private string? numberTypeValue = InitialNumber.ToString(CultureInfo.InvariantCulture);
+    private string? dateTypeValue;
+    private string? textAreaValue = InitialText;
+    private decimal? numberValue = InitialNumber;
+    private string? otpValue = InitialOtp;
+    private int otpClearCount;
+    private IReadOnlyList<string>? tagValues;
+    private DateOnly? knownDateValue;
+
+    private string earlyInputFocus = NotCalled;
+    private string earlyNumberStepUp = NotCalled;
+
+    // ?early=true: the page calls methods on its first render, while the autoloader still imports the element modules
+    [SupplyParameterFromQuery(Name = "early")] public bool CallOnFirstRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CallOnFirstRender)
+        {
+            var inputFocus = OutcomeOf(() => input!.FocusAsync());
+            var numberStepUp = OutcomeOf(() => numberInput!.StepUpAsync());
+            await Task.WhenAll(inputFocus, numberStepUp);
+            earlyInputFocus = inputFocus.Result;
+            earlyNumberStepUp = numberStepUp.Result;
+            StateHasChanged();
+        }
+    }
+
+    private static async Task<string> OutcomeOf(Func<Task> call)
+    {
+        try
+        {
+            await call();
+            return DoneText;
+        }
+        catch (Exception exception)
+        {
+            return ErrorPrefix + exception.Message;
+        }
+    }
+}

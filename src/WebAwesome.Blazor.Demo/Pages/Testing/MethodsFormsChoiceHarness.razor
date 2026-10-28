@@ -1,0 +1,168 @@
+@page "/testing/methods-forms-choice"
+
+@* e2e harness of the wrapper method suite, group "forms-choice" (tools\e2e\tests\methods-forms-choice.spec.js, cases
+   in tools\e2e\tests\helpers\method-cases\forms-choice.js) - deliberately outside /components/; the sweep reaches it
+   through the method groups (tools\e2e\data\method-groups.json). Every MethodCall button calls one wrapper method from
+   .NET through the wrapper's @ref and shows the outcome. ?early=true also calls methods on the first render, while the
+   autoloader still imports the element modules. All elements are free components. *@
+
+<PageTitle>Testing: Methods (forms, choice)</PageTitle>
+
+<h1>Methods Harness: Buttons, Toggles, Choices and Sliders</h1>
+<p>This page is an end-to-end test harness for the imperative methods of the button, toggle, choice and slider wrappers.</p>
+
+<ExampleSection Title="WaButton">
+    <div class="method-calls">
+        <MethodCall Id="button-focus" Action="() => button!.FocusAsync()" />
+        <MethodCall Id="button-blur" Action="() => button!.BlurAsync()" />
+        <MethodCall Id="button-click" Action="() => button!.ClickAsync()" />
+        <MethodCall Id="button-set-validity" Action="() => button!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="button-reset-validity" Action="() => button!.ResetValidityAsync()" />
+    </div>
+    <WaButton @ref="button" data-testid="button" OnClick="() => buttonClicks++">Press me</WaButton>
+    <p>Clicks received: <strong data-testid="button-clicks">@buttonClicks</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaCheckbox">
+    <div class="method-calls">
+        <MethodCall Id="checkbox-focus" Action="() => checkbox!.FocusAsync()" />
+        <MethodCall Id="checkbox-blur" Action="() => checkbox!.BlurAsync()" />
+        <MethodCall Id="checkbox-click" Action="() => checkbox!.ClickAsync()" />
+        <MethodCall Id="checkbox-set-validity" Action="() => checkbox!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="checkbox-reset-validity" Action="() => checkbox!.ResetValidityAsync()" />
+    </div>
+    <WaCheckbox @ref="checkbox" data-testid="checkbox" @bind-Value="checkboxChecked">Subscribe</WaCheckbox>
+    <p>Bound value: <strong data-testid="checkbox-value">@checkboxChecked</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaSwitch">
+    <div class="method-calls">
+        <MethodCall Id="switch-focus" Action="() => switchControl!.FocusAsync()" />
+        <MethodCall Id="switch-blur" Action="() => switchControl!.BlurAsync()" />
+        <MethodCall Id="switch-click" Action="() => switchControl!.ClickAsync()" />
+        <MethodCall Id="switch-set-validity" Action="() => switchControl!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="switch-reset-validity" Action="() => switchControl!.ResetValidityAsync()" />
+    </div>
+    <WaSwitch @ref="switchControl" data-testid="switch" @bind-Value="switchChecked">Notifications</WaSwitch>
+    <p>Bound value: <strong data-testid="switch-value">@switchChecked</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaRadioGroup and WaRadio">
+    <div class="method-calls">
+        <MethodCall Id="radio-group-focus" Action="() => radioGroup!.FocusAsync()" />
+        <MethodCall Id="radio-group-set-validity" Action="() => radioGroup!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="radio-group-reset-validity" Action="() => radioGroup!.ResetValidityAsync()" />
+        <MethodCall Id="radio-set-validity" Action="() => radio!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="radio-reset-validity" Action="() => radio!.ResetValidityAsync()" />
+    </div>
+    @* the second radio is checked, so the focus of the group goes to it and not to the first one *@
+    <WaRadioGroup @ref="radioGroup" data-testid="radio-group" Label="Plan" Name="methods-plan" @bind-Value="plan">
+        <WaRadio @ref="radio" data-testid="radio-alpha" Value="@AlphaPlan">Alpha</WaRadio>
+        <WaRadio data-testid="radio-beta" Value="@BetaPlan">Beta</WaRadio>
+    </WaRadioGroup>
+</ExampleSection>
+
+<ExampleSection Title="WaRating">
+    <div class="method-calls">
+        <MethodCall Id="rating-focus" Action="() => rating!.FocusAsync()" />
+        <MethodCall Id="rating-blur" Action="() => rating!.BlurAsync()" />
+        <MethodCall Id="rating-set-validity" Action="() => rating!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="rating-reset-validity" Action="() => rating!.ResetValidityAsync()" />
+    </div>
+    <WaRating @ref="rating" data-testid="rating" Label="Stars" @bind-Value="ratingValue" />
+</ExampleSection>
+
+<ExampleSection Title="WaSlider (single value)">
+    <div class="method-calls">
+        <MethodCall Id="slider-focus" Action="() => slider!.FocusAsync()" />
+        <MethodCall Id="slider-blur" Action="() => slider!.BlurAsync()" />
+        <MethodCall Id="slider-step-up" Action="() => slider!.StepUpAsync()" />
+        <MethodCall Id="slider-step-down" Action="() => slider!.StepDownAsync()" />
+        <MethodCall Id="slider-set-validity" Action="() => slider!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="slider-reset-validity" Action="() => slider!.ResetValidityAsync()" />
+    </div>
+    <WaSlider @ref="slider" data-testid="slider" Label="Volume" Step="SliderStep" @bind-Value="sliderValue" />
+</ExampleSection>
+
+<ExampleSection Title="WaRange (range mode)">
+    <div class="method-calls">
+        <MethodCall Id="range-focus" Action="() => range!.FocusAsync()" />
+        <MethodCall Id="range-blur" Action="() => range!.BlurAsync()" />
+        <MethodCall Id="range-step-up" Action="() => range!.StepUpAsync()" />
+        <MethodCall Id="range-step-down" Action="() => range!.StepDownAsync()" />
+        <MethodCall Id="range-set-validity" Action="() => range!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="range-reset-validity" Action="() => range!.ResetValidityAsync()" />
+    </div>
+    @* range mode: the focus goes to the minimum thumb, a step up moves the maximum and a step down the minimum *@
+    <WaRange @ref="range" data-testid="range" Label="Price" Range="true" Step="SliderStep" MinValue="RangeStartMin" MaxValue="RangeStartMax" @bind-Value="rangeValue" />
+</ExampleSection>
+
+<ExampleSection Title="Calls on the first render (?early=true)">
+    <p>Slider focus: <output data-testid="early-slider-focus">@earlySliderFocus</output></p>
+    <p>Checkbox click: <output data-testid="early-checkbox-click">@earlyCheckboxClick</output></p>
+</ExampleSection>
+
+@code {
+    private const string ValidityMessage = "Pick one, please";
+    private const string AlphaPlan = "alpha";
+    private const string BetaPlan = "beta";
+    private const string NotCalled = "not called";
+    private const string DoneText = "done";
+    private const string ErrorPrefix = "error: ";
+    private const decimal SliderStep = 10m;
+    private const decimal SliderStart = 50m;
+    private const decimal RangeStartMin = 20m;
+    private const decimal RangeStartMax = 60m;
+    private const decimal RatingStart = 3m;
+
+    private WaButton? button;
+    private WaCheckbox? checkbox;
+    private WaSwitch? switchControl;
+    private WaRadioGroup? radioGroup;
+    private WaRadio? radio;
+    private WaRating? rating;
+    private WaSlider? slider;
+    private WaRange? range;
+
+    private int buttonClicks;
+    private bool checkboxChecked;
+    private bool switchChecked;
+    private string? plan = BetaPlan;
+    private decimal ratingValue = RatingStart;
+    private decimal? sliderValue = SliderStart;
+    private decimal rangeValue;
+
+    private string earlySliderFocus = NotCalled;
+    private string earlyCheckboxClick = NotCalled;
+
+    // ?early=true: the page calls methods on its first render, while the autoloader still imports the element modules
+    [SupplyParameterFromQuery(Name = "early")] public bool CallOnFirstRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CallOnFirstRender)
+        {
+            // both methods use a part of the shadow DOM (the slider control, the native checkbox) that exists only
+            // after the first Lit update of the element
+            var sliderFocus = OutcomeOf(() => slider!.FocusAsync());
+            var checkboxClick = OutcomeOf(() => checkbox!.ClickAsync());
+            await Task.WhenAll(sliderFocus, checkboxClick);
+            earlySliderFocus = sliderFocus.Result;
+            earlyCheckboxClick = checkboxClick.Result;
+            StateHasChanged();
+        }
+    }
+
+    private static async Task<string> OutcomeOf(Func<Task> call)
+    {
+        try
+        {
+            await call();
+            return DoneText;
+        }
+        catch (Exception exception)
+        {
+            return ErrorPrefix + exception.Message;
+        }
+    }
+}

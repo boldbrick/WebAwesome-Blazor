@@ -1,0 +1,181 @@
+@page "/testing/methods-navigation"
+
+@* e2e harness of the wrapper method suite, group "navigation" (tools\e2e\tests\methods-navigation.spec.js, cases in
+   tools\e2e\tests\helpers\method-cases\navigation.js) - deliberately outside /components/; the sweep reaches it
+   through the method groups (tools\e2e\data\method-groups.json). Every MethodCall button calls one wrapper method from
+   .NET through the wrapper's @ref and shows the outcome. ?early=true also calls methods on the first render, while the
+   autoloader still imports the element modules. All elements of the group are free components. *@
+
+<PageTitle>Testing: Methods (navigation)</PageTitle>
+
+<h1>Methods Harness: Navigation</h1>
+<p>This page is an end-to-end test harness for the imperative methods of the navigation and disclosure wrappers.</p>
+
+<ExampleSection Title="WaTabGroup and WaTab">
+    <div class="method-calls">
+        <MethodCall Id="tab-group-show" Action="() => tabGroup!.ShowTabAsync(AdvancedPanel)" />
+        <MethodCall Id="tab-group-show-general" Action="() => tabGroup!.ShowTabAsync(GeneralPanel)" />
+        <MethodCall Id="tab-focus" Action="() => tab!.FocusAsync()" />
+        <MethodCall Id="tab-blur" Action="() => tab!.BlurAsync()" />
+    </div>
+    <WaTabGroup @ref="tabGroup" data-testid="tab-group" OnTabShow="HandleTabShow">
+        <WaTab Panel="@GeneralPanel">General</WaTab>
+        <WaTab @ref="tab" data-testid="tab-custom" Panel="@CustomPanel">Custom</WaTab>
+        <WaTab Panel="@AdvancedPanel">Advanced</WaTab>
+        <WaTabPanel Name="@GeneralPanel">The general panel.</WaTabPanel>
+        <WaTabPanel Name="@CustomPanel">The custom panel.</WaTabPanel>
+        <WaTabPanel Name="@AdvancedPanel">The advanced panel.</WaTabPanel>
+    </WaTabGroup>
+    <p>Last shown tab (OnTabShow): <strong data-testid="tab-shown">@lastShownTab</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaAccordion and WaAccordionItem">
+    <div class="method-calls">
+        <MethodCall Id="accordion-expand-all" Action="() => accordion!.ExpandAllAsync()" />
+        <MethodCall Id="accordion-collapse-all" Action="() => accordion!.CollapseAllAsync()" />
+        <MethodCall Id="accordion-item-expand" Action="() => accordionItem!.ExpandAsync()" />
+        <MethodCall Id="accordion-item-collapse" Action="() => accordionItem!.CollapseAsync()" />
+        <MethodCall Id="accordion-item-toggle" Action="() => accordionItem!.ToggleAsync()" />
+        <MethodCall Id="accordion-item-focus" Action="() => accordionItem!.FocusAsync()" />
+    </div>
+    <WaAccordion @ref="accordion" data-testid="accordion">
+        <WaAccordionItem @ref="accordionItem" data-testid="accordion-item-first" Label="First">The first answer.</WaAccordionItem>
+        <WaAccordionItem data-testid="accordion-item-second" Label="Second">The second answer.</WaAccordionItem>
+        <WaAccordionItem data-testid="accordion-item-disabled" Label="Disabled" Disabled="true">The disabled answer.</WaAccordionItem>
+    </WaAccordion>
+</ExampleSection>
+
+<ExampleSection Title="WaDetails">
+    <div class="method-calls">
+        <MethodCall Id="details-show" Action="() => details!.ShowAsync()" />
+        <MethodCall Id="details-hide" Action="() => details!.HideAsync()" />
+    </div>
+    <WaDetails @ref="details" data-testid="details" Summary="Toggle me">
+        <span data-testid="details-content">The details content.</span>
+    </WaDetails>
+</ExampleSection>
+
+<ExampleSection Title="WaStepper">
+    <div class="method-calls">
+        <MethodCall Id="stepper-go-to" Action="() => stepper!.GoToAsync(PaymentStep)" />
+        <MethodCall Id="stepper-previous" Action="() => stepper!.PreviousAsync()" />
+        <MethodCall Id="stepper-next" Action="() => stepper!.NextAsync()" />
+    </div>
+    <WaStepper @ref="stepper" data-testid="stepper" Label="Checkout">
+        <WaStep Name="@CartStep">Cart</WaStep>
+        <WaStep Name="@ShippingStep">Shipping</WaStep>
+        <WaStep Name="@PaymentStep">Payment</WaStep>
+    </WaStepper>
+</ExampleSection>
+
+<ExampleSection Title="WaCarousel">
+    <div class="method-calls">
+        <MethodCall Id="carousel-go-to" Action="() => carousel!.GoToSlideAsync(TargetSlideIndex)" />
+        <MethodCall Id="carousel-next" Action="() => carousel!.NextAsync()" />
+        <MethodCall Id="carousel-previous" Action="() => carousel!.PreviousAsync()" />
+    </div>
+    <WaCarousel @ref="carousel" data-testid="carousel" Pagination="true" Style="max-width: 480px">
+        @* foreach, not for: the child content of an item renders later and would read the loop variable after the loop *@
+        @foreach (var slide in Enumerable.Range(1, SlideCount))
+        {
+            <WaCarouselItem>Slide @slide</WaCarouselItem>
+        }
+    </WaCarousel>
+</ExampleSection>
+
+<ExampleSection Title="WaTreeItem">
+    <div class="method-calls">
+        <MethodCall Id="tree-parent-children" Function="async () => (await treeParent!.GetChildrenItemsAsync()).GetArrayLength()" />
+        <MethodCall Id="tree-leaf-children" Function="async () => (await treeLeaf!.GetChildrenItemsAsync()).GetArrayLength()" />
+    </div>
+    <WaTree data-testid="tree">
+        <WaTreeItem @ref="treeParent" data-testid="tree-parent" Expanded="true">
+            Fruits
+            <WaTreeItem @ref="treeLeaf" data-testid="tree-leaf">Apple</WaTreeItem>
+            <WaTreeItem>Banana</WaTreeItem>
+        </WaTreeItem>
+    </WaTree>
+</ExampleSection>
+
+<ExampleSection Title="WaSplitPanel">
+    <div class="method-calls">
+        <MethodCall Id="split-position" Function="async () => await splitPanel!.GetPositionAsync()" />
+        <MethodCall Id="split-position-px" Function="async () => await splitPanel!.GetPositionInPixelsAsync()" />
+    </div>
+    <WaSplitPanel @ref="splitPanel" data-testid="split-panel" Position="InitialSplitPosition" Style="width: 400px; height: 120px">
+        <StartContent><div>Start</div></StartContent>
+        <EndContent><div>End</div></EndContent>
+    </WaSplitPanel>
+</ExampleSection>
+
+<ExampleSection Title="Calls on the first render (?early=true)">
+    <p>Accordion item focus: <output data-testid="early-accordion-focus">@earlyAccordionFocus</output></p>
+    <p>Tab group show tab: <output data-testid="early-tab-show">@earlyTabShow</output></p>
+</ExampleSection>
+
+@code {
+    private const string GeneralPanel = "general";
+    private const string CustomPanel = "custom";
+    private const string AdvancedPanel = "advanced";
+    private const string CartStep = "cart";
+    private const string ShippingStep = "shipping";
+    private const string PaymentStep = "payment";
+    private const string NotCalled = "not called";
+    private const string NoTabShown = "none";
+    private const string DoneText = "done";
+    private const string ErrorPrefix = "error: ";
+    private const int SlideCount = 4;
+    private const int TargetSlideIndex = 2;
+    private const decimal InitialSplitPosition = 25;
+
+    private WaAccordion? accordion;
+    private WaAccordionItem? accordionItem;
+    private WaDetails? details;
+    private WaTabGroup? tabGroup;
+    private WaTab? tab;
+    private WaStepper? stepper;
+    private WaCarousel? carousel;
+    private WaTreeItem? treeParent;
+    private WaTreeItem? treeLeaf;
+    private WaSplitPanel? splitPanel;
+
+    private string lastShownTab = NoTabShown;
+
+    private string earlyAccordionFocus = NotCalled;
+    private string earlyTabShow = NotCalled;
+
+    // ?early=true: the page calls methods on its first render, while the autoloader still imports the element modules
+    [SupplyParameterFromQuery(Name = "early")] public bool CallOnFirstRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CallOnFirstRender)
+        {
+            var accordionFocus = OutcomeOf(() => accordionItem!.FocusAsync());
+            var tabShow = OutcomeOf(() => tabGroup!.ShowTabAsync(AdvancedPanel));
+            await Task.WhenAll(accordionFocus, tabShow);
+            earlyAccordionFocus = accordionFocus.Result;
+            earlyTabShow = tabShow.Result;
+            StateHasChanged();
+        }
+    }
+
+    private static async Task<string> OutcomeOf(Func<Task> call)
+    {
+        try
+        {
+            await call();
+            return DoneText;
+        }
+        catch (Exception exception)
+        {
+            return ErrorPrefix + exception.Message;
+        }
+    }
+
+    // shows the panel name of the last wa-tab-show, so a case sees the event of ShowTabAsync
+    private void HandleTabShow(WaTabChangeEventArgs args)
+    {
+        lastShownTab = args.Name;
+    }
+}

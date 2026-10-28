@@ -1,0 +1,284 @@
+@page "/testing/methods-pro-data"
+@using WebAwesome.Blazor.Models
+
+@* e2e harness of the wrapper method suite, group "pro-data" (tools\e2e\tests\methods-pro-data.spec.js, cases in
+   tools\e2e\tests\helpers\method-cases\pro-data.js) - deliberately outside /components/; the sweep reaches it through
+   the method groups (tools\e2e\data\method-groups.json). Every MethodCall button calls one wrapper method from .NET
+   through the wrapper's @ref and shows the outcome. ?early=true also calls methods on the first render, while the
+   autoloader still imports the element modules. wa-data-grid, wa-combobox and wa-file-input are Pro components, so the
+   tests skip on the free CDN. *@
+
+<PageTitle>Testing: Methods (Pro data)</PageTitle>
+
+<h1>Methods Harness: Pro Data</h1>
+<p>This page is an end-to-end test harness for the imperative methods of the Pro data wrappers.</p>
+
+<ExampleSection Title="WaDataGrid (client mode, a tree)">
+    <div class="method-calls">
+        <MethodCall Id="grid-autosize-column" Action="() => grid!.AutoSizeColumnAsync(NoteColumn)" />
+        <MethodCall Id="grid-autosize-columns" Action="() => grid!.AutoSizeColumnsAsync()" />
+        <MethodCall Id="grid-size-to-fit" Action="() => grid!.SizeColumnsToFitAsync()" />
+        <MethodCall Id="grid-expand-row" Action="() => grid!.ExpandRowAsync(TreeParentKey)" />
+        <MethodCall Id="grid-collapse-row" Action="() => grid!.CollapseRowAsync(TreeParentKey)" />
+        <MethodCall Id="grid-expand-all" Action="() => grid!.ExpandAllRowsAsync()" />
+        <MethodCall Id="grid-collapse-all" Action="() => grid!.CollapseAllRowsAsync()" />
+        <MethodCall Id="grid-visible-rows" Function="async () => KeysOf(await grid!.GetVisibleRowsAsync())" />
+        <MethodCall Id="grid-processed-rows" Function="async () => KeysOf(await grid!.GetProcessedRowsAsync())" />
+        <MethodCall Id="grid-hide-region" Action="() => grid!.ToggleColumnAsync(RegionColumn, false)" />
+        <MethodCall Id="grid-toggle-region" Action="() => grid!.ToggleColumnAsync(RegionColumn)" />
+        <MethodCall Id="grid-reset-columns" Action="() => grid!.ResetColumnsAsync()" />
+        <MethodCall Id="grid-pin-region" Action="() => grid!.PinColumnAsync(RegionColumn, PinLeft)" />
+        <MethodCall Id="grid-unpin-region" Action="() => grid!.PinColumnAsync(RegionColumn, null)" />
+        <MethodCall Id="grid-get-pin" Function="async () => await grid!.GetColumnPinAsync(RegionColumn)" />
+        <MethodCall Id="grid-set-state" Action="() => grid!.SetStateAsync(sortedState)" />
+        <MethodCall Id="grid-get-state" Function="async () => await grid!.GetStateAsync()" />
+        <MethodCall Id="grid-reset-state" Action="() => grid!.ResetStateAsync()" />
+        <MethodCall Id="grid-get-csv" Function="async () => await grid!.GetDataAsCsvAsync(csvOptions)" />
+        <MethodCall Id="grid-export-csv" Action="() => grid!.ExportDataAsCsvAsync(exportOptions)" />
+        <MethodCall Id="grid-copy" Function="async () => await grid!.CopySelectedRowsAsync(copyOptions)" />
+        <MethodCall Id="grid-focus" Action="() => grid!.FocusAsync()" />
+        <MethodCall Id="grid-scroll" Action="() => grid!.ScrollToIndexAsync(ScrollTargetIndex, ScrollAlignStart)" />
+        <MethodCall Id="grid-reload-client" Action="() => grid!.ReloadAsync()" />
+    </div>
+    <WaDataGrid @ref="grid" data-testid="grid" Label="Orders" RowKey="id" ChildRows="children" Selectable="WaDataGridSelectable.Multiple"
+                Resizable="true" Pinnable="true" Columns="columns" Data="orders" Style="--max-height: 260px" />
+</ExampleSection>
+
+<ExampleSection Title="WaDataGrid (server mode)">
+    <div class="method-calls">
+        <MethodCall Id="server-reload" Action="() => serverGrid!.ReloadAsync()" />
+        <MethodCall Id="server-set-state" Action="() => serverGrid!.SetStateAsync(secondPageState)" />
+        <MethodCall Id="server-reset-state" Action="() => serverGrid!.ResetStateAsync()" />
+    </div>
+    <WaDataGrid @ref="serverGrid" data-testid="server-grid" Label="Server orders" RowKey="id" Server="true" Paginate="true" PageSize="ServerPageSize"
+                Total="serverTotal" Data="serverRows" Columns="serverColumns" OnDataRequest="HandleDataRequest" />
+    <p>Requests received: <strong data-testid="server-request-count">@serverRequestCount</strong>, last page: <strong data-testid="server-last-page">@serverLastPage</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaDataGrid (disposed)">
+    <button type="button" data-testid="disposable-remove" @onclick="() => showDisposable = false">Remove the grid</button>
+    <MethodCall Id="disposed-get-state" Function="async () => await disposableGrid!.GetStateAsync()" />
+    @if (showDisposable)
+    {
+        <WaDataGrid @ref="disposableGrid" data-testid="disposable-grid" Label="Disposable" RowKey="id" Columns="serverColumns" Data="disposableRows" />
+    }
+</ExampleSection>
+
+<ExampleSection Title="WaCombobox">
+    <div class="method-calls">
+        <MethodCall Id="combobox-focus" Action="() => combobox!.FocusAsync()" />
+        <MethodCall Id="combobox-blur" Action="() => combobox!.BlurAsync()" />
+        <MethodCall Id="combobox-show" Action="() => combobox!.ShowAsync()" />
+        <MethodCall Id="combobox-hide" Action="() => combobox!.HideAsync()" />
+        <MethodCall Id="combobox-show-twice" Label="ShowAsync twice" Action="ShowComboboxTwiceAsync" />
+        <MethodCall Id="combobox-set-validity" Action="() => combobox!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="combobox-reset-validity" Action="() => combobox!.ResetValidityAsync()" />
+        <MethodCall Id="combobox-rename-and-reload" Label="Rename Banana, then ReloadAsync" Action="RenameAndReloadAsync" />
+    </div>
+    <WaCombobox @ref="combobox" data-testid="combobox" Label="Fruit" @bind-Value="fruitValue">
+        @foreach (var fruit in fruits)
+        {
+            <WaOption @key="fruit.Value" Value="@fruit.Value">@fruit.Label</WaOption>
+        }
+    </WaCombobox>
+</ExampleSection>
+
+<ExampleSection Title="WaCombobox (server mode)">
+    <MethodCall Id="server-combobox-reload" Action="() => serverCombobox!.ReloadAsync()" />
+    <WaCombobox @ref="serverCombobox" data-testid="server-combobox" Label="Server fruit" Server="true" @bind-Value="serverFruitValue" OnOptionsRequest="HandleOptionsRequest">
+        @foreach (var fruit in serverFruitOptions)
+        {
+            <WaOption @key="fruit" Value="@fruit">@fruit</WaOption>
+        }
+    </WaCombobox>
+    <p>Option requests received: <strong data-testid="server-combobox-request-count">@optionsRequestCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaFileInput">
+    <div class="method-calls">
+        <MethodCall Id="file-focus" Action="() => fileInput!.FocusAsync()" />
+        <MethodCall Id="file-blur" Action="() => fileInput!.BlurAsync()" />
+        <MethodCall Id="file-set-validity" Action="() => fileInput!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="file-reset-validity" Action="() => fileInput!.ResetValidityAsync()" />
+    </div>
+    <WaFileInput @ref="fileInput" data-testid="file-input" Label="Attachment" />
+</ExampleSection>
+
+<ExampleSection Title="Calls on the first render (?early=true)">
+    <p>Grid reload: <output data-testid="early-server-reload">@earlyServerReload</output></p>
+    <p>Combobox focus: <output data-testid="early-combobox-focus">@earlyComboboxFocus</output></p>
+    <p>File input custom validity: <output data-testid="early-file-validity">@earlyFileValidity</output></p>
+</ExampleSection>
+
+@code {
+    private const string NameColumn = "name";
+    private const string RegionColumn = "region";
+    private const string AmountColumn = "amount";
+    private const string NoteColumn = "note";
+    private const string IdColumn = "id";
+    private const string PinLeft = "left";
+    private const string ScrollAlignStart = "start";
+    private const string ValidityMessage = "Pick one, please";
+    private const string NotCalled = "not called";
+    private const string DoneText = "done";
+    private const string ErrorPrefix = "error: ";
+    private const string ExportFileName = "orders.csv";
+    private const string RenamedFruitValue = "banana";
+    private const string RenamedFruitLabel = "Chestnut";
+    private const int OrderCount = 60;
+    private const int TreeParentKey = 1;
+    private const int SecondTreeParentKey = 2;
+    private const int ChildrenPerParent = 2;
+    private const int ChildKeyFactor = 100;
+    private const int ScrollTargetIndex = 50;
+    private const int ServerPageSize = 3;
+    private const int ServerOrderCount = 7;
+    private const int SecondPage = 1;
+    private const int SortedFirstSelectedKey = 3;
+    private const int SortedSecondSelectedKey = 4;
+
+    private static readonly string[] Regions = ["North", "South", "East"];
+    private static readonly string[] serverFruits = ["Apple", "Banana", "Cherry"];
+
+    private static readonly IReadOnlyList<WaDataGridColumn> columns =
+    [
+        new() { Field = IdColumn, Label = "Id", Width = 200 },
+        new() { Field = NameColumn, Label = "Name", Width = 120 },
+        new() { Field = RegionColumn, Label = "Region", Width = 110 },
+        new() { Field = AmountColumn, Label = "Amount", Width = 100 },
+        new() { Field = NoteColumn, Label = "Note", Width = 120 },
+    ];
+
+    private static readonly IReadOnlyList<WaDataGridColumn> serverColumns =
+    [
+        new() { Field = IdColumn, Label = "Id", Width = 80 },
+        new() { Field = NameColumn, Label = "Name", Width = 160 },
+    ];
+
+    // a tree: orders 1 and 2 have two child orders each (keys 101, 102, 201, 202); the amounts fall with the id, so a
+    // descending amount sort keeps the order and an ascending one reverses it
+    private static readonly IReadOnlyList<object> orders = Enumerable.Range(1, OrderCount)
+        .Select(id => id is TreeParentKey or SecondTreeParentKey
+            ? (object)new { id, name = $"Order {id}", region = Regions[id % Regions.Length], amount = (OrderCount - id) * 10, note = $"A long note on order {id}, wider than its column", children = ChildrenOf(id) }
+            : new { id, name = $"Order {id}", region = Regions[id % Regions.Length], amount = (OrderCount - id) * 10, note = $"A long note on order {id}, wider than its column" })
+        .ToList();
+
+    private static readonly IReadOnlyList<object> disposableRows = [new { id = 1, name = "Only order" }];
+
+    // ascending amount sort (the last order first) with two rows selected
+    private static readonly WaDataGridState sortedState = new()
+    {
+        Sort = [new WaDataGridSortDescriptor { Id = AmountColumn, Desc = false }],
+        SelectedKeys = [SortedFirstSelectedKey, SortedSecondSelectedKey],
+    };
+
+    private static readonly WaDataGridState secondPageState = new() { Page = SecondPage };
+
+    private static readonly WaDataGridCsvOptions csvOptions = new() { ColumnIds = [IdColumn, NameColumn] };
+    private static readonly WaDataGridCsvExportOptions exportOptions = new() { FileName = ExportFileName, ColumnIds = [IdColumn, NameColumn] };
+    private static readonly WaDataGridCopyOptions copyOptions = new() { ColumnIds = [IdColumn, NameColumn], IncludeHeaders = false };
+
+    private sealed record Fruit(string Value, string Label);
+
+    private WaDataGrid? grid;
+    private WaDataGrid? serverGrid;
+    private WaDataGrid? disposableGrid;
+    private WaCombobox? combobox;
+    private WaCombobox? serverCombobox;
+    private WaFileInput? fileInput;
+
+    private bool showDisposable = true;
+    private int serverRequestCount;
+    private int serverLastPage = -1;
+    private int serverTotal;
+    private object[] serverRows = [];
+
+    private List<Fruit> fruits = [new("apple", "Apple"), new(RenamedFruitValue, "Banana"), new("cherry", "Cherry")];
+    private string? fruitValue;
+    private string[] serverFruitOptions = [];
+    private string? serverFruitValue;
+    private int optionsRequestCount;
+
+    private string earlyServerReload = NotCalled;
+    private string earlyComboboxFocus = NotCalled;
+    private string earlyFileValidity = NotCalled;
+
+    // ?early=true: the page calls methods on its first render, while the autoloader still imports the element modules
+    [SupplyParameterFromQuery(Name = "early")] public bool CallOnFirstRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CallOnFirstRender)
+        {
+            var reload = OutcomeOf(() => serverGrid!.ReloadAsync());
+            var comboboxFocus = OutcomeOf(() => combobox!.FocusAsync());
+            var fileValidity = OutcomeOf(() => fileInput!.SetCustomValidityAsync(ValidityMessage));
+            await Task.WhenAll(reload, comboboxFocus, fileValidity);
+            earlyServerReload = reload.Result;
+            earlyComboboxFocus = comboboxFocus.Result;
+            earlyFileValidity = fileValidity.Result;
+            StateHasChanged();
+        }
+    }
+
+    private static object[] ChildrenOf(int parent)
+    {
+        return Enumerable.Range(1, ChildrenPerParent)
+            .Select(index => (object)new { id = parent * ChildKeyFactor + index, name = $"Order {parent}.{index}", region = Regions[0], amount = index })
+            .ToArray();
+    }
+
+    // the row keys of a row list, so the output stays short
+    private static object KeysOf(IReadOnlyList<IReadOnlyDictionary<string, object>> rows)
+    {
+        return rows.Select(row => row.TryGetValue(IdColumn, out var id) ? id.ToString() : null).ToList();
+    }
+
+    private static async Task<string> OutcomeOf(Func<Task> call)
+    {
+        try
+        {
+            await call();
+            return DoneText;
+        }
+        catch (Exception exception)
+        {
+            return ErrorPrefix + exception.Message;
+        }
+    }
+
+    // server mode: answers each request with the requested page
+    private void HandleDataRequest(WaDataGridDataRequestEventArgs args)
+    {
+        serverRequestCount++;
+        serverLastPage = args.Page;
+        serverTotal = ServerOrderCount;
+        serverRows = Enumerable.Range(1, ServerOrderCount)
+            .Skip(args.Page * args.PageSize).Take(args.PageSize)
+            .Select(id => (object)new { id, name = $"Server order {id}" })
+            .ToArray();
+    }
+
+    // server mode: answers each request with the fruits that start with the query
+    private void HandleOptionsRequest(WaOptionsRequestEventArgs args)
+    {
+        optionsRequestCount++;
+        serverFruitOptions = serverFruits.Where(fruit => fruit.StartsWith(args.Query, StringComparison.OrdinalIgnoreCase)).ToArray();
+    }
+
+    // two show calls in a row, as a page that opens the combobox from two places does
+    private async Task ShowComboboxTwiceAsync()
+    {
+        await combobox!.ShowAsync();
+        await combobox!.ShowAsync();
+    }
+
+    // renames the Banana option in place (same element, new text), renders, then asks the combobox to re-run its filter
+    private async Task RenameAndReloadAsync()
+    {
+        fruits = fruits.Select(fruit => fruit.Value == RenamedFruitValue ? fruit with { Label = RenamedFruitLabel } : fruit).ToList();
+        StateHasChanged();
+        await Task.Yield();
+        await combobox!.ReloadAsync();
+    }
+}

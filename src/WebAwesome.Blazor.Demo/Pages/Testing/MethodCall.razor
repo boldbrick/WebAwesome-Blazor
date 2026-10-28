@@ -1,0 +1,72 @@
+@using System.Text.Json
+
+@* one wrapper method call of a method harness page (tools\e2e\tests\methods-<group>.spec.js): a button that runs the
+   call from .NET through the wrapper's @ref, and an output that shows its outcome - the returned value as JSON,
+   "done" for a call without a value, or "error: <message>" - with the number of completed calls in data-calls, so a
+   test waits for its own call (helpers\method-harness.js callMethod). The button is disabled until the page is
+   interactive, so a click on a prerendered page waits for the circuit. A plain button keeps the call independent of
+   any Web Awesome element. *@
+
+<span class="method-call">
+    <button type="button" data-testid="@Id" disabled="@(!RendererInfo.IsInteractive)" @onclick="RunAsync">@(Label ?? Id)</button>
+    <output data-testid="@($"{Id}-result")" data-calls="@calls" data-state="@state">@outcome</output>
+</span>
+
+@code {
+    /// <summary>
+    /// Test id of the button; the output has the test id "&lt;Id&gt;-result".
+    /// </summary>
+    [Parameter, EditorRequired] public string Id { get; set; } = default!;
+
+    /// <summary>
+    /// Text of the button; the test id when not set.
+    /// </summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>
+    /// A call without a value. Set this or <see cref="Function"/>.
+    /// </summary>
+    [Parameter] public Func<Task>? Action { get; set; }
+
+    /// <summary>
+    /// A call that returns a value, shown as JSON. Set this or <see cref="Action"/>.
+    /// </summary>
+    [Parameter] public Func<Task<object?>>? Function { get; set; }
+
+    private const string IdleState = "idle";
+    private const string RunningState = "running";
+    private const string DoneState = "done";
+    private const string DoneText = "done";
+    private const string ErrorPrefix = "error: ";
+
+    private static readonly JsonSerializerOptions SerializerOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    private int calls;
+    private string state = IdleState;
+    private string outcome = string.Empty;
+
+    private async Task RunAsync()
+    {
+        state = RunningState;
+        try
+        {
+            if (Function != null)
+            {
+                var value = await Function();
+                outcome = JsonSerializer.Serialize(value, value?.GetType() ?? typeof(object), SerializerOptions);
+            }
+            else if (Action != null)
+            {
+                await Action();
+                outcome = DoneText;
+            }
+        }
+        catch (Exception exception)
+        {
+            outcome = ErrorPrefix + exception.Message;
+        }
+
+        calls++;
+        state = DoneState;
+    }
+}

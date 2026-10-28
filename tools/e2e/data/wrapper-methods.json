@@ -1,0 +1,2027 @@
+{
+  "generatedBy": "src\\WebAwesome.Blazor.Tests\\ApiParity\\WrapperMethodManifestTests.cs",
+  "methods": [
+    {
+      "id": "WaAccordion.CollapseAllAsync",
+      "component": "WaAccordion",
+      "member": "CollapseAllAsync",
+      "tag": "wa-accordion",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "collapseAll"
+    },
+    {
+      "id": "WaAccordion.ExpandAllAsync",
+      "component": "WaAccordion",
+      "member": "ExpandAllAsync",
+      "tag": "wa-accordion",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "expandAll"
+    },
+    {
+      "id": "WaAccordionItem.CollapseAsync",
+      "component": "WaAccordionItem",
+      "member": "CollapseAsync",
+      "tag": "wa-accordion-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "collapse"
+    },
+    {
+      "id": "WaAccordionItem.ExpandAsync",
+      "component": "WaAccordionItem",
+      "member": "ExpandAsync",
+      "tag": "wa-accordion-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "expand"
+    },
+    {
+      "id": "WaAccordionItem.FocusAsync",
+      "component": "WaAccordionItem",
+      "member": "FocusAsync",
+      "tag": "wa-accordion-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaAccordionItem.ToggleAsync",
+      "component": "WaAccordionItem",
+      "member": "ToggleAsync",
+      "tag": "wa-accordion-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "toggle"
+    },
+    {
+      "id": "WaAnimatedImage.PauseAsync",
+      "component": "WaAnimatedImage",
+      "member": "PauseAsync",
+      "tag": "wa-animated-image",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "play"
+    },
+    {
+      "id": "WaAnimatedImage.PlayAsync",
+      "component": "WaAnimatedImage",
+      "member": "PlayAsync",
+      "tag": "wa-animated-image",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "play"
+    },
+    {
+      "id": "WaAnimation.CancelAsync",
+      "component": "WaAnimation",
+      "member": "CancelAsync",
+      "tag": "wa-animation",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "cancel"
+    },
+    {
+      "id": "WaAnimation.FinishAsync",
+      "component": "WaAnimation",
+      "member": "FinishAsync",
+      "tag": "wa-animation",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "finish"
+    },
+    {
+      "id": "WaAnimation.GetCurrentTimeAsync",
+      "component": "WaAnimation",
+      "member": "GetCurrentTimeAsync",
+      "tag": "wa-animation",
+      "pro": false,
+      "kind": "getProperty",
+      "js": "currentTime"
+    },
+    {
+      "id": "WaAnimation.SetCurrentTimeAsync",
+      "component": "WaAnimation",
+      "member": "SetCurrentTimeAsync",
+      "tag": "wa-animation",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "currentTime"
+    },
+    {
+      "id": "WaAnimation.SetKeyframesAsync",
+      "component": "WaAnimation",
+      "member": "SetKeyframesAsync",
+      "tag": "wa-animation",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "keyframes"
+    },
+    {
+      "id": "WaButton.BlurAsync",
+      "component": "WaButton",
+      "member": "BlurAsync",
+      "tag": "wa-button",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaButton.ClickAsync",
+      "component": "WaButton",
+      "member": "ClickAsync",
+      "tag": "wa-button",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "click"
+    },
+    {
+      "id": "WaButton.FocusAsync",
+      "component": "WaButton",
+      "member": "FocusAsync",
+      "tag": "wa-button",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaButton.ResetValidityAsync",
+      "component": "WaButton",
+      "member": "ResetValidityAsync",
+      "tag": "wa-button",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaButton.SetCustomValidityAsync",
+      "component": "WaButton",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-button",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaCarousel.GoToSlideAsync",
+      "component": "WaCarousel",
+      "member": "GoToSlideAsync",
+      "tag": "wa-carousel",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "goToSlide"
+    },
+    {
+      "id": "WaCarousel.NextAsync",
+      "component": "WaCarousel",
+      "member": "NextAsync",
+      "tag": "wa-carousel",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "next"
+    },
+    {
+      "id": "WaCarousel.PreviousAsync",
+      "component": "WaCarousel",
+      "member": "PreviousAsync",
+      "tag": "wa-carousel",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "previous"
+    },
+    {
+      "id": "WaCheckbox.BlurAsync",
+      "component": "WaCheckbox",
+      "member": "BlurAsync",
+      "tag": "wa-checkbox",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaCheckbox.ClickAsync",
+      "component": "WaCheckbox",
+      "member": "ClickAsync",
+      "tag": "wa-checkbox",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "click"
+    },
+    {
+      "id": "WaCheckbox.FocusAsync",
+      "component": "WaCheckbox",
+      "member": "FocusAsync",
+      "tag": "wa-checkbox",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaCheckbox.ResetValidityAsync",
+      "component": "WaCheckbox",
+      "member": "ResetValidityAsync",
+      "tag": "wa-checkbox",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaCheckbox.SetCustomValidityAsync",
+      "component": "WaCheckbox",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-checkbox",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaColorPicker.BlurAsync",
+      "component": "WaColorPicker",
+      "member": "BlurAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaColorPicker.FocusAsync",
+      "component": "WaColorPicker",
+      "member": "FocusAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaColorPicker.GetFormattedValueAsync",
+      "component": "WaColorPicker",
+      "member": "GetFormattedValueAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "getFormattedValue"
+    },
+    {
+      "id": "WaColorPicker.GetHexStringAsync",
+      "component": "WaColorPicker",
+      "member": "GetHexStringAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "getHexString"
+    },
+    {
+      "id": "WaColorPicker.HideAsync",
+      "component": "WaColorPicker",
+      "member": "HideAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaColorPicker.ReportValidityAsync",
+      "component": "WaColorPicker",
+      "member": "ReportValidityAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "reportValidity"
+    },
+    {
+      "id": "WaColorPicker.ResetValidityAsync",
+      "component": "WaColorPicker",
+      "member": "ResetValidityAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaColorPicker.SetCustomValidityAsync",
+      "component": "WaColorPicker",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaColorPicker.SetSwatchesAsync",
+      "component": "WaColorPicker",
+      "member": "SetSwatchesAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "swatches"
+    },
+    {
+      "id": "WaColorPicker.ShowAsync",
+      "component": "WaColorPicker",
+      "member": "ShowAsync",
+      "tag": "wa-color-picker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaCombobox.BlurAsync",
+      "component": "WaCombobox",
+      "member": "BlurAsync",
+      "tag": "wa-combobox",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaCombobox.FocusAsync",
+      "component": "WaCombobox",
+      "member": "FocusAsync",
+      "tag": "wa-combobox",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaCombobox.HideAsync",
+      "component": "WaCombobox",
+      "member": "HideAsync",
+      "tag": "wa-combobox",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaCombobox.ReloadAsync",
+      "component": "WaCombobox",
+      "member": "ReloadAsync",
+      "tag": "wa-combobox",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "reload"
+    },
+    {
+      "id": "WaCombobox.ResetValidityAsync",
+      "component": "WaCombobox",
+      "member": "ResetValidityAsync",
+      "tag": "wa-combobox",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaCombobox.SetCustomValidityAsync",
+      "component": "WaCombobox",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-combobox",
+      "pro": true,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaCombobox.ShowAsync",
+      "component": "WaCombobox",
+      "member": "ShowAsync",
+      "tag": "wa-combobox",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaCopyButton.CopyAsync",
+      "component": "WaCopyButton",
+      "member": "CopyAsync",
+      "tag": "wa-copy-button",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "click"
+    },
+    {
+      "id": "WaDataGrid.AutoSizeColumnAsync",
+      "component": "WaDataGrid",
+      "member": "AutoSizeColumnAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "autoSizeColumn"
+    },
+    {
+      "id": "WaDataGrid.AutoSizeColumnsAsync",
+      "component": "WaDataGrid",
+      "member": "AutoSizeColumnsAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "autoSizeColumns"
+    },
+    {
+      "id": "WaDataGrid.CollapseAllRowsAsync",
+      "component": "WaDataGrid",
+      "member": "CollapseAllRowsAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "collapseAllRows"
+    },
+    {
+      "id": "WaDataGrid.CollapseRowAsync",
+      "component": "WaDataGrid",
+      "member": "CollapseRowAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "collapseRow"
+    },
+    {
+      "id": "WaDataGrid.CopySelectedRowsAsync",
+      "component": "WaDataGrid",
+      "member": "CopySelectedRowsAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "copySelectedRows"
+    },
+    {
+      "id": "WaDataGrid.ExpandAllRowsAsync",
+      "component": "WaDataGrid",
+      "member": "ExpandAllRowsAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "expandAllRows"
+    },
+    {
+      "id": "WaDataGrid.ExpandRowAsync",
+      "component": "WaDataGrid",
+      "member": "ExpandRowAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "expandRow"
+    },
+    {
+      "id": "WaDataGrid.ExportDataAsCsvAsync",
+      "component": "WaDataGrid",
+      "member": "ExportDataAsCsvAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "exportDataAsCsv"
+    },
+    {
+      "id": "WaDataGrid.FocusAsync",
+      "component": "WaDataGrid",
+      "member": "FocusAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaDataGrid.GetColumnPinAsync",
+      "component": "WaDataGrid",
+      "member": "GetColumnPinAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "getColumnPin"
+    },
+    {
+      "id": "WaDataGrid.GetDataAsCsvAsync",
+      "component": "WaDataGrid",
+      "member": "GetDataAsCsvAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "getDataAsCsv"
+    },
+    {
+      "id": "WaDataGrid.GetProcessedRowsAsync",
+      "component": "WaDataGrid",
+      "member": "GetProcessedRowsAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "getProcessedRows"
+    },
+    {
+      "id": "WaDataGrid.GetStateAsync",
+      "component": "WaDataGrid",
+      "member": "GetStateAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "getState"
+    },
+    {
+      "id": "WaDataGrid.GetVisibleRowsAsync",
+      "component": "WaDataGrid",
+      "member": "GetVisibleRowsAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "getVisibleRows"
+    },
+    {
+      "id": "WaDataGrid.PinColumnAsync",
+      "component": "WaDataGrid",
+      "member": "PinColumnAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "pinColumn"
+    },
+    {
+      "id": "WaDataGrid.ReloadAsync",
+      "component": "WaDataGrid",
+      "member": "ReloadAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "reload"
+    },
+    {
+      "id": "WaDataGrid.ResetColumnsAsync",
+      "component": "WaDataGrid",
+      "member": "ResetColumnsAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "resetColumns"
+    },
+    {
+      "id": "WaDataGrid.ResetStateAsync",
+      "component": "WaDataGrid",
+      "member": "ResetStateAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "resetState"
+    },
+    {
+      "id": "WaDataGrid.ScrollToIndexAsync",
+      "component": "WaDataGrid",
+      "member": "ScrollToIndexAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "scrollToIndex"
+    },
+    {
+      "id": "WaDataGrid.SetStateAsync",
+      "component": "WaDataGrid",
+      "member": "SetStateAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "setState"
+    },
+    {
+      "id": "WaDataGrid.SizeColumnsToFitAsync",
+      "component": "WaDataGrid",
+      "member": "SizeColumnsToFitAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "sizeColumnsToFit"
+    },
+    {
+      "id": "WaDataGrid.ToggleColumnAsync",
+      "component": "WaDataGrid",
+      "member": "ToggleColumnAsync",
+      "tag": "wa-data-grid",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "toggleColumn"
+    },
+    {
+      "id": "WaDateInput.BlurAsync",
+      "component": "WaDateInput",
+      "member": "BlurAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaDateInput.ClearAsync",
+      "component": "WaDateInput",
+      "member": "ClearAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "clear"
+    },
+    {
+      "id": "WaDateInput.FocusAsync",
+      "component": "WaDateInput",
+      "member": "FocusAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaDateInput.HideAsync",
+      "component": "WaDateInput",
+      "member": "HideAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaDateInput.ResetValidityAsync",
+      "component": "WaDateInput",
+      "member": "ResetValidityAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaDateInput.SetCustomValidityAsync",
+      "component": "WaDateInput",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaDateInput.ShowAsync",
+      "component": "WaDateInput",
+      "member": "ShowAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaDatePicker.ClearAsync",
+      "component": "WaDatePicker",
+      "member": "ClearAsync",
+      "tag": "wa-date-picker",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "clear"
+    },
+    {
+      "id": "WaDatePicker.FocusAsync",
+      "component": "WaDatePicker",
+      "member": "FocusAsync",
+      "tag": "wa-date-picker",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaDatePicker.GoToDateAsync",
+      "component": "WaDatePicker",
+      "member": "GoToDateAsync",
+      "tag": "wa-date-picker",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "goToDate"
+    },
+    {
+      "id": "WaDatePicker.GoToTodayAsync",
+      "component": "WaDatePicker",
+      "member": "GoToTodayAsync",
+      "tag": "wa-date-picker",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "goToToday"
+    },
+    {
+      "id": "WaDateRangeInput.BlurAsync",
+      "component": "WaDateRangeInput",
+      "member": "BlurAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaDateRangeInput.ClearAsync",
+      "component": "WaDateRangeInput",
+      "member": "ClearAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "clear"
+    },
+    {
+      "id": "WaDateRangeInput.FocusAsync",
+      "component": "WaDateRangeInput",
+      "member": "FocusAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaDateRangeInput.HideAsync",
+      "component": "WaDateRangeInput",
+      "member": "HideAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaDateRangeInput.ResetValidityAsync",
+      "component": "WaDateRangeInput",
+      "member": "ResetValidityAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaDateRangeInput.SetCustomValidityAsync",
+      "component": "WaDateRangeInput",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaDateRangeInput.ShowAsync",
+      "component": "WaDateRangeInput",
+      "member": "ShowAsync",
+      "tag": "wa-date-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaDateRangePicker.ClearAsync",
+      "component": "WaDateRangePicker",
+      "member": "ClearAsync",
+      "tag": "wa-date-picker",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "clear"
+    },
+    {
+      "id": "WaDateRangePicker.FocusAsync",
+      "component": "WaDateRangePicker",
+      "member": "FocusAsync",
+      "tag": "wa-date-picker",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaDateRangePicker.GoToDateAsync",
+      "component": "WaDateRangePicker",
+      "member": "GoToDateAsync",
+      "tag": "wa-date-picker",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "goToDate"
+    },
+    {
+      "id": "WaDateRangePicker.GoToTodayAsync",
+      "component": "WaDateRangePicker",
+      "member": "GoToTodayAsync",
+      "tag": "wa-date-picker",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "goToToday"
+    },
+    {
+      "id": "WaDetails.HideAsync",
+      "component": "WaDetails",
+      "member": "HideAsync",
+      "tag": "wa-details",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaDetails.ShowAsync",
+      "component": "WaDetails",
+      "member": "ShowAsync",
+      "tag": "wa-details",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaDialog.FocusAsync",
+      "component": "WaDialog",
+      "member": "FocusAsync",
+      "tag": "wa-dialog",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaDialog.HideAsync",
+      "component": "WaDialog",
+      "member": "HideAsync",
+      "tag": "wa-dialog",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "open"
+    },
+    {
+      "id": "WaDialog.ShowAsync",
+      "component": "WaDialog",
+      "member": "ShowAsync",
+      "tag": "wa-dialog",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "open"
+    },
+    {
+      "id": "WaDrawer.FocusAsync",
+      "component": "WaDrawer",
+      "member": "FocusAsync",
+      "tag": "wa-drawer",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaDrawer.HideAsync",
+      "component": "WaDrawer",
+      "member": "HideAsync",
+      "tag": "wa-drawer",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "open"
+    },
+    {
+      "id": "WaDrawer.ShowAsync",
+      "component": "WaDrawer",
+      "member": "ShowAsync",
+      "tag": "wa-drawer",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "open"
+    },
+    {
+      "id": "WaDropdown.HideAsync",
+      "component": "WaDropdown",
+      "member": "HideAsync",
+      "tag": "wa-dropdown",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "open"
+    },
+    {
+      "id": "WaDropdown.ShowAsync",
+      "component": "WaDropdown",
+      "member": "ShowAsync",
+      "tag": "wa-dropdown",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "open"
+    },
+    {
+      "id": "WaDropdownItem.CloseSubmenuAsync",
+      "component": "WaDropdownItem",
+      "member": "CloseSubmenuAsync",
+      "tag": "wa-dropdown-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "closeSubmenu"
+    },
+    {
+      "id": "WaDropdownItem.OpenSubmenuAsync",
+      "component": "WaDropdownItem",
+      "member": "OpenSubmenuAsync",
+      "tag": "wa-dropdown-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "openSubmenu"
+    },
+    {
+      "id": "WaFileInput.BlurAsync",
+      "component": "WaFileInput",
+      "member": "BlurAsync",
+      "tag": "wa-file-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaFileInput.FocusAsync",
+      "component": "WaFileInput",
+      "member": "FocusAsync",
+      "tag": "wa-file-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaFileInput.ResetValidityAsync",
+      "component": "WaFileInput",
+      "member": "ResetValidityAsync",
+      "tag": "wa-file-input",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaFileInput.SetCustomValidityAsync",
+      "component": "WaFileInput",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-file-input",
+      "pro": true,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaInput.BlurAsync",
+      "component": "WaInput",
+      "member": "BlurAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaInput.FocusAsync",
+      "component": "WaInput",
+      "member": "FocusAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaInput.ResetValidityAsync",
+      "component": "WaInput",
+      "member": "ResetValidityAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaInput.SelectAsync",
+      "component": "WaInput",
+      "member": "SelectAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "select"
+    },
+    {
+      "id": "WaInput.SetCustomValidityAsync",
+      "component": "WaInput",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaInput.SetRangeTextAsync",
+      "component": "WaInput",
+      "member": "SetRangeTextAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "setRangeText",
+      "also": [
+        "getProperty:value"
+      ]
+    },
+    {
+      "id": "WaInput.SetSelectionRangeAsync",
+      "component": "WaInput",
+      "member": "SetSelectionRangeAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "setSelectionRange"
+    },
+    {
+      "id": "WaInput.ShowPickerAsync",
+      "component": "WaInput",
+      "member": "ShowPickerAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "showPicker"
+    },
+    {
+      "id": "WaInput.StepDownAsync",
+      "component": "WaInput",
+      "member": "StepDownAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stepDown"
+    },
+    {
+      "id": "WaInput.StepUpAsync",
+      "component": "WaInput",
+      "member": "StepUpAsync",
+      "tag": "wa-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stepUp"
+    },
+    {
+      "id": "WaKnownDate.BlurAsync",
+      "component": "WaKnownDate",
+      "member": "BlurAsync",
+      "tag": "wa-known-date",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaKnownDate.FocusAsync",
+      "component": "WaKnownDate",
+      "member": "FocusAsync",
+      "tag": "wa-known-date",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaKnownDate.ResetValidityAsync",
+      "component": "WaKnownDate",
+      "member": "ResetValidityAsync",
+      "tag": "wa-known-date",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaKnownDate.SetCustomValidityAsync",
+      "component": "WaKnownDate",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-known-date",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaMarkdown.RenderMarkdownAsync",
+      "component": "WaMarkdown",
+      "member": "RenderMarkdownAsync",
+      "tag": "wa-markdown",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "renderMarkdown"
+    },
+    {
+      "id": "WaMutationObserver.DisconnectAsync",
+      "component": "WaMutationObserver",
+      "member": "DisconnectAsync",
+      "tag": "wa-mutation-observer",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stopObserver"
+    },
+    {
+      "id": "WaMutationObserver.ReconnectAsync",
+      "component": "WaMutationObserver",
+      "member": "ReconnectAsync",
+      "tag": "wa-mutation-observer",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "startObserver"
+    },
+    {
+      "id": "WaNumberInput.BlurAsync",
+      "component": "WaNumberInput",
+      "member": "BlurAsync",
+      "tag": "wa-number-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaNumberInput.FocusAsync",
+      "component": "WaNumberInput",
+      "member": "FocusAsync",
+      "tag": "wa-number-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaNumberInput.ResetValidityAsync",
+      "component": "WaNumberInput",
+      "member": "ResetValidityAsync",
+      "tag": "wa-number-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaNumberInput.SelectAsync",
+      "component": "WaNumberInput",
+      "member": "SelectAsync",
+      "tag": "wa-number-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "select"
+    },
+    {
+      "id": "WaNumberInput.SetCustomValidityAsync",
+      "component": "WaNumberInput",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-number-input",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaNumberInput.StepDownAsync",
+      "component": "WaNumberInput",
+      "member": "StepDownAsync",
+      "tag": "wa-number-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stepDown"
+    },
+    {
+      "id": "WaNumberInput.StepUpAsync",
+      "component": "WaNumberInput",
+      "member": "StepUpAsync",
+      "tag": "wa-number-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stepUp"
+    },
+    {
+      "id": "WaOtpInput.BlurAsync",
+      "component": "WaOtpInput",
+      "member": "BlurAsync",
+      "tag": "wa-otp-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaOtpInput.ClearAsync",
+      "component": "WaOtpInput",
+      "member": "ClearAsync",
+      "tag": "wa-otp-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "clear"
+    },
+    {
+      "id": "WaOtpInput.FocusAsync",
+      "component": "WaOtpInput",
+      "member": "FocusAsync",
+      "tag": "wa-otp-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaOtpInput.ResetValidityAsync",
+      "component": "WaOtpInput",
+      "member": "ResetValidityAsync",
+      "tag": "wa-otp-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaOtpInput.SelectAsync",
+      "component": "WaOtpInput",
+      "member": "SelectAsync",
+      "tag": "wa-otp-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "select"
+    },
+    {
+      "id": "WaOtpInput.SetCustomValidityAsync",
+      "component": "WaOtpInput",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-otp-input",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaPage.HideNavigationAsync",
+      "component": "WaPage",
+      "member": "HideNavigationAsync",
+      "tag": "wa-page",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "hideNavigation"
+    },
+    {
+      "id": "WaPage.ShowNavigationAsync",
+      "component": "WaPage",
+      "member": "ShowNavigationAsync",
+      "tag": "wa-page",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "showNavigation"
+    },
+    {
+      "id": "WaPage.ToggleNavigationAsync",
+      "component": "WaPage",
+      "member": "ToggleNavigationAsync",
+      "tag": "wa-page",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "toggleNavigation"
+    },
+    {
+      "id": "WaPopover.HideAsync",
+      "component": "WaPopover",
+      "member": "HideAsync",
+      "tag": "wa-popover",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaPopover.ShowAsync",
+      "component": "WaPopover",
+      "member": "ShowAsync",
+      "tag": "wa-popover",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaPopup.RepositionAsync",
+      "component": "WaPopup",
+      "member": "RepositionAsync",
+      "tag": "wa-popup",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "reposition"
+    },
+    {
+      "id": "WaRadio.ResetValidityAsync",
+      "component": "WaRadio",
+      "member": "ResetValidityAsync",
+      "tag": "wa-radio",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaRadio.SetCustomValidityAsync",
+      "component": "WaRadio",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-radio",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaRadioGroup.FocusAsync",
+      "component": "WaRadioGroup",
+      "member": "FocusAsync",
+      "tag": "wa-radio-group",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaRadioGroup.ResetValidityAsync",
+      "component": "WaRadioGroup",
+      "member": "ResetValidityAsync",
+      "tag": "wa-radio-group",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaRadioGroup.SetCustomValidityAsync",
+      "component": "WaRadioGroup",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-radio-group",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaRandomContent.RandomizeAsync",
+      "component": "WaRandomContent",
+      "member": "RandomizeAsync",
+      "tag": "wa-random-content",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "randomize"
+    },
+    {
+      "id": "WaRange.BlurAsync",
+      "component": "WaRange",
+      "member": "BlurAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaRange.FocusAsync",
+      "component": "WaRange",
+      "member": "FocusAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaRange.ResetValidityAsync",
+      "component": "WaRange",
+      "member": "ResetValidityAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaRange.SetCustomValidityAsync",
+      "component": "WaRange",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaRange.StepDownAsync",
+      "component": "WaRange",
+      "member": "StepDownAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stepDown"
+    },
+    {
+      "id": "WaRange.StepUpAsync",
+      "component": "WaRange",
+      "member": "StepUpAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stepUp"
+    },
+    {
+      "id": "WaRating.BlurAsync",
+      "component": "WaRating",
+      "member": "BlurAsync",
+      "tag": "wa-rating",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaRating.FocusAsync",
+      "component": "WaRating",
+      "member": "FocusAsync",
+      "tag": "wa-rating",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaRating.ResetValidityAsync",
+      "component": "WaRating",
+      "member": "ResetValidityAsync",
+      "tag": "wa-rating",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaRating.SetCustomValidityAsync",
+      "component": "WaRating",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-rating",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaRelativeTime.UpdateAsync",
+      "component": "WaRelativeTime",
+      "member": "UpdateAsync",
+      "tag": "wa-relative-time",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "update"
+    },
+    {
+      "id": "WaResizeObserver.DisconnectAsync",
+      "component": "WaResizeObserver",
+      "member": "DisconnectAsync",
+      "tag": "wa-resize-observer",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stopObserver"
+    },
+    {
+      "id": "WaResizeObserver.ReconnectAsync",
+      "component": "WaResizeObserver",
+      "member": "ReconnectAsync",
+      "tag": "wa-resize-observer",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "startObserver"
+    },
+    {
+      "id": "WaSelect.BlurAsync",
+      "component": "WaSelect",
+      "member": "BlurAsync",
+      "tag": "wa-select",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaSelect.FocusAsync",
+      "component": "WaSelect",
+      "member": "FocusAsync",
+      "tag": "wa-select",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaSelect.HideAsync",
+      "component": "WaSelect",
+      "member": "HideAsync",
+      "tag": "wa-select",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaSelect.ResetValidityAsync",
+      "component": "WaSelect",
+      "member": "ResetValidityAsync",
+      "tag": "wa-select",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaSelect.SetCustomValidityAsync",
+      "component": "WaSelect",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-select",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaSelect.ShowAsync",
+      "component": "WaSelect",
+      "member": "ShowAsync",
+      "tag": "wa-select",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaSlider.BlurAsync",
+      "component": "WaSlider",
+      "member": "BlurAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaSlider.FocusAsync",
+      "component": "WaSlider",
+      "member": "FocusAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaSlider.ResetValidityAsync",
+      "component": "WaSlider",
+      "member": "ResetValidityAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaSlider.SetCustomValidityAsync",
+      "component": "WaSlider",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaSlider.StepDownAsync",
+      "component": "WaSlider",
+      "member": "StepDownAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stepDown"
+    },
+    {
+      "id": "WaSlider.StepUpAsync",
+      "component": "WaSlider",
+      "member": "StepUpAsync",
+      "tag": "wa-slider",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "stepUp"
+    },
+    {
+      "id": "WaSplitPanel.GetPositionAsync",
+      "component": "WaSplitPanel",
+      "member": "GetPositionAsync",
+      "tag": "wa-split-panel",
+      "pro": false,
+      "kind": "getProperty",
+      "js": "position"
+    },
+    {
+      "id": "WaSplitPanel.GetPositionInPixelsAsync",
+      "component": "WaSplitPanel",
+      "member": "GetPositionInPixelsAsync",
+      "tag": "wa-split-panel",
+      "pro": false,
+      "kind": "getProperty",
+      "js": "positionInPixels"
+    },
+    {
+      "id": "WaStepper.GoToAsync",
+      "component": "WaStepper",
+      "member": "GoToAsync",
+      "tag": "wa-stepper",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "goTo"
+    },
+    {
+      "id": "WaStepper.NextAsync",
+      "component": "WaStepper",
+      "member": "NextAsync",
+      "tag": "wa-stepper",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "next"
+    },
+    {
+      "id": "WaStepper.PreviousAsync",
+      "component": "WaStepper",
+      "member": "PreviousAsync",
+      "tag": "wa-stepper",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "previous"
+    },
+    {
+      "id": "WaSwitch.BlurAsync",
+      "component": "WaSwitch",
+      "member": "BlurAsync",
+      "tag": "wa-switch",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaSwitch.ClickAsync",
+      "component": "WaSwitch",
+      "member": "ClickAsync",
+      "tag": "wa-switch",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "click"
+    },
+    {
+      "id": "WaSwitch.FocusAsync",
+      "component": "WaSwitch",
+      "member": "FocusAsync",
+      "tag": "wa-switch",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaSwitch.ResetValidityAsync",
+      "component": "WaSwitch",
+      "member": "ResetValidityAsync",
+      "tag": "wa-switch",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaSwitch.SetCustomValidityAsync",
+      "component": "WaSwitch",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-switch",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaTab.BlurAsync",
+      "component": "WaTab",
+      "member": "BlurAsync",
+      "tag": "wa-tab",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaTab.FocusAsync",
+      "component": "WaTab",
+      "member": "FocusAsync",
+      "tag": "wa-tab",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaTabGroup.ShowTabAsync",
+      "component": "WaTabGroup",
+      "member": "ShowTabAsync",
+      "tag": "wa-tab-group",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "active"
+    },
+    {
+      "id": "WaTagInput.BlurAsync",
+      "component": "WaTagInput",
+      "member": "BlurAsync",
+      "tag": "wa-tag-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaTagInput.FocusAsync",
+      "component": "WaTagInput",
+      "member": "FocusAsync",
+      "tag": "wa-tag-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaTagInput.ResetValidityAsync",
+      "component": "WaTagInput",
+      "member": "ResetValidityAsync",
+      "tag": "wa-tag-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaTagInput.SetCustomValidityAsync",
+      "component": "WaTagInput",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-tag-input",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaTextArea.BlurAsync",
+      "component": "WaTextArea",
+      "member": "BlurAsync",
+      "tag": "wa-textarea",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaTextArea.FocusAsync",
+      "component": "WaTextArea",
+      "member": "FocusAsync",
+      "tag": "wa-textarea",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaTextArea.ResetValidityAsync",
+      "component": "WaTextArea",
+      "member": "ResetValidityAsync",
+      "tag": "wa-textarea",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaTextArea.ScrollPositionAsync",
+      "component": "WaTextArea",
+      "member": "ScrollPositionAsync",
+      "tag": "wa-textarea",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "scrollPosition"
+    },
+    {
+      "id": "WaTextArea.SelectAsync",
+      "component": "WaTextArea",
+      "member": "SelectAsync",
+      "tag": "wa-textarea",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "select"
+    },
+    {
+      "id": "WaTextArea.SetCustomValidityAsync",
+      "component": "WaTextArea",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-textarea",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaTextArea.SetRangeTextAsync",
+      "component": "WaTextArea",
+      "member": "SetRangeTextAsync",
+      "tag": "wa-textarea",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "setRangeText",
+      "also": [
+        "getProperty:value"
+      ]
+    },
+    {
+      "id": "WaTextArea.SetSelectionRangeAsync",
+      "component": "WaTextArea",
+      "member": "SetSelectionRangeAsync",
+      "tag": "wa-textarea",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "setSelectionRange"
+    },
+    {
+      "id": "WaTimeInput.BlurAsync",
+      "component": "WaTimeInput",
+      "member": "BlurAsync",
+      "tag": "wa-time-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaTimeInput.FocusAsync",
+      "component": "WaTimeInput",
+      "member": "FocusAsync",
+      "tag": "wa-time-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaTimeInput.HideAsync",
+      "component": "WaTimeInput",
+      "member": "HideAsync",
+      "tag": "wa-time-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaTimeInput.ResetValidityAsync",
+      "component": "WaTimeInput",
+      "member": "ResetValidityAsync",
+      "tag": "wa-time-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaTimeInput.SetCustomValidityAsync",
+      "component": "WaTimeInput",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-time-input",
+      "pro": false,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaTimeInput.ShowAsync",
+      "component": "WaTimeInput",
+      "member": "ShowAsync",
+      "tag": "wa-time-input",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaToast.CreateAsync",
+      "component": "WaToast",
+      "member": "CreateAsync",
+      "tag": "wa-toast",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "create"
+    },
+    {
+      "id": "WaToastItem.HideAsync",
+      "component": "WaToastItem",
+      "member": "HideAsync",
+      "tag": "wa-toast-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaTooltip.HideAsync",
+      "component": "WaTooltip",
+      "member": "HideAsync",
+      "tag": "wa-tooltip",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "hide"
+    },
+    {
+      "id": "WaTooltip.ShowAsync",
+      "component": "WaTooltip",
+      "member": "ShowAsync",
+      "tag": "wa-tooltip",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "show"
+    },
+    {
+      "id": "WaTreeItem.GetChildrenItemsAsync",
+      "component": "WaTreeItem",
+      "member": "GetChildrenItemsAsync",
+      "tag": "wa-tree-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "getChildrenItems"
+    },
+    {
+      "id": "WaVideo.ExitFullscreenAsync",
+      "component": "WaVideo",
+      "member": "ExitFullscreenAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "exitFullscreen"
+    },
+    {
+      "id": "WaVideo.GetStateAsync",
+      "component": "WaVideo",
+      "member": "GetStateAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "getState"
+    },
+    {
+      "id": "WaVideo.PauseAsync",
+      "component": "WaVideo",
+      "member": "PauseAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "pause"
+    },
+    {
+      "id": "WaVideo.PlayAsync",
+      "component": "WaVideo",
+      "member": "PlayAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "play"
+    },
+    {
+      "id": "WaVideo.RequestFullscreenAsync",
+      "component": "WaVideo",
+      "member": "RequestFullscreenAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "requestFullscreen"
+    },
+    {
+      "id": "WaVideo.SeekAsync",
+      "component": "WaVideo",
+      "member": "SeekAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "seek"
+    },
+    {
+      "id": "WaVideo.SetPlaybackRateAsync",
+      "component": "WaVideo",
+      "member": "SetPlaybackRateAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "setPlaybackRate"
+    },
+    {
+      "id": "WaVideo.SetVolumeAsync",
+      "component": "WaVideo",
+      "member": "SetVolumeAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "setVolume"
+    },
+    {
+      "id": "WaVideo.ToggleMuteAsync",
+      "component": "WaVideo",
+      "member": "ToggleMuteAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "toggleMute"
+    },
+    {
+      "id": "WaVideo.TogglePlayAsync",
+      "component": "WaVideo",
+      "member": "TogglePlayAsync",
+      "tag": "wa-video",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "togglePlay"
+    },
+    {
+      "id": "WaVideoPlaylist.GoToAsync",
+      "component": "WaVideoPlaylist",
+      "member": "GoToAsync",
+      "tag": "wa-video-playlist",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "goTo"
+    },
+    {
+      "id": "WaVideoPlaylist.NextAsync",
+      "component": "WaVideoPlaylist",
+      "member": "NextAsync",
+      "tag": "wa-video-playlist",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "next"
+    },
+    {
+      "id": "WaVideoPlaylist.PreviousAsync",
+      "component": "WaVideoPlaylist",
+      "member": "PreviousAsync",
+      "tag": "wa-video-playlist",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "previous"
+    },
+    {
+      "id": "WaZoomableFrame.ResetAsync",
+      "component": "WaZoomableFrame",
+      "member": "ResetAsync",
+      "tag": "wa-zoomable-frame",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "zoom"
+    },
+    {
+      "id": "WaZoomableFrame.SetZoomAsync",
+      "component": "WaZoomableFrame",
+      "member": "SetZoomAsync",
+      "tag": "wa-zoomable-frame",
+      "pro": false,
+      "kind": "setProperty",
+      "js": "zoom"
+    },
+    {
+      "id": "WaZoomableFrame.ZoomInAsync",
+      "component": "WaZoomableFrame",
+      "member": "ZoomInAsync",
+      "tag": "wa-zoomable-frame",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "zoomIn"
+    },
+    {
+      "id": "WaZoomableFrame.ZoomOutAsync",
+      "component": "WaZoomableFrame",
+      "member": "ZoomOutAsync",
+      "tag": "wa-zoomable-frame",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "zoomOut"
+    }
+  ]
+}

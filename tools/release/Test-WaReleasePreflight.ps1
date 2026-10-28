@@ -14,7 +14,10 @@
 # checks that the server answering there is the demo process it started, and runs Playwright with
 # CI=1 and --forbid-only. It then reads the JSON report and fails on any failed test, on any skip
 # not listed for the asset mode in tools\e2e\data\expected-skips.json, on a listed skip that ran or
-# no longer exists, and on fewer tests than the mode's minimumTests.
+# no longer exists, on fewer tests than the mode's minimumTests, and when a coverage spec
+# (event-coverage.spec.js, method-coverage.spec.js) did not run. Both passes run the whole suite, so the
+# wrapper method suite (methods-*.spec.js) runs in each: its free components in the free pass, its Pro
+# components in the Pro pass.
 # A second pass runs against a self-hosted Pro dist (the extracted Pro package root or its dist-cdn
 # folder): it generates the ignored asset override with tools\demo\Set-WaProAssets.ps1, runs the "pro"
 # mode, and clears the override again. By default it uses the local Pro build of the bound Web Awesome
@@ -103,6 +106,14 @@ $coverageExemptions = Get-Content tools\e2e\data\event-coverage-exemptions.json 
 $e2eDefects = @($coverageExemptions.exemptions | Where-Object { $_.knownDefect -eq $true } | ForEach-Object { $_.key })
 Write-Host ("Known defects (owner decisions pending): {0} parity-config.json knownDefects entries; {1} e2e event-coverage exemptions ({2})" -f `
     $parityDefects, $e2eDefects.Count, ($e2eDefects -join ', '))
+
+# the wrapper method suite (tools\e2e\tests\methods-*.spec.js): its known-defect exemptions and the groups whose cases
+# are still pending; the coverage spec itself runs in every e2e pass and fails on an uncovered method
+$methodExemptions = Get-Content tools\e2e\data\method-coverage-exemptions.json -Raw | ConvertFrom-Json
+$methodDefects = @($methodExemptions.exemptions | Where-Object { $_.knownDefect -eq $true } | ForEach-Object { '{0} ({1})' -f $_.key, $_.defect })
+$pendingGroups = @($methodExemptions.exemptions | Where-Object { $_.pendingGroup } | ForEach-Object { $_.pendingGroup })
+Write-Host ("Wrapper method suite: {0} known-defect exemptions ({1}); {2} pending groups ({3})" -f `
+    $methodDefects.Count, ($methodDefects -join ', '), $pendingGroups.Count, ($pendingGroups -join ', '))
 
 $surfaceHead = (Get-Content src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json -TotalCount 5) -join ' '
 $surfaceVersion = ''
@@ -367,6 +378,9 @@ function Get-ReportTests($suite, [string[]]$titles) {
     foreach ($child in @($suite.suites | Where-Object { $_ })) { Get-ReportTests $child $path }
 }
 
+# the specs every e2e pass must contain: the event and method coverage checks
+$requiredE2eSpecs = @('event-coverage.spec.js', 'method-coverage.spec.js')
+
 # checks one pass's report against the mode's policy; returns the problems (empty = pass)
 function Test-E2eReport($report, $policy) {
     $problems = @()
@@ -395,6 +409,11 @@ function Test-E2eReport($report, $policy) {
     foreach ($test in $tests) { $keys[$test.Key] = $true }
     foreach ($key in $expected.Keys) {
         if (-not $keys.ContainsKey($key)) { $problems += ("stale expected skip, no such test: {0}" -f $key) }
+    }
+
+    # the coverage specs must have run in every pass: without them a new wrapper callback or method goes unchecked
+    foreach ($required in $requiredE2eSpecs) {
+        if (-not ($tests | Where-Object { $_.Key.StartsWith($required + ' > ') })) { $problems += ("required spec did not run: {0}" -f $required) }
     }
 
     if ($tests.Count -lt [int]$policy.minimumTests) {

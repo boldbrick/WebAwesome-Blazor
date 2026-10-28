@@ -23,7 +23,10 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   comparisons; every dialog, drawer, popover or menu an interaction opens is closed again. Links are never followed,
   and a button next to a Pro component that did not upgrade (the free CDN) is passed over, because its handler calls
   the missing element's methods; the Pro pass drives it. The page clock (`page.clock`, installed before the app
-  starts) jumps 6 s after each interaction, twice, so toasts, delays and autoplay finish without real waiting. After
+  starts) jumps 6 s after each interaction, twice, so toasts, delays and autoplay finish without real waiting. The clock comes
+  from `tests\helpers\page-clock.js`: on Demo.Server the jumps also fired the 30 s server timeout of the SignalR client
+  ("Server timeout elapsed without receiving a message from the server") and closed the circuit, so the helper gives
+  that one timer a delay no test reaches. After
   each interaction the page must be healthy: no error UI, no page error, no console problem (the sweep's filter,
   `tests\helpers\page-health.js`), no overlay left open, no navigation away. Pages whose interactions legitimately
   leave the page list the element in `ROUTE_EXCLUSIONS` with the reason (none today). Each page has a 30 s
@@ -144,6 +147,8 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   bUnit test until the manifest is refreshed, then this spec until it is covered or exempted. An
   exemption for a known defect is flagged `"knownDefect": true` (with a reason starting `KNOWN DEFECT`)
   and needs a `KNOWN_DEFECT_CASES` case; the spec prints how many there are.
+- `tests\methods-<group>.spec.js` and `tests\method-coverage.spec.js` — the wrapper method suite, see
+  [Wrapper method suite](#wrapper-method-suite).
 - Pro components (combobox, date input/picker, file input, video, video playlist, data grid) upgrade
   only with a Pro asset override; their tests skip visibly on the free CDN (`skipUnlessProUpgrades`).
   The skip decides on the outcome, not on a grace period: the module next to the page's Web Awesome
@@ -195,6 +200,52 @@ dotnet run --project src\WebAwesome.Blazor.Demo.Server --no-build --launch-profi
 cd tools\e2e
 $env:DEMO_BASE_URL = 'http://localhost:5100'; npm test
 ```
+
+## Wrapper method suite
+
+The method suite calls every public wrapper method that reaches the browser (`InvokeMethodAsync`, the property
+calls, `SetCustomValidityAsync`, the function members) from .NET, through the wrapper's `@ref`, on a real upgraded
+element, and asserts the effect: the element state, the DOM, the returned value or the event. A call that only does
+not throw proves nothing.
+
+- **Manifest.** The bUnit test `WrapperMethodManifestTests` runs each public Task-returning method of each wrapper
+  once against a recording interop module and writes `data\wrapper-methods.json` (id `Wrapper.Method`, tag, Pro flag,
+  module function `kind`, element member `js`). It fails when the file is stale: copy the received file over it.
+- **Groups.** `data\method-groups.json` puts every wrapper with methods into one group. Each group has one harness
+  page (`/testing/methods-<group>`, `src\WebAwesome.Blazor.Demo\Pages\Testing\Methods<Group>Harness.razor`), one spec
+  (`tests\methods-<group>.spec.js`) and one case module (`tests\helpers\method-cases\<group>.js`). The groups are
+  `forms-text`, `forms-choice`, `pickers`, `overlays`, `navigation`, `media-content` and `pro-data`. A group's route
+  joins `HARNESS_ROUTES` (and the passive sweep) when its case module exists.
+- **Harness.** A `MethodCall` (`Pages\Testing\MethodCall.razor`) is a button that runs one call and an output
+  `<id>-result` with the returned value as JSON, `done` or `error: <message>`, and `data-calls`. The button is disabled
+  until the page is interactive, so a prerendered page works too. `helpers\method-harness.js` has `callMethod` and
+  `callOk`; `{ quiet: true }` triggers the button with a click event only, so the focus and an open popup stay where
+  they are (use it for focus, blur, show and hide calls; use the real click for a call that needs a user gesture).
+  Before a case acts, the runner waits until the page is interactive (a `MethodCall` button is enabled): the first
+  interactive render of a prerendered page replaces its elements, so a listener or a state that a case gives an
+  element before that render is lost.
+- **User activation.** Every Playwright evaluation (also `dispatchEvent` and the polling of `expect`) runs with a user
+  gesture, so the page has a transient user activation after it (5 s in Chromium). A quiet call is therefore not free
+  of a user activation. To prove that a call fails without one, let the page click the button itself once
+  `navigator.userActivation.isActive` is false, and wait with one `page.waitForFunction` (see
+  `callWithoutUserActivation` in `method-cases\forms-text.js`).
+- **Coverage.** `method-coverage.spec.js` (no browser) requires every manifest method to be proven by a case
+  (`methods` of a case), by an external proof (`external`: a spec and a literal piece of it), or exempted with a
+  reason in `data\method-coverage-exemptions.json`. A case proves only methods of its own group.
+- **Known defects.** A case for a known defect asserts the correct behavior and runs as an expected failure
+  (`knownDefects` of the module, with `defect`, for example `WAB-64 F8`); it turns red when the defect is fixed, and
+  the mark must go. `E2E_SHOW_DEFECTS=1` runs these cases as normal tests, to see why they fail. A method without any
+  working path is exempted with `"knownDefect": true`, a reason starting with `KNOWN DEFECT`, a `defect`, and a
+  known-defect case that names the exemption key.
+- **Pending groups.** An exemption with `"pendingGroup"` stands for a group that has no case module yet; the
+  coverage spec prints it as `pending group <name>` and fails when the module exists and the exemption is still there.
+- **Render modes.** The suite runs against both hosts. Demo.Server also runs with prerendering on:
+  `$env:Demo__Prerender = 'true'` before `dotnet run` (default off).
+
+To add a case: add a `MethodCall` for the call to the group's harness page, then an entry to `cases` of the group's
+module with the `methods` it proves, the `tags` it waits for (`pro: true` for a Pro element) and a `run` that calls
+`callOk` and asserts the effect. A Pro case skips on the free CDN, so add its key to the `free-cdn` mode of
+`data\expected-skips.json` and raise `minimumTests`. To exempt a method, add it to an exemption with the reason.
 
 ## WA Inspector tests
 
