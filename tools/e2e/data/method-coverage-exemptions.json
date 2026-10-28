@@ -2,40 +2,41 @@
   "description": "Methods of tools\\e2e\\data\\wrapper-methods.json that no browser case proves, each with the reason; checked by tools\\e2e\\tests\\method-coverage.spec.js (every method must be proven by a case of tests\\helpers\\method-cases\\<group>.js, by an external proof, or listed here - never both - and every entry must still name an existing method). A known defect is flagged \"knownDefect\": true, its reason starts with KNOWN DEFECT and \"defect\" names the ticket and finding (for example \"WAB-64 F1\"); each such entry needs an expected-failure case (knownDefects of a case module) that references its key. A temporary entry with \"pendingGroup\" exempts every unproven method of that group until the group's case module exists; the spec prints it as \"pending group <name>\", and the group's agent removes it together with adding the module.",
   "exemptions": [
     {
-      "key": "pending-group-forms-text",
-      "pendingGroup": "forms-text",
-      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
-      "methods": []
+      "key": "pickers-color-hex-string",
+      "knownDefect": true,
+      "defect": "WAB-64 F1",
+      "reason": "KNOWN DEFECT: GetHexStringAsync calls getHexString(hue, saturation, brightness, alpha) without arguments, so the element returns \"\" for every value; there is no working path to prove. The expected-failure case 'WaColorPicker.GetHexStringAsync returns the value as a hex string' (method-cases\\pickers.js) asserts the correct value.",
+      "methods": [
+        "WaColorPicker.GetHexStringAsync"
+      ]
     },
     {
-      "key": "pending-group-forms-choice",
-      "pendingGroup": "forms-choice",
-      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
-      "methods": []
+      "key": "media-content-relative-time-update",
+      "knownDefect": true,
+      "defect": "WAB-64 F4",
+      "reason": "KNOWN DEFECT: UpdateAsync calls the Lit lifecycle update() of wa-relative-time directly; it skips willUpdate, where the element computes its phrase, so the element renders the old phrase again and there is no working path to prove. The expected-failure case 'WaRelativeTime.UpdateAsync shows the phrase for the current time' (method-cases\\media-content.js) asserts the correct phrase after the page clock moves an hour on.",
+      "methods": [
+        "WaRelativeTime.UpdateAsync"
+      ]
     },
     {
-      "key": "pending-group-pickers",
-      "pendingGroup": "pickers",
-      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
-      "methods": []
+      "key": "media-content-copy-button-copy",
+      "knownDefect": true,
+      "defect": "WAB-64 F2",
+      "reason": "KNOWN DEFECT: CopyAsync calls the native click() on the wa-copy-button host; the copy handler listens on an element inside the shadow root, which a click on the host does not reach, so the call completes and copies nothing (a real click on the element copies the value with the same clipboard permissions). There is no working path to prove. The expected-failure case 'WaCopyButton.CopyAsync copies the value and reports it' (method-cases\\media-content.js) asserts the copied value and the OnCopy event.",
+      "methods": [
+        "WaCopyButton.CopyAsync"
+      ]
     },
     {
-      "key": "pending-group-overlays",
-      "pendingGroup": "overlays",
-      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
-      "methods": []
-    },
-    {
-      "key": "pending-group-navigation",
-      "pendingGroup": "navigation",
-      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
-      "methods": []
-    },
-    {
-      "key": "pending-group-media-content",
-      "pendingGroup": "media-content",
-      "reason": "PENDING: the group's cases are not written yet (WAB-65 group phase).",
-      "methods": []
+      "key": "overlays-dialog-drawer-focus",
+      "knownDefect": true,
+      "defect": "WAB-64 F3",
+      "reason": "KNOWN DEFECT: FocusAsync calls the native focus() of the wa-dialog and wa-drawer host; the elements have no focus() of their own, no delegatesFocus and no tabindex on the host, so the call completes and the focus stays on the document body. There is no working path to prove. The expected-failure cases 'WaDialog.FocusAsync moves the focus into the open dialog' and 'WaDrawer.FocusAsync moves the focus into the open drawer' (method-cases\\overlays.js) assert the focus inside the open element.",
+      "methods": [
+        "WaDialog.FocusAsync",
+        "WaDrawer.FocusAsync"
+      ]
     }
   ]
 }

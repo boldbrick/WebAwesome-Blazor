@@ -75,6 +75,9 @@ const SHOW_DEFECTS_VARIABLE = 'E2E_SHOW_DEFECTS';
 const DONE_TEXT = 'done';
 const ERROR_PREFIX = 'error: ';
 
+// the button of a MethodCall, disabled until the page is interactive
+const INTERACTIVE_CALL_SELECTOR = '.method-call > button';
+
 /**
  * Reads a JSON file of tools\e2e\data.
  *
@@ -159,7 +162,11 @@ async function openMethodHarness(page, route, c) {
   await page.goto(route);
   await page.waitForSelector('.demo-shell', { timeout: WA_READY_TIMEOUT_MS });
   if (c.pro) await skipUnlessProUpgrades(page, c.tags);
-  if (!c.noReadyWait) await waitForWaReady(page, c.tags);
+  if (c.noReadyWait) return;
+  // the first interactive render of a prerendered page replaces its elements, which drops a listener or a state a
+  // case gives an element before; the MethodCall buttons are enabled from that render on
+  await expect(page.locator(INTERACTIVE_CALL_SELECTOR).first(), 'the page is interactive').toBeEnabled({ timeout: WA_READY_TIMEOUT_MS });
+  await waitForWaReady(page, c.tags);
 }
 
 /**

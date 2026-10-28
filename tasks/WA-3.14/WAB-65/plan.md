@@ -151,3 +151,71 @@ integration agent runs the specs and fixes what the browser shows. PowerShell on
   running.
 - Interaction sweep on Demo.Server: the "Server timeout elapsed" failures came from the fake page clock firing the
   SignalR client's server timeout timer; `helpers\page-clock.js` holds that one timer. No library change.
+
+## Result
+
+### Counts
+
+- Manifest: 224 methods of 54 wrappers. 219 are proven by browser cases; 5 are exempted, all as known defects with
+  no working path (F1 `WaColorPicker.GetHexStringAsync`, F2 `WaCopyButton.CopyAsync`, F3 `WaDialog.FocusAsync` and
+  `WaDrawer.FocusAsync`, F4 `WaRelativeTime.UpdateAsync`). No pending group is left.
+- Method suite: 76 cases and 15 known-defect cases (91 tests) in 7 group specs, plus `method-coverage.spec.js`.
+  Per group (cases + known defects): forms-text 12 + 3, forms-choice 9 + 0, pickers 10 + 2, overlays 12 + 3,
+  navigation 10 + 2, media-content 11 + 2, pro-data 12 + 3.
+- With the Pro 3.14.0 dist, all 92 tests pass on the WASM host, on Demo.Server and on Demo.Server with
+  `Demo__Prerender=true`, each three times (`--repeat-each=3`: 276 of 276 per mode, no flaky test). With
+  `E2E_SHOW_DEFECTS=1`, the 15 known-defect cases fail on all three for the reasons in the table below.
+- Free CDN: the 7 Pro cases of pickers and media-content are expected skips. `minimumTests` is 563 in both modes (the
+  real total of `npx playwright test --list`).
+- `dotnet test src\WebAwesome.slnx`: 1408 + 191 tests pass on net9.0 and net10.0.
+- Release preflight (`tools\release\Test-WaReleasePreflight.ps1`, full, with builds): 24 of 25 gates pass. The free-CDN
+  pass runs 563 tests (454 passed, 109 expected skips, 0 flaky); the Pro pass runs 563 tests (563 passed, 0 skips, 0
+  flaky). Only `workspace-clean` fails, because of the pending changes of this check-in.
+
+### Verdicts
+
+| Item | Verdict | Evidence |
+|---|---|---|
+| F1 `WaColorPicker.GetHexStringAsync` | confirmed | returns `""` for `#ff0000` (expected `/^#ff0000(ff)?$/i`) |
+| F2 `WaCopyButton.CopyAsync` | confirmed | the call completes, the clipboard keeps "nothing copied yet", `OnCopy` count stays 0; a real click on the element copies the value with the same permissions |
+| F3 `WaDialog/WaDrawer.FocusAsync` | confirmed | the call completes on the open element; `document.activeElement` stays `BODY` (host `tabIndex` -1, no own `focus()`, no `delegatesFocus`) |
+| F4 `WaRelativeTime.UpdateAsync` | confirmed | an hour after the start the phrase stays "10 minutes ago" (expected "1 hour ago") |
+| F5 `WaTreeItem.GetChildrenItemsAsync` | confirmed | parent: "Converting circular structure to JSON ... property 'renderOptions' ... property 'host' closes the circle"; a leaf returns 0 items (working path) |
+| F6 `WaDataGrid.ReloadAsync` | as documented | client mode: completes and changes nothing; server mode sends a new `wa-data-request` (lead phase) |
+| F7 `WaCombobox.ReloadAsync` | confirmed | the local filter is not re-run (Chestnut missing) (lead phase) |
+| F8 show with a cancelled `wa-show` | confirmed | `WaDetails`, `WaPopover`, `WaTimeInput`, `WaCombobox`: the call never completes (`data-calls` stays 0 after 5 s); dialog, drawer and dropdown complete and stay closed |
+| F9 `WaSelect/WaCombobox.ShowAsync` | WA side | a second show closes the open control; asserted as current WA behavior |
+| F10 `WaTextArea.ScrollPositionAsync` | WA side | after a set to 40, the get returns `{ top: 40, left: 40 }`; asserted as current WA behavior |
+| F11 user gesture | confirmed, works with a real click | `showPicker()` without an activation: "HTMLInputElement::showPicker() requires a user gesture."; with a real click it completes on both hosts; `WaVideo` fullscreen enters and exits in headless Chromium from a real click (no exemption); `CopySelectedRowsAsync` works with the clipboard permission |
+| F12 native preconditions | confirmed (documented precondition) | `StepUpAsync` on a text input fails with the native `stepUp` error, which reaches .NET |
+| F13 `WaToast.CreateAsync`, `WaToastItem.HideAsync` | refuted | the created item shows, Blazor still adds and removes its own items, and the hidden item is removed by the model, without a Blazor error, in all three modes |
+| L1 `SetCustomValidityAsync` before the definition | confirmed (lead phase) | `WaFileInput`: "Element wa-file-input does not implement WebAwesomeFormControl interface"; `setProperty` before the definition is not affected (see L4) |
+| L2 `WaTextArea.ScrollPositionAsync(position)` | confirmed | the set call returns `null`, although the doc promises the resulting position |
+| L3 `WaInput/WaNumberInput.StepUpAsync/StepDownAsync` | confirmed | the element value goes to 6, the bound .NET value stays "4" (no input event, the wrapper does not read the value back as `SetRangeTextAsync` does) |
+| L4 call before the first Lit update | refuted (no finding) | with the element modules delayed 4 s, the first render calls at 1.3-1.5 s, the definitions come at 5.5-5.8 s, and every call completes 15-40 ms after its definition with the correct effect (focus, step, zoom, play, color value `rgb(255, 0, 0)`); `customElements.define` upgrades the elements and queues their first update before `whenDefined` resolves. `setProperty` before the definition (dialog `open`, tab group `active`) is kept by the upgrade |
+
+### Other checks
+
+- `wa-button` (MirrorValidator) and `wa-radio` report `customError` after `SetCustomValidityAsync`.
+- `WaColorPicker.ReportValidityAsync`: a valid picker stays closed; an invalid one opens its panel and reports false;
+  the hide closes it again.
+- `WaMarkdown` keeps the old heading until `RenderMarkdownAsync`; `WaAnimation.FinishAsync` on a paused animation fires
+  `wa-finish` (`OnFinish`) and leaves the current time at 10000 ms.
+- WA side, recheck on upgrade: `WaOtpInput.SelectAsync` on a field without the focus selects only the last character
+  (the native `select()` focuses the hidden input, and the element's focus handling moves the cursor); on a field with
+  the focus it selects the whole code. Asserted as current WA behavior.
+
+### Test fixes of the integration phase
+
+- `method-harness.js` `openMethodHarness`: waits until the page is interactive before a case acts. On a prerendered
+  page the first interactive render replaced the elements and dropped the `wa-show` listener of the F8 cases, so two
+  expected failures passed for the wrong reason.
+- `forms-text.js`: `ShowPickerAsync` refusal through `callWithoutUserActivation`. Every Playwright evaluation gives the
+  page a transient user activation, so the quiet call succeeded; the page now clicks once the activation has expired.
+- `forms-text.js`: the OTP select order (focus first) and the WA-side assertion above.
+- `media-content.js`: `wa-animated-image` declares `play` without a default (undefined, not false).
+- `MethodsNavigationHarness.razor`: the carousel items captured the `for` loop variable, so every slide read "Slide 5";
+  now `foreach`.
+- `pickers.js`: asserts that the color picker closes after the hide.
+- Known defects moved from `cases` to `knownDefects`: F2, F3 (with exemptions), F5, L2; new cases for L3 (bound values
+  added to `MethodsFormsTextHarness.razor`).

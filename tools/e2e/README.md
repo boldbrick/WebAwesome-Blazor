@@ -221,6 +221,14 @@ not throw proves nothing.
   until the page is interactive, so a prerendered page works too. `helpers\method-harness.js` has `callMethod` and
   `callOk`; `{ quiet: true }` triggers the button with a click event only, so the focus and an open popup stay where
   they are (use it for focus, blur, show and hide calls; use the real click for a call that needs a user gesture).
+  Before a case acts, the runner waits until the page is interactive (a `MethodCall` button is enabled): the first
+  interactive render of a prerendered page replaces its elements, so a listener or a state that a case gives an
+  element before that render is lost.
+- **User activation.** Every Playwright evaluation (also `dispatchEvent` and the polling of `expect`) runs with a user
+  gesture, so the page has a transient user activation after it (5 s in Chromium). A quiet call is therefore not free
+  of a user activation. To prove that a call fails without one, let the page click the button itself once
+  `navigator.userActivation.isActive` is false, and wait with one `page.waitForFunction` (see
+  `callWithoutUserActivation` in `method-cases\forms-text.js`).
 - **Coverage.** `method-coverage.spec.js` (no browser) requires every manifest method to be proven by a case
   (`methods` of a case), by an external proof (`external`: a spec and a literal piece of it), or exempted with a
   reason in `data\method-coverage-exemptions.json`. A case proves only methods of its own group.
