@@ -45,17 +45,21 @@ export function invokeMethodIfDefined(element, methodName) {
 
     if (!customElements.get(element.localName)) return false;
 
-    invokeMethod(element, methodName, []);
+    callElementMethod(element, methodName, []);
     return true;
 }
+
 /**
- * Invokes a method on a Web Awesome element
+ * Invokes a method on a Web Awesome element, once its custom element is defined. The autoloader imports the module of
+ * an element only after it finds the element in the DOM, so a call soon after the first render (in OnAfterRenderAsync,
+ * for example) can arrive while the element has none of its methods yet. Such a call waits for the definition, at most
+ * elementDefinitionTimeoutMs, and then fails if the element is still not defined (a Pro element on the free CDN).
  * @param {HTMLElement} element - The Web Awesome element
  * @param {string} methodName - The name of the method to invoke
  * @param {Array} args - Arguments to pass to the method
- * @returns {any} The result of the method call
+ * @returns {Promise<any>} The result of the method call
  */
-export function invokeMethod(element, methodName, args) {
+export async function invokeMethod(element, methodName, args) {
     if (!element) {
         throw new Error('Element reference is null or undefined');
     }
@@ -64,10 +68,41 @@ export function invokeMethod(element, methodName, args) {
         throw new Error('Method name cannot be null or empty');
     }
 
+    await whenElementDefined(element);
+    return callElementMethod(element, methodName, args);
+}
+
+// the longest wait of a method call for the definition of its element; the autoloader imports the module of the
+// element in this time, unless the module does not load at all
+const elementDefinitionTimeoutMs = 10000;
+
+// waits until the custom element of an element is defined, at most elementDefinitionTimeoutMs; an element that is not
+// a custom element, or is defined already, does not wait (customElements.define upgrades the connected elements before
+// whenDefined resolves)
+async function whenElementDefined(element) {
+    const tagName = element.localName;
+    if (!tagName?.includes('-') || customElements.get(tagName)) return;
+
+    let timer;
+    try {
+        await Promise.race([
+            customElements.whenDefined(tagName),
+            new Promise(resolve => { timer = setTimeout(resolve, elementDefinitionTimeoutMs); }),
+        ]);
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+function callElementMethod(element, methodName, args) {
     const tagName = element.tagName?.toLowerCase() || 'unknown';
 
     // Check if the method exists on the element
     if (typeof element[methodName] !== 'function') {
+        if (tagName.includes('-') && !customElements.get(tagName)) {
+            throw new Error(`Method '${methodName}' cannot be invoked: element ${tagName} is not defined after ${elementDefinitionTimeoutMs} ms. Ensure Web Awesome library is properly loaded and the component is available (Pro components need the Pro assets).`);
+        }
+
         throw new Error(`Method '${methodName}' does not exist on element ${tagName} or is not a function. Ensure Web Awesome library is properly loaded.`);
     }
 
