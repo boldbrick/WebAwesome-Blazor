@@ -2,7 +2,7 @@
 
 All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [3.14.0.2] — 2026-10-21
+## [3.14.0.2] — 2026-10-28
 
 A second revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. The wrappers can write placement metadata for the new WA Inspector, a browser extension for the UI review of a running page. There are no breaking changes.
 
