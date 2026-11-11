@@ -9,6 +9,11 @@
 // stay in sync with Components\EventArgs.cs. It also relays the events Blazor cannot receive
 // where Web Awesome dispatches them (relayedEvents below), and keeps the toast items Blazor renders
 // in the DOM until Blazor removes them (installOwnershipGuard below).
+//
+// The registrations go through the public module webawesome-events.js (registerEventTypes), which also exports the
+// payload helpers sanitize, detailArgs and isoDate; a sister wrapper set registers its own event types through it.
+
+import { registerEventTypes, detailArgs, isoDate } from './webawesome-events.js';
 
 // events whose detail (when present) is JSON-safe and maps 1:1 onto the typed args
 const eventNames = [
@@ -73,46 +78,6 @@ const eventNames = [
 const nativeCustomEventNames = [
   'beforeinput',
 ];
-
-// recursively copies JSON-safe values from an event detail, dropping DOM nodes, functions,
-// and anything too deep to marshal - custom event details may carry live Element references
-function sanitize(value, depth) {
-  if (value === null || value === undefined) return null;
-  const type = typeof value;
-  if (type === 'string' || type === 'number' || type === 'boolean') return value;
-  if (type === 'function') return undefined;
-  if (typeof Node !== 'undefined' && value instanceof Node) return undefined;
-  if (typeof Window !== 'undefined' && value instanceof Window) return undefined;
-  if (depth <= 0) return undefined;
-  if (Array.isArray(value)) {
-    return value.map(item => sanitize(item, depth - 1)).filter(item => item !== undefined);
-  }
-  if (type === 'object') {
-    const result = {};
-    for (const key of Object.keys(value)) {
-      const sanitized = sanitize(value[key], depth - 1);
-      if (sanitized !== undefined) result[key] = sanitized;
-    }
-    return result;
-  }
-  return undefined;
-}
-
-// default payload: the sanitized event detail (or an empty object when there is none)
-function detailArgs(event) {
-  const detail = sanitize(event.detail, 3);
-  return detail && typeof detail === 'object' && !Array.isArray(detail) ? detail : {};
-}
-
-// formats a JS Date (or ISO-parseable string) as a YYYY-MM-DD string; null when not a valid date
-function isoDate(value) {
-  const date = value instanceof Date ? value : (value != null ? new Date(value) : null);
-  if (!date || isNaN(date.getTime())) return null;
-  const year = String(date.getFullYear()).padStart(4, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 // events needing a hand-rolled payload because their detail is not JSON-safe, is empty, or
 // the typed args derive values from the event itself
@@ -441,46 +406,45 @@ function installOwnershipGuard() {
 
 let eventTypesRegistered = false;
 
-function registerEventTypes(blazor) {
+function registerOwnEventTypes(blazor) {
   if (eventTypesRegistered || !blazor || typeof blazor.registerCustomEventType !== 'function') return;
   eventTypesRegistered = true;
 
+  const relayDefinitions = {};
   for (const [name, relay] of Object.entries(relayedEvents)) {
-    blazor.registerCustomEventType(name, {
-      createEventArgs: relayArgs(relay),
-    });
+    relayDefinitions[name] = { createEventArgs: relayArgs(relay) };
   }
+  registerEventTypes(blazor, relayDefinitions);
 
   installEventRelay();
 
+  const eventDefinitions = {};
   for (const name of eventNames) {
-    blazor.registerCustomEventType(name, {
-      createEventArgs: specialArgs[name] || detailArgs,
-    });
+    eventDefinitions[name] = specialArgs[name] || detailArgs;
   }
+  registerEventTypes(blazor, eventDefinitions);
 
+  const nativeDefinitions = {};
   for (const name of nativeCustomEventNames) {
-    blazor.registerCustomEventType(name, {
-      createEventArgs: specialArgs[name] || detailArgs,
-    });
+    nativeDefinitions[name] = specialArgs[name] || detailArgs;
   }
+  registerEventTypes(blazor, nativeDefinitions);
 
+  const aliasDefinitions = {};
   for (const [name, browserEventName] of Object.entries(numericValueEventAliases)) {
-    blazor.registerCustomEventType(name, {
-      browserEventName,
-      createEventArgs: numericValueArgs,
-    });
+    aliasDefinitions[name] = { browserEventName, createEventArgs: numericValueArgs };
   }
+  registerEventTypes(blazor, aliasDefinitions);
 }
 
 // Blazor Web (blazor.web.js, .NET 8+)
 export function afterWebStarted(blazor) {
-  registerEventTypes(blazor);
+  registerOwnEventTypes(blazor);
   installOwnershipGuard();
 }
 
 // classic hosts (blazor.webassembly.js / blazor.server.js)
 export function afterStarted(blazor) {
-  registerEventTypes(blazor);
+  registerOwnEventTypes(blazor);
   installOwnershipGuard();
 }

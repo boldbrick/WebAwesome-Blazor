@@ -11,10 +11,24 @@ using WebAwesome.Blazor.Components;
 namespace WebAwesome.Blazor.Base;
 
 /// <summary>
-/// Helper extensions for <see cref="RenderTreeBuilder"/> that conditionally emit attributes,
-/// reducing repetitive null/empty checks in generated component render trees.
+/// Render tree helpers that every wrapper of WebAwesome.Blazor uses to render its custom element: attributes only when
+/// set, in the wire forms that Web Awesome parses, sticky attributes, event handlers that stop at their own wrapper,
+/// and slots. A package that wraps custom elements of its own on top of WebAwesome.Blazor (a sister wrapper set) uses
+/// the same helpers.
 /// </summary>
-internal static class RenderTreeBuilderExtensions
+/// <remarks>
+/// <para>
+/// A wrapper opens its element with <see cref="OpenWaElement"/> and renders each attribute that has a literal element
+/// default through a sticky overload, which takes the returned <see cref="WaAttributeMemory"/> as its second parameter
+/// and the element default after the value (see <see cref="WaAttributeMemory"/> for the rule). Use constant sequence
+/// numbers; a helper that renders several frames documents the sequence range it uses.
+/// </para>
+/// <para>
+/// Values never go through the culture-dependent <see cref="object.ToString"/>: numbers render in the invariant culture,
+/// booleans and dates have their own helpers, and the generic paths refuse them at compile time (error <c>CS0619</c>).
+/// </para>
+/// </remarks>
+public static class RenderTreeBuilderExtensions
 {
     /// <summary>
     /// Adds a string attribute to the render tree only when the value is not null or empty.
@@ -345,8 +359,8 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a date attribute as ISO <c>yyyy-MM-dd</c> (<see cref="WaWireFormat.FormatDate"/>), the only date form
-    /// Web Awesome parses; nothing when null.
+    /// Adds a date attribute as ISO <c>yyyy-MM-dd</c> in the invariant culture, the only date form Web Awesome parses;
+    /// nothing when null.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
@@ -362,7 +376,7 @@ internal static class RenderTreeBuilderExtensions
 
     /// <summary>
     /// Adds a time bound attribute (a min or max) as 24-hour <c>HH:mm</c>, or <c>HH:mm:ss</c> when the time has
-    /// seconds (<see cref="WaWireFormat.FormatTimeBound"/>); nothing when null.
+    /// seconds; nothing when null.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
@@ -377,8 +391,8 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a date-list attribute as ascending ISO dates separated by a space (<see cref="WaWireFormat.FormatDates"/>);
-    /// nothing when the set is null or empty.
+    /// Adds a date-list attribute as ascending ISO dates (<c>yyyy-MM-dd</c>) separated by a space; nothing when the set
+    /// is null or empty.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
@@ -394,8 +408,7 @@ internal static class RenderTreeBuilderExtensions
 
     /// <summary>
     /// Adds a weekday-list attribute as the lower-case three-letter tokens Web Awesome reads (<c>sun</c> … <c>sat</c>),
-    /// Sunday first, separated by a space (<see cref="WaWireFormat.FormatDaysOfWeek"/>); nothing when the set is null
-    /// or empty.
+    /// Sunday first, separated by a space; nothing when the set is null or empty.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
@@ -411,7 +424,7 @@ internal static class RenderTreeBuilderExtensions
 
     /// <summary>
     /// Adds a number-list attribute: each number in the invariant round-trip form, in list order, separated by a
-    /// space (<see cref="WaWireFormat.FormatNumbers"/>); nothing when the list is null or empty.
+    /// space; nothing when the list is null or empty.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
@@ -427,8 +440,8 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a token-list attribute: the tokens in list order, joined by the separator the element splits on
-    /// (<see cref="WaWireFormat.FormatTokens"/>); nothing when the list is null or empty.
+    /// Adds a token-list attribute: the tokens in list order, joined by the separator the element splits on; nothing
+    /// when the list is null or empty.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Sequence number for the attribute frame</param>
@@ -466,7 +479,7 @@ internal static class RenderTreeBuilderExtensions
 
     /// <summary>
     /// Adds an instant attribute in the ECMAScript date-time string format with its offset,
-    /// <c>yyyy-MM-ddTHH:mm:ss.fff+01:00</c> (<see cref="WaWireFormat.FormatInstant"/>), which <c>new Date(text)</c>
+    /// <c>yyyy-MM-ddTHH:mm:ss.fff+01:00</c>, which <c>new Date(text)</c>
     /// reads as that instant in every browser time zone; nothing when null.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
@@ -485,7 +498,9 @@ internal static class RenderTreeBuilderExtensions
     /// Adds an event handler attribute to the render tree only when the callback has a delegate attached. For a Web
     /// Awesome event (a name starting with "onwa-") it also adds Blazor's stopPropagation for it, with or without a
     /// delegate, so the element's own event is consumed here and a wrapper further up the tree never receives it as
-    /// its own (see <see cref="Constants.WaEventAttributePrefix"/>).
+    /// its own; any other name gets no stopPropagation. A sister wrapper set binds the own events of its element (for
+    /// example "onwaa-remove") with <see cref="AddOwnEventIfHasDelegate{T}(RenderTreeBuilder, int, string, EventCallback{T})"/>,
+    /// which stops them whatever their prefix.
     /// </summary>
     /// <typeparam name="T">Type of the event arguments</typeparam>
     /// <param name="builder">Render tree builder</param>
@@ -505,7 +520,8 @@ internal static class RenderTreeBuilderExtensions
 
     /// <summary>
     /// Adds an event handler attribute to the render tree only when the callback has a delegate attached, and Blazor's
-    /// stopPropagation for a Web Awesome event; see the generic overload.
+    /// stopPropagation for a Web Awesome event ("onwa-"); see the generic overload. A sister wrapper set uses
+    /// <see cref="AddOwnEventIfHasDelegate(RenderTreeBuilder, int, string, EventCallback)"/> for its own events.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Sequence number for the attribute frames</param>
@@ -523,9 +539,61 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
+    /// Adds the handler of an own event of the wrapper's element only when the callback has a delegate attached, and
+    /// Blazor's stopPropagation for the event always, with or without a delegate, whatever the prefix of its name.
+    /// This is what <see cref="AddAttributeIfHasDelegate{T}(RenderTreeBuilder, int, string, EventCallback{T})"/> does
+    /// for "onwa-" names, for the events of any custom element (for example "onwaa-selection-change").
+    /// </summary>
+    /// <remarks>
+    /// Custom element events usually bubble, and Blazor calls every handler for an event on the way up, so the event of
+    /// a nested element would also reach the callback of the same name on an outer wrapper. The stopPropagation ends
+    /// Blazor's dispatch at the wrapper of the element that raised the event: each wrapper's callbacks see only the
+    /// events of its own element. It does not stop the event in the browser; other listeners still see it. Use it only
+    /// for events of the wrapper's own element, never for a native event (a click) that content inside the element
+    /// raises too.
+    /// </remarks>
+    /// <typeparam name="T">Type of the event arguments</typeparam>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frames (the handler and the stopPropagation share it)</param>
+    /// <param name="name">Event attribute name, "on" and the event name, for example "onwaa-remove"</param>
+    /// <param name="callback">Event callback; no handler is emitted when no delegate is attached</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddOwnEventIfHasDelegate<T>(this RenderTreeBuilder builder, int sequence, string name, EventCallback<T> callback)
+    {
+        if (callback.HasDelegate)
+        {
+            builder.AddAttribute(sequence, name, callback);
+        }
+
+        builder.AddEventStopPropagationAttribute(sequence, name, true);
+    }
+
+    /// <summary>
+    /// Adds the handler of an own event of the wrapper's element only when the callback has a delegate attached, and
+    /// Blazor's stopPropagation for the event always, whatever the prefix of its name; see the generic overload.
+    /// </summary>
+    /// <param name="builder">Render tree builder</param>
+    /// <param name="sequence">Sequence number for the attribute frames (the handler and the stopPropagation share it)</param>
+    /// <param name="name">Event attribute name, "on" and the event name, for example "onwaa-invalid"</param>
+    /// <param name="callback">Event callback; no handler is emitted when no delegate is attached</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AddOwnEventIfHasDelegate(this RenderTreeBuilder builder, int sequence, string name, EventCallback callback)
+    {
+        if (callback.HasDelegate)
+        {
+            builder.AddAttribute(sequence, name, callback);
+        }
+
+        builder.AddEventStopPropagationAttribute(sequence, name, true);
+    }
+
+    /// <summary>
     /// Adds Blazor's stopPropagation for a Web Awesome event (a name starting with "onwa-"), so the event of the
     /// wrapper's own element stops at it in Blazor's dispatch and reaches no wrapper further up the tree; any other
-    /// name is left alone. The frame shares the handler's sequence number (attributes are diffed by name).
+    /// name is left alone. The frame shares the handler's sequence number (attributes are diffed by name). Use it for
+    /// a handler that a wrapper binds in another way. A sister wrapper set binds its own events with
+    /// <see cref="AddOwnEventIfHasDelegate{T}(RenderTreeBuilder, int, string, EventCallback{T})"/>, which stops them
+    /// whatever their prefix.
     /// </summary>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Sequence number of the event's handler attribute</param>
@@ -540,15 +608,16 @@ internal static class RenderTreeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the handler of an event the JS initializer relays (a Constants.Relayed*EventAttribute) together with
-    /// Blazor's stopPropagation for it, only when the callback has a delegate attached: the relayed event bubbles,
-    /// so without the stopPropagation it would also reach a wrapper of the same element further up the tree.
-    /// Uses sequence + 0..1.
+    /// Adds the handler of an event that the JS initializer of WebAwesome.Blazor relays under a private name (for
+    /// example "onwablazor-show", the relay of the non-bubbling wa-show of wa-color-picker) together with Blazor's
+    /// stopPropagation for it, only when the callback has a delegate attached: the relayed event bubbles, so without
+    /// the stopPropagation it would also reach a wrapper of the same element further up the tree. Uses sequence + 0..1.
+    /// The relayed names are a fixed list of the library's JS initializer.
     /// </summary>
     /// <typeparam name="T">Type of the event arguments</typeparam>
     /// <param name="builder">Render tree builder</param>
     /// <param name="sequence">Constant base sequence number</param>
-    /// <param name="name">Relayed event attribute name, e.g. <see cref="Constants.RelayedShowEventAttribute"/></param>
+    /// <param name="name">Relayed event attribute name, for example "onwablazor-show"</param>
     /// <param name="callback">Event callback; nothing is emitted when no delegate is attached</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void AddRelayedEventIfHasDelegate<T>(this RenderTreeBuilder builder, int sequence, string name, EventCallback<T> callback)
@@ -901,11 +970,14 @@ internal static class RenderTreeBuilderExtensions
     private const string SlotAttribute = "slot";
 
     private const string BooleanToStringMessage =
-        "A bool would be emitted as \"True\"/\"False\"; use AddBooleanAttribute or AddTrueFalseAttribute";
+        "A bool would render as \"True\" or \"False\", which no custom element attribute reads. Use AddBooleanAttribute " +
+        "for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads \"true\"/\"false\", or " +
+        "AddOnOffAttribute for one that reads \"on\"/\"off\".";
 
     private const string TemporalToStringMessage =
-        "A date or time would be emitted in a form Web Awesome does not parse; use AddDateAttribute, AddTimeAttribute, " +
-        "AddDateSetAttribute or AddDateTimeOffsetAttribute (WaWireFormat)";
+        "A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute " +
+        "(DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or " +
+        "AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).";
 
     // the text a "true"/"false" converter reads
     private static string TrueFalseText(bool value) => value ? Constants.TrueAttributeValue : Constants.FalseAttributeValue;

@@ -374,14 +374,15 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     private protected string FormatValidationMessage(string format)
         => string.Format(CultureInfo.InvariantCulture, format, DisplayName ?? FieldIdentifier.FieldName);
 
-    /// <summary>
-    /// Adds the "size" attribute at the given sequence number, falling back to <see cref="DefaultSize"/> once rendered;
-    /// a wrapper whose element declares no size default overrides it to render the attribute plainly.
-    /// </summary>
-    /// <param name="builder">The render tree builder</param>
-    /// <param name="sequence">The sequence number for the attribute</param>
-    private protected virtual void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
-        => builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
+    // adds the "size" attribute: sticky with ElementDefaultSize when the element has a literal size default, plainly
+    // (nothing while Size is null, removed when it returns to null) when it has none
+    private void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
+    {
+        if (ElementDefaultSize is { } elementDefaultSize)
+            builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence, "size", Size?.ToHtmlValue(), elementDefaultSize.ToHtmlValue());
+        else
+            builder.AddAttributeIfNotNull(sequence, "size", Size?.ToHtmlValue());
+    }
 
     // the live value last pushed to or received from the element; only meaningful when hasSyncedLiveValue is set
     private object? lastSyncedLiveValue;
@@ -398,6 +399,21 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// after rendering. Null (the default) means the attribute reaches the live property and no sync is needed.
     /// </summary>
     protected virtual string? LiveValuePropertyName => null;
+
+    /// <summary>
+    /// The literal default of the element's "size" attribute, which <see cref="AddCommonAttributes"/> renders from
+    /// <see cref="Size"/>. Non-null: "size" is sticky with this default, so nothing renders while <see cref="Size"/> was
+    /// never set, and once it was rendered, a return to null renders this default (a removed attribute would read as
+    /// null, not as the default). Null: the element has no literal size default, so "size" renders plainly, nothing
+    /// while <see cref="Size"/> is null, and the attribute is removed when it returns to null. The default is
+    /// <see cref="DefaultSize"/> (medium), the size default of every Web Awesome form control element that has one.
+    /// </summary>
+    /// <remarks>
+    /// Override it in a form control whose element declares another size default (return that size) or none at all
+    /// (return null), as wa-radio-group does, which only passes its size down to its radios. Return the element's own
+    /// default, never a preferred size: the attribute stays unset until the user sets <see cref="Size"/>.
+    /// </remarks>
+    protected virtual WaSize? ElementDefaultSize => DefaultSize;
 
     /// <summary>
     /// The current value typed as the element's live property expects it (string, number or boolean). Values

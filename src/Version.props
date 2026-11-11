@@ -66,9 +66,9 @@
 
     <!-- version numbers - these flow SDK-style projects; the first three parts are the bound Web Awesome
          version, an optional fourth part is a revision of the bindings (3.14.0.1) -->
-    <Version>3.14.0.2</Version>
-    <AssemblyVersion>3.14.0.2</AssemblyVersion>
-    <FileVersion>3.14.0.2</FileVersion>
+    <Version>3.14.0.3</Version>
+    <AssemblyVersion>3.14.0.3</AssemblyVersion>
+    <FileVersion>3.14.0.3</FileVersion>
     <!-- full version, readable at runtime (WebAwesomeOptions derives the default CDN version from its
          first three parts) -->
     <InformationalVersion>$(Version)</InformationalVersion>

@@ -9,11 +9,13 @@
 //   WaDataGridComparators refer to (WaJsFunction.Registered), before Blazor starts, so they exist before the first grid;
 // - it registers the ctx helpers of data grid functions (data-grid-context.js: ctx.emit, ctx.invoke, ctx.h, ctx.preset,
 //   ctx.format, ctx.cache) as a context decorator, in the same step;
-// - it registers the cell action event (`wablazor-cell-action`) with Blazor.registerCustomEventType, so that
-//   `@onwablazor-cell-action` on a WaDataGrid (declared by EventHandlers, passed to the element through the
-//   wrapper's additional attributes) reaches .NET as WaDataGridCellActionEventArgs.
+// - it registers the cell action event (`wablazor-cell-action`) through registerEventTypes of the public module
+//   webawesome-events.js of WebAwesome.Blazor, so that `@onwablazor-cell-action` on a WaDataGrid (declared by
+//   EventHandlers, passed to the element through the wrapper's additional attributes) reaches .NET as
+//   WaDataGridCellActionEventArgs.
 
 import { registerFunction, registerContextDecorator } from '../WebAwesome.Blazor/webawesome-functions.js';
+import { registerEventTypes } from '../WebAwesome.Blazor/webawesome-events.js';
 import { presets, cellActionEventName, cellActionArgs } from './data-grid-presets.js';
 import { decorateContext } from './data-grid-context.js';
 
@@ -32,13 +34,11 @@ function registerPresets() {
 
 let eventTypesRegistered = false;
 
-function registerEventTypes(blazor) {
+function registerOwnEventTypes(blazor) {
   if (eventTypesRegistered || !blazor || typeof blazor.registerCustomEventType !== 'function') return;
   eventTypesRegistered = true;
 
-  blazor.registerCustomEventType(cellActionEventName, {
-    createEventArgs: cellActionArgs,
-  });
+  registerEventTypes(blazor, { [cellActionEventName]: cellActionArgs });
 }
 
 // Blazor Web (blazor.web.js, .NET 8+)
@@ -48,7 +48,7 @@ export function beforeWebStart() {
 
 export function afterWebStarted(blazor) {
   registerPresets();
-  registerEventTypes(blazor);
+  registerOwnEventTypes(blazor);
 }
 
 // classic hosts (blazor.webassembly.js / blazor.server.js)
@@ -58,5 +58,5 @@ export function beforeStart() {
 
 export function afterStarted(blazor) {
   registerPresets();
-  registerEventTypes(blazor);
+  registerOwnEventTypes(blazor);
 }

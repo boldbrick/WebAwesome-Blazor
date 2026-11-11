@@ -22,6 +22,7 @@ description: "Use when writing or changing code that uses WebAwesome.Blazor: str
 - `WaInputBase<TValue>`, `WaLabeledInputBase<TValue>`: shared form-control members (`Label`, `Hint`, `Size`, `Disabled`, `OnInput`, `SetCustomValidityAsync`, `ResetValidityAsync`).
 - `WaDataGrid` with `WaDataGridColumn`, `WaDataGridState` and the CSV and copy options in WebAwesome.Blazor.Models.
 - `WaJsFunction.Registered`, `WaJsFunction.Module`, `WaJsFunction.Global`, then `WithArgs` and `Uses`.
+- Building wrappers of your own custom elements (a sister wrapper set): `RenderTreeBuilderExtensions.OpenWaElement` with `WaAttributeMemory` (sticky attributes), `AddOwnEventIfHasDelegate`, `WaInputBase.ElementDefaultSize`, the typed attribute helpers, `ChangeEventArgsExtensions`, and `registerEventTypes` of `_content/WebAwesome.Blazor/webawesome-events.js`; see "Building a sister wrapper set" in the package readme.
 
 ## Typical usage
 

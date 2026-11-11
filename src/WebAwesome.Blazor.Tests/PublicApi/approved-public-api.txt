@@ -1,5 +1,11 @@
 namespace WebAwesome.Blazor.Base
 {
+    public static class ChangeEventArgsExtensions
+    {
+        public static string[] GetStringArrayValue(this Microsoft.AspNetCore.Components.ChangeEventArgs args) { }
+        public static string? GetStringValue(this Microsoft.AspNetCore.Components.ChangeEventArgs args) { }
+        public static bool TryParseJsNumber(string? text, out decimal value) { }
+    }
     public static class Constants { }
     public interface IFormValidation
     {
@@ -51,6 +57,96 @@ namespace WebAwesome.Blazor.Base
         bool Open { get; }
         System.Threading.Tasks.Task HideAsync();
         System.Threading.Tasks.Task ShowAsync();
+    }
+    public static class RenderTreeBuilderExtensions
+    {
+        public static void AddAttributeIfHasDelegate(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback callback) { }
+        public static void AddAttributeIfHasDelegate<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback<T> callback) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateOnly value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateOnly? value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTime value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTime? value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTimeOffset value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTimeOffset? value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.TimeOnly value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.TimeOnly? value) { }
+        [System.Obsolete(@"A bool would render as ""True"" or ""False"", which no custom element attribute reads. Use AddBooleanAttribute for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads ""true""/""false"", or AddOnOffAttribute for one that reads ""on""/""off"".", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool value) { }
+        [System.Obsolete(@"A bool would render as ""True"" or ""False"", which no custom element attribute reads. Use AddBooleanAttribute for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads ""true""/""false"", or AddOnOffAttribute for one that reads ""on""/""off"".", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool? value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.DateOnly? value, System.DateOnly? defaultValue) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.DateTime? value, System.DateTime? defaultValue) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.DateTimeOffset? value, System.DateTimeOffset? defaultValue) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.TimeOnly? value, System.TimeOnly? defaultValue) { }
+        [System.Obsolete(@"A bool would render as ""True"" or ""False"", which no custom element attribute reads. Use AddBooleanAttribute for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads ""true""/""false"", or AddOnOffAttribute for one that reads ""on""/""off"".", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, bool value, bool defaultValue) { }
+        [System.Obsolete(@"A bool would render as ""True"" or ""False"", which no custom element attribute reads. Use AddBooleanAttribute for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads ""true""/""false"", or AddOnOffAttribute for one that reads ""on""/""off"".", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, bool? value, bool? defaultValue) { }
+        public static void AddAttributeIfNotNull<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, T? value) { }
+        public static void AddAttributeIfNotNull<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, T? value, T defaultValue) { }
+        public static void AddAttributeIfNotNullOrEmpty(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, string? value) { }
+        public static void AddAttributeIfNotNullOrEmpty(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, string? value, string defaultValue) { }
+        public static void AddBooleanAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool? value) { }
+        public static void AddDateAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateOnly? value) { }
+        public static void AddDateAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.DateOnly? value, System.DateOnly? defaultValue) { }
+        public static void AddDateSetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlySet<System.DateOnly>? value) { }
+        public static void AddDateSetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.Collections.Generic.IReadOnlySet<System.DateOnly>? value, System.Collections.Generic.IReadOnlySet<System.DateOnly> defaultValue) { }
+        public static void AddDateTimeOffsetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTimeOffset? value) { }
+        public static void AddDateTimeOffsetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.DateTimeOffset? value, System.TimeProvider clock) { }
+        public static void AddDaysOfWeekAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlySet<System.DayOfWeek>? value) { }
+        public static void AddDaysOfWeekAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.Collections.Generic.IReadOnlySet<System.DayOfWeek>? value, System.Collections.Generic.IReadOnlySet<System.DayOfWeek> defaultValue) { }
+        public static void AddDefaultedAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, string value, string defaultValue) { }
+        public static void AddIconSlot(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string? slotName, string? iconName) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddNumberAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateOnly value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddNumberAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTime value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddNumberAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTimeOffset value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddNumberAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.TimeOnly value) { }
+        public static void AddNumberAttribute<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, T value)
+            where T :  struct, System.IFormattable { }
+        public static void AddNumberAttribute<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, T value, T defaultValue)
+            where T :  struct, System.IFormattable { }
+        public static void AddNumberListAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlyList<double>? value) { }
+        public static void AddNumberListAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.Collections.Generic.IReadOnlyList<double>? value, System.Collections.Generic.IReadOnlyList<double> defaultValue) { }
+        public static void AddOnOffAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool? value) { }
+        public static void AddOwnEventIfHasDelegate(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback callback) { }
+        public static void AddOwnEventIfHasDelegate<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback<T> callback) { }
+        public static void AddOwnEventStopPropagation(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name) { }
+        public static void AddRelayedEventIfHasDelegate<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback<T> callback) { }
+        public static void AddSlotContent(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string slotName, Microsoft.AspNetCore.Components.RenderFragment? content) { }
+        public static void AddStepAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, WebAwesome.Blazor.Components.WaValueStep? value) { }
+        public static void AddStepAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, WebAwesome.Blazor.Components.WaValueStep? value, WebAwesome.Blazor.Components.WaValueStep defaultValue) { }
+        public static void AddTimeAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.TimeOnly? value) { }
+        public static void AddTimeAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.TimeOnly? value, System.TimeOnly? defaultValue) { }
+        public static void AddTokenListAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlyCollection<string>? value, string separator, char[] forbidden) { }
+        public static void AddTokenListAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, System.Collections.Generic.IReadOnlyCollection<string>? value, System.Collections.Generic.IReadOnlyCollection<string> defaultValue, string separator, char[] forbidden) { }
+        public static void AddTokenSetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlySet<string>? value) { }
+        public static void AddTrueFalseAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool? value) { }
+        public static void AddTrueFalseAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Base.WaAttributeMemory memory, int sequence, string name, bool? value, bool defaultValue) { }
+        public static string? FormatInvariant<T>(T value) { }
+        public static WebAwesome.Blazor.Base.WaAttributeMemory OpenWaElement(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, object component, int sequence, string tag) { }
+    }
+    public sealed class WaAttributeMemory
+    {
+        public System.Collections.Generic.IReadOnlyDictionary<string, string> PassedDefaults { get; }
+        public void Render(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, string? value, System.Func<string> computedDefault) { }
+        public void Render(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, string? value, string elementDefault, bool omitWhileDefault) { }
+        public static WebAwesome.Blazor.Base.WaAttributeMemory Of(object component) { }
     }
     public abstract class WaDateInputBase<TValue> : WebAwesome.Blazor.Base.WaPopupInputBase<TValue>, WebAwesome.Blazor.Base.IWaAffixedControl, WebAwesome.Blazor.Base.IWaCalendarOptions, WebAwesome.Blazor.Base.IWaClearableControl
     {
@@ -231,6 +327,7 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        protected virtual WebAwesome.Blazor.Components.WaSize? ElementDefaultSize { get; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         protected virtual string? LiveValuePropertyName { get; }
@@ -3588,6 +3685,7 @@ namespace WebAwesome.Blazor.Components
         public WaRadioGroup() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        protected override WebAwesome.Blazor.Components.WaSize? ElementDefaultSize { get; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Name { get; set; }
