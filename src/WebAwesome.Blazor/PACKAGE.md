@@ -91,7 +91,11 @@ export function afterWebStarted(blazor) { register(blazor); }   // Blazor Web
 export function afterStarted(blazor) { register(blazor); }      // WebAssembly and Server hosts
 ```
 
-**3. Size default of form controls.** A form control derived from `WaInputBase<TValue>` (or `WaLabeledInputBase<TValue>`) renders `size` sticky with `ElementDefaultSize`, which is `DefaultSize` (medium). Override it when the element declares another size default, or return `null` when it declares none: `size` then renders plainly and is removed when `Size` returns to null.
+**3. Size of form controls.** A form control derived from `WaInputBase<TValue>` (or `WaLabeledInputBase<TValue>`) renders `size` from the inherited `Size` parameter, sticky with `ElementDefaultSize`, which is `DefaultSize` (medium). Match it to your element:
+
+- The element has a literal size default other than medium: override `ElementDefaultSize` with that size.
+- The element has a `size` attribute without a literal default: return `null` from `ElementDefaultSize`. `size` then renders plainly and is removed when `Size` returns to null.
+- The element has no `size` attribute at all: return `false` from `ElementHasSize`. No `size` renders, whatever `Size` is set to; document on your wrapper that `Size` is ignored.
 
 ```csharp
 using WebAwesome.Blazor.Base;             // WaLabeledInputBase
@@ -101,6 +105,13 @@ public sealed class XyzChoiceGroup : WaLabeledInputBase<string?>
 {
     protected override WaSize? ElementDefaultSize => null;   // xyz-choice-group has no size default
     // BuildRenderTree: OpenWaElement, AddCommonAttributes(builder, 1), ...
+}
+
+/// <summary>... <see cref="WaInputBase{TValue}.Size"/> is ignored: xyz-toggle has no size attribute.</summary>
+public sealed class XyzToggle : WaInputBase<bool>
+{
+    protected override bool ElementHasSize => false;
+    // ...
 }
 ```
 

@@ -232,6 +232,7 @@ namespace WebAwesome.Blazor.Base
         public bool Disabled { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
         protected virtual WebAwesome.Blazor.Components.WaSize? ElementDefaultSize { get; }
+        protected virtual bool ElementHasSize { get; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         protected virtual string? LiveValuePropertyName { get; }

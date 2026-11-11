@@ -59,7 +59,9 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
-    /// Size variant of the input, mapped to the underlying Web Awesome element's "size" attribute.
+    /// Size variant of the input, mapped to the underlying Web Awesome element's "size" attribute: sticky with
+    /// <see cref="ElementDefaultSize"/> when the element has a literal size default, plain when it has none, and
+    /// ignored when the element has no size attribute (<see cref="ElementHasSize"/> is false).
     /// </summary>
     [Parameter] public WaSize? Size { get; set; }
 
@@ -366,10 +368,13 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     internal void AddRelayedKeyDownHandler(RenderTreeBuilder builder, int sequence)
         => builder.AddRelayedEventIfHasDelegate(sequence, Constants.RelayedKeyDownEventAttribute, OnKeyDown);
 
-    // adds the "size" attribute: sticky with ElementDefaultSize when the element has a literal size default, plainly
-    // (nothing while Size is null, removed when it returns to null) when it has none
+    // adds the "size" attribute: nothing when the element has no size attribute, sticky with ElementDefaultSize when
+    // the element has a literal size default, plainly (nothing while Size is null, removed when it returns to null)
+    // when it has none
     private void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
     {
+        if (!ElementHasSize) return;
+
         if (ElementDefaultSize is { } elementDefaultSize)
             builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence, "size", Size?.ToHtmlValue(), elementDefaultSize.ToHtmlValue());
         else
@@ -403,9 +408,23 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// <remarks>
     /// Override it in a form control whose element declares another size default (return that size) or none at all
     /// (return null), as wa-radio-group does, which only passes its size down to its radios. Return the element's own
-    /// default, never a preferred size: the attribute stays unset until the user sets <see cref="Size"/>.
+    /// default, never a preferred size: the attribute stays unset until the user sets <see cref="Size"/>. It is not
+    /// read when <see cref="ElementHasSize"/> is false.
     /// </remarks>
     protected virtual WaSize? ElementDefaultSize => DefaultSize;
+
+    /// <summary>
+    /// Whether the element declares a "size" attribute; true by default, as on every Web Awesome form control. When
+    /// false, <see cref="AddCommonAttributes"/> renders no "size" at all, whatever <see cref="Size"/> is set to, so the
+    /// inherited <see cref="Size"/> parameter has no effect, and <see cref="ElementDefaultSize"/> is not read. The
+    /// sequence number that <see cref="AddCommonAttributes"/> reserves for "size" (sequence + 4) stays reserved, so the
+    /// sequence layout does not change.
+    /// </summary>
+    /// <remarks>
+    /// Override it with false in a form control whose element has no size attribute, and document on the wrapper that
+    /// <see cref="Size"/> is ignored there.
+    /// </remarks>
+    protected virtual bool ElementHasSize => true;
 
     /// <summary>
     /// The current value typed as the element's live property expects it (string, number or boolean). Values

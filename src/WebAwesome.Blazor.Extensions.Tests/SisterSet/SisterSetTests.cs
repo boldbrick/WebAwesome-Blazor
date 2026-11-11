@@ -189,6 +189,20 @@ public class SisterSetTests : BunitContext
     }
 
     [Fact]
+    public void NoSizeAttribute_RendersNoSize_WhateverTheSize()
+    {
+        var cut = Render<XyzToggle>(p => p.Add(x => x.ValueExpression, () => Value));
+        Assert.False(cut.Find("xyz-toggle").HasAttribute("size"));
+
+        cut.Render(p => p.Add(x => x.Size, WaSize.Large));
+        Assert.False(cut.Find("xyz-toggle").HasAttribute("size"));
+
+        cut.Render(p => p.Add(x => x.Size, null));
+        Assert.False(cut.Find("xyz-toggle").HasAttribute("size"));
+        Assert.False(WaAttributeMemory.Of(cut.Instance).PassedDefaults.ContainsKey("size"));
+    }
+
+    [Fact]
     public void StringArrayValue_ReadsAJsonArray()
     {
         // a custom event type delivers the array value of a multi-value control as a JSON array
