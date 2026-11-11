@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Base;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
 /// Render tree helpers that every wrapper of WebAwesome.Blazor uses to render its custom element: attributes only when
@@ -26,6 +27,11 @@ namespace WebAwesome.Blazor.Base;
 /// <para>
 /// Values never go through the culture-dependent <see cref="object.ToString"/>: numbers render in the invariant culture,
 /// booleans and dates have their own helpers, and the generic paths refuse them at compile time (error <c>CS0619</c>).
+/// The date, time and list helpers render the wire forms of <see cref="WaWireFormat"/>.
+/// </para>
+/// <para>
+/// The namespace <c>WebAwesome.Blazor.Infrastructure</c> is for the authors of wrappers and extension libraries; app code
+/// that only uses the wrappers does not need it.
 /// </para>
 /// </remarks>
 public static class RenderTreeBuilderExtensions

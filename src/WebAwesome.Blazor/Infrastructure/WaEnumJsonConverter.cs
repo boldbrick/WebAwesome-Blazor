@@ -6,15 +6,28 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using WebAwesome.Blazor.Components;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
-/// Serializes an enum as the exact string Web Awesome uses for it (its ToHtmlValue() form), both ways: event args
-/// arriving from the JS initializer and models pushed to the element as JS properties. An unknown string fails
-/// with a <see cref="JsonException"/> naming the enum, because the value set is closed (the CEM or .d.ts union).
+/// Serializes an enum as the exact string its element uses for it, both ways: event args that arrive from a JS
+/// initializer and models pushed to the element as JS properties. An unknown string fails with a
+/// <see cref="JsonException"/> naming the enum, because the value set is closed. Works for any enum, also one declared
+/// outside WebAwesome.Blazor: derive a sealed converter that implements <see cref="ToWire"/> (usually with the enum's
+/// <c>ToHtmlValue()</c>) and put <see cref="JsonConverterAttribute"/> with it on the enum.
 /// </summary>
+/// <example>
+/// <code>
+/// [JsonConverter(typeof(XyzToneJsonConverter))]
+/// public enum XyzTone { Calm, Loud }
+///
+/// public sealed class XyzToneJsonConverter : WaEnumJsonConverter&lt;XyzTone&gt;
+/// {
+///     protected override string ToWire(XyzTone value) => value.ToHtmlValue();
+/// }
+/// </code>
+/// </example>
 /// <typeparam name="TEnum">The enum type</typeparam>
-internal abstract class WaEnumJsonConverter<TEnum> : JsonConverter<TEnum>
+public abstract class WaEnumJsonConverter<TEnum> : JsonConverter<TEnum>
     where TEnum : struct, Enum
 {
     /// <inheritdoc />
@@ -38,7 +51,9 @@ internal abstract class WaEnumJsonConverter<TEnum> : JsonConverter<TEnum>
     #region ------ Constructors ------
 
     /// <summary>
-    /// Builds the reverse lookup of every enum member's wire string.
+    /// Builds the reverse lookup of every enum member's wire string. It calls <see cref="ToWire"/> for every member,
+    /// before the constructor of the derived converter runs, so <see cref="ToWire"/> must not read state of the
+    /// derived converter.
     /// </summary>
     protected WaEnumJsonConverter()
     {
@@ -60,10 +75,10 @@ internal abstract class WaEnumJsonConverter<TEnum> : JsonConverter<TEnum>
     #region ------ Interface for descendants ------
 
     /// <summary>
-    /// The wire string of an enum member.
+    /// The wire string of an enum member: the exact string the element reads and writes for it, unique per member.
     /// </summary>
     /// <param name="value">The enum member</param>
-    /// <returns>Its ToHtmlValue() form</returns>
+    /// <returns>Its wire string, usually its ToHtmlValue() form</returns>
     protected abstract string ToWire(TEnum value);
 
     #endregion

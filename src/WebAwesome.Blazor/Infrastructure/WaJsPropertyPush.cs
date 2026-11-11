@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using WebAwesome.Blazor.Models;
+using WebAwesome.Blazor.Base;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
 /// Pushes the JavaScript properties of one wrapper's element that are no attributes: its function-valued members

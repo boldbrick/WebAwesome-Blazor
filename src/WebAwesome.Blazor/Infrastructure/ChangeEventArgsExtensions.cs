@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
 /// Reads the value of a <see cref="ChangeEventArgs"/> that a custom element sends, in the forms that reach .NET: a

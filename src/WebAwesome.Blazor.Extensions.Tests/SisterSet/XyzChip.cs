@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Extensions.Tests.SisterSet;
 

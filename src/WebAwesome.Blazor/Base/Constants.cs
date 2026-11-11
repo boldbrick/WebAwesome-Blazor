@@ -1,3 +1,5 @@
+using WebAwesome.Blazor.Infrastructure;
+
 namespace WebAwesome.Blazor.Base;
 
 /// <summary>

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components.Rendering;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
 /// Remembers, per component instance, which attributes of its custom element the component has rendered, so that an

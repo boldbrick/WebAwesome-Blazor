@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Extensions.Tests.SisterSet;
 
@@ -30,6 +31,13 @@ public abstract class XyzFieldBase : WaLabeledInputBase<string?>
         validationErrorMessage = null;
         return true;
     }
+
+    /// <summary>
+    /// Formats a validation message through the protected helper of the base, as a typed control reports a parse failure.
+    /// </summary>
+    /// <param name="format">A composite format whose {0} is the field's name</param>
+    /// <returns>The validation message</returns>
+    public string ValidationMessage(string format) => FormatValidationMessage(format);
 
     #region ------ Internals ------
 

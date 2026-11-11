@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.Extensions.DependencyInjection;
 using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
 using Xunit;
 
 // BL0006: the stopPropagation directives exist only as render tree frames, which the tests read on purpose
@@ -195,6 +196,33 @@ public class SisterSetTests : BunitContext
 
         Assert.Equal(["a", "b", "3"], args.GetStringArrayValue());
         Assert.Empty(new ChangeEventArgs { Value = null }.GetStringArrayValue());
+    }
+
+    [Fact]
+    public void EnumJsonConverter_WorksForAnOutsideEnum()
+    {
+        Assert.Equal("\"very-loud\"", JsonSerializer.Serialize(XyzTone.VeryLoud));
+        Assert.Equal(XyzTone.Calm, JsonSerializer.Deserialize<XyzTone>("\"calm\""));
+        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<XyzTone>("\"quiet\""));
+    }
+
+    [Fact]
+    public void WireFormat_ParsesWhatTheElementReports()
+    {
+        Assert.True(WaWireFormat.TryParseDate("2026-02-01", out var date));
+        Assert.Equal(new DateOnly(2026, 2, 1), date);
+        Assert.False(WaWireFormat.TryParseDate("1.2.2026", out _));
+        Assert.True(WaWireFormat.TryParseTime("13:04:05", out var time));
+        Assert.Equal(new TimeOnly(13, 4, 5), time);
+        Assert.Equal("13:04", WaWireFormat.FormatTime(time, withSeconds: false));
+    }
+
+    [Fact]
+    public void ValidationMessage_NamesTheBoundField()
+    {
+        var cut = Render<XyzField>(p => p.Add(x => x.ValueExpression, () => Value));
+
+        Assert.Equal("The Value field must be a xyz.", cut.Instance.ValidationMessage("The {0} field must be a xyz."));
     }
 
     #region ------ Internals ------

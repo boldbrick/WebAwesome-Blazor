@@ -87,7 +87,7 @@ public class TemporalAttributeGuardTests
 
     #region ------ Internals ------
 
-    private const string ExtensionsTypeName = "WebAwesome.Blazor.Base.RenderTreeBuilderExtensions";
+    private const string ExtensionsTypeName = "WebAwesome.Blazor.Infrastructure.RenderTreeBuilderExtensions";
     private const string AddAttributeIfNotNullMethod = "AddAttributeIfNotNull";
     private const string AddNumberAttributeMethod = "AddNumberAttribute";
     private const string FormatInvariantMethod = "FormatInvariant";

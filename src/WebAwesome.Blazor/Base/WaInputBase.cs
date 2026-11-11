@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Base;
 
@@ -365,15 +366,6 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     internal void AddRelayedKeyDownHandler(RenderTreeBuilder builder, int sequence)
         => builder.AddRelayedEventIfHasDelegate(sequence, Constants.RelayedKeyDownEventAttribute, OnKeyDown);
 
-    /// <summary>
-    /// Formats a parse-failure validation message for the bound field, naming it by <see cref="InputBase{TValue}.DisplayName"/>
-    /// or, when that is not set, by the field name, like Blazor's built-in inputs.
-    /// </summary>
-    /// <param name="format">A Constants.*ValidationMessageFormat, whose {0} is the field's name</param>
-    /// <returns>The validation message</returns>
-    private protected string FormatValidationMessage(string format)
-        => string.Format(CultureInfo.InvariantCulture, format, DisplayName ?? FieldIdentifier.FieldName);
-
     // adds the "size" attribute: sticky with ElementDefaultSize when the element has a literal size default, plainly
     // (nothing while Size is null, removed when it returns to null) when it has none
     private void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
@@ -422,6 +414,17 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     /// </summary>
     /// <returns>The value to assign to the live property</returns>
     protected virtual object? GetLiveValue() => CurrentValueAsString;
+
+    /// <summary>
+    /// Formats a parse-failure validation message for the bound field, naming it by <see cref="InputBase{TValue}.DisplayName"/>
+    /// or, when that is not set, by the field name, like Blazor's built-in inputs. A typed control reports the failure of
+    /// its <c>TryParseValueFromString</c> with it, worded like the library's controls, for example
+    /// <c>FormatValidationMessage("The {0} field must be a date.")</c>.
+    /// </summary>
+    /// <param name="format">A composite format whose {0} is the field's name</param>
+    /// <returns>The validation message</returns>
+    protected string FormatValidationMessage(string format)
+        => string.Format(CultureInfo.InvariantCulture, format, DisplayName ?? FieldIdentifier.FieldName);
 
     #endregion
 }

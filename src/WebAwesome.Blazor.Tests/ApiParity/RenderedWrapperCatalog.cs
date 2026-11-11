@@ -204,7 +204,7 @@ internal static class RenderedWrapperCatalog
     private const string IconTag = "wa-icon";
     private const string IconNameAttribute = "name";
     private const string ScriptTag = "script";
-    private const string AttributeMemoryTypeName = "WebAwesome.Blazor.Base.WaAttributeMemory";
+    private const string AttributeMemoryTypeName = "WebAwesome.Blazor.Infrastructure.WaAttributeMemory";
     private const string AttributeMemoryOfMethod = "Of";
     private const string PassedDefaultsPropertyName = "PassedDefaults";
 

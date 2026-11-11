@@ -7,12 +7,15 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 A third revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. A package can now build wrappers of its own custom elements on the same rendering infrastructure as the library's wrappers. There are no breaking changes.
 
 ### Added
-- `RenderTreeBuilderExtensions` and `WaAttributeMemory` (namespace `WebAwesome.Blazor.Base`) are public: open a custom element with `OpenWaElement` and render sticky attributes, slots and icon slots as the library's wrappers do. See "Building a sister wrapper set" in the package readme.
+- New namespace `WebAwesome.Blazor.Infrastructure` for the authors of wrappers and extension libraries (app code does not need it). Its `RenderTreeBuilderExtensions` and `WaAttributeMemory` are public: open a custom element with `OpenWaElement` and render sticky attributes, slots and icon slots as the library's wrappers do. See "Building a sister wrapper set" in the package readme.
 - `AddOwnEventIfHasDelegate` binds an own event of a custom element with any prefix (for example `onxyz-remove`) and always stops it at its wrapper, so a nested element's event never reaches an outer wrapper.
 - New JS module `_content/WebAwesome.Blazor/webawesome-events.js`: `registerEventTypes(blazor, definitions)` registers custom event types with Blazor once per name, and `sanitize`, `detailArgs` and `isoDate` build their payloads.
 - `WaInputBase.ElementDefaultSize`: a derived form control sets the size default of its element, or `null` when the element has none.
 - The typed attribute helpers are public (`AddBooleanAttribute`, `AddTrueFalseAttribute`, `AddOnOffAttribute`, `AddDateAttribute`, `AddTimeAttribute`, `AddDateTimeOffsetAttribute`, `AddDateSetAttribute`, `AddDaysOfWeekAttribute`), and the generic helpers refuse a `bool` or a date with a compiler error that names the helper to use.
 - `ChangeEventArgsExtensions` is public: `GetStringValue`, `GetStringArrayValue` (the array value of a multi-value control) and `TryParseJsNumber`.
+- `WaWireFormat` is public: it formats and parses the Web Awesome wire forms of dates, times, date ranges and lists.
+- `FormControlRendering` renders the label and hint cluster and the start and end slots for your own form controls, and `WaEnumJsonConverter<TEnum>` serializes your own enums as the strings of their element.
+- `WaInputBase.FormatValidationMessage` is protected (it was not accessible), so a derived control words a parse failure as the library's controls do.
 
 ## [3.14.0.2] — 2026-10-28
 

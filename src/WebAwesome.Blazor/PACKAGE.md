@@ -36,13 +36,13 @@ The component loads the matching Web Awesome version from the official CDN by de
 
 ## Building a sister wrapper set
 
-A package can wrap custom elements of its own (for example `xyz-*` elements) on top of WebAwesome.Blazor with the rendering infrastructure of the library's own wrappers, in `WebAwesome.Blazor.Base` and the JS module `_content/WebAwesome.Blazor/webawesome-events.js`.
+A package can wrap custom elements of its own (for example `xyz-*` elements) on top of WebAwesome.Blazor with the rendering infrastructure of the library's own wrappers, in the namespace `WebAwesome.Blazor.Infrastructure` and the JS module `_content/WebAwesome.Blazor/webawesome-events.js`. The namespace is for wrapper and extension authors; app code that only uses the wrappers does not need it.
 
 **1. Sticky attributes.** When Blazor removes an attribute, Lit sets the element property to null, not back to its default. Open the element with `OpenWaElement` and render each attribute that has a literal element default through a sticky overload: nothing while the parameter was never set, the value when set, and the element default (a public `Default<Name>` constant) once the parameter returns to null. An attribute without a literal default uses the plain overload; a plain boolean attribute uses `AddBooleanAttribute`.
 
 ```csharp
-using WebAwesome.Blazor.Base;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
 
 public sealed class XyzChip : ComponentBase
 {
@@ -94,6 +94,9 @@ export function afterStarted(blazor) { register(blazor); }      // WebAssembly a
 **3. Size default of form controls.** A form control derived from `WaInputBase<TValue>` (or `WaLabeledInputBase<TValue>`) renders `size` sticky with `ElementDefaultSize`, which is `DefaultSize` (medium). Override it when the element declares another size default, or return `null` when it declares none: `size` then renders plainly and is removed when `Size` returns to null.
 
 ```csharp
+using WebAwesome.Blazor.Base;             // WaLabeledInputBase
+using WebAwesome.Blazor.Infrastructure;   // OpenWaElement
+
 public sealed class XyzChoiceGroup : WaLabeledInputBase<string?>
 {
     protected override WaSize? ElementDefaultSize => null;   // xyz-choice-group has no size default
@@ -109,7 +112,19 @@ builder.AddTrueFalseAttribute(attributes, 4, "editable", Editable, DefaultEditab
 builder.AddDateAttribute(5, "since", Since);   // DateOnly? -> "2026-02-01"
 ```
 
-`ChangeEventArgsExtensions` reads the value of a change event as the library's form controls do: `GetStringValue`, `TryParseJsNumber`, and `GetStringArrayValue` for a multi-value control, which binds the array value of its `change` event as `WaSelect` does (`var values = args.GetStringArrayValue();`).
+`ChangeEventArgsExtensions` reads the value of a change event as the library's form controls do: `GetStringValue`, `TryParseJsNumber`, and `GetStringArrayValue` for a multi-value control, which binds the array value of its `change` event as `WaSelect` does (`var values = args.GetStringArrayValue();`). `WaWireFormat` formats and parses the wire forms of dates, times and lists (`TryParseDate`, `TryParseTime`, `FormatTime`, ...), and a typed control reports a parse failure with the protected `FormatValidationMessage("The {0} field must be a date.")` of `WaInputBase`.
+
+**More helpers.** `FormControlRendering` renders the label cluster (`AddLabelAndHintAttributes`, `AddWithHintAndLabelAttributes`, `AddLabelAndHintSlots`) and the `start`/`end` slots (`AddAffixSlots`) for a control that implements `IWaLabeledControl` or `IWaAffixedControl` on another base. `WaEnumJsonConverter<TEnum>` serializes your own enum as the strings of its element:
+
+```csharp
+[JsonConverter(typeof(XyzToneJsonConverter))]
+public enum XyzTone { Calm, VeryLoud }
+
+public sealed class XyzToneJsonConverter : WaEnumJsonConverter<XyzTone>
+{
+    protected override string ToWire(XyzTone value) => value == XyzTone.Calm ? "calm" : "very-loud";
+}
+```
 
 ## Links
 

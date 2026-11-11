@@ -3,19 +3,28 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Base;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
-/// Shared render code of the form control capability clusters (<see cref="IWaLabeledControl"/>, …), so each
-/// wrapper stops duplicating it. Each helper emits one cluster's frames in a fixed order at constant sequence
-/// numbers relative to the base it is given; the wrapper calls it where its element's attribute order puts the
-/// cluster.
+/// Shared render code of the form control capability clusters, so that each wrapper does not repeat it. Each helper
+/// emits the frames of one cluster in a fixed order at constant sequence numbers relative to the base it is given; the
+/// wrapper calls it where the attribute order of its element puts the cluster.
 /// </summary>
-internal static class FormControlRendering
+/// <remarks>
+/// The public helpers serve every form control whose element follows the label and affix conventions of Web Awesome's
+/// form controls: the <c>label</c> and <c>hint</c> attributes and slots, the <c>with-label</c> and <c>with-hint</c>
+/// flags (<see cref="IWaLabeledControl"/>), and the <c>start</c> and <c>end</c> slots (<see cref="IWaAffixedControl"/>).
+/// A control derived from <see cref="WaLabeledInputBase{TValue}"/> already has protected shortcuts for the label
+/// cluster; a control that implements <see cref="IWaLabeledControl"/> on another base calls these helpers directly. The
+/// sticky attributes use the memory of the control (<see cref="WaAttributeMemory.Of"/>).
+/// </remarks>
+public static class FormControlRendering
 {
     /// <summary>
-    /// Adds the "label" attribute at sequence + 0 and the "hint" attribute at sequence + 1, each only when set.
+    /// Adds the "label" attribute at sequence + 0 and the "hint" attribute at sequence + 1, each only when set, sticky
+    /// with <see cref="IWaLabeledControl.DefaultLabel"/> and <see cref="IWaLabeledControl.DefaultHint"/>.
     /// </summary>
     /// <param name="builder">The render tree builder</param>
     /// <param name="sequence">The constant base sequence number</param>
@@ -41,7 +50,7 @@ internal static class FormControlRendering
 
     /// <summary>
     /// Adds the markup label and hint to the element's "label" and "hint" slots, each only when set, at
-    /// sequence + 0..5.
+    /// sequence + 0..5. For a control with only a part of the label cluster, pass null for a slot its element lacks.
     /// </summary>
     /// <param name="builder">The render tree builder</param>
     /// <param name="sequence">The constant base sequence number</param>
@@ -68,60 +77,6 @@ internal static class FormControlRendering
         => AddLabelAndHintSlots(builder, sequence, control.MarkupLabel, control.MarkupHint);
 
     /// <summary>
-    /// Adds the handlers of the popup events, each only when its callback is set, in the order show, hide,
-    /// after-show, after-hide: the wa-* events at sequence + 0..3, or, for an element that dispatches them as
-    /// non-bubbling events, their relays (with Blazor's stopPropagation, see
-    /// <see cref="RenderTreeBuilderExtensions.AddRelayedEventIfHasDelegate{T}"/>) at sequence + 0..7.
-    /// </summary>
-    /// <param name="builder">The render tree builder</param>
-    /// <param name="sequence">The constant base sequence number</param>
-    /// <param name="control">The popup control</param>
-    /// <param name="relayed">Whether to bind the relayed events instead of the wa-* events</param>
-    public static void AddPopupEventHandlers(RenderTreeBuilder builder, int sequence, IWaPopupControl control, bool relayed)
-    {
-        if (relayed)
-        {
-            builder.AddRelayedEventIfHasDelegate(sequence + 0, Constants.RelayedShowEventAttribute, control.OnShow);
-            builder.AddRelayedEventIfHasDelegate(sequence + 2, Constants.RelayedHideEventAttribute, control.OnHide);
-            builder.AddRelayedEventIfHasDelegate(sequence + 4, Constants.RelayedAfterShowEventAttribute, control.OnAfterShow);
-            builder.AddRelayedEventIfHasDelegate(sequence + 6, Constants.RelayedAfterHideEventAttribute, control.OnAfterHide);
-            return;
-        }
-
-        builder.AddAttributeIfHasDelegate(sequence + 0, ShowEventAttribute, control.OnShow);
-        builder.AddAttributeIfHasDelegate(sequence + 1, HideEventAttribute, control.OnHide);
-        builder.AddAttributeIfHasDelegate(sequence + 2, AfterShowEventAttribute, control.OnAfterShow);
-        builder.AddAttributeIfHasDelegate(sequence + 3, AfterHideEventAttribute, control.OnAfterHide);
-    }
-
-    /// <summary>
-    /// Adds the "with-clear" flag (present when true).
-    /// </summary>
-    /// <param name="builder">The render tree builder</param>
-    /// <param name="sequence">The constant sequence number</param>
-    /// <param name="control">The clearable control</param>
-    public static void AddWithClearAttribute(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
-        => builder.AddAttribute(sequence, WithClearAttribute, control.WithClear);
-
-    /// <summary>
-    /// Adds the wa-clear handler when <see cref="IWaClearableControl.OnClear"/> is set.
-    /// </summary>
-    /// <param name="builder">The render tree builder</param>
-    /// <param name="sequence">The constant sequence number</param>
-    /// <param name="control">The clearable control</param>
-    public static void AddClearEventHandler(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
-        => builder.AddAttributeIfHasDelegate(sequence, ClearEventAttribute, control.OnClear);
-
-    /// <summary>
-    /// Adds <see cref="IWaClearableControl.ClearIconContent"/> to the "clear-icon" slot when set, at sequence + 0..2.
-    /// </summary>
-    /// <param name="builder">The render tree builder</param>
-    /// <param name="sequence">The constant base sequence number</param>
-    /// <param name="control">The clearable control</param>
-    public static void AddClearIconSlot(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
-        => builder.AddSlotContent(sequence, ClearIconSlot, control.ClearIconContent);
-
-    /// <summary>
     /// Adds the "start" and "end" slot content: each fragment when set (start at sequence + 0..2, end at
     /// sequence + 5..7), otherwise the icon of its icon-name shortcut when one is given (start at sequence + 40..42,
     /// end at sequence + 45..47), so the fragment wins.
@@ -145,6 +100,66 @@ internal static class FormControlRendering
             builder.AddIconSlot(sequence + 5 + AffixIconSequenceOffset, EndSlot, endIconName);
     }
 
+    #region ------ Internals ------
+
+    // the helpers below bind Web Awesome's own events (wa-show, wa-clear and the relays of the library's JS
+    // initializer) or render the calendar and day slots of wa-date-input and wa-date-picker, so they serve the
+    // library's own wrappers only
+
+    /// <summary>
+    /// Adds the handlers of the popup events, each only when its callback is set, in the order show, hide,
+    /// after-show, after-hide: the wa-* events at sequence + 0..3, or, for an element that dispatches them as
+    /// non-bubbling events, their relays (with Blazor's stopPropagation, see
+    /// <see cref="RenderTreeBuilderExtensions.AddRelayedEventIfHasDelegate{T}"/>) at sequence + 0..7.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number</param>
+    /// <param name="control">The popup control</param>
+    /// <param name="relayed">Whether to bind the relayed events instead of the wa-* events</param>
+    internal static void AddPopupEventHandlers(RenderTreeBuilder builder, int sequence, IWaPopupControl control, bool relayed)
+    {
+        if (relayed)
+        {
+            builder.AddRelayedEventIfHasDelegate(sequence + 0, Constants.RelayedShowEventAttribute, control.OnShow);
+            builder.AddRelayedEventIfHasDelegate(sequence + 2, Constants.RelayedHideEventAttribute, control.OnHide);
+            builder.AddRelayedEventIfHasDelegate(sequence + 4, Constants.RelayedAfterShowEventAttribute, control.OnAfterShow);
+            builder.AddRelayedEventIfHasDelegate(sequence + 6, Constants.RelayedAfterHideEventAttribute, control.OnAfterHide);
+            return;
+        }
+
+        builder.AddAttributeIfHasDelegate(sequence + 0, ShowEventAttribute, control.OnShow);
+        builder.AddAttributeIfHasDelegate(sequence + 1, HideEventAttribute, control.OnHide);
+        builder.AddAttributeIfHasDelegate(sequence + 2, AfterShowEventAttribute, control.OnAfterShow);
+        builder.AddAttributeIfHasDelegate(sequence + 3, AfterHideEventAttribute, control.OnAfterHide);
+    }
+
+    /// <summary>
+    /// Adds the "with-clear" flag (present when true).
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant sequence number</param>
+    /// <param name="control">The clearable control</param>
+    internal static void AddWithClearAttribute(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
+        => builder.AddAttribute(sequence, WithClearAttribute, control.WithClear);
+
+    /// <summary>
+    /// Adds the wa-clear handler when <see cref="IWaClearableControl.OnClear"/> is set.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant sequence number</param>
+    /// <param name="control">The clearable control</param>
+    internal static void AddClearEventHandler(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
+        => builder.AddAttributeIfHasDelegate(sequence, ClearEventAttribute, control.OnClear);
+
+    /// <summary>
+    /// Adds <see cref="IWaClearableControl.ClearIconContent"/> to the "clear-icon" slot when set, at sequence + 0..2.
+    /// </summary>
+    /// <param name="builder">The render tree builder</param>
+    /// <param name="sequence">The constant base sequence number</param>
+    /// <param name="control">The clearable control</param>
+    internal static void AddClearIconSlot(RenderTreeBuilder builder, int sequence, IWaClearableControl control)
+        => builder.AddSlotContent(sequence, ClearIconSlot, control.ClearIconContent);
+
     /// <summary>
     /// Adds the calendar options wa-date-input and wa-date-picker share, each only when set (a flag when true, a set when
     /// not empty) and in Web Awesome's wire format, at sequence + 0..12 in this order: min, max, today, disabled-dates, disabled-days-of-week, disable-past,
@@ -157,7 +172,7 @@ internal static class FormControlRendering
     /// The element default of disabled-dates (<see cref="IWaCalendarOptions.DefaultDisabledDates"/>), or null for an
     /// element that declares none (wa-date-picker, whose setter reads a removed attribute as no dates)
     /// </param>
-    public static void AddCalendarAttributes(RenderTreeBuilder builder, int sequence, IWaCalendarOptions calendar,
+    internal static void AddCalendarAttributes(RenderTreeBuilder builder, int sequence, IWaCalendarOptions calendar,
         IReadOnlySet<DateOnly>? disabledDatesDefault)
     {
         var attributes = WaAttributeMemory.Of(calendar);
@@ -191,7 +206,7 @@ internal static class FormControlRendering
     /// <param name="sequence">The constant base sequence number</param>
     /// <param name="host">The date input or date picker</param>
     /// <param name="content">The day content, or null</param>
-    public static void AddDayContent(RenderTreeBuilder builder, int sequence, IWaDayContentHost host, RenderFragment? content)
+    internal static void AddDayContent(RenderTreeBuilder builder, int sequence, IWaDayContentHost host, RenderFragment? content)
     {
         if (content is null) return;
 
@@ -201,8 +216,6 @@ internal static class FormControlRendering
         builder.AddComponentParameter(sequence + 3, nameof(CascadingValue<IWaDayContentHost>.ChildContent), content);
         builder.CloseComponent();
     }
-
-    #region ------ Internals ------
 
     private const string MinAttribute = "min";
     private const string MaxAttribute = "max";
