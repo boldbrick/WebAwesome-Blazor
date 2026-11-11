@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using WebAwesome.Blazor.Infrastructure;
 using WebAwesome.Blazor.Layout;
 using WebAwesome.Blazor.Base;
 

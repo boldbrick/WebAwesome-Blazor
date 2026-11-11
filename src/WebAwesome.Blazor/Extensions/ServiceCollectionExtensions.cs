@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 using WebAwesome.Blazor.Models;
 using WebAwesome.Blazor.Services;
 

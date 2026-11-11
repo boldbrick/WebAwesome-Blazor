@@ -4,35 +4,41 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components.Rendering;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
-/// Remembers, per component instance, which attributes of its Web Awesome element it has rendered, so that an
-/// attribute is never removed again once it was rendered (owner rule, "sticky attributes").
+/// Remembers, per component instance, which attributes of its custom element the component has rendered, so that an
+/// attribute is never removed again once it was rendered (the sticky rule). Get it from
+/// <see cref="RenderTreeBuilderExtensions.OpenWaElement"/> or <see cref="Of"/> and pass it to the sticky overloads of
+/// <see cref="RenderTreeBuilderExtensions"/>, which take the memory as their second parameter.
 /// </summary>
 /// <remarks>
 /// <para>
-/// When Blazor removes an attribute, Lit's attribute converter sets the element's property to null, not back to its
-/// default (a number reads null as 0, a string stays null): a <c>WaSlider</c> whose Max goes from 50 back to the default
-/// 100 would get <c>max = null</c>. So an unset parameter (null, or a non-nullable parameter at the element default)
-/// renders nothing while the attribute was never rendered (the element's own default applies, and the baseline render
-/// stays clean), but once the attribute was rendered, a return to the default or to null renders the element default
-/// explicitly.
-/// The element default is not looked up: every call site passes it, as the wrapper's public
-/// <c>Default&lt;Name&gt;</c> constant (docs\technical\technical.md, "Sticky attributes").
+/// Why: when Blazor removes an attribute, Lit's attribute converter sets the element's property to null, not back to
+/// its default. A number reads null as 0 and a string stays null, so a slider whose max goes from 50 back to the
+/// default 100 would get <c>max = null</c>. A wrapper therefore renders nothing for an unset parameter (null, or a
+/// non-nullable parameter at the element default) while the attribute was never rendered, so the element's own default
+/// applies and the first render stays clean. Once the attribute was rendered, a return to null or to the default
+/// renders the element default explicitly.
 /// </para>
 /// <para>
-/// Exempt: attributes whose CEM default is no literal (null, undefined), where removal restores the unset state and
-/// the call site uses the plain helper without a default, and plain boolean attributes, which the wrappers render
-/// with Blazor's present/absent booleans (a removed Lit boolean attribute reads false, the default). A computed
-/// default (<c>new Date()</c>) is rendered through <see cref="Render(RenderTreeBuilder, int, string, string?, Func{string})"/>.
+/// The element default is not looked up: every call site passes it. Declare it on the wrapper as a public constant
+/// <c>Default&lt;Name&gt;</c> (for example <c>DefaultVariant</c>), or as a static readonly field where the type cannot
+/// be a constant, and pass that constant, so the default is visible in the wrapper's API and in one place.
+/// </para>
+/// <para>
+/// Exemptions: an attribute whose element default is no literal value (null, undefined) uses the plain helper without
+/// the memory and without a default, because its removal restores the unset state. A plain boolean attribute keeps
+/// Blazor's present/absent rendering, because Lit reads a removed boolean attribute as false, its default. A default
+/// that the element computes when it is set up (<c>new Date()</c>) is rendered through
+/// <see cref="Render(RenderTreeBuilder, int, string, string?, Func{string})"/>.
 /// </para>
 /// </remarks>
-internal sealed class WaAttributeMemory
+public sealed class WaAttributeMemory
 {
     /// <summary>
-    /// The element default each sticky call site passed, by attribute name, in its wire form; the parity tests
-    /// compare it with the CEM default of the rendered element.
+    /// The element default that each sticky call site passed, by attribute name, in its wire form. A test can compare
+    /// it with the defaults that the element declares.
     /// </summary>
     public IReadOnlyDictionary<string, string> PassedDefaults => passedDefaults;
 
@@ -95,6 +101,15 @@ internal sealed class WaAttributeMemory
         rendered.Add(name);
         builder.AddAttribute(sequence, name, value);
     }
+
+    #region ------ Constructors ------
+
+    // one memory per component, created only through Of
+    private WaAttributeMemory()
+    {
+    }
+
+    #endregion
 
     #region ------ Internals ------
 

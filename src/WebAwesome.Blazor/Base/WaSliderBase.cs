@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
 using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Base;

@@ -7,11 +7,12 @@ using System.Text;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.RenderTree;
+using WebAwesome.Blazor.Base;
 
 // BL0006: the placement path reads the renderer's current render tree frames on purpose; the metadata is dev-only
 #pragma warning disable BL0006
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
 /// Dev-only placement metadata for the WA Inspector browser extension (tools\wa-inspector): when enabled, every

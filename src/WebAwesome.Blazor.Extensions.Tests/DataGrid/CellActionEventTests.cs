@@ -59,12 +59,13 @@ public class CellActionEventTests
         var initializer = PresetScripts.Read(PresetScripts.InitializerFileName);
 
         Assert.Matches(@"import \{[^}]*\bcellActionEventName\b[^}]*\} from '\./data-grid-presets\.js';", initializer);
-        Assert.Matches(@"registerCustomEventType\(cellActionEventName, \{\s*createEventArgs: cellActionArgs,", initializer);
+        Assert.Matches(@"import \{[^}]*\bregisterEventTypes\b[^}]*\} from '\.\./WebAwesome\.Blazor/webawesome-events\.js';", initializer);
+        Assert.Matches(@"registerEventTypes\(blazor, \{ \[cellActionEventName\]: cellActionArgs \}\);", initializer);
 
         // both start callbacks register it: afterWebStarted for Blazor Web, afterStarted for the classic hosts
         foreach (var callback in new[] { "afterWebStarted", "afterStarted" })
         {
-            Assert.Matches($@"export function {callback}\(blazor\) \{{[^}}]*registerEventTypes\(blazor\);", initializer);
+            Assert.Matches($@"export function {callback}\(blazor\) \{{[^}}]*registerOwnEventTypes\(blazor\);", initializer);
         }
     }
 

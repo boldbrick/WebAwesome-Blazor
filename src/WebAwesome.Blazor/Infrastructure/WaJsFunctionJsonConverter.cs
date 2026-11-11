@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using WebAwesome.Blazor.Models;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
 /// Writes a <see cref="WaJsFunction"/> as its JSON descriptor, with any serializer options. The descriptor only goes

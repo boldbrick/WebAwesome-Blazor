@@ -4,20 +4,28 @@ using System.Globalization;
 using System.Linq;
 using WebAwesome.Blazor.Components;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
-/// The culture-free wire formats Web Awesome parses its date and time attributes and values in, formatted and
-/// parsed exactly as the element does (3.12.0 sources: dates in date-picker/internal/iso.ts, disabled dates and
-/// weekdays in date-picker/internal/matchers.ts, times in time-input/internal/segments.ts). Every conversion uses
-/// the invariant culture and an explicit pattern, never the current culture or ToString().
+/// The culture-free wire forms in which Web Awesome reads and writes its date, time and list attributes and values,
+/// formatted and parsed exactly as the elements do (dates as in date-picker/internal/iso.ts, disabled dates and weekdays
+/// as in date-picker/internal/matchers.ts, times as in time-input/internal/segments.ts). Every conversion uses the
+/// invariant culture and an explicit pattern, never the current culture or ToString().
 /// </summary>
 /// <remarks>
+/// <para>
+/// The typed attribute helpers of <see cref="RenderTreeBuilderExtensions"/> render through these formats. A wrapper uses
+/// the class directly where a value does not go through an attribute helper: to format the value it binds, or to parse
+/// the value an element reports in its change event (<see cref="TryParseDate"/>, <see cref="TryParseTime"/>,
+/// <see cref="TryParseDateRange"/>).
+/// </para>
+/// <para>
 /// Web Awesome builds a date as a local JS Date, which maps the years 0-99 to 1900-1999 and then rejects the date
 /// as invalid; the years a date attribute can carry are therefore 100-9999. An earlier year renders, and the
 /// element treats it as invalid.
+/// </para>
 /// </remarks>
-internal static class WaWireFormat
+public static class WaWireFormat
 {
     /// <summary>
     /// Formats a date as ISO <c>yyyy-MM-dd</c> (the year zero-padded to four digits, as formatIsoDate pads it).
@@ -25,15 +33,6 @@ internal static class WaWireFormat
     /// <param name="date">The date</param>
     /// <returns>The wire string</returns>
     public static string FormatDate(DateOnly date) => date.ToString(DatePattern, CultureInfo.InvariantCulture);
-
-    /// <summary>
-    /// Formats the name of a date's day slot as the date picker names the slot of each day cell
-    /// (<c>`day-${formatIsoDate(date)}`</c> in renderDay): <c>day-yyyy-MM-dd</c>, e.g. <c>day-2026-12-25</c>. This is
-    /// also the form wa-date-input forwards to its popup calendar (<c>/^day-\d{4}-\d{2}-\d{2}$/</c>).
-    /// </summary>
-    /// <param name="date">The date</param>
-    /// <returns>The slot name</returns>
-    public static string FormatDaySlotName(DateOnly date) => DaySlotPrefix + FormatDate(date);
 
     /// <summary>
     /// Parses a date the way parseIsoDate does: the trimmed text must be exactly four, two and two ASCII digits
@@ -222,43 +221,55 @@ internal static class WaWireFormat
         => string.Join(separator, tokens.Select(t => CheckedToken(t, forbidden)));
 
     /// <summary>
-    /// The characters of an ASCII whitespace-separated token list, which every space-separated list splits on
-    /// (<c>/\s+/</c>, or a single space, which a token must not contain either).
-    /// </summary>
-    public static readonly char[] WhitespaceSeparators = [' ', '\t', '\n', '\r', '\f'];
-
-    /// <summary>
     /// The separator of a space-separated list.
     /// </summary>
     public const string SpaceSeparator = " ";
 
     /// <summary>
-    /// The separator of wa-color-picker's swatches, which the element splits on ';' (a colour such as rgb(1, 2, 3)
-    /// contains commas and spaces).
+    /// The separator of a list that the element splits on ';', for items that contain commas and spaces (the swatches
+    /// of wa-color-picker: a colour such as rgb(1, 2, 3)).
     /// </summary>
     public const string SemicolonSeparator = ";";
 
     /// <summary>
-    /// The characters a swatch must not contain.
-    /// </summary>
-    public static readonly char[] SemicolonSeparators = [';'];
-
-    /// <summary>
-    /// The separator of wa-file-input's accept, which the element splits on ',' (like the native accept).
+    /// The separator of a list that the element splits on ',' (the accept of wa-file-input, like the native accept).
     /// </summary>
     public const string CommaSeparator = ",";
+
+    #region ------ Internals ------
+
+    // used by the library's own wrappers only: the day slot names of the date elements, and the shared separator
+    // arrays, which stay internal because an array field can be changed by its caller
+
+    /// <summary>
+    /// Formats the name of a date's day slot as the date picker names the slot of each day cell
+    /// (<c>`day-${formatIsoDate(date)}`</c> in renderDay): <c>day-yyyy-MM-dd</c>, e.g. <c>day-2026-12-25</c>. This is
+    /// also the form wa-date-input forwards to its popup calendar (<c>/^day-\d{4}-\d{2}-\d{2}$/</c>).
+    /// </summary>
+    /// <param name="date">The date</param>
+    /// <returns>The slot name</returns>
+    internal static string FormatDaySlotName(DateOnly date) => DaySlotPrefix + FormatDate(date);
+
+    /// <summary>
+    /// The characters of an ASCII whitespace-separated token list, which every space-separated list splits on
+    /// (<c>/\s+/</c>, or a single space, which a token must not contain either).
+    /// </summary>
+    internal static readonly char[] WhitespaceSeparators = [' ', '\t', '\n', '\r', '\f'];
+
+    /// <summary>
+    /// The characters a swatch must not contain.
+    /// </summary>
+    internal static readonly char[] SemicolonSeparators = [';'];
 
     /// <summary>
     /// The characters an accepted file type must not contain.
     /// </summary>
-    public static readonly char[] CommaSeparators = [','];
+    internal static readonly char[] CommaSeparators = [','];
 
     /// <summary>
     /// The characters wa-data-grid splits group-by on (<c>/[\s,]+/</c>), which a field must not contain.
     /// </summary>
-    public static readonly char[] WhitespaceAndCommaSeparators = [' ', '\t', '\n', '\r', '\f', ','];
-
-    #region ------ Internals ------
+    internal static readonly char[] WhitespaceAndCommaSeparators = [' ', '\t', '\n', '\r', '\f', ','];
 
     private const string RoundTripNumberFormat = "R";
 

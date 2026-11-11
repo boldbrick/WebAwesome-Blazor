@@ -5,18 +5,25 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 
-namespace WebAwesome.Blazor.Base;
+namespace WebAwesome.Blazor.Infrastructure;
 
 /// <summary>
-/// Helpers for reading <see cref="ChangeEventArgs"/> delivered through custom event types.
+/// Reads the value of a <see cref="ChangeEventArgs"/> that a custom element sends, in the forms that reach .NET: a
+/// string, a JSON element (through a custom event type) or an array. The form controls of WebAwesome.Blazor read their
+/// change and input events with these helpers, and a sister wrapper set can use them for its own controls.
 /// </summary>
-internal static class ChangeEventArgsExtensions
+/// <remarks>
+/// A multi-value control binds the array value of its <c>change</c> event as <c>WaSelect</c> does: an explicit
+/// <c>onchange</c> handler (<c>EventCallback.Factory.Create&lt;ChangeEventArgs&gt;</c>) reads
+/// <c>args.GetStringArrayValue()</c>, records it as the live value and assigns the model.
+/// </remarks>
+public static class ChangeEventArgsExtensions
 {
     /// <summary>
-    /// Reads the event value as a string. Blazor's dedicated change-event reader, which yields a string, only runs for
-    /// the built-in "change"/"input" event names; for a custom event type (such as the numericchange/numericinput
-    /// aliases registered by the JS initializer) <see cref="ChangeEventArgs.Value"/> is deserialized as a
-    /// <see cref="JsonElement"/>, which Blazor's binders cannot convert.
+    /// Reads the event value as a string. Blazor's own change-event reader, which gives a string, runs only for the
+    /// built-in "change" and "input" event names. For a custom event type, <see cref="ChangeEventArgs.Value"/> arrives
+    /// as a <see cref="JsonElement"/>, which Blazor's binders cannot convert; this reads a JSON string as its text, JSON
+    /// null as null and any other JSON value as its raw text. Any other value is converted with the invariant culture.
     /// </summary>
     /// <param name="args">The change event arguments</param>
     /// <returns>The value as a string, or null when there is no value</returns>
@@ -34,9 +41,10 @@ internal static class ChangeEventArgsExtensions
     }
 
     /// <summary>
-    /// Reads the event value as a list of strings: the value of a multiple-selection wa-select or wa-combobox is a
-    /// string array, which reaches .NET as a string or object array (or, through a custom event type, a JSON array).
-    /// A plain string is split at commas, the format the wrappers used before.
+    /// Reads the event value as a list of strings, for an element whose value is a string array (a multiple-selection
+    /// wa-select or wa-combobox, wa-tag-input). The array reaches .NET as a string or object array, or, through a
+    /// custom event type, as a JSON array; a JSON item that is no string gives its raw text. A plain string is split at
+    /// commas, and an empty string or null gives an empty list.
     /// </summary>
     /// <param name="args">The change event arguments</param>
     /// <returns>The values, empty when there is no value</returns>
@@ -58,7 +66,8 @@ internal static class ChangeEventArgsExtensions
     }
 
     /// <summary>
-    /// Parses a number formatted by JavaScript (invariant culture, possibly in exponent notation).
+    /// Parses a number that JavaScript formatted (invariant culture, possibly in exponent notation, for example
+    /// "1e-7"), as an element sends its numeric value.
     /// </summary>
     /// <param name="text">The text to parse</param>
     /// <param name="value">The parsed number</param>

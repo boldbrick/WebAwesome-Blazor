@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -123,6 +124,12 @@ public class WaRadioGroup : WaLabeledInputBase<string?>
     /// <inheritdoc />
     protected override string? LiveValuePropertyName => "value";
 
+    /// <summary>
+    /// Null: wa-radio-group declares no size default (it passes its size down to the radios), so removing the
+    /// attribute restores the unset state and the size renders plainly.
+    /// </summary>
+    protected override WaSize? ElementDefaultSize => null;
+
     #endregion
 
     #region ------ Public Methods ------
@@ -151,11 +158,6 @@ public class WaRadioGroup : WaLabeledInputBase<string?>
         SetCurrentValueAsStringFromElement(args.GetStringValue());
         await OnValueChange.InvokeAsync(CurrentValue);
     }
-
-    // wa-radio-group declares no size default (it passes its size down to the radios), so removing the attribute
-    // restores the unset state and the size renders plainly
-    private protected override void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
-        => builder.AddAttributeIfNotNull(sequence, "size", Size?.ToHtmlValue());
 
     #endregion
 
