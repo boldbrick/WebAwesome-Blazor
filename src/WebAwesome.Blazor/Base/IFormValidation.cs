@@ -17,7 +17,8 @@ public interface IFormValidation
     /// <remarks>
     /// This method uses JavaScript interop to call the underlying web component's
     /// setCustomValidity method. Implementation depends on the Web Awesome library
-    /// being properly loaded in the page.
+    /// being properly loaded in the page. A call before the element is defined (in the first
+    /// OnAfterRenderAsync, while its module is still loading) waits for the definition.
     /// </remarks>
     Task SetCustomValidityAsync(string message);
 

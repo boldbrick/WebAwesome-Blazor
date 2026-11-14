@@ -408,6 +408,21 @@ module.exports = {
       },
     },
     {
+      // the interop's setCustomValidity waits for the definition as invokeMethod does (WAB-68): before the element
+      // module has loaded, the element has no setCustomValidity yet
+      name: 'timing: WaFileInput.SetCustomValidityAsync on the first render waits until the element is defined',
+      methods: ['WaFileInput.SetCustomValidityAsync'],
+      route: EARLY_ROUTE,
+      tags: [FILE_INPUT],
+      pro: true,
+      noReadyWait: true,
+      setup: delayModules,
+      run: async page => {
+        await expectEarlyOutcome(page, 'early-file-validity');
+        expect(await validityOf(page, 'file-input')).toEqual({ message: VALIDITY_MESSAGE, customError: true });
+      },
+    },
+    {
       name: 'timing: a call on a disposed wrapper fails with an error and leaves Blazor running',
       methods: ['WaDataGrid.GetStateAsync'],
       tags: [GRID],
@@ -426,22 +441,6 @@ module.exports = {
   ],
 
   knownDefects: [
-    {
-      // the interop's setCustomValidity does not wait for the definition as invokeMethod does since WAB-63: before the
-      // element module has loaded it throws "does not implement WebAwesomeFormControl interface"
-      name: 'WaFileInput.SetCustomValidityAsync on the first render waits until the element is defined',
-      defect: 'WAB-65 L1',
-      methods: ['WaFileInput.SetCustomValidityAsync'],
-      route: EARLY_ROUTE,
-      tags: [FILE_INPUT],
-      pro: true,
-      noReadyWait: true,
-      setup: delayModules,
-      run: async page => {
-        await expectEarlyOutcome(page, 'early-file-validity');
-        expect(await validityOf(page, 'file-input')).toEqual({ message: VALIDITY_MESSAGE, customError: true });
-      },
-    },
     {
       name: 'WaCombobox.ShowAsync completes when wa-show is cancelled',
       defect: 'WAB-64 F8',

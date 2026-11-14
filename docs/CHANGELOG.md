@@ -2,7 +2,7 @@
 
 All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [3.14.0.3] — 2026-11-11
+## [3.14.0.3] — 2026-11-14
 
 A third revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. A package can now build wrappers of its own custom elements on the same rendering infrastructure as the library's wrappers. There are no breaking changes.
 
@@ -16,6 +16,9 @@ A third revision of the bindings for Web Awesome 3.14.0; the default CDN version
 - `WaWireFormat` is public: it formats and parses the Web Awesome wire forms of dates, times, date ranges and lists.
 - `FormControlRendering` renders the label and hint cluster and the start and end slots for your own form controls, and `WaEnumJsonConverter<TEnum>` serializes your own enums as the strings of their element.
 - `WaInputBase.FormatValidationMessage` is protected (it was not accessible), so a derived control words a parse failure as the library's controls do.
+
+### Fixed
+- `SetCustomValidityAsync` of a form control no longer fails with "does not implement WebAwesomeFormControl interface" when you call it soon after the first render: it waits until Web Awesome has loaded the element.
 
 ## [3.14.0.2] — 2026-10-28
 

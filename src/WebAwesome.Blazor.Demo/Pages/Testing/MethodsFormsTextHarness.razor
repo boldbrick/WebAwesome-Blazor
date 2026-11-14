@@ -112,6 +112,7 @@
 <ExampleSection Title="Calls on the first render (?early=true)">
     <p>Input focus: <output data-testid="early-input-focus">@earlyInputFocus</output></p>
     <p>Number input step up: <output data-testid="early-number-step-up">@earlyNumberStepUp</output></p>
+    <p>Input custom validity: <output data-testid="early-input-validity">@earlyInputValidity</output></p>
 </ExampleSection>
 
 @code {
@@ -162,6 +163,7 @@
 
     private string earlyInputFocus = NotCalled;
     private string earlyNumberStepUp = NotCalled;
+    private string earlyInputValidity = NotCalled;
 
     // ?early=true: the page calls methods on its first render, while the autoloader still imports the element modules
     [SupplyParameterFromQuery(Name = "early")] public bool CallOnFirstRender { get; set; }
@@ -172,9 +174,11 @@
         {
             var inputFocus = OutcomeOf(() => input!.FocusAsync());
             var numberStepUp = OutcomeOf(() => numberInput!.StepUpAsync());
-            await Task.WhenAll(inputFocus, numberStepUp);
+            var inputValidity = OutcomeOf(() => input!.SetCustomValidityAsync(ValidityMessage));
+            await Task.WhenAll(inputFocus, numberStepUp, inputValidity);
             earlyInputFocus = inputFocus.Result;
             earlyNumberStepUp = numberStepUp.Result;
+            earlyInputValidity = inputValidity.Result;
             StateHasChanged();
         }
     }

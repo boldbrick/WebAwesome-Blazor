@@ -449,9 +449,9 @@ const EVENT_CASES = [
   },
   {
     name: 'OnInvalid of every form control when an invalid form is submitted',
-    // every control the harness marks invalid must have upgraded first: an element whose module is still loading has
-    // no setCustomValidity yet, so marking it throws and the form is never marked (the Pro pass serves the modules
-    // from the demo itself, where under a full worker load wa-otp-input or wa-known-date can lag behind)
+    // every control the harness marks invalid upgrades first: the marking of an element whose module is still loading
+    // waits for its definition (WAB-68), and this case tests the invalid events, not that wait (the Pro pass serves the
+    // modules from the demo itself, where under a full worker load wa-otp-input or wa-known-date can lag behind)
     route: FORMS, tags: ['wa-input', 'wa-textarea', 'wa-number-input', 'wa-checkbox', 'wa-switch', 'wa-radio-group', 'wa-slider',
       'wa-rating', 'wa-color-picker', 'wa-known-date', 'wa-otp-input', 'wa-time-input', 'wa-select', 'wa-tag-input', 'wa-button'],
     callbacks: ids('WaInput', ['OnInvalid']).concat(
