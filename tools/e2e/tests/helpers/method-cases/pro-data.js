@@ -1,7 +1,7 @@
 // @ts-check
 const fs = require('fs');
 const { expect } = require('../test');
-const { callMethod, callOk } = require('../method-harness');
+const { allowEvent, callMethod, callOk, cancelEvent } = require('../method-harness');
 const { WA_READY_TIMEOUT_MS } = require('../wa-ready');
 
 // Method cases of the group "pro-data" (tools\e2e\data\method-groups.json): WaDataGrid, WaCombobox and WaFileInput on
@@ -394,6 +394,48 @@ module.exports = {
       },
     },
     {
+      // the Promise of show() and hide() waits for the after-event, which a cancelled action never dispatches; the
+      // wrapper completes the call when the action is cancelled, as dialog, drawer and dropdown do
+      name: 'WaCombobox.ShowAsync and HideAsync complete when wa-show and wa-hide are cancelled',
+      methods: ['WaCombobox.ShowAsync', 'WaCombobox.HideAsync'],
+      tags: [COMBOBOX],
+      pro: true,
+      run: async page => {
+        const isOpen = () => page.getByTestId('combobox').evaluate(el => /** @type {any} */ (el).open);
+        await cancelEvent(page, 'combobox', 'wa-show');
+        const shown = await callMethod(page, 'combobox-show', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
+        expect(shown.done, 'the cancelled show completes').toBe(true);
+        expect(await isOpen(), 'the cancelled show leaves the combobox closed').toBe(false);
+
+        await allowEvent(page, 'combobox', 'wa-show');
+        await callOk(page, 'combobox-show', QUIET);
+        expect(await isOpen(), 'the combobox opens').toBe(true);
+
+        await cancelEvent(page, 'combobox', 'wa-hide');
+        const hidden = await callMethod(page, 'combobox-hide', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
+        expect(hidden.done, 'the cancelled hide completes').toBe(true);
+        expect(await isOpen(), 'the cancelled hide leaves the combobox open').toBe(true);
+      },
+    },
+    {
+      // reload() is for server mode only (documented): a local combobox filters its own options as the query changes,
+      // and the call returns at once without filtering again
+      name: 'WaCombobox.ReloadAsync completes and changes nothing on a local combobox',
+      methods: ['WaCombobox.ReloadAsync'],
+      tags: [COMBOBOX],
+      pro: true,
+      run: async page => {
+        const input = page.getByTestId('combobox').getByRole('combobox');
+        await input.click();
+        await input.pressSequentially('ch');
+        await expect.poll(() => visibleOptions(page)).toEqual(['Cherry']);
+
+        // Banana becomes Chestnut in place; the filter is not run again, so the renamed option stays filtered out
+        await callOk(page, 'combobox-rename-and-reload', QUIET);
+        expect(await visibleOptions(page)).toEqual(['Cherry']);
+      },
+    },
+    {
       name: 'timing: calls on the first render wait until the elements are defined',
       methods: ['WaDataGrid.ReloadAsync', 'WaCombobox.FocusAsync'],
       route: EARLY_ROUTE,
@@ -440,38 +482,7 @@ module.exports = {
     },
   ],
 
-  knownDefects: [
-    {
-      name: 'WaCombobox.ShowAsync completes when wa-show is cancelled',
-      defect: 'WAB-64 F8',
-      methods: ['WaCombobox.ShowAsync'],
-      tags: [COMBOBOX],
-      pro: true,
-      run: async page => {
-        await page.getByTestId('combobox').evaluate(el => el.addEventListener('wa-show', event => event.preventDefault()));
-        // the Promise of show() waits for wa-after-show, which a cancelled show never dispatches
-        const outcome = await callMethod(page, 'combobox-show', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
-        expect(outcome.done).toBe(true);
-      },
-    },
-    {
-      name: 'WaCombobox.ReloadAsync re-runs the filter of a local combobox',
-      defect: 'WAB-64 F7',
-      methods: ['WaCombobox.ReloadAsync'],
-      tags: [COMBOBOX],
-      pro: true,
-      run: async page => {
-        const input = page.getByTestId('combobox').getByRole('combobox');
-        await input.click();
-        await input.pressSequentially('ch');
-        await expect.poll(() => visibleOptions(page)).toEqual(['Cherry']);
-
-        // Banana becomes Chestnut in place; a re-run filter shows it
-        await callOk(page, 'combobox-rename-and-reload', QUIET);
-        await expect.poll(() => visibleOptions(page), { timeout: SETTLE_TIMEOUT_MS }).toEqual(['Chestnut', 'Cherry']);
-      },
-    },
-  ],
+  knownDefects: [],
 
   external: [],
 };

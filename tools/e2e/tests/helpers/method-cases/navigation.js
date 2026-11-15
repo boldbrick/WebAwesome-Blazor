@@ -1,6 +1,6 @@
 // @ts-check
 const { expect } = require('../test');
-const { callMethod, callOk } = require('../method-harness');
+const { allowEvent, callMethod, callOk, cancelEvent } = require('../method-harness');
 const { WA_READY_TIMEOUT_MS } = require('../wa-ready');
 
 // Method cases of the group "navigation" (tools\e2e\data\method-groups.json): WaAccordion, WaAccordionItem, WaDetails,
@@ -45,8 +45,11 @@ const LAST_SLIDE = 3;
 // the share of a slide in the viewport that counts as shown
 const SHOWN_RATIO = 0.9;
 
-// the tree of the harness: the parent item has two child items
-const TREE_CHILD_COUNT = 2;
+// the tree of the harness: the parent item has two child items, the first with an id, the second disabled
+const TREE_CHILDREN = [
+  { id: 'tree-apple', text: 'Apple', selected: false, expanded: false, disabled: false, lazy: false },
+  { id: null, text: 'Banana', selected: false, expanded: false, disabled: true, lazy: false },
+];
 
 // the split panel of the harness: 400 px wide, divider at 25 %
 const SPLIT_WIDTH_PX = 400;
@@ -355,6 +358,39 @@ module.exports = {
       },
     },
     {
+      // the child items are live elements whose fields point back to them, so they do not serialize; the wrapper
+      // returns a plain projection of each one
+      name: 'WaTreeItem.GetChildrenItemsAsync returns the child items of a parent',
+      methods: ['WaTreeItem.GetChildrenItemsAsync'],
+      tags: [TREE, TREE_ITEM],
+      run: async page => {
+        expect(await callOk(page, 'tree-parent-children')).toEqual(TREE_CHILDREN);
+      },
+    },
+    {
+      // the Promise of show() and hide() waits for the after-event, which a cancelled action never dispatches; the
+      // wrapper completes the call when the action is cancelled, as dialog, drawer and dropdown do
+      name: 'WaDetails.ShowAsync and HideAsync complete when wa-show and wa-hide are cancelled',
+      methods: ['WaDetails.ShowAsync', 'WaDetails.HideAsync'],
+      tags: [DETAILS],
+      run: async page => {
+        const isOpen = () => page.getByTestId('details').evaluate(el => /** @type {any} */ (el).open);
+        await cancelEvent(page, 'details', 'wa-show');
+        const shown = await callMethod(page, 'details-show', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
+        expect(shown.done, 'the cancelled show completes').toBe(true);
+        expect(await isOpen(), 'the cancelled show leaves the details closed').toBe(false);
+
+        await allowEvent(page, 'details', 'wa-show');
+        await callOk(page, 'details-show', QUIET);
+        expect(await isOpen(), 'the details open').toBe(true);
+
+        await cancelEvent(page, 'details', 'wa-hide');
+        const hidden = await callMethod(page, 'details-hide', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
+        expect(hidden.done, 'the cancelled hide completes').toBe(true);
+        expect(await isOpen(), 'the cancelled hide leaves the details open').toBe(true);
+      },
+    },
+    {
       name: 'timing: calls on the first render wait until the elements are defined',
       methods: ['WaAccordionItem.FocusAsync', 'WaTabGroup.ShowTabAsync'],
       route: EARLY_ROUTE,
@@ -371,31 +407,7 @@ module.exports = {
     },
   ],
 
-  knownDefects: [
-    {
-      // the child items are live elements whose localize controller points back to them (renderOptions.host), so the
-      // result fails to serialize ("Converting circular structure to JSON"); the leaf case proves the working path
-      name: 'WaTreeItem.GetChildrenItemsAsync returns the child items of a parent',
-      defect: 'WAB-64 F5',
-      methods: ['WaTreeItem.GetChildrenItemsAsync'],
-      tags: [TREE, TREE_ITEM],
-      run: async page => {
-        expect(await callOk(page, 'tree-parent-children'), 'the number of child items').toBe(TREE_CHILD_COUNT);
-      },
-    },
-    {
-      name: 'WaDetails.ShowAsync completes when wa-show is cancelled',
-      defect: 'WAB-64 F8',
-      methods: ['WaDetails.ShowAsync'],
-      tags: [DETAILS],
-      run: async page => {
-        await page.getByTestId('details').evaluate(el => el.addEventListener('wa-show', event => event.preventDefault()));
-        // the Promise of show() waits for wa-after-show, which a cancelled show never dispatches
-        const outcome = await callMethod(page, 'details-show', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
-        expect(outcome.done).toBe(true);
-      },
-    },
-  ],
+  knownDefects: [],
 
   external: [],
 };

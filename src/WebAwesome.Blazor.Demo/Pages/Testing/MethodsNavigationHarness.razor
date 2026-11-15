@@ -85,14 +85,14 @@
 
 <ExampleSection Title="WaTreeItem">
     <div class="method-calls">
-        <MethodCall Id="tree-parent-children" Function="async () => (await treeParent!.GetChildrenItemsAsync()).GetArrayLength()" />
+        <MethodCall Id="tree-parent-children" Function="async () => await treeParent!.GetChildrenItemsAsync()" />
         <MethodCall Id="tree-leaf-children" Function="async () => (await treeLeaf!.GetChildrenItemsAsync()).GetArrayLength()" />
     </div>
     <WaTree data-testid="tree">
         <WaTreeItem @ref="treeParent" data-testid="tree-parent" Expanded="true">
             Fruits
-            <WaTreeItem @ref="treeLeaf" data-testid="tree-leaf">Apple</WaTreeItem>
-            <WaTreeItem>Banana</WaTreeItem>
+            <WaTreeItem @ref="treeLeaf" id="tree-apple" data-testid="tree-leaf">Apple</WaTreeItem>
+            <WaTreeItem Disabled="true">Banana</WaTreeItem>
         </WaTreeItem>
     </WaTree>
 </ExampleSection>

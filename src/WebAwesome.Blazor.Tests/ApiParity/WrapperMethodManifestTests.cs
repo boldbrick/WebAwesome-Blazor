@@ -58,10 +58,12 @@ public class WrapperMethodManifestTests
     private const string GeneratorPath = "src\\WebAwesome.Blazor.Tests\\ApiParity\\WrapperMethodManifestTests.cs";
     private const string CreateRenderedMethodName = nameof(RecordingJSRuntime.CreateRendered);
 
-    // the module functions whose second argument names the element member they reach
+    // the module functions whose second argument names the element member they reach (focusOverlay: the panel
+    // property it focuses); clickShadowPart names a CSS part, not a member
     private static readonly HashSet<string> MemberNamingFunctions = new(StringComparer.Ordinal)
     {
-        "invokeMethod", "invokeMethodIfDefined", "setProperty", "getProperty", "syncProperty", "setElementFunction",
+        "invokeMethod", "invokeMethodIfDefined", "invokeCancelableMethod", "setProperty", "getProperty", "syncProperty",
+        "setElementFunction", "focusOverlay",
     };
 
     // setCustomValidity(element, message) reaches the element method of the same name

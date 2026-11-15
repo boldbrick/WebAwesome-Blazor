@@ -107,6 +107,18 @@ public static class Constants
     internal const string RelayedKeyDownEventAttribute = "onwablazor-keydown";
 
     /// <summary>
+    /// Name of Web Awesome's cancelable show event: a handler that calls preventDefault() keeps the element closed
+    /// (see <see cref="WebAwesomeJSInterop.InvokeCancelableMethodAsync"/>).
+    /// </summary>
+    internal const string ShowEventName = "wa-show";
+
+    /// <summary>
+    /// Name of Web Awesome's cancelable hide event: a handler that calls preventDefault() keeps the element open
+    /// (see <see cref="WebAwesomeJSInterop.InvokeCancelableMethodAsync"/>).
+    /// </summary>
+    internal const string HideEventName = "wa-hide";
+
+    /// <summary>
     /// Attribute value read as true by Web Awesome's "true"/"false" attribute converters (e.g. spellcheck).
     /// </summary>
     internal const string TrueAttributeValue = "true";

@@ -40,6 +40,19 @@ internal sealed class RecordingJSObjectReference : IJSObjectReference
     }
 
     /// <summary>
+    /// Asserts that exactly one module call was made and that it called the given module function, and returns the
+    /// arguments of the call after the element (the first argument).
+    /// </summary>
+    /// <param name="identifier">Expected module function, for example "focusOverlay"</param>
+    /// <returns>The arguments of the call without the element</returns>
+    public object?[] AssertCalledFunction(string identifier)
+    {
+        var (actual, args) = Assert.Single(Invocations);
+        Assert.Equal(identifier, actual);
+        return args.Skip(1).ToArray();
+    }
+
+    /// <summary>
     /// Asserts that exactly one module call was made and that it set an element property through "setProperty",
     /// and returns the value set.
     /// </summary>

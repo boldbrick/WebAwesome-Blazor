@@ -152,6 +152,39 @@ async function callOk(page, id, options = {}) {
 }
 
 /**
+ * Makes an element cancel every event of a type it dispatches itself, as a consumer handler that calls preventDefault
+ * does (a cancelled wa-show keeps the element closed, a cancelled wa-hide keeps it open), until allowEvent.
+ *
+ * @param {Page} page
+ * @param {string} testId test id of the element
+ * @param {string} type event type, for example "wa-show"
+ */
+async function cancelEvent(page, testId, type) {
+  await page.getByTestId(testId).evaluate((el, t) => {
+    const e = /** @type {any} */ (el);
+    e.e2eCancelled = e.e2eCancelled ?? new Set();
+    e.e2eCancelListeners = e.e2eCancelListeners ?? new Set();
+    e.e2eCancelled.add(t);
+    if (e.e2eCancelListeners.has(t)) return;
+    e.e2eCancelListeners.add(t);
+    el.addEventListener(t, event => {
+      if (event.target === el && e.e2eCancelled.has(t)) event.preventDefault();
+    });
+  }, type);
+}
+
+/**
+ * Stops cancelling an event type that cancelEvent made the element cancel.
+ *
+ * @param {Page} page
+ * @param {string} testId test id of the element
+ * @param {string} type event type, for example "wa-show"
+ */
+async function allowEvent(page, testId, type) {
+  await page.getByTestId(testId).evaluate((el, t) => /** @type {any} */ (el).e2eCancelled?.delete(t), type);
+}
+
+/**
  * Opens a case's page and waits for its elements (or skips a Pro case visibly on the free CDN).
  *
  * @param {Page} page
@@ -222,5 +255,6 @@ async function runKnownDefectCase(module, c, page, context) {
 }
 
 module.exports = {
-  callMethod, callOk, openMethodHarness, runMethodCase, runKnownDefectCase, loadMethodCaseModules, methodGroups, readMethodData,
+  callMethod, callOk, cancelEvent, allowEvent, openMethodHarness, runMethodCase, runKnownDefectCase, loadMethodCaseModules,
+  methodGroups, readMethodData,
 };

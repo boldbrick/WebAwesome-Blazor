@@ -2,6 +2,22 @@
 
 All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.14.0.4] — 2026-11-15
+
+A fourth revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. Wrapper methods that did nothing, failed or never completed in the browser now do what their documentation says, and the documentation of several methods names their preconditions. There are no breaking changes.
+
+### Changed
+- `ShowAsync` and `HideAsync` of `WaDetails`, `WaPopover`, `WaTooltip` and the popup form controls (`WaColorPicker`, `WaCombobox`, `WaSelect`, `WaTimeInput`, `WaDateInput`, `WaDateRangeInput`) complete at once when a handler cancels the show or hide (`wa-show` or `wa-hide` with `preventDefault()`), as `WaDialog`, `WaDrawer` and `WaDropdown` already do. Before, the call never completed.
+
+### Fixed
+- `WaColorPicker.GetHexStringAsync` returns the current value as a hex string instead of an empty string.
+- `WaCopyButton.CopyAsync` copies the value and raises `OnCopy`; before, nothing was copied.
+- `WaDialog.FocusAsync` and `WaDrawer.FocusAsync` move the focus into the open dialog or drawer, as the element does when it opens: to an element with `autofocus`, else to the dialog or drawer panel.
+- `WaRelativeTime.UpdateAsync` shows the phrase for the current time; before, it rendered the old phrase again.
+- `WaTreeItem.GetChildrenItemsAsync` no longer fails with "Converting circular structure to JSON" for an item with children: it returns the id, label text and states of each child item.
+- `WaTextArea.ScrollPositionAsync` with a position returns the resulting scroll position instead of `null`.
+- `WaInput.StepUpAsync`, `WaInput.StepDownAsync`, `WaNumberInput.StepUpAsync` and `WaNumberInput.StepDownAsync` update the bound value, the edit context and its validation.
+
 ## [3.14.0.3] — 2026-11-15
 
 A third revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. A package can now build wrappers of its own custom elements on the same rendering infrastructure as the library's wrappers. There are no breaking changes.

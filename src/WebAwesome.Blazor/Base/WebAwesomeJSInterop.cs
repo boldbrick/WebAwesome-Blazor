@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Models;
 
@@ -571,6 +572,132 @@ public class WebAwesomeJSInterop
         catch (JSDisconnectedException)
         {
             // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Invokes a parameterless show or hide method of a Web Awesome element whose Promise settles on the element's
+    /// after-event, and completes at once when the action is cancelled: a handler of the cancel event that calls
+    /// preventDefault() keeps the element as it was, and the element then dispatches no after-event. A call before the
+    /// element is defined waits in the browser for the definition.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="methodName">Name of the method to invoke, for example "show"</param>
+    /// <param name="cancelEventName">The cancelable event the element dispatches for the action, for example "wa-show"</param>
+    /// <returns>A task that completes when the action has finished or was cancelled</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="ArgumentNullException">Thrown when methodName is null or empty</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the method call fails, or when the element is still not
+    /// defined after the wait</exception>
+    internal async Task InvokeCancelableMethodAsync(ElementReference elementReference, string methodName, string cancelEventName)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        if (string.IsNullOrEmpty(methodName))
+            throw new ArgumentNullException(nameof(methodName));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("invokeCancelableMethod", elementReference, methodName, cancelEventName);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to invoke method '{methodName}': {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Moves the focus into an open wa-dialog or wa-drawer by the element's own rule on open: to the first descendant
+    /// with the autofocus attribute, else to the element's panel (its native dialog element, the element's public
+    /// dialog or drawer property). A closed element is left as it is.
+    /// </summary>
+    /// <param name="elementReference">Reference to the wa-dialog or wa-drawer element</param>
+    /// <param name="panelProperty">The element property that holds its native dialog element ("dialog", "drawer")</param>
+    /// <returns>A task that completes when the focus was moved, or the element was found closed</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task FocusOverlayAsync(ElementReference elementReference, string panelProperty)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeAsync<bool>("focusOverlay", elementReference, panelProperty);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to focus the {panelProperty}: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Clicks the element of a CSS part in the shadow root of a Web Awesome element, for an action the element runs
+    /// only from a click inside its shadow root and exposes no public method for. Uses a shadow-root internal of the
+    /// element; recheck it on every upgrade.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="partName">The CSS part of the element to click, for example "button"</param>
+    /// <returns>A task that completes when the click was dispatched</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the element has no such part, or the call fails</exception>
+    internal async Task ClickShadowPartAsync(ElementReference elementReference, string partName)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("clickShadowPart", elementReference, partName);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to click the '{partName}' part: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Returns the direct child items of a wa-tree-item as a JSON array of plain objects: per item its id attribute
+    /// (null when it has none), its label text, and its selected, expanded, disabled and lazy states.
+    /// </summary>
+    /// <param name="elementReference">Reference to the wa-tree-item element</param>
+    /// <returns>The JSON array of the child items</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task<JsonElement> GetTreeItemChildrenAsync(ElementReference elementReference)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<JsonElement>("getTreeItemChildren", elementReference);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to get the child items: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, return the default value silently
+            return default;
         }
     }
 

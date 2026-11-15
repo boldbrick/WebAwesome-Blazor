@@ -636,6 +636,13 @@ public class WaDataGrid : ComponentBase
     /// </summary>
     /// <param name="options">Copy options; all fields are optional.</param>
     /// <returns>The number of rows copied.</returns>
+    /// <remarks>
+    /// The browser writes to the clipboard only for a focused page with a user activation (call this method from a
+    /// handler of a user action, such as a click) or with the clipboard-write permission. In server mode the copy
+    /// holds the loaded page only.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered, or when the browser refuses
+    /// the clipboard write</exception>
     public async Task<int> CopySelectedRowsAsync(WaDataGridCopyOptions? options = null)
     {
         if (Element == null)
@@ -775,8 +782,17 @@ public class WaDataGrid : ComponentBase
     }
 
     /// <summary>
-    /// Re-runs the current server request (server mode only), even if its parameters haven't changed.
+    /// Re-runs the current server request, even if its parameters haven't changed: the element raises
+    /// <see cref="OnDataRequest"/> again with the current page, sort, filters and search.
     /// </summary>
+    /// <returns>A task that completes when the element has queued the request; the element sends it (its
+    /// wa-data-request event) a moment later, so the task does not wait for <see cref="OnDataRequest"/> or for the new
+    /// rows. Requests queued in the same moment are sent as one.</returns>
+    /// <remarks>
+    /// <see cref="Server"/> mode only: on a client-mode grid, and on a grid that is not in the document, the call does
+    /// nothing.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task ReloadAsync()
     {
         if (Element == null)

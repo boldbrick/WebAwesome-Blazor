@@ -40,14 +40,18 @@ public interface IWaPopupControl
     /// <summary>
     /// Opens the popup.
     /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <returns>A task that completes after the popup has opened and its animation is complete; at once when the
+    /// element does not open it (for example, it is open already), or when a handler cancels the open (wa-show with
+    /// preventDefault())</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     Task ShowAsync();
 
     /// <summary>
     /// Closes the popup.
     /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <returns>A task that completes after the popup has closed and its animation is complete; at once when the
+    /// element does not close it (for example, it is closed already), or when a handler cancels the close (wa-hide
+    /// with preventDefault())</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     Task HideAsync();
 }

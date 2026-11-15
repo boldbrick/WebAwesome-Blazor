@@ -1,6 +1,6 @@
 // @ts-check
 const { expect } = require('../test');
-const { callMethod, callOk } = require('../method-harness');
+const { allowEvent, callMethod, callOk, cancelEvent } = require('../method-harness');
 const { WA_READY_TIMEOUT_MS } = require('../wa-ready');
 
 // Method cases of the group "pickers" (tools\e2e\data\method-groups.json): WaColorPicker, WaSelect and WaTimeInput (free),
@@ -23,6 +23,7 @@ const VALIDITY_MESSAGE = 'Pick one, please';
 // the initial color of the harness (#ff0000) in the formats the cases ask for
 const INITIAL_RGB = 'rgb(255, 0, 0)';
 const INITIAL_HSL = 'hsl(0, 100%, 50%)';
+const INITIAL_HEX = '#ff0000';
 
 // the swatches the harness sets
 const SWATCH_COLORS = ['#ff0000', '#00ff00', '#0000ff'];
@@ -241,6 +242,16 @@ module.exports = {
       },
     },
     {
+      // the element's getHexString(hue, saturation, brightness, alpha) converts its arguments; the wrapper formats the
+      // current value (getFormattedValue), as hex without the alpha digits, because the picker has no opacity
+      name: 'WaColorPicker.GetHexStringAsync returns the value as a hex string',
+      methods: ['WaColorPicker.GetHexStringAsync'],
+      tags: [COLOR_PICKER],
+      run: async page => {
+        expect(await callOk(page, 'color-hex')).toBe(INITIAL_HEX);
+      },
+    },
+    {
       name: 'WaColorPicker.SetSwatchesAsync sets and renders the swatches',
       methods: ['WaColorPicker.SetSwatchesAsync'],
       tags: [COLOR_PICKER],
@@ -305,6 +316,28 @@ module.exports = {
       run: async page => provePopupInput(page, 'time', 'time-input'),
     },
     {
+      // the Promise of show() and hide() waits for the after-event, which a cancelled action never dispatches; the
+      // wrapper completes the call when the action is cancelled, as dialog, drawer and dropdown do
+      name: 'WaTimeInput.ShowAsync and HideAsync complete when wa-show and wa-hide are cancelled',
+      methods: ['WaTimeInput.ShowAsync', 'WaTimeInput.HideAsync'],
+      tags: [TIME_INPUT],
+      run: async page => {
+        await cancelEvent(page, 'time-input', 'wa-show');
+        const shown = await callMethod(page, 'time-show', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
+        expect(shown.done, 'the cancelled show completes').toBe(true);
+        expect(await isOpen(page, 'time-input'), 'the cancelled show leaves the input closed').toBe(false);
+
+        await allowEvent(page, 'time-input', 'wa-show');
+        await callOk(page, 'time-show', QUIET);
+        expect(await isOpen(page, 'time-input'), 'the input opens').toBe(true);
+
+        await cancelEvent(page, 'time-input', 'wa-hide');
+        const hidden = await callMethod(page, 'time-hide', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
+        expect(hidden.done, 'the cancelled hide completes').toBe(true);
+        expect(await isOpen(page, 'time-input'), 'the cancelled hide leaves the input open').toBe(true);
+      },
+    },
+    {
       name: 'WaDateInput takes and leaves the focus, opens and closes, reports a custom validity and clears its value',
       methods: ['WaDateInput.FocusAsync', 'WaDateInput.BlurAsync', 'WaDateInput.ShowAsync', 'WaDateInput.HideAsync',
         'WaDateInput.SetCustomValidityAsync', 'WaDateInput.ResetValidityAsync', 'WaDateInput.ClearAsync'],
@@ -357,34 +390,7 @@ module.exports = {
     },
   ],
 
-  knownDefects: [
-    {
-      // the JS method is getHexString(hue, saturation, brightness, alpha); the wrapper passes no arguments, so the
-      // element parses "hsva(undefined, ...)" and returns "" for every value
-      name: 'WaColorPicker.GetHexStringAsync returns the value as a hex string',
-      defect: 'WAB-64 F1',
-      methods: ['WaColorPicker.GetHexStringAsync'],
-      exemption: 'pickers-color-hex-string',
-      tags: [COLOR_PICKER],
-      run: async page => {
-        // the doc promises the current value (#ff0000) as hex; with or without the alpha digits
-        expect(await callOk(page, 'color-hex')).toMatch(/^#ff0000(ff)?$/i);
-      },
-    },
-    {
-      name: 'WaTimeInput.ShowAsync completes when wa-show is cancelled',
-      defect: 'WAB-64 F8',
-      methods: ['WaTimeInput.ShowAsync'],
-      tags: [TIME_INPUT],
-      run: async page => {
-        await page.getByTestId('time-input').evaluate(el => el.addEventListener('wa-show', event => event.preventDefault()));
-        // the Promise of show() waits for wa-after-show, which a cancelled show never dispatches
-        const outcome = await callMethod(page, 'time-show', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
-        expect(outcome.done).toBe(true);
-        expect(await isOpen(page, 'time-input'), 'the cancelled show leaves the input closed').toBe(false);
-      },
-    },
-  ],
+  knownDefects: [],
 
   external: [],
 };

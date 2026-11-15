@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -173,9 +174,28 @@ public class WaNewJSInteropMethodsTests : IDisposable
         // Act
         await component.ScrollPositionAsync(top: 5, left: 15);
 
-        // Assert
-        Assert.Equal("scrollPosition", recordingModule.LastMethodName);
-        Assert.Single(recordingModule.LastArgs);
+        // Assert - the set call takes one position object
+        var (method, args) = recordingModule.MethodCalls[0];
+        Assert.Equal("scrollPosition", method);
+        Assert.Single(args);
+    }
+
+    [Fact]
+    public async Task WaTextArea_ScrollPositionAsync_WithArguments_ReturnsThePositionAfterTheSet()
+    {
+        // Arrange - the element's scrollPosition(position) returns nothing; the getter answers the second call
+        var component = CreateRenderedComponent<WaTextArea>();
+        recordingModule.NextResult = new WaTextAreaScrollPosition(5, 5);
+
+        // Act
+        var result = await component.ScrollPositionAsync(top: 5, left: 15);
+
+        // Assert - the set, then the read of the resulting position
+        Assert.Collection(recordingModule.MethodCalls,
+            set => Assert.Single(set.Args),
+            read => Assert.Empty(read.Args));
+        Assert.All(recordingModule.MethodCalls, call => Assert.Equal("scrollPosition", call.Method));
+        Assert.Equal(new WaTextAreaScrollPosition(5, 5), result);
     }
 
     #endregion
@@ -312,13 +332,15 @@ public class WaNewJSInteropMethodsTests : IDisposable
     }
 
     /// <summary>
-    /// Records the last "invokeMethod" call, capturing the method name and the trailing args array so that tests
-    /// can assert on the exact argument shape passed by the wrapper
+    /// Records the "invokeMethod" calls, capturing the method name and the trailing args array so that tests
+    /// can assert on the exact argument shape passed by the wrapper; NextResult answers every call that returns its
+    /// type
     /// </summary>
     private class RecordingJSObjectReference : IJSObjectReference
     {
         public string? LastMethodName { get; private set; }
         public object[] LastArgs { get; private set; } = Array.Empty<object>();
+        public List<(string? Method, object[] Args)> MethodCalls { get; } = new();
         public object? NextResult { get; set; }
 
         public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
@@ -327,11 +349,12 @@ public class WaNewJSInteropMethodsTests : IDisposable
             {
                 LastMethodName = args[1] as string;
                 LastArgs = args[2] as object[] ?? Array.Empty<object>();
+                MethodCalls.Add((LastMethodName, LastArgs));
             }
 
-            if (NextResult is not null)
+            if (NextResult is TValue result)
             {
-                return ValueTask.FromResult((TValue)NextResult);
+                return ValueTask.FromResult(result);
             }
 
             return ValueTask.FromResult(default(TValue)!);
