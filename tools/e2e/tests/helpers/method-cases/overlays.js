@@ -1,6 +1,6 @@
 // @ts-check
 const { expect } = require('../test');
-const { callMethod, callOk } = require('../method-harness');
+const { allowEvent, callMethod, callOk, cancelEvent } = require('../method-harness');
 const { WA_READY_TIMEOUT_MS } = require('../wa-ready');
 
 // Method cases of the group "overlays" (tools\e2e\data\method-groups.json): WaDialog, WaDrawer, WaDropdown,
@@ -47,13 +47,15 @@ function isOpen(locator) {
 }
 
 /**
- * Whether the focus is on the element with the test id or inside it (its shadow root or its light DOM children).
+ * Whether the focus is on the element with the test id or inside it (its shadow root or its light DOM children): the
+ * document's focused element is the element itself (a focus in its shadow root is retargeted to it) or a descendant.
+ * (:focus-within does not match the host of a focused modal dialog in Chromium.)
  *
  * @param {Page} page
  * @param {string} testId
  */
 function hasFocusWithin(page, testId) {
-  return page.getByTestId(testId).evaluate(el => el.matches(':focus-within'));
+  return page.getByTestId(testId).evaluate(el => document.activeElement !== null && el.contains(document.activeElement));
 }
 
 /**
@@ -346,7 +348,7 @@ module.exports = {
     },
     {
       // dialog, drawer and dropdown open through the open property: ShowAsync returns at once, so a cancelled show
-      // cannot leave the call waiting (unlike WAB-64 F8 below)
+      // cannot leave the call waiting; the show and hide methods of the other overlays complete on a cancel too
       name: 'ShowAsync of dialog, drawer and dropdown completes when wa-show is cancelled, and the element stays closed',
       methods: ['WaDialog.ShowAsync', 'WaDrawer.ShowAsync', 'WaDropdown.ShowAsync'],
       tags: [DIALOG, DRAWER, DROPDOWN],
@@ -358,6 +360,46 @@ module.exports = {
           await expect.poll(() => isOpen(page.getByTestId(prefix)), { message: `${prefix}: the cancelled show resets open` }).toBe(false);
           await expect(page.getByTestId(content)).toBeHidden();
         }
+      },
+    },
+    {
+      // wa-dialog's host takes no focus (no focus() of its own, no delegatesFocus, no tabindex); the wrapper focuses by
+      // the dialog's open rule: an autofocus element, else the dialog panel (the public dialog property)
+      name: 'WaDialog.FocusAsync moves the focus into the open dialog',
+      methods: ['WaDialog.FocusAsync'],
+      tags: [DIALOG],
+      run: page => focusOpenOverlay(page, 'dialog'),
+    },
+    {
+      // as for wa-dialog
+      name: 'WaDrawer.FocusAsync moves the focus into the open drawer',
+      methods: ['WaDrawer.FocusAsync'],
+      tags: [DRAWER],
+      run: page => focusOpenOverlay(page, 'drawer'),
+    },
+    {
+      // the Promise of show() and hide() waits for the after-event, which a cancelled action never dispatches; the
+      // wrapper completes the call when the action is cancelled, as dialog, drawer and dropdown do
+      name: 'WaPopover.ShowAsync and HideAsync complete when wa-show and wa-hide are cancelled',
+      methods: ['WaPopover.ShowAsync', 'WaPopover.HideAsync'],
+      tags: [POPOVER],
+      run: async page => {
+        const popover = page.getByTestId('popover');
+        await cancelEvent(page, 'popover', 'wa-show');
+        const shown = await callMethod(page, 'popover-show', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
+        expect(shown.done, 'the cancelled show completes').toBe(true);
+        expect(await isOpen(popover), 'the cancelled show leaves the popover closed').toBe(false);
+
+        await allowEvent(page, 'popover', 'wa-show');
+        await callOk(page, 'popover-show', QUIET);
+        expect(await isOpen(popover), 'the popover opens').toBe(true);
+
+        // the hide call sits inside the popover, so its click does not close the popover by itself
+        await cancelEvent(page, 'popover', 'wa-hide');
+        const hidden = await callMethod(page, 'popover-hide', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
+        expect(hidden.done, 'the cancelled hide completes').toBe(true);
+        expect(await isOpen(popover), 'the cancelled hide leaves the popover open').toBe(true);
+        await expect(page.getByTestId('popover-content')).toBeVisible();
       },
     },
     {
@@ -376,39 +418,7 @@ module.exports = {
     },
   ],
 
-  knownDefects: [
-    {
-      // wa-dialog has no focus() of its own, no delegatesFocus and no tabindex on the host: the native focus() of the
-      // host does nothing, and the focus stays on the document body
-      name: 'WaDialog.FocusAsync moves the focus into the open dialog',
-      defect: 'WAB-64 F3',
-      methods: ['WaDialog.FocusAsync'],
-      exemption: 'overlays-dialog-drawer-focus',
-      tags: [DIALOG],
-      run: page => focusOpenOverlay(page, 'dialog'),
-    },
-    {
-      // as for wa-dialog
-      name: 'WaDrawer.FocusAsync moves the focus into the open drawer',
-      defect: 'WAB-64 F3',
-      methods: ['WaDrawer.FocusAsync'],
-      exemption: 'overlays-dialog-drawer-focus',
-      tags: [DRAWER],
-      run: page => focusOpenOverlay(page, 'drawer'),
-    },
-    {
-      name: 'WaPopover.ShowAsync completes when wa-show is cancelled',
-      defect: 'WAB-64 F8',
-      methods: ['WaPopover.ShowAsync'],
-      tags: [POPOVER],
-      run: async page => {
-        await cancelShow(page, 'popover');
-        // the Promise of show() waits for wa-after-show, which a cancelled show never dispatches
-        const outcome = await callMethod(page, 'popover-show', { ...QUIET, timeout: SETTLE_TIMEOUT_MS });
-        expect(outcome.done).toBe(true);
-      },
-    },
-  ],
+  knownDefects: [],
 
   external: [],
 };

@@ -273,7 +273,8 @@
         await combobox!.ShowAsync();
     }
 
-    // renames the Banana option in place (same element, new text), renders, then asks the combobox to re-run its filter
+    // renames the Banana option in place (same element, new text), renders, then calls ReloadAsync, which a local
+    // (not server mode) combobox ignores: it does not run its filter again
     private async Task RenameAndReloadAsync()
     {
         fruits = fruits.Select(fruit => fruit.Value == RenamedFruitValue ? fruit with { Label = RenamedFruitLabel } : fruit).ToList();

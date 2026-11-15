@@ -456,6 +456,40 @@ module.exports = {
       },
     },
     {
+      // the copy handler of wa-copy-button listens for clicks inside its shadow root, which a click on the host does not
+      // reach; the wrapper clicks the element's button part there. The real click on the call button gives the
+      // clipboard write its user activation
+      name: 'WaCopyButton.CopyAsync copies the value and reports it',
+      methods: ['WaCopyButton.CopyAsync'],
+      tags: [COPY_BUTTON],
+      clipboard: true,
+      run: async page => {
+        await page.evaluate(() => navigator.clipboard.writeText('nothing copied yet'));
+
+        await callOk(page, 'copy-button-copy');
+        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()), { message: 'the value is on the clipboard' }).toBe(COPIED_VALUE);
+        await expect(page.getByTestId('copy-count'), 'OnCopy reached .NET').toHaveText('1');
+      },
+    },
+    {
+      // UpdateAsync requests an update (requestUpdate), which runs willUpdate, where the element computes its phrase for
+      // the current time
+      name: 'WaRelativeTime.UpdateAsync shows the phrase for the current time',
+      methods: ['WaRelativeTime.UpdateAsync'],
+      tags: [RELATIVE_TIME],
+      setup: installPageClock,
+      run: async page => {
+        // the first interactive render of a prerendered page replaces the element, which then computes its phrase anew
+        await whenInteractive(page, 'relative-update');
+        await expect.poll(() => relativePhrase(page)).toBe(INITIAL_PHRASE);
+
+        // an hour later (no timer fires, and the element does not sync)
+        await page.clock.setSystemTime(Date.now() + CLOCK_SHIFT_MS);
+        await callOk(page, 'relative-update');
+        await expect.poll(() => relativePhrase(page)).toBe(SHIFTED_PHRASE);
+      },
+    },
+    {
       name: 'timing: calls on the first render wait until the elements are defined',
       methods: ['WaZoomableFrame.ZoomInAsync', 'WaAnimatedImage.PlayAsync'],
       route: EARLY_ROUTE,
@@ -471,46 +505,7 @@ module.exports = {
     },
   ],
 
-  knownDefects: [
-    {
-      // CopyAsync calls the native click() on the host, while the copy handler listens on an element inside the shadow
-      // root, so nothing is copied; the real click gives the clipboard write its user activation (a real click on the
-      // element itself copies the value with the same permissions)
-      name: 'WaCopyButton.CopyAsync copies the value and reports it',
-      defect: 'WAB-64 F2',
-      methods: ['WaCopyButton.CopyAsync'],
-      exemption: 'media-content-copy-button-copy',
-      tags: [COPY_BUTTON],
-      clipboard: true,
-      run: async page => {
-        await page.evaluate(() => navigator.clipboard.writeText('nothing copied yet'));
-
-        await callOk(page, 'copy-button-copy');
-        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()), { message: 'the value is on the clipboard' }).toBe(COPIED_VALUE);
-        await expect(page.getByTestId('copy-count'), 'OnCopy reached .NET').toHaveText('1');
-      },
-    },
-    {
-      // UpdateAsync calls the Lit lifecycle update() directly, which skips willUpdate, where the element computes its
-      // phrase: the element renders the old phrase again
-      name: 'WaRelativeTime.UpdateAsync shows the phrase for the current time',
-      defect: 'WAB-64 F4',
-      methods: ['WaRelativeTime.UpdateAsync'],
-      exemption: 'media-content-relative-time-update',
-      tags: [RELATIVE_TIME],
-      setup: installPageClock,
-      run: async page => {
-        // the first interactive render of a prerendered page replaces the element, which then computes its phrase anew
-        await whenInteractive(page, 'relative-update');
-        await expect.poll(() => relativePhrase(page)).toBe(INITIAL_PHRASE);
-
-        // an hour later (no timer fires, and the element does not sync)
-        await page.clock.setSystemTime(Date.now() + CLOCK_SHIFT_MS);
-        await callOk(page, 'relative-update');
-        await expect.poll(() => relativePhrase(page)).toBe(SHIFTED_PHRASE);
-      },
-    },
-  ],
+  knownDefects: [],
 
   external: [],
 };

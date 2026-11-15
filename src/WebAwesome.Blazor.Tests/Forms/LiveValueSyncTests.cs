@@ -245,7 +245,7 @@ public class LiveValueSyncTests : FormControlTestBase
         Assert.Equal(TextAfterReplacement, model.Text);
         Assert.NotNull(editContext);
         Assert.True(editContext!.IsModified(() => model.Text));
-        AssertSetRangeTextBeforeReadBack(module);
+        AssertMethodBeforeReadBack(module);
     }
 
     [Fact]
@@ -266,7 +266,7 @@ public class LiveValueSyncTests : FormControlTestBase
         Assert.Equal(TextAfterReplacement, model.Text);
         Assert.NotNull(editContext);
         Assert.True(editContext!.IsModified(() => model.Text));
-        AssertSetRangeTextBeforeReadBack(module);
+        AssertMethodBeforeReadBack(module);
     }
 
     [Fact]
@@ -288,6 +288,73 @@ public class LiveValueSyncTests : FormControlTestBase
 
     #endregion
 
+    #region ------ StepUpAsync / StepDownAsync read-back ------
+
+    [Theory]
+    [InlineData(StepUpMethod)]
+    [InlineData(StepDownMethod)]
+    public async Task WaInput_Step_ReadsValueBack_AndNotifiesEditContext(string method)
+    {
+        // Arrange - stepUp() and stepDown() change the element value without an input or change event
+        var module = SetupReadBackModule(method, SteppedValue);
+        var model = new TextModel { Text = InitialStepValue };
+        EditContext? editContext = null;
+        var cut = RenderControlForm<WaInput, string?>(model, model.Text, value => model.Text = value, () => model.Text,
+            onEditContext: context => editContext = context);
+        var input = cut.FindComponent<WaInput>().Instance;
+
+        // Act
+        await cut.InvokeAsync(() => method == StepUpMethod ? input.StepUpAsync() : input.StepDownAsync());
+
+        // Assert
+        Assert.Equal(SteppedValue, model.Text);
+        Assert.NotNull(editContext);
+        Assert.True(editContext!.IsModified(() => model.Text));
+        AssertMethodBeforeReadBack(module);
+    }
+
+    [Theory]
+    [InlineData(StepUpMethod)]
+    [InlineData(StepDownMethod)]
+    public async Task WaNumberInput_Step_ReadsValueBack_AndNotifiesEditContext(string method)
+    {
+        // Arrange
+        var module = SetupReadBackModule(method, SteppedValue);
+        var model = new NumberModel { Count = 4m };
+        EditContext? editContext = null;
+        var cut = RenderControlForm<WaNumberInput, decimal?>(model, model.Count, value => model.Count = value, () => model.Count,
+            onEditContext: context => editContext = context);
+        var input = cut.FindComponent<WaNumberInput>().Instance;
+
+        // Act
+        await cut.InvokeAsync(() => method == StepUpMethod ? input.StepUpAsync() : input.StepDownAsync());
+
+        // Assert - parsed as the bound type
+        Assert.Equal(6m, model.Count);
+        Assert.NotNull(editContext);
+        Assert.True(editContext!.IsModified(() => model.Count));
+        AssertMethodBeforeReadBack(module);
+    }
+
+    [Fact]
+    public async Task WaNumberInput_StepUpAsync_ReadBackValue_IsNotPushedBack()
+    {
+        // Arrange
+        var module = SetupReadBackModule(StepUpMethod, SteppedValue);
+        var bound = new BoundValue<decimal?>(4m);
+        var cut = RenderBound<WaNumberInput, decimal?>(bound);
+
+        // Act - the parent re-renders with the read-back value, as @bind-Value would
+        await cut.InvokeAsync(() => cut.Instance.StepUpAsync());
+        cut.Render(p => p.Add(c => c.Value, bound.Value));
+
+        // Assert
+        Assert.Equal(6m, bound.Value);
+        Assert.Empty(SyncInvocations(module));
+    }
+
+    #endregion
+
     #region ------ Internals ------
 
     private const string SyncPropertyIdentifier = "syncProperty";
@@ -296,6 +363,10 @@ public class LiveValueSyncTests : FormControlTestBase
     private const string ValueProperty = "value";
     private const string CheckedProperty = "checked";
     private const string TextAfterReplacement = "Hello, world";
+    private const string StepUpMethod = "stepUp";
+    private const string StepDownMethod = "stepDown";
+    private const string InitialStepValue = "4";
+    private const string SteppedValue = "6";
 
     // every single-value control overriding WaInputBase.LiveValuePropertyName: the value bound first, the value a
     // parent then binds and the JS-typed value it syncs, and a user edit from the element with the value it binds
@@ -333,6 +404,11 @@ public class LiveValueSyncTests : FormControlTestBase
     private class TextModel
     {
         public string? Text { get; set; }
+    }
+
+    private class NumberModel
+    {
+        public decimal? Count { get; set; }
     }
 
     // holds a bound value the way a parent's @bind-Value field would
@@ -421,19 +497,23 @@ public class LiveValueSyncTests : FormControlTestBase
     }
 
     private BunitJSModuleInterop SetupRangeTextModule(string valueAfterReplacement)
+        => SetupReadBackModule("setRangeText", valueAfterReplacement);
+
+    // an element method without an input or change event, and the value the element then holds
+    private BunitJSModuleInterop SetupReadBackModule(string method, string valueAfterCall)
     {
         var module = JSInterop.SetupModule(InteropModulePath);
-        module.SetupVoid(InvokeMethodIdentifier, i => Equals(i.Arguments[1], "setRangeText")).SetVoidResult();
-        module.Setup<string>(GetPropertyIdentifier, i => Equals(i.Arguments[1], ValueProperty)).SetResult(valueAfterReplacement);
+        module.SetupVoid(InvokeMethodIdentifier, i => Equals(i.Arguments[1], method)).SetVoidResult();
+        module.Setup<string>(GetPropertyIdentifier, i => Equals(i.Arguments[1], ValueProperty)).SetResult(valueAfterCall);
         return module;
     }
 
-    private static void AssertSetRangeTextBeforeReadBack(BunitJSModuleInterop module)
+    private static void AssertMethodBeforeReadBack(BunitJSModuleInterop module)
     {
         var identifiers = module.Invocations.Select(i => i.Identifier).ToList();
-        var setRangeText = identifiers.IndexOf(InvokeMethodIdentifier);
+        var method = identifiers.IndexOf(InvokeMethodIdentifier);
         var readBack = identifiers.IndexOf(GetPropertyIdentifier);
-        Assert.True(setRangeText >= 0 && readBack > setRangeText, $"Expected setRangeText then getProperty, got: {string.Join(", ", identifiers)}");
+        Assert.True(method >= 0 && readBack > method, $"Expected the element method, then getProperty, got: {string.Join(", ", identifiers)}");
     }
 
     #endregion

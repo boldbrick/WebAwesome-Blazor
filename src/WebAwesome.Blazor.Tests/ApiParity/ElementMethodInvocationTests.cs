@@ -10,7 +10,8 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 
 /// <summary>
 /// Verifies the inverse direction of the method parity check: every JavaScript element method a wrapper invokes
-/// via <c>InvokeMethodAsync</c> must actually exist on the Web Awesome element it runs against. A method is
+/// via <c>InvokeMethodAsync</c> or <c>InvokeCancelableMethodAsync</c> must actually exist on the Web Awesome element
+/// it runs against. A method is
 /// accepted when it is documented in the Custom Elements Manifest (expected-api-surface.json), is a native DOM
 /// element method (parity-config.json "nativeElementMethods"), or is explicitly allowlisted for the component
 /// ("extraElementMethods" — element methods verified against the Web Awesome source but absent from the CEM;
@@ -144,10 +145,11 @@ public class ElementMethodInvocationTests
 
     #region ------ Internals ------
 
-    // a call of WebAwesomeJSInterop.InvokeMethodAsync (member access, so the declarations do not match) with any
-    // generic arguments, however nested, and any element expression; the method name is a literal or an identifier
+    // a call of WebAwesomeJSInterop.InvokeMethodAsync or InvokeCancelableMethodAsync (member access, so the
+    // declarations do not match) with any generic arguments, however nested, and any element expression; the method
+    // name is a literal or an identifier
     private static readonly Regex InvocationRegex = new(
-        "\\.InvokeMethodAsync\\b[^(]*\\(\\s*[^,()]+,\\s*(?:\"([^\"]+)\"|([A-Za-z_]\\w*))", RegexOptions.Compiled);
+        "\\.Invoke(?:Cancelable)?MethodAsync\\b[^(]*\\(\\s*[^,()]+,\\s*(?:\"([^\"]+)\"|([A-Za-z_]\\w*))", RegexOptions.Compiled);
 
     private static readonly Regex DeclaredTypeRegex = new(
         "\\b(?:class|record)\\s+([A-Za-z_]\\w*)", RegexOptions.Compiled);

@@ -138,7 +138,7 @@ public class WaRelativeTime : ComponentBase
         // the refresh is skipped while the element's module is still loading: its upgrade renders the current attributes
         if (Element != null)
         {
-            await JSInterop.InvokeMethodIfDefinedAsync(Element.Value, "update");
+            await JSInterop.InvokeMethodIfDefinedAsync(Element.Value, "requestUpdate");
         }
 
         await base.OnParametersSetAsync();
@@ -149,15 +149,21 @@ public class WaRelativeTime : ComponentBase
     #region ------ Public Methods ------
 
     /// <summary>
-    /// Forces an update of the relative time display
+    /// Forces an update of the relative time display: the element computes its phrase again for the current time
+    /// (for example "1 hour ago" an hour after "now"), also when <see cref="Sync"/> is off.
     /// </summary>
+    /// <returns>A task that completes when the update is requested; the element renders the new phrase in its next
+    /// update, a moment later</returns>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task UpdateAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot update relative time: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "update");
+        // NOTE checked against WA 3.14.0: requestUpdate() is the public update request of every Web Awesome element
+        // (Lit's ReactiveElement); the update runs willUpdate, where wa-relative-time computes its phrase for the
+        // current time (the lifecycle update() skips willUpdate and renders the old phrase)
+        await JSInterop.InvokeMethodAsync(Element.Value, "requestUpdate");
     }
 
     #endregion

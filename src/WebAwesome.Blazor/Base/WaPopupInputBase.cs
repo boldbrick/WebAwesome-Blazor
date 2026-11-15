@@ -38,7 +38,7 @@ public abstract class WaPopupInputBase<TValue> : WaLabeledInputBase<TValue>, IWa
         if (Element == null)
             throw new InvalidOperationException("Cannot show: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+        await JSInterop.InvokeCancelableMethodAsync(Element.Value, "show", Constants.ShowEventName);
     }
 
     /// <inheritdoc />
@@ -47,7 +47,7 @@ public abstract class WaPopupInputBase<TValue> : WaLabeledInputBase<TValue>, IWa
         if (Element == null)
             throw new InvalidOperationException("Cannot hide: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+        await JSInterop.InvokeCancelableMethodAsync(Element.Value, "hide", Constants.HideEventName);
     }
 
     #region ------ Internals ------

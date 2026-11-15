@@ -269,7 +269,7 @@
       "tag": "wa-color-picker",
       "pro": false,
       "kind": "invokeMethod",
-      "js": "getHexString"
+      "js": "getFormattedValue"
     },
     {
       "id": "WaColorPicker.HideAsync",
@@ -277,7 +277,7 @@
       "member": "HideAsync",
       "tag": "wa-color-picker",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -322,7 +322,7 @@
       "member": "ShowAsync",
       "tag": "wa-color-picker",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -349,7 +349,7 @@
       "member": "HideAsync",
       "tag": "wa-combobox",
       "pro": true,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -385,7 +385,7 @@
       "member": "ShowAsync",
       "tag": "wa-combobox",
       "pro": true,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -394,8 +394,7 @@
       "member": "CopyAsync",
       "tag": "wa-copy-button",
       "pro": false,
-      "kind": "invokeMethod",
-      "js": "click"
+      "kind": "clickShadowPart"
     },
     {
       "id": "WaDataGrid.AutoSizeColumnAsync",
@@ -628,7 +627,7 @@
       "member": "HideAsync",
       "tag": "wa-date-input",
       "pro": true,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -655,7 +654,7 @@
       "member": "ShowAsync",
       "tag": "wa-date-input",
       "pro": true,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -727,7 +726,7 @@
       "member": "HideAsync",
       "tag": "wa-date-input",
       "pro": true,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -754,7 +753,7 @@
       "member": "ShowAsync",
       "tag": "wa-date-input",
       "pro": true,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -799,7 +798,7 @@
       "member": "HideAsync",
       "tag": "wa-details",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -808,7 +807,7 @@
       "member": "ShowAsync",
       "tag": "wa-details",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -817,8 +816,8 @@
       "member": "FocusAsync",
       "tag": "wa-dialog",
       "pro": false,
-      "kind": "invokeMethod",
-      "js": "focus"
+      "kind": "focusOverlay",
+      "js": "dialog"
     },
     {
       "id": "WaDialog.HideAsync",
@@ -844,8 +843,8 @@
       "member": "FocusAsync",
       "tag": "wa-drawer",
       "pro": false,
-      "kind": "invokeMethod",
-      "js": "focus"
+      "kind": "focusOverlay",
+      "js": "drawer"
     },
     {
       "id": "WaDrawer.HideAsync",
@@ -1019,7 +1018,10 @@
       "tag": "wa-input",
       "pro": false,
       "kind": "invokeMethod",
-      "js": "stepDown"
+      "js": "stepDown",
+      "also": [
+        "getProperty:value"
+      ]
     },
     {
       "id": "WaInput.StepUpAsync",
@@ -1028,7 +1030,10 @@
       "tag": "wa-input",
       "pro": false,
       "kind": "invokeMethod",
-      "js": "stepUp"
+      "js": "stepUp",
+      "also": [
+        "getProperty:value"
+      ]
     },
     {
       "id": "WaKnownDate.BlurAsync",
@@ -1145,7 +1150,10 @@
       "tag": "wa-number-input",
       "pro": false,
       "kind": "invokeMethod",
-      "js": "stepDown"
+      "js": "stepDown",
+      "also": [
+        "getProperty:value"
+      ]
     },
     {
       "id": "WaNumberInput.StepUpAsync",
@@ -1154,7 +1162,10 @@
       "tag": "wa-number-input",
       "pro": false,
       "kind": "invokeMethod",
-      "js": "stepUp"
+      "js": "stepUp",
+      "also": [
+        "getProperty:value"
+      ]
     },
     {
       "id": "WaOtpInput.BlurAsync",
@@ -1243,7 +1254,7 @@
       "member": "HideAsync",
       "tag": "wa-popover",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -1252,7 +1263,7 @@
       "member": "ShowAsync",
       "tag": "wa-popover",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -1415,7 +1426,7 @@
       "tag": "wa-relative-time",
       "pro": false,
       "kind": "invokeMethod",
-      "js": "update"
+      "js": "requestUpdate"
     },
     {
       "id": "WaResizeObserver.DisconnectAsync",
@@ -1459,7 +1470,7 @@
       "member": "HideAsync",
       "tag": "wa-select",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -1486,7 +1497,7 @@
       "member": "ShowAsync",
       "tag": "wa-select",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -1795,7 +1806,7 @@
       "member": "HideAsync",
       "tag": "wa-time-input",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -1822,7 +1833,7 @@
       "member": "ShowAsync",
       "tag": "wa-time-input",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -1849,7 +1860,7 @@
       "member": "HideAsync",
       "tag": "wa-tooltip",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "hide"
     },
     {
@@ -1858,7 +1869,7 @@
       "member": "ShowAsync",
       "tag": "wa-tooltip",
       "pro": false,
-      "kind": "invokeMethod",
+      "kind": "invokeCancelableMethod",
       "js": "show"
     },
     {
@@ -1867,8 +1878,7 @@
       "member": "GetChildrenItemsAsync",
       "tag": "wa-tree-item",
       "pro": false,
-      "kind": "invokeMethod",
-      "js": "getChildrenItems"
+      "kind": "getTreeItemChildren"
     },
     {
       "id": "WaVideo.ExitFullscreenAsync",

@@ -230,7 +230,7 @@ module.exports = {
         await callOk(page, 'input-step-down');
         await expect.poll(() => valueOf(page, 'input-number')).toBe(INITIAL_NUMBER);
 
-        // WAB-64 F12 (native precondition, undocumented): a text input is not steppable; the native error reaches .NET
+        // a text input is not steppable (a documented precondition): the native error reaches .NET
         const outcome = await callMethod(page, 'input-text-step-up');
         expect(outcome.error, 'StepUpAsync on a text input fails').toContain('stepUp');
         expect(await valueOf(page, 'input')).toBe(INITIAL_TEXT);
@@ -241,8 +241,8 @@ module.exports = {
       methods: ['WaInput.ShowPickerAsync'],
       tags: [INPUT],
       run: async page => {
-        // WAB-64 F11: without a user activation the native showPicker() refuses; the refusal proves that the call
-        // reaches the native picker of the date input
+        // without a user activation the native showPicker() refuses (a documented precondition); the refusal proves
+        // that the call reaches the native picker of the date input
         const refused = await callWithoutUserActivation(page, 'input-show-picker');
         expect(refused, 'showPicker() without a user gesture fails').toMatch(/^error: .*showPicker.*user (gesture|activation)/i);
 
@@ -375,6 +375,57 @@ module.exports = {
       },
     },
     {
+      // Web Awesome's scrollPosition(position) sets and returns nothing; the wrapper reads the resulting position after
+      // the set
+      name: 'WaTextArea.ScrollPositionAsync returns the resulting position when it scrolls',
+      methods: ['WaTextArea.ScrollPositionAsync'],
+      tags: [TEXTAREA],
+      run: async page => {
+        await expect.poll(async () => (await page.getByTestId('textarea-scroll').evaluate(el =>
+          el.shadowRoot?.querySelector('textarea.control')?.scrollHeight ?? 0)), { message: 'the long text overflows', timeout: WA_READY_TIMEOUT_MS })
+          .toBeGreaterThan(SCROLL_TOP * 2);
+
+        const result = await callOk(page, 'textarea-scroll-set', QUIET);
+        expect(result, 'the set call returns the resulting position').not.toBeNull();
+        expect(result?.top).toBe(SCROLL_TOP);
+      },
+    },
+    {
+      // stepUp() and stepDown() change the element value without an input event; the wrapper reads the value back (as
+      // SetRangeTextAsync does) and updates the bound .NET value
+      name: 'WaInput.StepUpAsync and StepDownAsync update the bound value',
+      methods: ['WaInput.StepUpAsync', 'WaInput.StepDownAsync'],
+      tags: [INPUT],
+      run: async page => {
+        const bound = page.getByTestId('input-number-bound-value');
+        await expect.poll(() => valueOf(page, 'input-number'), { timeout: WA_READY_TIMEOUT_MS }).toBe(INITIAL_NUMBER);
+        await expect(bound).toHaveText(INITIAL_NUMBER);
+
+        await callOk(page, 'input-step-up');
+        await expect.poll(() => valueOf(page, 'input-number')).toBe(NUMBER_AFTER_STEP_UP);
+        await expect(bound, 'the bound value follows StepUpAsync').toHaveText(NUMBER_AFTER_STEP_UP);
+        await callOk(page, 'input-step-down');
+        await expect(bound, 'the bound value follows StepDownAsync').toHaveText(INITIAL_NUMBER);
+      },
+    },
+    {
+      // as for WaInput
+      name: 'WaNumberInput.StepUpAsync and StepDownAsync update the bound value',
+      methods: ['WaNumberInput.StepUpAsync', 'WaNumberInput.StepDownAsync'],
+      tags: [NUMBER_INPUT],
+      run: async page => {
+        const bound = page.getByTestId('number-bound-value');
+        await expect.poll(() => valueOf(page, 'number-input'), { timeout: WA_READY_TIMEOUT_MS }).toBe(INITIAL_NUMBER);
+        await expect(bound).toHaveText(INITIAL_NUMBER);
+
+        await callOk(page, 'number-step-up');
+        await expect.poll(() => valueOf(page, 'number-input')).toBe(NUMBER_AFTER_STEP_UP);
+        await expect(bound, 'the bound value follows StepUpAsync').toHaveText(NUMBER_AFTER_STEP_UP);
+        await callOk(page, 'number-step-down');
+        await expect(bound, 'the bound value follows StepDownAsync').toHaveText(INITIAL_NUMBER);
+      },
+    },
+    {
       name: 'timing: calls on the first render wait until the elements are defined',
       methods: ['WaInput.FocusAsync', 'WaNumberInput.StepUpAsync'],
       route: EARLY_ROUTE,
@@ -403,62 +454,7 @@ module.exports = {
     },
   ],
 
-  knownDefects: [
-    {
-      // the wrapper documents "the resulting scroll position" also for a call that sets it; Web Awesome's
-      // scrollPosition(position) returns undefined, so the wrapper returns null
-      name: 'WaTextArea.ScrollPositionAsync returns the resulting position when it scrolls',
-      defect: 'WAB-65 L2',
-      methods: ['WaTextArea.ScrollPositionAsync'],
-      tags: [TEXTAREA],
-      run: async page => {
-        await expect.poll(async () => (await page.getByTestId('textarea-scroll').evaluate(el =>
-          el.shadowRoot?.querySelector('textarea.control')?.scrollHeight ?? 0)), { message: 'the long text overflows', timeout: WA_READY_TIMEOUT_MS })
-          .toBeGreaterThan(SCROLL_TOP * 2);
-
-        const result = await callOk(page, 'textarea-scroll-set', QUIET);
-        expect(result, 'the set call returns the resulting position').not.toBeNull();
-        expect(result?.top).toBe(SCROLL_TOP);
-      },
-    },
-    {
-      // stepUp() and stepDown() change the element value without an input event, and the wrapper does not read the
-      // value back (as SetRangeTextAsync does), so the bound .NET value keeps the old number
-      name: 'WaInput.StepUpAsync and StepDownAsync update the bound value',
-      defect: 'WAB-65 L3',
-      methods: ['WaInput.StepUpAsync', 'WaInput.StepDownAsync'],
-      tags: [INPUT],
-      run: async page => {
-        const bound = page.getByTestId('input-number-bound-value');
-        await expect.poll(() => valueOf(page, 'input-number'), { timeout: WA_READY_TIMEOUT_MS }).toBe(INITIAL_NUMBER);
-        await expect(bound).toHaveText(INITIAL_NUMBER);
-
-        await callOk(page, 'input-step-up');
-        await expect.poll(() => valueOf(page, 'input-number')).toBe(NUMBER_AFTER_STEP_UP);
-        await expect(bound, 'the bound value follows StepUpAsync').toHaveText(NUMBER_AFTER_STEP_UP);
-        await callOk(page, 'input-step-down');
-        await expect(bound, 'the bound value follows StepDownAsync').toHaveText(INITIAL_NUMBER);
-      },
-    },
-    {
-      // as for WaInput: the bound .NET value keeps the old number
-      name: 'WaNumberInput.StepUpAsync and StepDownAsync update the bound value',
-      defect: 'WAB-65 L3',
-      methods: ['WaNumberInput.StepUpAsync', 'WaNumberInput.StepDownAsync'],
-      tags: [NUMBER_INPUT],
-      run: async page => {
-        const bound = page.getByTestId('number-bound-value');
-        await expect.poll(() => valueOf(page, 'number-input'), { timeout: WA_READY_TIMEOUT_MS }).toBe(INITIAL_NUMBER);
-        await expect(bound).toHaveText(INITIAL_NUMBER);
-
-        await callOk(page, 'number-step-up');
-        await expect.poll(() => valueOf(page, 'number-input')).toBe(NUMBER_AFTER_STEP_UP);
-        await expect(bound, 'the bound value follows StepUpAsync').toHaveText(NUMBER_AFTER_STEP_UP);
-        await callOk(page, 'number-step-down');
-        await expect(bound, 'the bound value follows StepDownAsync').toHaveText(INITIAL_NUMBER);
-      },
-    },
-  ],
+  knownDefects: [],
 
   external: [],
 };

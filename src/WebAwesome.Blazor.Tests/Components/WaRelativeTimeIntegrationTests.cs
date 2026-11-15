@@ -49,6 +49,19 @@ public class WaRelativeTimeIntegrationTests : BunitContext
         Assert.Equal(UpdateMethod, refresh.Arguments[1]);
         Assert.DoesNotContain(module.Invocations, i => i.Identifier == UnguardedInvokeIdentifier);
     }
+
+    [Fact]
+    public async Task UpdateAsync_RequestsAnUpdate_WithoutArguments()
+    {
+        // the public requestUpdate() runs willUpdate, where the element computes its phrase; the lifecycle update()
+        // skipped it and rendered the old phrase again
+        using var runtime = new RecordingJSRuntime();
+
+        await runtime.CreateRendered<WaRelativeTime>().UpdateAsync();
+
+        Assert.Empty(runtime.Module.AssertInvokedMethod(UpdateMethod));
+    }
+
     [Theory]
     [InlineData(-5, "2026-01-02T03:04:05.678-05:00")]
     [InlineData(0, "2026-01-02T03:04:05.678+00:00")]
@@ -95,7 +108,7 @@ public class WaRelativeTimeIntegrationTests : BunitContext
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
     private const string GuardedInvokeIdentifier = "invokeMethodIfDefined";
     private const string UnguardedInvokeIdentifier = "invokeMethod";
-    private const string UpdateMethod = "update";
+    private const string UpdateMethod = "requestUpdate";
 
     #endregion
 }

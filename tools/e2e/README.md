@@ -221,6 +221,8 @@ not throw proves nothing.
   until the page is interactive, so a prerendered page works too. `helpers\method-harness.js` has `callMethod` and
   `callOk`; `{ quiet: true }` triggers the button with a click event only, so the focus and an open popup stay where
   they are (use it for focus, blur, show and hide calls; use the real click for a call that needs a user gesture).
+  `cancelEvent` and `allowEvent` make an element cancel its own events of a type (`wa-show`, `wa-hide`) as a consumer
+  handler that calls `preventDefault()` does, and stop it again.
   Before a case acts, the runner waits until the page is interactive (a `MethodCall` button is enabled): the first
   interactive render of a prerendered page replaces its elements, so a listener or a state that a case gives an
   element before that render is lost.

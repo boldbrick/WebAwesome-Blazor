@@ -397,11 +397,11 @@
           "reason": "wa-data-grid, wa-combobox and wa-file-input are Pro and never upgrade from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
-          "test": "methods-pro-data.spec.js > methods pro-data > method known defect: WaCombobox.ShowAsync completes when wa-show is cancelled",
+          "test": "methods-pro-data.spec.js > methods pro-data > method: WaCombobox.ShowAsync and HideAsync complete when wa-show and wa-hide are cancelled",
           "reason": "wa-data-grid, wa-combobox and wa-file-input are Pro and never upgrade from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {
-          "test": "methods-pro-data.spec.js > methods pro-data > method known defect: WaCombobox.ReloadAsync re-runs the filter of a local combobox",
+          "test": "methods-pro-data.spec.js > methods pro-data > method: WaCombobox.ReloadAsync completes and changes nothing on a local combobox",
           "reason": "wa-data-grid, wa-combobox and wa-file-input are Pro and never upgrade from the free CDN; the release gate's Pro pass (e2e-pro) runs it"
         },
         {

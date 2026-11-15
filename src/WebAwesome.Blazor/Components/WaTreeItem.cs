@@ -194,21 +194,36 @@ public class WaTreeItem : ComponentBase
     #region ------ Public Methods ------
 
     /// <summary>
-    /// Gets the tree item's nested child tree items.
+    /// Gets the tree item's direct child tree items (nested items of the children are not included), in document
+    /// order, disabled items included.
     /// </summary>
     /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains a raw
-    /// <see cref="JsonElement"/> representing the array of child <c>wa-tree-item</c> elements, since arbitrary
-    /// DOM element arrays returned from JavaScript cannot be marshaled into live <see cref="ElementReference"/>s
-    /// or wrapper instances.
+    /// A task that represents the asynchronous operation. The task result is a <see cref="JsonElement"/> array with
+    /// one plain object per child item, because DOM elements returned from JavaScript cannot be marshaled into live
+    /// <see cref="ElementReference"/>s or wrapper instances. Each object has these members:
+    /// <c>id</c> (string or null: the item's id attribute, null when it has none),
+    /// <c>text</c> (string: the label text of the item's own content, without its nested items and slotted icons,
+    /// white space collapsed),
+    /// <c>selected</c>, <c>expanded</c>, <c>disabled</c> and <c>lazy</c> (bool: the item's current states, as
+    /// <see cref="Selected"/>, <see cref="Expanded"/>, <see cref="Disabled"/> and <see cref="Lazy"/>).
+    /// A leaf item gives an empty array.
     /// </returns>
+    /// <example>
+    /// <code>
+    /// var children = await parent.GetChildrenItemsAsync();
+    /// foreach (var child in children.EnumerateArray())
+    ///     Console.WriteLine($"{child.GetProperty("text").GetString()}: {child.GetProperty("selected").GetBoolean()}");
+    /// </code>
+    /// </example>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task<JsonElement> GetChildrenItemsAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot get children items: component has not been rendered yet.");
 
-        return await JSInterop.InvokeMethodAsync<JsonElement>(Element.Value, "getChildrenItems");
+        // the element's getChildrenItems() returns live elements, whose fields point back to them (JSON serialization
+        // fails on the cycle); the interop module calls it and returns a plain projection of each item
+        return await JSInterop.GetTreeItemChildrenAsync(Element.Value);
     }
 
     #endregion

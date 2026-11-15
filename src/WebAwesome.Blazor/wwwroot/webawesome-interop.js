@@ -41,8 +41,8 @@ export async function setCustomValidity(element, message) {
 /**
  * Invokes a method on a Web Awesome element once its custom element is defined, and does nothing before: an element
  * whose module is still loading has none of its methods yet, and its upgrade renders it from its current attributes
- * anyway. For refreshes a wrapper requests on every parameter change (wa-relative-time's update), which can run while
- * the autoloader is still importing the element's module.
+ * anyway. For refreshes a wrapper requests on every parameter change (wa-relative-time's requestUpdate), which can run
+ * while the autoloader is still importing the element's module.
  * @param {HTMLElement} element - The Web Awesome element
  * @param {string} methodName - The name of the method to invoke
  * @returns {boolean} Whether the method was invoked
@@ -122,6 +122,151 @@ function callElementMethod(element, methodName, args) {
     } catch (error) {
         throw new Error(`Failed to invoke method '${methodName}' on ${tagName}: ${error.message}`);
     }
+}
+
+/**
+ * Invokes a show or hide method of a Web Awesome element (show(), hide()) once its custom element is defined, and
+ * completes when the method's Promise settles or as soon as the action is cancelled. The Promise of such a method
+ * settles on the element's wa-after-show or wa-after-hide event; a handler of the cancel event (wa-show, wa-hide)
+ * that calls preventDefault() keeps the element as it was, the element then dispatches no after-event, and the
+ * Promise never settles. A cancelled action therefore completes the call at once, as wa-dialog, wa-drawer and
+ * wa-dropdown do, whose wrappers set the open property instead.
+ * @param {HTMLElement} element - The Web Awesome element
+ * @param {string} methodName - The name of the method to invoke, for example 'show'
+ * @param {string} cancelEventName - The cancelable event the element dispatches for the action, for example 'wa-show'
+ * @returns {Promise<void>}
+ */
+export async function invokeCancelableMethod(element, methodName, cancelEventName) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    if (!methodName) {
+        throw new Error('Method name cannot be null or empty');
+    }
+
+    await whenElementDefined(element);
+
+    const cancellation = watchCancellation(element, cancelEventName);
+    try {
+        await Promise.race([callElementMethod(element, methodName, []), cancellation.cancelled]);
+    } finally {
+        cancellation.stop();
+    }
+}
+
+// resolves cancelled when the element cancels its own cancelEventName event; nested elements dispatch events of the
+// same name, which reach the element retargeted, so only an event the element dispatched itself counts. The element
+// reads defaultPrevented right after the dispatch, and every listener of the dispatch has run by the next microtask.
+function watchCancellation(element, cancelEventName) {
+    let listener;
+    const cancelled = new Promise(resolve => {
+        listener = event => {
+            if (event.composedPath()[0] !== element) return;
+            queueMicrotask(() => {
+                if (event.defaultPrevented) resolve();
+            });
+        };
+        element.addEventListener(cancelEventName, listener);
+    });
+
+    return { cancelled, stop: () => element.removeEventListener(cancelEventName, listener) };
+}
+
+/**
+ * Moves the focus into an open wa-dialog or wa-drawer by the rule the element follows when it opens: to the first
+ * descendant with the autofocus attribute, else to the element's panel (its public dialog or drawer property, the
+ * native dialog element). The element's host cannot take the focus itself. A closed element is left as it is.
+ * @param {HTMLElement} element - The wa-dialog or wa-drawer element
+ * @param {string} panelProperty - The property that holds the element's native dialog element ('dialog', 'drawer')
+ * @returns {Promise<boolean>} Whether the element was open, so the focus was moved
+ */
+export async function focusOverlay(element, panelProperty) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    await whenElementDefined(element);
+    // an open property set just before is applied in the element's next update, which opens the native dialog
+    await element.updateComplete;
+    if (!element.open) return false;
+
+    const autofocus = element.querySelector('[autofocus]');
+    if (autofocus && typeof autofocus.focus === 'function') {
+        autofocus.focus();
+        return true;
+    }
+
+    const panel = element[panelProperty];
+    if (typeof panel?.focus !== 'function') {
+        throw new Error(`Element ${element.localName} has no ${panelProperty} panel to focus. Ensure Web Awesome library is properly loaded.`);
+    }
+
+    panel.focus();
+    return true;
+}
+
+/**
+ * Clicks the element of a CSS part in the shadow root of a Web Awesome element, once the element is defined and has
+ * rendered. For an action that the element runs only from a click inside its shadow root and exposes no public method
+ * for (wa-copy-button's copy): a click on the host does not reach the handler. The part name is the element's
+ * documented CSS part; the query into the shadow root is an internal of the element, so recheck it on every upgrade.
+ * The click runs the element's own handler, with the user activation of the current task, if any.
+ * @param {HTMLElement} element - The Web Awesome element
+ * @param {string} partName - The CSS part of the element to click, for example 'button'
+ * @returns {Promise<void>}
+ */
+export async function clickShadowPart(element, partName) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    await whenElementDefined(element);
+    await element.updateComplete;
+
+    const part = element.shadowRoot?.querySelector(`[part~="${partName}"]`);
+    if (!part) {
+        throw new Error(`Element ${element.localName} has no '${partName}' part to click. Ensure Web Awesome library is properly loaded.`);
+    }
+
+    part.click();
+}
+
+/**
+ * Returns the direct child items of a wa-tree-item (its public getChildrenItems()) as plain data: a live element
+ * cannot be serialized, because its fields point back to it. Each item gives its id attribute (null when it has
+ * none), its label text (the text of its own content, without nested items and slotted icons, white space collapsed)
+ * and its selected, expanded, disabled and lazy states.
+ * @param {HTMLElement} element - The wa-tree-item element
+ * @returns {Promise<Array<{id: string|null, text: string, selected: boolean, expanded: boolean, disabled: boolean, lazy: boolean}>>}
+ */
+export async function getTreeItemChildren(element) {
+    if (!element) {
+        throw new Error('Element reference is null or undefined');
+    }
+
+    await whenElementDefined(element);
+    // the child items come from a slot of the shadow root, which exists from the first update on
+    await element.updateComplete;
+
+    return callElementMethod(element, 'getChildrenItems', []).map(item => ({
+        id: item.id || null,
+        text: treeItemLabel(item),
+        selected: item.selected === true,
+        expanded: item.expanded === true,
+        disabled: item.disabled === true,
+        lazy: item.lazy === true,
+    }));
+}
+
+// the label text of a tree item: its own text and elements, without nested tree items and slotted parts (icons)
+function treeItemLabel(item) {
+    const text = Array.from(item.childNodes)
+        .filter(node => node.nodeType === Node.TEXT_NODE
+            || (node.nodeType === Node.ELEMENT_NODE && node.localName !== item.localName && !node.hasAttribute('slot')))
+        .map(node => node.textContent)
+        .join(' ');
+    return text.replace(/\s+/g, ' ').trim();
 }
 
 /**

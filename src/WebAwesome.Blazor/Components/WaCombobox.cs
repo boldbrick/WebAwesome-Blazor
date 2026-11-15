@@ -564,10 +564,12 @@ public class WaCombobox : WaPopupInputBase<string?>, IWaClearableControl, IWaAff
     }
 
     /// <summary>
-    /// Re-runs the current filter, either locally or (in <see cref="Server"/> mode) by firing
-    /// <see cref="OnOptionsRequest"/> again for the current query.
+    /// Requests the options for the current query again: in <see cref="Server"/> mode the element raises
+    /// <see cref="OnOptionsRequest"/> again. Server mode only: a local combobox does nothing (it filters its own
+    /// options as the query changes).
     /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <returns>A task that completes when the element has sent the request (its wa-options-request event); it does
+    /// not wait for <see cref="OnOptionsRequest"/> or for the new options</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task ReloadAsync()
     {
