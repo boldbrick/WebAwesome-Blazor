@@ -57,6 +57,7 @@ const HARNESS_ROUTES = [
   '/testing/cell-presets',
   '/testing/element-functions',
   '/testing/icon-library',
+  '/testing/icon-path',
   '/testing/grid-functions',
   '/testing/cell-actions',
   '/testing/lit-cells',

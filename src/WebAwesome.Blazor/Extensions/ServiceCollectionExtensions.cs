@@ -89,6 +89,7 @@ public static class ServiceCollectionExtensions
         options.StylesheetUrl = section[nameof(WebAwesomeOptions.StylesheetUrl)] ?? options.StylesheetUrl;
         options.LoaderUrl = section[nameof(WebAwesomeOptions.LoaderUrl)] ?? options.LoaderUrl;
         options.FontAwesomeKitCode = section[nameof(WebAwesomeOptions.FontAwesomeKitCode)] ?? options.FontAwesomeKitCode;
+        options.IconPath = section[nameof(WebAwesomeOptions.IconPath)] ?? options.IconPath;
 
         var emitInspectorMetadata = section[nameof(WebAwesomeOptions.EmitInspectorMetadata)];
         if (!string.IsNullOrEmpty(emitInspectorMetadata))

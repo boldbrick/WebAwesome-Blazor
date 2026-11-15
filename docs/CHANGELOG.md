@@ -16,8 +16,10 @@ A third revision of the bindings for Web Awesome 3.14.0; the default CDN version
 - `WaWireFormat` is public: it formats and parses the Web Awesome wire forms of dates, times, date ranges and lists.
 - `FormControlRendering` renders the label and hint cluster and the start and end slots for your own form controls, and `WaEnumJsonConverter<TEnum>` serializes your own enums as the strings of their element.
 - `WaInputBase.FormatValidationMessage` is protected (it was not accessible), so a derived control words a parse failure as the library's controls do.
+- `WebAwesomeOptions.IconPath` (configuration key `WebAwesome:IconPath`): the default icon library loads its icons from your self-hosted Font Awesome `svgs` folder instead of the Font Awesome CDN; `WaIconLibraryService.SetIconPathAsync` sets the path at runtime.
 
 ### Fixed
+- `WebAwesomeAssets` with `FontAwesomeKitCode` no longer writes a broken module script into a prerendered page (`Invalid or unexpected token`); the kit code now applies from the first render.
 - `SetCustomValidityAsync` of a form control no longer fails with "does not implement WebAwesomeFormControl interface" when you call it soon after the first render: it waits until Web Awesome has loaded the element.
 
 ## [3.14.0.2] — 2026-10-28

@@ -8,7 +8,7 @@ description: "Use when writing or changing code that uses WebAwesome.Blazor: str
 
 - Blazor components that wrap the Web Awesome elements (`WaButton`, `WaInput`, `WaSelect`, `WaDialog`, `WaIcon`, `WaDataGrid` and more) in WebAwesome.Blazor.Components, with enums such as `WaVariant`, `WaSize` and `WaAppearance`.
 - Form controls derive from `WaInputBase<TValue>` (an InputBase<TValue>), so they bind with `@bind-Value` and work in an EditForm; custom validity through `IFormValidation`.
-- Asset delivery: `WebAwesomeAssets` writes the stylesheet, the autoloader module and an optional Font Awesome kit code, from `WebAwesomeOptions` (CDN by default, or self-hosted).
+- Asset delivery: `WebAwesomeAssets` writes the stylesheet, the autoloader module and the optional Font Awesome kit code and self-hosted icon path, from `WebAwesomeOptions` (CDN by default, or self-hosted).
 - Icon libraries at run time through `WaIconLibraryService` (Lucide, Heroicons, Font Awesome Pro, custom libraries).
 - Layout utilities in WebAwesome.Blazor.Layout: `WaStack`, `WaCluster`, `WaGrid`, `WaFlank`, `WaSplit` and more.
 - JavaScript function references (`WaJsFunction`) for members that take a function, for example `WaDataGridColumn.Formatter`.
@@ -17,8 +17,8 @@ description: "Use when writing or changing code that uses WebAwesome.Blazor: str
 
 - `ServiceCollectionExtensions.AddWebAwesome` (namespace WebAwesome.Blazor.Extensions): registers the services; overloads take nothing, an Action of `WebAwesomeOptions` or an IConfiguration (section `ServiceCollectionExtensions.ConfigurationSection`, "WebAwesome").
 - `WebAwesomeAssets`: put once in the head content (for example in App.razor); `WebAwesomeAssets.Options` overrides the registered options for one instance.
-- `WebAwesomeOptions`: `AssetSource`, `Version`, `CdnBaseUrl`, `BasePath`, `StylesheetUrl`, `LoaderUrl`, `FontAwesomeKitCode`.
-- `WaIconLibraryService`: `RegisterLucideAsync`, `RegisterHeroiconsAsync`, `RegisterFontAwesomeProAsync`, `RegisterIconLibraryAsync` with `IconLibraryOptions`, `SetDefaultIconFamilyAsync`.
+- `WebAwesomeOptions`: `AssetSource`, `Version`, `CdnBaseUrl`, `BasePath`, `StylesheetUrl`, `LoaderUrl`, `FontAwesomeKitCode`, `IconPath` (a self-hosted Font Awesome svgs folder for the default icon library; it wins over the kit code).
+- `WaIconLibraryService`: `RegisterLucideAsync`, `RegisterHeroiconsAsync`, `RegisterFontAwesomeProAsync`, `RegisterIconLibraryAsync` with `IconLibraryOptions`, `SetDefaultIconFamilyAsync`, `SetIconPathAsync`.
 - `WaInputBase<TValue>`, `WaLabeledInputBase<TValue>`: shared form-control members (`Label`, `Hint`, `Size`, `Disabled`, `OnInput`, `SetCustomValidityAsync`, `ResetValidityAsync`).
 - `WaDataGrid` with `WaDataGridColumn`, `WaDataGridState` and the CSV and copy options in WebAwesome.Blazor.Models.
 - `WaJsFunction.Registered`, `WaJsFunction.Module`, `WaJsFunction.Global`, then `WithArgs` and `Uses`.
@@ -57,6 +57,7 @@ builder.Services.AddWebAwesome(builder.Configuration);   // binds the "WebAwesom
 - `AddWebAwesome` is in the namespace WebAwesome.Blazor.Extensions of this package, not in the separate WebAwesome.Blazor.Extensions package. It also registers TimeProvider.System when no TimeProvider is registered; the date components read the time from it.
 - `WebAwesomeOptions.Version` defaults to the first three parts of the package version (3.14.0.1 binds Web Awesome 3.14.0). `StylesheetUrl` and `LoaderUrl` override the URLs derived from `AssetSource`; `BasePath` is used only with `WaAssetSource.SelfHosted`.
 - Never hard-code `FontAwesomeKitCode` or the kit code of `RegisterFontAwesomeProAsync`; supply it from configuration or user secrets.
+- To keep icon requests off the Font Awesome CDN, set `WebAwesomeOptions.IconPath`: a runtime `SetIconPathAsync` call comes after the first icons have loaded from the CDN.
 - In a standalone WebAssembly app with a static index.html, prefer the static asset tags of the README to `WebAwesomeAssets`.
 - `WaIconLibraryService` acts on the Web Awesome instance in the page: call it once the app is interactive (`OnAfterRenderAsync`), not during prerendering.
 - Form controls bind on commit (the change event, e.g. on blur). Set `WaInput.Immediate` to bind on every keystroke; `OnInput` then runs after the value update.

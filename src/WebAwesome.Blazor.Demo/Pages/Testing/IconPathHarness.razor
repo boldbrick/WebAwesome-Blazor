@@ -1,0 +1,60 @@
+@page "/testing/icon-path"
+@using WebAwesome.Blazor.Models
+@inject WebAwesomeOptions RegisteredOptions
+
+@* e2e harness for tools\e2e\tests\icon-path.spec.js - deliberately outside /components/, so it is neither derived from
+   api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. The page puts its own WebAwesomeAssets into the head: the registered options of
+   the host plus WebAwesomeOptions.IconPath, so the default icon library of this page loads from the test-only folder
+   wwwroot\fragments\icon-path (our own trivial SVGs, no Font Awesome files) and the other demo pages keep their icons.
+   The page's HeadContent replaces the one of App.razor while the page is shown. The path is relative, so it also
+   proves that WebAwesomeAssets resolves it against the app base. *@
+
+<PageTitle>Testing: Icon Path</PageTitle>
+
+<HeadContent>
+    <WebAwesomeAssets Options="@optionsWithIconPath" />
+</HeadContent>
+
+<h1>Icon Path Harness</h1>
+<p>This page is an end-to-end test harness for the self-hosted icon path of the default icon library (<code>WebAwesomeOptions.IconPath</code>).</p>
+
+<ExampleSection Title="Default library icons">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaIcon data-testid="ip-icon-solid" Name="@HarnessIcon" Label="Solid square" />
+        <WaIcon data-testid="ip-icon-regular" Name="@HarnessIcon" Variant="regular" Label="Regular square" />
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Icons a component renders itself">
+    <WaZoomableFrame data-testid="ip-zoomable-frame" SrcDoc="@FrameContent" Style="height: 120px;" />
+</ExampleSection>
+
+@code {
+    // relative to the app base: the folder wwwroot\fragments\icon-path, with one subfolder per Font Awesome style
+    private const string HarnessIconPath = "fragments/icon-path";
+
+    // an icon name of our own, so no request can be answered by a real Font Awesome file
+    private const string HarnessIcon = "harness-square";
+
+    private const string FrameContent = "<p>Zoomable frame content</p>";
+
+    private WebAwesomeOptions optionsWithIconPath = default!;
+
+    protected override void OnInitialized()
+    {
+        // the host's asset settings, so the page loads the same Web Awesome instance from the same loader URL
+        optionsWithIconPath = new WebAwesomeOptions
+        {
+            AssetSource = RegisteredOptions.AssetSource,
+            Version = RegisteredOptions.Version,
+            CdnBaseUrl = RegisteredOptions.CdnBaseUrl,
+            BasePath = RegisteredOptions.BasePath,
+            StylesheetUrl = RegisteredOptions.StylesheetUrl,
+            LoaderUrl = RegisteredOptions.LoaderUrl,
+            FontAwesomeKitCode = RegisteredOptions.FontAwesomeKitCode,
+            EmitInspectorMetadata = RegisteredOptions.EmitInspectorMetadata,
+            IconPath = HarnessIconPath
+        };
+    }
+}
