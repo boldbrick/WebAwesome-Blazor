@@ -143,6 +143,39 @@ h1 .component-badges {
     vertical-align: top;
 }
 
+/* content pages (Tooling): tables and screenshots with a caption */
+.demo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.demo-table th, .demo-table td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--wa-color-surface-border, #e2e5e9);
+    vertical-align: top;
+}
+
+.demo-figure {
+    margin: 1.5rem 0;
+}
+
+.demo-figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--wa-color-surface-border, #e2e5e9);
+    border-radius: 0.5rem;
+}
+
+.demo-figure figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--wa-color-text-quiet, #6a7381);
+}
+
 .demo-loading {
     display: grid;
     place-items: center;

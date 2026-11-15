@@ -17,7 +17,7 @@ description: "Use when writing or changing code that uses WebAwesome.Blazor: str
 
 - `ServiceCollectionExtensions.AddWebAwesome` (namespace WebAwesome.Blazor.Extensions): registers the services; overloads take nothing, an Action of `WebAwesomeOptions` or an IConfiguration (section `ServiceCollectionExtensions.ConfigurationSection`, "WebAwesome").
 - `WebAwesomeAssets`: put once in the head content (for example in App.razor); `WebAwesomeAssets.Options` overrides the registered options for one instance.
-- `WebAwesomeOptions`: `AssetSource`, `Version`, `CdnBaseUrl`, `BasePath`, `StylesheetUrl`, `LoaderUrl`, `FontAwesomeKitCode`, `IconPath` (a self-hosted Font Awesome svgs folder for the default icon library; it wins over the kit code).
+- `WebAwesomeOptions`: `AssetSource`, `Version`, `CdnBaseUrl`, `BasePath`, `StylesheetUrl`, `LoaderUrl`, `FontAwesomeKitCode`, `IconPath` (a self-hosted Font Awesome svgs folder for the default icon library; it wins over the kit code), `EmitInspectorMetadata` (the `data-wablazor-*` placement attributes for the WA Inspector review extension; default false, turn it on in development and test environments only).
 - `WaIconLibraryService`: `RegisterLucideAsync`, `RegisterHeroiconsAsync`, `RegisterFontAwesomeProAsync`, `RegisterIconLibraryAsync` with `IconLibraryOptions`, `SetDefaultIconFamilyAsync`, `SetIconPathAsync`.
 - `WaInputBase<TValue>`, `WaLabeledInputBase<TValue>`: shared form-control members (`Label`, `Hint`, `Size`, `Disabled`, `OnInput`, `SetCustomValidityAsync`, `ResetValidityAsync`).
 - `WaDataGrid` with `WaDataGridColumn`, `WaDataGridState` and the CSV and copy options in WebAwesome.Blazor.Models.

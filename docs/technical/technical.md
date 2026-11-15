@@ -6,7 +6,7 @@ The engineering standards and practices for authoring and maintaining the Web Aw
 
 - **Pure C# render trees.** Wrappers are `ComponentBase` descendants implementing `BuildRenderTree` by hand — no `.razor` markup. This keeps attribute emission, event wiring, and sequence numbering under explicit control.
 - **Web Awesome components are self-contained.** The upstream web components handle their own initialization, internal state, DOM manipulation, and third-party library integrations. A wrapper renders the correct tag with the correct attributes, slots, and event subscriptions — nothing more. Never re-implement behavior the custom element already provides.
-- **Naming**: tag `wa-foo-bar` → class `WaFooBar`, one class per file in `src\WebAwesome.Blazor\Components\`. Web Awesome's CSS-only layout utilities (no `wa-*` element, just markup + classes) are wrapped as components too, in `src\WebAwesome.Blazor\Layouts\`. Shared infrastructure lives in `src\WebAwesome.Blazor\Base\`.
+- **Naming**: tag `wa-foo-bar` → class `WaFooBar`, one class per file in `src\WebAwesome.Blazor\Components\`. Web Awesome's CSS-only layout utilities (no `wa-*` element, just markup + classes) are wrapped as components too, in `src\WebAwesome.Blazor\Layout\`. Shared infrastructure lives in `src\WebAwesome.Blazor\Base\`.
 - **Completeness**: every documented attribute, event, slot, and method of the bound Web Awesome version has a wrapper counterpart (mechanically enforced — see the parity suite in `docs\contributing\UPGRADE-PROCESS.md`). Intentional deviations are recorded in `parity-config.json` with a reason, never silently.
 - **Every element wrapper** exposes `[Parameter(CaptureUnmatchedValues = true)] AdditionalAttributes` pass-through and captures `ElementReference? Element`.
 

@@ -6,6 +6,9 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 
 A fourth revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. Wrapper methods that did nothing, failed or never completed in the browser now do what their documentation says, and the documentation of several methods names their preconditions. There are no breaking changes.
 
+### Added
+- Demo: a new Tooling section with a WA Inspector page: the installation of the extension and the Claude Code plugin `wablazor`, the Blazor placement metadata, the review, the hand-off to the coding agent and screenshots.
+
 ### Changed
 - `ShowAsync` and `HideAsync` of `WaDetails`, `WaPopover`, `WaTooltip` and the popup form controls (`WaColorPicker`, `WaCombobox`, `WaSelect`, `WaTimeInput`, `WaDateInput`, `WaDateRangeInput`) complete at once when a handler cancels the show or hide (`wa-show` or `wa-hide` with `preventDefault()`), as `WaDialog`, `WaDrawer` and `WaDropdown` already do. Before, the call never completed.
 

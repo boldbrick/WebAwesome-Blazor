@@ -48,6 +48,14 @@
                     <li><NavLink href="@($"layout/{route}")">@name</NavLink></li>
                 }
             </ul>
+
+            <h4>Tooling</h4>
+            <ul>
+                @foreach (var (route, name) in ToolingLinks)
+                {
+                    <li><NavLink href="@($"tooling/{route}")">@name</NavLink></li>
+                }
+            </ul>
         </nav>
     </aside>
 
@@ -97,6 +105,11 @@
         ("stack", "Stack"),
         ("text", "Text"),
         ("visually-hidden", "Visually Hidden")
+    ];
+
+    private static readonly (string Route, string Name)[] ToolingLinks =
+    [
+        ("inspector", "WA Inspector")
     ];
 
     /// <inheritdoc />
