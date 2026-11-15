@@ -2,7 +2,7 @@
 
 All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [3.14.0.3] — 2026-11-14
+## [3.14.0.3] — 2026-11-15
 
 A third revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. A package can now build wrappers of its own custom elements on the same rendering infrastructure as the library's wrappers. There are no breaking changes.
 
