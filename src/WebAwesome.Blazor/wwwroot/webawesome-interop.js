@@ -6,19 +6,28 @@
 import { findGlobalFunction, isFunctionDescriptor, resolveFunction } from './webawesome-functions.js';
 
 /**
- * Sets a custom validation message on a Web Awesome form control element
+ * Sets a custom validation message on a Web Awesome form control element, once its custom element is defined. Like
+ * invokeMethod, a call soon after the first render waits for the definition, at most elementDefinitionTimeoutMs, and
+ * then fails if the element is still not defined (a Pro element on the free CDN).
  * @param {HTMLElement} element - The Web Awesome form control element
  * @param {string} message - The validation message to display, or empty string to clear
+ * @returns {Promise<void>}
  */
-export function setCustomValidity(element, message) {
+export async function setCustomValidity(element, message) {
     if (!element) {
         throw new Error('Element reference is null or undefined');
     }
+
+    await whenElementDefined(element);
 
     const tagName = element.tagName?.toLowerCase() || 'unknown';
 
     // Check if element implements WebAwesomeFormControl interface by testing for setCustomValidity method
     if (typeof element.setCustomValidity !== 'function') {
+        if (tagName.includes('-') && !customElements.get(tagName)) {
+            throw new Error(`Custom validity cannot be set: element ${tagName} is not defined after ${elementDefinitionTimeoutMs} ms. Ensure Web Awesome library is properly loaded and the component is available (Pro components need the Pro assets).`);
+        }
+
         throw new Error(`Element ${tagName} does not implement WebAwesomeFormControl interface. Ensure Web Awesome library is properly loaded.`);
     }
 

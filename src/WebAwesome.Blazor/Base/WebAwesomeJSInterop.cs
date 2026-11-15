@@ -13,11 +13,15 @@ namespace WebAwesome.Blazor.Base;
 public class WebAwesomeJSInterop
 {
     /// <summary>
-    /// Sets a custom validation message on a Web Awesome form control element
+    /// Sets a custom validation message on a Web Awesome form control element. A call before the element is defined
+    /// (its module is still loading) waits in the browser for the definition.
     /// </summary>
     /// <param name="elementReference">Reference to the form control element</param>
     /// <param name="message">The validation message to display, or empty string to clear</param>
     /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the message cannot be set, or when the element is still
+    /// not defined after the wait</exception>
     public async Task SetCustomValidityAsync(ElementReference elementReference, string message)
     {
         if (elementReference.Id == null)

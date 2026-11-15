@@ -387,6 +387,20 @@ module.exports = {
         await expect.poll(() => valueOf(page, 'number-input'), { message: 'the number input stepped up' }).toBe(NUMBER_AFTER_STEP_UP);
       },
     },
+    {
+      // the interop's setCustomValidity waits for the definition as invokeMethod does (WAB-68): before the element
+      // module has loaded, the element has no setCustomValidity yet
+      name: 'timing: WaInput.SetCustomValidityAsync on the first render waits until the element is defined',
+      methods: ['WaInput.SetCustomValidityAsync'],
+      route: EARLY_ROUTE,
+      tags: [INPUT],
+      noReadyWait: true,
+      setup: delayModules,
+      run: async page => {
+        await expectEarlyOutcome(page, 'early-input-validity');
+        expect(await validityOf(page, 'input')).toEqual({ message: VALIDITY_MESSAGE, customError: true });
+      },
+    },
   ],
 
   knownDefects: [
