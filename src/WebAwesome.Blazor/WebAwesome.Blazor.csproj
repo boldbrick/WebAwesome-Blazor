@@ -47,7 +47,8 @@
   </ItemGroup>
 
   <!-- package docs (DocPack, local Release builds only): the changelog, the technical documentation and the full
-       migration chain; docs\contributing is maintainer documentation and stays out of the package -->
+       migration chain; docs\contributing (maintainer documentation) and docs\inspector (the WA Inspector tool docs)
+       stay out of the package -->
   <ItemGroup>
     <DocPackContent Include="..\..\docs\CHANGELOG.md" Title="Changelog" />
     <DocPackContent Include="..\..\docs\technical" Title="Technical documentation" />

@@ -47,13 +47,17 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   error. Removing the active slide keeps the active index, so the next slide shows; removing the active last slide
   shows the new last slide, or the first one when the carousel loops.
 - `tests\sweep.spec.js` — visits **every** demo route (every component page from
-  `api-surface.json`, plus the layout, showcase and harness pages and the home page), waits until every
+  `api-surface.json`, plus the layout, showcase, tooling and harness pages and the home page), waits until every
   free `wa-*` element on it has rendered, and fails on any page error and on every console error or
   warning except network `Failed to load resource` noise and the autoload warning of a Pro component.
   Every component page sets non-default enum, boolean and number values, so an invalid value a wrapper
   emits surfaces here (Web Awesome throws, e.g. a `RangeError` from `Intl`, or warns, e.g. a deprecated
   size). It is also the first line of defense against the "wrapper throws on first render" class of
   bug (e.g. the `wa-resize-observer` "initialize" crash).
+- `tests\tooling-pages.spec.js` — the screenshots of the Tooling pages (`TOOLING_ROUTES`, images in the demo's
+  `wwwroot\images\tooling`) load: every image answers 200, decodes and has an alt text, and its URL is relative, so that
+  it resolves against the base href of GitHub Pages. The sweep cannot see a missing image, because its console filter
+  drops network failures.
 - `tests\extensions-package.spec.js` — the demo loads the JS initializer of the optional `WebAwesome.Blazor.Extensions`
   package (`_content/WebAwesome.Blazor.Extensions/...lib.module.js` answers 200). It proves the static web asset chain
   from the package to the host, which fails silently otherwise. It passes against both demo hosts.
@@ -270,6 +274,24 @@ cd tools\e2e
 npm run test:inspector
 ```
 
+### Screenshots of the demo page
+
+The screenshots of the demo's WA Inspector page (`/tooling/inspector`, images in
+`src\WebAwesome.Blazor.Demo\wwwroot\images\tooling`) come from `inspector\screenshots.capture.js`. It uses the setup of
+the inspector tests (the extension in Chromium, the panel as a tab) on the Settings showcase and makes a small review:
+an attribute change, two comments and a theme token. It is not a test: its own config,
+`playwright.screenshots.config.js`, runs it, and the standard and inspector suites do not. Run it again after a visible
+change of the panel or of the Settings showcase, with Demo.Server and the metadata on as above:
+
+```powershell
+cd tools\e2e
+npm run capture:inspector-screenshots
+```
+
+It overwrites the PNG files and logs the size of each. When a size changes, update the `width` and `height` of the image
+in `src\WebAwesome.Blazor.Demo\Pages\Tooling\InspectorPage.razor`. Look at the images before the check-in, and keep
+each one below about 300 KB.
+
 ## Release gate
 
 `tools\release\Test-WaReleasePreflight.ps1` runs this suite itself: it starts the WebAssembly demo on a
@@ -300,7 +322,8 @@ tests. So a self-skipping test (a Pro component on the free CDN) must be added t
   `api-surface.json`; list them in `WRAPPER_ROUTES` in `tests\helpers\routes.js` and in `ComponentCategoryMap.WrapperPages`.
 - Layout routes (`LAYOUT_ROUTES` in `tests\helpers\routes.js`) are hand-authored components
   (`WaCluster`, `WaFlank`, ...) with no generated manifest; keep that list in sync with
-  `MainLayout.razor`'s `LayoutLinks` array by hand if a layout component is added or removed.
+  `MainLayout.razor`'s `LayoutLinks` array by hand if a layout component is added or removed. The same holds for the
+  tooling routes (`TOOLING_ROUTES`) and the `ToolingLinks` array.
 - When you find and fix another bug this way, add a targeted regression test alongside the
   existing ones and log the root cause + workaround in `docs\CHANGELOG.md` so the `/wa-upgrade`
   pipeline knows to re-verify it against future Web Awesome releases (see

@@ -1,7 +1,7 @@
 // Enumerates every demo route so the sweep test always covers the full site without a
 // hand-maintained list. Component routes are read straight from the same api-surface.json
 // that drives the demo's own navigation and API tables (src\WebAwesome.Blazor.Demo\wwwroot\data\api-surface.json),
-// so newly generated component pages are covered automatically. Layout routes have no such
+// so newly generated component pages are covered automatically. Layout and tooling routes have no such
 // generated manifest (WaCluster/WaFlank/... are hand-authored, not CEM-derived) and are kept
 // in sync manually with MainLayout.razor's LayoutLinks array. Harness routes (e2e-only pages
 // outside the navigation) are hand-listed in HARNESS_ROUTES, plus the method suite's group pages
@@ -28,6 +28,11 @@ const SHOWCASE_ROUTES = [
   '/showcases/overlays',
   '/showcases/media-gallery',
   '/showcases/content',
+];
+
+// Tooling pages; kept in sync manually with MainLayout.razor's ToolingLinks array.
+const TOOLING_ROUTES = [
+  '/tooling/inspector',
 ];
 
 // Pages of wrappers rendering another wrapper's element in one of its modes (the range wrappers of wa-date-input
@@ -89,7 +94,7 @@ function getComponentRoutes() {
 }
 
 function getAllRoutes() {
-  return ['/', ...getComponentRoutes(), ...WRAPPER_ROUTES, ...LAYOUT_ROUTES, ...SHOWCASE_ROUTES, ...HARNESS_ROUTES];
+  return ['/', ...getComponentRoutes(), ...WRAPPER_ROUTES, ...LAYOUT_ROUTES, ...SHOWCASE_ROUTES, ...TOOLING_ROUTES, ...HARNESS_ROUTES];
 }
 
-module.exports = { getComponentRoutes, getAllRoutes, WRAPPER_ROUTES, LAYOUT_ROUTES, SHOWCASE_ROUTES, HARNESS_ROUTES };
+module.exports = { getComponentRoutes, getAllRoutes, WRAPPER_ROUTES, LAYOUT_ROUTES, SHOWCASE_ROUTES, TOOLING_ROUTES, HARNESS_ROUTES };

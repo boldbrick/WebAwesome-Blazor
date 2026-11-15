@@ -183,6 +183,11 @@ The upgrade process (`docs/contributing/UPGRADE-PROCESS.md`, Phase 3) includes t
 The published plugin `wablazor` bundles the extension: when the extension changes, raise the plugin version before
 the next publish, so that the users get the change.
 
+The demo site has a page about the inspector (Tooling, WA Inspector: `src/WebAwesome.Blazor.Demo/Pages/Tooling/InspectorPage.razor`)
+with screenshots of the panel. When the panel changes visibly, make the screenshots again with
+`npm run capture:inspector-screenshots` in `tools/e2e` (see `tools/e2e/README.md`, "Screenshots of the demo page"), and
+keep the page in step with this guide.
+
 ## Browser tests
 
 The browser tests (`tools/e2e/inspector/`) load the extension in Chromium and run against the server demo app with
