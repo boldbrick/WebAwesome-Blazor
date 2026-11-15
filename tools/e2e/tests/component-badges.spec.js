@@ -53,7 +53,7 @@ test('sidebar groups components by the upstream docs taxonomy', async ({ page })
   await expect(headings).toHaveText([
     'Getting Started', 'Showcases',
     'Actions', 'Forms', 'Layout', 'Navigation', 'Feedback', 'Media', 'Data Viz', 'Helpers',
-    'Layout Utilities',
+    'Layout Utilities', 'Tooling',
   ]);
 
   const dataVizList = page.locator('.demo-sidebar nav h4:has-text("Data Viz") + ul');
