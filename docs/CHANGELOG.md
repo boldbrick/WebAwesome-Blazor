@@ -1,10 +1,95 @@
 # Changelog
 
-All notable changes to the Web Awesome Blazor Bindings. Versions mirror the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release; the format follows [Keep a Changelog](https://keepachangelog.com/).
+All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
+
+## [3.14.0.4] — 2026-11-15
+
+A fourth revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. Wrapper methods that did nothing, failed or never completed in the browser now do what their documentation says, and the documentation of several methods names their preconditions. There are no breaking changes.
+
+### Added
+- Demo: a new Tooling section with a WA Inspector page: the installation of the extension and the Claude Code plugin `wablazor`, the Blazor placement metadata, the review, the hand-off to the coding agent and screenshots.
+
+### Changed
+- `ShowAsync` and `HideAsync` of `WaDetails`, `WaPopover`, `WaTooltip` and the popup form controls (`WaColorPicker`, `WaCombobox`, `WaSelect`, `WaTimeInput`, `WaDateInput`, `WaDateRangeInput`) complete at once when a handler cancels the show or hide (`wa-show` or `wa-hide` with `preventDefault()`), as `WaDialog`, `WaDrawer` and `WaDropdown` already do. Before, the call never completed.
+
+### Fixed
+- `WaColorPicker.GetHexStringAsync` returns the current value as a hex string instead of an empty string.
+- `WaCopyButton.CopyAsync` copies the value and raises `OnCopy`; before, nothing was copied.
+- `WaDialog.FocusAsync` and `WaDrawer.FocusAsync` move the focus into the open dialog or drawer, as the element does when it opens: to an element with `autofocus`, else to the dialog or drawer panel.
+- `WaRelativeTime.UpdateAsync` shows the phrase for the current time; before, it rendered the old phrase again.
+- `WaTreeItem.GetChildrenItemsAsync` no longer fails with "Converting circular structure to JSON" for an item with children: it returns the id, label text and states of each child item.
+- `WaTextArea.ScrollPositionAsync` with a position returns the resulting scroll position instead of `null`.
+- `WaInput.StepUpAsync`, `WaInput.StepDownAsync`, `WaNumberInput.StepUpAsync` and `WaNumberInput.StepDownAsync` update the bound value, the edit context and its validation.
+
+## [3.14.0.3] — 2026-11-15
+
+A third revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. A package can now build wrappers of its own custom elements on the same rendering infrastructure as the library's wrappers. There are no breaking changes.
+
+### Added
+- New namespace `WebAwesome.Blazor.Infrastructure` for the authors of wrappers and extension libraries (app code does not need it). Its `RenderTreeBuilderExtensions` and `WaAttributeMemory` are public: open a custom element with `OpenWaElement` and render sticky attributes, slots and icon slots as the library's wrappers do. See "Building a sister wrapper set" in the package readme.
+- `AddOwnEventIfHasDelegate` binds an own event of a custom element with any prefix (for example `onxyz-remove`) and always stops it at its wrapper, so a nested element's event never reaches an outer wrapper.
+- New JS module `_content/WebAwesome.Blazor/webawesome-events.js`: `registerEventTypes(blazor, definitions)` registers custom event types with Blazor once per name, and `sanitize`, `detailArgs` and `isoDate` build their payloads.
+- `WaInputBase.ElementDefaultSize`: a derived form control sets the size default of its element, or `null` when the element has none; `WaInputBase.ElementHasSize` set to `false` renders no `size` for an element that has no size attribute.
+- The typed attribute helpers are public (`AddBooleanAttribute`, `AddTrueFalseAttribute`, `AddOnOffAttribute`, `AddDateAttribute`, `AddTimeAttribute`, `AddDateTimeOffsetAttribute`, `AddDateSetAttribute`, `AddDaysOfWeekAttribute`), and the generic helpers refuse a `bool` or a date with a compiler error that names the helper to use.
+- `ChangeEventArgsExtensions` is public: `GetStringValue`, `GetStringArrayValue` (the array value of a multi-value control) and `TryParseJsNumber`.
+- `WaWireFormat` is public: it formats and parses the Web Awesome wire forms of dates, times, date ranges and lists.
+- `FormControlRendering` renders the label and hint cluster and the start and end slots for your own form controls, and `WaEnumJsonConverter<TEnum>` serializes your own enums as the strings of their element.
+- `WaInputBase.FormatValidationMessage` is protected (it was not accessible), so a derived control words a parse failure as the library's controls do.
+- `WebAwesomeOptions.IconPath` (configuration key `WebAwesome:IconPath`): the default icon library loads its icons from your self-hosted Font Awesome `svgs` folder instead of the Font Awesome CDN; `WaIconLibraryService.SetIconPathAsync` sets the path at runtime.
+
+### Fixed
+- `WebAwesomeAssets` with `FontAwesomeKitCode` no longer writes a broken module script into a prerendered page (`Invalid or unexpected token`); the kit code now applies from the first render.
+- `SetCustomValidityAsync` of a form control no longer fails with "does not implement WebAwesomeFormControl interface" when you call it soon after the first render: it waits until Web Awesome has loaded the element.
+
+## [3.14.0.2] — 2026-10-28
+
+A second revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. The wrappers can write placement metadata for the new WA Inspector, a browser extension for the UI review of a running page. There are no breaking changes.
+
+### Added
+- `WebAwesomeOptions.EmitInspectorMetadata` (configuration key `WebAwesome:EmitInspectorMetadata`, default `false`): the wrappers write `data-wablazor-*` placement metadata on their root elements for the WA Inspector. Turn it on in development and test environments only.
+- WA Inspector (`tools/wa-inspector`, not part of the packages): a Chrome and Edge extension to review the Web Awesome elements of a running page, change them live, comment and export a change list. The published Claude Code plugin `wablazor` (`tools/wablazor-marketplace`, the developer skills of WebAwesome.Blazor) bundles the extension: `/wablazor:install-inspector` installs it, and `/wablazor:wa-review-apply` applies the change list to the source code. See `docs/inspector/README.md`.
+
+### Fixed
+- A wrapper method that calls an element method (for example `WaDataGrid.ReloadAsync` or `WaCombobox.ReloadAsync`) no longer fails with "Method '…' does not exist" when you call it soon after the first render: it waits until Web Awesome has loaded the element.
+
+## [3.14.0.1] — 2026-10-16
+
+A revision of the bindings for Web Awesome 3.14.0: the fourth version part marks changes to the bindings only, and the default CDN version stays 3.14.0. C# code can now refer to JavaScript functions for the function-valued Web Awesome members, the data grid renders rich cells, and the new `WebAwesome.Blazor.Extensions` package adds ready-made cell presets. There are no breaking changes: the obsolete members give compiler warnings only, and 3.15.0 removes them.
+
+### Added
+- `WaJsFunction` refers to a JavaScript function from C#: a function that the app registers by name (`registerFunction` of the module `_content/WebAwesome.Blazor/webawesome-functions.js`, which also exports `registerContextDecorator`), an export of an ES module (for example a collocated `.razor.js` file), or a global function. `WithArgs` gives the function options, and `Uses` declares the Web Awesome elements that it renders. The browser calls the function, with no round-trip to .NET.
+- `WaJsFunction` parameters for the function-valued members of Web Awesome: `GetTagFunction` (`WaSelect`, `WaCombobox`), `FilterFunction` (`WaCombobox`), `GetSymbolFunction` (`WaRating`), `ValueFormatterFunction` (`WaSlider`, `WaRange`), `IsDateDisabledFunction` and `DayContentFunction` (the date pickers and date inputs), and `HrefTemplateFunction` (`WaPagination`; set it or `HrefTemplate`, not both).
+- `ShadowStyles` on `WaDataGrid`, `WaSelect`, `WaCombobox`, `WaRating`, the date pickers and the date inputs: CSS for the output of your own functions in the element's shadow root.
+- `IconLibraryOptions.ResolverFunction` and `MutatorFunction` take a `WaJsFunction`: a resolver for URLs that a URL template cannot express (it can return a Promise or a sprite reference), and a mutator from a module or a registered function. Set `Resolver` or `ResolverFunction`, not both.
+- `WaDataGridColumn` takes JavaScript functions: `Formatter` (rich cell content), `AggregatedFormatter` (group row content), `ComparatorFunction` (a custom sort order), `ValueFunction` (a computed value for sort, filter, search, copy and CSV), `FilterFunction` (a custom column filter), and the function forms `FooterFunction`, `AggregationFunction` and `CellClassFunction`. Set the static form (`Footer`, `Aggregation`, `CellClass`) or the function form, not both. A reference that does not resolve shows raw values and writes a console error.
+- `WaDataGridColumn.FilterOptions` (a list of `WaDataGridFilterOption`) sets the options of a set filter picker: values, labels, counts and order. Use it for a value picker in server mode.
+- `WaDataGrid.RowClassFunction`, `RowDetailFunction` (an expandable detail panel), `SearchFunction`, `SelectableRowsFunction` (lock rows) and `ChildRowsFunction` (set `ChildRows` or `ChildRowsFunction`, not both). A `ChildRowsFunction` that changes after the first render applies from the next `Data` push.
+- New package `WebAwesome.Blazor.Extensions` for features that Web Awesome does not have, configured in C# only. It has the same version as `WebAwesome.Blazor`; use the same version of both. Its types are in `WebAwesome.Blazor.Extensions.DataGrid`.
+- Extensions: cell presets in `WaDataGridFormatters`: text formats for numbers, currencies, percentages, dates, times, relative times, bytes, durations, lookups, booleans, templates and lists; badges, tags, icons, links, e-mail and phone links; and the visual cells `ProgressBar`, `ProgressRing`, `Rating`, `Avatar`, `Image`, `ColorSwatch`, `Sparkline`, `Trend`, `DataBar` and `CopyButton`. Typed `Badge<TEnum>` and `Lookup<TEnum>` key the maps by the JSON form of the enum.
+- Extensions: the interactive cell presets `ActionLink`, `Button`, `Actions` (`WaDataGridAction`: icon buttons and a menu, hidden or disabled per row), `Menu`, `Switch` and `Checkbox` raise a cell action. Bind `@onwablazor-cell-action` on `WaDataGrid` to receive `WaDataGridCellActionEventArgs` (`GetRow<T>()`, `GetPayload<T>()`). A click that raises an action does not raise `OnCellClick`. A switch or checkbox sends `{ "checked": bool }`, so update the row and push `Data`.
+- Extensions: in Web Awesome 3.14.0, Enter on a `Link` in a cell raises `OnCellClick` and does not follow the link, because the grid's keyboard navigation takes Enter. Use `ActionLink` (a button) for an action that the keyboard must reach. **Next-release check:** recheck Enter on a link in a grid cell; if the grid follows the link, remove this note.
+- Extensions: `WaDataGridComparators.Ordinal` (a given order, for example the states of a workflow) and `Collation`, `WaDataGridClassRules` (cell and row classes by conditions), `WaDataGridFooters` (sum, average, min, max, count), `WaDataGridSearch.Formatted` (the search also finds lookup and badge labels), `WaDataGridFilterOptions`, and `WaDataGridRows.DetailFields` and `SelectableField`.
+- Extensions: your own grid functions get `ctx.emit`, `ctx.h`, `ctx.preset`, `ctx.format` and `ctx.cache`, and an element with `data-wablazor-action` (optional `data-wablazor-action-payload`) raises a cell action when clicked. A Lit template of your own Lit 3 renders in a cell.
+- Extensions: `ctx.invoke(action, payload)` asks .NET from a cell, a detail panel or a footer and returns a Promise; wrap the grid in `WaDataGridRequestHandler` and answer in `OnRequest` (throw `WaDataGridRequestException` to reject with a message).
+- Extensions: `WaDataGridRazorTemplates<TRow>` shows cells written in Razor (for example a `WaBadge`) as static HTML; buttons use `data-wablazor-action`. Meant for server mode and small pages: each row renders once per template on each data push.
+- Local-feed packages bundle documentation under `docs/`: API reference, technical documentation, migration guides and the Web Awesome docs.
+
+### Changed
+- `WaDataGrid` sends `Columns` to the element again only when a column definition changes: not on every render, and not for a new list with the same definitions. A change in place still reaches the element. The JSON of a column leaves out unset members.
+
+### Deprecated
+- `WaSelect.SetGetTagFunctionAsync` and `WaSelect.GetTag`: use `GetTagFunction`. They are removed in 3.15.0.
+- `WaRating.SetSymbolFunctionAsync`: use `GetSymbolFunction`. It is removed in 3.15.0.
+- `SetValueFormatterAsync` of `WaSlider` and `WaRange`, and `WaSlider.ValueFormatter`: use `ValueFormatterFunction`. They are removed in 3.15.0.
+- `IconLibraryOptions.Mutator` (a global function path): use `MutatorFunction = WaJsFunction.Global(path)`. It is removed in 3.15.0.
+- **Next-release check:** the 3.15.0 train removes the members above (each has a `// TODO WA 3.15.0 train` comment) as a breaking change, with a migration guide.
+
+### Fixed
+- `WaSelect.SetGetTagFunctionAsync` and `WaRating.SetSymbolFunctionAsync` sent JavaScript source text, so the element failed to render. They now send nothing and throw `NotSupportedException`: use `GetTagFunction` and `GetSymbolFunction`. `SetValueFormatterAsync` of `WaSlider` and `WaRange`, which had no effect, now sends nothing: use `ValueFormatterFunction`.
 
 ## [3.14.0] — 2026-09-27
 
-Alignment with the Web Awesome 3.14.0 release, opening the **WA-3.14 train**. Upstream this is additive: a new stepper, a server mode for the combobox, a divider label and a few new attributes. One rename in the bindings is **breaking**: the step value type `WaStep` becomes `WaValueStep`, so the wrapper of `wa-step` can be `WaStep`, like every other component. See **[MIGRATION-3.14.0.md](MIGRATION-3.14.0.md)**.
+Alignment with the Web Awesome 3.14.0 release, opening the **WA-3.14 train**. Upstream this is additive: a new stepper, a server mode for the combobox, a divider label and a few new attributes. One rename in the bindings is **breaking**: the step value type `WaStep` becomes `WaValueStep`, so the wrapper of `wa-step` can be `WaStep`, like every other component. See **[MIGRATION-3.14.0.md](migration/MIGRATION-3.14.0.md)**.
 
 ### Breaking changes
 - The step value of `WaInput`, `WaNumberInput` and `WaTimeInput` is renamed from `WaStep` to `WaValueStep` (`Step="WaValueStep.Any"`); numeric `Step` values are unaffected (section 1).
@@ -48,7 +133,7 @@ Alignment with the Web Awesome 3.13.0 release, opening the **WA-3.13 train**. A 
 
 Alignment with the Web Awesome 3.12.0 release, opening the **WA-3.12 train**. Upstream this is a small, additive release: `wa-dropdown-item` gains link attributes, and six components change only their CSS parts. This version of the bindings is still **breaking**: it fixes the defects reported in [GitHub issue #1](https://github.com/boldbrick/WebAwesome-Blazor/issues/1), makes every enum, event and default match Web Awesome, and replaces strings with .NET types wherever the value set or shape is known. Thanks to **@Eonasdan** for the report: all three points were confirmed and are fixed here.
 
-Most removed or renamed members never worked, so the compiler now points out code that was silently broken. See **[MIGRATION-3.12.0.md](MIGRATION-3.12.0.md)**; the section numbers below refer to it.
+Most removed or renamed members never worked, so the compiler now points out code that was silently broken. See **[MIGRATION-3.12.0.md](migration/MIGRATION-3.12.0.md)**; the section numbers below refer to it.
 
 ### Breaking changes
 - **Enums match Web Awesome's value sets** (sections 1, 3):
@@ -195,7 +280,7 @@ Alignment with the Web Awesome 3.10.0 release, opening the **WA-3.10 train**. A 
 
 ## [3.9.0] — 2026-07-24
 
-Alignment with the Web Awesome 3.9.0 release, opening the **WA-3.9 train**. A small additive upgrade: one new form-grouping component (`WaCheckboxGroup`) and one additive enum value on `WaTree`. **No wrapper APIs were removed or renamed.** See [MIGRATION-3.9.0.md](MIGRATION-3.9.0.md).
+Alignment with the Web Awesome 3.9.0 release, opening the **WA-3.9 train**. A small additive upgrade: one new form-grouping component (`WaCheckboxGroup`) and one additive enum value on `WaTree`. **No wrapper APIs were removed or renamed.** See [MIGRATION-3.9.0.md](migration/MIGRATION-3.9.0.md).
 
 ### Breaking changes
 - None to the wrapper API. The single entry flagged breaking in the upstream change report is a non-destructive enum widening (see below).
@@ -225,7 +310,7 @@ Alignment with the Web Awesome 3.9.0 release, opening the **WA-3.9 train**. A sm
 
 ## [3.8.0] — 2026-07-24
 
-Alignment with the Web Awesome 3.8.0 release, opening the **WA-3.8 train**. An additive upgrade: six new experimental components (an accordion pair and a date/time family), additive attributes on four existing components, and one upstream behavioral realignment (`wa-drawer` light-dismiss default). **No wrapper APIs were removed or renamed.** See [MIGRATION-3.8.0.md](MIGRATION-3.8.0.md).
+Alignment with the Web Awesome 3.8.0 release, opening the **WA-3.8 train**. An additive upgrade: six new experimental components (an accordion pair and a date/time family), additive attributes on four existing components, and one upstream behavioral realignment (`wa-drawer` light-dismiss default). **No wrapper APIs were removed or renamed.** See [MIGRATION-3.8.0.md](migration/MIGRATION-3.8.0.md).
 
 ### Breaking changes
 - None to the wrapper API. Two entries in the upstream change report are flagged breaking but are non-destructive for the wrappers (see below).
@@ -290,7 +375,7 @@ Alignment with the Web Awesome 3.7.0 release, opening the **WA-3.7 train**. An a
 
 ## [3.6.0] — 2026-07-24
 
-Alignment with the Web Awesome 3.6.0 release, opening the **WA-3.6 train**. A focused upgrade with **no new or removed components**: an expanded size scale, one new event on `WaNumberInput`, one removed `WaFileInput` slot, and the promotion of the chart family and several Pro components from experimental to stable. See [MIGRATION-3.6.0.md](MIGRATION-3.6.0.md).
+Alignment with the Web Awesome 3.6.0 release, opening the **WA-3.6 train**. A focused upgrade with **no new or removed components**: an expanded size scale, one new event on `WaNumberInput`, one removed `WaFileInput` slot, and the promotion of the chart family and several Pro components from experimental to stable. See [MIGRATION-3.6.0.md](migration/MIGRATION-3.6.0.md).
 
 ### Breaking changes
 - `wa-file-input` — slot `file-icon` removed upstream; `WaFileInput.FileIconContent` has been removed. Use `DropzoneContent` for custom dropzone visuals. (The 18 upstream `size` "breaking" entries are non-destructive for the wrappers — see below.)
@@ -456,7 +541,7 @@ Alignment with the Web Awesome 3.2.1 release. A pure version-alignment patch: no
 
 ## [3.2.0] — 2026-07-23
 
-Alignment with the Web Awesome 3.2.0 release. See [MIGRATION-3.2.0.md](MIGRATION-3.2.0.md) for the migration guide. A small, mostly additive upgrade: three new components, three new `WaIcon` attributes, and one behavioral breaking change to `WaQrCode` colors.
+Alignment with the Web Awesome 3.2.0 release. See [MIGRATION-3.2.0.md](migration/MIGRATION-3.2.0.md) for the migration guide. A small, mostly additive upgrade: three new components, three new `WaIcon` attributes, and one behavioral breaking change to `WaQrCode` colors.
 
 ### Breaking changes
 - `WaQrCode.Fill` and `WaQrCode.Background` changed from non-nullable `string` (defaulting to `"black"`/`"white"`, always emitted) to nullable `string?` (defaulting to `null`, emitted only when set). WA 3.2.0 changed both `wa-qr-code` attribute defaults from `'black'`/`'white'` to `''`, so an unset QR code now inherits theme colors instead of being forced to black-on-white. Set `Fill`/`Background` explicitly to keep the old look. (Upstream flags this as a breaking attribute change; it is the only one of the four upstream "breaking" default changes that alters the wrapper's public surface.)
@@ -483,7 +568,7 @@ Alignment with the Web Awesome 3.2.0 release. See [MIGRATION-3.2.0.md](MIGRATION
 
 ## [3.1.0] — 2026-07-22
 
-Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](MIGRATION-3.1.0.md) for the migration guide.
+Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](migration/MIGRATION-3.1.0.md) for the migration guide.
 
 ### Breaking changes
 - Removed `WaButtonGroup.Variant` — the `variant` attribute left the `wa-button-group` CEM in WA 3.1.0. Verified upstream (issue #1677, maintainer response): the group-level variant functionality had already been dropped earlier and the property lingered by mistake; the supported way is setting the variant on each button, which also allows mixing variants within a group.
@@ -510,7 +595,7 @@ Alignment with the Web Awesome 3.1.0 release. See [MIGRATION-3.1.0.md](MIGRATION
 
 ## [3.0.0] — 2026-07-22
 
-Alignment with the Web Awesome 3.0.0 stable release, plus the browser-verified correctness sweep that made every `wa-*` event and imperative method actually work. See [MIGRATION-3.0.0.md](MIGRATION-3.0.0.md) for the migration guide.
+Alignment with the Web Awesome 3.0.0 stable release, plus the browser-verified correctness sweep that made every `wa-*` event and imperative method actually work. See [MIGRATION-3.0.0.md](migration/MIGRATION-3.0.0.md) for the migration guide.
 
 ### Breaking changes
 - `appearance` combined token renamed by WA 3.0.0: `WaAppearance.OutlinedFilled` now emits `filled-outlined` (was `outlined filled`) across `WaBadge`, `WaButton`, `WaCallout`, `WaDetails`, `WaTag`; `WaInputAppearance` gains the new `FilledOutlined` value for `WaInput`, `WaSelect`, `WaTextArea`. No C# signature change — only the emitted attribute token.
@@ -566,18 +651,18 @@ Every `extraElementMethods` allowlist entry was verified against the live WA 3.0
 
 ### Library
 - Comprehensive EditForm integration coverage (bUnit) for all 10 form controls (`src\WebAwesome.Blazor.Tests\Forms\`): binding, change propagation, DataAnnotations validation lifecycle, validation CSS classes, custom validity interop, common parameter rendering. Notable findings recorded during this work: `WaRange` and `WaSlider` both render the `wa-slider` tag (duplication to resolve at the next upgrade); `WaRange`/`WaRating` `TryParseValueFromString` overrides are unreachable through the actual `onchange` wiring; `WaColorPicker` is `WaInputBase<string>` while sibling string controls use `string?`.
-- Upgrade process extended with explicit coverage gates for newly added components and features (event-delivery contract, element-method audit, form-control test coverage, public API baseline promotion, showcase curation, browser verification) — see `docs\UPGRADE-PROCESS.md` "Coverage gates" and the updated `/wa-upgrade` skill phases.
+- Upgrade process extended with explicit coverage gates for newly added components and features (event-delivery contract, element-method audit, form-control test coverage, public API baseline promotion, showcase curation, browser verification) — see `docs\contributing\UPGRADE-PROCESS.md` "Coverage gates" and the updated `/wa-upgrade` skill phases.
 - Public API snapshot test (`PublicApiSnapshotTests` + `approved-public-api.txt` baseline, via PublicApiGenerator): catches accidental breaking changes between our releases; intentional changes are promoted into the baseline and mentioned here.
 - EditForm end-to-end integration tests (bUnit): two-way binding, DataAnnotations validation lifecycle, validation CSS class merging, `SetCustomValidityAsync` interop round-trip, and the WaCheckbox checked-state interop workaround.
 - Element-method invocation audit (`ElementMethodInvocationTests`): every JS element method a wrapper invokes must be CEM-documented, a native DOM method, or explicitly allowlisted with a reason in `parity-config.json` (`extraElementMethods`) — the class of bug behind the observer `disconnect`/`reconnect` → `stopObserver`/`startObserver` rename can no longer slip through silently; allowlisted entries must be re-verified against the target source on every upgrade.
 - Multi-targeting: the package now ships `net9.0` and `net10.0` assemblies; .NET 10 (LTS) is the primary supported target.
 - NuGet packaging: full package metadata, icon, package readme, symbol packages (snupkg), per-framework XML documentation for IntelliSense.
-- Automated upgrade pipeline: CEM-driven API diff tooling (`tools\upgrade\`), API-surface parity tests, and the `/wa-upgrade` orchestration skill (see `docs\UPGRADE-PROCESS.md`).
+- Automated upgrade pipeline: CEM-driven API diff tooling (`tools\upgrade\`), API-surface parity tests, and the `/wa-upgrade` orchestration skill (see `docs\contributing\UPGRADE-PROCESS.md`).
 - Repository hygiene: corrected README setup snippet (official `@awesome.me/webawesome` CDN), verified 3.0.0-beta.6 documentation inputs, corrected API parity baseline.
 - Test stack migrated to the current generations: xunit → `xunit.v3` 3.2.2, bUnit 1.40.0 → 2.7.2 (official .NET 10 support); transitive AngleSharp lifted to 1.5.2 (mXSS advisory CVE-2026-54570).
-- NuGet dependency policy (see `docs\technical.md`): the package's framework dependencies are floored at the base target majors (`9.0.0`/`10.0.0`) instead of pinning latest patches — consumers are no longer forced onto specific patch levels; test/tooling dependencies track latest stable.
+- NuGet dependency policy (see `docs\technical\technical.md`): the package's framework dependencies are floored at the base target majors (`9.0.0`/`10.0.0`) instead of pinning latest patches — consumers are no longer forced onto specific patch levels; test/tooling dependencies track latest stable.
 - Release engineering: CI split into branch verification (`build.yml`) and a tag-triggered release workflow (`release.yml`, `wa-blazor-*` tags) that rebuilds from the tag and publishes to nuget.org via Trusted Publishing behind a go-live gate; release/branching model codified (patch releases tagged on train subtrunks, new trains branch from the main line behind a release gate) — see `README.md` and `CONTRIBUTING.md`.
-- Repository restructuring: task-scoped working documents moved from `docs\prompts\` to `tasks\<epic>\<task>\`; durable wrapper technical standards extracted into `docs\technical.md`.
+- Repository restructuring: task-scoped working documents moved from `docs\prompts\` to `tasks\<epic>\<task>\`; durable wrapper technical standards extracted into `docs\technical\technical.md`.
 
 ## [3.0.0-beta.6] — 2026-07-18
 
@@ -597,7 +682,7 @@ Every `extraElementMethods` allowlist entry was verified against the live WA 3.0
 ### Library
 - Integration tests and breaking-change validation tests added.
 
-See [MIGRATION-3.0.0-beta.6.md](MIGRATION-3.0.0-beta.6.md) for the full migration guide.
+See [MIGRATION-3.0.0-beta.6.md](migration/MIGRATION-3.0.0-beta.6.md) for the full migration guide.
 
 ## [3.0.0-beta.4] — 2025-09-27
 

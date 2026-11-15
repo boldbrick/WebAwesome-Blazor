@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -54,13 +55,10 @@ public class WaSlider : WaSliderBase<decimal?>
     #region ------ JavaScript Interop Properties ------
 
     /// <summary>
-    /// Custom value formatting function for tooltips and screen readers.
-    /// Note: This requires JavaScript interop to implement.
+    /// A value formatting function that nothing reads.
     /// </summary>
-    /// <remarks>
-    /// In the actual implementation, this would be a JavaScript function that formats
-    /// the slider value for display in tooltips and for screen reader announcements.
-    /// </remarks>
+    // TODO WA 3.15.0 train: remove this obsolete member (replaced by ValueFormatterFunction)
+    [Obsolete(ValueFormatterObsoleteMessage)]
     public Func<decimal, string>? ValueFormatter { get; set; }
 
     #endregion
@@ -172,6 +170,8 @@ public class WaSlider : WaSliderBase<decimal?>
             await MaxValueChanged.InvokeAsync(maxValue);
         }
     }
+
+    private const string ValueFormatterObsoleteMessage = "Nothing reads this property. Use ValueFormatterFunction with a WaJsFunction reference. This property is removed in the 3.15.0 train.";
 
     // target of the fallback ValueExpression in range mode (see SetParametersAsync); never read or written, the
     // range selection lives in MinValue/MaxValue

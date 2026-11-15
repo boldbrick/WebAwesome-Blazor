@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Components;
@@ -436,6 +437,11 @@ public class WaVideo : ComponentBase
     /// Enters fullscreen mode.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
+    /// <remarks>
+    /// The browser enters fullscreen only with a user activation: call this method from a handler of a user action,
+    /// such as a click. Without one the browser refuses; the element logs the refusal to the browser console, and the
+    /// call completes without fullscreen.
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public Task RequestFullscreenAsync() => InvokeVoidElementMethodAsync("requestFullscreen");
 

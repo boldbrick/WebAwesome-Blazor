@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebAwesome.Blazor.Extensions;
@@ -25,7 +26,8 @@ public class WebAwesomeAssetsTests
         // Act
         var version = options.ResolveVersion();
 
-        // Assert - the library version tracks the bound Web Awesome release
+        // Assert - the default is the bound Web Awesome version, without the bindings revision of the package
+        // version (package 3.14.0.1 binds Web Awesome 3.14.0)
         Assert.Equal(BoundWaVersion.Value, version);
     }
 
@@ -117,6 +119,7 @@ public class WebAwesomeAssetsTests
         var options = provider.GetRequiredService<WebAwesomeOptions>();
         Assert.Equal(WaAssetSource.Cdn, options.AssetSource);
         Assert.Null(options.FontAwesomeKitCode);
+        Assert.Null(options.IconPath);
     }
 
     [Fact]
@@ -159,6 +162,28 @@ public class WebAwesomeAssetsTests
     }
 
     [Fact]
+    public void AddWebAwesome_WithConfiguration_BindsIconPath()
+    {
+        // Arrange - the icon path is independent of the asset source
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["WebAwesome:IconPath"] = "/lib/fontawesome/svgs"
+            })
+            .Build();
+        var services = new ServiceCollection();
+
+        // Act
+        services.AddWebAwesome(configuration);
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        var options = provider.GetRequiredService<WebAwesomeOptions>();
+        Assert.Equal("/lib/fontawesome/svgs", options.IconPath);
+        Assert.Equal(WaAssetSource.Cdn, options.AssetSource);
+    }
+
+    [Fact]
     public void AddWebAwesome_WithEmptyConfiguration_KeepsDefaults()
     {
         // Arrange
@@ -172,6 +197,44 @@ public class WebAwesomeAssetsTests
         // Assert
         Assert.Equal(WaAssetSource.Cdn, provider.GetRequiredService<WebAwesomeOptions>().AssetSource);
     }
+
+    #endregion
+
+    #region ------ Bound Web Awesome version ------
+
+    [Theory]
+    // a fourth numeric part is a bindings revision
+    [InlineData("3.14.0.1", "3.14.0")]
+    [InlineData("3.14.0.12", "3.14.0")]
+    [InlineData("3.14.0.1+abc123", "3.14.0")]
+    // the prerelease suffix of a four-part version belongs to the bindings revision
+    [InlineData("3.14.0.1-beta.1", "3.14.0")]
+    [InlineData("3.14.0.1-beta.1+abc123", "3.14.0")]
+    // a three-part version is the Web Awesome version, with its own prerelease suffix
+    [InlineData("3.14.0", "3.14.0")]
+    [InlineData("3.14.0+abc123", "3.14.0")]
+    [InlineData("3.0.0-beta.6", "3.0.0-beta.6")]
+    [InlineData("3.0.0-beta.6+abc123", "3.0.0-beta.6")]
+    [InlineData("3.0.0-rc.1.2", "3.0.0-rc.1.2")]
+    public void ToWebAwesomeVersion_KeepsOnlyTheWebAwesomePart(string packageVersion, string expected)
+    {
+        // Act
+        var version = ToWebAwesomeVersion(packageVersion);
+
+        // Assert
+        Assert.Equal(expected, version);
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // the parser is internal, and InternalsVisibleTo applies to Debug builds only, hence the lookup by name
+    private const string ToWebAwesomeVersionMethod = "ToWebAwesomeVersion";
+
+    private static readonly Func<string, string> ToWebAwesomeVersion = typeof(WebAwesomeOptions)
+        .GetMethod(ToWebAwesomeVersionMethod, BindingFlags.NonPublic | BindingFlags.Static)!
+        .CreateDelegate<Func<string, string>>();
 
     #endregion
 }

@@ -1,0 +1,50 @@
+@page "/testing/lit-cells"
+@using WebAwesome.Blazor.Extensions.DataGrid
+@using WebAwesome.Blazor.Models
+
+@* e2e harness for the Lit case of tools\e2e\tests\cell-actions.spec.js (risk R2 of the design: a Lit 3 TemplateResult
+   from the app's own copy of Lit renders in a grid cell) - deliberately outside /components/, reached by the sweep
+   through HARNESS_ROUTES in tools\e2e\tests\helpers\routes.js. The collocated LitCellsHarness.razor.js imports lit from
+   the CDN, so this page is separate from the other harnesses: a failed import breaks only this grid. *@
+
+<PageTitle>Testing: Lit Cells</PageTitle>
+
+<h1>Lit Cells Harness</h1>
+<p>This page is an end-to-end test harness for a cell function that returns a Lit template.</p>
+
+<ExampleSection Title="A Lit template in a cell">
+    <WaDataGrid data-testid="lit-grid" Label="Lit cells" RowKey="id" Data="rows" Columns="columns"
+                OnCellClick="HandleCellClick" @onwablazor-cell-action="HandleCellAction" />
+    <p>Cell action: <strong data-testid="lit-action">@actionText</strong></p>
+    <p>Cell clicks received: <strong data-testid="lit-click-count">@clickCount</strong></p>
+</ExampleSection>
+
+@code {
+    private const string NoneText = "none";
+
+    // the collocated module of this page
+    private const string HarnessModule = "./Pages/Testing/LitCellsHarness.razor.js";
+
+    private string actionText = NoneText;
+    private int clickCount;
+
+    private sealed record Row(int Id, string Name);
+
+    private readonly object[] rows = [new Row(1, "Ada"), new Row(2, "Grace")];
+
+    private readonly WaDataGridColumn[] columns =
+    [
+        new() { Field = "id", Label = "Id", Width = 80 },
+        new() { Id = "lit", Field = "name", Label = "Lit", Width = 360, Formatter = WaJsFunction.Module(HarnessModule, "litCell") }
+    ];
+
+    private void HandleCellAction(WaDataGridCellActionEventArgs e)
+    {
+        actionText = $"{e.Action}|{e.Column}|{e.RowKey}|{e.Payload?.GetRawText()}";
+    }
+
+    private void HandleCellClick(WaDataGridCellClickEventArgs e)
+    {
+        clickCount++;
+    }
+}

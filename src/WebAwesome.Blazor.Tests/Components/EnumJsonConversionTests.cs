@@ -85,7 +85,8 @@ public class EnumJsonConversionTests
         Assert.Equal("equals", json.GetProperty("filterType").GetString());
         Assert.Equal("left", json.GetProperty("pinned").GetString());
         Assert.Equal("uniqueCount", json.GetProperty("aggregation").GetString());
-        Assert.Equal(JsonValueKind.Null, json.GetProperty("sortUndefined").ValueKind);
+        // an unset member is left out, so the element applies its own default
+        Assert.False(json.TryGetProperty("sortUndefined", out _));
     }
 
     [Theory]

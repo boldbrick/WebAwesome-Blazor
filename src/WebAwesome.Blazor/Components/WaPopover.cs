@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -197,28 +198,32 @@ public class WaPopover : ComponentBase
     /// <summary>
     /// Shows the popover with dynamic positioning
     /// </summary>
+    /// <returns>A task that completes after the popover is shown and its animation is complete; at once when the
+    /// popover is open already, or when a handler cancels the show (wa-show with preventDefault())</returns>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task ShowAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot show popover: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+        await JSInterop.InvokeCancelableMethodAsync(Element.Value, "show", Constants.ShowEventName);
     }
 
     /// <summary>
     /// Hides the popover
     /// </summary>
+    /// <returns>A task that completes after the popover is hidden and its animation is complete; at once when the
+    /// popover is closed already, or when a handler cancels the hide (wa-hide with preventDefault())</returns>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task HideAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot hide popover: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+        await JSInterop.InvokeCancelableMethodAsync(Element.Value, "hide", Constants.HideEventName);
     }
 
-    // note: no RepositionAsync - wa-popover exposes no reposition() method in WA 3.0
+    // NOTE checked against WA 3.14.0: no RepositionAsync - wa-popover exposes no reposition() method
     // (repositioning is handled internally by its anchored wa-popup)
 
     #endregion

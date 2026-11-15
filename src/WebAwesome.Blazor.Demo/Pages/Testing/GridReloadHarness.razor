@@ -1,0 +1,146 @@
+@page "/testing/grid-reload"
+@using WebAwesome.Blazor.Models
+
+@* e2e harness for tools\e2e\tests\grid-reload.spec.js - deliberately outside /components/, reached by the sweep
+   through HARNESS_ROUTES in tools\e2e\tests\helpers\routes.js. A server-mode grid and a server-mode combobox with an
+   @ref: the buttons call ReloadAsync after a row create and after an external filter change, as an app does. With
+   ?early=true the page also calls both ReloadAsync methods on its first render, while the autoloader still imports
+   the element modules. wa-data-grid and wa-combobox are Pro components, so the tests skip on the free CDN. *@
+
+<PageTitle>Testing: Grid Reload</PageTitle>
+
+<h1>Grid Reload Harness</h1>
+<p>This page is an end-to-end test harness for <code>ReloadAsync</code> of the server-mode wrappers.</p>
+
+<ExampleSection Title="ReloadAsync on a server-mode grid">
+    <WaButton data-testid="gr-reload" Size="WaSize.Small" OnClick="ReloadGridAsync">Reload</WaButton>
+    <WaButton data-testid="gr-create" Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="CreateOrderAsync">Create an order</WaButton>
+    <WaButton data-testid="gr-filter" Size="WaSize.Small" Appearance="WaAppearance.Outlined" OnClick="ToggleOpenOnlyAsync">Toggle the open-only filter</WaButton>
+    <WaDataGrid @ref="grid" data-testid="gr-grid" Label="Orders" RowKey="id" Server="true" Paginate="true" PageSize="PageSize"
+                Total="total" Data="rows" Columns="columns" OnDataRequest="HandleDataRequest" />
+    <p>Requests received: <strong data-testid="gr-request-count">@requestCount</strong></p>
+    <p>Reload calls completed: <strong data-testid="gr-reload-count">@reloadCount</strong></p>
+    <p>Last error: <strong data-testid="gr-error">@lastError</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="ReloadAsync on a server-mode combobox">
+    <WaButton data-testid="cb-reload" Size="WaSize.Small" OnClick="ReloadComboboxAsync">Reload</WaButton>
+    <WaCombobox @ref="combobox" data-testid="cb-combobox" Label="Fruit" Server="true" @bind-Value="fruitValue" OnOptionsRequest="HandleOptionsRequest">
+        @foreach (var fruit in fruitOptions)
+        {
+            <WaOption @key="fruit" Value="@fruit">@fruit</WaOption>
+        }
+    </WaCombobox>
+    <p>Requests received: <strong data-testid="cb-request-count">@optionsRequestCount</strong></p>
+    <p>Reload calls completed: <strong data-testid="cb-reload-count">@comboboxReloadCount</strong></p>
+    <p>Last error: <strong data-testid="cb-error">@comboboxError</strong></p>
+</ExampleSection>
+
+@code {
+    private const int PageSize = 3;
+    private const int InitialOrderCount = 5;
+    private const string NoneText = "none";
+    private const string OpenState = "open";
+    private const string ClosedState = "closed";
+
+    private sealed record Order(int Id, string Customer, string State);
+
+    private static readonly IReadOnlyList<WaDataGridColumn> columns =
+    [
+        new() { Field = "id", Label = "Id", Width = 70 },
+        new() { Field = "customer", Label = "Customer", Width = 160 },
+        new() { Field = "state", Label = "State", Width = 100 },
+    ];
+
+    private static readonly string[] fruits = ["Apple", "Banana", "Cherry"];
+
+    // the server-side store; a created order goes first, so the first page shows it after a reload
+    private readonly List<Order> orders = Enumerable.Range(1, InitialOrderCount)
+        .Select(id => new Order(id, $"Customer {id}", id % 2 == 0 ? ClosedState : OpenState))
+        .ToList();
+
+    private WaDataGrid? grid;
+    private int requestCount;
+    private int reloadCount;
+    private bool openOnly;
+    private string lastError = NoneText;
+    private int total;
+    private object[] rows = [];
+
+    private WaCombobox? combobox;
+    private string[] fruitOptions = [];
+    private string? fruitValue;
+    private int optionsRequestCount;
+    private int comboboxReloadCount;
+    private string comboboxError = NoneText;
+
+    // ?early=true: the page calls both ReloadAsync methods on its first render, as an app does that applies a stored
+    // filter at once
+    [SupplyParameterFromQuery(Name = "early")] public bool ReloadOnFirstRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ReloadOnFirstRender)
+        {
+            await Task.WhenAll(ReloadGridAsync(), ReloadComboboxAsync());
+            StateHasChanged();
+        }
+    }
+
+    // server mode: answers each request with the requested page of the filtered store
+    private void HandleDataRequest(WaDataGridDataRequestEventArgs args)
+    {
+        requestCount++;
+        var matches = orders.Where(order => !openOnly || order.State == OpenState).ToList();
+        total = matches.Count;
+        rows = matches.Skip(args.Page * args.PageSize).Take(args.PageSize).Cast<object>().ToArray();
+    }
+
+    private async Task ReloadGridAsync()
+    {
+        try
+        {
+            await grid!.ReloadAsync();
+            reloadCount++;
+            lastError = NoneText;
+        }
+        catch (Exception exception)
+        {
+            lastError = exception.Message;
+        }
+    }
+
+    private Task CreateOrderAsync()
+    {
+        var id = orders.Max(order => order.Id) + 1;
+        orders.Insert(0, new Order(id, $"Customer {id}", OpenState));
+        return ReloadGridAsync();
+    }
+
+    private Task ToggleOpenOnlyAsync()
+    {
+        openOnly = !openOnly;
+        return ReloadGridAsync();
+    }
+
+    // server mode: answers each request with the fruits that start with the query
+    private void HandleOptionsRequest(WaOptionsRequestEventArgs args)
+    {
+        optionsRequestCount++;
+        fruitOptions = fruits.Where(fruit => fruit.StartsWith(args.Query, StringComparison.OrdinalIgnoreCase)).ToArray();
+    }
+
+    private async Task ReloadComboboxAsync()
+    {
+        try
+        {
+            await combobox!.ReloadAsync();
+            comboboxReloadCount++;
+            comboboxError = NoneText;
+        }
+        catch (Exception exception)
+        {
+            comboboxError = exception.Message;
+        }
+    }
+}

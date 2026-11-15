@@ -1,0 +1,187 @@
+@page "/testing/methods-pickers"
+
+@* e2e harness of the wrapper method suite, group "pickers" (tools\e2e\tests\methods-pickers.spec.js, cases in
+   tools\e2e\tests\helpers\method-cases\pickers.js) - deliberately outside /components/; the sweep reaches it through
+   the method groups (tools\e2e\data\method-groups.json). Every MethodCall button calls one wrapper method from .NET
+   through the wrapper's @ref and shows the outcome. ?early=true also calls methods on the first render, while the
+   autoloader still imports the element modules. wa-color-picker, wa-select and wa-time-input are free components;
+   wa-date-input and wa-date-picker are Pro components, so their tests skip on the free CDN. *@
+
+<PageTitle>Testing: Methods (pickers)</PageTitle>
+
+<h1>Methods Harness: Pickers</h1>
+<p>This page is an end-to-end test harness for the imperative methods of the popup picker wrappers.</p>
+
+<ExampleSection Title="WaColorPicker">
+    <div class="method-calls">
+        <MethodCall Id="color-focus" Action="() => colorPicker!.FocusAsync()" />
+        <MethodCall Id="color-blur" Action="() => colorPicker!.BlurAsync()" />
+        <MethodCall Id="color-show" Action="() => colorPicker!.ShowAsync()" />
+        <MethodCall Id="color-hide" Action="() => colorPicker!.HideAsync()" />
+        <MethodCall Id="color-format-rgb" Function="async () => await colorPicker!.GetFormattedValueAsync(WaColorFormat.Rgb)" />
+        <MethodCall Id="color-format-hsl" Function="async () => await colorPicker!.GetFormattedValueAsync(WaColorFormat.Hsl)" />
+        <MethodCall Id="color-hex" Function="async () => await colorPicker!.GetHexStringAsync()" />
+        <MethodCall Id="color-set-swatches" Action="() => colorPicker!.SetSwatchesAsync(SwatchColors)" />
+        <MethodCall Id="color-set-validity" Action="() => colorPicker!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="color-reset-validity" Action="() => colorPicker!.ResetValidityAsync()" />
+        <MethodCall Id="color-report-validity" Function="async () => await colorPicker!.ReportValidityAsync()" />
+    </div>
+    <WaColorPicker @ref="colorPicker" data-testid="color-picker" Label="Color" @bind-Value="colorValue" />
+</ExampleSection>
+
+<ExampleSection Title="WaSelect">
+    <div class="method-calls">
+        <MethodCall Id="select-focus" Action="() => select!.FocusAsync()" />
+        <MethodCall Id="select-blur" Action="() => select!.BlurAsync()" />
+        <MethodCall Id="select-show" Action="() => select!.ShowAsync()" />
+        <MethodCall Id="select-hide" Action="() => select!.HideAsync()" />
+        <MethodCall Id="select-show-twice" Label="ShowAsync twice" Action="ShowSelectTwiceAsync" />
+        <MethodCall Id="select-set-validity" Action="() => select!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="select-reset-validity" Action="() => select!.ResetValidityAsync()" />
+    </div>
+    <WaSelect @ref="select" data-testid="select" Label="Fruit" @bind-Value="selectValue">
+        <WaOption Value="apple">Apple</WaOption>
+        <WaOption Value="banana">Banana</WaOption>
+        <WaOption Value="cherry">Cherry</WaOption>
+    </WaSelect>
+</ExampleSection>
+
+<ExampleSection Title="WaTimeInput">
+    <div class="method-calls">
+        <MethodCall Id="time-focus" Action="() => timeInput!.FocusAsync()" />
+        <MethodCall Id="time-blur" Action="() => timeInput!.BlurAsync()" />
+        <MethodCall Id="time-show" Action="() => timeInput!.ShowAsync()" />
+        <MethodCall Id="time-hide" Action="() => timeInput!.HideAsync()" />
+        <MethodCall Id="time-set-validity" Action="() => timeInput!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="time-reset-validity" Action="() => timeInput!.ResetValidityAsync()" />
+    </div>
+    <WaTimeInput @ref="timeInput" data-testid="time-input" Label="Time" HourFormat="WaTimeHourFormat.TwentyFour" @bind-Value="timeValue" />
+</ExampleSection>
+
+<ExampleSection Title="WaDateInput">
+    <div class="method-calls">
+        <MethodCall Id="date-input-focus" Action="() => dateInput!.FocusAsync()" />
+        <MethodCall Id="date-input-blur" Action="() => dateInput!.BlurAsync()" />
+        <MethodCall Id="date-input-show" Action="() => dateInput!.ShowAsync()" />
+        <MethodCall Id="date-input-hide" Action="() => dateInput!.HideAsync()" />
+        <MethodCall Id="date-input-clear" Action="() => dateInput!.ClearAsync()" />
+        <MethodCall Id="date-input-set-validity" Action="() => dateInput!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="date-input-reset-validity" Action="() => dateInput!.ResetValidityAsync()" />
+    </div>
+    <WaDateInput @ref="dateInput" data-testid="date-input" Label="Date" Today="Today" @bind-Value="dateInputValue" />
+    <p>Bound value: <code data-testid="date-input-value">@DemoFormat.Iso(dateInputValue)</code></p>
+</ExampleSection>
+
+<ExampleSection Title="WaDateRangeInput">
+    <div class="method-calls">
+        <MethodCall Id="range-input-focus" Action="() => rangeInput!.FocusAsync()" />
+        <MethodCall Id="range-input-blur" Action="() => rangeInput!.BlurAsync()" />
+        <MethodCall Id="range-input-show" Action="() => rangeInput!.ShowAsync()" />
+        <MethodCall Id="range-input-hide" Action="() => rangeInput!.HideAsync()" />
+        <MethodCall Id="range-input-clear" Action="() => rangeInput!.ClearAsync()" />
+        <MethodCall Id="range-input-set-validity" Action="() => rangeInput!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="range-input-reset-validity" Action="() => rangeInput!.ResetValidityAsync()" />
+    </div>
+    <WaDateRangeInput @ref="rangeInput" data-testid="range-input" Label="Stay" Today="Today" @bind-Value="rangeInputValue" />
+    <p>Bound value: <code data-testid="range-input-value">@DemoFormat.Iso(rangeInputValue)</code></p>
+</ExampleSection>
+
+<ExampleSection Title="WaDatePicker">
+    <div class="method-calls">
+        <MethodCall Id="date-picker-focus" Action="() => datePicker!.FocusAsync()" />
+        <MethodCall Id="date-picker-go-to-date" Action="() => datePicker!.GoToDateAsync(GoToTarget)" />
+        <MethodCall Id="date-picker-go-to-today" Action="() => datePicker!.GoToTodayAsync()" />
+        <MethodCall Id="date-picker-clear" Action="() => datePicker!.ClearAsync()" />
+    </div>
+    <WaDatePicker @ref="datePicker" data-testid="date-picker" Today="Today" @bind-Value="datePickerValue" />
+    <p>Bound value: <code data-testid="date-picker-value">@DemoFormat.Iso(datePickerValue)</code></p>
+</ExampleSection>
+
+<ExampleSection Title="WaDateRangePicker">
+    <div class="method-calls">
+        <MethodCall Id="range-picker-focus" Action="() => rangePicker!.FocusAsync()" />
+        <MethodCall Id="range-picker-go-to-date" Action="() => rangePicker!.GoToDateAsync(GoToTarget)" />
+        <MethodCall Id="range-picker-go-to-today" Action="() => rangePicker!.GoToTodayAsync()" />
+        <MethodCall Id="range-picker-clear" Action="() => rangePicker!.ClearAsync()" />
+    </div>
+    <WaDateRangePicker @ref="rangePicker" data-testid="range-picker" Today="Today" @bind-Value="rangePickerValue" />
+    <p>Bound value: <code data-testid="range-picker-value">@DemoFormat.Iso(rangePickerValue)</code></p>
+</ExampleSection>
+
+<ExampleSection Title="Calls on the first render (?early=true)">
+    <p>Select focus: <output data-testid="early-select-focus">@earlySelectFocus</output></p>
+    <p>Color picker value as RGB: <output data-testid="early-color-format">@earlyColorFormat</output></p>
+</ExampleSection>
+
+@code {
+    private const string ValidityMessage = "Pick one, please";
+    private const string InitialColor = "#ff0000";
+    private const string NotCalled = "not called";
+    private const string DoneText = "done";
+    private const string ErrorPrefix = "error: ";
+
+    // a fixed "today", so the calendars show the same month on every run; the values lie in the same month
+    private static readonly DateOnly Today = new(2026, 6, 10);
+    private static readonly DateOnly InitialDate = new(2026, 6, 12);
+    private static readonly WaDateRange InitialRange = new(new DateOnly(2026, 6, 8), new DateOnly(2026, 6, 12));
+
+    // a date in another month and year than the initial values
+    private static readonly DateOnly GoToTarget = new(2027, 3, 15);
+
+    private static readonly string[] SwatchColors = ["#ff0000", "#00ff00", "#0000ff"];
+
+    private WaColorPicker? colorPicker;
+    private WaSelect? select;
+    private WaTimeInput? timeInput;
+    private WaDateInput? dateInput;
+    private WaDateRangeInput? rangeInput;
+    private WaDatePicker? datePicker;
+    private WaDateRangePicker? rangePicker;
+
+    private string? colorValue = InitialColor;
+    private string? selectValue;
+    private TimeOnly? timeValue;
+    private DateOnly? dateInputValue = InitialDate;
+    private WaDateRange? rangeInputValue = InitialRange;
+    private DateOnly? datePickerValue = InitialDate;
+    private WaDateRange? rangePickerValue = InitialRange;
+
+    private string earlySelectFocus = NotCalled;
+    private string earlyColorFormat = NotCalled;
+
+    // ?early=true: the page calls methods on its first render, while the autoloader still imports the element modules
+    [SupplyParameterFromQuery(Name = "early")] public bool CallOnFirstRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CallOnFirstRender)
+        {
+            var selectFocus = OutcomeOf(async () => { await select!.FocusAsync(); return DoneText; });
+            var colorFormat = OutcomeOf(() => colorPicker!.GetFormattedValueAsync(WaColorFormat.Rgb));
+            await Task.WhenAll(selectFocus, colorFormat);
+            earlySelectFocus = selectFocus.Result;
+            earlyColorFormat = colorFormat.Result;
+            StateHasChanged();
+        }
+    }
+
+    // the text of a call's outcome: its value ("done" for a call without one), or the error
+    private static async Task<string> OutcomeOf(Func<Task<string>> call)
+    {
+        try
+        {
+            return await call();
+        }
+        catch (Exception exception)
+        {
+            return ErrorPrefix + exception.Message;
+        }
+    }
+
+    // two show calls in a row, as a page that opens the select from two places does
+    private async Task ShowSelectTwiceAsync()
+    {
+        await select!.ShowAsync();
+        await select!.ShowAsync();
+    }
+}

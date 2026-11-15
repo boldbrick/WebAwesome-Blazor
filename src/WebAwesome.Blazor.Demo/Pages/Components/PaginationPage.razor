@@ -1,4 +1,5 @@
 @page "/components/pagination"
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Pagination</PageTitle>
 
@@ -71,6 +72,15 @@
     <WaPagination Total="237" PageSize="10" Page="3" HrefTemplate="?page={page}" />
 </ExampleSection>
 
+<ExampleSection Title="Links from a JavaScript Function" Code="@HrefFunctionExample">
+    <p>
+        Where a <code>{page}</code> placeholder is not enough, <code>HrefTemplateFunction</code> builds each page's URL with
+        a JavaScript function, here an export of the collocated <code>PaginationPage.razor.js</code> that keeps a sort
+        order from C# in the link. Set either <code>HrefTemplate</code> or <code>HrefTemplateFunction</code>.
+    </p>
+    <WaPagination Total="237" PageSize="25" Page="2" HrefTemplateFunction="sortedPageLink" />
+</ExampleSection>
+
 <ApiTable Tag="wa-pagination" />
 
 @code {
@@ -79,6 +89,10 @@
     private int selectedPageSize = 10;
 
     private void HandlePageChange(WaPaginationPageChangeEventArgs e) => currentPage = e.Page;
+
+    // the URL of a page with the page size and the sort order of the list
+    private readonly WaJsFunction sortedPageLink = WaJsFunction.Module("./Pages/Components/PaginationPage.razor.js", "pageLink")
+        .WithArgs(new { size = 25, sort = "name" });
 
     // the selected page size, kept as the select's string value; a new size invalidates the
     // current page, so the pagination jumps back to the first one
@@ -183,5 +197,21 @@
 
     private const string HrefTemplateExample = """
         <WaPagination Total="237" PageSize="10" Page="3" HrefTemplate="?page={page}" />
+        """;
+
+    private const string HrefFunctionExample = """
+        <WaPagination Total="237" PageSize="25" Page="2" HrefTemplateFunction="sortedPageLink" />
+
+        @code {
+            // the URL of a page with the page size and the sort order of the list
+            private readonly WaJsFunction sortedPageLink = WaJsFunction.Module("./Pages/Components/PaginationPage.razor.js", "pageLink")
+                .WithArgs(new { size = 25, sort = "name" });
+        }
+
+        // PaginationPage.razor.js, next to PaginationPage.razor
+        export function pageLink(page, ctx) {
+          const query = new URLSearchParams({ page, size: ctx.args.size, sort: ctx.args.sort });
+          return `?${query}`;
+        }
         """;
 }

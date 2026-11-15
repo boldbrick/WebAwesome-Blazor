@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -225,27 +226,29 @@ public class WaDetails : ComponentBase
     /// <summary>
     /// Programmatically shows the details content.
     /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <returns>A task that completes after the content is shown and its animation is complete; at once when the
+    /// details are open already or disabled, or when a handler cancels the show (wa-show with preventDefault())</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task ShowAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot show details: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+        await JSInterop.InvokeCancelableMethodAsync(Element.Value, "show", Constants.ShowEventName);
     }
 
     /// <summary>
     /// Programmatically hides the details content.
     /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <returns>A task that completes after the content is hidden and its animation is complete; at once when the
+    /// details are closed already or disabled, or when a handler cancels the hide (wa-hide with preventDefault())</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task HideAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot hide details: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+        await JSInterop.InvokeCancelableMethodAsync(Element.Value, "hide", Constants.HideEventName);
     }
 
     #endregion

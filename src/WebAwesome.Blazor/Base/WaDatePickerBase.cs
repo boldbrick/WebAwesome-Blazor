@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
+using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Base;
 
@@ -22,11 +24,12 @@ namespace WebAwesome.Blazor.Base;
 /// calendar options, declared through <see cref="IWaCalendarOptions"/> and rendered by one static renderer, so the
 /// two element wrappers need no common base class.
 /// <para>
-/// Custom day content goes in <see cref="ChildContent"/> as <see cref="WaDayContent"/> children. Web Awesome's
-/// JS-only <c>dayContent</c> and <c>isDateDisabled</c> callbacks are not supported: the element calls them for every
-/// rendered day cell, which would need a JS round-trip per cell. Use <see cref="WaDayContent"/> for day content and
+/// Custom day content goes in <see cref="ChildContent"/> as <see cref="WaDayContent"/> children, and disabled days in
 /// <see cref="DisabledDates"/> (with <see cref="DisabledDaysOfWeek"/>, <see cref="DisablePast"/>,
-/// <see cref="DisableFuture"/>, <see cref="Min"/> and <see cref="Max"/>) for disabled days.
+/// <see cref="DisableFuture"/>, <see cref="Min"/> and <see cref="Max"/>). For a rule that C# cannot list (every
+/// rendered day), Web Awesome's <c>dayContent</c> and <c>isDateDisabled</c> callbacks take a JavaScript function
+/// through <see cref="DayContentFunction"/> and <see cref="IsDateDisabledFunction"/>; the browser calls it for each day
+/// cell, with no round-trip to .NET.
 /// </para>
 /// </remarks>
 /// <typeparam name="TValue">The type of value bound to the date picker</typeparam>
@@ -222,6 +225,30 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// The JavaScript function that disables a day in addition to the declarative rules (the element's
+    /// <c>isDateDisabled</c>). It is called as <c>(date, ctx)</c>: the day as a JavaScript <c>Date</c> at local midnight,
+    /// and <c>ctx</c> with <c>args</c> (the <see cref="WaJsFunction.WithArgs"/> value) and <c>element</c>; it returns true
+    /// to disable the day. When null, only the declarative rules apply.
+    /// </summary>
+    [Parameter] public WaJsFunction? IsDateDisabledFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that renders the content of a day cell (the element's <c>dayContent</c>). It is called as
+    /// <c>(date, ctx)</c>: the day as a JavaScript <c>Date</c> at local midnight, and <c>ctx</c> with <c>args</c> and
+    /// <c>element</c>. It returns a string of trusted HTML, a Lit template, or null for the day number. It runs for every
+    /// rendered day cell; a <see cref="WaDayContent"/> for the same date wins. Declare the Web Awesome elements it renders
+    /// with <see cref="WaJsFunction.Uses"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? DayContentFunction { get; set; }
+
+    /// <summary>
+    /// CSS rules for the output of <see cref="DayContentFunction"/>, adopted into the element's shadow root as a
+    /// constructed stylesheet and replaced only when the text changes. It is for styling your own function output, not
+    /// Web Awesome's internals: style those with <c>::part</c> and the CSS custom properties.
+    /// </summary>
+    [Parameter] public string? ShadowStyles { get; set; }
+
+    /// <summary>
     /// Invoked when the value changes during interaction. In range mode, this fires after the first click of a new
     /// range. The event's value is the element's wire string (ISO <c>YYYY-MM-DD</c>, or <c>from/to</c> for a range).
     /// </summary>
@@ -336,6 +363,21 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
         builder.CloseElement();
     }
 
+    /// <summary>
+    /// Pushes <see cref="IsDateDisabledFunction"/>, <see cref="DayContentFunction"/> and <see cref="ShadowStyles"/> to
+    /// the element when they changed.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first time the component has rendered</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        await jsProperties.PushFunctionAsync(JSInterop, Element, IsDateDisabledMember, IsDateDisabledFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, DayContentMember, DayContentFunction);
+        await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
+    }
+
     #endregion
 
     #region ------ Implementation of IWaDayContentHost ------
@@ -352,6 +394,12 @@ public abstract class WaDatePickerBase<TValue> : ComponentBase, IWaCalendarOptio
 
     #region ------ Internals ------
 
+    // the function-valued members of wa-date-picker
+    private const string IsDateDisabledMember = "isDateDisabled";
+    private const string DayContentMember = "dayContent";
+
+    // the function members and the shadow styles last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
 
     /// <summary>
     /// Formats a value as the element's wire string.

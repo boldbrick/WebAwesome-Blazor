@@ -1,0 +1,16 @@
+@* a small reusable action of the inspector harness (InspectorHarness.razor): the page uses it at two positions, so
+   its WaButton has one source site and two placements *@
+
+<WaButton data-testid="@TestId" Appearance="WaAppearance.Outlined">@Label</WaButton>
+
+@code {
+    /// <summary>
+    /// The text of the button.
+    /// </summary>
+    [Parameter, EditorRequired] public string Label { get; set; } = default!;
+
+    /// <summary>
+    /// The test id of the button.
+    /// </summary>
+    [Parameter, EditorRequired] public string TestId { get; set; } = default!;
+}

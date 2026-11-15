@@ -1,0 +1,135 @@
+@page "/testing/icon-library"
+@using WebAwesome.Blazor.Models
+@using WebAwesome.Blazor.Services
+@inject WaIconLibraryService IconLibraries
+
+@* e2e harness for tools\e2e\tests\icon-library-functions.spec.js - deliberately outside /components/, so it is neither
+   derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. Each button registers one icon library whose resolver or mutator is a WaJsFunction
+   (an export of the collocated IconLibraryHarness.razor.js, a function the demo JS initializer registers, or a global
+   path), or the obsolete Mutator path; the icons reference their library before it exists. The status shows
+   "registered" or the type name of the exception. *@
+
+<PageTitle>Testing: Icon Library</PageTitle>
+
+<h1>Icon Library Harness</h1>
+<p>This page is an end-to-end test harness for the function references of an icon library (<code>IconLibraryOptions.ResolverFunction</code> and <code>MutatorFunction</code>).</p>
+
+<ExampleSection Title="Module resolver and module mutator">
+    <WaButton data-testid="il-register-module" Size="WaSize.Small" OnClick="@(() => RegisterAsync(ModuleLibrary, ModuleOptions()))">Register</WaButton>
+    <p>Status: <strong data-testid="il-status-module">@StatusOf(ModuleLibrary)</strong></p>
+    <WaIcon data-testid="il-icon-module" Library="@ModuleLibrary" Name="dot" Family="sample" Variant="solid" />
+    <WaIcon data-testid="il-icon-module-auto" Library="@ModuleLibrary" Name="wide" Canvas="WaIconCanvas.Auto" />
+</ExampleSection>
+
+<ExampleSection Title="Registered resolver (a Promise) and global mutator">
+    <WaButton data-testid="il-register-registered" Size="WaSize.Small" OnClick="@(() => RegisterAsync(RegisteredLibrary, RegisteredOptions()))">Register</WaButton>
+    <p>Status: <strong data-testid="il-status-registered">@StatusOf(RegisteredLibrary)</strong></p>
+    <WaIcon data-testid="il-icon-registered" Library="@RegisteredLibrary" Name="dot" />
+</ExampleSection>
+
+<ExampleSection Title="Sprite sheet resolver">
+    <WaButton data-testid="il-register-sprite" Size="WaSize.Small" OnClick="@(() => RegisterAsync(SpriteLibrary, SpriteOptions()))">Register</WaButton>
+    <p>Status: <strong data-testid="il-status-sprite">@StatusOf(SpriteLibrary)</strong></p>
+    <WaIcon data-testid="il-icon-sprite" Library="@SpriteLibrary" Name="star" />
+</ExampleSection>
+
+<ExampleSection Title="Obsolete mutator path">
+    <WaButton data-testid="il-register-obsolete" Size="WaSize.Small" OnClick="@(() => RegisterAsync(ObsoleteLibrary, ObsoleteOptions()))">Register</WaButton>
+    <p>Status: <strong data-testid="il-status-obsolete">@StatusOf(ObsoleteLibrary)</strong></p>
+    <WaIcon data-testid="il-icon-obsolete" Library="@ObsoleteLibrary" Name="dot" />
+</ExampleSection>
+
+<ExampleSection Title="References that do not resolve">
+    <WaCluster Gap="GapSize.Gap_S">
+        <WaButton data-testid="il-register-bad-resolver" Size="WaSize.Small" OnClick="@(() => RegisterAsync(BadResolverLibrary, BadResolverOptions()))">Register a missing resolver</WaButton>
+        <WaButton data-testid="il-register-bad-mutator" Size="WaSize.Small" OnClick="@(() => RegisterAsync(BadMutatorLibrary, BadMutatorOptions()))">Register a missing mutator</WaButton>
+    </WaCluster>
+    <p>
+        Missing resolver: <strong data-testid="il-status-bad-resolver">@StatusOf(BadResolverLibrary)</strong>,
+        missing mutator: <strong data-testid="il-status-bad-mutator">@StatusOf(BadMutatorLibrary)</strong>
+    </p>
+    <WaIcon data-testid="il-icon-bad-resolver" Library="@BadResolverLibrary" Name="dot" />
+    <WaIcon data-testid="il-icon-bad-mutator" Library="@BadMutatorLibrary" Name="dot" />
+</ExampleSection>
+
+@code {
+    // the collocated module of this page
+    private const string HarnessModule = "./Pages/Testing/IconLibraryHarness.razor.js";
+
+    private const string ModuleLibrary = "harness-module";
+    private const string RegisteredLibrary = "harness-registered";
+    private const string SpriteLibrary = "harness-sprite";
+    private const string ObsoleteLibrary = "harness-obsolete";
+    private const string BadResolverLibrary = "harness-bad-resolver";
+    private const string BadMutatorLibrary = "harness-bad-mutator";
+
+    // the functions the demo JS initializer registers or defines (WebAwesome.Blazor.Demo.lib.module.js, js\demo-icons.js)
+    private const string RegisteredResolver = "demo.iconUrlAsync";
+    private const string GlobalMutator = "demoIcons.thinStroke";
+    private const string MissingGlobalMutator = "demoIcons.missingMutator";
+    private const string MissingExport = "missingResolver";
+
+    private const string Red = "rgb(255, 0, 0)";
+    private const string Blue = "rgb(0, 0, 255)";
+    // relative to the document base, as wwwroot\fragments\icon-sprite.svg is served
+    private const string SpriteUrl = "fragments/icon-sprite.svg";
+
+    // the status text of a registration that did not throw
+    private const string RegisteredResult = "registered";
+
+    private readonly Dictionary<string, string> statuses = new(StringComparer.Ordinal);
+
+    private static IconLibraryOptions ModuleOptions() => new()
+    {
+        ResolverFunction = WaJsFunction.Module(HarnessModule, "dataUrl").WithArgs(new { color = Red }),
+        MutatorFunction = WaJsFunction.Module(HarnessModule, "markSvg").WithArgs(new { mark = "module" })
+    };
+
+    private static IconLibraryOptions RegisteredOptions() => new()
+    {
+        ResolverFunction = WaJsFunction.Registered(RegisteredResolver).WithArgs(new { color = Blue }),
+        MutatorFunction = WaJsFunction.Global(GlobalMutator)
+    };
+
+    private static IconLibraryOptions SpriteOptions() => new()
+    {
+        ResolverFunction = WaJsFunction.Module(HarnessModule, "spriteReference").WithArgs(new { sprite = SpriteUrl }),
+        MutatorFunction = WaJsFunction.Module(HarnessModule, "markSvg").WithArgs(new { mark = "sprite" }),
+        SpriteSheet = true
+    };
+
+#pragma warning disable CS0618 // the harness proves the obsolete mutator path still works until its removal
+    private static IconLibraryOptions ObsoleteOptions() => new()
+    {
+        ResolverFunction = WaJsFunction.Module(HarnessModule, "dataUrl").WithArgs(new { color = Red }),
+        Mutator = GlobalMutator
+    };
+#pragma warning restore CS0618
+
+    private static IconLibraryOptions BadResolverOptions() => new()
+    {
+        ResolverFunction = WaJsFunction.Module(HarnessModule, MissingExport)
+    };
+
+    private static IconLibraryOptions BadMutatorOptions() => new()
+    {
+        ResolverFunction = WaJsFunction.Module(HarnessModule, "dataUrl").WithArgs(new { color = Red }),
+        MutatorFunction = WaJsFunction.Global(MissingGlobalMutator)
+    };
+
+    private string StatusOf(string library) => statuses.GetValueOrDefault(library, "not registered");
+
+    private async Task RegisterAsync(string library, IconLibraryOptions options)
+    {
+        try
+        {
+            await IconLibraries.RegisterIconLibraryAsync(library, options);
+            statuses[library] = RegisteredResult;
+        }
+        catch (Exception exception)
+        {
+            statuses[library] = exception.GetType().Name;
+        }
+    }
+}

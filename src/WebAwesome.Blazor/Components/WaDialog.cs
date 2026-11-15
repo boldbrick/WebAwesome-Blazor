@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -225,6 +226,9 @@ public class WaDialog : ComponentBase
         return string.Join(' ', classes);
     }
 
+    // the public property of wa-dialog that holds its native dialog element, the panel FocusAsync focuses
+    private const string PanelProperty = "dialog";
+
     #endregion
 
     #region ------ Public Methods ------
@@ -256,15 +260,18 @@ public class WaDialog : ComponentBase
     }
 
     /// <summary>
-    /// Focuses the dialog or first focusable element within it
+    /// Moves the focus into the open dialog as the dialog does when it opens: to the first element in the content
+    /// with the autofocus attribute, else to the dialog panel itself, from where Tab moves on to the dialog's controls.
+    /// A closed dialog is left as it is.
     /// </summary>
+    /// <returns>A task that completes when the focus has moved, or the dialog was found closed</returns>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task FocusAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot focus dialog: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+        await JSInterop.FocusOverlayAsync(Element.Value, PanelProperty);
     }
 
     #endregion

@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 

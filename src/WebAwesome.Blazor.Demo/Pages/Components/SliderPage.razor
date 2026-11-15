@@ -1,4 +1,6 @@
 @page "/components/slider"
+@using System.Globalization
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Slider</PageTitle>
 
@@ -68,6 +70,16 @@
     </WaStack>
 </ExampleSection>
 
+<ExampleSection Title="Value Formatter with JavaScript" Code="@FormatterExample">
+    <p>
+        <code>ValueFormatterFunction</code> formats the value for the tooltip and for screen readers with a JavaScript
+        function, here an export of the collocated <code>SliderPage.razor.js</code> that uses <code>Intl</code> with a unit
+        and a locale from C#.
+    </p>
+    <WaSlider Label="Oven temperature" Min="50" Max="250" Step="10" WithTooltip="true" @bind-Value="oven"
+              ValueFormatterFunction="celsius" />
+</ExampleSection>
+
 <ApiTable Tag="wa-slider" />
 
 @code {
@@ -89,6 +101,11 @@
     private decimal? large = 50;
     private decimal? locked = 25;
     private decimal? disabled = 75;
+    private decimal? oven = 180;
+
+    // formats the value with a unit in the culture of the app
+    private readonly WaJsFunction celsius = WaJsFunction.Module("./Pages/Components/SliderPage.razor.js", "formatUnit")
+        .WithArgs(new { unit = "celsius", locale = CultureInfo.CurrentCulture.Name });
 
     private const string DefaultExample = """
         <WaSlider @bind-Value="value" />
@@ -157,5 +174,23 @@
     private const string ReadonlyExample = """
         <WaSlider Label="Readonly" Readonly="true" @bind-Value="locked" />
         <WaSlider Label="Disabled" Disabled="true" @bind-Value="disabled" />
+        """;
+
+    private const string FormatterExample = """
+        <WaSlider Label="Oven temperature" Min="50" Max="250" Step="10" WithTooltip="true" @bind-Value="oven"
+                  ValueFormatterFunction="celsius" />
+
+        @code {
+            private decimal? oven = 180;
+
+            // formats the value with a unit in the culture of the app
+            private readonly WaJsFunction celsius = WaJsFunction.Module("./Pages/Components/SliderPage.razor.js", "formatUnit")
+                .WithArgs(new { unit = "celsius", locale = CultureInfo.CurrentCulture.Name });
+        }
+
+        // SliderPage.razor.js, next to SliderPage.razor
+        export function formatUnit(value, ctx) {
+          return new Intl.NumberFormat(ctx.args.locale || undefined, { style: 'unit', unit: ctx.args.unit }).format(value);
+        }
         """;
 }

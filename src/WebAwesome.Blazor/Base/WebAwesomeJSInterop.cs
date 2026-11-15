@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Models;
 
@@ -12,11 +14,15 @@ namespace WebAwesome.Blazor.Base;
 public class WebAwesomeJSInterop
 {
     /// <summary>
-    /// Sets a custom validation message on a Web Awesome form control element
+    /// Sets a custom validation message on a Web Awesome form control element. A call before the element is defined
+    /// (its module is still loading) waits in the browser for the definition.
     /// </summary>
     /// <param name="elementReference">Reference to the form control element</param>
     /// <param name="message">The validation message to display, or empty string to clear</param>
     /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the message cannot be set, or when the element is still
+    /// not defined after the wait</exception>
     public async Task SetCustomValidityAsync(ElementReference elementReference, string message)
     {
         if (elementReference.Id == null)
@@ -38,7 +44,8 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
-    /// Invokes a method on a Web Awesome element and returns the result
+    /// Invokes a method on a Web Awesome element and returns the result. A call before the element is defined (its
+    /// module is still loading) waits in the browser for the definition.
     /// </summary>
     /// <typeparam name="T">The expected return type of the method</typeparam>
     /// <param name="elementReference">Reference to the Web Awesome element</param>
@@ -47,7 +54,8 @@ public class WebAwesomeJSInterop
     /// <returns>The result of the method call</returns>
     /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
     /// <exception cref="ArgumentNullException">Thrown when methodName is null</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the method call fails</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the method call fails, or when the element is still not
+    /// defined after the wait</exception>
     public async Task<T> InvokeMethodAsync<T>(ElementReference elementReference, string methodName, params object[] args)
     {
         if (elementReference.Id == null)
@@ -73,7 +81,8 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
-    /// Invokes a void method on a Web Awesome element
+    /// Invokes a void method on a Web Awesome element. A call before the element is defined (its module is still
+    /// loading) waits in the browser for the definition.
     /// </summary>
     /// <param name="elementReference">Reference to the Web Awesome element</param>
     /// <param name="methodName">Name of the method to invoke</param>
@@ -81,7 +90,8 @@ public class WebAwesomeJSInterop
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
     /// <exception cref="ArgumentNullException">Thrown when methodName is null</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the method call fails</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the method call fails, or when the element is still not
+    /// defined after the wait</exception>
     public async Task InvokeMethodAsync(ElementReference elementReference, string methodName, params object[] args)
     {
         if (elementReference.Id == null)
@@ -212,12 +222,14 @@ public class WebAwesomeJSInterop
     /// replaces that library, and rendered icons of the library re-resolve.
     /// </summary>
     /// <param name="name">Name of the icon library, referenced by <c>WaIcon.Library</c></param>
-    /// <param name="options">Configuration options for the library; <see cref="IconLibraryOptions.Resolver"/> is required</param>
+    /// <param name="options">Configuration options for the library; exactly one of
+    /// <see cref="IconLibraryOptions.Resolver"/> and <see cref="IconLibraryOptions.ResolverFunction"/> is required</param>
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="ArgumentNullException">Thrown when name is null or empty, or options is null</exception>
-    /// <exception cref="ArgumentException">Thrown when the options have no resolver URL template</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the registration fails, e.g. Web Awesome is not loaded
-    /// or the mutator does not name a global function</exception>
+    /// <exception cref="ArgumentException">Thrown when the options have no resolver, or both a resolver URL template
+    /// and a resolver function, or both the obsolete mutator path and a mutator function</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the registration fails, e.g. Web Awesome is not loaded,
+    /// the resolver function does not resolve, or the obsolete mutator path does not name a global function</exception>
     public virtual async Task RegisterIconLibraryAsync(string name, IconLibraryOptions options)
     {
         if (string.IsNullOrEmpty(name))
@@ -226,8 +238,7 @@ public class WebAwesomeJSInterop
         if (options == null)
             throw new ArgumentNullException(nameof(options));
 
-        if (string.IsNullOrEmpty(options.Resolver))
-            throw new ArgumentException("An icon library requires a resolver URL template", nameof(options));
+        ValidateIconLibraryOptions(name, options);
 
         try
         {
@@ -353,6 +364,37 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
+    /// Sets the base URL of the self-hosted Font Awesome <c>svgs</c> folder the default icon library resolves from
+    /// (Web Awesome's <c>setIconPath</c>); rendered icons re-resolve. The call runs once the app is interactive, which
+    /// is too late to prevent the first requests to the Font Awesome CDN; to prevent them, set
+    /// <see cref="WebAwesomeOptions.IconPath"/>, which applies the same setting at startup.
+    /// </summary>
+    /// <param name="iconPath">Base URL of the svgs folder, e.g. "/lib/fontawesome/svgs"; a relative URL resolves
+    /// against the document base URL</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentNullException">Thrown when iconPath is null or empty</exception>
+    /// <exception cref="InvalidOperationException">Thrown when setting the icon path fails</exception>
+    public virtual async Task SetIconPathAsync(string iconPath)
+    {
+        if (string.IsNullOrEmpty(iconPath))
+            throw new ArgumentNullException(nameof(iconPath));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setIconPath", ConfiguredLoaderUrl(), iconPath);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the icon path to '{iconPath}': {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
     /// Fires the slotchange of an element's default slot, so the element re-reads its light-DOM children through its
     /// own slotchange handler; used to make wa-date-input forward day slots added or removed after its first update
     /// (see <see cref="WaDateInputBase{TValue}"/>)
@@ -374,6 +416,128 @@ public class WebAwesomeJSInterop
         catch (JSException ex)
         {
             throw new InvalidOperationException($"Failed to signal a default slot change: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Assigns the columns of a wa-data-grid from their JSON. The browser resolves each <see cref="WaJsFunction"/>
+    /// descriptor into its function, registers the Web Awesome elements the functions declare, assigns the element's
+    /// <c>columns</c> property, and registers the elements the rendered cells use. A reference that does not resolve
+    /// is logged and left out. The same JSON again for the same element assigns nothing.
+    /// </summary>
+    /// <param name="elementReference">Reference to the wa-data-grid element</param>
+    /// <param name="columnsJson">The JSON array of the column definitions</param>
+    /// <returns>A task that completes when the columns are assigned</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SetDataGridColumnsAsync(ElementReference elementReference, string columnsJson)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setDataGridColumns", elementReference, columnsJson, ConfiguredLoaderUrl());
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the data grid columns: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Assigns the data of a wa-data-grid. While function members of the grid are still resolving in the browser, the
+    /// assignment waits for them, because the grid reads <c>childRows</c> only when it receives data; a newer push
+    /// replaces a waiting one. The call returns at once.
+    /// </summary>
+    /// <param name="elementReference">Reference to the wa-data-grid element</param>
+    /// <param name="data">The row objects</param>
+    /// <returns>A task that completes when the push was sent</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SetDataGridDataAsync(ElementReference elementReference, IReadOnlyList<object> data)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setDataGridData", elementReference, data);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the data grid data: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Assigns a function-valued member of a Web Awesome element from the JSON of a <see cref="WaJsFunction"/>
+    /// descriptor. The browser waits until the element is defined, resolves the reference, registers the Web Awesome
+    /// elements it declares, and assigns the member. Null restores the element's own value of the member. A reference
+    /// that does not resolve is logged and leaves the element's own value. The same JSON again assigns nothing.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="member">The JavaScript member, for example "getTag"</param>
+    /// <param name="descriptorJson">The JSON of the descriptor, or null to remove the function</param>
+    /// <returns>A task that completes when the member is assigned</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SetElementFunctionAsync(ElementReference elementReference, string member, string? descriptorJson)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setElementFunction", elementReference, member, descriptorJson, ConfiguredLoaderUrl());
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the function member '{member}': {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Adopts CSS text into the shadow root of a Web Awesome element as a constructed stylesheet, once the element is
+    /// defined and has rendered. A new text replaces the sheet's content; null removes the sheet.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="cssText">The CSS text, or null to remove the styles</param>
+    /// <returns>A task that completes when the styles are adopted</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task SetShadowStylesAsync(ElementReference elementReference, string? cssText)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setShadowStyles", elementReference, cssText);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the shadow styles: {ex.Message}", ex);
         }
         catch (JSDisconnectedException)
         {
@@ -408,6 +572,132 @@ public class WebAwesomeJSInterop
         catch (JSDisconnectedException)
         {
             // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Invokes a parameterless show or hide method of a Web Awesome element whose Promise settles on the element's
+    /// after-event, and completes at once when the action is cancelled: a handler of the cancel event that calls
+    /// preventDefault() keeps the element as it was, and the element then dispatches no after-event. A call before the
+    /// element is defined waits in the browser for the definition.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="methodName">Name of the method to invoke, for example "show"</param>
+    /// <param name="cancelEventName">The cancelable event the element dispatches for the action, for example "wa-show"</param>
+    /// <returns>A task that completes when the action has finished or was cancelled</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="ArgumentNullException">Thrown when methodName is null or empty</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the method call fails, or when the element is still not
+    /// defined after the wait</exception>
+    internal async Task InvokeCancelableMethodAsync(ElementReference elementReference, string methodName, string cancelEventName)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        if (string.IsNullOrEmpty(methodName))
+            throw new ArgumentNullException(nameof(methodName));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("invokeCancelableMethod", elementReference, methodName, cancelEventName);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to invoke method '{methodName}': {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Moves the focus into an open wa-dialog or wa-drawer by the element's own rule on open: to the first descendant
+    /// with the autofocus attribute, else to the element's panel (its native dialog element, the element's public
+    /// dialog or drawer property). A closed element is left as it is.
+    /// </summary>
+    /// <param name="elementReference">Reference to the wa-dialog or wa-drawer element</param>
+    /// <param name="panelProperty">The element property that holds its native dialog element ("dialog", "drawer")</param>
+    /// <returns>A task that completes when the focus was moved, or the element was found closed</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task FocusOverlayAsync(ElementReference elementReference, string panelProperty)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeAsync<bool>("focusOverlay", elementReference, panelProperty);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to focus the {panelProperty}: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Clicks the element of a CSS part in the shadow root of a Web Awesome element, for an action the element runs
+    /// only from a click inside its shadow root and exposes no public method for. Uses a shadow-root internal of the
+    /// element; recheck it on every upgrade.
+    /// </summary>
+    /// <param name="elementReference">Reference to the Web Awesome element</param>
+    /// <param name="partName">The CSS part of the element to click, for example "button"</param>
+    /// <returns>A task that completes when the click was dispatched</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the element has no such part, or the call fails</exception>
+    internal async Task ClickShadowPartAsync(ElementReference elementReference, string partName)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("clickShadowPart", elementReference, partName);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to click the '{partName}' part: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
+    /// Returns the direct child items of a wa-tree-item as a JSON array of plain objects: per item its id attribute
+    /// (null when it has none), its label text, and its selected, expanded, disabled and lazy states.
+    /// </summary>
+    /// <param name="elementReference">Reference to the wa-tree-item element</param>
+    /// <returns>The JSON array of the child items</returns>
+    /// <exception cref="ArgumentException">Thrown when element reference is invalid</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the call fails</exception>
+    internal async Task<JsonElement> GetTreeItemChildrenAsync(ElementReference elementReference)
+    {
+        if (elementReference.Id == null)
+            throw new ArgumentException("Element reference is not valid", nameof(elementReference));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<JsonElement>("getTreeItemChildren", elementReference);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to get the child items: {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, return the default value silently
+            return default;
         }
     }
 
@@ -455,6 +745,22 @@ public class WebAwesomeJSInterop
     #region ------ Internals ------
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+
+    // a resolver is either a URL template or a function, and a mutator either the obsolete global path or a function
+    private static void ValidateIconLibraryOptions(string name, IconLibraryOptions options)
+    {
+        var hasTemplate = !string.IsNullOrEmpty(options.Resolver);
+        if (!hasTemplate && options.ResolverFunction is null)
+            throw new ArgumentException($"Icon library '{name}' requires a resolver: set {nameof(IconLibraryOptions.Resolver)} (a URL template) or {nameof(IconLibraryOptions.ResolverFunction)}.", nameof(options));
+
+        if (hasTemplate && options.ResolverFunction is not null)
+            throw new ArgumentException($"Icon library '{name}' has both {nameof(IconLibraryOptions.Resolver)} and {nameof(IconLibraryOptions.ResolverFunction)}; set only one of them.", nameof(options));
+
+#pragma warning disable CS0618 // the obsolete mutator path stays valid until its removal, but not together with its replacement
+        if (!string.IsNullOrEmpty(options.Mutator) && options.MutatorFunction is not null)
+            throw new ArgumentException($"Icon library '{name}' has both {nameof(IconLibraryOptions.Mutator)} and {nameof(IconLibraryOptions.MutatorFunction)}; set only {nameof(IconLibraryOptions.MutatorFunction)}.", nameof(options));
+#pragma warning restore CS0618
+    }
 
     // initial default icon family of Web Awesome, reported while the JS runtime is disconnected
     private const string WebAwesomeDefaultIconFamily = "classic";

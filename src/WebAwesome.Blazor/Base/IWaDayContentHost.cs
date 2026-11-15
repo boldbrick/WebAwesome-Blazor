@@ -6,7 +6,7 @@ namespace WebAwesome.Blazor.Base;
 /// The element wrapper a <see cref="WaDayContent"/> renders its day slot into: <see cref="WaDateInputBase{TValue}"/>
 /// and <see cref="WaDatePickerBase{TValue}"/> cascade themselves under this type (a fixed cascading value) around
 /// their ChildContent, so a day content finds its host, and fails clearly outside one. The pattern of every
-/// dynamically named slot (docs\technical.md, "Dynamic slots").
+/// dynamically named slot (docs\technical\technical.md, "Dynamic slots").
 /// </summary>
 internal interface IWaDayContentHost
 {

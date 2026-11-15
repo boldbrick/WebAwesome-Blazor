@@ -1,0 +1,203 @@
+@page "/testing/methods-overlays"
+
+@* e2e harness of the wrapper method suite, group "overlays" (tools\e2e\tests\methods-overlays.spec.js, cases in
+   tools\e2e\tests\helpers\method-cases\overlays.js) - deliberately outside /components/; the sweep reaches it through
+   the method groups (tools\e2e\data\method-groups.json). Every MethodCall button calls one wrapper method from .NET
+   through the wrapper's @ref and shows the outcome. ?early=true also calls methods on the first render, while the
+   autoloader still imports the element modules. All elements are free components. *@
+
+<PageTitle>Testing: Methods (Overlays)</PageTitle>
+
+<h1>Methods Harness: Overlays</h1>
+<p>This page is an end-to-end test harness for the imperative methods of the overlay and toast wrappers.</p>
+
+<ExampleSection Title="WaDialog">
+    <div class="method-calls">
+        <MethodCall Id="dialog-show" Action="() => dialog!.ShowAsync()" />
+        <MethodCall Id="dialog-hide" Action="() => dialog!.HideAsync()" />
+        <MethodCall Id="dialog-focus" Action="() => dialog!.FocusAsync()" />
+    </div>
+    <WaDialog @ref="dialog" data-testid="dialog" Label="Method dialog">
+        <p data-testid="dialog-content">Dialog content</p>
+        <input data-testid="dialog-field" aria-label="Dialog field" />
+    </WaDialog>
+</ExampleSection>
+
+<ExampleSection Title="WaDrawer">
+    <div class="method-calls">
+        <MethodCall Id="drawer-show" Action="() => drawer!.ShowAsync()" />
+        <MethodCall Id="drawer-hide" Action="() => drawer!.HideAsync()" />
+        <MethodCall Id="drawer-focus" Action="() => drawer!.FocusAsync()" />
+    </div>
+    <WaDrawer @ref="drawer" data-testid="drawer" Label="Method drawer">
+        <p data-testid="drawer-content">Drawer content</p>
+        <input data-testid="drawer-field" aria-label="Drawer field" />
+    </WaDrawer>
+</ExampleSection>
+
+<ExampleSection Title="WaDropdown and WaDropdownItem (a submenu)">
+    <div class="method-calls">
+        <MethodCall Id="dropdown-show" Action="() => dropdown!.ShowAsync()" />
+        <MethodCall Id="dropdown-hide" Action="() => dropdown!.HideAsync()" />
+        <MethodCall Id="dropdown-open-submenu" Action="() => submenuItem!.OpenSubmenuAsync()" />
+        <MethodCall Id="dropdown-close-submenu" Action="() => submenuItem!.CloseSubmenuAsync()" />
+    </div>
+    <WaDropdown @ref="dropdown" data-testid="dropdown">
+        <TriggerContent>
+            <WaButton WithCaret="true" data-testid="dropdown-trigger">Actions</WaButton>
+        </TriggerContent>
+        <ChildContent>
+            <WaDropdownItem Value="copy" data-testid="dropdown-copy">Copy</WaDropdownItem>
+            <WaDropdownItem @ref="submenuItem" Value="share" data-testid="dropdown-share">
+                <ChildContent>Share</ChildContent>
+                <SubmenuContent>
+                    <WaDropdownItem Value="email" data-testid="dropdown-share-email">Email</WaDropdownItem>
+                    <WaDropdownItem Value="link" data-testid="dropdown-share-link">Link</WaDropdownItem>
+                </SubmenuContent>
+            </WaDropdownItem>
+        </ChildContent>
+    </WaDropdown>
+</ExampleSection>
+
+<ExampleSection Title="WaPopover">
+    @* the hide call sits inside the popover: a click outside an open popover closes it by itself, which would fake the
+       effect of HideAsync *@
+    <div class="method-calls">
+        <MethodCall Id="popover-show" Action="() => popover!.ShowAsync()" />
+    </div>
+    <WaButton id="@PopoverAnchorId" data-testid="popover-anchor">Popover anchor</WaButton>
+    <WaPopover @ref="popover" For="@PopoverAnchorId" data-testid="popover">
+        <p data-testid="popover-content">Popover content</p>
+        <MethodCall Id="popover-hide" Action="() => popover!.HideAsync()" />
+    </WaPopover>
+</ExampleSection>
+
+<ExampleSection Title="WaTooltip (manual trigger)">
+    <div class="method-calls">
+        <MethodCall Id="tooltip-show" Action="() => tooltip!.ShowAsync()" />
+        <MethodCall Id="tooltip-hide" Action="() => tooltip!.HideAsync()" />
+    </div>
+    <WaButton id="@TooltipAnchorId" data-testid="tooltip-anchor">Tooltip anchor</WaButton>
+    <WaTooltip @ref="tooltip" For="@TooltipAnchorId" Trigger="WaTrigger.Manual" data-testid="tooltip">
+        <span data-testid="tooltip-content">Tooltip content</span>
+    </WaTooltip>
+</ExampleSection>
+
+<ExampleSection Title="WaToast and WaToastItem">
+    <div class="method-calls">
+        <MethodCall Id="toast-create" Action="() => toast!.CreateAsync(ToastMessage)" />
+        <MethodCall Id="toast-item-hide" Action="() => toastItem!.HideAsync()" />
+        <button type="button" data-testid="toast-add-item" disabled="@(!RendererInfo.IsInteractive)" @onclick="() => toastItemShown = true">Add a toast item</button>
+    </div>
+    <p>Toast items hidden: <strong data-testid="toast-item-hidden-count">@toastItemHiddenCount</strong></p>
+    <WaToast @ref="toast" data-testid="toast" Placement="WaToastPlacement.BottomEnd">
+        @if (toastItemShown)
+        {
+            @* the model owns the item: OnAfterHide drops it, and Blazor removes the element *@
+            <WaToastItem @ref="toastItem" data-testid="toast-item" Duration="PersistentDuration" OnAfterHide="HandleToastItemAfterHide">
+                Toast item rendered by Blazor
+            </WaToastItem>
+        }
+    </WaToast>
+</ExampleSection>
+
+<ExampleSection Title="WaPage (mobile view)">
+    <div class="method-calls">
+        <MethodCall Id="page-show-nav" Action="() => waPage!.ShowNavigationAsync()" />
+        <MethodCall Id="page-hide-nav" Action="() => waPage!.HideNavigationAsync()" />
+        <MethodCall Id="page-toggle-nav" Action="() => waPage!.ToggleNavigationAsync()" />
+    </div>
+    @* a breakpoint wider than any viewport keeps the page in its mobile view, where the navigation is a drawer *@
+    <div style="height: 240px; overflow: auto;">
+        <WaPage @ref="waPage" data-testid="page" MobileBreakpoint="@AlwaysMobileBreakpoint">
+            <Header><div>Page header</div></Header>
+            <Navigation><div data-testid="page-nav-content">Page navigation</div></Navigation>
+            <ChildContent><div>Page main content</div></ChildContent>
+        </WaPage>
+    </div>
+</ExampleSection>
+
+<ExampleSection Title="WaPopup">
+    @* the call and the count come after the popup: an outcome text that changes above the anchor could move it, and
+       the popup's own auto-update would then reposition it without the call *@
+    <WaPopup @ref="popup" data-testid="popup" Active="true" Placement="WaPlacement.Bottom" OnReposition="() => popupRepositionCount++">
+        <AnchorContent><span data-testid="popup-anchor">Popup anchor</span></AnchorContent>
+        <ChildContent><div data-testid="popup-content">Popup content</div></ChildContent>
+    </WaPopup>
+    <div class="method-calls">
+        <MethodCall Id="popup-reposition" Action="() => popup!.RepositionAsync()" />
+    </div>
+    <p>Repositions: <strong data-testid="popup-reposition-count">@popupRepositionCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Calls on the first render (?early=true)">
+    <p>Dialog show: <output data-testid="early-dialog-show">@earlyDialogShow</output></p>
+    <p>Toast create: <output data-testid="early-toast-create">@earlyToastCreate</output></p>
+</ExampleSection>
+
+@code {
+    private const string PopoverAnchorId = "methods-popover-anchor";
+    private const string TooltipAnchorId = "methods-tooltip-anchor";
+    private const string ToastMessage = "Toast created from .NET";
+    private const string AlwaysMobileBreakpoint = "10000";
+    private const string NotCalled = "not called";
+    private const string DoneText = "done";
+    private const string ErrorPrefix = "error: ";
+
+    // Duration 0 keeps the toast item open until it is hidden
+    private const int PersistentDuration = 0;
+
+    private WaDialog? dialog;
+    private WaDrawer? drawer;
+    private WaDropdown? dropdown;
+    private WaDropdownItem? submenuItem;
+    private WaPopover? popover;
+    private WaTooltip? tooltip;
+    private WaToast? toast;
+    private WaToastItem? toastItem;
+    private WaPage? waPage;
+    private WaPopup? popup;
+
+    private bool toastItemShown;
+    private int toastItemHiddenCount;
+    private int popupRepositionCount;
+
+    private string earlyDialogShow = NotCalled;
+    private string earlyToastCreate = NotCalled;
+
+    // ?early=true: the page calls methods on its first render, while the autoloader still imports the element modules
+    [SupplyParameterFromQuery(Name = "early")] public bool CallOnFirstRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CallOnFirstRender)
+        {
+            var dialogShow = OutcomeOf(() => dialog!.ShowAsync());
+            var toastCreate = OutcomeOf(() => toast!.CreateAsync(ToastMessage));
+            await Task.WhenAll(dialogShow, toastCreate);
+            earlyDialogShow = dialogShow.Result;
+            earlyToastCreate = toastCreate.Result;
+            StateHasChanged();
+        }
+    }
+
+    private static async Task<string> OutcomeOf(Func<Task> call)
+    {
+        try
+        {
+            await call();
+            return DoneText;
+        }
+        catch (Exception exception)
+        {
+            return ErrorPrefix + exception.Message;
+        }
+    }
+
+    // the model drops the item once it has hidden, so Blazor removes its element
+    private void HandleToastItemAfterHide()
+    {
+        toastItemHiddenCount++;
+        toastItemShown = false;
+    }
+}

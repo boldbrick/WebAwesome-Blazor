@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Base;
 
@@ -58,7 +59,9 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     public const WaSize DefaultSize = WaSize.Medium;
 
     /// <summary>
-    /// Size variant of the input, mapped to the underlying Web Awesome element's "size" attribute.
+    /// Size variant of the input, mapped to the underlying Web Awesome element's "size" attribute: sticky with
+    /// <see cref="ElementDefaultSize"/> when the element has a literal size default, plain when it has none, and
+    /// ignored when the element has no size attribute (<see cref="ElementHasSize"/> is false).
     /// </summary>
     [Parameter] public WaSize? Size { get; set; }
 
@@ -365,23 +368,18 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     internal void AddRelayedKeyDownHandler(RenderTreeBuilder builder, int sequence)
         => builder.AddRelayedEventIfHasDelegate(sequence, Constants.RelayedKeyDownEventAttribute, OnKeyDown);
 
-    /// <summary>
-    /// Formats a parse-failure validation message for the bound field, naming it by <see cref="InputBase{TValue}.DisplayName"/>
-    /// or, when that is not set, by the field name, like Blazor's built-in inputs.
-    /// </summary>
-    /// <param name="format">A Constants.*ValidationMessageFormat, whose {0} is the field's name</param>
-    /// <returns>The validation message</returns>
-    private protected string FormatValidationMessage(string format)
-        => string.Format(CultureInfo.InvariantCulture, format, DisplayName ?? FieldIdentifier.FieldName);
+    // adds the "size" attribute: nothing when the element has no size attribute, sticky with ElementDefaultSize when
+    // the element has a literal size default, plainly (nothing while Size is null, removed when it returns to null)
+    // when it has none
+    private void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
+    {
+        if (!ElementHasSize) return;
 
-    /// <summary>
-    /// Adds the "size" attribute at the given sequence number, falling back to <see cref="DefaultSize"/> once rendered;
-    /// a wrapper whose element declares no size default overrides it to render the attribute plainly.
-    /// </summary>
-    /// <param name="builder">The render tree builder</param>
-    /// <param name="sequence">The sequence number for the attribute</param>
-    private protected virtual void AddSizeAttribute(RenderTreeBuilder builder, int sequence)
-        => builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence, "size", Size?.ToHtmlValue(), DefaultSize.ToHtmlValue());
+        if (ElementDefaultSize is { } elementDefaultSize)
+            builder.AddAttributeIfNotNull(WaAttributeMemory.Of(this), sequence, "size", Size?.ToHtmlValue(), elementDefaultSize.ToHtmlValue());
+        else
+            builder.AddAttributeIfNotNull(sequence, "size", Size?.ToHtmlValue());
+    }
 
     // the live value last pushed to or received from the element; only meaningful when hasSyncedLiveValue is set
     private object? lastSyncedLiveValue;
@@ -400,12 +398,52 @@ public abstract class WaInputBase<TValue> : InputBase<TValue>, IFormValidation
     protected virtual string? LiveValuePropertyName => null;
 
     /// <summary>
+    /// The literal default of the element's "size" attribute, which <see cref="AddCommonAttributes"/> renders from
+    /// <see cref="Size"/>. Non-null: "size" is sticky with this default, so nothing renders while <see cref="Size"/> was
+    /// never set, and once it was rendered, a return to null renders this default (a removed attribute would read as
+    /// null, not as the default). Null: the element has no literal size default, so "size" renders plainly, nothing
+    /// while <see cref="Size"/> is null, and the attribute is removed when it returns to null. The default is
+    /// <see cref="DefaultSize"/> (medium), the size default of every Web Awesome form control element that has one.
+    /// </summary>
+    /// <remarks>
+    /// Override it in a form control whose element declares another size default (return that size) or none at all
+    /// (return null), as wa-radio-group does, which only passes its size down to its radios. Return the element's own
+    /// default, never a preferred size: the attribute stays unset until the user sets <see cref="Size"/>. It is not
+    /// read when <see cref="ElementHasSize"/> is false.
+    /// </remarks>
+    protected virtual WaSize? ElementDefaultSize => DefaultSize;
+
+    /// <summary>
+    /// Whether the element declares a "size" attribute; true by default, as on every Web Awesome form control. When
+    /// false, <see cref="AddCommonAttributes"/> renders no "size" at all, whatever <see cref="Size"/> is set to, so the
+    /// inherited <see cref="Size"/> parameter has no effect, and <see cref="ElementDefaultSize"/> is not read. The
+    /// sequence number that <see cref="AddCommonAttributes"/> reserves for "size" (sequence + 4) stays reserved, so the
+    /// sequence layout does not change.
+    /// </summary>
+    /// <remarks>
+    /// Override it with false in a form control whose element has no size attribute, and document on the wrapper that
+    /// <see cref="Size"/> is ignored there.
+    /// </remarks>
+    protected virtual bool ElementHasSize => true;
+
+    /// <summary>
     /// The current value typed as the element's live property expects it (string, number or boolean). Values
     /// passed to <see cref="MarkLiveValueSynced"/> must use the same type. Defaults to
     /// <see cref="InputBase{TValue}.CurrentValueAsString"/>.
     /// </summary>
     /// <returns>The value to assign to the live property</returns>
     protected virtual object? GetLiveValue() => CurrentValueAsString;
+
+    /// <summary>
+    /// Formats a parse-failure validation message for the bound field, naming it by <see cref="InputBase{TValue}.DisplayName"/>
+    /// or, when that is not set, by the field name, like Blazor's built-in inputs. A typed control reports the failure of
+    /// its <c>TryParseValueFromString</c> with it, worded like the library's controls, for example
+    /// <c>FormatValidationMessage("The {0} field must be a date.")</c>.
+    /// </summary>
+    /// <param name="format">A composite format whose {0} is the field's name</param>
+    /// <returns>The validation message</returns>
+    protected string FormatValidationMessage(string format)
+        => string.Format(CultureInfo.InvariantCulture, format, DisplayName ?? FieldIdentifier.FieldName);
 
     #endregion
 }

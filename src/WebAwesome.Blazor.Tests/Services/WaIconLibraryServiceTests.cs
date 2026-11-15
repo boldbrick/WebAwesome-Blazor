@@ -52,6 +52,27 @@ public class WaIconLibraryServiceTests
     }
 
     [Fact]
+    public async Task SetIconPathAsync_WithValidPath_SetsIconPath()
+    {
+        // Arrange
+        const string iconPath = "/lib/fontawesome/svgs";
+
+        // Act
+        await service.SetIconPathAsync(iconPath);
+
+        // Assert - the default library then resolves from the path
+        mockJSInterop.Verify(x => x.SetIconPathAsync(iconPath), Times.Once);
+    }
+
+    [Fact]
+    public async Task SetIconPathAsync_WithNullPath_ThrowsArgumentNullException()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            service.SetIconPathAsync(null!));
+    }
+
+    [Fact]
     public async Task RegisterHeroiconsAsync_WithDefaultVersion_CallsJSInterop()
     {
         // Act

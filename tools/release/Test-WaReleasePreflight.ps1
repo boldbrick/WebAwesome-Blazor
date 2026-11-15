@@ -1,7 +1,9 @@
 # Test-WaReleasePreflight.ps1
 # Automated release-preflight gates for WebAwesome.Blazor (see .claude\skills\wa-release-preflight\SKILL.md).
 # Verifies everything that can be checked without VCS/ticketing context:
-#   version alignment, changelog/migration doc shape, builds, tests, nupkg dependency floors, browser e2e.
+#   version alignment, changelog/migration doc shape, builds, tests, nupkg dependency floors, the two
+#   packages (WebAwesome.Blazor and WebAwesome.Blazor.Extensions at one version), the docs bundle of both
+#   packages (DocPack, local Release builds), browser e2e.
 # Windows PowerShell 5.1 compatible; ASCII only (5.1 misparses BOM-less non-ASCII scripts).
 #
 # Usage (from anywhere):
@@ -12,18 +14,22 @@
 # checks that the server answering there is the demo process it started, and runs Playwright with
 # CI=1 and --forbid-only. It then reads the JSON report and fails on any failed test, on any skip
 # not listed for the asset mode in tools\e2e\data\expected-skips.json, on a listed skip that ran or
-# no longer exists, and on fewer tests than the mode's minimumTests.
+# no longer exists, on fewer tests than the mode's minimumTests, and when a coverage spec
+# (event-coverage.spec.js, method-coverage.spec.js) did not run. Both passes run the whole suite, so the
+# wrapper method suite (methods-*.spec.js) runs in each: its free components in the free pass, its Pro
+# components in the Pro pass.
 # A second pass runs against a self-hosted Pro dist (the extracted Pro package root or its dist-cdn
 # folder): it generates the ignored asset override with tools\demo\Set-WaProAssets.ps1, runs the "pro"
-# mode, and clears the override again. By default it uses the local Pro build of the target version,
-# temp\wa-src\<Version.props version> (extracted from the release zip by the upgrade pipeline), and
+# mode, and clears the override again. By default it uses the local Pro build of the bound Web Awesome
+# version, temp\wa-src\<first three parts of the Version.props version> (extracted from the release zip
+# by the upgrade pipeline; a fourth version part is a bindings revision, see README "Version alignment"), and
 # prints a WARNING - not a failure - when that folder does not exist, so the Pro components go
 # unverified in the browser. -ProDist <path> points it at another dist, -ProE2E takes the path from
 # WA_PRO_DIST, and -SkipProE2E turns the pass off. No Pro URL or token is needed or committed.
 
 param(
     [switch]$SkipE2E,   # skip the Playwright sweep (demo server lifecycle)
-    [switch]$SkipBuild, # skip builds/tests/nuspec gates (docs-only quick check)
+    [switch]$SkipBuild, # skip builds/tests/package gates (docs-only quick check)
     [string]$ProDist,   # run the Pro e2e pass against this self-hosted Pro dist (default: temp\wa-src\<version>)
     [switch]$ProE2E,    # like -ProDist, with the path taken from $env:WA_PRO_DIST
     [switch]$SkipProE2E, # skip the Pro e2e pass (it runs by default when the local Pro build exists)
@@ -69,13 +75,29 @@ if ([string]::IsNullOrEmpty($plasticUser)) {
 
 # --- gate: version alignment ------------------------------------------------
 [xml]$props = Get-Content src\Version.props
-$version = ($props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+$versionGroup = $props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1
+$version = $versionGroup.Version
 Write-Host ("Version.props version: {0}" -f $version)
-Add-Gate 'version-props' (-not [string]::IsNullOrEmpty($version)) ("Version = {0}" -f $version)
+# package version = bound Web Awesome version (major.minor.patch, with the Web Awesome prerelease suffix)
+# or a bindings revision of it as a fourth numeric part (3.14.0.1, optionally with its own prerelease suffix)
+$versionShape = '^\d+\.\d+\.\d+(\.\d+)?(-[0-9A-Za-z.-]+)?$'
+Add-Gate 'version-props' ((-not [string]::IsNullOrEmpty($version)) -and ($version -match $versionShape)) ("Version = {0}" -f $version)
+
+# the bound Web Awesome version: the first three parts; a fourth part is a bindings revision and is dropped
+# with its prerelease suffix, which belongs to the revision (same rule as WebAwesomeOptions.ToWebAwesomeVersion)
+$waVersion = $version
+if ($version -match '^(\d+\.\d+\.\d+)\.\d+(-.*)?$') { $waVersion = $Matches[1] }
+Write-Host ("Bound Web Awesome version: {0}" -f $waVersion)
+
+# assembly and file versions are the numeric parts of the package version, padded to four (3.14.0 -> 3.14.0.0)
+$numericVersion = ($version -split '-')[0]
+if (@($numericVersion -split '\.').Count -eq 3) { $numericVersion = $numericVersion + '.0' }
+$assemblyOk = ($versionGroup.AssemblyVersion -eq $numericVersion) -and ($versionGroup.FileVersion -eq $numericVersion)
+Add-Gate 'assembly-version' $assemblyOk ("AssemblyVersion = {0}, FileVersion = {1}, expected {2}" -f $versionGroup.AssemblyVersion, $versionGroup.FileVersion, $numericVersion)
 
 $parity = Get-Content src\WebAwesome.Blazor.Tests\ApiParity\parity-config.json -Raw | ConvertFrom-Json
 Add-Gate 'parity-armed' ($parity.enabled -eq $true) ("enabled = {0}" -f $parity.enabled)
-Add-Gate 'parity-version' ($parity.targetWaVersion -eq $version) ("targetWaVersion = {0}" -f $parity.targetWaVersion)
+Add-Gate 'parity-version' ($parity.targetWaVersion -eq $waVersion) ("targetWaVersion = {0}" -f $parity.targetWaVersion)
 
 # known defects awaiting an owner decision are no gate, but their number is shown at every release
 $parityDefects = 0
@@ -85,13 +107,21 @@ $e2eDefects = @($coverageExemptions.exemptions | Where-Object { $_.knownDefect -
 Write-Host ("Known defects (owner decisions pending): {0} parity-config.json knownDefects entries; {1} e2e event-coverage exemptions ({2})" -f `
     $parityDefects, $e2eDefects.Count, ($e2eDefects -join ', '))
 
+# the wrapper method suite (tools\e2e\tests\methods-*.spec.js): its known-defect exemptions and the groups whose cases
+# are still pending; the coverage spec itself runs in every e2e pass and fails on an uncovered method
+$methodExemptions = Get-Content tools\e2e\data\method-coverage-exemptions.json -Raw | ConvertFrom-Json
+$methodDefects = @($methodExemptions.exemptions | Where-Object { $_.knownDefect -eq $true } | ForEach-Object { '{0} ({1})' -f $_.key, $_.defect })
+$pendingGroups = @($methodExemptions.exemptions | Where-Object { $_.pendingGroup } | ForEach-Object { $_.pendingGroup })
+Write-Host ("Wrapper method suite: {0} known-defect exemptions ({1}); {2} pending groups ({3})" -f `
+    $methodDefects.Count, ($methodDefects -join ', '), $pendingGroups.Count, ($pendingGroups -join ', '))
+
 $surfaceHead = (Get-Content src\WebAwesome.Blazor.Tests\ApiParity\expected-api-surface.json -TotalCount 5) -join ' '
 $surfaceVersion = ''
 if ($surfaceHead -match '"version"\s*:\s*"([^"]+)"') { $surfaceVersion = $Matches[1] }
-Add-Gate 'surface-version' ($surfaceVersion -eq $version) ("expected-api-surface version = {0}" -f $surfaceVersion)
+Add-Gate 'surface-version' ($surfaceVersion -eq $waVersion) ("expected-api-surface version = {0}" -f $surfaceVersion)
 
 $readme = Get-Content README.md -Raw
-Add-Gate 'readme-cdn-version' ($readme.Contains("webawesome@$version")) ("README CDN snippet references webawesome@{0}" -f $version)
+Add-Gate 'readme-cdn-version' ($readme.Contains("webawesome@$waVersion")) ("README CDN snippet references webawesome@{0}" -f $waVersion)
 
 # demo asset tags are emitted by WebAwesomeAssets from configuration and default to the library
 # version, so demo/version alignment is structural; the gate instead verifies nothing reintroduced
@@ -154,20 +184,35 @@ if ($changelog -match ('(?s)## \[' + [regex]::Escape($version) + '\](.*?)(\r?\n#
     }
 }
 if ($entryHasBreaking) {
-    Add-Gate 'migration-doc' (Test-Path ("docs\MIGRATION-{0}.md" -f $version)) ("breaking changes present, docs\MIGRATION-{0}.md required" -f $version)
+    Add-Gate 'migration-doc' (Test-Path ("docs\migration\MIGRATION-{0}.md" -f $version)) ("breaking changes present, docs\migration\MIGRATION-{0}.md required" -f $version)
 } else {
     Add-Gate 'migration-doc' $true 'no breaking changes declared, migration doc not required'
 }
 
 # --- gates: build, tests, package -------------------------------------------
 if (-not $SkipBuild) {
+    # the Release build bundles the package docs with the docpack tool pinned in .config\dotnet-tools.json
+    $restore = dotnet tool restore 2>&1
+    $restoreOk = ($LASTEXITCODE -eq 0)
+    if (-not $restoreOk) { $restore | Select-Object -Last 10 | ForEach-Object { Write-Host ("    {0}" -f $_) } }
+    Add-Gate 'tool-restore' $restoreOk ("dotnet tool restore exit {0}" -f $LASTEXITCODE)
+
     foreach ($config in 'Debug', 'Release') {
         $build = dotnet build src\WebAwesome.slnx -p:Configuration=$config 2>&1
         $buildOk = ($LASTEXITCODE -eq 0)
         $warnings = -1
-        $m = ($build | Select-String -Pattern '(\d+) Warning\(s\)' | Select-Object -First 1)
+        # the MSBuild summary line only: the docpack output has its own "<n> warning(s)" line for content checks
+        $m = ($build | Select-String -CaseSensitive -Pattern '^\s*(\d+) Warning\(s\)\s*$' | Select-Object -First 1)
         if ($m) { $warnings = [int]$m.Matches[0].Groups[1].Value }
         Add-Gate ("build-{0}" -f $config.ToLower()) ($buildOk -and $warnings -eq 0) ("exit {0}, warnings {1}" -f $LASTEXITCODE, $warnings)
+
+        # the Release pack bundles the package docs; docpack reports a broken link as "warning: <page>: link target ..."
+        # (UpstreamDocs.targets rewrites the upstream site links, so a new one after an upgrade needs a fix there)
+        if ($config -eq 'Release') {
+            $linkWarnings = @($build | ForEach-Object { $_.ToString() } | Where-Object { $_ -match 'warning: .*: link ' -and $_ -notmatch 'warning (CS|NU|MSB)\d' })
+            $linkWarnings | Select-Object -First 10 | ForEach-Object { Write-Host ("    {0}" -f $_.Trim()) }
+            Add-Gate 'docs-links' ($linkWarnings.Count -eq 0) ("docpack link warnings in the Release pack: {0}" -f $linkWarnings.Count)
+        }
 
         $test = dotnet test src\WebAwesome.slnx --no-build -p:Configuration=$config 2>&1
         $testOk = ($LASTEXITCODE -eq 0)
@@ -176,20 +221,118 @@ if (-not $SkipBuild) {
         Add-Gate ("test-{0}" -f $config.ToLower()) ($testOk -and $skipped -eq 0) ("exit {0}, skipped-frameworks {1}: {2}" -f $LASTEXITCODE, $skipped, $totals)
     }
 
-    # nupkg dependency floors: every shipped dependency must sit on a base major (x.0.0)
-    $nuspecPath = "src\output\obj\Release\WebAwesome.Blazor\WebAwesome.Blazor.$version.nuspec"
-    if (Test-Path $nuspecPath) {
+    # the release ships two packages with one version: the bindings and the optional Extensions package
+    $mainId = 'WebAwesome.Blazor'
+    $extensionsId = 'WebAwesome.Blazor.Extensions'
+    $packageIds = @($mainId, $extensionsId)
+    $packageDir = 'src\output\packages\Release'
+    function Get-NuspecPath([string]$id) { return ("src\output\obj\Release\{0}\{0}.{1}.nuspec" -f $id, $version) }
+
+    # nupkg dependency floors: every shipped dependency must sit on a base major (x.0.0); the dependency of the
+    # Extensions package on WebAwesome.Blazor is the exception (floor = package version, extensions-package gate)
+    $offenders = @()
+    $missingNuspecs = @()
+    foreach ($id in $packageIds) {
+        $nuspecPath = Get-NuspecPath $id
+        if (-not (Test-Path $nuspecPath)) { $missingNuspecs += $nuspecPath; continue }
         [xml]$nuspec = Get-Content $nuspecPath
-        $deps = @($nuspec.package.metadata.dependencies.group | ForEach-Object { $_.dependency })
-        $offenders = @($deps | Where-Object { $_.version -notmatch '^\d+\.0\.0$' } | ForEach-Object { "{0} {1}" -f $_.id, $_.version })
-        $detail = 'all shipped dependencies floored at x.0.0'
-        if ($offenders.Count -gt 0) { $detail = 'non-floored: ' + ($offenders -join ', ') }
-        Add-Gate 'nupkg-dependency-floors' ($offenders.Count -eq 0) $detail
-    } else {
-        Add-Gate 'nupkg-dependency-floors' $false ("nuspec not found at {0}" -f $nuspecPath)
+        $deps = @($nuspec.package.metadata.dependencies.group | ForEach-Object { $_.dependency } | Where-Object { $_ -and $_.id -ne $mainId })
+        $offenders += @($deps | Where-Object { $_.version -notmatch '^\d+\.0\.0$' } | ForEach-Object { "{0}: {1} {2}" -f $id, $_.id, $_.version })
     }
+    $detail = 'all shipped dependencies floored at x.0.0'
+    if ($offenders.Count -gt 0) { $detail = 'non-floored: ' + ($offenders -join ', ') }
+    if ($missingNuspecs.Count -gt 0) { $detail = 'nuspec not found: ' + ($missingNuspecs -join ', ') }
+    Add-Gate 'nupkg-dependency-floors' (($offenders.Count -eq 0) -and ($missingNuspecs.Count -eq 0)) $detail
+
+    # Extensions package: both nupkgs exist at the package version, the Extensions package depends on
+    # WebAwesome.Blazor with a floor equal to the package version in every framework group, and it ships its
+    # JS initializer as a static web asset with the JS module trait, so the Blazor runtime loads it
+    $extensionsProblems = @()
+    foreach ($id in $packageIds) {
+        $nupkgPath = Join-Path $packageDir ("{0}.{1}.nupkg" -f $id, $version)
+        if (-not (Test-Path $nupkgPath)) { $extensionsProblems += ("missing {0}" -f $nupkgPath) }
+    }
+
+    $extensionsNuspecPath = Get-NuspecPath $extensionsId
+    if (Test-Path $extensionsNuspecPath) {
+        [xml]$extensionsNuspec = Get-Content $extensionsNuspecPath
+        $groups = @($extensionsNuspec.package.metadata.dependencies.group | Where-Object { $_ })
+        if ($groups.Count -eq 0) { $extensionsProblems += 'Extensions nuspec has no dependency groups' }
+        foreach ($group in $groups) {
+            $sibling = @($group.dependency | Where-Object { $_ -and $_.id -eq $mainId })
+            $floor = ($sibling | ForEach-Object { $_.version }) -join ', '
+            if ($sibling.Count -ne 1 -or $sibling[0].version -ne $version) {
+                $extensionsProblems += ("{0}: {1} floor '{2}', expected '{3}'" -f $group.targetFramework, $mainId, $floor, $version)
+            }
+        }
+    } else {
+        $extensionsProblems += ("nuspec not found at {0}" -f $extensionsNuspecPath)
+    }
+
+    $extensionsNupkgPath = Join-Path $packageDir ("{0}.{1}.nupkg" -f $extensionsId, $version)
+    if (Test-Path $extensionsNupkgPath) {
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $extensionsNupkgPath).Path)
+        try {
+            # the packed file name may carry the fingerprint of the static web asset
+            $initializer = @($zip.Entries | Where-Object { $_.FullName -match '^staticwebassets/WebAwesome\.Blazor\.Extensions(\.[0-9a-z]+)?\.lib\.module\.js$' })
+            if ($initializer.Count -ne 1) { $extensionsProblems += 'JS initializer not packed under staticwebassets/' }
+            $assetProps = $zip.GetEntry('build/Microsoft.AspNetCore.StaticWebAssets.props')
+            $isModule = $false
+            if ($assetProps) {
+                $reader = New-Object System.IO.StreamReader($assetProps.Open())
+                try { $isModule = $reader.ReadToEnd().Contains('<AssetTraitValue>JSLibraryModule</AssetTraitValue>') } finally { $reader.Dispose() }
+            }
+            if (-not $isModule) { $extensionsProblems += 'static web asset props do not declare the JS initializer (JSLibraryModule)' }
+        } finally {
+            $zip.Dispose()
+        }
+    }
+
+    $detail = ("{0} and {1} {2}; {1} depends on {0} >= {2}; JS initializer packed" -f $mainId, $extensionsId, $version)
+    if ($extensionsProblems.Count -gt 0) { $detail = $extensionsProblems -join '; ' }
+    Add-Gate 'extensions-package' ($extensionsProblems.Count -eq 0) $detail
+
+    # docs bundle (DocPack, local Release builds only): both packages carry docs/ with the API reference and the
+    # skill; the main package also carries docs/content/ with the changelog, every migration guide, the technical
+    # documentation and the upstream Web Awesome docs with their license, and nothing from ai\ or docs\contributing;
+    # the Extensions package has no content pages
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $docsProblems = @()
+    $docsSummary = @()
+    foreach ($id in $packageIds) {
+        $nupkgPath = Join-Path $packageDir ("{0}.{1}.nupkg" -f $id, $version)
+        if (-not (Test-Path $nupkgPath)) { $docsProblems += ("missing {0}" -f $nupkgPath); continue }
+        $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $nupkgPath).Path)
+        try { $docs = @($zip.Entries | ForEach-Object { $_.FullName } | Where-Object { $_.StartsWith('docs/') }) } finally { $zip.Dispose() }
+        if ($docs.Count -eq 0) {
+            $docsProblems += ("{0}: no docs/ folder (DocPack bundles in local Release builds only; run dotnet tool restore)" -f $id)
+            continue
+        }
+        if ($docs -notcontains 'docs/api/INDEX.md') { $docsProblems += ("{0}: no API reference (docs/api/INDEX.md)" -f $id) }
+        if ($docs -notcontains 'docs/SKILL.md') { $docsProblems += ("{0}: no skill (docs/SKILL.md)" -f $id) }
+        $content = @($docs | Where-Object { $_.StartsWith('docs/content/') })
+        if ($id -eq $mainId) {
+            $expected = @('docs/content/CHANGELOG.md', 'docs/content/web-awesome/LICENSE.md')
+            $expected += @(Get-ChildItem docs\migration -File -Filter 'MIGRATION-*.md' | ForEach-Object { 'docs/content/migration/' + $_.Name })
+            $expected += @(Get-ChildItem docs\technical -File -Recurse | ForEach-Object { 'docs/content/technical/' + $_.FullName.Substring((Resolve-Path docs\technical).Path.Length + 1).Replace('\', '/') })
+            $missing = @($expected | Where-Object { $content -notcontains $_ })
+            if ($missing.Count -gt 0) { $docsProblems += ("{0}: missing {1}" -f $id, ($missing -join ', ')) }
+            $upstream = @($content | Where-Object { $_.StartsWith('docs/content/web-awesome/') })
+            if ($upstream.Count -lt 2) { $docsProblems += ("{0}: no upstream Web Awesome pages under docs/content/web-awesome/" -f $id) }
+            $forbidden = @($content | Where-Object { $_ -match '/ai/|^docs/content/contributing/|UPGRADE-PROCESS\.md$' -or ($_.StartsWith('docs/content/web-awesome/') -and $_ -notmatch '\.md$') })
+            if ($forbidden.Count -gt 0) { $docsProblems += ("{0}: must not bundle {1}" -f $id, ($forbidden -join ', ')) }
+            $docsSummary += ("{0}: {1} files, {2} content ({3} upstream)" -f $id, $docs.Count, $content.Count, $upstream.Count)
+        } else {
+            if ($content.Count -gt 0) { $docsProblems += ("{0}: unexpected content pages ({1})" -f $id, $content.Count) }
+            $docsSummary += ("{0}: {1} files" -f $id, $docs.Count)
+        }
+    }
+    $detail = $docsSummary -join '; '
+    if ($docsProblems.Count -gt 0) { $detail = $docsProblems -join '; ' }
+    Add-Gate 'docs-bundle' ($docsProblems.Count -eq 0) $detail
 } else {
-    Write-Host 'Builds/tests/nuspec gates skipped (-SkipBuild).'
+    Write-Host 'Builds/tests/package gates skipped (-SkipBuild).'
 }
 
 # --- gate: browser e2e sweep --------------------------------------------------
@@ -235,6 +378,9 @@ function Get-ReportTests($suite, [string[]]$titles) {
     foreach ($child in @($suite.suites | Where-Object { $_ })) { Get-ReportTests $child $path }
 }
 
+# the specs every e2e pass must contain: the event and method coverage checks
+$requiredE2eSpecs = @('event-coverage.spec.js', 'method-coverage.spec.js')
+
 # checks one pass's report against the mode's policy; returns the problems (empty = pass)
 function Test-E2eReport($report, $policy) {
     $problems = @()
@@ -263,6 +409,11 @@ function Test-E2eReport($report, $policy) {
     foreach ($test in $tests) { $keys[$test.Key] = $true }
     foreach ($key in $expected.Keys) {
         if (-not $keys.ContainsKey($key)) { $problems += ("stale expected skip, no such test: {0}" -f $key) }
+    }
+
+    # the coverage specs must have run in every pass: without them a new wrapper callback or method goes unchecked
+    foreach ($required in $requiredE2eSpecs) {
+        if (-not ($tests | Where-Object { $_.Key.StartsWith($required + ' > ') })) { $problems += ("required spec did not run: {0}" -f $required) }
     }
 
     if ($tests.Count -lt [int]$policy.minimumTests) {
@@ -363,9 +514,9 @@ if (-not $SkipE2E) {
     }
 
     # by default the Pro pass uses the local Pro build of the target version, when there is one
-    $defaultProDist = Join-Path $repoRoot ('temp\wa-src\{0}' -f $version)
+    $defaultProDist = Join-Path $repoRoot ('temp\wa-src\{0}' -f $waVersion)
     $proDistIsDefault = $false
-    if (-not $SkipProE2E -and -not $ProDist -and -not $ProE2E -and -not [string]::IsNullOrEmpty($version) -and (Test-Path $defaultProDist)) {
+    if (-not $SkipProE2E -and -not $ProDist -and -not $ProE2E -and -not [string]::IsNullOrEmpty($waVersion) -and (Test-Path $defaultProDist)) {
         $ProDist = $defaultProDist
         $proDistIsDefault = $true
     }
@@ -396,8 +547,8 @@ if (-not $SkipE2E) {
                 if ($null -eq $savedProDist) { Remove-Item env:WA_PRO_DIST -ErrorAction SilentlyContinue }
             }
         } else {
-            $script:proWarning = ('Pro e2e pass NOT run: no local Pro build of {0} at {1}' -f $version, $defaultProDist)
-            Write-Warning ('Pro e2e pass NOT run: no local Pro build of {0} at {1}. The Pro components (combobox, date input/picker, file input, video, video playlist, data grid) are not verified in the browser. Extract the Pro release zip there (the wa-upgrade pipeline does), or pass -ProDist <path> / -ProE2E with WA_PRO_DIST; -SkipProE2E silences this warning.' -f $version, $defaultProDist)
+            $script:proWarning = ('Pro e2e pass NOT run: no local Pro build of {0} at {1}' -f $waVersion, $defaultProDist)
+            Write-Warning ('Pro e2e pass NOT run: no local Pro build of {0} at {1}. The Pro components (combobox, date input/picker, file input, video, video playlist, data grid) are not verified in the browser. Extract the Pro release zip there (the wa-upgrade pipeline does), or pass -ProDist <path> / -ProE2E with WA_PRO_DIST; -SkipProE2E silences this warning.' -f $waVersion, $defaultProDist)
         }
     }
 } else {

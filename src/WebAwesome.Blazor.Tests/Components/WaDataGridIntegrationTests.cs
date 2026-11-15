@@ -14,11 +14,12 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// <summary>
 /// Integration tests for the new WaDataGrid (Pro) component introduced in Web Awesome 3.11.0.
 /// Covers attribute emission for the 25 declarative attributes, confirms Data/Columns are NOT
-/// rendered as attributes (they are pushed as JS properties via WebAwesomeJSInterop.SetPropertyAsync
-/// during OnAfterRenderAsync/OnParametersSetAsync), the three content slots, and guard clauses for the imperative
+/// rendered as attributes (they are pushed as JS properties during
+/// OnAfterRenderAsync/OnParametersSetAsync: the data through setDataGridData, the columns as their JSON through
+/// setDataGridColumns), the three content slots, and guard clauses for the imperative
 /// methods. The 14 events are covered by EventCallbackBindingParityTests (binding) and the e2e event-dispatch and
 /// event-payload specs (browser delivery and payload). bUnit cannot host a real wa-data-grid custom
-/// element, so these tests observe the interop boundary (the setProperty/invokeMethod calls the
+/// element, so these tests observe the interop boundary (the setDataGridData/invokeMethod calls the
 /// wrapper makes) rather than any real grid behavior in the browser.
 /// </summary>
 public class WaDataGridIntegrationTests : BunitContext
@@ -128,7 +129,8 @@ public class WaDataGridIntegrationTests : BunitContext
     public void Data_And_Columns_ArePushedAsJSPropertiesOnFirstRender()
     {
         var module = JSInterop.SetupModule(InteropModulePath);
-        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
 
         var data = new List<object> { new { id = 1, name = "Ada" } };
         var columns = new List<WaDataGridColumn> { new() { Field = "name", Label = "Name" } };
@@ -137,18 +139,38 @@ public class WaDataGridIntegrationTests : BunitContext
             .Add(p => p.Data, data)
             .Add(p => p.Columns, columns));
 
-        var dataInvocation = Assert.Single(module.Invocations, i => i.Identifier == "setProperty" && Equals(i.Arguments[1], "data"));
-        Assert.Same(data, dataInvocation.Arguments[2]);
+        var dataInvocation = Assert.Single(module.Invocations, i => i.Identifier == "setDataGridData");
+        Assert.Same(data, dataInvocation.Arguments[1]);
 
-        var columnsInvocation = Assert.Single(module.Invocations, i => i.Identifier == "setProperty" && Equals(i.Arguments[1], "columns"));
-        Assert.Same(columns, columnsInvocation.Arguments[2]);
+        // the columns go as their JSON text, which the interop module parses and resolves before it assigns them
+        var columnsInvocation = Assert.Single(module.Invocations, i => i.Identifier == "setDataGridColumns");
+        Assert.Equal("[{\"field\":\"name\",\"label\":\"Name\"}]", columnsInvocation.Arguments[1]);
+    }
+
+    [Fact]
+    public void FirstRender_PushesTheFunctionMembersBeforeTheData()
+    {
+        // the browser makes the data push wait for the function members that are still resolving, because the grid
+        // reads childRows only when it receives data; so the function members must be sent first
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+        module.SetupVoid("setElementFunction", _ => true).SetVoidResult();
+
+        Render<WaDataGrid>(parameters => parameters
+            .Add(p => p.Data, new List<object> { new { id = 1 } })
+            .Add(p => p.ChildRowsFunction, WaJsFunction.Registered("myapp.children")));
+
+        var order = module.Invocations.Select(i => i.Identifier).Where(id => id is "setElementFunction" or "setDataGridData" or "setDataGridColumns").ToList();
+        Assert.Equal(["setElementFunction", "setDataGridData", "setDataGridColumns"], order);
     }
 
     [Fact]
     public void Data_And_Columns_ArePushedAgainWhenParametersChange()
     {
         var module = JSInterop.SetupModule(InteropModulePath);
-        module.SetupVoid("setProperty", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
 
         var cut = Render<WaDataGrid>(parameters => parameters
             .Add(p => p.Data, new List<object>()));
@@ -156,8 +178,122 @@ public class WaDataGridIntegrationTests : BunitContext
         cut.Render(parameters => parameters
             .Add(p => p.Data, new List<object> { new { id = 2 } }));
 
-        var dataInvocations = module.Invocations.Where(i => i.Identifier == "setProperty" && Equals(i.Arguments[1], "data")).ToList();
+        var dataInvocations = module.Invocations.Where(i => i.Identifier == "setDataGridData").ToList();
         Assert.True(dataInvocations.Count >= 2);
+    }
+
+    [Fact]
+    public void Columns_AreNotPushedAgain_WhenAParameterSetLeavesThemUnchanged()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+        var data = new List<object> { new { id = 1, name = "Ada" } };
+        var columns = new List<WaDataGridColumn> { new() { Field = "name", Label = "Name" } };
+
+        var cut = Render<WaDataGrid>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.Columns, columns));
+        cut.Render(parameters => parameters.Add(p => p.Label, "People"));
+        cut.Render(parameters => parameters.Add(p => p.Columns, columns));
+
+        Assert.Equal(1, PushCount(module, "columns"));
+        // the data keeps its contract: every parameter set pushes it, so a list changed in place reaches the element
+        Assert.Equal(3, PushCount(module, "data"));
+    }
+
+    [Fact]
+    public void Columns_WithoutAList_AreNotPushedAgain_WhenAParameterSetLeavesThemUnset()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+
+        var cut = Render<WaDataGrid>();
+        cut.Render(parameters => parameters.Add(p => p.Label, "People"));
+
+        Assert.Equal(1, PushCount(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_AreNotPushedAgain_WhenANewListHasTheSameDefinitions()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, NameColumns(WaJsFunction.Registered("myapp.name").WithArgs(new { max = 5 }))));
+
+        // a list created again on every render (for example inline in the markup), with equal function references
+        cut.Render(parameters => parameters.Add(p => p.Columns, NameColumns(WaJsFunction.Registered("myapp.name").WithArgs(new { max = 5 }))));
+        cut.Render(parameters => parameters.Add(p => p.Columns, NameColumns(WaJsFunction.Registered("myapp.name").WithArgs(new { max = 5 }))));
+
+        Assert.Equal(1, PushCount(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenANewListHasOtherDefinitions()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, NameColumns(null)));
+        cut.Render(parameters => parameters.Add(p => p.Columns, new List<WaDataGridColumn> { new() { Field = "email" } }));
+
+        Assert.Equal(2, PushCount(module, "columns"));
+        Assert.Equal("[{\"field\":\"email\"}]", LastPush(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenAFunctionReferenceChanges()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+        var columns = NameColumns(WaJsFunction.Registered("myapp.name").WithArgs(new { max = 5 }));
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
+        columns[0].Formatter = columns[0].Formatter!.WithArgs(new { max = 6 });
+        cut.Render(parameters => parameters.Add(p => p.Columns, columns));
+        columns[0].ComparatorFunction = WaJsFunction.Module("./cells.js", "byName");
+        cut.Render(parameters => parameters.Add(p => p.Columns, columns));
+
+        Assert.Equal(3, PushCount(module, "columns"));
+        Assert.Contains("\"comparator\":", Assert.IsType<string>(LastPush(module, "columns")));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenAColumnChangesInPlace()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+        var columns = new List<WaDataGridColumn> { new() { Field = "name", Label = "Name" } };
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
+        columns[0].Label = "Full name";
+        cut.Render(parameters => parameters.Add(p => p.Label, "People"));
+        cut.Render(parameters => parameters.Add(p => p.Label, "Staff"));
+
+        // one push for the first render, one for the change; the parameter set after it changes nothing
+        Assert.Equal(2, PushCount(module, "columns"));
+        Assert.Equal("[{\"field\":\"name\",\"label\":\"Full name\"}]", LastPush(module, "columns"));
+    }
+
+    [Fact]
+    public void Columns_ArePushedAgain_WhenTheListChangesInPlace()
+    {
+        var module = JSInterop.SetupModule(InteropModulePath);
+        module.SetupVoid("setDataGridData", _ => true).SetVoidResult();
+        module.SetupVoid("setDataGridColumns", _ => true).SetVoidResult();
+        var columns = new List<WaDataGridColumn> { new() { Field = "name" } };
+
+        var cut = Render<WaDataGrid>(parameters => parameters.Add(p => p.Columns, columns));
+        columns.Add(new WaDataGridColumn { Field = "email" });
+        cut.Render(parameters => parameters.Add(p => p.Columns, columns));
+
+        Assert.Equal(2, PushCount(module, "columns"));
     }
 
     [Fact]
@@ -316,4 +452,29 @@ public class WaDataGridIntegrationTests : BunitContext
     }
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
+
+    // the interop function of a JS property: the columns go through setDataGridColumns, which resolves the function
+    // references, the data through setDataGridData, which waits for the function members that are still resolving
+    private const string ColumnsPropertyName = "columns";
+    private const string SetColumnsIdentifier = "setDataGridColumns";
+    private const string SetDataIdentifier = "setDataGridData";
+
+    // the number of calls the wrapper made for one JS property
+    private static int PushCount(BunitJSModuleInterop module, string propertyName) =>
+        module.Invocations.Count(i => IsPush(i, propertyName));
+
+    // the value of the last call for one JS property (for the columns, their JSON text)
+    private static object? LastPush(BunitJSModuleInterop module, string propertyName)
+    {
+        var push = module.Invocations.Last(i => IsPush(i, propertyName));
+        return push.Arguments[1];
+    }
+
+    private static bool IsPush(JSRuntimeInvocation invocation, string propertyName) => propertyName == ColumnsPropertyName
+        ? invocation.Identifier == SetColumnsIdentifier
+        : invocation.Identifier == SetDataIdentifier;
+
+    // a new list with one name column and the given formatter
+    private static List<WaDataGridColumn> NameColumns(WaJsFunction? formatter) =>
+        [new() { Field = "name", Label = "Name", Formatter = formatter }];
 }

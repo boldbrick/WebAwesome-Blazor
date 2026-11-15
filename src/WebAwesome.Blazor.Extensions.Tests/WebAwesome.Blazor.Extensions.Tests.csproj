@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!-- xunit.v3 test projects are executables; declared here (not only via package targets) so
+         NuGet restore already sees it and records the apphost pack - package-delivered props/targets
+         are not imported during restore, which broke clean CI builds (MSB3030, missing apphost.exe) -->
+    <OutputType>Exe</OutputType>
+    <UseAppHost>true</UseAppHost>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="PublicApiGenerator" />
+    <PackageReference Include="bunit" />
+    <!-- transitive via bunit; direct reference lifts the vulnerable version (see Directory.Packages.props) -->
+    <PackageReference Include="AngleSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebAwesome.Blazor.Extensions\WebAwesome.Blazor.Extensions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- both test projects build into one output folder (output\bin\<config>\Tests\<tfm>), so the file name
+         differs from the main test project's approved-public-api.txt -->
+    <None Include="PublicApi\approved-extensions-public-api.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

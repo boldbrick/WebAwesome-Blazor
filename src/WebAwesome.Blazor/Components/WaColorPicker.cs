@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -221,7 +222,9 @@ public class WaColorPicker : WaPopupInputBase<string?>
     }
 
     /// <summary>
-    /// Gets the current value as a hex string, regardless of the configured <see cref="Format"/>.
+    /// Gets the current value as a hex string, regardless of the configured <see cref="Format"/>: "#rrggbb", or
+    /// "#rrggbbaa" with the alpha channel when <see cref="Opacity"/> is set. The letter case follows
+    /// <see cref="Uppercase"/>.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains the hex string value</returns>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
@@ -230,7 +233,10 @@ public class WaColorPicker : WaPopupInputBase<string?>
         if (Element == null)
             throw new InvalidOperationException("Cannot get hex string: component has not been rendered yet.");
 
-        return await JSInterop.InvokeMethodAsync<string>(Element.Value, "getHexString");
+        // the element's own getHexString(hue, saturation, brightness, alpha) converts the given values, not the current
+        // value; getFormattedValue reads the current value
+        var format = Opacity ? HexWithAlphaFormat : WaColorFormat.Hex.ToHtmlValue();
+        return await JSInterop.InvokeMethodAsync<string>(Element.Value, "getFormattedValue", format);
     }
 
     /// <summary>
@@ -245,6 +251,14 @@ public class WaColorPicker : WaPopupInputBase<string?>
 
         return await JSInterop.InvokeMethodAsync<bool>(Element.Value, "reportValidity");
     }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // the getFormattedValue format of a hex string with the alpha channel, which WaColorFormat does not offer as a value
+    // format of the element
+    private const string HexWithAlphaFormat = "hexa";
 
     #endregion
 }

@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
+// the obsolete string methods stay covered until they are removed in the 3.15.0 train
+#pragma warning disable CS0618
+
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Interop tests for WaSlider.SetValueFormatterAsync: it rejects a missing function, throws before the first
-/// render, and afterwards sets the element's valueFormatter property to the function through the interop module
-/// (recorded, see RecordingJSRuntime).
+/// Interop tests for the obsolete WaSlider.SetValueFormatterAsync: it rejects a missing function, throws before the first
+/// render, and afterwards sends nothing, because wa-slider ignores JavaScript source text and a string would replace a
+/// ValueFormatterFunction (the interop module is recorded, see RecordingJSRuntime).
 /// </summary>
 public class WaSliderIntegrationTests : IDisposable
 {
@@ -29,11 +32,11 @@ public class WaSliderIntegrationTests : IDisposable
     }
 
     [Fact]
-    public async Task SetValueFormatterAsync_WithValidElement_SetsTheValueFormatterProperty()
+    public async Task SetValueFormatterAsync_WithValidElement_SendsNothing()
     {
         await runtime.CreateRendered<WaSlider>().SetValueFormatterAsync(Formatter);
 
-        Assert.Equal(Formatter, runtime.Module.AssertSetProperty("valueFormatter"));
+        Assert.Empty(runtime.Module.Invocations);
     }
 
     #region ------ Implementation of IDisposable ------

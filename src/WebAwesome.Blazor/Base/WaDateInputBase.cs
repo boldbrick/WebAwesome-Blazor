@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
+using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Base;
 
@@ -16,10 +18,12 @@ namespace WebAwesome.Blazor.Base;
 /// </summary>
 /// <remarks>
 /// Custom day content goes in <see cref="ChildContent"/> as <see cref="WaDayContent"/> children, which the element
-/// forwards to its popup calendar. Web Awesome's JS-only <c>dayContent</c> and <c>isDateDisabled</c> callbacks are
-/// not supported: the calendar calls them for every rendered day cell, which would need a JS round-trip per cell. Use
-/// <see cref="WaDayContent"/> for day content and <see cref="DisabledDates"/> (with <see cref="DisabledDaysOfWeek"/>,
-/// <see cref="DisablePast"/>, <see cref="DisableFuture"/>, <see cref="Min"/> and <see cref="Max"/>) for disabled days.
+/// forwards to its popup calendar, and disabled days in <see cref="DisabledDates"/> (with
+/// <see cref="DisabledDaysOfWeek"/>, <see cref="DisablePast"/>, <see cref="DisableFuture"/>, <see cref="Min"/> and
+/// <see cref="Max"/>). For a rule that C# cannot list (every rendered day), Web Awesome's <c>dayContent</c> and
+/// <c>isDateDisabled</c> callbacks take a JavaScript function through <see cref="DayContentFunction"/> and
+/// <see cref="IsDateDisabledFunction"/>, which the element forwards to its popup calendar; the browser calls it for each
+/// day cell, with no round-trip to .NET.
 /// </remarks>
 /// <typeparam name="TValue">The type of value bound to the date input</typeparam>
 public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaClearableControl, IWaAffixedControl, IWaCalendarOptions,
@@ -211,6 +215,31 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// The JavaScript function that disables a day in addition to the declarative rules (the element's
+    /// <c>isDateDisabled</c>, which it forwards to its popup calendar). It is called as <c>(date, ctx)</c>: the day as a
+    /// JavaScript <c>Date</c> at local midnight, and <c>ctx</c> with <c>args</c> (the <see cref="WaJsFunction.WithArgs"/>
+    /// value) and <c>element</c>; it returns true to disable the day. When null, only the declarative rules apply.
+    /// </summary>
+    [Parameter] public WaJsFunction? IsDateDisabledFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that renders the content of a day cell of the popup calendar (the element's
+    /// <c>dayContent</c>). It is called as <c>(date, ctx)</c>: the day as a JavaScript <c>Date</c> at local midnight, and
+    /// <c>ctx</c> with <c>args</c> and <c>element</c>. It returns a string of trusted HTML, a Lit template, or null for the
+    /// day number. It runs for every rendered day cell; a <see cref="WaDayContent"/> for the same date wins. Declare the
+    /// Web Awesome elements it renders with <see cref="WaJsFunction.Uses"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? DayContentFunction { get; set; }
+
+    /// <summary>
+    /// CSS rules for the output of <see cref="DayContentFunction"/>, adopted as a constructed stylesheet into the shadow
+    /// root of the element and of its popup calendar (where the day cells are), and replaced only when the text changes.
+    /// It is for styling your own function output, not Web Awesome's internals: style those with <c>::part</c> and the
+    /// CSS custom properties.
+    /// </summary>
+    [Parameter] public string? ShadowStyles { get; set; }
+
+    /// <summary>
     /// Sets focus on the first empty (else first) segment.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
@@ -316,8 +345,9 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     protected override string? LiveValuePropertyName => "value";
 
     /// <summary>
-    /// Syncs the live value (see the base class), then has the element forward its day slots to the popup calendar
-    /// again when a <see cref="WaDayContent"/> was added, removed or moved to another date.
+    /// Syncs the live value (see the base class), pushes the function members and the shadow styles when they changed,
+    /// then has the element forward its day slots to the popup calendar again when a <see cref="WaDayContent"/> was
+    /// added, removed or moved to another date.
     /// </summary>
     /// <param name="firstRender">Whether this is the first time the component has rendered</param>
     /// <returns>A task that represents the asynchronous operation</returns>
@@ -325,6 +355,10 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     {
         afterRenderPending = false;
         await base.OnAfterRenderAsync(firstRender);
+
+        await jsProperties.PushFunctionAsync(JSInterop, Element, IsDateDisabledMember, IsDateDisabledFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, DayContentMember, DayContentFunction);
+        await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
 
         if (!daySlotsChanged || Element is null) return;
 
@@ -372,6 +406,13 @@ public abstract class WaDateInputBase<TValue> : WaPopupInputBase<TValue>, IWaCle
     private bool afterRenderPending;
 
     private bool disposed;
+
+    // the function-valued members of wa-date-input
+    private const string IsDateDisabledMember = "isDateDisabled";
+    private const string DayContentMember = "dayContent";
+
+    // the function members and the shadow styles last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
 
     /// <summary>
     /// Adds the attributes of the wrapper's selection mode ("mode", "min-range", "max-range") at sequence + 0..2;

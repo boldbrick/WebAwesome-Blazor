@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using WebAwesome.Blazor.Infrastructure;
 using WebAwesome.Blazor.Layout;
 using WebAwesome.Blazor.Base;
 
@@ -94,6 +95,7 @@ public abstract class WaLayoutBase : ComponentBase
     protected int AddCommonLayoutAttributes(RenderTreeBuilder builder, int sequence, string elementName, string baseLayoutClass)
     {
         builder.OpenElement(sequence + 0, elementName);
+        WaInspectorMetadata.AddAttributes(builder, this, sequence + 0);
         builder.AddMultipleAttributes(sequence + 1, AdditionalAttributes);
         builder.AddAttributeIfNotNullOrEmpty(sequence + 2, "class", GetCombinedCssClass(baseLayoutClass));
         builder.AddAttributeIfNotNullOrEmpty(sequence + 3, "style", Style);

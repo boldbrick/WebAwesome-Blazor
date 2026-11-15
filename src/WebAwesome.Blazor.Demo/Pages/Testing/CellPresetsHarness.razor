@@ -1,0 +1,196 @@
+@page "/testing/cell-presets"
+@using System.Globalization
+@using System.Text.Json.Serialization
+@using WebAwesome.Blazor.Extensions.DataGrid
+@using WebAwesome.Blazor.Models
+
+@* e2e harness for tools\e2e\tests\cell-presets.spec.js - deliberately outside /components/, so it is neither derived
+   from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. The grids use every cell preset of the Extensions package
+   (WaDataGridFormatters, WaDataGridComparators) with fixed cultures and time zones, so the texts are known. Nothing in
+   the light DOM renders wa-badge, wa-tag or wa-icon: the presets' Uses declarations must register them. The visual grid
+   binds OnCellClick and @onwablazor-cell-action and shows what each received. *@
+
+<PageTitle>Testing: Cell Presets</PageTitle>
+
+<h1>Cell Presets Harness</h1>
+<p>This page is an end-to-end test harness for the data grid cell presets of the <code>WebAwesome.Blazor.Extensions</code> package.</p>
+
+<ExampleSection Title="Numbers, dates and times">
+    <WaDataGrid data-testid="cp-numbers" Label="Numbers and dates" RowKey="id" Data="textRows" Columns="numberColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Other text presets">
+    <WaDataGrid data-testid="cp-texts" Label="Other texts" RowKey="id" Data="textRows" Columns="textColumns" />
+</ExampleSection>
+
+<ExampleSection Title="Progress, rating, avatar, image, color, sparkline, trend, data bar and copy">
+    <WaDataGrid data-testid="cp-more" Label="Projects" RowKey="id" Data="projects" Columns="projectColumns"
+                OnCellClick="HandleCellClick" />
+</ExampleSection>
+
+<ExampleSection Title="Visual presets, links and cell actions">
+    <WaDataGrid data-testid="cp-visual" Label="Tickets" RowKey="id" Data="tickets" Columns="ticketColumns"
+                OnCellClick="HandleCellClick" @onwablazor-cell-action="HandleCellAction" />
+    <p>Cell action: <strong data-testid="cp-action">@actionText</strong></p>
+    <p>Cell click: <strong data-testid="cp-click">@clickText</strong></p>
+    <p>Actions received: <strong data-testid="cp-action-count">@actionCount</strong>, cell clicks received: <strong data-testid="cp-click-count">@clickCount</strong></p>
+</ExampleSection>
+
+@code {
+    private const string NoneText = "none";
+
+    private static readonly CultureInfo English = CultureInfo.GetCultureInfo("en-US");
+    private static readonly CultureInfo Czech = CultureInfo.GetCultureInfo("cs-CZ");
+
+    private string actionText = NoneText;
+    private string clickText = NoneText;
+    private int actionCount;
+    private int clickCount;
+
+    private sealed record TextRow(int Id, double Amount, decimal Price, string? Currency, double Share, DateOnly Due,
+        DateTimeOffset Created, TimeOnly Opens, DateTimeOffset Seen, long Size, TimeSpan Spent, string? Region, bool? Active,
+        string Customer, int Items, string[]? Labels);
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    private enum TicketState
+    {
+        Open,
+        InProgress,
+        Blocked,
+        Done
+    }
+
+    private sealed record TicketRow(int Id, string Title, TicketState State, string Kind, string[] Labels, string Health,
+        bool Paid, string Slug, string Email, string Phone);
+
+    private object[] textRows = [];
+
+    private sealed record ProjectRow(int Id, string Name, double Progress, int Score, string Owner, string? Photo, string? Initials,
+        string Color, double[] Sales, string SalesTrend, double Change, double Budget, string Key);
+
+    private readonly object[] projects =
+    [
+        new ProjectRow(1, "Atlas", 0.25, 3, "Ada Lovelace", "fragments/icon-sprite.svg", "AL", "#ff8800", [3, 5, 4, 8], "positive", 0.125, 1200, "KEY-ATLAS"),
+        new ProjectRow(2, "Borealis", 0.9, 5, "Grace Hopper", null, "GH", "rebeccapurple", [8, 6, 5, 2], "negative", -0.05, 300, "KEY-BOREALIS"),
+        new ProjectRow(3, "Cirrus", 0.5, 4, "Alan Turing", null, null, "not a color", [], "neutral", 0, 600, "KEY-CIRRUS")
+    ];
+
+    private readonly WaDataGridColumn[] projectColumns =
+    [
+        new() { Field = "name", Label = "Name", Width = 110 },
+        new()
+        {
+            Field = "progress", Label = "Progress bar", Width = 150,
+            Formatter = WaDataGridFormatters.ProgressBar(showLabel: true, culture: English,
+                thresholds: [new WaDataGridThreshold(0.8, WaVariant.Success), new WaDataGridThreshold(0, WaVariant.Warning)])
+        },
+        new() { Id = "ring", Field = "progress", Label = "Progress ring", Width = 120, Formatter = WaDataGridFormatters.ProgressRing(culture: English) },
+        new() { Field = "score", Label = "Rating", Width = 150, Formatter = WaDataGridFormatters.Rating(max: 5, culture: English) },
+        new()
+        {
+            Field = "owner", Label = "Avatar", Width = 200,
+            Formatter = WaDataGridFormatters.Avatar(imageField: "photo", initialsField: "initials", shape: WaAvatarShape.Rounded, showLabel: true, size: "1.75rem")
+        },
+        new() { Id = "image", Field = "photo", Label = "Image", Width = 90, Formatter = WaDataGridFormatters.Image(altTemplate: "Photo of {owner}", width: 24, height: 24, nullText: NoneText) },
+        new() { Field = "color", Label = "Color", Width = 160, Formatter = WaDataGridFormatters.ColorSwatch(showText: true) },
+        new() { Field = "sales", Label = "Sparkline", Width = 140, Formatter = WaDataGridFormatters.Sparkline(trendField: "salesTrend", nullText: NoneText, culture: English) },
+        new() { Field = "change", Label = "Trend", Width = 120, Formatter = WaDataGridFormatters.Trend(WaDataGridFormatters.Percent(maxFractionDigits: 1, signDisplay: WaDataGridSignDisplay.ExceptZero, culture: English)) },
+        new() { Field = "budget", Label = "Data bar", Width = 170, Formatter = WaDataGridFormatters.DataBar(variant: WaVariant.Success, showValue: true, format: WaDataGridFormatters.Currency("EUR", culture: English)) },
+        new() { Field = "key", Label = "Copy", Width = 200, Formatter = WaDataGridFormatters.CopyButton(showValue: true) }
+    ];
+
+    private readonly object[] tickets =
+    [
+        new TicketRow(101, "Login fails", TicketState.Blocked, "bug", ["auth", "urgent"], "warn", false, "login-fails", "ada@example.com", "+1 (555) 010-0001"),
+        new TicketRow(102, "Dark mode", TicketState.Done, "feature", ["ui"], "ok", true, "dark-mode", "grace@example.com", "+1 555 010 0002"),
+        new TicketRow(103, "Export to CSV", TicketState.Open, "feature", [], "ok", true, "export-csv", "alan@example.com", "555-0103"),
+        new TicketRow(104, "Slow search", TicketState.InProgress, "bug", ["search"], "unknown", false, "slow-search", "kat@example.com", "555 0104")
+    ];
+
+    private readonly WaDataGridColumn[] numberColumns =
+    [
+        new() { Field = "amount", Label = "Number", Formatter = WaDataGridFormatters.Number(maxFractionDigits: 2, culture: English) },
+        new() { Field = "price", Label = "Currency", Formatter = WaDataGridFormatters.Currency("EUR", culture: English) },
+        new() { Id = "local-price", Field = "price", Label = "Row currency", Formatter = WaDataGridFormatters.Currency(currencyField: "currency", culture: Czech) },
+        new() { Field = "share", Label = "Percent", Formatter = WaDataGridFormatters.Percent(maxFractionDigits: 1, culture: English) },
+        new() { Field = "due", Label = "Date", Formatter = WaDataGridFormatters.Date(culture: English) },
+        new() { Field = "created", Label = "Date and time", Formatter = WaDataGridFormatters.DateTime(timeZone: "UTC", culture: English) },
+        new() { Id = "created-prague", Field = "created", Label = "Time in Prague", Formatter = WaDataGridFormatters.Time(timeZone: "Europe/Prague", culture: English) },
+        new() { Field = "opens", Label = "Time of day", Formatter = WaDataGridFormatters.Time(culture: English) }
+    ];
+
+    private readonly WaDataGridColumn[] textColumns =
+    [
+        new() { Field = "seen", Label = "Relative", Formatter = WaDataGridFormatters.RelativeTime(culture: English) },
+        new() { Field = "size", Label = "Bytes", Formatter = WaDataGridFormatters.Bytes(culture: English) },
+        new() { Field = "spent", Label = "Duration", Formatter = WaDataGridFormatters.Duration(culture: English) },
+        new() { Field = "region", Label = "Lookup", Formatter = WaDataGridFormatters.Lookup(new Dictionary<string, string> { ["EU"] = "Europe" }, nullText: NoneText) },
+        new() { Field = "active", Label = "Boolean", Formatter = WaDataGridFormatters.Boolean("Yes", "No", "unknown") },
+        new() { Id = "summary", Label = "Template", Formatter = WaDataGridFormatters.Template("{customer} ({items:number})", culture: English) },
+        new() { Field = "labels", Label = "List", Formatter = WaDataGridFormatters.List(nullText: NoneText) }
+    ];
+
+    private readonly WaDataGridColumn[] ticketColumns =
+    [
+        new() { Id = "open", Field = "id", Label = "Open", Formatter = WaDataGridFormatters.ActionLink("open", "Open #{id}") },
+        new() { Field = "title", Label = "Title" },
+        new()
+        {
+            Field = "state", Label = "State",
+            Formatter = WaDataGridFormatters.Badge<TicketState>(state => state switch
+            {
+                TicketState.InProgress => WaVariant.Brand,
+                TicketState.Blocked => WaVariant.Danger,
+                TicketState.Done => WaVariant.Success,
+                _ => WaVariant.Neutral,
+            }, state => state == TicketState.InProgress ? "In progress" : state.ToString(),
+            icon: state => state == TicketState.Blocked ? "ban" : null, pill: true),
+            ComparatorFunction = WaDataGridComparators.Ordinal(TicketState.Open, TicketState.InProgress, TicketState.Blocked, TicketState.Done)
+        },
+        new() { Field = "kind", Label = "Tag", Formatter = WaDataGridFormatters.Tag(new Dictionary<string, WaVariant> { ["bug"] = WaVariant.Danger, ["feature"] = WaVariant.Brand }, size: WaSize.Small) },
+        new() { Field = "labels", Label = "Tags", Formatter = WaDataGridFormatters.Tags(pill: true, nullText: NoneText) },
+        new()
+        {
+            Field = "health", Label = "Icon",
+            Formatter = WaDataGridFormatters.Icon(
+                new Dictionary<string, WaDataGridIcon> { ["ok"] = "circle-check", ["warn"] = "triangle-exclamation" },
+                new Dictionary<string, string> { ["ok"] = "Healthy", ["warn"] = "Degraded" },
+                new Dictionary<string, WaVariant> { ["ok"] = WaVariant.Success, ["warn"] = WaVariant.Warning })
+        },
+        new() { Field = "paid", Label = "Boolean icon", Formatter = WaDataGridFormatters.BooleanIcon("Paid", "Not paid", trueColor: WaVariant.Success) },
+        new() { Field = "slug", Label = "Link", Formatter = WaDataGridFormatters.Link("https://example.com/tickets/{slug}?from={title}", "{title}", WaLinkTarget.Blank) },
+        // a relative link to this page, so that following it shows whether the router navigates without a page load
+        new() { Id = "same-page", Field = "id", Label = "Same page", Formatter = WaDataGridFormatters.Link("testing/cell-presets?ticket={id}", "Ticket {id}") },
+        new() { Field = "email", Label = "Email", Formatter = WaDataGridFormatters.Email() },
+        new() { Field = "phone", Label = "Phone", Formatter = WaDataGridFormatters.Phone() }
+    ];
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        // the relative time is three hours before the page opens
+        var seen = DateTimeOffset.UtcNow.AddHours(-3);
+        var created = new DateTimeOffset(2026, 10, 15, 10, 30, 0, TimeSpan.Zero);
+        textRows =
+        [
+            new TextRow(1, 1234.567, 1499.5m, "CZK", 0.256, new DateOnly(2026, 10, 15), created, new TimeOnly(14, 30), seen,
+                1536000, new TimeSpan(1, 30, 0), "EU", true, "Ada", 3, ["a", "b"]),
+            new TextRow(2, 1234.567, 1499.5m, null, 0.256, new DateOnly(2026, 10, 15), created, new TimeOnly(14, 30), seen,
+                1536000, new TimeSpan(1, 30, 0), null, null, "Grace", 12, null)
+        ];
+    }
+
+    private void HandleCellAction(WaDataGridCellActionEventArgs e)
+    {
+        actionCount++;
+        var ticket = e.GetRow<TicketRow>();
+        actionText = $"{e.Action}|{e.Column}|{e.RowKey}|{e.RowIndex}|{e.Value}|{ticket?.Title}|{ticket?.State}";
+    }
+
+    private void HandleCellClick(WaDataGridCellClickEventArgs e)
+    {
+        clickCount++;
+        clickText = $"{e.Column}|{e.RowIndex}";
+    }
+}

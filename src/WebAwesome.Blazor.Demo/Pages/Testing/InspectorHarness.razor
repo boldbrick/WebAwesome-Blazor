@@ -1,0 +1,61 @@
+@page "/testing/inspector"
+
+@* e2e harness for the WA Inspector browser tests (tools\e2e\inspector, the extension of tools\wa-inspector) -
+   deliberately outside /components/, so it is neither derived from api-surface.json nor linked from the sidebar; the
+   sweep reaches it through HARNESS_ROUTES in tools\e2e\tests\helpers\routes.js. A small task board: a toolbar, one
+   loop of rows whose badge variant comes from the data (all badges share one placement), a reusable action at two
+   positions (one source site, two placements), a card and a plain element with a utility class. The toggle button
+   changes the data, so the page renders a badge value again. The inspector tests run against Demo.Server with
+   WebAwesome__EmitInspectorMetadata=true; without it the page is a normal page *@
+
+<PageTitle>Testing: Inspector</PageTitle>
+
+<h1>Inspector Harness</h1>
+<p data-testid="ih-intro">This page is an end-to-end test harness for the WA Inspector browser extension: it holds the kinds of markup a review changes.</p>
+
+<ExampleSection Title="Task board">
+    <WaCluster Gap="GapSize.Gap_S" data-testid="ih-toolbar">
+        <WaButton data-testid="ih-toggle" Variant="WaVariant.Brand" OnClick="ToggleFirstTask">Toggle the first task</WaButton>
+        <WaButton data-testid="ih-reopen" OnClick="ReopenAllTasks">Reopen all tasks</WaButton>
+    </WaCluster>
+
+    <WaStack Gap="GapSize.Gap_S" data-testid="ih-rows">
+        @foreach (var task in tasks)
+        {
+            <div class="ih-row" data-testid="ih-row">
+                <span>@task.Title</span>
+                <WaBadge data-testid="ih-badge" Variant="VariantOf(task)">@(task.Done ? "Done" : "Open")</WaBadge>
+            </div>
+        }
+    </WaStack>
+
+    <WaCard data-testid="ih-card">
+        <p>Open tasks: <code data-testid="ih-open-count">@tasks.Count(task => !task.Done)</code></p>
+        <InspectorHarnessAction Label="Archive the board" TestId="ih-action-card" />
+    </WaCard>
+
+    <div class="ih-note wa-gap-m" data-testid="ih-note">
+        <span>Notes go here.</span>
+        <InspectorHarnessAction Label="Add a note" TestId="ih-action-note" />
+    </div>
+</ExampleSection>
+
+@code {
+    private readonly List<TaskEntry> tasks =
+    [
+        new("Write the summary", false),
+        new("Review the layout", true),
+        new("Check the colors", false)
+    ];
+
+    private static WaVariant VariantOf(TaskEntry task) => task.Done ? WaVariant.Success : WaVariant.Neutral;
+
+    private void ToggleFirstTask() => tasks[0] = tasks[0] with { Done = !tasks[0].Done };
+
+    private void ReopenAllTasks()
+    {
+        for (var index = 0; index < tasks.Count; index++) tasks[index] = tasks[index] with { Done = false };
+    }
+
+    private sealed record TaskEntry(string Title, bool Done);
+}

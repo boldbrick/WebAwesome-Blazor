@@ -2,7 +2,7 @@
 const { test, expect } = require('./helpers/test');
 const { waitForWaReady } = require('./helpers/wa-ready');
 
-// Browser proof of the sticky attribute rule (3.12.0, docs\technical.md): when Blazor removes an attribute, Lit sets
+// Browser proof of the sticky attribute rule (3.12.0, docs\technical\technical.md): when Blazor removes an attribute, Lit sets
 // the element's property to null instead of back to its default, so a parameter returning to its default after it
 // was rendered must render the element default explicitly. Each case sets a parameter away from its default and back
 // on the harness /testing/sticky-attributes and reads the element's own property: with the attribute removed, the

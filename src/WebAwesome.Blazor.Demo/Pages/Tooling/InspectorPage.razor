@@ -1,0 +1,259 @@
+@page "/tooling/inspector"
+
+<PageTitle>WA Inspector</PageTitle>
+
+<h1>WA Inspector</h1>
+<p>
+    WA Inspector is a browser extension for the UI review of pages that use Web Awesome, for example a Blazor UI that a
+    coding agent built. You open the running page in Chrome or Edge, change the Web Awesome elements live, write comments,
+    and export the change list with screenshots. The Claude Code plugin <code>wablazor</code> then applies the change list
+    to the source code of the app.
+</p>
+
+<WaCallout Variant="WaVariant.Brand" IconName="circle-info">
+    WA Inspector needs Chrome or Edge 116 or later, and the hand-off needs
+    <a href="https://claude.com/claude-code">Claude Code</a>. The extension and the plugin are in the
+    <a href="https://github.com/boldbrick/WebAwesome-Blazor">WebAwesome.Blazor repository</a>: the extension installs as
+    an unpacked extension, and the plugin installs from the plugin marketplace in a clone of the repository.
+</WaCallout>
+
+<figure class="demo-figure">
+    <img src="images/tooling/inspector-elements.png" width="1280" height="760"
+         alt="The WA Inspector panel. On the left, the tree of the wa- elements of the Settings showcase. On the right, the details of the selected wa-input: its Blazor component and chain, the Apply to scopes and the attribute form with the changed appearance attribute." />
+    <figcaption>The Elements tab: the tree of the page's Web Awesome elements and the forms of the selected element.</figcaption>
+</figure>
+
+<h2>What it does</h2>
+<ul>
+    <li>Shows the tree of the <code>wa-</code> elements and of the plain elements with Web Awesome utility classes.</li>
+    <li>Changes attributes, CSS custom properties, CSS part styles, classes and inline style, and shows the result on the page at once.</li>
+    <li>Changes the theme tokens (<code>--wa-*</code>) of the whole page.</li>
+    <li>Adds a comment to any element.</li>
+    <li>Exports the change list with screenshots for a coding agent.</li>
+</ul>
+<p>
+    The inspector works on every page with Web Awesome elements. In a WebAwesome.Blazor app with the placement metadata on,
+    it also knows which component and which source position rendered each element.
+</p>
+
+<h2>Install</h2>
+
+<h3>1. Install the Claude Code plugin</h3>
+<p>
+    The plugin <code>wablazor</code> holds the developer skills of WebAwesome.Blazor: <code>install-inspector</code> and
+    <code>wa-review-apply</code>. Clone the repository, then add its plugin marketplace and install the plugin once:
+</p>
+<pre><code>git clone https://github.com/boldbrick/WebAwesome-Blazor.git
+claude plugin marketplace add &lt;clone folder&gt;/tools/wablazor-marketplace
+claude plugin install wablazor@@wablazor-marketplace</code></pre>
+<p>
+    After an update of the clone, run <code>claude plugin marketplace update wablazor-marketplace</code> and
+    <code>claude plugin update wablazor@@wablazor-marketplace</code>.
+</p>
+
+<h3>2. Install the browser extension</h3>
+<p>On Windows, run this skill in Claude Code:</p>
+<pre><code>/wablazor:install-inspector [Chrome | Edge | Both]</code></pre>
+<p>
+    A plugin from the marketplace of a clone does not bundle the extension, so the skill asks you for the extension folder:
+    give <code>tools/wa-inspector/extension</code> of your clone. The skill copies the extension to
+    <code>%LOCALAPPDATA%\WABlazor\wa-inspector-extension</code>, opens Chrome or Edge, puts the folder path on the clipboard
+    and tells you the steps on the extensions page. Only you can load an unpacked extension into the browser. Run the skill
+    again after an update to update the extension.
+</p>
+<p>To install manually, for example on macOS or Linux, where the skill does not run:</p>
+<ol>
+    <li>Open <code>chrome://extensions</code> (Chrome) or <code>edge://extensions</code> (Edge).</li>
+    <li>Turn on <strong>Developer mode</strong>.</li>
+    <li>Click <strong>Load unpacked</strong>.</li>
+    <li>Select the folder <code>tools/wa-inspector/extension</code> of your clone, or the folder that the skill made.</li>
+    <li>Reload the pages that were open before. The extension loads with the page.</li>
+</ol>
+<p>
+    After an update of the extension files, click the reload button of the extension on the extensions page, and then reload
+    the inspected page.
+</p>
+
+<h2>Turn on the Blazor metadata</h2>
+<p>
+    With <code>WebAwesomeOptions.EmitInspectorMetadata</code> on, the root element of every wrapper gets
+    <code>data-wablazor-*</code> attributes: the wrapper type, the chain of the application components from the render root,
+    and two hashes of its source position. The inspector then groups the instances of one source position, offers the scope
+    <strong>Same source site</strong>, and the coding agent finds the source more easily. Without the metadata the
+    inspector still works, but the locators are less exact.
+</p>
+<p>Use one of these settings:</p>
+<ul>
+    <li>the option <code>EmitInspectorMetadata = true</code> in the <code>AddWebAwesome</code> delegate;</li>
+    <li>the configuration key <code>WebAwesome:EmitInspectorMetadata</code> set to <code>true</code>, when the app calls <code>AddWebAwesome(builder.Configuration)</code>;</li>
+    <li>the environment variable <code>WebAwesome__EmitInspectorMetadata=true</code>, with the same call.</li>
+</ul>
+<pre><code>builder.Services.AddWebAwesome(options =>
+    options.EmitInspectorMetadata = builder.Environment.IsDevelopment());</code></pre>
+<WaCallout Variant="WaVariant.Warning" IconName="triangle-exclamation">
+    Turn on the metadata in development and test environments only. The attributes show the names of the application's
+    components, and the metadata costs some render time.
+</WaCallout>
+<p>
+    The setting is process-wide. In a Blazor Web App with WebAssembly or Auto render modes, the client project calls
+    <code>AddWebAwesome</code> too: set the option there also, for example in <code>wwwroot/appsettings.Development.json</code>.
+    The default is <code>false</code>.
+</p>
+
+<h2>Review a page</h2>
+
+<h3>Open the inspector</h3>
+<p>One panel runs in three places:</p>
+<table class="demo-table">
+    <thead>
+        <tr><th>Mode</th><th>How to open it</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>DevTools panel</td>
+            <td>Open DevTools (F12), then the <strong>Web Awesome</strong> tab</td>
+            <td><strong>Follow $0</strong> selects the element that the Elements panel selects. <strong>Inspect in Elements</strong> shows the selected element there.</td>
+        </tr>
+        <tr>
+            <td>Side panel</td>
+            <td>Click the <strong>WA Inspector</strong> button in the browser toolbar</td>
+            <td>Follows the active tab of its window</td>
+        </tr>
+        <tr>
+            <td>Tab</td>
+            <td>Open <code>chrome-extension://&lt;extension id&gt;/panel.html?tabId=&lt;tab id&gt;</code></td>
+            <td>Inspects one tab</td>
+        </tr>
+    </tbody>
+</table>
+<p>The status line under the toolbar shows the page title, the Web Awesome version and whether the page has Blazor placement metadata.</p>
+
+<h3>Select an element and a scope</h3>
+<p>
+    Click an element in the tree (the filter box finds a tag, a class, a text or a component), or click <strong>Pick</strong>
+    and then the element on the page. The details show the tag, the text, the ancestors, and the Blazor component and chain.
+    <code>×3</code> in the tree means that one source position renders three instances.
+</p>
+<p>Under <strong>Apply to</strong>, select which elements a change is for:</p>
+<table class="demo-table">
+    <thead>
+        <tr><th>Scope</th><th>Use it when</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>This placement</td><td>The change is for all instances of this position in the source, for example all rows of one list</td></tr>
+        <tr><td>Same source site</td><td>The change is for this markup line wherever its component is used (Blazor metadata only)</td></tr>
+        <tr><td>All of this tag</td><td>The change is for every element with this tag, on every page</td></tr>
+        <tr><td>This instance</td><td>The change is for one element only</td></tr>
+    </tbody>
+</table>
+<p>
+    The first change makes a numbered item with a color. More changes to the same element in the same scope go to the same
+    item. <strong>Add marker</strong> makes an item without a change, for a comment.
+</p>
+
+<h3>Change the element</h3>
+<ul>
+    <li><strong>Attributes</strong>: select or type a value, or set a check box. The hint shows the page's own value.</li>
+    <li><strong>CSS custom properties</strong>: type a value. The placeholder shows the default.</li>
+    <li><strong>Part styles</strong>: select a part, then type CSS declarations, for example <code>padding: 0; gap: 4px</code>.</li>
+    <li><strong>Classes</strong>: remove a class, or add one. The list proposes the Web Awesome utility classes, for example <code>wa-gap-l</code>.</li>
+    <li><strong>Style</strong>: type CSS declarations for the element.</li>
+    <li><strong>Comment</strong>: write what must change and why. The coding agent reads the comment as the intent, so write the intent, not only the value. A comment can be the only content of an item, also on a plain element.</li>
+</ul>
+<p>
+    When the instances of one placement have different values, the attribute is data-driven. The panel then offers a
+    <strong>remap</strong> instead of one value: for example, <code>warning</code> becomes <code>danger</code> and
+    <code>neutral</code> stays.
+</p>
+<p>
+    The page shows each change at once. The changes stay while you navigate and after a reload, until you delete the item.
+    Set <strong>Markers</strong> on to see the numbered outlines of the items on the page.
+</p>
+
+<figure class="demo-figure">
+    <img src="images/tooling/inspector-page-markers.png" width="1280" height="760"
+         alt="The Settings showcase with three review items applied: numbered, colored outlines around the Workspace name input, the density button group and the auto-save switch, and the brand color changed by a theme token." />
+    <figcaption>The reviewed page with the numbered markers of the items and a changed brand color.</figcaption>
+</figure>
+
+<h3>Change the theme</h3>
+<p>
+    On the <strong>Theme</strong> tab, filter the tokens (for example <code>color-brand</code> or <code>space</code>) and type a
+    new value, or select a color for a <code>--wa-color-*</code> token. A theme change applies to the whole page.
+</p>
+
+<figure class="demo-figure">
+    <img src="images/tooling/inspector-theme.png" width="1280" height="435"
+         alt="The Theme tab of the WA Inspector panel, filtered to color-brand, with a changed value of the brand fill token." />
+    <figcaption>The Theme tab with a changed brand token.</figcaption>
+</figure>
+
+<h3>Check the change list</h3>
+<p>The <strong>Changes</strong> tab lists all items with their number, color, target, scope, changes and comment, and a status:</p>
+<table class="demo-table">
+    <thead>
+        <tr><th>Status</th><th>Meaning</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><code>pending</code></td><td>The page does not have the values on its own yet</td></tr>
+        <tr><td><code>applied</code></td><td>The page has the values on its own: the code has the change</td></tr>
+        <tr><td><code>unchecked</code></td><td>The item has no attribute or class change that the inspector can compare (CSS, parts, style, remaps, comments)</td></tr>
+        <tr><td><code>not on this page</code></td><td>No element on this page matches the item</td></tr>
+    </tbody>
+</table>
+
+<figure class="demo-figure">
+    <img src="images/tooling/inspector-changes.png" width="1280" height="359"
+         alt="The Changes tab of the WA Inspector panel with three numbered items: an attribute change on wa-input, a comment on the density buttons and an attribute change with a comment on wa-switch, each with its status." />
+    <figcaption>The Changes tab: the items of the review with their status.</figcaption>
+</figure>
+
+<h3>Export</h3>
+<p>
+    Click <strong>Export</strong>. The inspector writes a folder <code>Downloads/wa-review/&lt;yyyy-MM-dd_HHmmss&gt;/</code> with:
+</p>
+<ul>
+    <li><code>changes.json</code>: the machine-readable change list (schema <code>wa-inspector/change-list@@1</code>);</li>
+    <li><code>changes.md</code>: the same change list for people;</li>
+    <li><code>page.png</code>: a screenshot of the visible page with the numbered outlines;</li>
+    <li><code>item-NN.png</code>: one screenshot for each item that matches an element on the page.</li>
+</ul>
+<p><strong>Copy</strong> copies the change list as Markdown, without screenshots, for example for a ticket.</p>
+
+<h2>Hand off to Claude Code</h2>
+<p>Open Claude Code in the repository of the reviewed app and run the skill with the export folder:</p>
+<pre><code>/wablazor:wa-review-apply Downloads/wa-review/2026-10-20_143012</code></pre>
+<p>
+    The skill reads <code>changes.json</code> and looks at the screenshots. The reviewer's comments come first: the values show
+    the intent, they are not a patch. The agent then:
+</p>
+<ul>
+    <li>finds the source through the component chain, the text, the classes and the CSS isolation scope of each element;</li>
+    <li>makes the change at the narrowest place that gives the chosen scope: one line for a placement, the shared component for a source site, an app-wide rule for a tag, and a rule from the data for one instance;</li>
+    <li>writes attributes as wrapper parameters (<code>with-caret</code> becomes <code>WithCaret</code>, closed value sets become enum members), and changes the mapping code for a remap of a data-driven value;</li>
+    <li>puts CSS custom properties and part styles into the app CSS, utility classes into layout wrapper parameters or <code>Class</code>, and theme tokens into the app's theme CSS;</li>
+    <li>solves the cases that the inspector cannot show (hover and focus states, other breakpoints, the dark theme), as the intent requires;</li>
+    <li>builds the app, runs the tests of the changed components, and reports each item as done, changed differently (and why) or not done (with a question).</li>
+</ul>
+<p>
+    The skill also works for apps with plain Web Awesome HTML. Restart or reload the app, then reload the page with the
+    inspector open: the items whose attribute and class changes are now in the code show <code>applied</code>.
+    <strong>Remove applied items</strong> removes them. Check the <code>unchecked</code> items on the page, then delete them.
+</p>
+
+<h2>Limits</h2>
+<ul>
+    <li>A data-driven value that is the same on all instances on the current page looks like a literal value.</li>
+    <li>One instance of a loop cannot get its own literal value. Use a comment or a value remap.</li>
+    <li>Property-only settings (no attribute) and slot content are read-only. Write a comment.</li>
+    <li><code>wa-</code> elements inside the shadow root of another <code>wa-</code> element are shown as internal and are not edited.</li>
+    <li>Placements are stable for one build. A change of the Razor markup can change them. Old exports stay readable, because the locator also has the chain, the classes and a text snippet.</li>
+    <li>The skill <code>install-inspector</code> runs on Windows only. On other systems, load the extension manually.</li>
+</ul>
+
+<h2>More</h2>
+<p>
+    The <a href="https://github.com/boldbrick/WebAwesome-Blazor/blob/master/docs/inspector/README.md">WA Inspector overview</a>
+    and the <a href="https://github.com/boldbrick/WebAwesome-Blazor/blob/master/docs/inspector/user-guide.md">user guide</a>
+    in the repository have the details: the metadata attributes, how matching works, troubleshooting and maintenance.
+</p>

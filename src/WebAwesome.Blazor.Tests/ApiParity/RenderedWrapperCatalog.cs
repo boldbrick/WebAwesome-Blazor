@@ -204,7 +204,7 @@ internal static class RenderedWrapperCatalog
     private const string IconTag = "wa-icon";
     private const string IconNameAttribute = "name";
     private const string ScriptTag = "script";
-    private const string AttributeMemoryTypeName = "WebAwesome.Blazor.Base.WaAttributeMemory";
+    private const string AttributeMemoryTypeName = "WebAwesome.Blazor.Infrastructure.WaAttributeMemory";
     private const string AttributeMemoryOfMethod = "Of";
     private const string PassedDefaultsPropertyName = "PassedDefaults";
 
@@ -360,7 +360,7 @@ internal static class RenderedWrapperCatalog
     }
 
     // sub-components rendering content into a slot of the element wrapper hosting them, not an element of their own
-    // (docs\technical.md, "Dynamic slots"); they throw outside their host, so the catalog renders none of them on its
+    // (docs\technical\technical.md, "Dynamic slots"); they throw outside their host, so the catalog renders none of them on its
     // own: SlotParityTests renders each through its hosts' ChildContent, and their own tests cover the rest
     private static readonly IReadOnlySet<Type> HostedSlotContentComponents = new HashSet<Type> { typeof(WaDayContent) };
 
@@ -488,9 +488,13 @@ internal static class RenderedWrapperCatalog
         return value is MulticastDelegate || (value != null && IsEventCallbackType(value.GetType()));
     }
 
-    // the parameters a component cannot render without: InputBase requires a ValueExpression (normally
-    // supplied by @bind-Value), which is pointed at a field of a throwaway holder here
-    private static IEnumerable<(string Name, object Value)> RequiredParameters(Type componentType)
+    /// <summary>
+    /// The parameters a component cannot render without: InputBase requires a ValueExpression (normally supplied by
+    /// @bind-Value), which is pointed at a field of a throwaway holder here.
+    /// </summary>
+    /// <param name="componentType">Concrete component type</param>
+    /// <returns>The required parameters with their values</returns>
+    internal static IEnumerable<(string Name, object Value)> RequiredParameters(Type componentType)
     {
         var inputBase = FindGenericBase(componentType, typeof(InputBase<>));
         if (inputBase == null) yield break;

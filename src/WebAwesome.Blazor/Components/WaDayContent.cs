@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -22,9 +23,9 @@ namespace WebAwesome.Blazor.Components;
 /// shows when the user navigates there. Without ChildContent nothing is rendered and the day keeps its number.
 /// </para>
 /// <para>
-/// Web Awesome's JS-only <c>dayContent</c> callback (content computed for every rendered cell) is not supported:
-/// it would need a JS round-trip per cell. Render one <see cref="WaDayContent"/> per date instead, e.g. with a
-/// loop over the dates of interest.
+/// Render one <see cref="WaDayContent"/> per date of interest, for example with a loop. For content computed for every
+/// rendered cell, set the host's <c>DayContentFunction</c> to a JavaScript function instead; a day content for the
+/// same date wins over it.
 /// </para>
 /// </remarks>
 public class WaDayContent : ComponentBase, IDisposable

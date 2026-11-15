@@ -121,4 +121,17 @@
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
     <None Include="$(MSBuildThisFileDirectory)..\LICENSE.md" Pack="true" PackagePath="" />
   </ItemGroup>
+
+  <!-- only production libraries generate XML docs; without this, DocPack.Build.props turns them on for the tests
+       and the demo apps too, and their undocumented public members give CS1591 warnings -->
+  <PropertyGroup Condition="!$(BbForProductionUse)">
+    <GenerateDocumentationFile Condition="'$(GenerateDocumentationFile)' == ''">false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)DocPack.Build.props" />
+
+  <!-- package docs (DocPack): local Release builds only; GitHub builds have no DocPack tool -->
+  <PropertyGroup Condition="'$(Configuration)' != 'Release' or '$(GITHUB_ACTIONS)' == 'true'">
+    <DocPackEnabled>false</DocPackEnabled>
+  </PropertyGroup>
 </Project>

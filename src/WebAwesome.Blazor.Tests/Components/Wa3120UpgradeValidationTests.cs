@@ -12,7 +12,7 @@ using Xunit;
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Validates the wrapper-level breaking changes of the Web Awesome 3.12.0 bindings (docs\MIGRATION-3.12.0.md):
+/// Validates the wrapper-level breaking changes of the Web Awesome 3.12.0 bindings (docs\migration\MIGRATION-3.12.0.md):
 /// WaRelativeTime's Format/Numeric enums emitted only when set, WaTextArea's nullable Rows and its move onto
 /// WaInputBase, the enums realigned with Web Awesome's value sets (new per-component enums, renamed members,
 /// WaSize short forms, the WaTrigger flag set), the removed callbacks, parameters and types that never worked,
@@ -414,7 +414,7 @@ public class Wa3120UpgradeValidationTests : BunitContext
         ["MarkupHint"] = typeof(RenderFragment),
     };
 
-    // which of them each form control's element declares in the 3.12.0 CEM (docs\MIGRATION-3.12.0.md, section 6)
+    // which of them each form control's element declares in the 3.12.0 CEM (docs\migration\MIGRATION-3.12.0.md, section 6)
     private static readonly Dictionary<Type, string[]> DeclaredFormControlParameters = new()
     {
         [typeof(WaInput)] = ["Readonly", "Required", "MinLength", "MaxLength", "Autocomplete", "Label", "Hint", "MarkupLabel", "MarkupHint"],

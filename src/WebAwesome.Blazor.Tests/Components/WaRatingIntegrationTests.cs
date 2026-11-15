@@ -3,11 +3,15 @@ using System.Threading.Tasks;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
+// the obsolete string methods stay covered until they are removed in the 3.15.0 train
+#pragma warning disable CS0618
+
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Interop tests for WaRating.SetSymbolFunctionAsync: it rejects a missing function, throws before the first
-/// render, and afterwards sets the element's getSymbol property to the function through the interop module
+/// Interop tests for the obsolete WaRating.SetSymbolFunctionAsync: it rejects a missing function, throws before the
+/// first render, and afterwards throws NotSupportedException naming GetSymbolFunction without sending the JavaScript
+/// source text, which wa-rating cannot call (the interop module
 /// (recorded, see RecordingJSRuntime).
 /// </summary>
 public class WaRatingIntegrationTests : IDisposable
@@ -36,11 +40,14 @@ public class WaRatingIntegrationTests : IDisposable
     }
 
     [Fact]
-    public async Task SetSymbolFunctionAsync_WithValidElement_SetsTheGetSymbolProperty()
+    public async Task SetSymbolFunctionAsync_WithValidElement_ThrowsNotSupportedAndSendsNothing()
     {
-        await runtime.CreateRendered<WaRating>().SetSymbolFunctionAsync(SymbolFunction);
+        var exception = await Assert.ThrowsAsync<NotSupportedException>(() =>
+            runtime.CreateRendered<WaRating>().SetSymbolFunctionAsync(SymbolFunction));
 
-        Assert.Equal(SymbolFunction, runtime.Module.AssertSetProperty("getSymbol"));
+        Assert.Contains(nameof(WaRating.GetSymbolFunction), exception.Message);
+        Assert.Contains(RemovalTrain, exception.Message);
+        Assert.Empty(runtime.Module.Invocations);
     }
 
     #region ------ Implementation of IDisposable ------
@@ -54,6 +61,7 @@ public class WaRatingIntegrationTests : IDisposable
 
     #region ------ Internals ------
 
+    private const string RemovalTrain = "3.15.0";
     private const string SymbolFunction = "function(value, isSelected) { return isSelected ? '★' : '☆'; }";
 
     private readonly RecordingJSRuntime runtime = new();

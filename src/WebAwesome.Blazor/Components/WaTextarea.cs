@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -262,17 +263,20 @@ public class WaTextArea : WaLabeledInputBase<string?>
     /// </summary>
     /// <param name="top">The vertical scroll position to set, in pixels</param>
     /// <param name="left">The horizontal scroll position to set, in pixels</param>
-    /// <returns>The resulting scroll position</returns>
+    /// <returns>The resulting scroll position: after a set, the position the textarea has then (the browser limits a
+    /// position to the scrollable range)</returns>
+    /// <remarks>
+    /// Web Awesome 3.14.0 reports the vertical position as the horizontal one too (<c>Left</c> repeats <c>Top</c>).
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task<WaTextAreaScrollPosition?> ScrollPositionAsync(double? top = null, double? left = null)
     {
         if (Element is null)
             throw new InvalidOperationException("Cannot get or set scroll position: component has not been rendered yet.");
 
+        // the element's scrollPosition(position) sets and returns nothing, so the position is read after the set
         if (top.HasValue || left.HasValue)
-        {
-            return await JSInterop.InvokeMethodAsync<WaTextAreaScrollPosition?>(Element.Value, "scrollPosition", new { top, left });
-        }
+            await JSInterop.InvokeMethodAsync(Element.Value, "scrollPosition", new { top, left });
 
         return await JSInterop.InvokeMethodAsync<WaTextAreaScrollPosition?>(Element.Value, "scrollPosition");
     }

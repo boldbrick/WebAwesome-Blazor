@@ -1,3 +1,5 @@
+using WebAwesome.Blazor.Infrastructure;
+
 namespace WebAwesome.Blazor.Base;
 
 /// <summary>
@@ -28,6 +30,30 @@ public static class Constants
     /// marked element in place instead; Blazor removes it when the model drops it.
     /// </summary>
     internal const string BlazorOwnedAttribute = "data-wablazor-owned";
+
+    /// <summary>
+    /// Inspector metadata attribute with the wrapper type name (for example "WaButton"), see
+    /// <see cref="WaInspectorMetadata"/>.
+    /// </summary>
+    internal const string InspectorComponentAttribute = "data-wablazor-component";
+
+    /// <summary>
+    /// Inspector metadata attribute with the readable component chain from the root to the wrapper, framework types
+    /// left out (for example "MainLayout>OrderPage>WaCard>WaButton").
+    /// </summary>
+    internal const string InspectorChainAttribute = "data-wablazor-chain";
+
+    /// <summary>
+    /// Inspector metadata attribute with the hash of the full placement path: the same for all instances that one
+    /// source position renders (a loop), different for the same markup at another position.
+    /// </summary>
+    internal const string InspectorPlacementAttribute = "data-wablazor-placement";
+
+    /// <summary>
+    /// Inspector metadata attribute with the hash of the last placement level only: the source site of the wrapper in
+    /// the component that renders it, the same wherever that component is used.
+    /// </summary>
+    internal const string InspectorSiteAttribute = "data-wablazor-site";
 
     /// <summary>
     /// Prefix of the render-tree attribute names of Web Awesome's own events (e.g. "onwa-hide"). Web Awesome's events
@@ -79,6 +105,18 @@ public static class Constants
     /// <see cref="Microsoft.AspNetCore.Components.Web.KeyboardEventArgs"/>. See <see cref="RelayedShowEventAttribute"/>.
     /// </summary>
     internal const string RelayedKeyDownEventAttribute = "onwablazor-keydown";
+
+    /// <summary>
+    /// Name of Web Awesome's cancelable show event: a handler that calls preventDefault() keeps the element closed
+    /// (see <see cref="WebAwesomeJSInterop.InvokeCancelableMethodAsync"/>).
+    /// </summary>
+    internal const string ShowEventName = "wa-show";
+
+    /// <summary>
+    /// Name of Web Awesome's cancelable hide event: a handler that calls preventDefault() keeps the element open
+    /// (see <see cref="WebAwesomeJSInterop.InvokeCancelableMethodAsync"/>).
+    /// </summary>
+    internal const string HideEventName = "wa-hide";
 
     /// <summary>
     /// Attribute value read as true by Web Awesome's "true"/"false" attribute converters (e.g. spellcheck).

@@ -1,0 +1,249 @@
+<Project>
+
+  <!-- upstream Web Awesome docs in the package docs (DocPack): staged from inputs\WebAwesome, which stays a verbatim
+       upstream copy, and their site links rewritten in the staged copy only, so the links work in the package -->
+
+  <PropertyGroup>
+    <!-- origin of the Web Awesome site: target of every site link that has no bundled page -->
+    <WaUpstreamSiteOrigin>https://webawesome.com</WaUpstreamSiteOrigin>
+    <!-- site path of the docs; a link below it resolves to a bundled page when one exists -->
+    <WaUpstreamDocsPath>/docs</WaUpstreamDocsPath>
+  </PropertyGroup>
+
+  <!-- the values of the Nunjucks site variables that upstream pages use as link targets
+       (packages/webawesome/docs/_data/site.json of the Web Awesome repository, tag v3.14.0); a link with
+       another {{ ... }} target goes to the site page of the page that contains it -->
+  <ItemGroup>
+    <WaUpstreamSiteLink Include="site.urls.discord" Url="https://discord.gg/mg8f26C" />
+    <WaUpstreamSiteLink Include="site.github.issues" Url="https://github.com/shoelace-style/webawesome/issues" />
+    <WaUpstreamSiteLink Include="site.github.discussions" Url="https://github.com/shoelace-style/webawesome/discussions" />
+    <WaUpstreamSiteLink Include="site.github.ideas" Url="https://github.com/shoelace-style/webawesome/discussions/categories/ideas-suggestions" />
+    <WaUpstreamSiteLink Include="site.github.helpSupport" Url="https://github.com/shoelace-style/webawesome/discussions/categories/help-support" />
+  </ItemGroup>
+
+  <!-- stages the upstream Web Awesome docs for the bundle: the *.md pages of inputs\WebAwesome and the upstream
+       LICENSE.md, without ai\ (input for PACKAGE-SKILL.md, never bundled) and without the .njk and .json files -->
+  <Target Name="WaStageUpstreamDocs"
+          BeforeTargets="DocPackBundle"
+          Condition="'$(DocPackEnabled)' == 'true' or ('$(DocPackEnabled)' == '' and '$(IsPackable)' == 'true')">
+    <PropertyGroup>
+      <WaUpstreamDocsSource>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '..', '..', 'inputs', 'WebAwesome'))</WaUpstreamDocsSource>
+      <WaUpstreamDocsStaging>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'docpack-content', 'web-awesome'))</WaUpstreamDocsStaging>
+    </PropertyGroup>
+    <ItemGroup>
+      <WaUpstreamDoc Include="$(WaUpstreamDocsSource)**\*.md" Exclude="$(WaUpstreamDocsSource)ai\**" />
+    </ItemGroup>
+    <Error Condition="!Exists('$(WaUpstreamDocsSource)LICENSE.md')"
+           Text="The upstream license $(WaUpstreamDocsSource)LICENSE.md is missing; run tools\upgrade\Sync-WaDocs.ps1 for the bound Web Awesome version." />
+    <RemoveDir Directories="$(WaUpstreamDocsStaging)" />
+    <Copy SourceFiles="@(WaUpstreamDoc)" DestinationFiles="@(WaUpstreamDoc->'$(WaUpstreamDocsStaging)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <WaRewriteUpstreamDocLinks StagingDirectory="$(WaUpstreamDocsStaging)"
+                               SiteOrigin="$(WaUpstreamSiteOrigin)"
+                               DocsPath="$(WaUpstreamDocsPath)"
+                               SiteVariables="@(WaUpstreamSiteLink)" />
+    <ItemGroup>
+      <DocPackContent Include="$(WaUpstreamDocsStaging)" Title="Web Awesome (upstream)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- rewrites the site links of the staged upstream pages, outside fenced code blocks and inline code:
+       1. a docs link with a bundled page becomes a path relative to the page, with the anchor kept
+       2. any other site-absolute link (href, src, Markdown link or reference definition) goes to the site origin
+       3. a Nunjucks {{ ... }} link target takes the value of its site variable, else the site page of the page -->
+  <UsingTask TaskName="WaRewriteUpstreamDocLinks"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <StagingDirectory ParameterType="System.String" Required="true" />
+      <SiteOrigin ParameterType="System.String" Required="true" />
+      <DocsPath ParameterType="System.String" Required="true" />
+      <SiteVariables ParameterType="Microsoft.Build.Framework.ITaskItem[]" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Class" Language="cs"><![CDATA[
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public class WaRewriteUpstreamDocLinks : Task
+{
+    [Required]
+    public string StagingDirectory { get; set; }
+
+    [Required]
+    public string SiteOrigin { get; set; }
+
+    [Required]
+    public string DocsPath { get; set; }
+
+    public ITaskItem[] SiteVariables { get; set; }
+
+    public override bool Execute()
+    {
+        var root = Path.GetFullPath(StagingDirectory).TrimEnd('\\', '/') + Path.DirectorySeparatorChar;
+        foreach (var file in Directory.GetFiles(root, "*.md", SearchOption.AllDirectories))
+            pages.Add(ToPagePath(file.Substring(root.Length)));
+        if (SiteVariables != null)
+        {
+            foreach (var item in SiteVariables)
+                variables[item.ItemSpec] = item.GetMetadata("Url");
+        }
+
+        foreach (var page in pages)
+        {
+            var path = Path.Combine(root, page.Replace('/', Path.DirectorySeparatorChar));
+            var text = File.ReadAllText(path);
+            var rewritten = RewritePage(page, text);
+            if (rewritten != text) File.WriteAllText(path, rewritten, new UTF8Encoding(false));
+        }
+
+        Log.LogMessage(MessageImportance.High,
+            "Upstream docs links rewritten: {0} to bundled pages, {1} to {2}, {3} Nunjucks targets",
+            relativeLinks, siteLinks, SiteOrigin, templateLinks);
+        return !Log.HasLoggedErrors;
+    }
+
+    #region ------ Internals ------
+
+    private string RewritePage(string page, string text)
+    {
+        var lines = text.Split('\n');
+        string fence = null;
+        for (var i = 0; i < lines.Length; i++)
+        {
+            // fenced code blocks hold example markup and stay as they are
+            var fenceMatch = FencePattern.Match(lines[i]);
+            if (fence == null)
+            {
+                if (fenceMatch.Success)
+                {
+                    fence = fenceMatch.Groups[1].Value;
+                    continue;
+                }
+            }
+            else
+            {
+                if (fenceMatch.Success && fenceMatch.Groups[1].Value[0] == fence[0] && fenceMatch.Groups[1].Value.Length >= fence.Length
+                    && lines[i].Trim().Length == fenceMatch.Groups[1].Value.Length)
+                {
+                    fence = null;
+                }
+                continue;
+            }
+
+            lines[i] = RewriteLine(page, lines[i]);
+        }
+        return string.Join("\n", lines);
+    }
+
+    private string RewriteLine(string page, string line)
+    {
+        // inline code spans stay as they are; only the text between them is rewritten
+        var result = new StringBuilder();
+        var position = 0;
+        foreach (Match span in CodeSpanPattern.Matches(line))
+        {
+            result.Append(RewriteText(page, line.Substring(position, span.Index - position)));
+            result.Append(span.Value);
+            position = span.Index + span.Length;
+        }
+        result.Append(RewriteText(page, line.Substring(position)));
+        return result.ToString();
+    }
+
+    private string RewriteText(string page, string text)
+    {
+        text = ReferenceDefinitionPattern.Replace(text, m => m.Groups[1].Value + RewriteSitePath(page, m.Groups[2].Value));
+        text = MarkdownTemplatePattern.Replace(text, m => m.Groups[1].Value + RewriteTemplate(page, m.Groups[2].Value));
+        text = MarkdownTargetPattern.Replace(text, m => m.Groups[1].Value + RewriteSitePath(page, m.Groups[2].Value));
+        text = HtmlTemplatePattern.Replace(text, m => m.Groups[1].Value + m.Groups[2].Value + RewriteTemplate(page, m.Groups[3].Value) + m.Groups[2].Value);
+        text = HtmlTargetPattern.Replace(text, m => m.Groups[1].Value + m.Groups[2].Value + RewriteSitePath(page, m.Groups[3].Value) + m.Groups[2].Value);
+        return text;
+    }
+
+    private string RewriteSitePath(string page, string target)
+    {
+        var path = target;
+        var anchor = string.Empty;
+        var hash = path.IndexOf('#');
+        if (hash >= 0)
+        {
+            anchor = path.Substring(hash);
+            path = path.Substring(0, hash);
+        }
+
+        // rule 1: a docs link without a query that names a bundled page
+        if (path.IndexOf('?') < 0 && (path == DocsPath || path.StartsWith(DocsPath + "/", StringComparison.Ordinal)))
+        {
+            var docsPath = path.Substring(DocsPath.Length).Trim('/');
+            var candidates = docsPath.Length == 0 ? new[] { IndexPage } : new[] { docsPath + ".md", docsPath + "/" + IndexPage };
+            foreach (var candidate in candidates)
+            {
+                if (!pages.Contains(candidate)) continue;
+                relativeLinks++;
+                return GetRelativePath(page, candidate) + anchor;
+            }
+        }
+
+        // rule 2: every other site-absolute link goes to the site, with its query and anchor
+        siteLinks++;
+        return SiteOrigin + target;
+    }
+
+    private string RewriteTemplate(string page, string expression)
+    {
+        // rule 3: a site variable gives its value, any other expression the site page of the page
+        templateLinks++;
+        string url;
+        if (variables.TryGetValue(expression, out url) && !string.IsNullOrEmpty(url)) return url;
+        var sitePage = page.Substring(0, page.Length - ".md".Length);
+        if (sitePage == "index") sitePage = string.Empty;
+        else if (sitePage.EndsWith("/index", StringComparison.Ordinal)) sitePage = sitePage.Substring(0, sitePage.Length - "/index".Length);
+        return SiteOrigin + DocsPath + (sitePage.Length == 0 ? string.Empty : "/" + sitePage);
+    }
+
+    private static string GetRelativePath(string fromPage, string toPage)
+    {
+        var from = fromPage.Split('/');
+        var to = toPage.Split('/');
+        var common = 0;
+        while (common < from.Length - 1 && common < to.Length - 1 && string.Equals(from[common], to[common], StringComparison.OrdinalIgnoreCase))
+            common++;
+        var result = new StringBuilder();
+        for (var i = common; i < from.Length - 1; i++) result.Append("../");
+        result.Append(string.Join("/", to, common, to.Length - common));
+        return result.ToString();
+    }
+
+    private static string ToPagePath(string relativePath)
+    {
+        return relativePath.Replace('\\', '/');
+    }
+
+    private const string IndexPage = "index.md";
+
+    private static readonly Regex FencePattern = new Regex(@"^\s*(`{3,}|~{3,})");
+    private static readonly Regex CodeSpanPattern = new Regex(@"(`+)(?!`).*?(?<!`)\1(?!`)");
+    private static readonly Regex ReferenceDefinitionPattern = new Regex(@"^(\s{0,3}\[[^\]]+\]:\s*)(/(?!/)\S*)");
+    private static readonly Regex MarkdownTemplatePattern = new Regex(@"(\]\(\s*)\{\{\s*(.+?)\s*\}\}(?=\s*\))");
+    private static readonly Regex MarkdownTargetPattern = new Regex(@"(\]\(\s*)(/(?!/)[^)\s]*)");
+    private static readonly Regex HtmlTemplatePattern = new Regex(@"(\b(?:href|src)\s*=\s*)([""'])\{\{\s*(.+?)\s*\}\}\2");
+    private static readonly Regex HtmlTargetPattern = new Regex(@"(\b(?:href|src)\s*=\s*)([""'])(/(?!/)[^""']*)\2");
+
+    private readonly HashSet<string> pages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> variables = new Dictionary<string, string>(StringComparer.Ordinal);
+    private int relativeLinks;
+    private int siteLinks;
+    private int templateLinks;
+
+    #endregion
+}
+]]></Code>
+    </Task>
+  </UsingTask>
+
+</Project>

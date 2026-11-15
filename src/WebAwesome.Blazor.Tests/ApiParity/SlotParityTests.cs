@@ -21,11 +21,11 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// slot is fed by a RenderFragment parameter of each wrapper of the element (ChildContent for the default slot),
 /// unless allowlisted in "unreachableSlots"; (c) every RenderFragment parameter renders its content into the
 /// element; (d) every icon convenience parameter renders a wa-icon into a slot a RenderFragment parameter also
-/// feeds, and yields to that fragment when both are set (docs\technical.md, "Icon slot convenience"). A patterned CEM
+/// feeds, and yields to that fragment when both are set (docs\technical\technical.md, "Icon slot convenience"). A patterned CEM
 /// slot name (wa-date-input's day-YYYY-MM-DD) stands for the slots of its pattern (day-2026-12-25), a
 /// "sourceVerifiedSlots" entry counts as declared where the CEM omits a slot the source renders (wa-date-picker's day
 /// slots), and the ChildContent of a day content host is sampled as a WaDayContent holding the marker
-/// (docs\technical.md, "Dynamic slots"). Every allowlist entry needs a reason (AllowlistHygieneTests), and stale
+/// (docs\technical\technical.md, "Dynamic slots"). Every allowlist entry needs a reason (AllowlistHygieneTests), and stale
 /// entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
 public class SlotParityTests
@@ -423,7 +423,7 @@ public class SlotParityTests
     private static readonly Type DayContentHostType = typeof(WaDayContent).Assembly.GetType(DayContentHostTypeName, throwOnError: true)!;
 
     // the sample of a fragment parameter: the marker, or for a day content host's ChildContent the marker inside a
-    // WaDayContent (docs\technical.md, "Dynamic slots")
+    // WaDayContent (docs\technical\technical.md, "Dynamic slots")
     private static RenderFragment FragmentSample(Type componentType, PropertyInfo parameter)
         => IsDayContent(componentType, parameter) ? DayContentProbe : SlotProbe.Fragment;
 

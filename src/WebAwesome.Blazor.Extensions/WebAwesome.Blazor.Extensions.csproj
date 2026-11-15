@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <!-- multi-targeted library: packed, never published (solution-level dotnet publish would fail with NETSDK1129) -->
+    <IsPublishable>false</IsPublishable>
+    <RootNamespace>WebAwesome.Blazor.Extensions</RootNamespace>
+  </PropertyGroup>
+
+  <!-- NuGet package metadata -->
+  <PropertyGroup>
+    <PackageId>WebAwesome.Blazor.Extensions</PackageId>
+    <Title>Web Awesome Blazor Extensions</Title>
+    <Description>Optional extras for the WebAwesome.Blazor bindings: features that add behavior upstream Web Awesome does not have. The main package stays pure bindings. Same version as WebAwesome.Blazor, which it depends on. MIT-licensed.</Description>
+    <Authors>BoldBrick</Authors>
+    <PackageTags>blazor;webawesome;web-awesome;web-components;components;ui;razor;extensions</PackageTags>
+    <PackageProjectUrl>https://github.com/boldbrick/WebAwesome-Blazor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/boldbrick/WebAwesome-Blazor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
+    <PackageReleaseNotes>See https://github.com/boldbrick/WebAwesome-Blazor/blob/master/docs/CHANGELOG.md</PackageReleaseNotes>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- deterministic, SourceLink-enabled builds on CI only (local builds run from a PlasticSCM workspace without git metadata) -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" />
+    <None Include="PACKAGE.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <!-- packs as the NuGet dependency WebAwesome.Blazor with the floor of this package's own version
+       (both take Version from Version.props); the framework packages come through it -->
+  <ItemGroup>
+    <ProjectReference Include="..\WebAwesome.Blazor\WebAwesome.Blazor.csproj" />
+  </ItemGroup>
+
+</Project>

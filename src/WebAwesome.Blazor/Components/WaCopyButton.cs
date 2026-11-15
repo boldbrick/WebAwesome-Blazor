@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -288,18 +289,25 @@ public class WaCopyButton : ComponentBase
     #region ------ Public Methods ------
 
     /// <summary>
-    /// Programmatically trigger the copy operation.
+    /// Programmatically trigger the copy operation, as a click on the button does.
     /// </summary>
-    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <returns>A task that completes when the copy has started; the element raises <see cref="OnCopy"/> when the
+    /// value is on the clipboard, or <see cref="OnError"/> when the copy fails</returns>
+    /// <remarks>
+    /// The browser writes to the clipboard only with a user activation (call this method from a handler of a user
+    /// action, such as a click) or with the clipboard-write permission; without either, the copy fails and the
+    /// element raises <see cref="OnError"/>. A disabled button copies nothing.
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task CopyAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot copy: component has not been rendered yet.");
 
-        // wa-copy-button exposes no copy() method in WA 3.0; clicking the element triggers
-        // the copy operation exactly like a user interaction
-        await JSInterop.InvokeMethodAsync(Element.Value, "click");
+        // NOTE checked against WA 3.14.0: wa-copy-button has no public copy method; its copy handler listens for clicks
+        // inside its shadow root, which a click on the host does not reach, so the wrapper clicks the button part
+        // there (a shadow-root internal of the element, recheck on every upgrade)
+        await JSInterop.ClickShadowPartAsync(Element.Value, ButtonPart);
     }
 
     #endregion
@@ -318,6 +326,9 @@ public class WaCopyButton : ComponentBase
 
         return string.Join(' ', classes);
     }
+
+    // the CSS part of wa-copy-button's own button, inside the element's copy trigger
+    private const string ButtonPart = "button";
 
     #endregion
 }

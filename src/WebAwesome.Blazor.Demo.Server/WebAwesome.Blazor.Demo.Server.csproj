@@ -9,6 +9,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebAwesome.Blazor.Demo\WebAwesome.Blazor.Demo.csproj" />
+    <!-- explicit, not only through the demo project: this host maps the static assets (MapStaticAssets) and
+         serves the Extensions JS initializer to blazor.web.js -->
+    <ProjectReference Include="..\WebAwesome.Blazor.Extensions\WebAwesome.Blazor.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

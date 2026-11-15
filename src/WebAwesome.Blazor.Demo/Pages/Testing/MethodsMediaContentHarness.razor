@@ -1,0 +1,252 @@
+@page "/testing/methods-media-content"
+
+@* e2e harness of the wrapper method suite, group "media-content" (tools\e2e\tests\methods-media-content.spec.js, cases
+   in tools\e2e\tests\helpers\method-cases\media-content.js) - deliberately outside /components/; the sweep reaches it
+   through the method groups (tools\e2e\data\method-groups.json). Every MethodCall button calls one wrapper method from
+   .NET through the wrapper's @ref and shows the outcome. ?early=true also calls methods on the first render, while the
+   autoloader still imports the element modules. wa-video and wa-video-playlist are Pro components, so their tests skip
+   on the free CDN. *@
+
+<PageTitle>Testing: Methods (media and content)</PageTitle>
+
+<h1>Methods Harness: Media and Content</h1>
+<p>This page is an end-to-end test harness for the imperative methods of the media, animation, observer and content wrappers.</p>
+
+<ExampleSection Title="WaAnimatedImage">
+    <div class="method-calls">
+        <MethodCall Id="animated-image-play" Action="() => animatedImage!.PlayAsync()" />
+        <MethodCall Id="animated-image-pause" Action="() => animatedImage!.PauseAsync()" />
+    </div>
+    <WaAnimatedImage @ref="animatedImage" data-testid="animated-image" Src="@PixelGif" Alt="Pixel" Style="width: 40px;" />
+</ExampleSection>
+
+<ExampleSection Title="WaAnimation">
+    <div class="method-calls">
+        <MethodCall Id="animation-set-keyframes" Action="() => animation!.SetKeyframesAsync(fadeKeyframes)" />
+        <MethodCall Id="animation-set-time" Action="() => animation!.SetCurrentTimeAsync(HalfAnimationTime)" />
+        <MethodCall Id="animation-get-time" Function="async () => await animation!.GetCurrentTimeAsync()" />
+        <MethodCall Id="animation-finish" Action="() => animation!.FinishAsync()" />
+        <MethodCall Id="animation-cancel" Action="() => animation!.CancelAsync()" />
+    </div>
+    @* no built-in animation name: the animation exists only once SetKeyframesAsync has given it keyframes; one
+       paused iteration, so the current time decides the style and FinishAsync can reach the end *@
+    <WaAnimation @ref="animation" data-testid="animation" Duration="AnimationDuration" Iterations="AnimationIterations"
+                 OnFinish="() => animationFinishCount++" OnCancel="() => animationCancelCount++">
+        <div data-testid="animation-target" style="width: 24px; height: 24px; background: var(--wa-color-brand-fill-loud);"></div>
+    </WaAnimation>
+    <p>Finished: <strong data-testid="animation-finish-count">@animationFinishCount</strong>, cancelled: <strong data-testid="animation-cancel-count">@animationCancelCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaZoomableFrame">
+    <div class="method-calls">
+        <MethodCall Id="zoom-in" Action="() => zoomableFrame!.ZoomInAsync()" />
+        <MethodCall Id="zoom-out" Action="() => zoomableFrame!.ZoomOutAsync()" />
+        <MethodCall Id="zoom-set" Action="() => zoomableFrame!.SetZoomAsync(SetZoomLevel)" />
+        <MethodCall Id="zoom-reset" Action="() => zoomableFrame!.ResetAsync()" />
+    </div>
+    <WaZoomableFrame @ref="zoomableFrame" data-testid="zoomable-frame" SrcDoc="@FrameDocument" Style="height: 80px;" />
+</ExampleSection>
+
+<ExampleSection Title="WaVideo (Pro)">
+    <div class="method-calls">
+        <MethodCall Id="video-play" Action="() => video!.PlayAsync()" />
+        <MethodCall Id="video-pause" Action="() => video!.PauseAsync()" />
+        <MethodCall Id="video-toggle-play" Action="() => video!.TogglePlayAsync()" />
+        <MethodCall Id="video-toggle-mute" Action="() => video!.ToggleMuteAsync()" />
+        <MethodCall Id="video-seek" Action="() => video!.SeekAsync(SeekSeconds)" />
+        <MethodCall Id="video-set-volume" Action="() => video!.SetVolumeAsync(HalfVolume)" />
+        <MethodCall Id="video-set-rate" Action="() => video!.SetPlaybackRateAsync(UnlistedPlaybackRate)" />
+        <MethodCall Id="video-get-state" Function="async () => await video!.GetStateAsync()" />
+        <MethodCall Id="video-fullscreen" Action="() => video!.RequestFullscreenAsync()" />
+        <MethodCall Id="video-exit-fullscreen" Action="() => video!.ExitFullscreenAsync()" />
+    </div>
+    @* a generated six-second silent clip, so playback needs no network; it loops, so it never ends during a case *@
+    <WaVideo @ref="video" data-testid="video" Src="@silentClip" Loop="true" Style="max-width: 320px;" />
+</ExampleSection>
+
+<ExampleSection Title="WaVideoPlaylist (Pro)">
+    <div class="method-calls">
+        <MethodCall Id="playlist-next" Action="() => playlist!.NextAsync()" />
+        <MethodCall Id="playlist-previous" Action="() => playlist!.PreviousAsync()" />
+        <MethodCall Id="playlist-go-to-last" Action="() => playlist!.GoToAsync(LastPlaylistIndex)" />
+    </div>
+    <WaVideoPlaylist @ref="playlist" data-testid="playlist" Style="max-width: 320px;">
+        <WaVideo Title="First clip" />
+        <WaVideo Title="Second clip" />
+        <WaVideo Title="Third clip" />
+    </WaVideoPlaylist>
+</ExampleSection>
+
+<ExampleSection Title="WaMarkdown">
+    <div class="method-calls">
+        <button type="button" data-testid="markdown-change-source" disabled="@(!RendererInfo.IsInteractive)" @onclick="() => markdownSource = ChangedMarkdown">Change the source</button>
+        <MethodCall Id="markdown-render" Action="() => markdown!.RenderMarkdownAsync()" />
+    </div>
+    <WaMarkdown @ref="markdown" data-testid="markdown" Content="@markdownSource" />
+</ExampleSection>
+
+<ExampleSection Title="WaMutationObserver">
+    <div class="method-calls">
+        <MethodCall Id="mutation-disconnect" Action="() => mutationObserver!.DisconnectAsync()" />
+        <MethodCall Id="mutation-reconnect" Action="() => mutationObserver!.ReconnectAsync()" />
+    </div>
+    <WaMutationObserver @ref="mutationObserver" data-testid="mutation-observer" Attr="true" AttributeFilter="observedAttributes">
+        <div data-testid="mutation-target" data-state="@InitialMutationState">Observed attribute</div>
+    </WaMutationObserver>
+</ExampleSection>
+
+<ExampleSection Title="WaResizeObserver">
+    <div class="method-calls">
+        <MethodCall Id="resize-disconnect" Action="() => resizeObserver!.DisconnectAsync()" />
+        <MethodCall Id="resize-reconnect" Action="() => resizeObserver!.ReconnectAsync()" />
+    </div>
+    <WaResizeObserver @ref="resizeObserver" data-testid="resize-observer">
+        <div data-testid="resize-target" style="width: @(InitialResizeWidth)px; height: 20px; background: var(--wa-color-brand-fill-loud);"></div>
+    </WaResizeObserver>
+</ExampleSection>
+
+<ExampleSection Title="WaRandomContent">
+    <div class="method-calls">
+        <MethodCall Id="random-randomize" Action="() => randomContent!.RandomizeAsync()" />
+    </div>
+    @* sequence mode: every call shows the next item, so the effect is predictable *@
+    <WaRandomContent @ref="randomContent" data-testid="random-content" Mode="WaRandomContentMode.Sequence" Animation="WaRandomContentAnimation.None">
+        <div data-item="first">First item</div>
+        <div data-item="second">Second item</div>
+        <div data-item="third">Third item</div>
+    </WaRandomContent>
+</ExampleSection>
+
+<ExampleSection Title="WaRelativeTime">
+    <div class="method-calls">
+        <MethodCall Id="relative-update" Action="() => relativeTime!.UpdateAsync()" />
+    </div>
+    <WaRelativeTime @ref="relativeTime" data-testid="relative-time" Lang="en-US" Date="relativeDate" />
+</ExampleSection>
+
+<ExampleSection Title="WaCopyButton">
+    <div class="method-calls">
+        <MethodCall Id="copy-button-copy" Action="() => copyButton!.CopyAsync()" />
+    </div>
+    <WaCopyButton @ref="copyButton" data-testid="copy-button" Value="@CopiedValue" OnCopy="() => copyCount++" />
+    <p>Copies reported: <strong data-testid="copy-count">@copyCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Calls on the first render (?early=true)">
+    <p>Zoomable frame zoom in: <output data-testid="early-zoom-in">@earlyZoomIn</output></p>
+    <p>Animated image play: <output data-testid="early-animated-image-play">@earlyAnimatedImagePlay</output></p>
+</ExampleSection>
+
+@code {
+    private const string PixelGif = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+    private const string FrameDocument = "<body style=\"margin:0;font-family:sans-serif\">Framed</body>";
+    private const string InitialMarkdown = "# Initial heading";
+    private const string ChangedMarkdown = "# Changed heading";
+    private const string ObservedAttribute = "data-state";
+    private const string InitialMutationState = "initial";
+    private const string CopiedValue = "copied by CopyAsync";
+    private const string NotCalled = "not called";
+    private const string DoneText = "done";
+    private const string ErrorPrefix = "error: ";
+    private const int AnimationDuration = 10000;
+    private const double AnimationIterations = 1;
+    private const decimal HalfAnimationTime = 5000m;
+    private const double SetZoomLevel = 1.5;
+    private const double SeekSeconds = 3;
+    private const double HalfVolume = 0.5;
+    private const double UnlistedPlaybackRate = 1.4;
+    private const int LastPlaylistIndex = 2;
+    private const int InitialResizeWidth = 100;
+    private const int RelativeTimeAgeMinutes = 10;
+
+    private const int ClipSampleRate = 8000;
+    private const int ClipSeconds = 6;
+    private const int ClipSamples = ClipSampleRate * ClipSeconds;
+    private const byte SilentSample = 128;
+    private const int PcmFormat = 1;
+    private const int MonoChannels = 1;
+    private const int BitsPerSample = 8;
+    private const int FmtChunkSize = 16;
+    private const int RiffHeaderSize = 36;
+
+    // the keyframes SetKeyframesAsync gives the animation: a fade out, so the opacity tells the current time
+    private static readonly object[] fadeKeyframes = [new { opacity = 1 }, new { opacity = 0 }];
+
+    private static readonly IReadOnlySet<string> observedAttributes = new HashSet<string> { ObservedAttribute };
+
+    private readonly string silentClip = CreateSilentClip();
+    private readonly DateTimeOffset relativeDate = DateTimeOffset.UtcNow.AddMinutes(-RelativeTimeAgeMinutes);
+
+    private WaAnimatedImage? animatedImage;
+    private WaAnimation? animation;
+    private WaZoomableFrame? zoomableFrame;
+    private WaVideo? video;
+    private WaVideoPlaylist? playlist;
+    private WaMarkdown? markdown;
+    private WaMutationObserver? mutationObserver;
+    private WaResizeObserver? resizeObserver;
+    private WaRandomContent? randomContent;
+    private WaRelativeTime? relativeTime;
+    private WaCopyButton? copyButton;
+
+    private string markdownSource = InitialMarkdown;
+    private int animationFinishCount;
+    private int animationCancelCount;
+    private int copyCount;
+
+    private string earlyZoomIn = NotCalled;
+    private string earlyAnimatedImagePlay = NotCalled;
+
+    // ?early=true: the page calls methods on its first render, while the autoloader still imports the element modules
+    [SupplyParameterFromQuery(Name = "early")] public bool CallOnFirstRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CallOnFirstRender)
+        {
+            // zoomIn steps through the zoom levels, which the element reads in its first update
+            var zoomIn = OutcomeOf(() => zoomableFrame!.ZoomInAsync());
+            // a property set before the definition, which the element must keep when it upgrades
+            var play = OutcomeOf(() => animatedImage!.PlayAsync());
+            await Task.WhenAll(zoomIn, play);
+            earlyZoomIn = zoomIn.Result;
+            earlyAnimatedImagePlay = play.Result;
+            StateHasChanged();
+        }
+    }
+
+    private static async Task<string> OutcomeOf(Func<Task> call)
+    {
+        try
+        {
+            await call();
+            return DoneText;
+        }
+        catch (Exception exception)
+        {
+            return ErrorPrefix + exception.Message;
+        }
+    }
+
+    // an 8 kHz, 8-bit mono PCM WAV of silence as a data URI
+    private static string CreateSilentClip()
+    {
+        using var stream = new System.IO.MemoryStream();
+        using var writer = new System.IO.BinaryWriter(stream);
+        writer.Write("RIFF"u8);
+        writer.Write(RiffHeaderSize + ClipSamples);
+        writer.Write("WAVEfmt "u8);
+        writer.Write(FmtChunkSize);
+        writer.Write((short)PcmFormat);
+        writer.Write((short)MonoChannels);
+        writer.Write(ClipSampleRate);
+        writer.Write(ClipSampleRate * MonoChannels * BitsPerSample / 8);
+        writer.Write((short)(MonoChannels * BitsPerSample / 8));
+        writer.Write((short)BitsPerSample);
+        writer.Write("data"u8);
+        writer.Write(ClipSamples);
+        for (var i = 0; i < ClipSamples; i++) writer.Write(SilentSample);
+        writer.Flush();
+        return "data:audio/wav;base64," + Convert.ToBase64String(stream.ToArray());
+    }
+}

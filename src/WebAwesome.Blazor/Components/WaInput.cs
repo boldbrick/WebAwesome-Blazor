@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -117,7 +118,7 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     // The min and max of wa-input are typed number | string (a number for a number input, an ISO date, time or local
     // date-time for the date and time types), which C# before 15 cannot express as one parameter type. Until then each
     // bound is a raw string plus one strongly typed accessor per value type; at most one of them may be set per bound.
-    // On net11.0 this becomes a C# 15 union type, a deliberate breaking change (docs\technical.md, Multi-targeting).
+    // On net11.0 this becomes a C# 15 union type, a deliberate breaking change (docs\technical\technical.md, Multi-targeting).
 
     /// <summary>
     /// The input's minimum value as the raw attribute text, for a format none of the typed accessors covers. Only
@@ -452,6 +453,10 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// Selects all the text in the input.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
+    /// <remarks>
+    /// Works with every input type, but only the text types (text, search, url, tel, password) also take a selection
+    /// range or a range replacement (see <see cref="SetSelectionRangeAsync"/> and <see cref="SetRangeTextAsync"/>).
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task SelectAsync()
     {
@@ -473,8 +478,11 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// <remarks>
     /// The element dispatches no input or change event for this change, so the resulting value is read back and
     /// assigned to the bound value (which also notifies the edit context).
+    /// Works only with the text types (text, search, url, tel, password); on any other type (number, email, date, time
+    /// and so on) the browser throws an InvalidStateError, which fails the call.
     /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered, or when the input type has
+    /// no text selection</exception>
     public async Task SetRangeTextAsync(string replacement, int? start = null, int? end = null, string selectMode = "preserve")
     {
         if (Element == null)
@@ -486,7 +494,7 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         else
             await JSInterop.InvokeMethodAsync(Element.Value, "setRangeText", replacement);
 
-        SetCurrentValueAsStringFromElement(await JSInterop.GetPropertyAsync<string?>(Element.Value, "value"));
+        await ReadValueBackAsync();
     }
 
     /// <summary>
@@ -497,7 +505,12 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// <param name="selectionDirection">The direction in which selection is considered to have occurred. One of
     /// <c>forward</c>, <c>backward</c>, or <c>none</c> (default)</param>
     /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    /// <remarks>
+    /// Works only with the text types (text, search, url, tel, password); on any other type (number, email, date, time
+    /// and so on) the browser throws an InvalidStateError, which fails the call.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered, or when the input type has
+    /// no text selection</exception>
     public async Task SetSelectionRangeAsync(int selectionStart, int selectionEnd, string selectionDirection = "none")
     {
         if (Element == null)
@@ -511,7 +524,13 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// type).
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    /// <remarks>
+    /// The browser shows the picker only with a user activation: call this method from a handler of a user action,
+    /// such as a click. Without one the browser throws a NotAllowedError ("showPicker() requires a user gesture"),
+    /// which fails the call.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered, or when the browser refuses
+    /// to show the picker</exception>
     public async Task ShowPickerAsync()
     {
         if (Element == null)
@@ -524,31 +543,57 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     /// Decrements the value of a numeric input type by the value of the <see cref="Step"/> attribute.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    /// <remarks>
+    /// The element dispatches no input or change event for this change, so the resulting value is read back and
+    /// assigned to the bound value, as a change from the element is (the value changed callback, the edit context and
+    /// its validation). Works only with the steppable types (number and the date and time types); on any other type
+    /// (text, email and so on) the browser throws an InvalidStateError, which fails the call.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered, or when the input type is
+    /// not steppable</exception>
     public async Task StepDownAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot step down before the component is rendered. Element reference is null.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "stepDown");
+        await ReadValueBackAsync();
     }
 
     /// <summary>
     /// Increments the value of a numeric input type by the value of the <see cref="Step"/> attribute.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
+    /// <remarks>
+    /// The element dispatches no input or change event for this change, so the resulting value is read back and
+    /// assigned to the bound value, as a change from the element is (the value changed callback, the edit context and
+    /// its validation). Works only with the steppable types (number and the date and time types); on any other type
+    /// (text, email and so on) the browser throws an InvalidStateError, which fails the call.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered, or when the input type is
+    /// not steppable</exception>
     public async Task StepUpAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot step up before the component is rendered. Element reference is null.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "stepUp");
+        await ReadValueBackAsync();
     }
 
     #endregion
 
     #region ------ Internals ------
+
+    // the element's live value property
+    private const string ValueProperty = "value";
+
+    // assigns the element's current value to the bound value, for an element method that changes the value without an
+    // input or change event (setRangeText, stepUp, stepDown)
+    private async Task ReadValueBackAsync()
+    {
+        SetCurrentValueAsStringFromElement(await JSInterop.GetPropertyAsync<string?>(Element!.Value, ValueProperty));
+    }
 
     // the min attribute text of whichever accessor is set, in the invariant or ISO form the native input reads
     private string? MinAttributeValue() => BoundValue(Min, MinDecimal, MinLong, MinULong, MinDate, MinTime, MinDateTime);

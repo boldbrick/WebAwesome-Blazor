@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -236,6 +237,9 @@ public class WaDrawer : ComponentBase
         return string.Join(' ', classes);
     }
 
+    // the public property of wa-drawer that holds its native dialog element, the panel FocusAsync focuses
+    private const string PanelProperty = "drawer";
+
     #endregion
 
     #region ------ Public Methods ------
@@ -267,15 +271,18 @@ public class WaDrawer : ComponentBase
     }
 
     /// <summary>
-    /// Focuses the drawer or first focusable element within it
+    /// Moves the focus into the open drawer as the drawer does when it opens: to the first element in the content
+    /// with the autofocus attribute, else to the drawer panel itself, from where Tab moves on to the drawer's controls.
+    /// A closed drawer is left as it is.
     /// </summary>
+    /// <returns>A task that completes when the focus has moved, or the drawer was found closed</returns>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task FocusAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot focus drawer: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "focus");
+        await JSInterop.FocusOverlayAsync(Element.Value, PanelProperty);
     }
 
     #endregion

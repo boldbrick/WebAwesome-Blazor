@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -242,28 +243,32 @@ public class WaTooltip : ComponentBase
     /// <summary>
     /// Shows the tooltip with dynamic positioning
     /// </summary>
+    /// <returns>A task that completes after the tooltip is shown and its animation is complete; at once when the
+    /// tooltip is open already, or when a handler cancels the show (wa-show with preventDefault())</returns>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task ShowAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot show tooltip: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "show");
+        await JSInterop.InvokeCancelableMethodAsync(Element.Value, "show", Constants.ShowEventName);
     }
 
     /// <summary>
     /// Hides the tooltip
     /// </summary>
+    /// <returns>A task that completes after the tooltip is hidden and its animation is complete; at once when the
+    /// tooltip is closed already, or when a handler cancels the hide (wa-hide with preventDefault())</returns>
     /// <exception cref="InvalidOperationException">Thrown when the component has not been rendered yet</exception>
     public async Task HideAsync()
     {
         if (Element == null)
             throw new InvalidOperationException("Cannot hide tooltip: component has not been rendered yet.");
 
-        await JSInterop.InvokeMethodAsync(Element.Value, "hide");
+        await JSInterop.InvokeCancelableMethodAsync(Element.Value, "hide", Constants.HideEventName);
     }
 
-    // note: no RepositionAsync - wa-tooltip exposes no reposition() method in WA 3.0
+    // NOTE checked against WA 3.14.0: no RepositionAsync - wa-tooltip exposes no reposition() method
     // (repositioning is handled internally by its anchored wa-popup)
 
     #endregion

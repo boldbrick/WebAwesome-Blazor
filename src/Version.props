@@ -40,7 +40,7 @@
   <!-- Framework targeting: net10.0 (LTS) is the primary target, net9.0 kept for compatibility;
        applications target net10.0 only -->
   <!-- no RuntimeFrameworkVersion pinning: the baseline x.0.0 runtime of each target major applies,
-       consistent with the dependency floors policy (docs\technical.md) -->
+       consistent with the dependency floors policy (docs\technical\technical.md) -->
   <PropertyGroup Condition="'$(BbComponentGroup)' != 'Apps'">
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
   </PropertyGroup>
@@ -64,11 +64,13 @@
     <Product>Web Awesome Blazor bindings</Product>
     <Copyright>Copyright © 2025–$([System.DateTime]::Today.Year) $(Company) and contributors</Copyright>
 
-    <!-- version numbers - these flow SDK-style projects -->
-    <Version>3.14.0</Version>
-    <AssemblyVersion>3.14.0.0</AssemblyVersion>
-    <FileVersion>3.14.0.0</FileVersion>
-    <!-- full semver, readable at runtime (WebAwesomeOptions derives the default CDN version from it) -->
+    <!-- version numbers - these flow SDK-style projects; the first three parts are the bound Web Awesome
+         version, an optional fourth part is a revision of the bindings (3.14.0.1) -->
+    <Version>3.14.0.4</Version>
+    <AssemblyVersion>3.14.0.4</AssemblyVersion>
+    <FileVersion>3.14.0.4</FileVersion>
+    <!-- full version, readable at runtime (WebAwesomeOptions derives the default CDN version from its
+         first three parts) -->
     <InformationalVersion>$(Version)</InformationalVersion>
 
     <!-- supported languages -->

@@ -1,4 +1,5 @@
 @page "/components/date-range-input"
+@using WebAwesome.Blazor.Models
 
 <PageTitle>Date Range Input</PageTitle>
 
@@ -20,6 +21,16 @@
 
 <ExampleSection Title="Disabled Weekdays" Code="@DisabledExample">
     <WaDateRangeInput Label="Working days" DisabledDaysOfWeek="Weekend" @bind-Value="workingDays" />
+</ExampleSection>
+
+<ExampleSection Title="Disabled Days with JavaScript" Code="@FunctionExample">
+    <p>
+        <code>IsDateDisabledFunction</code> takes a JavaScript function that the popup calendar calls for every day it
+        renders, here an export of the collocated <code>DateRangeInputPage.razor.js</code>: the stock-taking days at the end
+        of each month (their number comes from C#) cannot be picked.
+    </p>
+    <WaDateRangeInput Label="Rental period" Hint="The last two days of each month are stock-taking days." @bind-Value="rental"
+                      IsDateDisabledFunction="stockTaking" />
 </ExampleSection>
 
 <ApiTable Tag="wa-date-input" />
@@ -59,6 +70,31 @@
             private static readonly DateOnly YearStart = new(2026, 1, 1);
             private static readonly DateOnly YearEnd = new(2026, 12, 31);
             private WaDateRange? holiday;
+        }
+        """;
+
+    private WaDateRange? rental;
+
+    // disables the last days of each month
+    private readonly WaJsFunction stockTaking = WaJsFunction.Module("./Pages/Components/DateRangeInputPage.razor.js", "monthEnd")
+        .WithArgs(new { days = 2 });
+
+    private const string FunctionExample = """
+        <WaDateRangeInput Label="Rental period" Hint="The last two days of each month are stock-taking days." @bind-Value="rental"
+                          IsDateDisabledFunction="stockTaking" />
+
+        @code {
+            private WaDateRange? rental;
+
+            // disables the last days of each month
+            private readonly WaJsFunction stockTaking = WaJsFunction.Module("./Pages/Components/DateRangeInputPage.razor.js", "monthEnd")
+                .WithArgs(new { days = 2 });
+        }
+
+        // DateRangeInputPage.razor.js, next to DateRangeInputPage.razor; the function gets a Date at local midnight and ctx
+        export function monthEnd(date, ctx) {
+          const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+          return date.getDate() > lastDay - ctx.args.days;
         }
         """;
 

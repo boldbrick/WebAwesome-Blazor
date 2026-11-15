@@ -3,7 +3,7 @@ const { test, expect } = require('./helpers/test');
 
 // the Web Awesome asset tags are emitted by the WebAwesomeAssets component from configuration
 // (WebAwesomeOptions) instead of being hard-coded in index.html; with no override the free CDN
-// at the library's own version applies
+// at the library's bound Web Awesome version applies
 test('WA asset tags are emitted from configuration into head', async ({ page }) => {
   await page.goto('/components/button');
   await page.waitForSelector('.demo-shell');
@@ -53,7 +53,7 @@ test('sidebar groups components by the upstream docs taxonomy', async ({ page })
   await expect(headings).toHaveText([
     'Getting Started', 'Showcases',
     'Actions', 'Forms', 'Layout', 'Navigation', 'Feedback', 'Media', 'Data Viz', 'Helpers',
-    'Layout Utilities',
+    'Layout Utilities', 'Tooling',
   ]);
 
   const dataVizList = page.locator('.demo-sidebar nav h4:has-text("Data Viz") + ul');

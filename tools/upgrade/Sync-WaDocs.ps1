@@ -5,7 +5,9 @@ Refreshes the versioned Web Awesome reference documentation from the public GitH
 .DESCRIPTION
 Downloads the public Web Awesome GitHub repository at tag v<Version> (single codeload zip
 request, no API rate limits), extracts the packages/webawesome/docs/docs folder, and replaces
-the destination folder's contents with it (default: inputs\WebAwesome).
+the destination folder's contents with it (default: inputs\WebAwesome). It also writes the
+upstream MIT license (LICENSE.md at the root of the repository) to <destination>\LICENSE.md: the
+main package bundles these docs and THIRD-PARTY-NOTICES.md quotes that license.
 
 Pro components (e.g. combobox, page) are absent from the public GitHub docs tree. For every
 component present in the release CEM (temp\download\webawesome_<version>.zip ->
@@ -96,6 +98,7 @@ elseif ($DocsTagVersion -ne $Version) {
 }
 
 $docsRepoPath = 'packages/webawesome/docs/docs/'
+$licenseRepoPath = 'LICENSE.md'
 $zipUrl = "https://codeload.github.com/shoelace-style/webawesome/zip/refs/tags/v$DocsTagVersion"
 $cacheDir = Join-Path $RepoRoot 'temp\wa-docs'
 $zipPath = Join-Path $cacheDir "github_v$DocsTagVersion.zip"
@@ -126,6 +129,7 @@ if (Test-Path $staging) { Remove-Item -Recurse -Force $staging }
 New-Item -ItemType Directory -Force $staging | Out-Null
 
 $extracted = 0
+$licenseFound = $false
 $zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
 try {
     foreach ($entry in $zip.Entries) {
@@ -135,6 +139,14 @@ try {
         $slash = $entry.FullName.IndexOf('/')
         if ($slash -lt 0) { continue }
         $relative = $entry.FullName.Substring($slash + 1)
+
+        # the upstream MIT license at the repository root goes beside the docs (the package notice quotes it)
+        if ($relative -eq $licenseRepoPath) {
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, (Join-Path $staging 'LICENSE.md'), $true)
+            $licenseFound = $true
+            continue
+        }
+
         if (-not $relative.StartsWith($docsRepoPath)) { continue }
 
         $relative = $relative.Substring($docsRepoPath.Length)
@@ -152,7 +164,8 @@ finally {
 }
 
 if ($extracted -eq 0) { throw "No files found under $docsRepoPath in the v$DocsTagVersion GitHub zip - tag layout changed?" }
-Write-Output "Extracted $extracted doc files from GitHub tag v$DocsTagVersion."
+if (-not $licenseFound) { throw "No $licenseRepoPath at the root of the v$DocsTagVersion GitHub zip - tag layout changed?" }
+Write-Output "Extracted $extracted doc files and $licenseRepoPath from GitHub tag v$DocsTagVersion."
 
 # ------ determine the component list from the release CEM ------
 

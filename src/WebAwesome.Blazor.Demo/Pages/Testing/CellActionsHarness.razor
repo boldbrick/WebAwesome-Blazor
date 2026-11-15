@@ -1,0 +1,256 @@
+@page "/testing/cell-actions"
+@using System.Globalization
+@using WebAwesome.Blazor.Extensions.DataGrid
+@using WebAwesome.Blazor.Models
+
+@* e2e harness for tools\e2e\tests\cell-actions.spec.js - deliberately outside /components/, so it is neither derived
+   from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
+   tools\e2e\tests\helpers\routes.js. The tickets grid uses the interactive presets of the Extensions package (Button,
+   Actions, Menu in a pinned column, Switch, Checkbox) and the ctx helpers and declarative actions of the collocated
+   CellActionsHarness.razor.js in a cell, a detail panel and a footer; it binds OnCellClick and @onwablazor-cell-action
+   and shows what each received. The cities grid uses the rule and member presets (class rules, footers, collation,
+   formatted search, filter options, detail fields, selectable field). With ?perf=true, a grid of 10,000 rows with eight
+   preset columns follows (the performance budget of the design, section 11.5). wa-data-grid is a Pro component. *@
+
+<PageTitle>Testing: Cell Actions</PageTitle>
+
+<h1>Cell Actions Harness</h1>
+<p>This page is an end-to-end test harness for the interactive presets, the <code>ctx</code> helpers, the declarative actions and the rule presets of the <code>WebAwesome.Blazor.Extensions</code> package.</p>
+
+<ExampleSection Title="Interactive presets, ctx helpers and declarative actions">
+    <WaDataGrid data-testid="ca-tickets" Label="Tickets" RowKey="id" Data="tickets" Columns="ticketColumns"
+                RowDetailFunction="@ticketDetail" ShadowStyles="@TicketStyles"
+                OnCellClick="HandleCellClick" @onwablazor-cell-action="HandleCellAction" />
+    <p>Cell action: <strong data-testid="ca-action">@actionText</strong></p>
+    <p>Cell click: <strong data-testid="ca-click">@clickText</strong></p>
+    <p>Actions received: <strong data-testid="ca-action-count">@actionCount</strong>, cell clicks received: <strong data-testid="ca-click-count">@clickCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Rules, footers, collation, search, filter options, detail fields and selectable rows">
+    <WaDataGrid data-testid="ca-cities" Label="Cities" RowKey="id" WithSearch="true" Selectable="WaDataGridSelectable.Multiple"
+                Data="cities" Columns="cityColumns" RowClassFunction="@cityRowRules" SearchFunction="@citySearch"
+                RowDetailFunction="@cityDetail" SelectableRowsFunction="@citySelectable" ShadowStyles="@CityStyles" />
+</ExampleSection>
+
+@if (Perf)
+{
+    <ExampleSection Title="10,000 rows with eight preset columns">
+        <WaDataGrid data-testid="ca-perf" Label="Measurements" RowKey="id" Data="perfRows" Columns="perfColumns" />
+    </ExampleSection>
+}
+
+@code {
+    private const string NoneText = "none";
+
+    // the collocated module of this page
+    private const string HarnessModule = "./Pages/Testing/CellActionsHarness.razor.js";
+
+    // the rows of the performance grid
+    private const int PerfRowCount = 10_000;
+
+    private const string TicketStyles = ".ca-high { font-weight: 700; } .ca-closed { opacity: 0.6; }";
+    private const string CityStyles = ".pop-big { color: rgb(0, 0, 160); } .neg { color: rgb(200, 0, 0); } .row-capital { font-style: italic; }";
+
+    private static readonly CultureInfo English = CultureInfo.GetCultureInfo("en-US");
+    private static readonly CultureInfo Czech = CultureInfo.GetCultureInfo("cs-CZ");
+
+    /// <summary>
+    /// Adds the grid of 10,000 rows (query <c>?perf=true</c>).
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "perf")]
+    public bool Perf { get; set; }
+
+    private string actionText = NoneText;
+    private string clickText = NoneText;
+    private int actionCount;
+    private int clickCount;
+
+    private sealed record Ticket(int Id, string Title, string State, decimal Amount, bool Active, bool Done, bool Locked);
+
+    private sealed record City(int Id, string Name, string Region, int Population, double? Growth, DateOnly Founded,
+        bool Capital, bool Coastal, string Code, bool CanSelect, string Email);
+
+    private sealed record Measurement(int Id, double Value, decimal Price, DateOnly Day, string State, double Share,
+        bool Ok, double Change, double Load);
+
+    private readonly object[] tickets =
+    [
+        new Ticket(1, "Login fails", "open", 120.5m, true, false, false),
+        new Ticket(2, "Dark mode", "closed", 80m, false, true, true),
+        new Ticket(3, "Export to CSV", "open", 42m, true, false, false),
+        new Ticket(4, "Slow search", "open", 310m, false, false, false),
+        new Ticket(5, "Typo in footer", "closed", 9.99m, true, true, false)
+    ];
+
+    private readonly WaJsFunction ticketDetail = WaJsFunction.Module(HarnessModule, "ticketDetail");
+
+    private readonly WaDataGridColumn[] ticketColumns =
+    [
+        new()
+        {
+            Id = "edit", Field = "id", Label = "Edit", Width = 130,
+            Formatter = WaDataGridFormatters.Button("edit", "Edit #{id}", size: WaSize.Small, disabledField: "locked")
+        },
+        new() { Field = "title", Label = "Title", Width = 160 },
+        new()
+        {
+            Id = "actions", Label = "Actions", Width = 170,
+            Formatter = WaDataGridFormatters.Actions(
+            [
+                new WaDataGridAction("view", "View") { Icon = "eye", Tooltip = "View the ticket" },
+                new WaDataGridAction("delete", "Delete") { Icon = "trash", Variant = WaVariant.Danger, HiddenField = "locked" },
+                new WaDataGridAction("archive", "Archive") { InMenu = true },
+                new WaDataGridAction("export", "Export") { InMenu = true, DisabledField = "locked" }
+            ], WaSize.Small, WaAppearance.Plain)
+        },
+        new() { Field = "active", Label = "Active", Width = 100, Formatter = WaDataGridFormatters.Switch("Active: {title}") },
+        new() { Field = "done", Label = "Done", Width = 90, Formatter = WaDataGridFormatters.Checkbox("Done: {title}", "complete", disabledField: "locked") },
+        new() { Id = "custom", Field = "state", Label = "Custom", Width = 380, Formatter = WaJsFunction.Module(HarnessModule, "ticketCell").Uses("wa-badge") },
+        new()
+        {
+            Field = "amount", Label = "Amount", Width = 200,
+            CellClassFunction = WaDataGridClassRules.Cell(new WaDataGridClassRule("ca-high", WaDataGridCondition.GreaterThan(100))),
+            FooterFunction = WaJsFunction.Module(HarnessModule, "amountFooter")
+        },
+        new()
+        {
+            Id = "menu", Label = "Menu", Width = 90, Pinned = WaDataGridPinSide.Right,
+            Formatter = WaDataGridFormatters.Menu(
+            [
+                new WaDataGridAction("open", "Open") { Icon = "folder-open" },
+                new WaDataGridAction("duplicate", "Duplicate"),
+                new WaDataGridAction("remove", "Remove") { Variant = WaVariant.Danger, DisabledField = "locked" }
+            ], "Ticket actions", WaSize.Small, WaAppearance.Plain)
+        }
+    ];
+
+    private readonly object[] cities =
+    [
+        new City(1, "Hlinsko", "PA", 9_500, -0.4, new DateOnly(1356, 1, 1), false, false, "HL1", true, "info@hlinsko.example"),
+        new City(2, "Chrudim", "PA", 23_000, 0.2, new DateOnly(1276, 1, 1), false, false, "CR2", true, "info@chrudim.example"),
+        new City(3, "Cvikov", "LI", 4_300, null, new DateOnly(1352, 1, 1), false, false, "CV3", false, "info@cvikov.example"),
+        new City(4, "Ústí nad Labem", "UL", 92_000, -1.1, new DateOnly(1249, 1, 1), true, false, "UL4", true, "info@usti.example"),
+        new City(5, "Zlín", "ZL", 74_000, 0.8, new DateOnly(1322, 1, 1), true, false, "ZL5", true, "info@zlin.example"),
+        new City(6, "Praha", "PR", 1_380_000, 1.5, new DateOnly(885, 1, 1), true, false, "PR1", true, "info@praha.example")
+    ];
+
+    private static readonly WaJsFunction RegionLookup = WaDataGridFormatters.Lookup(new Dictionary<string, string>
+    {
+        ["PA"] = "Pardubice Region",
+        ["LI"] = "Liberec Region",
+        ["UL"] = "Ústí Region",
+        ["ZL"] = "Zlín Region",
+        ["PR"] = "Prague"
+    });
+
+    private readonly WaDataGridColumn[] cityColumns =
+    [
+        new() { Field = "name", Label = "Name", Width = 160, ComparatorFunction = WaDataGridComparators.Collation(Czech) },
+        new()
+        {
+            Field = "region", Label = "Region", Width = 170, Formatter = RegionLookup,
+            Filterable = true, FilterType = WaDataGridFilterType.Set, FilterOptions = WaDataGridFilterOptions.FromFormatter(RegionLookup)
+        },
+        new()
+        {
+            Field = "population", Label = "Population", Width = 150, Formatter = WaDataGridFormatters.Number(culture: English),
+            CellClassFunction = WaDataGridClassRules.Cell(
+                new WaDataGridClassRule("pop-big", WaDataGridCondition.GreaterThan(1_000_000)),
+                new WaDataGridClassRule("pop-mid", WaDataGridCondition.Between(50_000, 1_000_000)),
+                new WaDataGridClassRule("pop-small", WaDataGridCondition.LessThan(10_000))),
+            FooterFunction = WaDataGridFooters.Sum(WaDataGridFormatters.Number(culture: English), "Total", culture: English)
+        },
+        new()
+        {
+            Field = "growth", Label = "Growth", Width = 120,
+            CellClassFunction = WaDataGridClassRules.Cell(
+                new WaDataGridClassRule("unknown", WaDataGridCondition.IsNull),
+                new WaDataGridClassRule("neg", WaDataGridCondition.LessThan(0))),
+            FooterFunction = WaDataGridFooters.Average(WaDataGridFormatters.Number(maxFractionDigits: 2, culture: English), "Avg", culture: English)
+        },
+        new()
+        {
+            Field = "founded", Label = "Founded", Width = 150, Formatter = WaDataGridFormatters.Date(culture: English),
+            CellClassFunction = WaDataGridClassRules.Cell(new WaDataGridClassRule("old", WaDataGridCondition.LessThan(new DateOnly(1300, 1, 1))))
+        },
+        new()
+        {
+            Field = "code", Label = "Code", Width = 110,
+            CellClassFunction = WaDataGridClassRules.Cell(
+                new WaDataGridClassRule("code-in", WaDataGridCondition.In("PR1", "ZL5")),
+                new WaDataGridClassRule("code-c", WaDataGridCondition.Matches("^c", ignoreCase: true)),
+                new WaDataGridClassRule("code-hl", WaDataGridCondition.EqualTo("HL1"))),
+            FooterFunction = WaDataGridFooters.Count(label: "Cities", culture: English)
+        },
+        new()
+        {
+            Field = "capital", Label = "Capital", Width = 110,
+            CellClassFunction = WaDataGridClassRules.Cell(
+                new WaDataGridClassRule("capital", WaDataGridCondition.IsTrue),
+                new WaDataGridClassRule("not-capital", WaDataGridCondition.IsFalse))
+        },
+        new() { Id = "biggest", Field = "population", Label = "Max", Width = 120, FooterFunction = WaDataGridFooters.Max(culture: English) },
+        new() { Id = "smallest", Field = "population", Label = "Min", Width = 120, FooterFunction = WaDataGridFooters.Min(label: "Min", culture: English) }
+    ];
+
+    private readonly WaJsFunction cityRowRules = WaDataGridClassRules.Row(
+        new WaDataGridClassRule("row-capital", WaDataGridCondition.IsTrue) { Field = "capital" },
+        new WaDataGridClassRule("row-small", WaDataGridCondition.LessThan(10_000)) { Field = "population" });
+
+    private readonly WaJsFunction citySelectable = WaDataGridRows.SelectableField("canSelect");
+
+    private readonly WaJsFunction cityDetail = WaDataGridRows.DetailFields(
+    [
+        new WaDataGridDetailField("Name", "name"),
+        new WaDataGridDetailField("Founded", "founded") { Format = WaDataGridFormatters.Date(WaDataGridDateStyle.Long, culture: English) },
+        new WaDataGridDetailField("Growth", "growth") { Format = WaDataGridFormatters.Percent(WaDataGridPercentScale.Percent, maxFractionDigits: 1, culture: English) },
+        new WaDataGridDetailField("Email", "email")
+    ], NoneText);
+
+    private WaJsFunction? citySearch;
+
+    private object[] perfRows = [];
+
+    private readonly WaDataGridColumn[] perfColumns =
+    [
+        new() { Field = "id", Label = "Id", Width = 90 },
+        new() { Field = "value", Label = "Number", Width = 120, Formatter = WaDataGridFormatters.Number(maxFractionDigits: 1, culture: English) },
+        new() { Field = "price", Label = "Currency", Width = 120, Formatter = WaDataGridFormatters.Currency("EUR", culture: English) },
+        new() { Field = "day", Label = "Date", Width = 130, Formatter = WaDataGridFormatters.Date(culture: English) },
+        new()
+        {
+            Field = "state", Label = "Badge", Width = 120,
+            Formatter = WaDataGridFormatters.Badge(new Dictionary<string, WaVariant> { ["ok"] = WaVariant.Success, ["warn"] = WaVariant.Warning, ["fail"] = WaVariant.Danger })
+        },
+        new() { Field = "share", Label = "Progress", Width = 150, Formatter = WaDataGridFormatters.ProgressBar(culture: English) },
+        new() { Field = "ok", Label = "Icon", Width = 90, Formatter = WaDataGridFormatters.BooleanIcon("OK", "Not OK") },
+        new() { Field = "change", Label = "Trend", Width = 120, Formatter = WaDataGridFormatters.Trend(culture: English) },
+        new() { Field = "load", Label = "Data bar", Width = 160, Formatter = WaDataGridFormatters.DataBar(0, 100) }
+    ];
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        citySearch = WaDataGridSearch.Formatted(cityColumns);
+        if (!Perf) return;
+
+        string[] states = ["ok", "warn", "fail"];
+        perfRows = Enumerable.Range(1, PerfRowCount)
+            .Select(i => (object)new Measurement(i, i * 1.5, i % 1000 + 0.99m, new DateOnly(2026, 1, 1).AddDays(i % 365), states[i % 3],
+                i % 101 / 100.0, i % 2 == 0, i % 21 - 10, i % 100))
+            .ToArray();
+    }
+
+    private void HandleCellAction(WaDataGridCellActionEventArgs e)
+    {
+        actionCount++;
+        var ticket = e.GetRow<Ticket>();
+        actionText = $"{e.Action}|{e.Column}|{e.RowKey}|{e.RowIndex}|{e.Value}|{ticket?.Title}|{e.Payload?.GetRawText()}";
+    }
+
+    private void HandleCellClick(WaDataGridCellClickEventArgs e)
+    {
+        clickCount++;
+        clickText = $"{e.Column}|{e.RowIndex}";
+    }
+}

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -124,7 +125,7 @@ public class WaInclude : ComponentBase
 
     #region ------ Public Methods ------
 
-    // note: no ReloadAsync - wa-include exposes no reload() method in WA 3.0 and Lit's
+    // NOTE checked against WA 3.14.0: no ReloadAsync - wa-include exposes no reload() method, and Lit's
     // reactive src property ignores same-value re-assignment; re-fetching requires changing
     // the Src parameter (e.g. via a cache-busting query string)
 

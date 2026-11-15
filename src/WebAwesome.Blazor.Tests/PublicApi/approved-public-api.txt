@@ -68,6 +68,8 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ClearIconContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? DayContentFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool DisableFuture { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool DisablePast { get; set; }
@@ -85,6 +87,8 @@ namespace WebAwesome.Blazor.Base
         public WebAwesome.Blazor.Components.WaFirstDayOfWeek? FirstDayOfWeek { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? IsDateDisabledFunction { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public System.DateOnly? Max { get; set; }
@@ -110,6 +114,8 @@ namespace WebAwesome.Blazor.Base
         public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -143,6 +149,8 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? DayContentFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool DisableFuture { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool DisablePast { get; set; }
@@ -161,6 +169,8 @@ namespace WebAwesome.Blazor.Base
         public Microsoft.AspNetCore.Components.RenderFragment? FooterContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? HeaderContent { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? IsDateDisabledFunction { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -186,6 +196,8 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Style { get; set; }
@@ -208,6 +220,7 @@ namespace WebAwesome.Blazor.Base
         public System.Threading.Tasks.Task FocusAsync() { }
         public System.Threading.Tasks.Task GoToDateAsync(System.DateOnly date) { }
         public System.Threading.Tasks.Task GoToTodayAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
     }
     public abstract class WaInputBase<TValue> : Microsoft.AspNetCore.Components.Forms.InputBase<TValue>, WebAwesome.Blazor.Base.IFormValidation
     {
@@ -218,6 +231,8 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Disabled { get; set; }
         public Microsoft.AspNetCore.Components.ElementReference? Element { get; protected set; }
+        protected virtual WebAwesome.Blazor.Components.WaSize? ElementDefaultSize { get; }
+        protected virtual bool ElementHasSize { get; }
         [Microsoft.AspNetCore.Components.Inject]
         protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
         protected virtual string? LiveValuePropertyName { get; }
@@ -242,6 +257,7 @@ namespace WebAwesome.Blazor.Base
         protected int AddCommonEventHandlers(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, bool includeInputHandler) { }
         protected int AddLabelAndHintSlots(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, Microsoft.AspNetCore.Components.RenderFragment? markupLabel, Microsoft.AspNetCore.Components.RenderFragment? markupHint) { }
         protected Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs> CreateImmediateInputHandler() { }
+        protected string FormatValidationMessage(string format) { }
         protected string GetCombinedCssClass() { }
         protected virtual object? GetLiveValue() { }
         protected void MarkLiveValueSynced(object? value) { }
@@ -350,12 +366,18 @@ namespace WebAwesome.Blazor.Base
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaTooltipSide? TooltipPlacement { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? ValueFormatterFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool WithMarkers { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithTooltip { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        [System.Obsolete("wa-slider ignores JavaScript source text, so this method had no effect and sends " +
+            "nothing now. Use ValueFormatterFunction with a WaJsFunction reference. This meth" +
+            "od is removed in the 3.15.0 train.")]
         public System.Threading.Tasks.Task SetValueFormatterAsync(string jsFunction) { }
         public System.Threading.Tasks.Task StepDownAsync() { }
         public System.Threading.Tasks.Task StepUpAsync() { }
@@ -372,6 +394,7 @@ namespace WebAwesome.Blazor.Base
         public virtual System.Threading.Tasks.Task RegisterIconLibraryAsync(string name, WebAwesome.Blazor.Models.IconLibraryOptions options) { }
         public System.Threading.Tasks.Task SetCustomValidityAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string message) { }
         public virtual System.Threading.Tasks.Task SetDefaultIconFamilyAsync(string family) { }
+        public virtual System.Threading.Tasks.Task SetIconPathAsync(string iconPath) { }
         public virtual System.Threading.Tasks.Task SetKitCodeAsync(string kitCode) { }
         public System.Threading.Tasks.Task SetPropertyAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string propertyName, object value) { }
         public System.Threading.Tasks.Task SyncPropertyAsync(Microsoft.AspNetCore.Components.ElementReference elementReference, string propertyName, object? value) { }
@@ -1253,6 +1276,10 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public int? FilterDebounce { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? FilterFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? GetTagFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaInputMode? InputMode { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1289,6 +1316,8 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<System.Collections.Generic.IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Server { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool? Spellcheck { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1431,6 +1460,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? ChildRows { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? ChildRowsFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? Class { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridColumn>? Columns { get; set; }
@@ -1498,11 +1529,21 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Resizable { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? RowClassFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? RowDetailFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? RowKey { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? SearchFunction { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaDataGridSelectable? Selectable { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? SelectableRowsFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public bool Server { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public WebAwesome.Blazor.Components.WaSize? Size { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
@@ -1537,6 +1578,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task<WebAwesome.Blazor.Models.WaDataGridState> GetStateAsync() { }
         public System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyDictionary<string, object>>> GetVisibleRowsAsync() { }
         protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        protected override void OnParametersSet() { }
         protected override System.Threading.Tasks.Task OnParametersSetAsync() { }
         public System.Threading.Tasks.Task PinColumnAsync(string columnId, string? side) { }
         public System.Threading.Tasks.Task ReloadAsync() { }
@@ -1547,7 +1589,7 @@ namespace WebAwesome.Blazor.Components
         public System.Threading.Tasks.Task SizeColumnsToFitAsync() { }
         public System.Threading.Tasks.Task ToggleColumnAsync(string columnId, bool? visible = default) { }
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaDataGridAggregationJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaDataGridAggregationJsonConverter))]
     public enum WaDataGridAggregation
     {
         Sum = 0,
@@ -1560,7 +1602,7 @@ namespace WebAwesome.Blazor.Components
         UniqueCount = 7,
         Count = 8,
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaDataGridAlignJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaDataGridAlignJsonConverter))]
     public enum WaDataGridAlign
     {
         Start = 0,
@@ -1636,7 +1678,7 @@ namespace WebAwesome.Blazor.Components
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridFilterDescriptor>? Filters { get; set; }
         public string? Search { get; set; }
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaDataGridFilterTypeJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaDataGridFilterTypeJsonConverter))]
     public enum WaDataGridFilterType
     {
         Text = 0,
@@ -1653,7 +1695,7 @@ namespace WebAwesome.Blazor.Components
         public int Page { get; set; }
         public int PageSize { get; set; }
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaDataGridPinSideJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaDataGridPinSideJsonConverter))]
     public enum WaDataGridPinSide
     {
         Left = 0,
@@ -1681,7 +1723,7 @@ namespace WebAwesome.Blazor.Components
         public WaDataGridSortChangeEventArgs() { }
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaDataGridSortFnJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaDataGridSortFnJsonConverter))]
     public enum WaDataGridSortFn
     {
         Alphanumeric = 0,
@@ -1691,7 +1733,7 @@ namespace WebAwesome.Blazor.Components
         Datetime = 4,
         Basic = 5,
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaDataGridSortUndefinedJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaDataGridSortUndefinedJsonConverter))]
     public enum WaDataGridSortUndefined
     {
         First = 0,
@@ -1719,7 +1761,7 @@ namespace WebAwesome.Blazor.Components
         public WaDatePickerFocusDayEventArgs() { }
         public System.DateOnly? Date { get; set; }
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaDatePickerViewJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaDatePickerViewJsonConverter))]
     public enum WaDatePickerView
     {
         Days = 0,
@@ -2889,7 +2931,7 @@ namespace WebAwesome.Blazor.Components
         public string? OldValue { get; init; }
         public WebAwesome.Blazor.Components.WaMutationType Type { get; init; }
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaMutationTypeJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaMutationTypeJsonConverter))]
     public enum WaMutationType
     {
         Attributes = 0,
@@ -3202,6 +3244,10 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public string? HrefTemplate { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? HrefTemplateFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        protected WebAwesome.Blazor.Base.WebAwesomeJSInterop JSInterop { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? LastIconContent { get; set; }
@@ -3236,6 +3282,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public bool WithoutNav { get; set; }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        protected override void OnParametersSet() { }
     }
     public enum WaPaginationAppearance
     {
@@ -3544,6 +3592,7 @@ namespace WebAwesome.Blazor.Components
         public WaRadioGroup() { }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ChildContent { get; set; }
+        protected override WebAwesome.Blazor.Components.WaSize? ElementDefaultSize { get; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? Name { get; set; }
@@ -3631,6 +3680,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public decimal DefaultValue { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? GetSymbolFunction { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public string? Label { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int Max { get; set; }
@@ -3644,10 +3695,16 @@ namespace WebAwesome.Blazor.Components
         public bool Readonly { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public bool Required { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
         public System.Threading.Tasks.Task BlurAsync() { }
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder) { }
         public System.Threading.Tasks.Task FocusAsync() { }
         protected override string? FormatValueAsString(decimal value) { }
+        protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
+        [System.Obsolete("JavaScript source text cannot become the function that wa-rating calls, so the el" +
+            "ement failed to render. Use GetSymbolFunction with a WaJsFunction reference. Thi" +
+            "s method throws NotSupportedException and is removed in the 3.15.0 train.")]
         public System.Threading.Tasks.Task SetSymbolFunctionAsync(string jsFunction) { }
         protected override bool TryParseValueFromString(string? value, out decimal result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
@@ -3657,7 +3714,7 @@ namespace WebAwesome.Blazor.Components
         public WebAwesome.Blazor.Components.WaRatingHoverPhase Phase { get; set; }
         public decimal Value { get; set; }
     }
-    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Base.WaRatingHoverPhaseJsonConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaRatingHoverPhaseJsonConverter))]
     public enum WaRatingHoverPhase
     {
         Start = 0,
@@ -3809,7 +3866,11 @@ namespace WebAwesome.Blazor.Components
         public string? EndIconName { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? ExpandIconContent { get; set; }
+        [System.Obsolete("Nothing reads this property. Use GetTagFunction with a WaJsFunction reference. Th" +
+            "is property is removed in the 3.15.0 train.")]
         public System.Func<WebAwesome.Blazor.Components.WaOption, int, string>? GetTag { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public WebAwesome.Blazor.Models.WaJsFunction? GetTagFunction { get; set; }
         protected override string? LiveValuePropertyName { get; }
         [Microsoft.AspNetCore.Components.Parameter]
         public int? MaxOptionsVisible { get; set; }
@@ -3832,6 +3893,8 @@ namespace WebAwesome.Blazor.Components
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<System.Collections.Generic.IReadOnlyList<string>?> SelectedValuesChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
+        public string? ShadowStyles { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.RenderFragment? StartContent { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public string? StartIconName { get; set; }
@@ -3843,6 +3906,9 @@ namespace WebAwesome.Blazor.Components
         protected override object? GetLiveValue() { }
         protected override System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender) { }
         protected override void OnParametersSet() { }
+        [System.Obsolete("JavaScript source text cannot become the function that wa-select calls, so the el" +
+            "ement failed to render. Use GetTagFunction with a WaJsFunction reference. This m" +
+            "ethod throws NotSupportedException and is removed in the 3.15.0 train.")]
         public System.Threading.Tasks.Task SetGetTagFunctionAsync(string jsFunction) { }
         protected override bool TryParseValueFromString(string? value, out string? result, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? validationErrorMessage) { }
     }
@@ -3884,6 +3950,8 @@ namespace WebAwesome.Blazor.Components
         public Microsoft.AspNetCore.Components.EventCallback<decimal?> MinValueChanged { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public Microsoft.AspNetCore.Components.EventCallback<decimal?> OnValueChange { get; set; }
+        [System.Obsolete("Nothing reads this property. Use ValueFormatterFunction with a WaJsFunction refer" +
+            "ence. This property is removed in the 3.15.0 train.")]
         public System.Func<decimal, string>? ValueFormatter { get; set; }
         protected override string? FormatValueAsString(decimal? value) { }
         protected override object? GetLiveValue() { }
@@ -4928,6 +4996,140 @@ namespace WebAwesome.Blazor.Extensions
         public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddWebAwesome(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<WebAwesome.Blazor.Models.WebAwesomeOptions> configure) { }
     }
 }
+namespace WebAwesome.Blazor.Infrastructure
+{
+    public static class ChangeEventArgsExtensions
+    {
+        public static string[] GetStringArrayValue(this Microsoft.AspNetCore.Components.ChangeEventArgs args) { }
+        public static string? GetStringValue(this Microsoft.AspNetCore.Components.ChangeEventArgs args) { }
+        public static bool TryParseJsNumber(string? text, out decimal value) { }
+    }
+    public static class FormControlRendering
+    {
+        public static void AddAffixSlots(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, WebAwesome.Blazor.Base.IWaAffixedControl control, string? startIconName = null, string? endIconName = null) { }
+        public static void AddLabelAndHintAttributes(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, WebAwesome.Blazor.Base.IWaLabeledControl control) { }
+        public static int AddLabelAndHintSlots(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, WebAwesome.Blazor.Base.IWaLabeledControl control) { }
+        public static int AddLabelAndHintSlots(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, Microsoft.AspNetCore.Components.RenderFragment? markupLabel, Microsoft.AspNetCore.Components.RenderFragment? markupHint) { }
+        public static void AddWithHintAndLabelAttributes(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, WebAwesome.Blazor.Base.IWaLabeledControl control) { }
+    }
+    public static class RenderTreeBuilderExtensions
+    {
+        public static void AddAttributeIfHasDelegate(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback callback) { }
+        public static void AddAttributeIfHasDelegate<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback<T> callback) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateOnly value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateOnly? value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTime value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTime? value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTimeOffset value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTimeOffset? value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.TimeOnly value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.TimeOnly? value) { }
+        [System.Obsolete(@"A bool would render as ""True"" or ""False"", which no custom element attribute reads. Use AddBooleanAttribute for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads ""true""/""false"", or AddOnOffAttribute for one that reads ""on""/""off"".", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool value) { }
+        [System.Obsolete(@"A bool would render as ""True"" or ""False"", which no custom element attribute reads. Use AddBooleanAttribute for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads ""true""/""false"", or AddOnOffAttribute for one that reads ""on""/""off"".", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool? value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.DateOnly? value, System.DateOnly? defaultValue) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.DateTime? value, System.DateTime? defaultValue) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.DateTimeOffset? value, System.DateTimeOffset? defaultValue) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.TimeOnly? value, System.TimeOnly? defaultValue) { }
+        [System.Obsolete(@"A bool would render as ""True"" or ""False"", which no custom element attribute reads. Use AddBooleanAttribute for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads ""true""/""false"", or AddOnOffAttribute for one that reads ""on""/""off"".", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, bool value, bool defaultValue) { }
+        [System.Obsolete(@"A bool would render as ""True"" or ""False"", which no custom element attribute reads. Use AddBooleanAttribute for a present/absent attribute, AddTrueFalseAttribute for an attribute that reads ""true""/""false"", or AddOnOffAttribute for one that reads ""on""/""off"".", true)]
+        public static void AddAttributeIfNotNull(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, bool? value, bool? defaultValue) { }
+        public static void AddAttributeIfNotNull<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, T? value) { }
+        public static void AddAttributeIfNotNull<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, T? value, T defaultValue) { }
+        public static void AddAttributeIfNotNullOrEmpty(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, string? value) { }
+        public static void AddAttributeIfNotNullOrEmpty(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, string? value, string defaultValue) { }
+        public static void AddBooleanAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool? value) { }
+        public static void AddDateAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateOnly? value) { }
+        public static void AddDateAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.DateOnly? value, System.DateOnly? defaultValue) { }
+        public static void AddDateSetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlySet<System.DateOnly>? value) { }
+        public static void AddDateSetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.Collections.Generic.IReadOnlySet<System.DateOnly>? value, System.Collections.Generic.IReadOnlySet<System.DateOnly> defaultValue) { }
+        public static void AddDateTimeOffsetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTimeOffset? value) { }
+        public static void AddDateTimeOffsetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.DateTimeOffset? value, System.TimeProvider clock) { }
+        public static void AddDaysOfWeekAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlySet<System.DayOfWeek>? value) { }
+        public static void AddDaysOfWeekAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.Collections.Generic.IReadOnlySet<System.DayOfWeek>? value, System.Collections.Generic.IReadOnlySet<System.DayOfWeek> defaultValue) { }
+        public static void AddDefaultedAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, string value, string defaultValue) { }
+        public static void AddIconSlot(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string? slotName, string? iconName) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddNumberAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateOnly value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddNumberAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTime value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddNumberAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.DateTimeOffset value) { }
+        [System.Obsolete(@"A date or time would render in a culture-dependent form that Web Awesome does not parse. Use AddDateAttribute (DateOnly, yyyy-MM-dd), AddTimeAttribute (TimeOnly, HH:mm[:ss]), AddDateSetAttribute, AddDaysOfWeekAttribute or AddDateTimeOffsetAttribute (DateTimeOffset, with its offset; convert a DateTime to a DateOnly or a DateTimeOffset first).", true)]
+        public static void AddNumberAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.TimeOnly value) { }
+        public static void AddNumberAttribute<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, T value)
+            where T :  struct, System.IFormattable { }
+        public static void AddNumberAttribute<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, T value, T defaultValue)
+            where T :  struct, System.IFormattable { }
+        public static void AddNumberListAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlyList<double>? value) { }
+        public static void AddNumberListAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.Collections.Generic.IReadOnlyList<double>? value, System.Collections.Generic.IReadOnlyList<double> defaultValue) { }
+        public static void AddOnOffAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool? value) { }
+        public static void AddOwnEventIfHasDelegate(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback callback) { }
+        public static void AddOwnEventIfHasDelegate<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback<T> callback) { }
+        public static void AddOwnEventStopPropagation(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name) { }
+        public static void AddRelayedEventIfHasDelegate<T>(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, Microsoft.AspNetCore.Components.EventCallback<T> callback) { }
+        public static void AddSlotContent(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string slotName, Microsoft.AspNetCore.Components.RenderFragment? content) { }
+        public static void AddStepAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, WebAwesome.Blazor.Components.WaValueStep? value) { }
+        public static void AddStepAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, WebAwesome.Blazor.Components.WaValueStep? value, WebAwesome.Blazor.Components.WaValueStep defaultValue) { }
+        public static void AddTimeAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.TimeOnly? value) { }
+        public static void AddTimeAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.TimeOnly? value, System.TimeOnly? defaultValue) { }
+        public static void AddTokenListAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlyCollection<string>? value, string separator, char[] forbidden) { }
+        public static void AddTokenListAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, System.Collections.Generic.IReadOnlyCollection<string>? value, System.Collections.Generic.IReadOnlyCollection<string> defaultValue, string separator, char[] forbidden) { }
+        public static void AddTokenSetAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, System.Collections.Generic.IReadOnlySet<string>? value) { }
+        public static void AddTrueFalseAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, bool? value) { }
+        public static void AddTrueFalseAttribute(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, WebAwesome.Blazor.Infrastructure.WaAttributeMemory memory, int sequence, string name, bool? value, bool defaultValue) { }
+        public static string? FormatInvariant<T>(T value) { }
+        public static WebAwesome.Blazor.Infrastructure.WaAttributeMemory OpenWaElement(this Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, object component, int sequence, string tag) { }
+    }
+    public sealed class WaAttributeMemory
+    {
+        public System.Collections.Generic.IReadOnlyDictionary<string, string> PassedDefaults { get; }
+        public void Render(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, string? value, System.Func<string> computedDefault) { }
+        public void Render(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, int sequence, string name, string? value, string elementDefault, bool omitWhileDefault) { }
+        public static WebAwesome.Blazor.Infrastructure.WaAttributeMemory Of(object component) { }
+    }
+    public abstract class WaEnumJsonConverter<TEnum> : System.Text.Json.Serialization.JsonConverter<TEnum>
+        where TEnum :  struct, System.Enum
+    {
+        protected WaEnumJsonConverter() { }
+        public override TEnum Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options) { }
+        protected abstract string ToWire(TEnum value);
+        public override void Write(System.Text.Json.Utf8JsonWriter writer, TEnum value, System.Text.Json.JsonSerializerOptions options) { }
+    }
+    public static class WaWireFormat
+    {
+        public const string CommaSeparator = ",";
+        public const string SemicolonSeparator = ";";
+        public const string SpaceSeparator = " ";
+        public static string FormatDate(System.DateOnly date) { }
+        public static string FormatDateRange(WebAwesome.Blazor.Components.WaDateRange range) { }
+        public static string FormatDates(System.Collections.Generic.IEnumerable<System.DateOnly> dates) { }
+        public static string FormatDaysOfWeek(System.Collections.Generic.IEnumerable<System.DayOfWeek> days) { }
+        public static string FormatInstant(System.DateTimeOffset instant) { }
+        public static string FormatLocalDateTime(System.DateTime value) { }
+        public static string FormatNumbers(System.Collections.Generic.IEnumerable<double> numbers, string separator) { }
+        public static string FormatTime(System.TimeOnly time, bool withSeconds) { }
+        public static string FormatTimeBound(System.TimeOnly time) { }
+        public static string FormatTokens(System.Collections.Generic.IEnumerable<string> tokens, string separator, char[] forbidden) { }
+        public static bool TryParseDate(string? value, out System.DateOnly date) { }
+        public static bool TryParseDateRange(string? value, out WebAwesome.Blazor.Components.WaDateRange range) { }
+        public static bool TryParseTime(string? value, out System.TimeOnly time) { }
+    }
+}
 namespace WebAwesome.Blazor.Layout
 {
     public enum AlignItems
@@ -5086,8 +5288,12 @@ namespace WebAwesome.Blazor.Models
     public class IconLibraryOptions
     {
         public IconLibraryOptions() { }
+        [System.Obsolete("Use MutatorFunction with WaJsFunction.Global(path), or with a registered or modul" +
+            "e function. This property is removed in the 3.15.0 train.")]
         public string? Mutator { get; set; }
+        public WebAwesome.Blazor.Models.WaJsFunction? MutatorFunction { get; set; }
         public string? Resolver { get; set; }
+        public WebAwesome.Blazor.Models.WaJsFunction? ResolverFunction { get; set; }
         public bool SpriteSheet { get; set; }
     }
     public enum WaAssetSource
@@ -5098,30 +5304,78 @@ namespace WebAwesome.Blazor.Models
     public class WaDataGridColumn
     {
         public WaDataGridColumn() { }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("aggregatedFormatter")]
+        public WebAwesome.Blazor.Models.WaJsFunction? AggregatedFormatter { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public WebAwesome.Blazor.Components.WaDataGridAggregation? Aggregation { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public WebAwesome.Blazor.Models.WaJsFunction? AggregationFunction { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridAlign? Align { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public string? CellClass { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public WebAwesome.Blazor.Models.WaJsFunction? CellClassFunction { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("comparator")]
+        public WebAwesome.Blazor.Models.WaJsFunction? ComparatorFunction { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public string? Field { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("filterFn")]
+        public WebAwesome.Blazor.Models.WaJsFunction? FilterFunction { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridFilterOption>? FilterOptions { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridFilterType? FilterType { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Filterable { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public double? Flex { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public string? Footer { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public WebAwesome.Blazor.Models.WaJsFunction? FooterFunction { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("formatter")]
+        public WebAwesome.Blazor.Models.WaJsFunction? Formatter { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridAlign? HeaderAlign { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Hidden { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Hideable { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public string? Id { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public string? Label { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public int? MaxWidth { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public int? MinWidth { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Movable { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Pinnable { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridPinSide? Pinned { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Resizable { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Searchable { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? SortDescFirst { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridSortFn? SortFn { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public WebAwesome.Blazor.Components.WaDataGridSortUndefined? SortUndefined { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public bool? Sortable { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        [System.Text.Json.Serialization.JsonPropertyName("value")]
+        public WebAwesome.Blazor.Models.WaJsFunction? ValueFunction { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public int? Width { get; set; }
     }
     public class WaDataGridColumnPinning
@@ -5161,6 +5415,15 @@ namespace WebAwesome.Blazor.Models
         public string Id { get; set; }
         public object? Value { get; set; }
     }
+    public sealed class WaDataGridFilterOption : System.IEquatable<WebAwesome.Blazor.Models.WaDataGridFilterOption>
+    {
+        public WaDataGridFilterOption(string Value, string? Label = null, int? Count = default) { }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        public int? Count { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        public string? Label { get; init; }
+        public string Value { get; init; }
+    }
     public class WaDataGridRequestSnapshot
     {
         public WaDataGridRequestSnapshot() { }
@@ -5192,6 +5455,31 @@ namespace WebAwesome.Blazor.Models
         public System.Collections.Generic.IReadOnlyList<WebAwesome.Blazor.Models.WaDataGridSortDescriptor>? Sort { get; set; }
         public int Version { get; set; }
     }
+    [System.Text.Json.Serialization.JsonConverter(typeof(WebAwesome.Blazor.Infrastructure.WaJsFunctionJsonConverter))]
+    public sealed class WaJsFunction : System.IEquatable<WebAwesome.Blazor.Models.WaJsFunction>
+    {
+        public const string DefaultExportName = "default";
+        public bool AllowCrossOrigin { get; }
+        public System.Text.Json.JsonElement? Args { get; }
+        public string? ExportName { get; }
+        public WebAwesome.Blazor.Models.WaJsFunctionKind Kind { get; }
+        public string Reference { get; }
+        public System.Collections.Generic.IReadOnlyList<string> Tags { get; }
+        public bool Equals(WebAwesome.Blazor.Models.WaJsFunction? other) { }
+        public override int GetHashCode() { }
+        public override string ToString() { }
+        public WebAwesome.Blazor.Models.WaJsFunction Uses(params string[] tags) { }
+        public WebAwesome.Blazor.Models.WaJsFunction WithArgs(object args) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Global(string path) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Module(string url, string exportName = "default", bool allowCrossOrigin = false) { }
+        public static WebAwesome.Blazor.Models.WaJsFunction Registered(string name) { }
+    }
+    public enum WaJsFunctionKind
+    {
+        Registered = 0,
+        Module = 1,
+        Global = 2,
+    }
     public class WaVideoState : System.IEquatable<WebAwesome.Blazor.Models.WaVideoState>
     {
         public WaVideoState(bool Playing, double CurrentTime, double Duration, double Volume, bool Muted, double PlaybackRate) { }
@@ -5208,7 +5496,9 @@ namespace WebAwesome.Blazor.Models
         public WebAwesome.Blazor.Models.WaAssetSource AssetSource { get; set; }
         public string? BasePath { get; set; }
         public string CdnBaseUrl { get; set; }
+        public bool EmitInspectorMetadata { get; set; }
         public string? FontAwesomeKitCode { get; set; }
+        public string? IconPath { get; set; }
         public string? LoaderUrl { get; set; }
         public string? StylesheetUrl { get; set; }
         public string? Version { get; set; }
@@ -5228,6 +5518,7 @@ namespace WebAwesome.Blazor.Services
         public System.Threading.Tasks.Task RegisterIconLibraryAsync(string name, WebAwesome.Blazor.Models.IconLibraryOptions options) { }
         public System.Threading.Tasks.Task RegisterLucideAsync(string version = "latest") { }
         public System.Threading.Tasks.Task SetDefaultIconFamilyAsync(string family) { }
+        public System.Threading.Tasks.Task SetIconPathAsync(string iconPath) { }
         public System.Threading.Tasks.Task UnregisterIconLibraryAsync(string name) { }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 using WebAwesome.Blazor.Models;
 using WebAwesome.Blazor.Services;
 
@@ -48,6 +49,9 @@ public static class ServiceCollectionExtensions
         configure(options);
 
         services.AddSingleton(options);
+
+        // the inspector metadata is process-wide: the wrappers have no services to read the options from
+        WaInspectorMetadata.Enabled = options.EmitInspectorMetadata;
         services.AddScoped<WebAwesomeJSInterop>();
         services.AddScoped<WaIconLibraryService>();
 
@@ -85,6 +89,11 @@ public static class ServiceCollectionExtensions
         options.StylesheetUrl = section[nameof(WebAwesomeOptions.StylesheetUrl)] ?? options.StylesheetUrl;
         options.LoaderUrl = section[nameof(WebAwesomeOptions.LoaderUrl)] ?? options.LoaderUrl;
         options.FontAwesomeKitCode = section[nameof(WebAwesomeOptions.FontAwesomeKitCode)] ?? options.FontAwesomeKitCode;
+        options.IconPath = section[nameof(WebAwesomeOptions.IconPath)] ?? options.IconPath;
+
+        var emitInspectorMetadata = section[nameof(WebAwesomeOptions.EmitInspectorMetadata)];
+        if (!string.IsNullOrEmpty(emitInspectorMetadata))
+            options.EmitInspectorMetadata = bool.Parse(emitInspectorMetadata);
     }
 
     #endregion

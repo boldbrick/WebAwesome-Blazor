@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -182,8 +183,8 @@ public class WaMutationObserver : ComponentBase
         await JSInterop.InvokeMethodAsync(Element.Value, "startObserver");
     }
 
-    // note: no TakeRecordsAsync - wa-mutation-observer exposes no takeRecords() method in
-    // WA 3.0 (the underlying MutationObserver instance is private to the element)
+    // NOTE checked against WA 3.14.0: no TakeRecordsAsync - wa-mutation-observer exposes no takeRecords()
+    // method (the underlying MutationObserver instance is private to the element)
 
     #endregion
 

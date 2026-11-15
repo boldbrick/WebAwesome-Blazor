@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Components;
@@ -19,24 +20,27 @@ namespace WebAwesome.Blazor.Components;
 /// <para>
 /// <see cref="Data"/> and <see cref="Columns"/> are JavaScript properties on the underlying element,
 /// not HTML attributes, and there is no declarative JSON child form. The wrapper pushes both through
-/// <see cref="WebAwesomeJSInterop.SetPropertyAsync"/> on first render and whenever either parameter
-/// changes.
+/// JS interop on first render. After that, it pushes <see cref="Data"/> on every parameter set, so a list changed in
+/// place reaches the element. It pushes <see cref="Columns"/> only when the serialized column definitions changed:
+/// a change in place of the list or of a column reaches the element, but an unrelated parameter change, or a new list
+/// with the same definitions, does not make the grid render every cell again.
 /// </para>
 /// <para>
-/// The upstream <c>dataSource</c> property (an async request-to-response callback) cannot be marshaled
-/// across JS interop and is not exposed. Use server mode instead: set <see cref="Server"/>, handle
+/// The upstream <c>dataSource</c> property (an async request-to-response callback) is not bound, because server mode
+/// covers it with a .NET handler: set <see cref="Server"/>, handle
 /// <see cref="OnDataRequest"/> to fetch the current page (its args carry the active sort, filters,
 /// search term, page, and page size), then assign <see cref="Data"/>, <see cref="Total"/>, and
 /// <see cref="Loading"/> yourself.
 /// </para>
 /// <para>
-/// The upstream <c>child-rows</c> property accepts either a field name or a function that computes a
-/// row's children; only the field-name (string) form is exposed as <see cref="ChildRows"/>.
-/// </para>
-/// <para>
-/// Rich per-cell rendering (the column <c>formatter</c>/<c>aggregatedFormatter</c> Lit templates) has no
-/// Blazor equivalent and is not exposed by <see cref="WaDataGridColumn"/>; only its JSON-expressible
-/// members are supported.
+/// Rich cell content, footers, computed values, filters, aggregations and classes come from JavaScript: the
+/// function-valued members of <see cref="WaDataGridColumn"/> take a <see cref="WaJsFunction"/> reference, which the
+/// browser resolves before it assigns the columns. The grid-level function members are parameters of their own:
+/// <see cref="RowClassFunction"/>, <see cref="RowDetailFunction"/>, <see cref="SearchFunction"/>,
+/// <see cref="SelectableRowsFunction"/> and <see cref="ChildRowsFunction"/>, pushed to the element only when they
+/// change. A reference that does not resolve leaves its member out (the grid uses its default) and writes a
+/// <c>console.error</c>. The grid renders the function output in its shadow root: <see cref="ShadowStyles"/> styles
+/// it, and <see cref="WaJsFunction.Uses"/> declares its Web Awesome elements.
 /// </para>
 /// </remarks>
 public class WaDataGrid : ComponentBase
@@ -82,10 +86,21 @@ public class WaDataGrid : ComponentBase
     [Parameter] public IReadOnlyList<object>? Data { get; set; }
 
     /// <summary>
-    /// The column definitions. Pushed to the element's <c>columns</c> JavaScript property; see the
-    /// class remarks for why this isn't an HTML attribute.
+    /// The column definitions. Pushed to the element's <c>columns</c> JavaScript property when the serialized
+    /// definitions change; see the class remarks for why this isn't an HTML attribute.
     /// </summary>
     [Parameter] public IReadOnlyList<WaDataGridColumn>? Columns { get; set; }
+
+    /// <summary>
+    /// CSS rules for the output of the JavaScript functions (the cells of <see cref="WaDataGridColumn.Formatter"/> and
+    /// <see cref="WaDataGridColumn.AggregatedFormatter"/>, the footer of <see cref="WaDataGridColumn.FooterFunction"/>,
+    /// the detail panel of <see cref="RowDetailFunction"/>, and the classes of
+    /// <see cref="WaDataGridColumn.CellClassFunction"/> and <see cref="RowClassFunction"/>), adopted into the grid's
+    /// shadow root as a constructed stylesheet and replaced only when the text changes. It is for styling your own
+    /// function output, for example a class that a formatter sets, not Web Awesome's internals: style those with
+    /// <c>::part</c> and the CSS custom properties.
+    /// </summary>
+    [Parameter] public string? ShadowStyles { get; set; }
 
     /// <summary>
     /// An accessible label for the grid.
@@ -242,10 +257,58 @@ public class WaDataGrid : ComponentBase
     /// and selection.
     /// </summary>
     /// <remarks>
-    /// Upstream also accepts a function form (<c>(row) =&gt; Row[]</c>); only the field-name string form
-    /// can be authored declaratively and is exposed here.
+    /// The function form of the upstream property is <see cref="ChildRowsFunction"/>; set one of the two.
     /// </remarks>
     [Parameter] public string? ChildRows { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that returns the child rows of a row for tree data, the function form of the element's
+    /// <c>childRows</c>. It is called as <c>(row, ctx)</c> and returns an array of rows, or undefined for none. Set
+    /// either this or <see cref="ChildRows"/>: both write the same element property, and the wrapper throws
+    /// <see cref="InvalidOperationException"/> when both are set. <c>ctx</c> holds <c>args</c> (the
+    /// <see cref="WaJsFunction.WithArgs"/> value), <c>element</c> and <c>grid</c> (the grid element) and <c>rowKey</c>
+    /// (the row's value of the <see cref="RowKey"/> field).
+    /// </summary>
+    /// <remarks>
+    /// Web Awesome 3.14.0 reads <c>childRows</c> only when the grid receives its data. On the first render, the wrapper
+    /// assigns <see cref="Data"/> only after the function has resolved (or failed to resolve), so the tree shows at once.
+    /// A function that changes after that applies from the next push of <see cref="Data"/>: every parameter set of the
+    /// grid pushes it.
+    /// </remarks>
+    [Parameter] public WaJsFunction? ChildRowsFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that returns extra CSS classes for a row, the element's <c>rowClass</c>, for example to
+    /// flag overdue rows. It is called as <c>(row, ctx)</c> and returns space-separated classes, or a falsy value for
+    /// none; group rows are skipped. The row is in the grid's shadow root, so style the classes with
+    /// <see cref="ShadowStyles"/>. <c>ctx</c> holds the members of <see cref="ChildRowsFunction"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? RowClassFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript function that renders the detail panel of an expanded row, the element's <c>rowDetail</c>. When it
+    /// is set, each row shows an expand toggle. It is called as <c>(row, ctx)</c> and returns a string (escaped text), a
+    /// <c>Node</c> or a Lit <c>TemplateResult</c>. The panel renders in the grid's shadow root when the row expands, so
+    /// declare its Web Awesome elements with <see cref="WaJsFunction.Uses"/> and style it with
+    /// <see cref="ShadowStyles"/>. <c>ctx</c> holds the members of <see cref="ChildRowsFunction"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? RowDetailFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript predicate of the global search box, the element's <c>searchFn</c>. It is called as
+    /// <c>(value, searchTerm, row, ctx)</c> for each searchable column and returns true to keep the row; a row matches
+    /// when any searchable column matches. Client mode only. <c>ctx</c> holds the members of
+    /// <see cref="ChildRowsFunction"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? SearchFunction { get; set; }
+
+    /// <summary>
+    /// The JavaScript predicate that decides whether a row can be selected, the element's <c>selectableRows</c>. It is
+    /// called as <c>(row, ctx)</c>; false locks the row: its checkbox is disabled, and select-all and range selection
+    /// skip it. Null makes every row selectable (subject to <see cref="Selectable"/>). <c>ctx</c> holds the members of
+    /// <see cref="ChildRowsFunction"/>.
+    /// </summary>
+    [Parameter] public WaJsFunction? SelectableRowsFunction { get; set; }
 
     /// <summary>
     /// Enables drag-to-resize for columns (can be overridden per column).
@@ -468,11 +531,29 @@ public class WaDataGrid : ComponentBase
     }
 
     /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">Thrown when both <see cref="ChildRows"/> and
+    /// <see cref="ChildRowsFunction"/> are set, or when a column sets both the static and the function form of one
+    /// member</exception>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (!string.IsNullOrEmpty(ChildRows) && ChildRowsFunction is not null)
+            throw new InvalidOperationException($"{nameof(WaDataGrid)}: set either {nameof(ChildRows)} or {nameof(ChildRowsFunction)}, not both; they write the same element property.");
+
+        if (Columns is null) return;
+
+        for (var index = 0; index < Columns.Count; index++)
+            Columns[index].ThrowIfBothFormsAreSet(index);
+    }
+
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (Element != null)
         {
-            await PushDataAndColumnsAsync();
+            await PushDataAsync();
+            await PushColumnsIfChangedAsync();
         }
 
         await base.OnParametersSetAsync();
@@ -481,9 +562,19 @@ public class WaDataGrid : ComponentBase
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // the function members go first: on the first render, the data push waits in the browser until they have
+        // resolved, because the grid reads childRows only when it receives data
+        await jsProperties.PushShadowStylesAsync(JSInterop, Element, ShadowStyles);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, ChildRowsMember, ChildRowsFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, RowClassMember, RowClassFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, RowDetailMember, RowDetailFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, SearchFunctionMember, SearchFunction);
+        await jsProperties.PushFunctionAsync(JSInterop, Element, SelectableRowsMember, SelectableRowsFunction);
+
         if (firstRender)
         {
-            await PushDataAndColumnsAsync();
+            await PushDataAsync();
+            await PushColumnsAsync(SerializeColumns());
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -545,6 +636,13 @@ public class WaDataGrid : ComponentBase
     /// </summary>
     /// <param name="options">Copy options; all fields are optional.</param>
     /// <returns>The number of rows copied.</returns>
+    /// <remarks>
+    /// The browser writes to the clipboard only for a focused page with a user activation (call this method from a
+    /// handler of a user action, such as a click) or with the clipboard-write permission. In server mode the copy
+    /// holds the loaded page only.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered, or when the browser refuses
+    /// the clipboard write</exception>
     public async Task<int> CopySelectedRowsAsync(WaDataGridCopyOptions? options = null)
     {
         if (Element == null)
@@ -684,8 +782,17 @@ public class WaDataGrid : ComponentBase
     }
 
     /// <summary>
-    /// Re-runs the current server request (server mode only), even if its parameters haven't changed.
+    /// Re-runs the current server request, even if its parameters haven't changed: the element raises
+    /// <see cref="OnDataRequest"/> again with the current page, sort, filters and search.
     /// </summary>
+    /// <returns>A task that completes when the element has queued the request; the element sends it (its
+    /// wa-data-request event) a moment later, so the task does not wait for <see cref="OnDataRequest"/> or for the new
+    /// rows. Requests queued in the same moment are sent as one.</returns>
+    /// <remarks>
+    /// <see cref="Server"/> mode only: on a client-mode grid, and on a grid that is not in the document, the call does
+    /// nothing.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task ReloadAsync()
     {
         if (Element == null)
@@ -795,13 +902,50 @@ public class WaDataGrid : ComponentBase
         return string.IsNullOrEmpty(Class) ? string.Empty : Class;
     }
 
-    private async Task PushDataAndColumnsAsync()
+    private async Task PushDataAsync()
     {
         if (Element == null) return;
 
-        await JSInterop.SetPropertyAsync(Element.Value, "data", Data ?? Array.Empty<object>());
-        await JSInterop.SetPropertyAsync(Element.Value, "columns", Columns ?? Array.Empty<WaDataGridColumn>());
+        await JSInterop.SetDataGridDataAsync(Element.Value, Data ?? Array.Empty<object>());
     }
+
+    // a column push makes the element render every cell again (and resolves the function references again), so a
+    // parameter set pushes the columns only when their JSON differs from the last push; the JSON catches a change in
+    // place, and a new list with the same definitions is not pushed
+    private async Task PushColumnsIfChangedAsync()
+    {
+        var columnsJson = SerializeColumns();
+        if (columnsJson == pushedColumnsJson) return;
+
+        await PushColumnsAsync(columnsJson);
+    }
+
+    private async Task PushColumnsAsync(string columnsJson)
+    {
+        if (Element == null) return;
+
+        // record the push before the await, so an overlapping parameter set does not push the same columns again
+        pushedColumnsJson = columnsJson;
+
+        await JSInterop.SetDataGridColumnsAsync(Element.Value, columnsJson);
+    }
+
+    // the JSON the element receives: unset members are left out, and a WaJsFunction is its descriptor
+    private string SerializeColumns() =>
+        JsonSerializer.Serialize(Columns ?? Array.Empty<WaDataGridColumn>(), JsonSerializerOptions.Web);
+
+    // the column JSON of the last push
+    private string? pushedColumnsJson;
+
+    // the shadow styles and the function members last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
+
+    // the function-valued members of wa-data-grid (elementFunctions in webawesome-interop.js)
+    private const string ChildRowsMember = "childRows";
+    private const string RowClassMember = "rowClass";
+    private const string RowDetailMember = "rowDetail";
+    private const string SearchFunctionMember = "searchFn";
+    private const string SelectableRowsMember = "selectableRows";
 
     #endregion
 }

@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using WebAwesome.Blazor.Components;
+using WebAwesome.Blazor.Infrastructure;
+using WebAwesome.Blazor.Models;
 
 namespace WebAwesome.Blazor.Base;
 
@@ -144,21 +146,33 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
     [Parameter] public RenderFragment? ReferenceContent { get; set; }
 
     /// <summary>
-    /// Sets the custom value formatting function for tooltips and screen readers.
+    /// The JavaScript function that formats a value for the tooltip and for screen readers (the element's
+    /// <c>valueFormatter</c>). It is called as <c>(value, ctx)</c>: the number, and <c>ctx</c> with <c>args</c> (the
+    /// <see cref="WaJsFunction.WithArgs"/> value) and <c>element</c>; it returns the text. When null, the element
+    /// formats the number for its locale.
     /// </summary>
-    /// <param name="jsFunction">JavaScript function string that formats slider values for display</param>
-    /// <returns>A task that represents the asynchronous operation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered or the operation fails</exception>
+    [Parameter] public WaJsFunction? ValueFormatterFunction { get; set; }
+
+    /// <summary>
+    /// Sent JavaScript source text to the element's <c>valueFormatter</c>, which the element ignored. It sends nothing
+    /// now. Use <see cref="ValueFormatterFunction"/> instead.
+    /// </summary>
+    /// <param name="jsFunction">JavaScript source text, which is not sent</param>
+    /// <returns>A completed task</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
-    public async Task SetValueFormatterAsync(string jsFunction)
+    // TODO WA 3.15.0 train: remove this obsolete member (replaced by ValueFormatterFunction)
+    [Obsolete(SetValueFormatterObsoleteMessage)]
+    public Task SetValueFormatterAsync(string jsFunction)
     {
         if (Element == null)
-            throw new InvalidOperationException("Cannot set value formatter: component has not been rendered yet.");
+            return Task.FromException(new InvalidOperationException("Cannot set value formatter: component has not been rendered yet."));
 
         if (string.IsNullOrEmpty(jsFunction))
-            throw new ArgumentNullException(nameof(jsFunction));
+            return Task.FromException(new ArgumentNullException(nameof(jsFunction)));
 
-        await JSInterop.SetPropertyAsync(Element.Value, "valueFormatter", jsFunction);
+        // the element ignores a string; sending it would only replace a ValueFormatterFunction
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -280,7 +294,28 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
 
         builder.CloseElement();
     }
+
+    /// <summary>
+    /// Pushes <see cref="ValueFormatterFunction"/> to the element when it changed.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first time the component has rendered</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        await jsProperties.PushFunctionAsync(JSInterop, Element, ValueFormatterMember, ValueFormatterFunction);
+    }
+
     #region ------ Internals ------
+
+    // the function-valued member of wa-slider
+    private const string ValueFormatterMember = "valueFormatter";
+
+    private const string SetValueFormatterObsoleteMessage = "wa-slider ignores JavaScript source text, so this method had no effect and sends nothing now. Use ValueFormatterFunction with a WaJsFunction reference. This method is removed in the 3.15.0 train.";
+
+    // the function member last pushed to the element
+    private readonly WaJsPropertyPush jsProperties = new();
 
     /// <summary>
     /// Parses the range-mode change payload the numericchange alias delivers, "&lt;minValue&gt;,&lt;maxValue&gt;"

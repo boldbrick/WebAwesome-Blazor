@@ -11,7 +11,7 @@
   <PropertyGroup>
     <PackageId>WebAwesome.Blazor</PackageId>
     <Title>Web Awesome Blazor Bindings</Title>
-    <Description>Strongly-typed Blazor wrappers for the Web Awesome web components: idiomatic C# parameters and enums, EditForm and validation integration, named slots as render fragments, and a minimal JS interop surface. MIT-licensed; versions follow Web Awesome releases one-to-one.</Description>
+    <Description>Strongly-typed Blazor wrappers for the Web Awesome web components: idiomatic C# parameters and enums, EditForm and validation integration, named slots as render fragments, and a minimal JS interop surface. MIT-licensed; the first three version parts are the bound Web Awesome version, a fourth part marks a bindings revision.</Description>
     <Authors>BoldBrick</Authors>
     <PackageTags>blazor;webawesome;web-awesome;shoelace;web-components;components;ui;razor</PackageTags>
     <PackageProjectUrl>https://github.com/boldbrick/WebAwesome-Blazor</PackageProjectUrl>
@@ -40,6 +40,23 @@
     <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" />
     <None Include="PACKAGE.md" Pack="true" PackagePath="\" />
   </ItemGroup>
+
+  <!-- the license notice of the bundled upstream docs ships with the docs bundle only -->
+  <ItemGroup Condition="'$(DocPackEnabled)' != 'false'">
+    <None Include="..\..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- package docs (DocPack, local Release builds only): the changelog, the technical documentation and the full
+       migration chain; docs\contributing (maintainer documentation) and docs\inspector (the WA Inspector tool docs)
+       stay out of the package -->
+  <ItemGroup>
+    <DocPackContent Include="..\..\docs\CHANGELOG.md" Title="Changelog" />
+    <DocPackContent Include="..\..\docs\technical" Title="Technical documentation" />
+    <DocPackContent Include="..\..\docs\migration" Title="Migration guides" />
+  </ItemGroup>
+
+  <!-- the upstream Web Awesome docs (web-awesome/): staged from inputs\WebAwesome with working links -->
+  <Import Project="UpstreamDocs.targets" />
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />

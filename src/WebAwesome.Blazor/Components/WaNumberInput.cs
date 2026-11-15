@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading.Tasks;
 using WebAwesome.Blazor.Base;
+using WebAwesome.Blazor.Infrastructure;
 
 namespace WebAwesome.Blazor.Components;
 
@@ -321,6 +322,11 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
     /// Increments the value of the input by the value of the <see cref="Step"/> attribute.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
+    /// <remarks>
+    /// The element dispatches no input or change event for this change, so the resulting value is read back and
+    /// assigned to the bound value, as a change from the element is (the value changed callback, the edit context and
+    /// its validation).
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task StepUpAsync()
     {
@@ -328,12 +334,18 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
             throw new InvalidOperationException("Cannot step up before the component is rendered. Element reference is null.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "stepUp");
+        await ReadValueBackAsync();
     }
 
     /// <summary>
     /// Decrements the value of the input by the value of the <see cref="Step"/> attribute.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
+    /// <remarks>
+    /// The element dispatches no input or change event for this change, so the resulting value is read back and
+    /// assigned to the bound value, as a change from the element is (the value changed callback, the edit context and
+    /// its validation).
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
     public async Task StepDownAsync()
     {
@@ -341,6 +353,21 @@ public class WaNumberInput : WaLabeledInputBase<decimal?>, IWaAffixedControl
             throw new InvalidOperationException("Cannot step down before the component is rendered. Element reference is null.");
 
         await JSInterop.InvokeMethodAsync(Element.Value, "stepDown");
+        await ReadValueBackAsync();
+    }
+
+    #endregion
+
+    #region ------ Internals ------
+
+    // the element's live value property
+    private const string ValueProperty = "value";
+
+    // assigns the element's current value to the bound value: stepUp and stepDown change the value without an input
+    // or change event
+    private async Task ReadValueBackAsync()
+    {
+        SetCurrentValueAsStringFromElement(await JSInterop.GetPropertyAsync<string?>(Element!.Value, ValueProperty));
     }
 
     #endregion

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>WA Inspector</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <header class="toolbar">
+    <button id="pick" class="tool" title="Pick an element on the page (Esc cancels)">&#8982; Pick</button>
+    <button id="refresh" class="tool" title="Read the page again">&#8635;</button>
+    <label class="tool check" title="Show the numbered outlines of the change-list items on the page">
+      <input type="checkbox" id="markers"> Markers
+    </label>
+    <label class="tool check devtools-only" title="Select the element that the Elements panel selects ($0)">
+      <input type="checkbox" id="follow" checked> Follow $0
+    </label>
+    <nav class="tabs" role="tablist">
+      <button class="tab" data-tab="elements" role="tab">Elements</button>
+      <button class="tab" data-tab="changes" role="tab">Changes <span id="change-count" class="count"></span></button>
+      <button class="tab" data-tab="theme" role="tab">Theme</button>
+    </nav>
+    <span class="spacer"></span>
+    <button id="copy" class="tool" title="Copy the change list as Markdown">Copy</button>
+    <button id="export" class="tool primary" title="Save the change list and screenshots to Downloads\wa-review">Export</button>
+  </header>
+  <div id="status" class="status"></div>
+  <main>
+    <section id="tab-elements" class="tab-page">
+      <div id="split" class="split split-columns">
+        <div id="tree-pane" class="tree-pane">
+          <input id="tree-filter" class="filter" type="search" placeholder="Filter: tag, class, text, component">
+          <div id="tree" class="tree"></div>
+        </div>
+        <div id="splitter" class="splitter" role="separator" tabindex="0" aria-controls="tree-pane" aria-valuemin="0" aria-valuemax="100"
+          aria-label="Resize the tree and the details" title="Drag to resize. Arrow keys move the divider. Double-click resets it."></div>
+        <div id="details" class="details"></div>
+      </div>
+    </section>
+    <section id="tab-changes" class="tab-page" hidden>
+      <div class="changes-toolbar">
+        <button id="clear-applied" class="tool">Remove applied items</button>
+        <button id="clear-all" class="tool danger">Clear session</button>
+      </div>
+      <div id="changes"></div>
+    </section>
+    <section id="tab-theme" class="tab-page" hidden>
+      <input id="theme-filter" class="filter" type="search" placeholder="Filter tokens, for example color-brand or space">
+      <div id="theme"></div>
+    </section>
+  </main>
+  <script src="panel.js"></script>
+</body>
+</html>

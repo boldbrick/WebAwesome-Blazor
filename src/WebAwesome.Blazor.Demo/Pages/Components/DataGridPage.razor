@@ -1,5 +1,8 @@
 @page "/components/data-grid"
+@using System.Text.Json.Serialization
+@using WebAwesome.Blazor.Extensions.DataGrid
 @using WebAwesome.Blazor.Models
+@inject IServiceProvider Services
 
 <PageTitle>Data Grid</PageTitle>
 
@@ -9,10 +12,10 @@
     column footers, pagination, CSV export and full keyboard navigation.
     <code>&lt;wa-data-grid&gt;</code> wrapped by <code>WaDataGrid</code>. Rows and columns are JavaScript
     properties rather than attributes, so <code>Data</code> and <code>Columns</code> are supplied as typed
-    C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Upstream's
-    per-cell <code>formatter</code> is a JavaScript function or Lit template and cannot cross the interop
-    boundary, so cells render their raw values; format the value in your row data when you need control
-    over how it reads.
+    C# parameters — a <code>WaDataGridColumn</code> list — and pushed to the element for you. Cells render
+    their raw values; for rich cell content, a column refers to a small JavaScript function with
+    <code>WaJsFunction</code> (see "Custom Cell Rendering with JavaScript" below; footers, computed values, classes and detail panels in "More JavaScript Members"), or to a cell preset of the
+    <code>WebAwesome.Blazor.Extensions</code> package, configured in C# only (see "Extensions: Cell Presets", and "Extensions: Actions &amp; Rules" for buttons, menus, switches, class rules and footer sums). Cell functions can ask .NET for values ("Extensions: Values from .NET"), and cells can be written in Razor as static HTML ("Extensions: Razor Cell Templates").
 </p>
 
 <ExampleSection Title="Columns" Code="@ColumnsExample">
@@ -125,6 +128,61 @@
     <p>Served <strong>@serverRows.Length</strong> of <strong>@serverTotal</strong> matching orders in @serverRequestCount request(s).</p>
 </ExampleSection>
 
+<ExampleSection Title="Custom Cell Rendering with JavaScript" Code="@CellRenderingExample">
+    <WaDataGrid Label="Sprint tasks" RowKey="id" Data="sprintTasks" Columns="taskColumns" />
+</ExampleSection>
+
+<ExampleSection Title="More JavaScript Members" Code="@MoreFunctionsExample">
+    <WaDataGrid Label="Billed work" RowKey="id" Data="invoiceItems" Columns="billingColumns"
+                RowDetailFunction="billingDetail" ShadowStyles="@BillingStyles" />
+</ExampleSection>
+
+<ExampleSection Title="Extensions: Cell Presets" Code="@CellPresetsExample">
+    <WaCallout Variant="WaVariant.Brand" IconName="puzzle-piece" Style="margin-block-end: var(--wa-space-m);">
+        This example uses the <strong>WebAwesome.Blazor.Extensions</strong> package, which adds behavior upstream
+        Web Awesome does not have. <code>WaDataGridFormatters</code> and <code>WaDataGridComparators</code> configure
+        badges, numbers, currencies, dates, lookups, icons, sort orders and links in C#, with no JavaScript of your own.
+        <code>@@onwablazor-cell-action</code> receives the actions of cell content, such as the order links.
+    </WaCallout>
+    <WaDataGrid Label="Orders" RowKey="id" Data="presetOrders" Columns="presetColumns"
+                OnCellClick="HandlePresetCellClick" @onwablazor-cell-action="HandlePresetCellAction" />
+    <WaDivider />
+    <p data-testid="preset-cell-action">@(presetActionMessage ?? "Click an order number to raise its \"open\" action.")</p>
+    <p data-testid="preset-cell-click">@(presetClickMessage ?? "Click any other cell to raise OnCellClick.")</p>
+</ExampleSection>
+
+<ExampleSection Title="Extensions: Actions &amp; Rules" Code="@ActionsRulesExample">
+    <WaDataGrid Label="Subscriptions" RowKey="id" Data="subscriptions" Columns="subscriptionColumns"
+                RowClassFunction="subscriptionRowClass" ShadowStyles="@SubscriptionStyles"
+                @onwablazor-cell-action="HandleSubscriptionAction" />
+    <WaDivider />
+    <p data-testid="subscription-action">@(subscriptionMessage ?? "Turn a subscription off, or use the actions of a row.")</p>
+</ExampleSection>
+
+<ExampleSection Title="Extensions: Values from .NET" Code="@RequestsExample">
+    <WaCallout Variant="WaVariant.Brand" IconName="puzzle-piece" Style="margin-block-end: var(--wa-space-m);">
+        A cell function asks .NET with <code>ctx.invoke(action, payload)</code> and gets a Promise. Put the grid inside a
+        <code>WaDataGridRequestHandler</code>; its <code>OnRequest</code> returns the answer, or throws
+        <code>WaDataGridRequestException</code> to reject it. The cell shows a pending state first and renders again
+        when the answer arrives.
+    </WaCallout>
+    <WaDataGridRequestHandler OnRequest="HandleStockRequestAsync">
+        <WaDataGrid data-testid="request-grid" Label="Warehouse" RowKey="sku" Data="warehouseItems" Columns="warehouseColumns" />
+    </WaDataGridRequestHandler>
+</ExampleSection>
+
+<ExampleSection Title="Extensions: Razor Cell Templates" Code="@RazorTemplatesExample">
+    <WaCallout Variant="WaVariant.Brand" IconName="puzzle-piece" Style="margin-block-end: var(--wa-space-m);">
+        <code>WaDataGridRazorTemplates</code> renders Razor markup to static HTML for each row, and the column shows it.
+        The HTML is static: use <code>data-wablazor-action</code> for buttons, not <code>@@onclick</code>. Each row costs
+        one render per template on each data push, so keep it for small pages.
+    </WaCallout>
+    <WaDataGrid data-testid="template-grid" Label="Deployments" RowKey="id" Data="deploymentRows" Columns="deploymentColumns"
+                @onwablazor-cell-action="HandleDeploymentAction" />
+    <WaDivider />
+    <p data-testid="template-action">@(deploymentMessage ?? "Restart a deployment.")</p>
+</ExampleSection>
+
 <ExampleSection Title="Responding to Cell Clicks" Code="@CellClickExample">
     <WaDataGrid Label="Countries" RowKey="code" Data="countries" Columns="cellClickColumns" OnCellClick="HandleCellClick" />
     <WaDivider />
@@ -163,6 +221,10 @@
     private string? searchTerm;
     private int filterCount;
     private string? cellClickMessage;
+    private string? presetActionMessage;
+    private string? presetClickMessage;
+    private string? subscriptionMessage;
+    private string? deploymentMessage;
     private string? csvPreview;
     private int copiedRows;
 
@@ -193,6 +255,50 @@
     private void HandleCellClick(WaDataGridCellClickEventArgs e)
     {
         cellClickMessage = $"Clicked the \"{e.Column}\" cell of row {e.RowIndex}; its value is {e.Value}.";
+    }
+
+    // the order links raise the "open" action; a click on them does not raise OnCellClick
+    private void HandlePresetCellAction(WaDataGridCellActionEventArgs e)
+    {
+        var order = e.GetRow<PresetOrderRow>();
+        presetActionMessage = $"Action \"{e.Action}\" for order {e.RowKey} (display row {e.RowIndex}): {order?.Customer}, {order?.State}.";
+    }
+
+    private void HandlePresetCellClick(WaDataGridCellClickEventArgs e)
+    {
+        presetClickMessage = $"OnCellClick: the \"{e.Column}\" cell of display row {e.RowIndex}.";
+    }
+
+    // the switch shows its new state at once: update the row and push the data, or push it unchanged to reject the change
+    private void HandleSubscriptionAction(WaDataGridCellActionEventArgs e)
+    {
+        var subscription = e.GetRow<Subscription>();
+        if (subscription is null) return;
+
+        if (e.Action == WaDataGridFormatters.DefaultToggleAction && e.GetPayload<TogglePayload>() is { } toggle)
+        {
+            subscriptions = subscriptions.Select(s => s.Id == subscription.Id ? s with { Active = toggle.Checked } : s).ToArray();
+            subscriptionMessage = $"{subscription.Customer} is {(toggle.Checked ? "active" : "paused")} now.";
+            return;
+        }
+
+        subscriptionMessage = $"Action \"{e.Action}\" for {subscription.Customer}.";
+    }
+
+    // the stock of a warehouse item, as a slow service would give it; the cell shows "Checking…" meanwhile
+    private async Task<object?> HandleStockRequestAsync(WaDataGridCellActionEventArgs request)
+    {
+        var item = request.GetRow<WarehouseItem>() ?? throw new WaDataGridRequestException("Unknown item");
+        await Task.Delay(StockLookupDelayMs);
+        if (!warehouseStock.TryGetValue(item.Sku, out var stock) || stock == 0) throw new WaDataGridRequestException("Sold out");
+        return stock;
+    }
+
+    // the template's button raises the "restart" action with data-wablazor-action
+    private void HandleDeploymentAction(WaDataGridCellActionEventArgs e)
+    {
+        var deployment = e.GetRow<Deployment>();
+        deploymentMessage = $"Action \"{e.Action}\" for {deployment?.Service} ({deployment?.Environment}).";
     }
 
     // server mode: the grid asks for the rows it needs, we fetch them and hand back Data, Total and Loading
@@ -393,7 +499,20 @@
     [
         new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150, Filterable = true },
         new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
-        new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set },
+        new()
+        {
+            Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set,
+            // the picker shows these options in this order, with their labels, and also a value that no row has
+            FilterOptions =
+            [
+                new("Africa"),
+                new("Americas", "North and South America"),
+                new("Asia"),
+                new("Europe"),
+                new("Oceania", "Australia and Oceania"),
+                new("Antarctica")
+            ]
+        },
         new() { Field = "population", Label = "Population", Align = WaDataGridAlign.End, Width = 160, Filterable = true, FilterType = WaDataGridFilterType.NumberRange }
     ];
 
@@ -512,6 +631,112 @@
         new() { Field = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 120 }
     ];
 
+    private sealed record TaskRow(int Id, string Title, string Status, int Progress);
+
+    private readonly object[] sprintTasks =
+    [
+        new TaskRow(1, "Design the onboarding flow", "done", 100),
+        new TaskRow(2, "Build the settings page", "doing", 60),
+        new TaskRow(3, "Migrate the billing data", "blocked", 35),
+        new TaskRow(4, "Write the release notes", "todo", 0),
+        new TaskRow(5, "Review the accessibility audit", "doing", 80)
+    ];
+
+    // the JavaScript file next to this page; Blazor serves a collocated .razor.js file at the page's path
+    private const string TaskCellsModule = "./Pages/Components/DataGridPage.razor.js";
+
+    private readonly WaDataGridColumn[] taskColumns =
+    [
+        new() { Field = "title", Label = "Task", Flex = 2, MinWidth = 220 },
+        new()
+        {
+            Field = "status", Label = "Status", Width = 140,
+            // a badge per status, and a sort in workflow order; the maps come from C# as ctx.args
+            Formatter = WaJsFunction.Module(TaskCellsModule, "statusBadge")
+                .WithArgs(new { variants = new { todo = "neutral", doing = "brand", blocked = "danger", done = "success" } })
+                .Uses("wa-badge"),
+            ComparatorFunction = WaJsFunction.Module(TaskCellsModule, "byWorkflowOrder")
+                .WithArgs(new { order = new[] { "todo", "doing", "blocked", "done" } })
+        },
+        new()
+        {
+            Field = "progress", Label = "Progress", Width = 200,
+            Formatter = WaJsFunction.Module(TaskCellsModule, "progressBar").Uses("wa-progress-bar")
+        }
+    ];
+
+    // the classes that the functions set are in the grid's shadow root, so ShadowStyles styles them
+    private const string BillingStyles = ".over-budget { color: var(--wa-color-danger-on-quiet); font-weight: var(--wa-font-weight-bold); }";
+
+    private readonly WaJsFunction billingDetail = WaJsFunction.Module(TaskCellsModule, "billingDetail");
+
+    private readonly WaDataGridColumn[] billingColumns =
+    [
+        new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
+        new()
+        {
+            Field = "hours", Label = "Hours", Align = WaDataGridAlign.End, Width = 110,
+            // a class for the cells over the budget in ctx.args, and the sum of the filtered rows in the footer
+            CellClassFunction = WaJsFunction.Module(TaskCellsModule, "overBudget").WithArgs(new { budget = 40 }),
+            FooterFunction = WaJsFunction.Module(TaskCellsModule, "sumOfHours")
+        },
+        new() { Field = "rate", Label = "Rate", Align = WaDataGridAlign.End, Width = 110 },
+        new()
+        {
+            // a computed value sorts, searches and exports like a field; give the column an Id
+            Id = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 130,
+            ValueFunction = WaJsFunction.Module(TaskCellsModule, "amount"),
+            FooterFunction = WaJsFunction.Module(TaskCellsModule, "sumOfAmounts")
+        }
+    ];
+
+    // the JSON converter makes the browser see the state names, which the alphabetic sort would order wrongly
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    private enum OrderState { New, Processing, Shipped, Cancelled }
+
+    private sealed record PresetOrderRow(int Id, string Customer, OrderState State, int Items, decimal Total, DateOnly Due, string Region, bool Paid);
+
+    private readonly object[] presetOrders =
+    [
+        new PresetOrderRow(1001, "Ada Lovelace", OrderState.Shipped, 3, 129.90m, new DateOnly(2026, 10, 2), "EU", true),
+        new PresetOrderRow(1002, "Grace Hopper", OrderState.Processing, 12, 1480m, new DateOnly(2026, 10, 18), "NA", false),
+        new PresetOrderRow(1003, "Alan Turing", OrderState.New, 1, 19.99m, new DateOnly(2026, 10, 21), "EU", false),
+        new PresetOrderRow(1004, "Katherine Johnson", OrderState.Cancelled, 5, 315.50m, new DateOnly(2026, 9, 30), "NA", true),
+        new PresetOrderRow(1005, "Hedy Lamarr", OrderState.Processing, 2, 74m, new DateOnly(2026, 10, 25), "APAC", true)
+    ];
+
+    private readonly WaDataGridColumn[] presetColumns =
+    [
+        new() { Field = "id", Label = "Order", Width = 110, Formatter = WaDataGridFormatters.ActionLink("open", "#{id}") },
+        new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 170 },
+        new()
+        {
+            Field = "state", Label = "State", Width = 140,
+            // a state badge, from C# only; the sort follows the workflow, not the alphabet
+            Formatter = WaDataGridFormatters.Badge<OrderState>(state => state switch
+            {
+                OrderState.Processing => WaVariant.Brand,
+                OrderState.Shipped => WaVariant.Success,
+                OrderState.Cancelled => WaVariant.Danger,
+                _ => WaVariant.Neutral,
+            }),
+            ComparatorFunction = WaDataGridComparators.Ordinal<OrderState>()
+        },
+        new() { Field = "items", Label = "Items", Align = WaDataGridAlign.End, Width = 90, Formatter = WaDataGridFormatters.Number() },
+        new() { Field = "total", Label = "Total", Align = WaDataGridAlign.End, Width = 130, Formatter = WaDataGridFormatters.Currency("EUR") },
+        new() { Field = "due", Label = "Due", Width = 140, Formatter = WaDataGridFormatters.Date(WaDataGridDateStyle.Medium) },
+        new()
+        {
+            Field = "region", Label = "Region", Width = 150,
+            Formatter = WaDataGridFormatters.Lookup(new Dictionary<string, string> { ["EU"] = "Europe", ["NA"] = "North America", ["APAC"] = "Asia-Pacific" })
+        },
+        new()
+        {
+            Field = "paid", Label = "Paid", Width = 90, Align = WaDataGridAlign.Center,
+            Formatter = WaDataGridFormatters.BooleanIcon("Paid", "Not paid", trueColor: WaVariant.Success, falseColor: WaVariant.Danger)
+        }
+    ];
+
     private sealed record ExpenseRow(int Id, string Description, string Category, decimal Amount);
 
     private readonly object[] expenses =
@@ -529,6 +754,111 @@
         new() { Field = "category", Label = "Category", Flex = 1, MinWidth = 140 },
         new() { Field = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 120 }
     ];
+
+    // Extensions: actions and rules; the classes are in the grid's shadow root, so ShadowStyles styles them
+    private const string SubscriptionStyles = ".large-team { font-weight: var(--wa-font-weight-bold); } .paused { color: var(--wa-color-text-quiet); }";
+
+    private sealed record Subscription(int Id, string Customer, int Seats, decimal Monthly, bool Active);
+
+    private sealed record TogglePayload(bool Checked);
+
+    private Subscription[] subscriptions =
+    [
+        new Subscription(1, "Northwind", 120, 2400m, true),
+        new Subscription(2, "Contoso", 25, 500m, true),
+        new Subscription(3, "Fabrikam", 8, 160m, false),
+        new Subscription(4, "Tailspin", 64, 1280m, true)
+    ];
+
+    private readonly WaJsFunction subscriptionRowClass = WaDataGridClassRules.Row(new WaDataGridClassRule("paused", WaDataGridCondition.IsFalse) { Field = "active" });
+
+    private readonly WaDataGridColumn[] subscriptionColumns =
+    [
+        new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 150 },
+        new()
+        {
+            Field = "seats", Label = "Seats", Align = WaDataGridAlign.End, Width = 100,
+            CellClassFunction = WaDataGridClassRules.Cell(new WaDataGridClassRule("large-team", WaDataGridCondition.GreaterThan(50))),
+            FooterFunction = WaDataGridFooters.Sum()
+        },
+        new()
+        {
+            Field = "monthly", Label = "Monthly", Align = WaDataGridAlign.End, Width = 140,
+            Formatter = WaDataGridFormatters.Currency("EUR"),
+            FooterFunction = WaDataGridFooters.Sum(WaDataGridFormatters.Currency("EUR"))
+        },
+        new() { Field = "active", Label = "Active", Width = 100, Formatter = WaDataGridFormatters.Switch("Active: {customer}") },
+        new()
+        {
+            Id = "actions", Label = "Actions", Width = 120,
+            Formatter = WaDataGridFormatters.Actions(
+            [
+                new WaDataGridAction("edit", "Edit") { Icon = "pen" },
+                new WaDataGridAction("invoice", "Send invoice") { InMenu = true },
+                new WaDataGridAction("cancel", "Cancel subscription") { InMenu = true, Variant = WaVariant.Danger }
+            ], WaSize.Small, WaAppearance.Plain)
+        }
+    ];
+
+    // "Extensions: Values from .NET": the stock column asks .NET (stockCell in DataGridPage.razor.js)
+    private const int StockLookupDelayMs = 600;
+
+    private sealed record WarehouseItem(string Sku, string Product, string Location);
+
+    private readonly object[] warehouseItems =
+    [
+        new WarehouseItem("A-100", "Standing desk", "Prague"),
+        new WarehouseItem("B-200", "Office chair", "Brno"),
+        new WarehouseItem("C-300", "Desk lamp", "Prague")
+    ];
+
+    private readonly Dictionary<string, int> warehouseStock = new() { ["A-100"] = 12, ["B-200"] = 0, ["C-300"] = 3 };
+
+    private readonly WaDataGridColumn[] warehouseColumns =
+    [
+        new() { Field = "sku", Label = "SKU", Width = 100 },
+        new() { Field = "product", Label = "Product", Flex = 2, MinWidth = 160 },
+        new() { Field = "location", Label = "Location", Width = 120 },
+        new() { Id = "stock", Label = "Stock", Width = 140, Formatter = WaJsFunction.Module(TaskCellsModule, "stockCell") }
+    ];
+
+    // "Extensions: Razor Cell Templates": a badge and a button in Razor, rendered to HTML for each row
+    private sealed record Deployment(int Id, string Service, string Environment, string State);
+
+    private static WaVariant StateVariant(string state) => state switch
+    {
+        "running" => WaVariant.Success,
+        "failed" => WaVariant.Danger,
+        _ => WaVariant.Neutral,
+    };
+
+    private static readonly WaDataGridRazorTemplates<Deployment> deploymentTemplates = new WaDataGridRazorTemplates<Deployment>()
+        .Add("state", deployment => @<WaBadge Variant="@StateVariant(deployment.State)" Pill="true">@deployment.State</WaBadge>)
+        .Add("actions", deployment => @<WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" StartIconName="rotate-right"
+                                                 data-wablazor-action="restart">Restart</WaButton>);
+
+    private readonly Deployment[] deployments =
+    [
+        new Deployment(1, "api", "production", "running"),
+        new Deployment(2, "worker", "production", "failed"),
+        new Deployment(3, "web", "staging", "stopped")
+    ];
+
+    private readonly WaDataGridColumn[] deploymentColumns =
+    [
+        new() { Field = "service", Label = "Service", Flex = 1, MinWidth = 120 },
+        new() { Field = "environment", Label = "Environment", Width = 140 },
+        new() { Id = "state", Field = "state", Label = "State", Width = 120, Formatter = deploymentTemplates.Formatter("state", "wa-badge") },
+        new() { Id = "actions", Label = "Actions", Width = 140, Formatter = deploymentTemplates.Formatter("actions", "wa-button", "wa-icon") }
+    ];
+
+    private IReadOnlyList<object>? deploymentRows;
+
+    // the HTML of the templates for each row: render again when the rows change
+    protected override async Task OnInitializedAsync()
+    {
+        deploymentRows = await deploymentTemplates.RenderAsync(Services, deployments);
+    }
 
     #endregion
 
@@ -634,7 +964,20 @@
             [
                 new() { Field = "country", Label = "Country", Flex = 2, MinWidth = 150, Filterable = true },
                 new() { Field = "capital", Label = "Capital", Flex = 2, MinWidth = 150 },
-                new() { Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set },
+                new()
+                {
+                    Field = "region", Label = "Region", Width = 140, Filterable = true, FilterType = WaDataGridFilterType.Set,
+                    // the picker shows these options in this order, with their labels, and also a value that no row has
+                    FilterOptions =
+                    [
+                        new("Africa"),
+                        new("Americas", "North and South America"),
+                        new("Asia"),
+                        new("Europe"),
+                        new("Oceania", "Australia and Oceania"),
+                        new("Antarctica")
+                    ]
+                },
                 new() { Field = "population", Label = "Population", Align = WaDataGridAlign.End, Width = 160, Filterable = true, FilterType = WaDataGridFilterType.NumberRange }
             ];
         }
@@ -666,7 +1009,7 @@
         <WaDataGrid Label="Invoice" RowKey="id" Data="invoiceItems" Columns="invoiceColumns" />
 
         @code {
-            @* footers take static text; upstream's row-aggregating footer function cannot be marshaled *@
+            @* static footer text; for a footer computed from the rows, see FooterFunction in "More JavaScript Members" *@
             private readonly WaDataGridColumn[] invoiceColumns =
             [
                 new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
@@ -801,6 +1144,383 @@
                 serverTotal = matches.Count;
                 serverRows = matches.Skip(e.Page * e.PageSize).Take(e.PageSize).Cast<object>().ToArray();
                 serverLoading = false;
+            }
+        }
+        """;
+
+    private const string CellRenderingExample = """
+        <WaDataGrid Label="Sprint tasks" RowKey="id" Data="sprintTasks" Columns="taskColumns" />
+
+        @code {
+            private sealed record TaskRow(int Id, string Title, string Status, int Progress);
+
+            private readonly object[] sprintTasks =
+            [
+                new TaskRow(1, "Design the onboarding flow", "done", 100),
+                new TaskRow(2, "Build the settings page", "doing", 60),
+                new TaskRow(3, "Migrate the billing data", "blocked", 35),
+                new TaskRow(4, "Write the release notes", "todo", 0),
+                new TaskRow(5, "Review the accessibility audit", "doing", 80)
+            ];
+
+            // the JavaScript file next to this page; Blazor serves a collocated .razor.js file at the page's path
+            private const string TaskCellsModule = "./Pages/Components/DataGridPage.razor.js";
+
+            private readonly WaDataGridColumn[] taskColumns =
+            [
+                new() { Field = "title", Label = "Task", Flex = 2, MinWidth = 220 },
+                new()
+                {
+                    Field = "status", Label = "Status", Width = 140,
+                    // a badge per status, and a sort in workflow order; the maps come from C# as ctx.args
+                    Formatter = WaJsFunction.Module(TaskCellsModule, "statusBadge")
+                        .WithArgs(new { variants = new { todo = "neutral", doing = "brand", blocked = "danger", done = "success" } })
+                        .Uses("wa-badge"),
+                    ComparatorFunction = WaJsFunction.Module(TaskCellsModule, "byWorkflowOrder")
+                        .WithArgs(new { order = new[] { "todo", "doing", "blocked", "done" } })
+                },
+                new()
+                {
+                    Field = "progress", Label = "Progress", Width = 200,
+                    Formatter = WaJsFunction.Module(TaskCellsModule, "progressBar").Uses("wa-progress-bar")
+                }
+            ];
+        }
+
+        // DataGridPage.razor.js, next to DataGridPage.razor
+        // each function gets the grid's arguments and a trailing ctx (ctx.args holds the WithArgs value)
+
+        export function statusBadge(value, row, ctx) {
+          const badge = document.createElement('wa-badge');
+          badge.variant = ctx.args.variants[value] ?? 'neutral';
+          badge.textContent = value;
+          return badge;
+        }
+
+        export function byWorkflowOrder(a, b, rowA, rowB, ctx) {
+          return ctx.args.order.indexOf(a) - ctx.args.order.indexOf(b);
+        }
+
+        export function progressBar(value) {
+          const bar = document.createElement('wa-progress-bar');
+          bar.value = value;
+          bar.textContent = `${value}%`;
+          return bar;
+        }
+        """;
+
+    private const string MoreFunctionsExample = """
+        <WaDataGrid Label="Billed work" RowKey="id" Data="invoiceItems" Columns="billingColumns"
+                    RowDetailFunction="billingDetail" ShadowStyles="@BillingStyles" />
+
+        @code {
+            // the classes that the functions set are in the grid's shadow root, so ShadowStyles styles them
+            private const string BillingStyles = ".over-budget { color: var(--wa-color-danger-on-quiet); font-weight: var(--wa-font-weight-bold); }";
+
+            private readonly WaJsFunction billingDetail = WaJsFunction.Module(TaskCellsModule, "billingDetail");
+
+            private readonly WaDataGridColumn[] billingColumns =
+            [
+                new() { Field = "item", Label = "Item", Flex = 2, MinWidth = 180, Footer = "Total" },
+                new()
+                {
+                    Field = "hours", Label = "Hours", Align = WaDataGridAlign.End, Width = 110,
+                    // a class for the cells over the budget in ctx.args, and the sum of the filtered rows in the footer
+                    CellClassFunction = WaJsFunction.Module(TaskCellsModule, "overBudget").WithArgs(new { budget = 40 }),
+                    FooterFunction = WaJsFunction.Module(TaskCellsModule, "sumOfHours")
+                },
+                new() { Field = "rate", Label = "Rate", Align = WaDataGridAlign.End, Width = 110 },
+                new()
+                {
+                    // a computed value sorts, searches and exports like a field; give the column an Id
+                    Id = "amount", Label = "Amount", Align = WaDataGridAlign.End, Width = 130,
+                    ValueFunction = WaJsFunction.Module(TaskCellsModule, "amount"),
+                    FooterFunction = WaJsFunction.Module(TaskCellsModule, "sumOfAmounts")
+                }
+            ];
+        }
+
+        // DataGridPage.razor.js, next to DataGridPage.razor
+
+        export function overBudget(value, row, ctx) {
+          return value > ctx.args.budget ? 'over-budget' : '';
+        }
+
+        export function amount(row) {
+          return row.hours * row.rate;
+        }
+
+        export function sumOfHours(rows) {
+          return String(rows.reduce((sum, row) => sum + row.hours, 0));
+        }
+
+        export function sumOfAmounts(rows) {
+          return String(rows.reduce((sum, row) => sum + amount(row), 0));
+        }
+
+        export function billingDetail(row) {
+          const detail = document.createElement('p');
+          detail.textContent = `${row.item}: ${row.hours} h at ${row.rate} per hour`;
+          return detail;
+        }
+        """;
+
+    private const string CellPresetsExample = """
+        @* package WebAwesome.Blazor.Extensions; @using WebAwesome.Blazor.Extensions.DataGrid *@
+        <WaDataGrid Label="Orders" RowKey="id" Data="presetOrders" Columns="presetColumns"
+                    OnCellClick="HandlePresetCellClick" @onwablazor-cell-action="HandlePresetCellAction" />
+        <WaDivider />
+        <p>@(presetActionMessage ?? "Click an order number to raise its \"open\" action.")</p>
+        <p>@(presetClickMessage ?? "Click any other cell to raise OnCellClick.")</p>
+
+        @code {
+            private string? presetActionMessage;
+            private string? presetClickMessage;
+
+            // the JSON converter makes the browser see the state names, which the alphabetic sort would order wrongly
+            [JsonConverter(typeof(JsonStringEnumConverter))]
+            private enum OrderState { New, Processing, Shipped, Cancelled }
+
+            private sealed record PresetOrderRow(int Id, string Customer, OrderState State, int Items, decimal Total, DateOnly Due, string Region, bool Paid);
+
+            private readonly object[] presetOrders =
+            [
+                new PresetOrderRow(1001, "Ada Lovelace", OrderState.Shipped, 3, 129.90m, new DateOnly(2026, 10, 2), "EU", true),
+                new PresetOrderRow(1002, "Grace Hopper", OrderState.Processing, 12, 1480m, new DateOnly(2026, 10, 18), "NA", false),
+                new PresetOrderRow(1003, "Alan Turing", OrderState.New, 1, 19.99m, new DateOnly(2026, 10, 21), "EU", false),
+                new PresetOrderRow(1004, "Katherine Johnson", OrderState.Cancelled, 5, 315.50m, new DateOnly(2026, 9, 30), "NA", true),
+                new PresetOrderRow(1005, "Hedy Lamarr", OrderState.Processing, 2, 74m, new DateOnly(2026, 10, 25), "APAC", true)
+            ];
+
+            private readonly WaDataGridColumn[] presetColumns =
+            [
+                new() { Field = "id", Label = "Order", Width = 110, Formatter = WaDataGridFormatters.ActionLink("open", "#{id}") },
+                new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 170 },
+                new()
+                {
+                    Field = "state", Label = "State", Width = 140,
+                    // a state badge, from C# only; the sort follows the workflow, not the alphabet
+                    Formatter = WaDataGridFormatters.Badge<OrderState>(state => state switch
+                    {
+                        OrderState.Processing => WaVariant.Brand,
+                        OrderState.Shipped => WaVariant.Success,
+                        OrderState.Cancelled => WaVariant.Danger,
+                        _ => WaVariant.Neutral,
+                    }),
+                    ComparatorFunction = WaDataGridComparators.Ordinal<OrderState>()
+                },
+                new() { Field = "items", Label = "Items", Align = WaDataGridAlign.End, Width = 90, Formatter = WaDataGridFormatters.Number() },
+                new() { Field = "total", Label = "Total", Align = WaDataGridAlign.End, Width = 130, Formatter = WaDataGridFormatters.Currency("EUR") },
+                new() { Field = "due", Label = "Due", Width = 140, Formatter = WaDataGridFormatters.Date(WaDataGridDateStyle.Medium) },
+                new()
+                {
+                    Field = "region", Label = "Region", Width = 150,
+                    Formatter = WaDataGridFormatters.Lookup(new Dictionary<string, string> { ["EU"] = "Europe", ["NA"] = "North America", ["APAC"] = "Asia-Pacific" })
+                },
+                new()
+                {
+                    Field = "paid", Label = "Paid", Width = 90, Align = WaDataGridAlign.Center,
+                    Formatter = WaDataGridFormatters.BooleanIcon("Paid", "Not paid", trueColor: WaVariant.Success, falseColor: WaVariant.Danger)
+                }
+            ];
+
+            // the order links raise the "open" action; a click on them does not raise OnCellClick
+            private void HandlePresetCellAction(WaDataGridCellActionEventArgs e)
+            {
+                var order = e.GetRow<PresetOrderRow>();
+                presetActionMessage = $"Action \"{e.Action}\" for order {e.RowKey} (display row {e.RowIndex}): {order?.Customer}, {order?.State}.";
+            }
+
+            private void HandlePresetCellClick(WaDataGridCellClickEventArgs e)
+            {
+                presetClickMessage = $"OnCellClick: the \"{e.Column}\" cell of display row {e.RowIndex}.";
+            }
+        }
+        """;
+
+    private const string ActionsRulesExample = """
+        @* package WebAwesome.Blazor.Extensions; @using WebAwesome.Blazor.Extensions.DataGrid *@
+        <WaDataGrid Label="Subscriptions" RowKey="id" Data="subscriptions" Columns="subscriptionColumns"
+                    RowClassFunction="subscriptionRowClass" ShadowStyles="@SubscriptionStyles"
+                    @onwablazor-cell-action="HandleSubscriptionAction" />
+        <WaDivider />
+        <p>@(subscriptionMessage ?? "Turn a subscription off, or use the actions of a row.")</p>
+
+        @code {
+            // the classes are in the grid's shadow root, so ShadowStyles styles them
+            private const string SubscriptionStyles = ".large-team { font-weight: var(--wa-font-weight-bold); } .paused { color: var(--wa-color-text-quiet); }";
+
+            private string? subscriptionMessage;
+
+            private sealed record Subscription(int Id, string Customer, int Seats, decimal Monthly, bool Active);
+
+            private sealed record TogglePayload(bool Checked);
+
+            private Subscription[] subscriptions =
+            [
+                new Subscription(1, "Northwind", 120, 2400m, true),
+                new Subscription(2, "Contoso", 25, 500m, true),
+                new Subscription(3, "Fabrikam", 8, 160m, false),
+                new Subscription(4, "Tailspin", 64, 1280m, true)
+            ];
+
+            // the first rule that matches gives the class
+            private readonly WaJsFunction subscriptionRowClass = WaDataGridClassRules.Row(new WaDataGridClassRule("paused", WaDataGridCondition.IsFalse) { Field = "active" });
+
+            private readonly WaDataGridColumn[] subscriptionColumns =
+            [
+                new() { Field = "customer", Label = "Customer", Flex = 2, MinWidth = 150 },
+                new()
+                {
+                    Field = "seats", Label = "Seats", Align = WaDataGridAlign.End, Width = 100,
+                    CellClassFunction = WaDataGridClassRules.Cell(new WaDataGridClassRule("large-team", WaDataGridCondition.GreaterThan(50))),
+                    FooterFunction = WaDataGridFooters.Sum()
+                },
+                new()
+                {
+                    Field = "monthly", Label = "Monthly", Align = WaDataGridAlign.End, Width = 140,
+                    Formatter = WaDataGridFormatters.Currency("EUR"),
+                    FooterFunction = WaDataGridFooters.Sum(WaDataGridFormatters.Currency("EUR"))
+                },
+                new() { Field = "active", Label = "Active", Width = 100, Formatter = WaDataGridFormatters.Switch("Active: {customer}") },
+                new()
+                {
+                    Id = "actions", Label = "Actions", Width = 120,
+                    Formatter = WaDataGridFormatters.Actions(
+                    [
+                        new WaDataGridAction("edit", "Edit") { Icon = "pen" },
+                        new WaDataGridAction("invoice", "Send invoice") { InMenu = true },
+                        new WaDataGridAction("cancel", "Cancel subscription") { InMenu = true, Variant = WaVariant.Danger }
+                    ], WaSize.Small, WaAppearance.Plain)
+                }
+            ];
+
+            // the switch shows its new state at once: update the row and push the data, or push it unchanged to reject the change
+            private void HandleSubscriptionAction(WaDataGridCellActionEventArgs e)
+            {
+                var subscription = e.GetRow<Subscription>();
+                if (subscription is null) return;
+
+                if (e.Action == WaDataGridFormatters.DefaultToggleAction && e.GetPayload<TogglePayload>() is { } toggle)
+                {
+                    subscriptions = subscriptions.Select(s => s.Id == subscription.Id ? s with { Active = toggle.Checked } : s).ToArray();
+                    subscriptionMessage = $"{subscription.Customer} is {(toggle.Checked ? "active" : "paused")} now.";
+                    return;
+                }
+
+                subscriptionMessage = $"Action \"{e.Action}\" for {subscription.Customer}.";
+            }
+        }
+        """;
+
+    private const string RequestsExample = """
+        @* package WebAwesome.Blazor.Extensions; @using WebAwesome.Blazor.Extensions.DataGrid *@
+        <WaDataGridRequestHandler OnRequest="HandleStockRequestAsync">
+            <WaDataGrid Label="Warehouse" RowKey="sku" Data="warehouseItems" Columns="warehouseColumns" />
+        </WaDataGridRequestHandler>
+
+        @code {
+            private sealed record WarehouseItem(string Sku, string Product, string Location);
+
+            private readonly object[] warehouseItems =
+            [
+                new WarehouseItem("A-100", "Standing desk", "Prague"),
+                new WarehouseItem("B-200", "Office chair", "Brno"),
+                new WarehouseItem("C-300", "Desk lamp", "Prague")
+            ];
+
+            private readonly Dictionary<string, int> warehouseStock = new() { ["A-100"] = 12, ["B-200"] = 0, ["C-300"] = 3 };
+
+            private readonly WaDataGridColumn[] warehouseColumns =
+            [
+                new() { Field = "sku", Label = "SKU", Width = 100 },
+                new() { Field = "product", Label = "Product", Flex = 2, MinWidth = 160 },
+                new() { Field = "location", Label = "Location", Width = 120 },
+                new() { Id = "stock", Label = "Stock", Width = 140, Formatter = WaJsFunction.Module(TaskCellsModule, "stockCell") }
+            ];
+
+            // the answer of ctx.invoke('stock'); WaDataGridRequestException rejects the Promise with its message
+            private async Task<object?> HandleStockRequestAsync(WaDataGridCellActionEventArgs request)
+            {
+                var item = request.GetRow<WarehouseItem>() ?? throw new WaDataGridRequestException("Unknown item");
+                await Task.Delay(600);   // a slow service
+                if (!warehouseStock.TryGetValue(item.Sku, out var stock) || stock == 0) throw new WaDataGridRequestException("Sold out");
+                return stock;
+            }
+        }
+
+        // DataGridPage.razor.js: the cell shows "Checking…" first and renders again when the answer arrives; the
+        // answers are kept by row key, because the grid gets new row objects whenever the page pushes its Data again
+        const stockAnswers = new Map();
+
+        export function stockCell(value, row, ctx) {
+          let answer = stockAnswers.get(ctx.rowKey);
+          if (!answer) {
+            answer = { text: null };
+            stockAnswers.set(ctx.rowKey, answer);
+            ctx.invoke('stock')
+              .then(stock => { answer.text = `${stock} in stock`; }, error => { answer.text = error.message; })
+              .then(() => ctx.grid.requestUpdate());
+          }
+
+          return answer.text ?? ctx.cache('pending', () => ctx.h('span', { style: 'color: var(--wa-color-text-quiet)' }, 'Checking…'));
+        }
+        """;
+
+    private const string RazorTemplatesExample = """
+        @* package WebAwesome.Blazor.Extensions; @using WebAwesome.Blazor.Extensions.DataGrid *@
+        @inject IServiceProvider Services
+
+        <WaDataGrid Label="Deployments" RowKey="id" Data="deploymentRows" Columns="deploymentColumns"
+                    @onwablazor-cell-action="HandleDeploymentAction" />
+        <WaDivider />
+        <p>@(deploymentMessage ?? "Restart a deployment.")</p>
+
+        @code {
+            private sealed record Deployment(int Id, string Service, string Environment, string State);
+
+            private static WaVariant StateVariant(string state) => state switch
+            {
+                "running" => WaVariant.Success,
+                "failed" => WaVariant.Danger,
+                _ => WaVariant.Neutral,
+            };
+
+            // static HTML: Razor encodes the text; a button raises its action with data-wablazor-action, not @onclick
+            private static readonly WaDataGridRazorTemplates<Deployment> deploymentTemplates = new WaDataGridRazorTemplates<Deployment>()
+                .Add("state", deployment => @<WaBadge Variant="@StateVariant(deployment.State)" Pill="true">@deployment.State</WaBadge>)
+                .Add("actions", deployment => @<WaButton Size="WaSize.Small" Appearance="WaAppearance.Outlined" StartIconName="rotate-right"
+                                                         data-wablazor-action="restart">Restart</WaButton>);
+
+            private readonly Deployment[] deployments =
+            [
+                new Deployment(1, "api", "production", "running"),
+                new Deployment(2, "worker", "production", "failed"),
+                new Deployment(3, "web", "staging", "stopped")
+            ];
+
+            // declare the elements of a template: the cells are in the grid's shadow root, where the autoloader does not look
+            private readonly WaDataGridColumn[] deploymentColumns =
+            [
+                new() { Field = "service", Label = "Service", Flex = 1, MinWidth = 120 },
+                new() { Field = "environment", Label = "Environment", Width = 140 },
+                new() { Id = "state", Field = "state", Label = "State", Width = 120, Formatter = deploymentTemplates.Formatter("state", "wa-badge") },
+                new() { Id = "actions", Label = "Actions", Width = 140, Formatter = deploymentTemplates.Formatter("actions", "wa-button", "wa-icon") }
+            ];
+
+            private IReadOnlyList<object>? deploymentRows;
+            private string? deploymentMessage;
+
+            // one render per row and template: render again when the rows change
+            protected override async Task OnInitializedAsync()
+            {
+                deploymentRows = await deploymentTemplates.RenderAsync(Services, deployments);
+            }
+
+            private void HandleDeploymentAction(WaDataGridCellActionEventArgs e)
+            {
+                var deployment = e.GetRow<Deployment>();
+                deploymentMessage = $"Action \"{e.Action}\" for {deployment?.Service} ({deployment?.Environment}).";
             }
         }
         """;
