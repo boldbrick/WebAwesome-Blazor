@@ -363,6 +363,37 @@ public class WebAwesomeJSInterop
     }
 
     /// <summary>
+    /// Sets the base URL of the self-hosted Font Awesome <c>svgs</c> folder the default icon library resolves from
+    /// (Web Awesome's <c>setIconPath</c>); rendered icons re-resolve. The call runs once the app is interactive, which
+    /// is too late to prevent the first requests to the Font Awesome CDN; to prevent them, set
+    /// <see cref="WebAwesomeOptions.IconPath"/>, which applies the same setting at startup.
+    /// </summary>
+    /// <param name="iconPath">Base URL of the svgs folder, e.g. "/lib/fontawesome/svgs"; a relative URL resolves
+    /// against the document base URL</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentNullException">Thrown when iconPath is null or empty</exception>
+    /// <exception cref="InvalidOperationException">Thrown when setting the icon path fails</exception>
+    public virtual async Task SetIconPathAsync(string iconPath)
+    {
+        if (string.IsNullOrEmpty(iconPath))
+            throw new ArgumentNullException(nameof(iconPath));
+
+        try
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("setIconPath", ConfiguredLoaderUrl(), iconPath);
+        }
+        catch (JSException ex)
+        {
+            throw new InvalidOperationException($"Failed to set the icon path to '{iconPath}': {ex.Message}", ex);
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime is disconnected, ignore silently
+        }
+    }
+
+    /// <summary>
     /// Fires the slotchange of an element's default slot, so the element re-reads its light-DOM children through its
     /// own slotchange handler; used to make wa-date-input forward day slots added or removed after its first update
     /// (see <see cref="WaDateInputBase{TValue}"/>)

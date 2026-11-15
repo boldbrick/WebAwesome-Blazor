@@ -119,6 +119,7 @@ public class WebAwesomeAssetsTests
         var options = provider.GetRequiredService<WebAwesomeOptions>();
         Assert.Equal(WaAssetSource.Cdn, options.AssetSource);
         Assert.Null(options.FontAwesomeKitCode);
+        Assert.Null(options.IconPath);
     }
 
     [Fact]
@@ -158,6 +159,28 @@ public class WebAwesomeAssetsTests
         Assert.Equal(WaAssetSource.SelfHosted, options.AssetSource);
         Assert.Equal("/assets/wa", options.BasePath);
         Assert.Equal("test-kit-code", options.FontAwesomeKitCode);
+    }
+
+    [Fact]
+    public void AddWebAwesome_WithConfiguration_BindsIconPath()
+    {
+        // Arrange - the icon path is independent of the asset source
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["WebAwesome:IconPath"] = "/lib/fontawesome/svgs"
+            })
+            .Build();
+        var services = new ServiceCollection();
+
+        // Act
+        services.AddWebAwesome(configuration);
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        var options = provider.GetRequiredService<WebAwesomeOptions>();
+        Assert.Equal("/lib/fontawesome/svgs", options.IconPath);
+        Assert.Equal(WaAssetSource.Cdn, options.AssetSource);
     }
 
     [Fact]

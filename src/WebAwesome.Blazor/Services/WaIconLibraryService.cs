@@ -29,6 +29,25 @@ public class WaIconLibraryService
     }
 
     /// <summary>
+    /// Makes the default icon library load its icons from a self-hosted Font Awesome <c>svgs</c> folder (Web
+    /// Awesome's <c>setIconPath</c>); rendered icons re-resolve from the path. This runtime call is too late to
+    /// prevent the first requests to the Font Awesome CDN: icons that render before it load from the CDN. To keep
+    /// every request off the CDN, set <see cref="WebAwesomeOptions.IconPath"/> instead, which applies the path at
+    /// startup, before any icon renders.
+    /// </summary>
+    /// <param name="iconPath">Base URL of the svgs folder, e.g. "/lib/fontawesome/svgs"; a relative URL resolves
+    /// against the document base URL</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <exception cref="ArgumentNullException">Thrown when iconPath is null or empty</exception>
+    public async Task SetIconPathAsync(string iconPath)
+    {
+        if (string.IsNullOrEmpty(iconPath))
+            throw new ArgumentNullException(nameof(iconPath));
+
+        await jsInterop.SetIconPathAsync(iconPath);
+    }
+
+    /// <summary>
     /// Registers the outline style of the Heroicons icon library (24 px) from the jsDelivr CDN as library
     /// "heroicons". For the solid style, register a custom library with a ".../24/solid/{name}.svg" resolver.
     /// </summary>

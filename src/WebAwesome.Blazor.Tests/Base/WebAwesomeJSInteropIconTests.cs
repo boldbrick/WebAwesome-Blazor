@@ -193,6 +193,17 @@ public class WebAwesomeJSInteropIconTests : BunitContext
     }
 
     [Fact]
+    public async Task SetIconPathAsync_WithNullIconPath_ThrowsArgumentNullException()
+    {
+        // Arrange
+        var jsInterop = new WebAwesomeJSInterop(new MockJSRuntime());
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            jsInterop.SetIconPathAsync(null!));
+    }
+
+    [Fact]
     public async Task RegisterIconLibraryAsync_InvokesModule_WithConfiguredLoaderUrlNameAndOptions()
     {
         // Arrange
@@ -269,6 +280,20 @@ public class WebAwesomeJSInteropIconTests : BunitContext
     }
 
     [Fact]
+    public async Task SetIconPathAsync_InvokesModule_WithConfiguredLoaderUrlAndIconPath()
+    {
+        // Arrange
+        var module = SetupInteropModule();
+
+        // Act
+        await CreateConfiguredInterop().SetIconPathAsync(SampleIconPath);
+
+        // Assert
+        var invocation = Assert.Single(module.Invocations, i => i.Identifier == "setIconPath");
+        Assert.Equal(new object?[] { SampleLoaderUrl, SampleIconPath }, invocation.Arguments);
+    }
+
+    [Fact]
     public async Task IconLibraryMethods_WithoutOptions_PassNullLoaderUrl()
     {
         // Arrange - the JS side then relies on the page's own Web Awesome script tag alone
@@ -299,6 +324,7 @@ public class WebAwesomeJSInteropIconTests : BunitContext
     private static readonly WaJsFunction SampleMutatorFunction = WaJsFunction.Global(SampleMutator);
     private const string SampleFamily = "sharp";
     private const string SampleKitCode = "your_kit_code_here";
+    private const string SampleIconPath = "/lib/fontawesome/svgs";
 
     private BunitJSModuleInterop SetupInteropModule()
     {

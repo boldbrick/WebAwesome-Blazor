@@ -61,6 +61,41 @@ public class WebAwesomeOptions
     public string? FontAwesomeKitCode { get; set; }
 
     /// <summary>
+    /// Base URL of a self-hosted Font Awesome <c>svgs</c> folder for the default icon library, e.g.
+    /// "/lib/fontawesome/svgs". Null or empty (the default) keeps Web Awesome's own behavior: the default library
+    /// loads every icon from the Font Awesome CDN. When set, the WebAwesomeAssets component calls Web Awesome's
+    /// <c>setIconPath</c> before any icon renders, and every icon of the default library, including the icons that
+    /// components such as wa-zoomable-frame render themselves, loads from <c>{IconPath}/{folder}/{name}.svg</c>, with
+    /// no request to the Font Awesome CDN.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The folder is the <c>svgs</c> folder of a Font Awesome package, with one subfolder per style, named as Web
+    /// Awesome maps the icon family and variant: <c>solid</c> (the default), <c>regular</c>, <c>brands</c>,
+    /// <c>sharp-solid</c>, <c>duotone</c> and so on. The SVG files are not part of Web Awesome or of this package;
+    /// copy them from the Font Awesome package that your license covers (Free or Pro) and serve them as static files.
+    /// </para>
+    /// <para>
+    /// A relative path is relative to the app base, like the other asset URLs of these options: the component turns it
+    /// into an absolute URL with the app's base URI, so it works under an app base path and on every route. A
+    /// root-relative path ("/...") is used as it is.
+    /// </para>
+    /// <para>
+    /// With a path set, Web Awesome resolves the default library from the path and no longer from the Font Awesome
+    /// CDN, also when <see cref="FontAwesomeKitCode"/> is set: the path wins over the kit code, so a Pro folder must
+    /// contain the Pro styles that the app uses. The setting is independent of <see cref="AssetSource"/>.
+    /// </para>
+    /// <para>
+    /// A standalone WebAssembly app with static asset tags in index.html (no WebAwesomeAssets component) adds its own
+    /// module script after the loader script, with the same loader URL:
+    /// <c>&lt;script type="module"&gt;import { setIconPath } from '/lib/webawesome/webawesome.loader.js'; setIconPath('/lib/fontawesome/svgs');&lt;/script&gt;</c>.
+    /// A runtime call (<see cref="Services.WaIconLibraryService.SetIconPathAsync(string)"/>) comes too late to
+    /// prevent the first CDN requests.
+    /// </para>
+    /// </remarks>
+    public string? IconPath { get; set; }
+
+    /// <summary>
     /// Whether the wrappers write placement metadata (data-wablazor-component, data-wablazor-chain,
     /// data-wablazor-placement, data-wablazor-site) on their root elements, for the WA Inspector browser extension.
     /// Defaults to false. Turn it on in development and test environments only: the metadata shows the names of the

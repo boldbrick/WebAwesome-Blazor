@@ -323,6 +323,19 @@ export async function setKitCode(configuredEntryPointUrl, kitCode) {
     webAwesome.setDefaultIconFamily(webAwesome.getDefaultIconFamily());
 }
 
+/**
+ * Sets the base URL of the self-hosted Font Awesome svgs folder the default icon library resolves from
+ * @param {string|null} configuredEntryPointUrl - Web Awesome entry point configured in .NET
+ * @param {string} iconPath - Base URL of the svgs folder; a relative URL resolves against the document base
+ */
+export async function setIconPath(configuredEntryPointUrl, iconPath) {
+    const webAwesome = await importWebAwesome(configuredEntryPointUrl);
+    webAwesome.setIconPath(iconPath);
+
+    // setIconPath alone does not refresh rendered icons; re-applying the default family re-resolves them
+    webAwesome.setDefaultIconFamily(webAwesome.getDefaultIconFamily());
+}
+
 async function importWebAwesome(configuredEntryPointUrl) {
     if (!webAwesomeModule) {
         const url = findWebAwesomeEntryPoint(configuredEntryPointUrl);

@@ -26,6 +26,26 @@ Include the Web Awesome assets in your head content (e.g. in `App.razor`):
 
 The component loads the matching Web Awesome version from the official CDN by default; asset source, version, URLs, and a Font Awesome kit code are configurable via the `WebAwesome` configuration section.
 
+### Self-hosted icons
+
+The default icon library of Web Awesome loads every icon from the Font Awesome CDN, also when the Web Awesome assets are self-hosted. To serve the icons yourself, copy the `svgs` folder of the Font Awesome package that your license covers (one subfolder per style: `solid`, `regular`, `brands`, ...) to your static files and set `IconPath` to its URL:
+
+```json
+{
+  "WebAwesome": {
+    "AssetSource": "SelfHosted",
+    "BasePath": "/lib/webawesome",
+    "IconPath": "/lib/fontawesome/svgs"
+  }
+}
+```
+
+`WebAwesomeAssets` then calls Web Awesome's `setIconPath` before any icon renders, and every icon of the default library, including the icons that components render themselves, loads from `<IconPath>/<style>/<name>.svg`; no request goes to the Font Awesome CDN. The path wins over a kit code. `IconPath` is independent of `AssetSource`, and a relative value is relative to the app base. `WaIconLibraryService.SetIconPathAsync` sets the same path at runtime, but only after the first icons have loaded from the CDN. A standalone WebAssembly app with static tags in `index.html` adds the call itself, after the loader script and with the same loader URL:
+
+```html
+<script type="module">import { setIconPath } from '/lib/webawesome/webawesome.loader.js'; setIconPath('/lib/fontawesome/svgs');</script>
+```
+
 ## Use
 
 ```razor
