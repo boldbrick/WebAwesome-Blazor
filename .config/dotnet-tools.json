@@ -3,12 +3,12 @@
   "isRoot": true,
   "tools": {
     "docpack.cli.tool": {
-      "version": "0.2.0",
+      "version": "0.3.1",
       "commands": [ "docpack" ],
       "rollForward": false
     },
     "docpack.viewer.web": {
-      "version": "0.2.0",
+      "version": "0.3.1",
       "commands": [ "docview" ],
       "rollForward": false
     }
