@@ -37,12 +37,12 @@
     </Otherwise>
   </Choose>
 
-  <!-- Framework targeting: net10.0 (LTS) is the primary target, net9.0 kept for compatibility;
-       applications target net10.0 only -->
+  <!-- Framework targeting: net10.0 (LTS) is the primary target, net11.0 is supported, net9.0 is kept for
+       compatibility for the last time (3.15; removed in the next version); applications target net10.0 only -->
   <!-- no RuntimeFrameworkVersion pinning: the baseline x.0.0 runtime of each target major applies,
        consistent with the dependency floors policy (docs\technical\technical.md) -->
   <PropertyGroup Condition="'$(BbComponentGroup)' != 'Apps'">
-    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net9.0;net10.0;net11.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BbComponentGroup)' == 'Apps'">
     <TargetFramework>net10.0</TargetFramework>

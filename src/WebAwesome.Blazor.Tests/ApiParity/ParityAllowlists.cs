@@ -59,6 +59,7 @@ internal static class ParityAllowlists
         ("nativeDomEvents", c => c.NativeDomEvents.Keys),
         ("bubblingEventAliases", c => c.BubblingEventAliases.Keys),
         ("unreachableEnumUnionValues", c => c.UnreachableEnumUnionValues.Keys),
+        ("targetFrameworkExclusions", c => c.TargetFrameworkExclusions.Keys),
     };
 
     private static readonly (string List, Func<ComponentParityConfig, IEnumerable<string>> Names)[] ComponentLists =

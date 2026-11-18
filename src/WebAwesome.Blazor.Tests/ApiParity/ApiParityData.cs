@@ -63,6 +63,17 @@ internal static class ApiParityData
     }
 
     /// <summary>
+    /// Determines whether an allowlist entry applies on the target framework the tests run on, that is, whether
+    /// "targetFrameworkExclusions" does not exclude it there.
+    /// </summary>
+    /// <param name="key">Reason key of the entry, e.g. "additionalAttributeParameters:wa-input:min"</param>
+    /// <returns>true when the entry applies</returns>
+    public static bool AppliesToThisTargetFramework(string key)
+    {
+        return !(Config.TargetFrameworkExclusions.TryGetValue(TestTargetFramework.Moniker, out var excluded) && excluded.Contains(key));
+    }
+
+    /// <summary>
     /// Enumerates the custom elements of the expected surface that are not ignored as a whole.
     /// </summary>
     /// <returns>Tag name and expected surface of each relevant custom element</returns>

@@ -379,7 +379,7 @@ public class SlotParityTests
             (IReadOnlyList<(string, object?)>)new[] { (p.Name, (object?)IconSample) })));
         samples.AddRange(RenderedAttributeParityTests.SampleValues(componentType)
             .Where(s => s.Value is bool or string && !iconNames.Contains(s.Property))
-            .Select(s => (SampleKind.Value, (PropertyInfo?)s.Property, s.Label, (IReadOnlyList<(string, object?)>)new[] { (s.Property.Name, (object?)s.Value) })));
+            .Select(s => (SampleKind.Value, (PropertyInfo?)s.Property, s.Label, (IReadOnlyList<(string, object?)>)new[] { (s.Property.Name, (object?)s.ParameterValue) })));
 
         var first = RenderedWrapperCatalog.RenderSlots(componentType, samples.Select(s => s.Values).ToList());
         var renders = samples.Select((s, i) => new SlotRender(s.Kind, s.Parameter, s.Label, first[i])).ToList();

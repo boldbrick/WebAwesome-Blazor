@@ -29,6 +29,7 @@ jobs:
           dotnet-version: |
             9.0.x
             10.0.x
+            11.0.x
 
       # Web Awesome Pro assets for the published demo: set the WA_PRO_CDN_BASE repository
       # VARIABLE to your kit base URL with a literal {version} placeholder, e.g.

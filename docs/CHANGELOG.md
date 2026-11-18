@@ -4,10 +4,17 @@ All notable changes to the Web Awesome Blazor Bindings. The first three version 
 
 ## [3.15.0] — 2026-11-18
 
-Alignment with the Web Awesome 3.15.0 release, opening the **WA-3.15 train**. Upstream this is additive: six new components, and the data grid, stepper and step are stable now. The bindings remove the members that 3.14.0.1 deprecated, which is **breaking**. See **[MIGRATION-3.15.0.md](migration/MIGRATION-3.15.0.md)**.
+Alignment with the Web Awesome 3.15.0 release, opening the **WA-3.15 train**. Upstream this is additive: six new components, and the data grid, stepper and step are stable now. The bindings remove the members that 3.14.0.1 deprecated, which is **breaking**, and add a `net11.0` target. See **[MIGRATION-3.15.0.md](migration/MIGRATION-3.15.0.md)**.
 
 ### Breaking changes
 - Removed the members deprecated in 3.14.0.1: `WaSelect.GetTag` and `WaSelect.SetGetTagFunctionAsync` (use `GetTagFunction`), `WaRating.SetSymbolFunctionAsync` (use `GetSymbolFunction`), `SetValueFormatterAsync` of `WaSlider` and `WaRange` and `WaSlider.ValueFormatter` (use `ValueFormatterFunction`), and `IconLibraryOptions.Mutator` (use `MutatorFunction = WaJsFunction.Global(path)`) (section 1).
+- net11.0 only: `WaInput.Min` and `Max` are the C# 15 union `WaInputBound?`, and the typed accessors `MinDecimal`, `MinLong`, `MinULong`, `MinDate`, `MinTime`, `MinDateTime` and their `Max` equivalents do not exist there (section 2).
+
+### Added
+- `net11.0` target: both packages ship `net9.0`, `net10.0` and `net11.0` assemblies.
+
+### Deprecated
+- `net9.0`: 3.15 is the last release that supports .NET 9; the next version targets `net10.0` and `net11.0` only.
 
 ### New components
 - `WaCodeHighlighter` (`wa-code-highlighter`, free/experimental) highlights code given as `Code` or as child text, with `Language`, `Wrap`, `WithoutCopy`, `WithoutDedent`, `Label`, `OnLoad` and `OnError`.

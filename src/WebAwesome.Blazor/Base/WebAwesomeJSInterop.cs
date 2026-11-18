@@ -766,7 +766,11 @@ public class WebAwesomeJSInterop
 
     private async Task<IJSObjectReference> LoadModuleAsync()
     {
+        // a failed import must fault the module task, so that every interop call reports it to its caller; the
+        // .NET 11 analyzer BL0016 asks for a try/catch here, which would hide the failure
+#pragma warning disable BL0016
         return await jsRuntime.InvokeAsync<IJSObjectReference>("import", InteropModulePath);
+#pragma warning restore BL0016
     }
 
     private string? ConfiguredLoaderUrl() => options?.ResolveLoaderUrl();
