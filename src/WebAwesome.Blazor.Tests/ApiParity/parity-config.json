@@ -7,7 +7,7 @@
     "extraElementMethods and sourceVerifiedEvents are invisible to the CEM diff: re-verify them against the target version's source on every upgrade."
   ],
   "enabled": true,
-  "targetWaVersion": "3.14.0",
+  "targetWaVersion": "3.15.0",
   "globalIgnoredAttributes": [
     "title",
     "did-ssr",
@@ -223,8 +223,7 @@
     "wa-date-picker": {
       "unrenderedAttributes": [ "mode", "min-range", "max-range" ],
       "wrapperDefaultAttributes": [ "mode" ],
-      "ignoredEvents": [ "change" ],
-      "sourceVerifiedSlots": [ "day-YYYY-MM-DD" ]
+      "ignoredEvents": [ "change" ]
     },
     "wa-rating": {
       "ignoredAttributes": [ "getSymbol", "name", "custom-error" ],
@@ -309,7 +308,9 @@
       "extraElementMethods": [ "requestUpdate" ]
     },
     "wa-page": {
-      "extraRenderedAttributes": [ "disable-sticky" ],
+      "tokenListAttributes": {
+        "disable-sticky": [ "banner", "header", "subheader", "aside", "menu" ]
+      },
       "ignoredMethods": [ "visiblePixelsInViewport" ]
     },
     "wa-video": {
@@ -334,7 +335,7 @@
     "additionalAttributeParameters:wa-input:min": "wa-input's min is typed number | string in the CEM and passed unchanged to its native input (3.12.0 chunk.3UR7XKQK.js:232-233): a number for type=number, an ISO date, time or local date-time for the date and time types. Until C# 15 union types (net11.0, a planned breaking change; docs\\technical\\technical.md, Multi-targeting) the raw string Min is joined by one strongly typed accessor per value type (MinDecimal, MinLong, MinULong, MinDate, MinTime, MinDateTime), at most one of which may be set; all of them feed the one attribute",
     "additionalAttributeParameters:wa-input:max": "wa-input's max is typed number | string in the CEM and passed unchanged to its native input (3.12.0 chunk.3UR7XKQK.js:232-233): a number for type=number, an ISO date, time or local date-time for the date and time types. Until C# 15 union types (net11.0, a planned breaking change; docs\\technical\\technical.md, Multi-targeting) the raw string Max is joined by one strongly typed accessor per value type (MaxDecimal, MaxLong, MaxULong, MaxDate, MaxTime, MaxDateTime), at most one of which may be set; all of them feed the one attribute",
     "additionalAttributeParameters:wa-mutation-observer:attr": "wa-mutation-observer's attr is either '*' (all attributes, Attr = true) or a space-separated list of names (this.attr.split(' '), 3.12.0 chunk.KJH3JDJP.js:48), which AttributeFilter (IReadOnlySet<string>) renders instead when set; both parameters feed the one attribute",
-    "extraRenderedAttributes:wa-page:disable-sticky": "wa-page's disable-sticky is a CSS-only attribute the CEM omits: the 3.12.0 page styles match it with :host([disable-sticky~='banner'|'header'|'subheader'|'aside'|'menu']) rules (chunk.NSKMM5IJ.js:86-116) and page.md (Sticky Sections) documents it; WaPage.DisableSticky renders the WaPageSections tokens, which FlagTokenTests pins - re-verify every upgrade",
+    "tokenListAttributes:wa-page:disable-sticky": "wa-page declares disable-sticky since 3.15.0, typed string; its JSDoc names banner, header and subheader, and the 3.15.0 page styles also match aside and menu (:host([disable-sticky~='aside']) and ~='menu' rules), so the element reads a space-separated token list of these five sections, which WaPageSections flags emit; re-verify every upgrade",
     "onOffAttributes:wa-input:autocorrect": "wa-input's autocorrect converter is fromAttribute: (value) => !value || value === \"off\" ? false : true, toAttribute: value ? \"on\" : \"off\" (3.12.0 chunk.3UR7XKQK.js), so a present empty attribute (Blazor's true) reads false; AutoCorrect (bool?) must render exactly \"on\"/\"off\"",
     "onOffAttributes:wa-textarea:autocorrect": "wa-textarea's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.YIEXWZ6G.js), so AutoCorrect must render exactly \"on\"/\"off\"",
     "onOffAttributes:wa-combobox:autocorrect": "wa-combobox's autocorrect has the same on/off converter as wa-input (3.12.0 chunk.HYTAIWXE.js), so AutoCorrect must render exactly \"on\"/\"off\"",
@@ -496,7 +497,6 @@
     "unrenderedAttributes:wa-date-picker:min-range": "a range-mode-only option (CEM: range mode only), exposed as MinRange on WaDateRangePicker only; WaDatePicker, the single-date wrapper, has no range to constrain",
     "unrenderedAttributes:wa-date-picker:max-range": "a range-mode-only option (CEM: range mode only), exposed as MaxRange on WaDateRangePicker only; WaDatePicker, the single-date wrapper, has no range to constrain",
     "ignoredEvents:wa-date-picker:change": "WaDatePicker binds change as its @bind-Value binder (SetValueAsync), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
-    "sourceVerifiedSlots:wa-date-picker:day-YYYY-MM-DD": "wa-date-picker's CEM and @slot JSDoc omit its per-day slots, but the compiled 3.12.0 source renders one in every day cell (verified 2026-09-26 in chunk.YRRAFIFT.js renderDay, line 864: const slotName = `day-${iso}`, rendered as <slot name=${slotName}> with the day number as fallback) and its documentation describes them (inputs\\WebAwesome\\components\\date-picker.md:427-444, Custom Day Content); wa-date-input declares the same slot family and forwards it here. WaDayContent in the ChildContent of WaDatePicker/WaDateRangePicker feeds it. Upstream issue filed by the owner - once a CEM declares the slot this entry is stale and must be removed (SourceVerifiedSlots_AreNotStale); re-verify against the source every upgrade",
     "ignoredAttributes:wa-rating:getSymbol": "function-valued property: the CEM lists it as an attribute only because its @property() decorator lacks attribute: false, and a string attribute would replace the function, which the element then fails to call. WaRating binds it as a JS property through GetSymbolFunction (a WaJsFunction, pushed by setElementFunction), which the attribute render checks cannot see",
     "ignoredAttributes:wa-rating:name": "WaRating renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
     "ignoredAttributes:wa-rating:custom-error": "WaRating sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
