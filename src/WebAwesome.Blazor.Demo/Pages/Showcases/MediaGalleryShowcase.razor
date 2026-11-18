@@ -5,8 +5,8 @@
 <h1>Nova Studio — Media Gallery</h1>
 <p>
     The asset review screen of Nova Studio: a carousel of renders, a before/after comparison,
-    a video clip preview, a zoomable embedded preview, an animated sticker, a QR code for mobile
-    review and a scrollable strip of gallery thumbnails.
+    a video clip preview, a lightbox of stills to review and approve full screen, a zoomable embedded preview,
+    an animated sticker, a QR code for mobile review and a scrollable strip of gallery thumbnails.
 </p>
 
 <WaGrid MinColumnSize="22rem" Gap="GapSize.Gap_L">
@@ -76,6 +76,41 @@
 
     <WaCard WithHeader="true">
         <HeaderContent>
+            <WaCluster Gap="GapSize.Gap_XS" AlignItems="AlignItems.Center">
+                <WaText Variant="TextVariant.Heading" Element="h2">Clip stills</WaText>
+                <WaBadge Variant="WaVariant.Success" Pill="true">@approvedStills.Count / @stills.Length approved</WaBadge>
+            </WaCluster>
+        </HeaderContent>
+        <ChildContent>
+            <p>Click a still to review it full screen, and approve it from the lightbox's toolbar.</p>
+            <WaLightbox Label="Clip stills" WithThumbnails="true" Loop="true" Index="@stillIndex" Open="@stillsOpen"
+                        OnShow="HandleStillsShow" OnHide="@(() => stillsOpen = false)" OnItemChange="HandleStillChange">
+                <ChildContent>
+                    <WaGrid MinColumnSize="5rem" Gap="GapSize.Gap_S">
+                        @foreach (var still in stills)
+                        {
+                            <WaLightboxItem Src="@still.Src" Caption="@still.Caption">
+                                <img src="@still.Src" alt="@still.Alt"
+                                     style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                            </WaLightboxItem>
+                        }
+                    </WaGrid>
+                </ChildContent>
+                <ActionsContent>
+                    <WaButton StartIconName="@(IsStillApproved ? "circle-check" : "thumbs-up")" OnClick="ToggleStillApproval">
+                        @(IsStillApproved ? "Approved" : "Approve")
+                    </WaButton>
+                </ActionsContent>
+            </WaLightbox>
+            <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center" Style="margin-block-start: var(--wa-space-s);">
+                <WaButton Size="WaSize.Small" StartIconName="images" OnClick="OpenLatestStill">Open the latest still</WaButton>
+                <p class="stills-status" style="margin: 0;">@(lastReviewed is null ? "No still reviewed yet." : $"Last reviewed: {lastReviewed}")</p>
+            </WaCluster>
+        </ChildContent>
+    </WaCard>
+
+    <WaCard WithHeader="true">
+        <HeaderContent>
             <WaText Variant="TextVariant.Heading" Element="h2">Zoomable spec preview</WaText>
         </HeaderContent>
         <ChildContent>
@@ -136,6 +171,49 @@
 
 @code {
     private int currentSlide;
+
+    // a still of the launch clip in the review lightbox: the image, its alternative text and the caption
+    private sealed record ClipStill(string Src, string Alt, string Caption);
+
+    private readonly ClipStill[] stills =
+    [
+        new("https://uploads.webawesome.com/fa-part-1.jpg", "Title card of the kit setup chapter", "Chapter 1 — setting up a kit"),
+        new("https://uploads.webawesome.com/fa-part-2.jpg", "Title card of the kits in a project chapter", "Chapter 2 — kits in a project"),
+        new("https://uploads.webawesome.com/kits.jpg", "The kit library overview", "Kit library overview"),
+        new("https://uploads.webawesome.com/teams.jpg", "The team workspace", "Team workspace")
+    ];
+
+    // the lightbox's current still and open state follow the element, which navigates and closes itself
+    private int stillIndex;
+    private bool stillsOpen;
+    private string? lastReviewed;
+    private readonly HashSet<int> approvedStills = [];
+
+    private bool IsStillApproved => approvedStills.Contains(stillIndex);
+
+    // the lightbox opened, from a thumbnail or from the button: the still it shows is the one reviewed
+    private void HandleStillsShow()
+    {
+        stillsOpen = true;
+        lastReviewed = stills[stillIndex].Caption;
+    }
+
+    private void HandleStillChange(WaLightboxItemChangeEventArgs e)
+    {
+        stillIndex = e.Index;
+        lastReviewed = stills[e.Index].Caption;
+    }
+
+    private void ToggleStillApproval()
+    {
+        if (!approvedStills.Add(stillIndex)) approvedStills.Remove(stillIndex);
+    }
+
+    private void OpenLatestStill()
+    {
+        stillIndex = stills.Length - 1;
+        stillsOpen = true;
+    }
 
     private sealed record GalleryAsset(string Name, string Kind, string IconName, string Background, FrameAspectRatio Ratio, string Owner, string OwnerInitials);
 

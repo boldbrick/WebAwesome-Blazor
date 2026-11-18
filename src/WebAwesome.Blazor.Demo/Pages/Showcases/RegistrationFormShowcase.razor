@@ -8,7 +8,8 @@
     A realistic event-registration form demonstrating every Web Awesome form control inside a single
     <code>EditForm</code> with <code>DataAnnotationsValidator</code>-backed validation. A <code>WaStepper</code> above the
     fields tracks the progress, driven from the model: a section's step is completed once its required fields are
-    filled and valid, and the first unfinished section is the active step.
+    filled and valid, and the first unfinished section is the active step. The optional introduction is a
+    <code>WaRichTextEditor</code> bound to the model as HTML, with a trimmed toolbar and a character count.
 </p>
 
 <WaVisuallyHidden>All fields marked required must be completed before the registration can be submitted.</WaVisuallyHidden>
@@ -20,6 +21,7 @@
         Your @model.TicketType ticket for the @model.Track track is reserved. A confirmation was sent
         to @model.Email.
         Your agenda highlights talks on @(string.Join(", ", model.Interests ?? [])).
+        @(string.IsNullOrWhiteSpace(model.Introduction) ? null : "Your introduction will be shared with your workshop group.")
         @(model.BadgePhotoSelected ? "Your badge will be printed with the photo you uploaded." : "Your badge will use the default Nova Summit artwork.")
         Your phone number is verified, so on-site check-in is a single scan.
         See you at Nova Summit 2026!
@@ -117,6 +119,12 @@ else
                                 Hint="Shared only with the catering and venue teams" Rows="3"
                                 Placeholder="e.g. vegetarian, step-free access" @bind-Value="model.Notes" />
 
+                    <WaRichTextEditor Label="Introduce yourself" Hint="@($"Optional — a short introduction for your workshop group, up to {IntroductionMaxLength} characters")"
+                                      Placeholder="What are you working on, and what would you like to learn?"
+                                      Toolbar="bold italic | bullet-list | link | undo redo"
+                                      DisabledFeatures="@(WaRichTextEditorFeatures.Image | WaRichTextEditorFeatures.Embed | WaRichTextEditorFeatures.Table | WaRichTextEditorFeatures.Color | WaRichTextEditorFeatures.Align)"
+                                      MaxLength="IntroductionMaxLength" WithCount="true" @bind-Value="model.Introduction" />
+
                     <WaFileInput Label="Badge photo" Hint="Optional — a square PNG or JPG up to 5 MB, printed on your badge"
                                  Accept="@(new[] { "image/png", "image/jpeg" })" OnChange="@(() => model.BadgePhotoSelected = true)" />
 
@@ -166,6 +174,9 @@ else
     // the conference days, the selectable range of the arrival date
     private static readonly DateOnly ConferenceStart = new(2026, 3, 12);
     private static readonly DateOnly ConferenceEnd = new(2026, 3, 14);
+
+    // the longest introduction, counted by the editor on the text without markup
+    private const int IntroductionMaxLength = 280;
 
     private RegistrationModel model = new();
     private EditContext editContext = null!;
@@ -258,6 +269,10 @@ else
 
         [StringLength(300, ErrorMessage = "Notes are limited to 300 characters.")]
         public string? Notes { get; set; }
+
+        // the introduction as HTML from the rich text editor; optional, and its length is the editor's own constraint
+        // (it counts the text, not the markup)
+        public string? Introduction { get; set; }
 
         [Range(0, 10, ErrorMessage = "Guest passes must be between 0 and 10.")]
         public decimal? GuestPasses { get; set; } = 0;

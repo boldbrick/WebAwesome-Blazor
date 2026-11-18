@@ -134,8 +134,9 @@ test('grid functions: selectableRows locks a row', async ({ page }) => {
     'Alan Turing:true', 'Katherine Johnson:false', 'Hedy Lamarr:false',
   ]);
 
-  // select-all skips the locked row
-  await grid.locator('wa-checkbox[exportparts="base:select-all-checkbox"]').click();
+  // select-all skips the locked row; the header checkbox is found by the part it exports, whatever its inner part (WA
+  // 3.15.0 exports "checkbox:select-all-checkbox", 3.14.0 exported "base:select-all-checkbox")
+  await grid.locator('wa-checkbox[exportparts$=":select-all-checkbox"]').click();
   await expect.poll(() => grid.evaluate(el => [.../** @type {any} */ (el).selectedKeys].map(Number).sort((a, b) => a - b))).toEqual([1, 2, 3, 5, 6]);
 });
 

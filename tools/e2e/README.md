@@ -117,9 +117,10 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   harness pages (`/testing/events-forms`, `-overlays`, `-content`, `-pro`, see
   `src\WebAwesome.Blazor.Demo\Pages\Testing`), which renders what reached .NET. Known defects run as
   expected failures (`KNOWN_DEFECT_CASES`, `test.fail`): they start failing once the defect is fixed.
-  The list is empty since 3.12.0: the focus cases prove `OnFocus`/`OnBlur` through `focusin`/`focusout`,
-  and the color picker, select, combobox and intersection observer cases prove the events the JS
-  initializer relays (non-bubbling, or stopped in the shadow root).
+  The list is empty since 3.12.0: the focus cases prove `OnFocus`/`OnBlur` through `focusin`/`focusout`
+  (the rich text editor through the `focus`/`blur` it relays to its host itself), and the color picker, select,
+  combobox, rich text editor and intersection observer cases prove the events the JS initializer relays
+  (non-bubbling, or stopped in the shadow root).
 - `tests\date-typing.spec.js` — the strongly typed date and time wrappers (`/testing/date-typing`): a user picks a
   date, a range and a time and the typed model (`DateOnly`, `WaDateRange`, `TimeOnly`) shows up in the Blazor echo,
   a half-filled range binds as `From` only, `DisabledDates`/`DisabledDaysOfWeek` disable exactly those calendar cells,
@@ -152,7 +153,7 @@ actually renders the page and a real user interaction fires a real DOM event. Se
   and needs a `KNOWN_DEFECT_CASES` case; the spec prints how many there are.
 - `tests\methods-<group>.spec.js` and `tests\method-coverage.spec.js` — the wrapper method suite, see
   [Wrapper method suite](#wrapper-method-suite).
-- Pro components (combobox, date input/picker, file input, video, video playlist, data grid) upgrade
+- Pro components (combobox, date input/picker, file input, rich text editor, video, video playlist, data grid) upgrade
   only with a Pro asset override; their tests skip visibly on the free CDN (`skipUnlessProUpgrades`).
   The skip decides on the outcome, not on a grace period: the module next to the page's Web Awesome
   script answering 404 skips at once, and otherwise the test waits for the upgrade (up to

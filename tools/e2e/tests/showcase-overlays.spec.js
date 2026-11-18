@@ -125,15 +125,46 @@ test('overlays showcase: the dropdown items feed the feedback callout', async ({
   await expectHealthy(page, problems);
 });
 
+/**
+ * Counts, from now on, the wa-after-show events of toast items: an item starts its duration timer right after it,
+ * once its show animation has ended.
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+async function countShownToasts(page) {
+  await page.evaluate(() => {
+    const counter = /** @type {any} */ (window);
+    counter.e2eShownToasts = 0;
+    document.addEventListener('wa-after-show', event => {
+      if (/** @type {Element} */ (event.target).localName === 'wa-toast-item') counter.e2eShownToasts++;
+    }, true);
+  });
+}
+
+/**
+ * Waits until the given number of toast items have finished their show animation (and started their timers). The
+ * animation waits for an animation frame of the page clock, so a fast-forward before its end only lets the timer start
+ * after the jump, and the toast then stays for its whole duration of real time.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {number} count
+ */
+async function expectToastsShown(page, count) {
+  await expect.poll(() => page.evaluate(() => /** @type {any} */ (window).e2eShownToasts), { message: `${count} toast item(s) shown` })
+    .toBe(count);
+}
+
 test('overlays showcase: the programmatic and the declarative toasts show, close and show again', async ({ page }) => {
   const problems = await openShowcase(page, ROUTE, TAGS, { clock: true });
   const stack = page.locator('wa-toast');
   const items = stack.locator('wa-toast-item');
   const deploy = page.locator('wa-button', { hasText: 'Deploy to staging' });
+  await countShownToasts(page);
 
   // Save draft: a toast item WaToast.CreateAsync makes (not Blazor's), gone after its duration
   await page.locator('wa-button', { hasText: 'Save draft' }).click();
   await expect(items.filter({ hasText: 'Draft saved to the workspace.' }), 'the draft toast shows').toBeVisible();
+  await expectToastsShown(page, 1);
   await page.mouse.move(0, 0);
   await page.clock.fastForward(TOAST_DURATION_JUMP_MS);
   await expect(items, 'the draft toast is gone').toHaveCount(0);
@@ -143,6 +174,7 @@ test('overlays showcase: the programmatic and the declarative toasts show, close
   await expect(items, 'one deployment toast').toHaveCount(1);
   await expect(items.first()).toHaveText('Build 3.2.0-rc.1 deployed to staging.');
   await expect(items.first()).toBeVisible();
+  await expectToastsShown(page, 2);
   await page.mouse.move(0, 0);
   await page.clock.fastForward(TOAST_DURATION_JUMP_MS);
   await expect(items, 'the first deployment toast is gone').toHaveCount(0);
@@ -153,6 +185,7 @@ test('overlays showcase: the programmatic and the declarative toasts show, close
   await expect(items, 'a second deployment toast').toHaveCount(1);
   await expect(items.first()).toHaveText('Build 3.2.0-rc.2 deployed to staging.');
   await expect(items.first()).toBeVisible();
+  await expectToastsShown(page, 3);
   await page.mouse.move(0, 0);
   await page.clock.fastForward(TOAST_DURATION_JUMP_MS);
   await expect(items, 'the second deployment toast is gone').toHaveCount(0);
@@ -162,6 +195,7 @@ test('overlays showcase: the programmatic and the declarative toasts show, close
   await deploy.click();
   await expect(items, 'two deployment toasts').toHaveCount(2);
   await expect(items.nth(1)).toHaveText('Build 3.2.0-rc.4 deployed to staging.');
+  await expectToastsShown(page, 5);
   await page.mouse.move(0, 0);
   await page.clock.fastForward(TOAST_DURATION_JUMP_MS);
   await expect(items, 'both deployment toasts are gone').toHaveCount(0);

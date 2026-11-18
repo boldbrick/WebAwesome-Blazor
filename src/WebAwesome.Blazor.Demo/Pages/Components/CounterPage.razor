@@ -1,0 +1,432 @@
+﻿@page "/components/counter"
+@using WebAwesome.Blazor.Models
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter <ComponentBadges Tag="wa-counter" /></h1>
+<p>
+    Counters count down to a date or up from one, ticking through years, months, days and smaller units.
+    <code>&lt;wa-counter&gt;</code> wrapped by <code>WaCounter</code>. <code>Date</code> is a
+    <code>DateTimeOffset?</code>, sent with its offset (ISO 8601), so every browser reads the same instant; without it the
+    counter counts down from <code>Duration</code> (milliseconds), or up from the moment it starts. The examples compute
+    their dates relative to now, so the page always shows a running count.
+</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaCounter Duration="launchDuration" Label="Time until launch" Style="font-size: var(--wa-font-size-2xl);" />
+</ExampleSection>
+
+<ExampleSection Title="Date" Code="@DateExample">
+    <p>
+        <code>Date</code> counts down to a moment in time. <code>Label</code> names the counter for assistive devices
+        and isn't displayed; screen readers read the time as one phrase, such as "2 days 3 hours 5 minutes".
+    </p>
+    <WaCounter Date="conference" LargestUnit="WaCounterUnit.Years" Label="Time until the conference" />
+</ExampleSection>
+
+<ExampleSection Title="Duration" Code="@DurationExample">
+    <p>
+        <code>Duration</code> counts down from the moment the counter is added to the page, for a countdown that isn't
+        tied to a moment, such as a quiz timer. Changing it starts the countdown over; <code>Date</code> takes precedence
+        when both are set.
+    </p>
+    <WaCounter Duration="quizDuration" LargestUnit="WaCounterUnit.Minutes" Label="Time left in this quiz" />
+</ExampleSection>
+
+<ExampleSection Title="Units" Code="@UnitsExample">
+    <p>
+        <code>LargestUnit</code> and <code>SmallestUnit</code> choose the units shown, days to seconds by default. Time
+        beyond the largest unit rolls up into it, so two days show as 48 hours; units at zero ahead of the first non-zero
+        unit are hidden.
+    </p>
+    <WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">Largest unit is hours</span>
+            <WaCounter Duration="launchDuration" LargestUnit="WaCounterUnit.Hours" Label="Time until the conference" />
+        </WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">Smallest unit is hours</span>
+            <WaCounter Duration="launchDuration" SmallestUnit="WaCounterUnit.Hours" Label="Time until the conference" />
+        </WaStack>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Counting Up" Code="@CountingUpExample">
+    <p>
+        With <code>Direction</code> up, the counter counts up from a past date; without a date it counts up from when
+        it's added to the page. A count up never finishes.
+    </p>
+    <WaStack>
+        <WaCounter Direction="WaCounterDirection.Up" Date="launchedAt" Label="Time since the launch" />
+        <WaCounter Direction="WaCounterDirection.Up" LargestUnit="WaCounterUnit.Hours" Label="Time on this page" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Format" Code="@FormatExample">
+    <p>
+        <code>Format</code> shortens the unit labels, such as "hr" or "h". Avoid narrow when the counter shows months,
+        since some locales label months and minutes both "m".
+    </p>
+    <WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">Long</span>
+            <WaCounter Duration="auctionDuration" Format="WaRelativeTimeFormat.Long" Label="Time until the auction closes" />
+        </WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">Short</span>
+            <WaCounter Duration="auctionDuration" Format="WaRelativeTimeFormat.Short" Label="Time until the auction closes" />
+        </WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">Narrow</span>
+            <WaCounter Duration="auctionDuration" Format="WaRelativeTimeFormat.Narrow" Label="Time until the auction closes" />
+        </WaStack>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Unit Labels" Code="@UnitLabelsExample">
+    <p>
+        <code>YearsContent</code> to <code>SecondsContent</code> replace a unit's label. Slotted labels don't change with
+        the value, and screen readers still read the built-in unit names.
+    </p>
+    <WaCounter Duration="pizzaDuration" LargestUnit="WaCounterUnit.Hours" Label="Time until the pizza arrives">
+        <HoursContent>Hrs</HoursContent>
+        <MinutesContent>Mins</MinutesContent>
+        <SecondsContent>Secs</SecondsContent>
+    </WaCounter>
+</ExampleSection>
+
+<ExampleSection Title="Clock Style" Code="@ClockExample">
+    <p><code>Delimiter</code> shows text between units, and <code>WithoutLabels</code> hides the labels for a clock.</p>
+    <WaCounter Duration="trainDuration" Delimiter=":" WithoutLabels="true" LargestUnit="WaCounterUnit.Hours"
+               Label="Time until the next train" Style="font-size: var(--wa-font-size-2xl);" />
+</ExampleSection>
+
+<ExampleSection Title="Size" Code="@SizeExample">
+    <p>
+        Counters are sized relative to the current font size and stay on one line, so give a large one a size that
+        scales with the viewport.
+    </p>
+    <WaCounter Duration="showDuration" Label="Time until the show starts" Style="font-size: min(8vw, var(--wa-font-size-4xl));" />
+</ExampleSection>
+
+<ExampleSection Title="Localization" Code="@LocalizationExample">
+    <p>
+        The <code>lang</code> attribute sets the counter's locale; the browser's <code>Intl</code> APIs do the work, so
+        no language packs are needed. <code>WaCounter</code> has no <code>Lang</code> parameter, so <code>lang</code>
+        goes through as an additional attribute.
+    </p>
+    <WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">English</span>
+            <WaCounter Duration="launchDuration" lang="en" Label="Time until launch" />
+        </WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">German</span>
+            <WaCounter Duration="launchDuration" lang="de" Label="Zeit bis zum Start" />
+        </WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">Japanese</span>
+            <WaCounter Duration="launchDuration" lang="ja" Label="発売までの時間" />
+        </WaStack>
+        <WaStack Gap="GapSize.Gap_2XS">
+            <span class="wa-caption-s">Chinese</span>
+            <WaCounter Duration="launchDuration" lang="zh-CN" Label="距离发布还有" />
+        </WaStack>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="On a Colored Surface" Code="@SurfaceExample">
+    <p>Counters inherit the surrounding font and color, and their digits are tabular, so the width holds as they tick.</p>
+    <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Accent" IconName="clock">
+        <WaSplit Direction="SplitDirection.Row" AlignItems="AlignItems.Center">
+            <strong>Launch day is almost here</strong>
+            <WaCounter Duration="launchDuration" Label="Time until launch" />
+        </WaSplit>
+    </WaCallout>
+</ExampleSection>
+
+<ExampleSection Title="Formatting the Value with JavaScript" Code="@FormatterExample">
+    <p>
+        <code>ValueFormatterFunction</code> formats each unit's number with a JavaScript function, here an export of the
+        collocated <code>CounterPage.razor.js</code> that pads every unit to two digits except days. Screen readers
+        always read the unformatted number.
+    </p>
+    <WaCounter Duration="launchDuration" Label="Time until the next episode" ValueFormatterFunction="padExceptDays" />
+</ExampleSection>
+
+<ExampleSection Title="Pausing" Code="@PausingExample">
+    <p>
+        <code>Paused</code> stops the counter; when it's cleared, counting continues from the time shown, so a paused
+        countdown ends later than its date. Give people a way to pause a counter that is decoration rather than a real
+        deadline.
+    </p>
+    <WaStack>
+        <WaCounter Duration="quizDuration" LargestUnit="WaCounterUnit.Minutes" Paused="paused" Label="Time left in this focus session" />
+        <WaDivider />
+        <WaSwitch @bind-Value="paused">Pause</WaSwitch>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Finished Content" Code="@FinishedExample">
+    <p>
+        <code>FinishedContent</code> replaces the units when a countdown reaches zero, and also when the date had already
+        passed, as it has here until you run the countdown again (10 seconds). Without it, the counter stays at zero.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <WaCounter Date="saleEnd" LargestUnit="WaCounterUnit.Seconds" Label="Time until the sale ends">
+            <FinishedContent><strong>The sale has ended.</strong></FinishedContent>
+        </WaCounter>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton OnClick="() => saleEnd = DateTimeOffset.UtcNow.AddSeconds(RunAgainSeconds)">Run Again</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Reacting to Completion" Code="@FinishExample">
+    <p>
+        <code>OnFinish</code> fires when a running countdown reaches zero; it doesn't fire when the date had already
+        passed. Screen readers don't announce a counter as it changes, so announce the finish in a
+        <code>role="status"</code> element.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <WaCluster>
+            <WaCounter Date="liftoff" LargestUnit="WaCounterUnit.Seconds" Label="Time until liftoff" OnFinish="() => liftoffMessage = LiftoffText" />
+            <span role="status">@liftoffMessage</span>
+        </WaCluster>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton OnClick="RunLiftoffAgain">Run Again</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ApiTable Tag="wa-counter" />
+
+@code {
+    // countdown lengths in milliseconds
+    private static readonly int launchDuration = (int)TimeSpan.FromHours(53).TotalMilliseconds;
+    private static readonly int quizDuration = (int)TimeSpan.FromMinutes(25).TotalMilliseconds;
+    private static readonly int auctionDuration = (int)TimeSpan.FromHours(29).TotalMilliseconds;
+    private static readonly int pizzaDuration = (int)TimeSpan.FromMinutes(95).TotalMilliseconds;
+    private static readonly int trainDuration = (int)TimeSpan.FromMinutes(135).TotalMilliseconds;
+    private static readonly int showDuration = (int)TimeSpan.FromHours(20).TotalMilliseconds;
+
+    // how long the countdowns of the finish examples run
+    private const int RunAgainSeconds = 10;
+    private const string LiftoffText = "We have liftoff.";
+
+    // instants relative to now in UTC; the sale ended five minutes ago
+    private readonly DateTimeOffset conference = DateTimeOffset.UtcNow.AddMonths(14).AddDays(9);
+    private readonly DateTimeOffset launchedAt = DateTimeOffset.UtcNow.AddDays(-12).AddHours(-5);
+    private DateTimeOffset saleEnd = DateTimeOffset.UtcNow.AddMinutes(-5);
+    private DateTimeOffset liftoff = DateTimeOffset.UtcNow.AddSeconds(RunAgainSeconds);
+    private string liftoffMessage = "";
+    private bool paused;
+
+    // pads every unit to two digits except days
+    private readonly WaJsFunction padExceptDays = WaJsFunction.Module("./Pages/Components/CounterPage.razor.js", "padExcept")
+        .WithArgs(new { unpadded = new[] { "days" } });
+
+    // starts a new 10 second countdown and clears the announcement
+    private void RunLiftoffAgain()
+    {
+        liftoff = DateTimeOffset.UtcNow.AddSeconds(RunAgainSeconds);
+        liftoffMessage = "";
+    }
+
+    private const string DefaultExample = """
+        <WaCounter Duration="launchDuration" Label="Time until launch" Style="font-size: var(--wa-font-size-2xl);" />
+
+        @code {
+            // 53 hours in milliseconds
+            private static readonly int launchDuration = (int)TimeSpan.FromHours(53).TotalMilliseconds;
+        }
+        """;
+
+    private const string DateExample = """
+        <WaCounter Date="conference" LargestUnit="WaCounterUnit.Years" Label="Time until the conference" />
+
+        @code {
+            private readonly DateTimeOffset conference = DateTimeOffset.UtcNow.AddMonths(14).AddDays(9);
+        }
+        """;
+
+    private const string DurationExample = """
+        <WaCounter Duration="quizDuration" LargestUnit="WaCounterUnit.Minutes" Label="Time left in this quiz" />
+
+        @code {
+            private static readonly int quizDuration = (int)TimeSpan.FromMinutes(25).TotalMilliseconds;
+        }
+        """;
+
+    private const string UnitsExample = """
+        <WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">Largest unit is hours</span>
+                <WaCounter Duration="launchDuration" LargestUnit="WaCounterUnit.Hours" Label="Time until the conference" />
+            </WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">Smallest unit is hours</span>
+                <WaCounter Duration="launchDuration" SmallestUnit="WaCounterUnit.Hours" Label="Time until the conference" />
+            </WaStack>
+        </WaStack>
+        """;
+
+    private const string CountingUpExample = """
+        <WaStack>
+            <WaCounter Direction="WaCounterDirection.Up" Date="launchedAt" Label="Time since the launch" />
+            <WaCounter Direction="WaCounterDirection.Up" LargestUnit="WaCounterUnit.Hours" Label="Time on this page" />
+        </WaStack>
+
+        @code {
+            private readonly DateTimeOffset launchedAt = DateTimeOffset.UtcNow.AddDays(-12).AddHours(-5);
+        }
+        """;
+
+    private const string FormatExample = """
+        <WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">Long</span>
+                <WaCounter Duration="auctionDuration" Format="WaRelativeTimeFormat.Long" Label="Time until the auction closes" />
+            </WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">Short</span>
+                <WaCounter Duration="auctionDuration" Format="WaRelativeTimeFormat.Short" Label="Time until the auction closes" />
+            </WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">Narrow</span>
+                <WaCounter Duration="auctionDuration" Format="WaRelativeTimeFormat.Narrow" Label="Time until the auction closes" />
+            </WaStack>
+        </WaStack>
+
+        @code {
+            private static readonly int auctionDuration = (int)TimeSpan.FromHours(29).TotalMilliseconds;
+        }
+        """;
+
+    private const string UnitLabelsExample = """
+        <WaCounter Duration="pizzaDuration" LargestUnit="WaCounterUnit.Hours" Label="Time until the pizza arrives">
+            <HoursContent>Hrs</HoursContent>
+            <MinutesContent>Mins</MinutesContent>
+            <SecondsContent>Secs</SecondsContent>
+        </WaCounter>
+
+        @code {
+            private static readonly int pizzaDuration = (int)TimeSpan.FromMinutes(95).TotalMilliseconds;
+        }
+        """;
+
+    private const string ClockExample = """
+        <WaCounter Duration="trainDuration" Delimiter=":" WithoutLabels="true" LargestUnit="WaCounterUnit.Hours"
+                   Label="Time until the next train" Style="font-size: var(--wa-font-size-2xl);" />
+
+        @code {
+            private static readonly int trainDuration = (int)TimeSpan.FromMinutes(135).TotalMilliseconds;
+        }
+        """;
+
+    private const string SizeExample = """
+        <WaCounter Duration="showDuration" Label="Time until the show starts" Style="font-size: min(8vw, var(--wa-font-size-4xl));" />
+
+        @code {
+            private static readonly int showDuration = (int)TimeSpan.FromHours(20).TotalMilliseconds;
+        }
+        """;
+
+    private const string LocalizationExample = """
+        <WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">English</span>
+                <WaCounter Duration="launchDuration" lang="en" Label="Time until launch" />
+            </WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">German</span>
+                <WaCounter Duration="launchDuration" lang="de" Label="Zeit bis zum Start" />
+            </WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">Japanese</span>
+                <WaCounter Duration="launchDuration" lang="ja" Label="発売までの時間" />
+            </WaStack>
+            <WaStack Gap="GapSize.Gap_2XS">
+                <span class="wa-caption-s">Chinese</span>
+                <WaCounter Duration="launchDuration" lang="zh-CN" Label="距离发布还有" />
+            </WaStack>
+        </WaStack>
+        """;
+
+    private const string SurfaceExample = """
+        <WaCallout Variant="WaVariant.Brand" Appearance="WaAppearance.Accent" IconName="clock">
+            <WaSplit Direction="SplitDirection.Row" AlignItems="AlignItems.Center">
+                <strong>Launch day is almost here</strong>
+                <WaCounter Duration="launchDuration" Label="Time until launch" />
+            </WaSplit>
+        </WaCallout>
+        """;
+
+    private const string FormatterExample = """
+        <WaCounter Duration="launchDuration" Label="Time until the next episode" ValueFormatterFunction="padExceptDays" />
+
+        @code {
+            // pads every unit to two digits except days
+            private readonly WaJsFunction padExceptDays = WaJsFunction.Module("./Pages/Components/CounterPage.razor.js", "padExcept")
+                .WithArgs(new { unpadded = new[] { "days" } });
+        }
+
+        // CounterPage.razor.js, next to CounterPage.razor
+        export function padExcept(value, unit, ctx) {
+          return ctx.args.unpadded.includes(unit) ? String(value) : String(value).padStart(2, '0');
+        }
+        """;
+
+    private const string PausingExample = """
+        <WaStack>
+            <WaCounter Duration="quizDuration" LargestUnit="WaCounterUnit.Minutes" Paused="paused" Label="Time left in this focus session" />
+            <WaDivider />
+            <WaSwitch @bind-Value="paused">Pause</WaSwitch>
+        </WaStack>
+
+        @code {
+            private bool paused;
+        }
+        """;
+
+    private const string FinishedExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <WaCounter Date="saleEnd" LargestUnit="WaCounterUnit.Seconds" Label="Time until the sale ends">
+                <FinishedContent><strong>The sale has ended.</strong></FinishedContent>
+            </WaCounter>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton OnClick="() => saleEnd = DateTimeOffset.UtcNow.AddSeconds(RunAgainSeconds)">Run Again</WaButton>
+        </WaStack>
+
+        @code {
+            private const int RunAgainSeconds = 10;
+
+            // the sale ended five minutes ago, so the finished content shows and OnFinish doesn't fire
+            private DateTimeOffset saleEnd = DateTimeOffset.UtcNow.AddMinutes(-5);
+        }
+        """;
+
+    private const string FinishExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <WaCluster>
+                <WaCounter Date="liftoff" LargestUnit="WaCounterUnit.Seconds" Label="Time until liftoff" OnFinish="() => liftoffMessage = LiftoffText" />
+                <span role="status">@liftoffMessage</span>
+            </WaCluster>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton OnClick="RunLiftoffAgain">Run Again</WaButton>
+        </WaStack>
+
+        @code {
+            private const int RunAgainSeconds = 10;
+            private const string LiftoffText = "We have liftoff.";
+
+            private DateTimeOffset liftoff = DateTimeOffset.UtcNow.AddSeconds(RunAgainSeconds);
+            private string liftoffMessage = "";
+
+            // starts a new 10 second countdown and clears the announcement
+            private void RunLiftoffAgain()
+            {
+                liftoff = DateTimeOffset.UtcNow.AddSeconds(RunAgainSeconds);
+                liftoffMessage = "";
+            }
+        }
+        """;
+}

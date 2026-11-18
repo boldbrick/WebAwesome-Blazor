@@ -6,10 +6,10 @@ const { WA_READY_TIMEOUT_MS } = require('../wa-ready');
 
 // Method cases of the group "media-content" (tools\e2e\data\method-groups.json): WaAnimatedImage, WaAnimation,
 // WaZoomableFrame, WaVideo, WaVideoPlaylist, WaMarkdown, WaMutationObserver, WaResizeObserver, WaRandomContent,
-// WaRelativeTime and WaCopyButton on /testing/methods-media-content (MethodsMediaContentHarness.razor). Every call runs
-// from .NET through the wrapper's @ref (a MethodCall button); the case asserts the effect on the element, and the
-// returned value where there is one. wa-video and wa-video-playlist are Pro components, so their cases skip on the free
-// CDN.
+// WaRelativeTime, WaCopyButton, WaNumberTicker, WaLightbox and WaLightboxItem on /testing/methods-media-content
+// (MethodsMediaContentHarness.razor). Every call runs from .NET through the wrapper's @ref (a MethodCall button); the
+// case asserts the effect on the element, and the returned value where there is one. wa-video and wa-video-playlist are
+// Pro components, so their cases skip on the free CDN.
 
 /** @typedef {import('@playwright/test').Page} Page */
 /** @typedef {import('../method-harness').MethodGroupModule} MethodGroupModule */
@@ -25,6 +25,12 @@ const RESIZE_OBSERVER = 'wa-resize-observer';
 const RANDOM_CONTENT = 'wa-random-content';
 const RELATIVE_TIME = 'wa-relative-time';
 const COPY_BUTTON = 'wa-copy-button';
+const NUMBER_TICKER = 'wa-number-ticker';
+const LIGHTBOX = 'wa-lightbox';
+const LIGHTBOX_ITEM = 'wa-lightbox-item';
+
+// the number the harness's ticker counts to
+const TICKER_VALUE = 100;
 
 // the values of the harness
 const ANIMATION_DURATION_MS = 10_000;
@@ -487,6 +493,70 @@ module.exports = {
         await page.clock.setSystemTime(Date.now() + CLOCK_SHIFT_MS);
         await callOk(page, 'relative-update');
         await expect.poll(() => relativePhrase(page)).toBe(SHIFTED_PHRASE);
+      },
+    },
+    {
+      name: 'WaNumberTicker.RestartAsync counts from the start value to the value again',
+      methods: ['WaNumberTicker.RestartAsync'],
+      tags: [NUMBER_TICKER],
+      run: async page => {
+        const finished = page.getByTestId('ticker-finish-count');
+        // the number the ticker shows: the start value until it starts counting
+        const shown = () => page.getByTestId('number-ticker').evaluate(el => {
+          const ticker = /** @type {any} */ (el);
+          return ticker.displayValue ?? ticker.startValue;
+        });
+        await whenInteractive(page, 'ticker-restart');
+        // the eager ticker counts once on its own
+        await expect(finished, 'the first count finished').toHaveText('1', { timeout: WA_READY_TIMEOUT_MS });
+        expect(await shown()).toBe(TICKER_VALUE);
+
+        await callOk(page, 'ticker-restart');
+        await expect.poll(shown, { message: 'the ticker counts from the start value again' }).toBeLessThan(TICKER_VALUE);
+        await expect(finished, 'the restarted count finished').toHaveText('2', { timeout: WA_READY_TIMEOUT_MS });
+        expect(await shown()).toBe(TICKER_VALUE);
+      },
+    },
+    {
+      // the lightbox is modal while open, so the calls are quiet (a click event on the call button, no pointer)
+      name: 'WaLightbox moves to the next and the previous item and zooms in and out, WaLightboxItem takes the focus',
+      methods: ['WaLightbox.NextAsync', 'WaLightbox.PreviousAsync', 'WaLightbox.ZoomInAsync', 'WaLightbox.ZoomOutAsync',
+        'WaLightboxItem.FocusAsync'],
+      tags: [LIGHTBOX, LIGHTBOX_ITEM],
+      run: async page => {
+        const index = () => propertyOf(page, 'lightbox', 'index');
+        const isOpen = () => propertyOf(page, 'lightbox', 'open');
+        const zoomed = () => page.getByTestId('lightbox').evaluate(el => el.matches(':state(zoomed)'));
+        const reportedIndex = page.getByTestId('lightbox-index');
+        await whenInteractive(page, 'lightbox-item-focus');
+
+        // the item's trigger in its shadow root takes the focus, which makes the item the active element
+        await callOk(page, 'lightbox-item-focus', QUIET);
+        await expect.poll(() => page.getByTestId('lightbox-second').evaluate(el =>
+          document.activeElement === el && el.shadowRoot?.activeElement?.getAttribute('part') === 'trigger'),
+        { message: 'the trigger of the second item has the focus' }).toBe(true);
+
+        // a click on the first thumbnail opens the lightbox at the first item
+        await page.getByTestId('lightbox-first').click();
+        await expect.poll(isOpen, { message: 'the thumbnail opened the lightbox' }).toBe(true);
+        expect(await index()).toBe(0);
+
+        await callOk(page, 'lightbox-next', QUIET);
+        await expect.poll(index).toBe(1);
+        await expect(reportedIndex, 'OnItemChange reached .NET').toHaveText('1');
+        await callOk(page, 'lightbox-previous', QUIET);
+        await expect.poll(index).toBe(0);
+        await expect(reportedIndex).toHaveText('0');
+
+        // the image zooms to twice its fitted size and back
+        expect(await zoomed()).toBe(false);
+        await callOk(page, 'lightbox-zoom-in', QUIET);
+        await expect.poll(zoomed, { message: 'the image is zoomed in' }).toBe(true);
+        await callOk(page, 'lightbox-zoom-out', QUIET);
+        await expect.poll(zoomed, { message: 'the image is back at its fitted size' }).toBe(false);
+
+        await page.keyboard.press('Escape');
+        await expect.poll(isOpen, { message: 'Escape closed the lightbox' }).toBe(false);
       },
     },
     {
