@@ -224,37 +224,12 @@ public class WaRating : WaInputBase<decimal>
         await JSInterop.InvokeMethodAsync(Element.Value, "focus");
     }
 
-    /// <summary>
-    /// Sent JavaScript source text to the element's <c>getSymbol</c>, which the element cannot call. Use
-    /// <see cref="GetSymbolFunction"/> instead.
-    /// </summary>
-    /// <param name="jsFunction">JavaScript source text, which is not sent</param>
-    /// <returns>A task that always fails</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
-    /// <exception cref="NotSupportedException">Thrown always otherwise: the replacement is <see cref="GetSymbolFunction"/></exception>
-    // TODO WA 3.15.0 train: remove this obsolete member (replaced by GetSymbolFunction)
-    [Obsolete(SetSymbolFunctionObsoleteMessage)]
-    public Task SetSymbolFunctionAsync(string jsFunction)
-    {
-        // the element would throw a TypeError on its next render, so the string is never sent
-        Exception failure = Element == null
-            ? new InvalidOperationException("Cannot set symbol function: component has not been rendered yet.")
-            : string.IsNullOrEmpty(jsFunction)
-                ? new ArgumentNullException(nameof(jsFunction))
-                : new NotSupportedException(SetSymbolFunctionObsoleteMessage);
-
-        return Task.FromException(failure);
-    }
-
     #endregion
 
     #region ------ Internals ------
 
     // the function-valued member of wa-rating
     private const string GetSymbolMember = "getSymbol";
-
-    private const string SetSymbolFunctionObsoleteMessage = "JavaScript source text cannot become the function that wa-rating calls, so the element failed to render. Use GetSymbolFunction with a WaJsFunction reference. This method throws NotSupportedException and is removed in the 3.15.0 train.";
 
     // the function member and the shadow styles last pushed to the element
     private readonly WaJsPropertyPush jsProperties = new();

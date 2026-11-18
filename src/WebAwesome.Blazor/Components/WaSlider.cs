@@ -52,17 +52,6 @@ public class WaSlider : WaSliderBase<decimal?>
 
     #endregion
 
-    #region ------ JavaScript Interop Properties ------
-
-    /// <summary>
-    /// A value formatting function that nothing reads.
-    /// </summary>
-    // TODO WA 3.15.0 train: remove this obsolete member (replaced by ValueFormatterFunction)
-    [Obsolete(ValueFormatterObsoleteMessage)]
-    public Func<decimal, string>? ValueFormatter { get; set; }
-
-    #endregion
-
     #region ------ Overrides ------
 
     /// <inheritdoc />
@@ -170,8 +159,6 @@ public class WaSlider : WaSliderBase<decimal?>
             await MaxValueChanged.InvokeAsync(maxValue);
         }
     }
-
-    private const string ValueFormatterObsoleteMessage = "Nothing reads this property. Use ValueFormatterFunction with a WaJsFunction reference. This property is removed in the 3.15.0 train.";
 
     // target of the fallback ValueExpression in range mode (see SetParametersAsync); never read or written, the
     // range selection lives in MinValue/MaxValue

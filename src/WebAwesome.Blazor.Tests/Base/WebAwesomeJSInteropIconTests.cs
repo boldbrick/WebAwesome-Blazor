@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,24 +74,6 @@ public class WebAwesomeJSInteropIconTests : BunitContext
     }
 
     [Fact]
-    public async Task RegisterIconLibraryAsync_WithMutatorAndMutatorFunction_ThrowsAndInvokesNothing()
-    {
-        // Arrange - the obsolete path and its replacement would write the one mutator of the library
-        var module = SetupInteropModule();
-#pragma warning disable CS0618 // the obsolete mutator path is under test
-        var options = new IconLibraryOptions { Resolver = SampleResolver, Mutator = SampleMutator, MutatorFunction = SampleMutatorFunction };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
-            CreateConfiguredInterop().RegisterIconLibraryAsync(SampleLibrary, options));
-
-        // Assert
-        Assert.Contains($"both {nameof(IconLibraryOptions.Mutator)} and {nameof(IconLibraryOptions.MutatorFunction)}", exception.Message);
-#pragma warning restore CS0618
-        Assert.Empty(module.Invocations);
-    }
-
-    [Fact]
     public async Task RegisterIconLibraryAsync_WithResolverFunctionOnly_InvokesModule()
     {
         // Arrange - a resolver function replaces the URL template
@@ -137,26 +118,6 @@ public class WebAwesomeJSInteropIconTests : BunitContext
         Assert.Equal("fn", mutator.GetProperty("$wab").GetString());
         Assert.Equal("global", mutator.GetProperty("ref").GetProperty("kind").GetString());
         Assert.Equal(SampleMutator, mutator.GetProperty("ref").GetProperty("path").GetString());
-    }
-
-    [Fact]
-    public void IconLibraryOptions_Mutator_IsObsoleteForTheNextTrain()
-    {
-        // Arrange - the removal is due in the 3.15.0 train (CHANGELOG "Next-release check")
-        var property = typeof(IconLibraryOptions).GetProperty(nameof(IconLibraryOptions.MutatorFunction))!;
-#pragma warning disable CS0618 // the obsolete mutator path is under test
-        var obsolete = typeof(IconLibraryOptions).GetProperty(nameof(IconLibraryOptions.Mutator))!;
-#pragma warning restore CS0618
-
-        // Act
-        var attribute = obsolete.GetCustomAttribute<ObsoleteAttribute>();
-
-        // Assert - the message names the replacement and the train, and the replacement is not obsolete
-        Assert.NotNull(attribute);
-        Assert.False(attribute.IsError);
-        Assert.Contains(nameof(IconLibraryOptions.MutatorFunction), attribute.Message);
-        Assert.Contains("3.15.0 train", attribute.Message);
-        Assert.Null(property.GetCustomAttribute<ObsoleteAttribute>());
     }
 
     [Fact]
@@ -209,9 +170,7 @@ public class WebAwesomeJSInteropIconTests : BunitContext
         // Arrange
         var module = SetupInteropModule();
         var jsInterop = CreateConfiguredInterop();
-#pragma warning disable CS0618 // the obsolete mutator path still registers until its removal
-        var options = new IconLibraryOptions { Resolver = SampleResolver, Mutator = SampleMutator, SpriteSheet = true };
-#pragma warning restore CS0618
+        var options = new IconLibraryOptions { Resolver = SampleResolver, MutatorFunction = SampleMutatorFunction, SpriteSheet = true };
 
         // Act
         await jsInterop.RegisterIconLibraryAsync(SampleLibrary, options);

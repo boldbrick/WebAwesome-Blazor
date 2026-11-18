@@ -173,6 +173,20 @@
       "handlers": []
     },
     {
+      "id": "WaCodeHighlighter.OnError",
+      "tag": "wa-code-highlighter",
+      "handlers": [
+        "wa-error"
+      ]
+    },
+    {
+      "id": "WaCodeHighlighter.OnLoad",
+      "tag": "wa-code-highlighter",
+      "handlers": [
+        "wa-load"
+      ]
+    },
+    {
       "id": "WaColorPicker.OnAfterHide",
       "tag": "wa-color-picker",
       "handlers": [
@@ -388,6 +402,13 @@
       "tag": "wa-copy-button",
       "handlers": [
         "wa-error"
+      ]
+    },
+    {
+      "id": "WaCounter.OnFinish",
+      "tag": "wa-counter",
+      "handlers": [
+        "wa-finish"
       ]
     },
     {
@@ -1031,6 +1052,41 @@
       "handlers": []
     },
     {
+      "id": "WaLightbox.OnAfterHide",
+      "tag": "wa-lightbox",
+      "handlers": [
+        "wa-after-hide"
+      ]
+    },
+    {
+      "id": "WaLightbox.OnAfterShow",
+      "tag": "wa-lightbox",
+      "handlers": [
+        "wa-after-show"
+      ]
+    },
+    {
+      "id": "WaLightbox.OnHide",
+      "tag": "wa-lightbox",
+      "handlers": [
+        "wa-hide"
+      ]
+    },
+    {
+      "id": "WaLightbox.OnItemChange",
+      "tag": "wa-lightbox",
+      "handlers": [
+        "wa-item-change"
+      ]
+    },
+    {
+      "id": "WaLightbox.OnShow",
+      "tag": "wa-lightbox",
+      "handlers": [
+        "wa-show"
+      ]
+    },
+    {
       "id": "WaMutationObserver.OnMutation",
       "tag": "wa-mutation-observer",
       "handlers": [
@@ -1097,6 +1153,13 @@
       "id": "WaNumberInput.ValueChanged",
       "tag": "wa-number-input",
       "handlers": []
+    },
+    {
+      "id": "WaNumberTicker.OnFinish",
+      "tag": "wa-number-ticker",
+      "handlers": [
+        "wa-finish"
+      ]
     },
     {
       "id": "WaOtpInput.OnBlur",
@@ -1424,6 +1487,74 @@
       "handlers": [
         "wa-resize"
       ]
+    },
+    {
+      "id": "WaRichTextEditor.OnBlur",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "blur"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.OnFocus",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "focus"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.OnInput",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "input"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.OnInvalid",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "wa-invalid"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.OnKeyDown",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "wablazor-keydown"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.OnKeyPress",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "keypress"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.OnKeyUp",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "keyup"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.OnSelectionChange",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "wablazor-selectionchange"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.OnSuggestionsError",
+      "tag": "wa-rich-text-editor",
+      "handlers": [
+        "wa-suggestions-error"
+      ]
+    },
+    {
+      "id": "WaRichTextEditor.ValueChanged",
+      "tag": "wa-rich-text-editor",
+      "handlers": []
     },
     {
       "id": "WaSelect.OnAfterHide",

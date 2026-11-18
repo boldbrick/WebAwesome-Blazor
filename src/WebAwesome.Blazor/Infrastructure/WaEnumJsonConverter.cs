@@ -103,6 +103,15 @@ internal sealed class WaRatingHoverPhaseJsonConverter : WaEnumJsonConverter<WaRa
 }
 
 /// <summary>
+/// JSON form of <see cref="WaLightboxItemType"/> (the projected items of the wa-item-change detail).
+/// </summary>
+internal sealed class WaLightboxItemTypeJsonConverter : WaEnumJsonConverter<WaLightboxItemType>
+{
+    /// <inheritdoc />
+    protected override string ToWire(WaLightboxItemType value) => value.ToHtmlValue();
+}
+
+/// <summary>
 /// JSON form of <see cref="WaMutationType"/> (the projected wa-mutation records).
 /// </summary>
 internal sealed class WaMutationTypeJsonConverter : WaEnumJsonConverter<WaMutationType>

@@ -40,7 +40,7 @@
     },
     "WaSize": {
       "literals": [ "small", "medium", "large" ],
-      "attributes": [ "wa-button:size", "wa-callout:size", "wa-checkbox:size", "wa-checkbox-group:size", "wa-color-picker:size", "wa-combobox:size", "wa-data-grid:size", "wa-date-input:size", "wa-date-picker:size", "wa-dropdown:size", "wa-file-input:size", "wa-input:size", "wa-known-date:size", "wa-number-input:size", "wa-otp-input:size", "wa-radio:size", "wa-radio-group:size", "wa-rating:size", "wa-select:size", "wa-slider:size", "wa-switch:size", "wa-tag:size", "wa-tag-input:size", "wa-textarea:size", "wa-time-input:size", "wa-toast-item:size" ]
+      "attributes": [ "wa-button:size", "wa-callout:size", "wa-checkbox:size", "wa-checkbox-group:size", "wa-color-picker:size", "wa-combobox:size", "wa-data-grid:size", "wa-date-input:size", "wa-date-picker:size", "wa-dropdown:size", "wa-file-input:size", "wa-input:size", "wa-known-date:size", "wa-number-input:size", "wa-otp-input:size", "wa-radio:size", "wa-radio-group:size", "wa-rating:size", "wa-select:size", "wa-slider:size", "wa-switch:size", "wa-tag:size", "wa-tag-input:size", "wa-rich-text-editor:size", "wa-textarea:size", "wa-time-input:size", "wa-toast-item:size" ]
     }
   },
   "components": {
@@ -160,6 +160,32 @@
       "ignoredAttributes": [ "name", "custom-error" ],
       "ignoredEvents": [ "change" ],
       "ignoredMethods": [ "formStateRestoreCallback" ]
+    },
+    "wa-rich-text-editor": {
+      "onOffAttributes": [ "autocorrect" ],
+      "attributeOverrides": {
+        "maxlength": "MaxLength",
+        "minlength": "MinLength",
+        "autocapitalize": "AutoCapitalize",
+        "autocorrect": "AutoCorrect",
+        "enterkeyhint": "EnterKeyHint",
+        "inputmode": "InputMode"
+      },
+      "eventOverrides": {
+        "selectionchange": "OnSelectionChange"
+      },
+      "tokenListAttributes": {
+        "disabled-features": [ "bold", "italic", "underline", "strikethrough", "highlight", "code", "subscript", "superscript", "color", "link", "align", "bullet-list", "ordered-list", "blockquote", "code-block", "image", "embed", "table", "horizontal-rule" ]
+      },
+      "ignoredAttributes": [ "name", "custom-error" ],
+      "ignoredEvents": [ "change" ],
+      "cemOnlyEvents": [ "type" ],
+      "ignoredMethods": [ "formStateRestoreCallback" ]
+    },
+    "wa-lightbox-item": {
+      "attributeOverrides": {
+        "srcset": "SrcSet"
+      }
     },
     "wa-number-input": {
       "attributeOverrides": {
@@ -450,6 +476,21 @@
     "ignoredAttributes:wa-textarea:custom-error": "WaTextArea sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
     "ignoredEvents:wa-textarea:change": "WaTextArea binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
     "ignoredMethods:wa-textarea:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-textarea to restore or autofill its state; not consumer API and not callable from Blazor",
+    "onOffAttributes:wa-rich-text-editor:autocorrect": "wa-rich-text-editor's autocorrect is typed boolean but has the same on/off converter as wa-input (fromAttribute reads empty or \"off\" as false, toAttribute writes \"on\"/\"off\"; 3.15.0 chunk.B2ZVLTFC.js), so AutoCorrect must render exactly \"on\"/\"off\"",
+    "attributeOverrides:wa-rich-text-editor:maxlength": "exposed as WaRichTextEditor.MaxLength, the natural-PascalCase name (mechanical conversion would yield 'Maxlength')",
+    "attributeOverrides:wa-rich-text-editor:minlength": "exposed as WaRichTextEditor.MinLength, the natural-PascalCase name (mechanical conversion would yield 'Minlength')",
+    "attributeOverrides:wa-rich-text-editor:autocapitalize": "exposed as WaRichTextEditor.AutoCapitalize, the natural-PascalCase name (mechanical conversion would yield 'Autocapitalize')",
+    "attributeOverrides:wa-rich-text-editor:autocorrect": "exposed as WaRichTextEditor.AutoCorrect, the natural-PascalCase name (mechanical conversion would yield 'Autocorrect')",
+    "attributeOverrides:wa-rich-text-editor:enterkeyhint": "exposed as WaRichTextEditor.EnterKeyHint, the natural-PascalCase name (mechanical conversion would yield 'Enterkeyhint')",
+    "attributeOverrides:wa-rich-text-editor:inputmode": "exposed as WaRichTextEditor.InputMode, the natural-PascalCase name (mechanical conversion would yield 'Inputmode')",
+    "eventOverrides:wa-rich-text-editor:selectionchange": "wa-rich-text-editor dispatches selectionchange as a plain non-bubbling Event on its host (3.15.0 chunk.B2ZVLTFC.js); exposed as the natural-PascalCase OnSelectionChange (mechanical conversion would yield 'OnSelectionchange') and delivered through the wablazor-selectionchange relay",
+    "tokenListAttributes:wa-rich-text-editor:disabled-features": "wa-rich-text-editor's disabled-features is typed string, but parseDisabledFeatures splits it on whitespace into feature names (plus the alias lists = bullet-list ordered-list; 3.15.0 chunk.6A4X64UA.js) that the editor checks by name; WaRichTextEditorFeatures flags emit exactly these tokens; re-verify every upgrade",
+    "ignoredAttributes:wa-rich-text-editor:name": "WaRichTextEditor renders name from Blazor's InputBase form integration (WaInputBase.NameAttributeValue: the name passed through AdditionalAttributes, or the bound field's name inside a named form), not from a discrete parameter",
+    "ignoredAttributes:wa-rich-text-editor:custom-error": "WaRichTextEditor sets the custom validity message imperatively, through IFormValidation.SetCustomValidityAsync / ResetValidityAsync (JS interop), not as an attribute",
+    "ignoredEvents:wa-rich-text-editor:change": "WaRichTextEditor binds change as its @bind-Value binder (SetCurrentValueAsStringFromElement), so no OnChange callback stands for it (EventCallbackBindingParityTests requires the binding)",
+    "cemOnlyEvents:wa-rich-text-editor:type": "CEM extraction artifact of wa-rich-text-editor, not a real event: the analyzer names it after the variable passed to new FocusEvent(type) where the element relays its focus and blur to the host (3.15.0 chunk.B2ZVLTFC.js); neither dist\\events nor the component's @event JSDoc declares a 'type' event - the dispatched events are focus and blur, bound as OnFocus/OnBlur",
+    "ignoredMethods:wa-rich-text-editor:formStateRestoreCallback": "form-associated custom element lifecycle callback the browser invokes on wa-rich-text-editor to restore or autofill its state; not consumer API and not callable from Blazor",
+    "attributeOverrides:wa-lightbox-item:srcset": "exposed as WaLightboxItem.SrcSet, the natural-PascalCase name (src + set, like SrcDoc; mechanical conversion would yield 'Srcset')",
     "attributeOverrides:wa-number-input:autofocus": "exposed as WaNumberInput.AutoFocus, the natural-PascalCase name (mechanical conversion would yield 'Autofocus')",
     "attributeOverrides:wa-number-input:enterkeyhint": "exposed as WaNumberInput.EnterKeyHint, the natural-PascalCase name (mechanical conversion would yield 'Enterkeyhint')",
     "attributeOverrides:wa-number-input:inputmode": "exposed as WaNumberInput.InputMode, the natural-PascalCase name (mechanical conversion would yield 'Inputmode')",

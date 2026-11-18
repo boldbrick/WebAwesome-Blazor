@@ -66,6 +66,8 @@ internal static class WaWirePatterns
     /// - group-by: <c>this.groupBy.split(/[\s,]+/)</c> (chunk.545TV6Q6.js:330)
     /// - swatches: <c>this.swatches.split(";")</c> (chunk.6O6PWE4O.js:785)
     /// - accept: <c>this.accept.split(",")</c> (chunk.D5HSK7BD.js:230)
+    /// - heading-levels: parseHeadingLevels, <c>value.split(/\s+/)</c> (3.15.0 chunk.6A4X64UA.js:13)
+    /// - text-colors, highlight-colors: parseSwatches, <c>value.split(";")</c> (3.15.0 chunk.B2ZVLTFC.js:1410)
     /// A list parameter mapped to an attribute without an entry fails the check, so a new one needs its source cited here.
     /// </summary>
     public static readonly IReadOnlyDictionary<string, Regex> ListSeparators = new Dictionary<string, Regex>(StringComparer.Ordinal)
@@ -78,6 +80,9 @@ internal static class WaWirePatterns
         ["wa-data-grid:group-by"] = new Regex(@"[\s,]+", RegexOptions.ECMAScript),
         ["wa-color-picker:swatches"] = new Regex(";", RegexOptions.ECMAScript),
         ["wa-file-input:accept"] = new Regex(",", RegexOptions.ECMAScript),
+        ["wa-rich-text-editor:heading-levels"] = ListSeparator,
+        ["wa-rich-text-editor:text-colors"] = new Regex(";", RegexOptions.ECMAScript),
+        ["wa-rich-text-editor:highlight-colors"] = new Regex(";", RegexOptions.ECMAScript),
     };
 
     #region ------ Internals ------

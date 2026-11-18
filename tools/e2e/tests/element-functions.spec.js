@@ -5,9 +5,9 @@ const { waitForWaReady, skipUnlessProUpgrades } = require('./helpers/wa-ready');
 // The function-valued members of the element wrappers and ShadowStyles (docs\technical\technical.md, "JavaScript function
 // references"), on the harness /testing/element-functions: each WaJsFunction parameter reaches its element as a
 // function with a trailing ctx (args, element), ShadowStyles styles the output of a function in the shadow root
-// (changed in place), a function set back to null gives the element its own renderer again, and the obsolete string
-// methods no longer break wa-select and wa-rating. The select, rating, slider, range and pagination run on the free CDN;
-// the combobox, the date controls and the data grid are Pro components and skip visibly there.
+// (changed in place), and a function set back to null gives the element its own renderer again. The select, rating,
+// slider, range and pagination run on the free CDN; the combobox, the date controls and the data grid are Pro
+// components and skip visibly there.
 
 const HARNESS = '/testing/element-functions';
 
@@ -23,36 +23,6 @@ async function open(page, tags, proTags = []) {
   await page.waitForSelector('.demo-shell');
   if (proTags.length > 0) await skipUnlessProUpgrades(page, proTags);
   await waitForWaReady(page, [...tags, ...proTags]);
-}
-
-/**
- * Collects the uncaught page errors (and unhandled rejections) of a page.
- *
- * @param {import('@playwright/test').Page} page
- * @returns {string[]}
- */
-function collectPageErrors(page) {
-  const errors = [];
-  page.on('pageerror', error => errors.push(error.message));
-  return errors;
-}
-
-/**
- * Asks an element to render again and returns the error of a failed update, or null.
- *
- * @param {import('@playwright/test').Locator} element
- * @returns {Promise<string|null>}
- */
-function updateError(element) {
-  return element.evaluate(async el => {
-    try {
-      /** @type {any} */ (el).requestUpdate();
-      await /** @type {any} */ (el).updateComplete;
-      return null;
-    } catch (error) {
-      return String(error);
-    }
-  });
 }
 
 /**
@@ -79,28 +49,6 @@ function shadowColor(element, selector) {
     return node ? getComputedStyle(node).color : null;
   }, selector);
 }
-
-test('obsolete string methods: wa-select and wa-rating keep rendering after the call', async ({ page }) => {
-  const errors = collectPageErrors(page);
-  await open(page, ['wa-select', 'wa-rating', 'wa-button']);
-
-  await page.getByTestId('ef-call-obsolete').click();
-  await expect(page.getByTestId('ef-obsolete-rating-result')).not.toBeEmpty();
-
-  const select = page.getByTestId('ef-obsolete-select');
-  const rating = page.getByTestId('ef-obsolete-rating');
-  expect(await updateError(select), 'wa-select renders its tags').toBeNull();
-  expect(await updateError(rating), 'wa-rating renders its symbols').toBeNull();
-  expect(errors, 'no page error').toEqual([]);
-
-  // the tags and the symbols are the element's own
-  await expect.poll(() => select.evaluate(el => el.shadowRoot?.querySelectorAll('wa-tag').length ?? 0)).toBe(2);
-  await expect.poll(() => rating.evaluate(el => el.shadowRoot?.querySelectorAll('wa-icon').length ?? 0)).toBeGreaterThan(0);
-
-  // the methods tell the caller what to use instead
-  await expect(page.getByTestId('ef-obsolete-select-result')).toHaveText('NotSupportedException');
-  await expect(page.getByTestId('ef-obsolete-rating-result')).toHaveText('NotSupportedException');
-});
 
 test('select: GetTagFunction renders the tags, ShadowStyles colors them, and null restores the element tags', async ({ page }) => {
   await open(page, ['wa-select', 'wa-button']);

@@ -47,6 +47,7 @@ const eventNames = [
   'wa-hover',
   'wa-include-error',
   'wa-invalid',
+  'wa-item-change',
   'wa-lazy-change',
   'wa-lazy-load',
   'wa-load',
@@ -67,6 +68,7 @@ const eventNames = [
   'wa-sort-change',
   'wa-start',
   'wa-step-change',
+  'wa-suggestions-error',
   'wa-tab-hide',
   'wa-tab-show',
   'wa-video-change',
@@ -99,6 +101,24 @@ const specialArgs = {
   // extra property is ignored by every other wa-show/wa-hide consumer
   'wa-show': event => ({ ...detailArgs(event), isOpen: true }),
   'wa-hide': event => ({ ...detailArgs(event), isOpen: false }),
+
+  // detail is { index, previousIndex, item: WaLightboxItem, previousItem: WaLightboxItem | null } - project the
+  // live item elements to their src, alt, caption and type (WaLightboxItemChangeEventArgs)
+  'wa-item-change': event => {
+    const detail = event.detail || {};
+    const project = item => item ? {
+      src: typeof item.src === 'string' ? item.src : '',
+      alt: typeof item.alt === 'string' ? item.alt : '',
+      caption: typeof item.caption === 'string' ? item.caption : '',
+      type: item.type === 'video' ? 'video' : 'image',
+    } : null;
+    return {
+      index: typeof detail.index === 'number' ? detail.index : 0,
+      previousIndex: typeof detail.previousIndex === 'number' ? detail.previousIndex : 0,
+      item: project(detail.item),
+      previousItem: project(detail.previousItem),
+    };
+  },
 
   // detail is { name, previousName, step: Element, previousStep: Element | null } - drop the
   // live step elements, keep only their names (WaStepChangeEventArgs)
@@ -229,6 +249,19 @@ const specialArgs = {
     };
   },
 
+  // detail is { error, request: { trigger, query } } - error is typically an Error instance (own enumerable props are
+  // empty), so project its message (WaSuggestionsErrorEventArgs)
+  'wa-suggestions-error': event => {
+    const detail = event.detail || {};
+    const error = detail.error;
+    const request = detail.request || {};
+    return {
+      error: error && typeof error.message === 'string' ? error.message : (error != null ? String(error) : null),
+      trigger: typeof request.trigger === 'string' ? request.trigger : '',
+      query: typeof request.query === 'string' ? request.query : '',
+    };
+  },
+
   // detail is { query, signal } - signal is an AbortSignal, not marshalable (WaOptionsRequestEventArgs)
   'wa-options-request': event => {
     const detail = event.detail || {};
@@ -288,7 +321,8 @@ const relayedEvents = {
   'wablazor-hide': { event: 'wa-hide', hosts: ['wa-color-picker'], source: 'host' },
   'wablazor-after-hide': { event: 'wa-after-hide', hosts: ['wa-color-picker'], source: 'host' },
   'wablazor-intersect': { event: 'wa-intersect', hosts: ['wa-intersection-observer'], source: 'host' },
-  'wablazor-keydown': { event: 'keydown', hosts: ['wa-color-picker', 'wa-combobox', 'wa-select'], source: 'subtree' },
+  'wablazor-keydown': { event: 'keydown', hosts: ['wa-color-picker', 'wa-combobox', 'wa-rich-text-editor', 'wa-select'], source: 'subtree' },
+  'wablazor-selectionchange': { event: 'selectionchange', hosts: ['wa-rich-text-editor'], source: 'host' },
 };
 
 // the payload Blazor's built-in keyboard reader builds (KeyboardEventArgs), for relayed keyboard events

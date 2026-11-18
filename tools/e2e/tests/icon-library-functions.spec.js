@@ -101,13 +101,6 @@ test('a resolver of a sprite sheet library returns a sprite reference that the i
     .toBe('sprite|wa-icon|harness-sprite');
 });
 
-test('the obsolete global mutator path still mutates until its removal', async ({ page }) => {
-  await register(page, 'obsolete', 'registered');
-
-  await expect.poll(() => svgAttribute(page, 'il-icon-obsolete', 'data-name')).toBe('dot');
-  expect(await svgAttribute(page, 'il-icon-obsolete', 'stroke-width')).toBe('1.25');
-});
-
 test('a resolver that does not resolve fails the registration; a mutator that does not resolve is left out', async ({ page }) => {
   const consoleErrors = collectConsoleErrors(page);
 

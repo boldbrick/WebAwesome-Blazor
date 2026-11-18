@@ -192,6 +192,10 @@ public class ElementJsPropertyTests : BunitContext
         new(typeof(WaDataGrid), nameof(WaDataGrid.RowDetailFunction), "wa-data-grid", "rowDetail"),
         new(typeof(WaDataGrid), nameof(WaDataGrid.SearchFunction), "wa-data-grid", "searchFn"),
         new(typeof(WaDataGrid), nameof(WaDataGrid.SelectableRowsFunction), "wa-data-grid", "selectableRows"),
+        new(typeof(WaCounter), nameof(WaCounter.ValueFormatterFunction), "wa-counter", "valueFormatter"),
+        new(typeof(WaNumberTicker), nameof(WaNumberTicker.ValueFormatterFunction), "wa-number-ticker", "valueFormatter"),
+        new(typeof(WaRichTextEditor), nameof(WaRichTextEditor.ImageProviderFunction), "wa-rich-text-editor", "imageProvider"),
+        new(typeof(WaRichTextEditor), nameof(WaRichTextEditor.EmbedProviderFunction), "wa-rich-text-editor", "embedProvider"),
     ];
 
     private static readonly Type[] ShadowStylesWrappers =

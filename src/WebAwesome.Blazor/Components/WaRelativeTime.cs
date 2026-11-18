@@ -160,7 +160,7 @@ public class WaRelativeTime : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot update relative time: component has not been rendered yet.");
 
-        // NOTE checked against WA 3.14.0: requestUpdate() is the public update request of every Web Awesome element
+        // NOTE checked against WA 3.15.0: requestUpdate() is the public update request of every Web Awesome element
         // (Lit's ReactiveElement); the update runs willUpdate, where wa-relative-time computes its phrase for the
         // current time (the lifecycle update() skips willUpdate and renders the old phrase)
         await JSInterop.InvokeMethodAsync(Element.Value, "requestUpdate");

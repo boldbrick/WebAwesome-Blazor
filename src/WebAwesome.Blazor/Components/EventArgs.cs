@@ -25,6 +25,66 @@ public class WaSlideChangeEventArgs : EventArgs
 
 #endregion
 
+#region ------ Lightbox Events ------
+
+/// <summary>
+/// Event arguments for wa-lightbox's wa-item-change event.
+/// </summary>
+/// <remarks>
+/// The event's detail carries the lightbox item elements themselves; DOM elements cannot be marshaled into Blazor
+/// <see cref="ElementReference"/>s from event payloads, so the items are projected to <see cref="WaLightboxItemInfo"/>.
+/// </remarks>
+public class WaLightboxItemChangeEventArgs : EventArgs
+{
+    /// <summary>
+    /// Zero-based index of the item now shown.
+    /// </summary>
+    public int Index { get; set; }
+
+    /// <summary>
+    /// Zero-based index of the item shown before the change.
+    /// </summary>
+    public int PreviousIndex { get; set; }
+
+    /// <summary>
+    /// The item now shown, or null when there is none.
+    /// </summary>
+    public WaLightboxItemInfo? Item { get; set; }
+
+    /// <summary>
+    /// The item shown before the change, or null when there was none.
+    /// </summary>
+    public WaLightboxItemInfo? PreviousItem { get; set; }
+}
+
+/// <summary>
+/// The properties of a wa-lightbox-item that wa-lightbox's wa-item-change event reports.
+/// </summary>
+public class WaLightboxItemInfo
+{
+    /// <summary>
+    /// The URL of the full-size image or video.
+    /// </summary>
+    public string Src { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The alternative text of the item.
+    /// </summary>
+    public string Alt { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The plain text caption of the item.
+    /// </summary>
+    public string Caption { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The kind of media the item shows.
+    /// </summary>
+    public WaLightboxItemType Type { get; set; }
+}
+
+#endregion
+
 #region ------ Tab Events ------
 
 /// <summary>
@@ -359,6 +419,27 @@ public class WaOptionsErrorEventArgs : EventArgs
     public string Query { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Event arguments for the wa-suggestions-error event of a rich text editor, emitted when the <c>dataSource</c> of a
+/// suggestion source rejects. Suggestion sources are a JavaScript-only property of the element.
+/// </summary>
+public class WaSuggestionsErrorEventArgs : EventArgs
+{
+    /// <summary>
+    /// The error message the data source rejected with.
+    /// </summary>
+    public string? Error { get; set; }
+
+    /// <summary>
+    /// The trigger character of the suggestion source that failed.
+    /// </summary>
+    public string Trigger { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The query of the request that failed.
+    /// </summary>
+    public string Query { get; set; } = string.Empty;
+}
 #endregion
 
 #region ------ Date Picker Events ------
