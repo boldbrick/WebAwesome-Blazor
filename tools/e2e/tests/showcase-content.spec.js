@@ -3,7 +3,8 @@ const { test, expect } = require('./helpers/test');
 const { openShowcase, expectHealthy, readableText } = require('./helpers/showcase');
 
 // The Content & Observers showcase (/showcases/content) as a user works it: the document tree reports the selected
-// document, the tip rotator reports its pick (OnContentChange), the split panel reports its position and the
+// document, the settings sample is highlighted in the format picked (OnLoad of the code highlighter), the tip
+// rotator reports its pick (OnContentChange), the split panel reports its position and the
 // resize observer the measured pane width, adding reviewers is reported by the mutation observer until the pool is
 // used up, and scrolling the changelog brings the sign-off card into view for the intersection observer. Every
 // outcome asserted is text Blazor renders from the event payloads.
@@ -11,6 +12,9 @@ const { openShowcase, expectHealthy, readableText } = require('./helpers/showcas
 const ROUTE = '/showcases/content';
 const TAGS = ['wa-tree', 'wa-tree-item', 'wa-random-content', 'wa-split-panel', 'wa-resize-observer', 'wa-mutation-observer',
   'wa-intersection-observer', 'wa-button', 'wa-tag'];
+
+// the elements of the settings sample flow (the format picker and the code highlighter)
+const SAMPLE_TAGS = ['wa-radio-group', 'wa-radio', 'wa-code-highlighter'];
 
 // past the tip rotator's 4 s autoplay interval
 const AUTOPLAY_JUMP_MS = 4_500;
@@ -51,6 +55,29 @@ test('content showcase: the document tree reports the selected document', async 
   const ownLabel = await release31.evaluateHandle(item => /** @type {any} */ (item).shadowRoot.querySelector('[part~="label"]'));
   await /** @type {import('@playwright/test').ElementHandle} */ (ownLabel.asElement()).click();
   await expect(selected).toHaveText('Selected: 3.1 release');
+
+  await expectHealthy(page, problems);
+});
+
+test('content showcase: the settings sample is highlighted in the format picked', async ({ page }) => {
+  const problems = await openShowcase(page, ROUTE, [...TAGS, ...SAMPLE_TAGS]);
+  const sample = page.locator('wa-code-highlighter');
+  const message = page.getByText(/Highlighting the settings sample|Highlighted as /);
+
+  // OnLoad reports the highlighted sample; the code is shown in the element's code part
+  await expect.poll(() => readableText(message), 'the JSON sample is highlighted').toBe('Highlighted as JSON');
+  await expect(sample).toHaveAttribute('language', 'json');
+  await expect(sample).toHaveAttribute('label', 'Workspace settings');
+  await expect(sample.locator('[part~="code"]')).toContainText('"exportPipeline"');
+
+  await page.locator('wa-radio', { hasText: 'nova.config.js' }).click();
+  await expect(sample, 'Blazor switches the language').toHaveAttribute('language', 'js');
+  await expect.poll(() => readableText(message), 'the JavaScript sample is highlighted').toBe('Highlighted as JavaScript');
+  await expect(sample.locator('[part~="code"]')).toContainText('export default');
+
+  await page.locator('wa-radio', { hasText: 'nova.json' }).click();
+  await expect(sample).toHaveAttribute('language', 'json');
+  await expect.poll(() => readableText(message), 'back to JSON').toBe('Highlighted as JSON');
 
   await expectHealthy(page, problems);
 });

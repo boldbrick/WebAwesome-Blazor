@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.14.0 release zip (dist/skills/webawesome/references/components/data-grid.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/data-grid -->
+<!-- Source: reference doc bundled in the Web Awesome 3.15.0 release zip (dist/skills/webawesome/references/components/data-grid.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/data-grid -->
 
 # Data Grid [Pro]
 
@@ -6,9 +6,9 @@
 
 `<wa-data-grid>`
 
-ProIncluded with Web Awesome Pro Experimental [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.11](https://webawesome.com/docs/resources/changelog#wa_3110)
+ProIncluded with Web Awesome Pro Stable [Data Viz](https://webawesome.com/docs/components/?category=data-viz) [Since 3.11](https://webawesome.com/docs/resources/changelog#wa_3110)
 
-Data grids display tabular data with sorting, selection, filtering, pinning, tree data, grouping with aggregation, column footers, expandable rows, pagination, CSV export, full keyboard navigation, and virtualization for large datasets.
+Data grids display tabular data with sorting, selection, filtering, grouping, pagination, CSV export, and virtualization for large datasets.
 
 **[Get Data Grid with Web Awesome Pro!](https://webawesome.com/pro?from=pro-docs&component=data-grid)**
 
@@ -216,7 +216,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.14.0/components/data-grid/data-grid.js';
+import 'https://ka-f.webawesome.com/webawesome@3.15.0/components/data-grid/data-grid.js';
 ```
 
 \*\*npm\*\*
@@ -245,179 +245,180 @@ import WaDataGrid from '@awesome.me/webawesome/dist/react/data-grid/index.js';
 
 ### Slots
 
-| Name | Description |
-| --- | --- |
-| \`empty\` | Content shown when there are no rows to display. |
-| \`loading\` | Content shown in the loading overlay (server mode). |
-| \`no-results\` | Content shown when an active search or filter matches no rows (falls back to a localized message). |
+Valid slot names for this component (use exactly these — any other `slot` value is
+silently ignored and the element falls back to the default slot):
+
+- `empty` — Content shown when there are no rows to display.
+- `no-results` — Content shown when an active search or filter matches no rows (falls back to a localized message).
+- `loading` — Content shown in the loading overlay (server mode).
 
 ### Attributes & Properties
 
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`appearance\` appearance | \`'outlined' \\| 'plain'\` The grid's visual appearance. Type Default 'outlined' | |
-| \`childRows\` child-rows | \`string \\| ((row: Row) => Row\[\] \\| undefined) \\| null\` Provides each row's child rows for tree data — a field name (dot paths allowed) or a function returning children. Rows with children get an expand toggle; expanded children render indented and join sorting/filtering/selection. Type Default null | |
-| \`columnOrder\` | \`string\[\]\` Get/set the column display order as an array of column ids. Empty array = natural order. Type | |
-| \`columns\` | \`DataGridColumn\[\]\` The column definitions. Type Default \[\] | |
-| \`data\` | \`Row\[\]\` The row objects to display. In client mode this is the full set. Type Default \[\] | |
-| \`dataSource\` | \`rows\` An async function that loads data from a server. When set, the grid switches to manual mode: client-side sorting/filtering/pagination are disabled and this runs on any sort/filter/search/page change. Return and total. Type ((request: DataGridRequest) => Promise) \\| null Default null | |
-| \`expandedKeys\` | \`row-key\` The row keys of the currently expanded rows. Settable. Without a , ids follow table-core's convention: a top-level row's index ('0'), then dotted index paths for children ('0.1'). Type (string \\| number)\[\] | |
-| \`filterDebounce\` filter-debounce | \`number\` How long (in milliseconds) to wait after a search or filter keystroke before requesting data in server mode. Client-side filtering is always immediate. Sort and page changes are never debounced. Type Default 250 | |
-| \`filteredCount\` | \`total\` The number of rows in the current result set after filtering and search, across every page (top-level rows for tree and grouped data; the server-reported in server mode). Read-only. Type number | |
-| \`filterFromLeafRows\` filter-from-leaf-rows | \`boolean\` When filtering tree data, keeps a parent visible when any descendant matches (the filter runs leaf-up). By default a non-matching parent is removed with its entire subtree. Type Default false | |
-| \`filters\` | \`\[{ id: 'category', value: 'Lighting' }\]\` Get/set the column filters declaratively, e.g. . Type { id: string; value: unknown }\[\] | |
-| \`groupBy\` group-by | \`string \\| string\[\] \\| null\` Groups rows by column id — a single id, a space/comma-separated list (or array) for multi-level grouping. Each group is an expandable row showing its value, member count, and any column aggregates. Ignored for tree data and in server mode. Type Default null | |
-| \`label\` label | \`string \\| null\` An accessible label for the grid. Type Default null | |
-| \`loading\` loading | \`dataSource\` Whether a request is in flight. Type boolean Default false | |
-| \`maxMultiSort\` max-multi-sort | \`0\` The maximum number of columns that can participate in a multi-column sort. (default) means no limit. Type number Default 0 | |
-| \`page\` page | \`number\` The current page index (0-based). Type Default 0 | |
-| \`pageCount\` | \`1\` The number of pages in the current result set (always when paginate is off). Read-only. Type number | |
-| \`pageSize\` page-size | \`number\` The of rows per page. Type number Default 20 | |
-| \`pageSizeOptions\` | \`number\[\]\` The page sizes offered by the pager's page-size selector. Type Default \[10, 20, 50, 100\] | |
-| \`paginate\` paginate | \`boolean\` Enables client-side pagination and the pager footer. Type Default false | |
-| \`pinnable\` pinnable | \`pinnable\` Enables column pinning (and the pin actions in the column menu). Can be overridden per column with . Type boolean Default false | |
-| \`reorderable\` reorderable | \`movable\` Enables drag-to-reorder for columns (can be overridden per column with ). Type boolean Default false | |
-| \`resizable\` resizable | \`boolean\` Enables drag-to-resize for columns (can be overridden per column). Type Default false | |
-| \`rowClass\` | \`((row: Row) => string \\| null \\| undefined) \\| null\` Returns extra CSS class names for a row (space-separated; falsy for none) — e.g. to flag overdue or archived rows. Classes land on the row element inside the grid's shadow root, so style them with an adopted stylesheet (see the docs' "Styling Rendered Components"). Group rows are skipped. Type Default null | |
-| \`rowDetail\` | \`TemplateResult\` Renders an expandable detail panel for a row. When set, each row shows an expand toggle. Return a string (escaped text), a Lit , or a Node. Type ((row: Row) => string \\| TemplateResult \\| Node) \\| null Default null | |
-| \`rowKey\` row-key | \`selectable\` The field used as a stable row id for selection. Required in practice when is set. Type string \\| null Default null | |
-| \`searchFn\` | \`true\` A custom predicate for the global search box. Receives the cell value, the search term, and the row; return to keep the row (a row matches when any searchable column matches). Client mode only. Type ((value: unknown, searchTerm: string, row: Row) => boolean) \\| null Default null | |
-| \`searchTerm\` | \`string\` The current global search term. Type Default '' | |
-| \`selectable\` selectable | \`multiple\` Enables row selection. A bare attribute means . Type '' \\| 'single' \\| 'multiple' \\| 'none' Default 'none' | |
-| \`selectableRows\` | \`false\` A predicate deciding whether a row can be selected. Return to lock a row: its checkbox is disabled and it's skipped by select-all and range selection. When unset, every row is selectable (subject to selectable). Type ((row: Row) => boolean) \\| null Default null | |
-| \`selectedKeys\` | \`rowKey\` The values of the currently selected rows. The source of truth for selection. Type (string \\| number)\[\] | |
-| \`selectedRows\` | \`data\` The selected row objects resolvable from the currently loaded (best-effort, any tree depth). Settable, resolved by key. Type Row\[\] | |
-| \`server\` server | \`dataSource\` Switches the grid to server mode without a callback: client-side sorting, filtering, and pagination are disabled and the grid emits wa-data-request whenever it needs data. Listen for it, fetch, then set data, total, and loading yourself. Implied when dataSource is set. Type boolean Default false | |
-| \`size\` size | \`'xs' \\| 's' \\| 'm' \\| 'l' \\| 'xl' \\| 'small' \\| 'medium' \\| 'large'\` The grid's size. Controls the font scale of grid text and form controls, plus row height and cell padding. Type Default 'm' | |
-| \`sort\` | \`\[{ id: 'name', desc: false }\]\` Get/set the sort state declaratively, e.g. . Type SortingState | |
-| \`sortDescFirst\` sort-desc-first | \`true\` When , a column's first sort click sorts descending instead of ascending (table-core sortDescFirst). Type boolean Default false | |
-| \`striped\` striped | \`boolean\` Renders alternating row background colors. Type Default false | |
-| \`total\` total | \`dataSource\` The total row count in server mode. Drives the pager. Set automatically when resolves. Type number Default -1 | |
-| \`withColumnMenu\` with-column-menu | \`boolean\` Shows a per-column header menu (kebab button) with pin, sort, hide, and autosize actions. Type Default false | |
-| \`withColumnsMenu\` with-columns-menu | \`boolean\` Shows a toolbar menu for toggling column visibility. Type Default false | |
-| \`withoutSortRemoval\` without-sort-removal | \`boolean\` Keeps a sorted column always sorted, alternating between ascending and descending. By default, a sorted column's third click clears its sort (the asc → desc → unsorted cycle). Type Default false | |
-| \`withSearch\` with-search | \`boolean\` Shows a global search box that filters across all columns. Type Default false | |
+| Property | Attribute | Description | Type | Default |
+| --- | --- | --- | --- | --- |
+| `data` | — | The row objects to display. In client mode this is the full set. | `Row[]` | `[]` |
+| `columns` | — | The column definitions. | `DataGridColumn[]` | `[]` |
+| `rowKey` | `row-key` | The field used as a stable row id for selection. Required in practice when `selectable` is set. | `string \| null` | `null` |
+| `selectableRows` | — | A predicate deciding whether a row can be selected. Return `false` to lock a row: its checkbox is disabled and it's skipped by select-all and range selection. When unset, every row is selectable (subject to `selectable`). | `((row: Row) => boolean) \| null` | `null` |
+| `selectable` | `selectable` | Enables row selection. A bare attribute means `multiple`. | `'' \| 'single' \| 'multiple' \| 'none'` | `'none'` |
+| `paginate` | `paginate` | Enables client-side pagination and the pager footer. | `boolean` | `false` |
+| `pageSize` | `page-size` | The number of rows per page. | `number` | `20` |
+| `pageSizeOptions` | — | The page sizes offered by the pager's page-size selector. | `number[]` | `[10, 20, 50, 100]` |
+| `page` | `page` | The current page index (0-based). | `number` | `0` |
+| `withoutSortRemoval` | `without-sort-removal` | Keeps a sorted column always sorted, alternating between ascending and descending. By default, a sorted column's third click clears its sort (the asc → desc → unsorted cycle). | `boolean` | `false` |
+| `sortDescFirst` | `sort-desc-first` | When `true`, a column's first sort click sorts descending instead of ascending (table-core `sortDescFirst`). | `boolean` | `false` |
+| `maxMultiSort` | `max-multi-sort` | The maximum number of columns that can participate in a multi-column sort. `0` (default) means no limit. | `number` | `0` |
+| `withSearch` | `with-search` | Shows a global search box that filters across all columns. | `boolean` | `false` |
+| `searchTerm` | — | The current global search term. | `string` | `''` |
+| `resizable` | `resizable` | Enables drag-to-resize for columns (can be overridden per column). | `boolean` | `false` |
+| `reorderable` | `reorderable` | Enables drag-to-reorder for columns (can be overridden per column with `movable`). | `boolean` | `false` |
+| `pinnable` | `pinnable` | Enables column pinning (and the pin actions in the column menu). Can be overridden per column with `pinnable`. | `boolean` | `false` |
+| `withColumnMenu` | `with-column-menu` | Shows a per-column header menu (kebab button) with pin, sort, hide, and autosize actions. | `boolean` | `false` |
+| `withColumnsMenu` | `with-columns-menu` | Shows a toolbar menu for toggling column visibility. | `boolean` | `false` |
+| `striped` | `striped` | Renders alternating row background colors. | `boolean` | `false` |
+| `rowDetail` | — | Renders an expandable detail panel for a row. When set, each row shows an expand toggle. Return a string (escaped text), a Lit `TemplateResult`, or a `Node`. | `((row: Row) => string \| TemplateResult \| Node) \| null` | `null` |
+| `rowClass` | — | Returns extra CSS class names for a row (space-separated; falsy for none) — e.g. to flag overdue or archived rows. Classes land on the row element inside the grid's shadow root, so style them with an adopted stylesheet (see the docs' "Styling Rendered Components"). Group rows are skipped. | `((row: Row) => string \| null \| undefined) \| null` | `null` |
+| `childRows` | `child-rows` | Provides each row's child rows for tree data — a field name (dot paths allowed) or a function returning children. Rows with children get an expand toggle; expanded children render indented and join sorting/filtering/selection. | `string \| ((row: Row) => Row[] \| undefined) \| null` | `null` |
+| `filterFromLeafRows` | `filter-from-leaf-rows` | When filtering tree data, keeps a parent visible when any descendant matches (the filter runs leaf-up). By default a non-matching parent is removed with its entire subtree. | `boolean` | `false` |
+| `groupBy` | `group-by` | Groups rows by column id — a single id, a space/comma-separated list (or array) for multi-level grouping. Each group is an expandable row showing its value, member count, and any column aggregates. Ignored for tree data and in server mode. | `string \| string[] \| null` | `null` |
+| `dataSource` | — | An async function that loads data from a server. When set, the grid switches to manual mode: client-side sorting/filtering/pagination are disabled and this runs on any sort/filter/search/page change. Return `rows` and `total`. | `((request: DataGridRequest) => Promise<DataGridResponse>) \| null` | `null` |
+| `server` | `server` | Switches the grid to server mode without a `dataSource` callback: client-side sorting, filtering, and pagination are disabled and the grid emits `wa-data-request` whenever it needs data. Listen for it, fetch, then set `data`, `total`, and `loading` yourself. Implied when `dataSource` is set. | `boolean` | `false` |
+| `filterDebounce` | `filter-debounce` | How long (in milliseconds) to wait after a search or filter keystroke before requesting data in server mode. Client-side filtering is always immediate. Sort and page changes are never debounced. | `number` | `250` |
+| `searchFn` | — | A custom predicate for the global search box. Receives the cell value, the search term, and the row; return `true` to keep the row (a row matches when any searchable column matches). Client mode only. | `((value: unknown, searchTerm: string, row: Row) => boolean) \| null` | `null` |
+| `total` | `total` | The total row count in server mode. Drives the pager. Set automatically when `dataSource` resolves. | `number` | `-1` |
+| `loading` | `loading` | Whether a `dataSource` request is in flight. | `boolean` | `false` |
+| `label` | `label` | An accessible label for the grid. | `string \| null` | `null` |
+| `appearance` | `appearance` | The grid's visual appearance. | `'outlined' \| 'plain'` | `'outlined'` |
+| `size` | `size` | The grid's size. Controls the font scale of grid text and form controls, plus row height and cell padding. | `'xs' \| 's' \| 'm' \| 'l' \| 'xl' \| 'small' \| 'medium' \| 'large'` | `'m'` |
+| `sort` | — | Get/set the sort state declaratively, e.g. `[{ id: 'name', desc: false }]`. | `SortingState` | — |
+| `columnOrder` | — | Get/set the column display order as an array of column ids. Empty array = natural order. | `string[]` | — |
+| `selectedKeys` | — | The `rowKey` values of the currently selected rows. The source of truth for selection. | `(string \| number)[]` | — |
+| `selectedRows` | — | The selected row objects resolvable from the currently loaded `data` (best-effort, any tree depth). Settable, resolved by key. | `Row[]` | — |
+| `expandedKeys` | — | The row keys of the currently expanded rows. Settable. Without a `row-key`, ids follow table-core's convention: a top-level row's index (`'0'`), then dotted index paths for children (`'0.1'`). | `(string \| number)[]` | — |
+| `pageCount` | — | The number of pages in the current result set (always `1` when `paginate` is off). Read-only. | `number` | — |
+| `filteredCount` | — | The number of rows in the current result set after filtering and search, across every page (top-level rows for tree and grouped data; the server-reported `total` in server mode). Read-only. | `number` | — |
+| `filters` | — | Get/set the column filters declaratively, e.g. `[{ id: 'category', value: 'Lighting' }]`. | `{ id: string; value: unknown }[]` | — |
 
 ### Methods
 
 | Name | Description | Arguments |
 | --- | --- | --- |
-| \`autoSizeColumn()\` | Resizes one column to fit its widest rendered cell content (the double-click-handle behavior). | \`columnId: string\` |
-| \`autoSizeColumns()\` | Resizes every resizable column to fit its content. | |
-| \`collapseAllRows()\` | Collapses every row. | |
-| \`collapseRow()\` | \`rowKey\` Collapses the row with the given key (its value). | \`key: string \\| number\` |
-| \`copySelectedRows()\` | \`format: 'csv'\` Copies the selected rows (or every processed row when nothing is selected) to the clipboard, honoring the active sort, filters, and column visibility/order. The default tab-separated format pastes into spreadsheet cells; copies comma-separated text instead. Also wired to Ctrl+C when the grid has focus. Returns the number of rows copied. | \`options: { columnIds?: string\[\]; includeHeaders?: boolean; format?: 'tsv' \\| 'csv'; escapeFormulas?: boolean; }\` |
-| \`expandAllRows()\` | Expands every row (all detail panels, or every branch of a tree). | |
-| \`expandRow()\` | \`rowKey\` Expands the row with the given key (its value). | \`key: string \\| number\` |
-| \`exportDataAsCsv()\` | \`formatter\` Exports the current rows as a CSV file (browser download). Respects the active sort, filters, search, and column visibility/order, and runs each column's . In server mode, only the currently loaded page is exported. | \`options: { fileName?: string; columnIds?: string\[\]; includeHeaders?: boolean; delimiter?: string; escapeFormulas?: boolean; }\` |
-| \`focus()\` | Focuses the grid by focusing the active (roving-tabindex) cell. | \`options: FocusOptions\` |
-| \`getColumnFacets()\` | Faceted data for a column — distinct cell values (with counts) and the numeric min/max, computed before this column's own filter applies. Use it to build filter UIs. Client mode only; returns empty facets in server mode. | \`columnId: string\` |
-| \`getColumnPin()\` | \`false\` Returns which edge a column is pinned to, or if it isn't pinned. | \`columnId: string\` |
-| \`getDataAsCsv()\` | \`formatter\` Returns the current rows as a CSV string, honoring the active sort, filters, search, and column visibility/order. Each column's runs for string output only (TemplateResult/Node cells fall back to the raw value). Every page and tree depth is included; server mode exports only the loaded page. Set escapeFormulas: true when the file may open in a spreadsheet and the data isn't trusted — cells starting with =, +, -, or @ are prefixed with an apostrophe so they can't execute as formulas (plain numbers are left alone). | \`options: { columnIds?: string\[\]; includeHeaders?: boolean; delimiter?: string; escapeFormulas?: boolean; }\` |
-| \`getProcessedRows()\` | Every data row in the current result set, in display order — after sorting, filtering, and search, across all pages and tree depths (parents before their children). Group header rows are excluded. In server mode this is the currently loaded page. | |
-| \`getState()\` | Returns a serializable snapshot of column order, widths, visibility, sort, filters, search, selection, paging. | |
-| \`getVisibleRows()\` | The data rows currently displayed, in display order — after sorting, filtering, expansion, and pagination. Group header rows are excluded. | |
-| \`handleColumnsChange()\` | When the columns change, prune any persisted order/sizing/visibility for column ids that no longer exist, and append newly-added column ids to the end of the order so they remain visible. | |
-| \`handlePageChange()\` | \`page\` Reacts to changes from ANY source — pager clicks and programmatic sets alike — so grid.page = 3 clamps, keeps the roving tab stop in range, and refetches in server mode. UI paths that already requested data are deduped by the fetch scheduler. | |
-| \`handleSearchTermChange()\` | \`searchTerm\` Reacts to changes from any source: returns to the first page, keeps the tab stop in range, and refetches (debounced) in server mode. The UI input handler only sets the property and emits — the behavior lives here so programmatic sets act exactly like typing. | |
-| \`pinColumn()\` | \`'left'\` Pins a column to the or 'right' edge, or unpins it with false. | \`columnId: string, side: 'left' \\| 'right' \\| false\` |
-| \`reload()\` | Re-runs the current server request (server mode only), even if its parameters haven't changed. | |
-| \`resetColumns()\` | Resets column order, widths, visibility, and pinning to the column definitions' defaults, leaving sort, filters, search, selection, and paging untouched (the columns menu's "Reset columns" action). | |
-| \`resetState()\` | Resets all user-adjusted view state (order, widths, visibility, pinning, sort, filters, search, expansion) to the column defaults. Selection and paging are left alone — clearing a user's selection is destructive. | |
-| \`scrollToIndex()\` | Scrolls the row at the given display index into view (pairs with virtualization). | \`index: number, options: { align?: 'start' \\| 'center' \\| 'end' }\` |
-| \`setState()\` | Restores a previously captured state. Unknown column ids are ignored; omitted keys are left unchanged. | \`state: DataGridState\` |
-| \`sizeColumnsToFit()\` | Distributes column widths to fill the available horizontal space, honoring each column's min/max. | |
-| \`toggleColumn()\` | \`id\` Shows or hes a column by its id (the column's id, or field when no id is set). | \`columnId: string, visible: boolean\` |
+| `pinColumn()` | Pins a column to the `'left'` or `'right'` edge, or unpins it with `false`. | `columnId: string, side: 'left' \\| 'right' \\| false` |
+| `getColumnPin()` | Returns which edge a column is pinned to, or `false` if it isn't pinned. | `columnId: string` |
+| `focus()` | Focuses the grid by focusing the active (roving-tabindex) cell. | `options: FocusOptions` |
+| `handlePageChange()` | Reacts to `page` changes from ANY source — pager clicks and programmatic sets alike — so `grid.page = 3` clamps, keeps the roving tab stop in range, and refetches in server mode. UI paths that already requested data are deduped by the fetch scheduler. | — |
+| `handleSearchTermChange()` | Reacts to `searchTerm` changes from any source: returns to the first page, keeps the tab stop in range, and refetches (debounced) in server mode. The UI input handler only sets the property and emits — the behavior lives here so programmatic sets act exactly like typing. | — |
+| `handleColumnsChange()` | When the columns change, prune any persisted order/sizing/visibility for column ids that no longer exist, and append newly-added column ids to the end of the order so they remain visible. | — |
+| `expandRow()` | Expands the row with the given key (its `rowKey` value). | `key: string \\| number` |
+| `collapseRow()` | Collapses the row with the given key (its `rowKey` value). | `key: string \\| number` |
+| `expandAllRows()` | Expands every row (all detail panels, or every branch of a tree). | — |
+| `collapseAllRows()` | Collapses every row. | — |
+| `getVisibleRows()` | The data rows currently displayed, in display order — after sorting, filtering, expansion, and pagination. Group header rows are excluded. | — |
+| `getProcessedRows()` | Every data row in the current result set, in display order — after sorting, filtering, and search, across all pages and tree depths (parents before their children). Group header rows are excluded. In server mode this is the currently loaded page. | — |
+| `getColumnFacets()` | Faceted data for a column — distinct cell values (with counts) and the numeric min/max, computed before this column's own filter applies. Use it to build filter UIs. Client mode only; returns empty facets in server mode. | `columnId: string` |
+| `reload()` | Re-runs the current server request (server mode only), even if its parameters haven't changed. | — |
+| `toggleColumn()` | Shows or hides a column by its id (the column's `id`, or `field` when no id is set). | `columnId: string, visible: boolean` |
+| `autoSizeColumn()` | Resizes one column to fit its widest rendered cell content (the double-click-handle behavior). | `columnId: string` |
+| `autoSizeColumns()` | Resizes every resizable column to fit its content. | — |
+| `sizeColumnsToFit()` | Distributes column widths to fill the available horizontal space, honoring each column's min/max. | — |
+| `scrollToIndex()` | Scrolls the row at the given display index into view (pairs with virtualization). | `index: number, options: { align?: 'start' \\| 'center' \\| 'end' }` |
+| `getDataAsCsv()` | Returns the current rows as a CSV string, honoring the active sort, filters, search, and column visibility/order. Each column's `formatter` runs for string output only (`TemplateResult`/`Node` cells fall back to the raw value). Every page and tree depth is included; server mode exports only the loaded page. Set `escapeFormulas: true` when the file may open in a spreadsheet and the data isn't trusted — cells starting with `=`, `+`, `-`, or `@` are prefixed with an apostrophe so they can't execute as formulas (plain numbers are left alone). | `options: { columnIds?: string[]; includeHeaders?: boolean; delimiter?: string; escapeFormulas?: boolean; }` |
+| `exportDataAsCsv()` | Exports the current rows as a CSV file (browser download). Respects the active sort, filters, search, and column visibility/order, and runs each column's `formatter`. In server mode, only the currently loaded page is exported. | `options: { fileName?: string; columnIds?: string[]; includeHeaders?: boolean; delimiter?: string; escapeFormulas?: boolean; }` |
+| `copySelectedRows()` | Copies the selected rows (or every processed row when nothing is selected) to the clipboard, honoring the active sort, filters, and column visibility/order. The default tab-separated format pastes into spreadsheet cells; `format: 'csv'` copies comma-separated text instead. Also wired to [[Ctrl]]+[[C]] when the grid has focus. Returns the number of rows copied. | `options: { columnIds?: string[]; includeHeaders?: boolean; format?: 'tsv' \\| 'csv'; escapeFormulas?: boolean; }` |
+| `getState()` | Returns a serializable snapshot of column order, widths, visibility, sort, filters, search, selection, paging. | — |
+| `setState()` | Restores a previously captured state. Unknown column ids are ignored; omitted keys are left unchanged. | `state: DataGridState` |
+| `resetState()` | Resets all user-adjusted view state (order, widths, visibility, pinning, sort, filters, search, expansion) to the column defaults. Selection and paging are left alone — clearing a user's selection is destructive. | — |
+| `resetColumns()` | Resets column order, widths, visibility, and pinning to the column definitions' defaults, leaving sort, filters, search, selection, and paging untouched (the columns menu's "Reset columns" action). | — |
 
 ### Events
 
 | Name | Description |
 | --- | --- |
-| \`request\` | |
-| \`wa-cell-click\` | Emitted when a data cell is clicked, or Enter is pressed on the active data cell. |
-| \`wa-cell-contextmenu\` | Emitted when a data cell is right-clicked (or Shift+F10 / the menu key is pressed on the active cell). Cancel it to suppress the native context menu. |
-| \`wa-column-move\` | \`detail.finished\` Emitted when a column is reordered (live during drag; check ). |
-| \`wa-column-pin\` | \`pinColumn()\` Emitted when the user pins or unpins a column through the built-in controls. Programmatic calls don't emit. |
-| \`wa-column-resize\` | \`detail.finished\` Emitted when a column is resized (live during drag; check ). |
-| \`wa-column-visibility-change\` | \`toggleColumn()\` Emitted when the user shows or hides a column through the built-in menus. Programmatic calls don't emit. |
-| \`wa-data-error\` | \`dataSource\` Emitted in server mode when a request rejects. |
-| \`wa-data-request\` | Emitted in server mode when the grid needs data for the current sort, filters, and page. |
-| \`wa-filter-change\` | Emitted when the global search or a column filter changes. |
-| \`wa-page-change\` | Emitted when the current page or page size changes. |
-| \`wa-row-collapse\` | Emitted when a row collapses (a detail panel or a tree row's children). |
-| \`wa-row-expand\` | Emitted when a row expands (a detail panel or a tree row's children). |
-| \`wa-row-select\` | Emitted when the row selection changes. |
-| \`wa-sort-change\` | Emitted when the sort order changes. |
+| `request` | — |
+| `wa-sort-change` | Emitted when the sort order changes. |
+| `wa-row-select` | Emitted when the row selection changes. |
+| `wa-page-change` | Emitted when the current page or page size changes. |
+| `wa-filter-change` | Emitted when the global search or a column filter changes. |
+| `wa-row-expand` | Emitted when a row expands (a detail panel or a tree row's children). |
+| `wa-row-collapse` | Emitted when a row collapses (a detail panel or a tree row's children). |
+| `wa-data-request` | Emitted in server mode when the grid needs data for the current sort, filters, and page. |
+| `wa-data-error` | Emitted in server mode when a `dataSource` request rejects. |
+| `wa-column-move` | Emitted when a column is reordered (live during drag; check `detail.finished`). |
+| `wa-column-resize` | Emitted when a column is resized (live during drag; check `detail.finished`). |
+| `wa-column-visibility-change` | Emitted when the user shows or hides a column through the built-in menus. Programmatic `toggleColumn()` calls don't emit. |
+| `wa-column-pin` | Emitted when the user pins or unpins a column through the built-in controls. Programmatic `pinColumn()` calls don't emit. |
+| `wa-cell-click` | Emitted when a data cell is clicked, or [[Enter]] is pressed on the active data cell. |
+| `wa-cell-contextmenu` | Emitted when a data cell is right-clicked (or Shift+F10 / the menu key is pressed on the active cell). Cancel it to suppress the native context menu. |
 
 ### CSS Custom Properties
 
-| Name | Description |
-| --- | --- |
-| \`--accent-color\` | \`var(--wa-color-brand-fill-loud)\` The checkbox accent and pinned-column highlight. Default |
-| \`--background-color\` | \`var(--wa-color-surface-default)\` The grid body background. Default |
-| \`--border-color\` | \`var(--wa-color-surface-border)\` The gridline and outer border color. Default |
-| \`--border-radius\` | \`var(--wa-border-radius-m)\` The outer corner radius (outlined appearance). Default |
-| \`--border-width\` | \`var(--wa-border-width-s)\` The gridline thickness. Default |
-| \`--cell-padding\` | \`size\` The cell inline padding (also set by ). Default var(--wa-space-m) |
-| \`--focus-ring\` | \`var(--wa-focus-ring)\` The active-cell focus ring. Default |
-| \`--header-background\` | \`var(--wa-color-surface-lowered)\` The header row background. Default |
-| \`--header-row-height\` | \`var(--row-height)\` The height of the header row. Default |
-| \`--header-text-color\` | \`var(--wa-color-text-normal)\` The header text color. Default |
-| \`--indent-size\` | \`1.25em\` The indentation applied per depth level to child rows in tree data. Default |
-| \`--max-height\` | \`none\` The maximum height of the scrollable body. Set for natural height. Default 30rem |
-| \`--row-height\` | \`size\` The height of each row (also set by ). Default 3.5rem |
-| \`--row-hover-background\` | \`var(--wa-color-neutral-fill-normal)\` The hovered row background. Default |
-| \`--selected-background\` | \`var(--wa-color-brand-fill-quiet)\` The selected row background. Default |
-| \`--stripe-background\` | \`var(--wa-color-neutral-fill-quiet)\` The zebra (odd row) background. Default |
-| \`--text-color\` | \`var(--wa-color-text-normal)\` The cell text color. Default |
-| \`--transition-duration\` | \`var(--wa-transition-normal)\` The reorder/resize transition duration. Default |
+| Name | Description | Default |
+| --- | --- | --- |
+| `--accent-color` | The checkbox accent and pinned-column highlight. | `var(--wa-color-brand-fill-loud)` |
+| `--background-color` | The grid body background. | `var(--wa-color-surface-default)` |
+| `--text-color` | The cell text color. | `var(--wa-color-text-normal)` |
+| `--border-color` | The gridline and outer border color. | `var(--wa-color-surface-border)` |
+| `--border-width` | The gridline thickness. | `var(--wa-border-width-s)` |
+| `--border-radius` | The outer corner radius (outlined appearance). | `var(--wa-border-radius-m)` |
+| `--max-height` | The maximum height of the scrollable body. Set `none` for natural height. | `30rem` |
+| `--row-height` | The height of each row (also set by `size`). | `3.5rem` |
+| `--header-row-height` | The height of the header row. | `var(--row-height)` |
+| `--cell-padding` | The cell inline padding (also set by `size`). | `var(--wa-space-m)` |
+| `--header-background` | The header row background. | `var(--wa-color-surface-lowered)` |
+| `--header-text-color` | The header text color. | `var(--wa-color-text-normal)` |
+| `--row-hover-background` | The hovered row background. | `var(--wa-color-neutral-fill-normal)` |
+| `--stripe-background` | The zebra (odd row) background. | `var(--wa-color-neutral-fill-quiet)` |
+| `--selected-background` | The selected row background. | `var(--wa-color-brand-fill-quiet)` |
+| `--focus-ring` | The active-cell focus ring. | `var(--wa-focus-ring)` |
+| `--transition-duration` | The reorder/resize transition duration. | `var(--wa-transition-normal)` |
+| `--indent-size` | The indentation applied per depth level to child rows in tree data. | `1.25em` |
 
 ### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`body\` | The scrollable body container. | \`::part(body)\` |
-| \`cell\` | A data cell. | \`::part(cell)\` |
-| \`column-menu\` | The per-column header options dropdown. | \`::part(column-menu)\` |
-| \`column-menu-button\` | The kebab button that opens a column's options menu. | \`::part(column-menu-button)\` |
-| \`columns-menu\` | The column visibility menu. | \`::part(columns-menu)\` |
-| \`data-grid\` | The component's outer wrapper. | \`::part(data-grid)\` |
-| \`drag-ghost\` | The floating label that follows the pointer while reordering a column (rendered in the top layer). | \`::part(drag-ghost)\` |
-| \`ellipsis\` | The collapsed-pages ellipsis in the pager. | \`::part(ellipsis)\` |
-| \`empty\` | \`empty\` The -state container shown when there are no rows (wraps the empty slot). | \`::part(empty)\` |
-| \`expand-button\` | The expand/collapse toggle button on a row. | \`::part(expand-button)\` |
-| \`filter-button\` | The funnel button in a filterable column's header that opens its filter panel. | \`::part(filter-button)\` |
-| \`filter-panel\` | The popover panel that contains a column's filter controls. | \`::part(filter-panel)\` |
-| \`first-button\` | The "first page" pager button. | \`::part(first-button)\` |
-| \`footer\` | The footer that contains the pager. | \`::part(footer)\` |
-| \`footer-cell\` | A column footer cell. | \`::part(footer-cell)\` |
-| \`footer-row\` | The column footer row pinned to the bottom of the scroll area. | \`::part(footer-row)\` |
-| \`group-count\` | The member count shown next to a group's value. | \`::part(group-count)\` |
-| \`group-row\` | \`row\` A group (also carries row), when group-by is set. | \`::part(group-row)\` |
-| \`group-value\` | The group's value in a group row's grouping cell. | \`::part(group-value)\` |
-| \`header\` | The header row container. | \`::part(header)\` |
-| \`header-cell\` | A column header cell. | \`::part(header-cell)\` |
-| \`last-button\` | The "last page" pager button. | \`::part(last-button)\` |
-| \`live-region\` | The visually-hidden polite live region for screen-reader announcements. | \`::part(live-region)\` |
-| \`loading-overlay\` | The overlay shown while a server request is in flight. | \`::part(loading-overlay)\` |
-| \`next-button\` | The "next page" pager button. | \`::part(next-button)\` |
-| \`no-results\` | \`no-results\` The container shown when a search or filter matches no rows (wraps the slot). | \`::part(no-results)\` |
-| \`page\` | A page-number button in the pager. | \`::part(page)\` |
-| \`page-current\` | The current page-number button in the pager. | \`::part(page-current)\` |
-| \`page-size\` | \`\` The page-size in the footer. | \`::part(page-size)\` |
-| \`pager\` | \`\` The pagination control (a element). | \`::part(pager)\` |
-| \`pager-button\` | \`wa-pagination\` Every button in the pager, including page numbers (exported from 's button part). | \`::part(pager-button)\` |
-| \`pin-indicator\` | The pin button shown in a pinned column's header (click to unpin). | \`::part(pin-indicator)\` |
-| \`previous-button\` | The "previous page" pager button. | \`::part(previous-button)\` |
-| \`resize-handle\` | The drag handle for resizing a column. | \`::part(resize-handle)\` |
-| \`row\` | A data row. | \`::part(row)\` |
-| \`row-detail\` | The expandable detail panel for a row. | \`::part(row-detail)\` |
-| \`search\` | The global search input. | \`::part(search)\` |
-| \`select-all-checkbox\` | The header checkbox that selects the current page. | \`::part(select-all-checkbox)\` |
-| \`sort-indicator\` | The sort direction arrow icon in a header cell. | \`::part(sort-indicator)\` |
-| \`sort-number\` | The numbered priority badge shown next to each column in a multi-column sort. | \`::part(sort-number)\` |
-| \`table\` | The grid table element. | \`::part(table)\` |
-| \`toolbar\` | The toolbar that contains the search box and columns menu. | \`::part(toolbar)\` |
+| `data-grid` | The component's outer wrapper. | `::part(data-grid)` |
+| `toolbar` | The toolbar that contains the search box and columns menu. | `::part(toolbar)` |
+| `search` | The global search input. | `::part(search)` |
+| `select-all-checkbox` | The header checkbox that selects the current page. | `::part(select-all-checkbox)` |
+| `columns-menu` | The column visibility menu. | `::part(columns-menu)` |
+| `table` | The grid table element. | `::part(table)` |
+| `header` | The header row container. | `::part(header)` |
+| `header-cell` | A column header cell. | `::part(header-cell)` |
+| `sort-indicator` | The sort direction arrow icon in a header cell. | `::part(sort-indicator)` |
+| `sort-number` | The numbered priority badge shown next to each column in a multi-column sort. | `::part(sort-number)` |
+| `resize-handle` | The drag handle for resizing a column. | `::part(resize-handle)` |
+| `column-menu` | The per-column header options dropdown. | `::part(column-menu)` |
+| `column-menu-button` | The kebab button that opens a column's options menu. | `::part(column-menu-button)` |
+| `filter-button` | The funnel button in a filterable column's header that opens its filter panel. | `::part(filter-button)` |
+| `filter-panel` | The popover panel that contains a column's filter controls. | `::part(filter-panel)` |
+| `pin-indicator` | The pin button shown in a pinned column's header (click to unpin). | `::part(pin-indicator)` |
+| `drag-ghost` | The floating label that follows the pointer while reordering a column (rendered in the top layer). | `::part(drag-ghost)` |
+| `body` | The scrollable body container. | `::part(body)` |
+| `empty` | The empty-state container shown when there are no rows (wraps the `empty` slot). | `::part(empty)` |
+| `no-results` | The container shown when a search or filter matches no rows (wraps the `no-results` slot). | `::part(no-results)` |
+| `row` | A data row. | `::part(row)` |
+| `cell` | A data cell. | `::part(cell)` |
+| `expand-button` | The expand/collapse toggle button on a row. | `::part(expand-button)` |
+| `row-detail` | The expandable detail panel for a row. | `::part(row-detail)` |
+| `loading-overlay` | The overlay shown while a server request is in flight. | `::part(loading-overlay)` |
+| `live-region` | The visually-hidden polite live region for screen-reader announcements. | `::part(live-region)` |
+| `group-row` | A group row (also carries `row`), when `group-by` is set. | `::part(group-row)` |
+| `group-value` | The group's value in a group row's grouping cell. | `::part(group-value)` |
+| `group-count` | The member count shown next to a group's value. | `::part(group-count)` |
+| `footer-row` | The column footer row pinned to the bottom of the scroll area. | `::part(footer-row)` |
+| `footer-cell` | A column footer cell. | `::part(footer-cell)` |
+| `footer` | The footer that contains the pager. | `::part(footer)` |
+| `pager` | The pagination control (a `<wa-pagination>` element). | `::part(pager)` |
+| `pager-button` | Every button in the pager, including page numbers (exported from `wa-pagination`'s `button` part). | `::part(pager-button)` |
+| `page` | A page-number button in the pager. | `::part(page)` |
+| `page-current` | The current page-number button in the pager. | `::part(page-current)` |
+| `ellipsis` | The collapsed-pages ellipsis in the pager. | `::part(ellipsis)` |
+| `first-button` | The "first page" pager button. | `::part(first-button)` |
+| `previous-button` | The "previous page" pager button. | `::part(previous-button)` |
+| `next-button` | The "next page" pager button. | `::part(next-button)` |
+| `last-button` | The "last page" pager button. | `::part(last-button)` |
+| `page-size` | The page-size `<wa-select>` in the footer. | `::part(page-size)` |
 
 ### Dependencies
 
@@ -2026,7 +2027,7 @@ const grid = document.querySelector('#grid');
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
-  .row-badge::part(base) {
+  .row-badge::part(badge) {
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }

@@ -1,0 +1,124 @@
+﻿@page "/components/lightbox-item"
+
+<PageTitle>Lightbox Item</PageTitle>
+
+<h1>Lightbox Item <ComponentBadges Tag="wa-lightbox-item" /></h1>
+<p>One image or video of a <a href="components/lightbox"><code>WaLightbox</code></a> gallery; its content is the thumbnail that opens the lightbox at this item. <code>&lt;wa-lightbox-item&gt;</code> wrapped by <code>WaLightboxItem</code>.</p>
+
+<ExampleSection Title="Image" Code="@ImageExample">
+    <p>
+        <code>Src</code> is the full-size image and the content is its thumbnail, which links to the full-size image, so the
+        item still works before the component loads. <code>Width</code> and <code>Height</code> give the full-size
+        dimensions, so the lightbox can size the slide before the image loads, and <code>Caption</code> shows plain text
+        with the item in the lightbox.
+    </p>
+    <WaLightbox Label="Kitten photo">
+        <WaLightboxItem Src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=1200&h=800&q=80"
+                        Caption="Fluffy and gray" Width="1200" Height="800">
+            <img src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=600&h=400&q=60"
+                 alt="A white and grayish kitten"
+                 style="width: 100%; max-width: 16rem; aspect-ratio: 3 / 2; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+        </WaLightboxItem>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Responsive Images" Code="@ResponsiveExample">
+    <p>
+        <code>SrcSet</code> offers the full-size image at more than one resolution; the lightbox picks a source for the size
+        it shows the image at, and a sharper one when it is zoomed in. <code>Sizes</code> overrides that choice.
+    </p>
+    <WaLightbox Label="Kitten photo">
+        <WaLightboxItem Src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80"
+                        SrcSet="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80 1200w, https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=2400&h=1600&q=80 2400w"
+                        Caption="On the lookout" Width="2400" Height="1600">
+            <img src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&h=400&q=60"
+                 alt="A gray tabby kitten looking down"
+                 style="width: 100%; max-width: 16rem; aspect-ratio: 3 / 2; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+        </WaLightboxItem>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Video" Code="@VideoExample">
+    <p>
+        <code>Type</code> <code>WaLightboxItemType.Video</code> plays the video in the lightbox. The thumbnail gets a play
+        button, which <code>PlayIconName</code> (or <code>PlayIconContent</code>) replaces, and becomes the video's poster.
+    </p>
+    <WaLightbox Label="Videos">
+        <WaLightboxItem Type="WaLightboxItemType.Video" Src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4"
+                        Caption="Using kits in your project" PlayIconName="circle-play">
+            <img src="https://uploads.webawesome.com/fa-part-2.jpg" alt="Title card of the video Using kits in your project"
+                 style="width: 100%; max-width: 16rem; aspect-ratio: 16 / 9; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+        </WaLightboxItem>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Without a Thumbnail" Code="@WithoutThumbnailExample">
+    <p>
+        An item without content isn't shown on the page, but it still appears in the lightbox. <code>Thumbnail</code> gives
+        it an image for the thumbnail strip and a placeholder while it loads, and <code>Alt</code> its alternative text.
+    </p>
+    <WaLightbox Label="Kitten photos" WithThumbnails="true" Open="@hiddenOpen" OnHide="@(() => hiddenOpen = false)">
+        <WaLightboxItem Src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80"
+                        Thumbnail="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&h=400&q=60"
+                        Alt="A gray tabby kitten looking down" Width="1200" Height="800" />
+        <WaLightboxItem Src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=1200&h=800&q=80"
+                        Thumbnail="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=600&h=400&q=60"
+                        Alt="A kitten walking toward the camera on top of a pallet" Width="1200" Height="800" />
+    </WaLightbox>
+    <WaButton StartIconName="images" OnClick="@(() => hiddenOpen = true)">Show the photos</WaButton>
+</ExampleSection>
+
+<ApiTable Tag="wa-lightbox-item" />
+
+@code {
+    private bool hiddenOpen;
+
+    private const string ImageExample = """
+        <WaLightbox Label="Kitten photo">
+            <WaLightboxItem Src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=1200&h=800&q=80"
+                            Caption="Fluffy and gray" Width="1200" Height="800">
+                <img src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=600&h=400&q=60"
+                     alt="A white and grayish kitten"
+                     style="width: 100%; max-width: 16rem; aspect-ratio: 3 / 2; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+        </WaLightbox>
+        """;
+
+    private const string ResponsiveExample = """
+        <WaLightbox Label="Kitten photo">
+            <WaLightboxItem Src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80"
+                            SrcSet="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80 1200w, https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=2400&h=1600&q=80 2400w"
+                            Caption="On the lookout" Width="2400" Height="1600">
+                <img src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&h=400&q=60"
+                     alt="A gray tabby kitten looking down"
+                     style="width: 100%; max-width: 16rem; aspect-ratio: 3 / 2; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+        </WaLightbox>
+        """;
+
+    private const string VideoExample = """
+        <WaLightbox Label="Videos">
+            <WaLightboxItem Type="WaLightboxItemType.Video" Src="https://uploads.webawesome.com/02-using-kits-in-your-project.mp4"
+                            Caption="Using kits in your project" PlayIconName="circle-play">
+                <img src="https://uploads.webawesome.com/fa-part-2.jpg" alt="Title card of the video Using kits in your project"
+                     style="width: 100%; max-width: 16rem; aspect-ratio: 16 / 9; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+        </WaLightbox>
+        """;
+
+    private const string WithoutThumbnailExample = """
+        <WaLightbox Label="Kitten photos" WithThumbnails="true" Open="@hiddenOpen" OnHide="@(() => hiddenOpen = false)">
+            <WaLightboxItem Src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80"
+                            Thumbnail="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&h=400&q=60"
+                            Alt="A gray tabby kitten looking down" Width="1200" Height="800" />
+            <WaLightboxItem Src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=1200&h=800&q=80"
+                            Thumbnail="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=600&h=400&q=60"
+                            Alt="A kitten walking toward the camera on top of a pallet" Width="1200" Height="800" />
+        </WaLightbox>
+        <WaButton StartIconName="images" OnClick="@(() => hiddenOpen = true)">Show the photos</WaButton>
+
+        @code {
+            private bool hiddenOpen;
+        }
+        """;
+}

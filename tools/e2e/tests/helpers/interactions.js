@@ -42,7 +42,7 @@ const OVERLAY_SELECTOR = 'wa-dialog, wa-drawer, wa-popover, wa-dropdown, wa-toas
 
 // the open overlays the sweep closes after every interaction
 const OPEN_OVERLAY_SELECTOR = [
-  'wa-dialog[open]', 'wa-drawer[open]', 'wa-popover[open]', 'wa-dropdown[open]',
+  'wa-dialog[open]', 'wa-drawer[open]', 'wa-lightbox[open]', 'wa-popover[open]', 'wa-dropdown[open]',
   'wa-select[open]', 'wa-combobox[open]', 'wa-color-picker[open]', 'wa-date-input[open]', 'wa-time-input[open]',
 ].join(', ');
 

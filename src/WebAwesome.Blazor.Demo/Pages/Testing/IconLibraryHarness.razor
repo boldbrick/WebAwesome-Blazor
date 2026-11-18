@@ -7,8 +7,8 @@
    derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
    tools\e2e\tests\helpers\routes.js. Each button registers one icon library whose resolver or mutator is a WaJsFunction
    (an export of the collocated IconLibraryHarness.razor.js, a function the demo JS initializer registers, or a global
-   path), or the obsolete Mutator path; the icons reference their library before it exists. The status shows
-   "registered" or the type name of the exception. *@
+   path); the icons reference their library before it exists. The status shows "registered" or the type name of the
+   exception. *@
 
 <PageTitle>Testing: Icon Library</PageTitle>
 
@@ -34,12 +34,6 @@
     <WaIcon data-testid="il-icon-sprite" Library="@SpriteLibrary" Name="star" />
 </ExampleSection>
 
-<ExampleSection Title="Obsolete mutator path">
-    <WaButton data-testid="il-register-obsolete" Size="WaSize.Small" OnClick="@(() => RegisterAsync(ObsoleteLibrary, ObsoleteOptions()))">Register</WaButton>
-    <p>Status: <strong data-testid="il-status-obsolete">@StatusOf(ObsoleteLibrary)</strong></p>
-    <WaIcon data-testid="il-icon-obsolete" Library="@ObsoleteLibrary" Name="dot" />
-</ExampleSection>
-
 <ExampleSection Title="References that do not resolve">
     <WaCluster Gap="GapSize.Gap_S">
         <WaButton data-testid="il-register-bad-resolver" Size="WaSize.Small" OnClick="@(() => RegisterAsync(BadResolverLibrary, BadResolverOptions()))">Register a missing resolver</WaButton>
@@ -60,7 +54,6 @@
     private const string ModuleLibrary = "harness-module";
     private const string RegisteredLibrary = "harness-registered";
     private const string SpriteLibrary = "harness-sprite";
-    private const string ObsoleteLibrary = "harness-obsolete";
     private const string BadResolverLibrary = "harness-bad-resolver";
     private const string BadMutatorLibrary = "harness-bad-mutator";
 
@@ -98,14 +91,6 @@
         MutatorFunction = WaJsFunction.Module(HarnessModule, "markSvg").WithArgs(new { mark = "sprite" }),
         SpriteSheet = true
     };
-
-#pragma warning disable CS0618 // the harness proves the obsolete mutator path still works until its removal
-    private static IconLibraryOptions ObsoleteOptions() => new()
-    {
-        ResolverFunction = WaJsFunction.Module(HarnessModule, "dataUrl").WithArgs(new { color = Red }),
-        Mutator = GlobalMutator
-    };
-#pragma warning restore CS0618
 
     private static IconLibraryOptions BadResolverOptions() => new()
     {

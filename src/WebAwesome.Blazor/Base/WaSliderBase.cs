@@ -154,28 +154,6 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
     [Parameter] public WaJsFunction? ValueFormatterFunction { get; set; }
 
     /// <summary>
-    /// Sent JavaScript source text to the element's <c>valueFormatter</c>, which the element ignored. It sends nothing
-    /// now. Use <see cref="ValueFormatterFunction"/> instead.
-    /// </summary>
-    /// <param name="jsFunction">JavaScript source text, which is not sent</param>
-    /// <returns>A completed task</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
-    // TODO WA 3.15.0 train: remove this obsolete member (replaced by ValueFormatterFunction)
-    [Obsolete(SetValueFormatterObsoleteMessage)]
-    public Task SetValueFormatterAsync(string jsFunction)
-    {
-        if (Element == null)
-            return Task.FromException(new InvalidOperationException("Cannot set value formatter: component has not been rendered yet."));
-
-        if (string.IsNullOrEmpty(jsFunction))
-            return Task.FromException(new ArgumentNullException(nameof(jsFunction)));
-
-        // the element ignores a string; sending it would only replace a ValueFormatterFunction
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
     /// Removes focus from the slider.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation</returns>
@@ -311,8 +289,6 @@ public abstract class WaSliderBase<TValue> : WaLabeledInputBase<TValue>
 
     // the function-valued member of wa-slider
     private const string ValueFormatterMember = "valueFormatter";
-
-    private const string SetValueFormatterObsoleteMessage = "wa-slider ignores JavaScript source text, so this method had no effect and sends nothing now. Use ValueFormatterFunction with a WaJsFunction reference. This method is removed in the 3.15.0 train.";
 
     // the function member last pushed to the element
     private readonly WaJsPropertyPush jsProperties = new();

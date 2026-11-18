@@ -1,0 +1,448 @@
+@page "/components/number-ticker"
+@using System.Globalization
+@using WebAwesome.Blazor.Models
+
+<PageTitle>Number Ticker</PageTitle>
+
+<h1>Number Ticker <ComponentBadges Tag="wa-number-ticker" /></h1>
+<p>
+    Number tickers count up or down to a number once they scroll into view, formatted with the browser's
+    <code>Intl.NumberFormat</code> API. <code>&lt;wa-number-ticker&gt;</code> wrapped by <code>WaNumberTicker</code>.
+    Screen readers read the final value only, and with the user's reduced motion preference on the final value shows
+    right away. <code>RestartAsync</code> plays a ticker again; for a number that doesn't need to count, use
+    <a href="components/format-number"><code>WaFormatNumber</code></a>.
+</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaStack AlignItems="AlignItems.Start">
+        <WaNumberTicker @ref="overviewTicker" Value="1000000" Class="wa-heading-3xl" />
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(overviewTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Start &amp; End Values" Code="@ValuesExample">
+    <p>
+        <code>Value</code> is the number to count to; tickers count from 0 unless <code>StartValue</code> says otherwise.
+        Start higher than <code>Value</code> to count down.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <p>Up: <WaNumberTicker @ref="upTicker" Value="100" /></p>
+        <p>Down: <WaNumberTicker @ref="downTicker" StartValue="100" Value="0" /></p>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(upTicker, downTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Duration &amp; Delay" Code="@DurationExample">
+    <p>
+        <code>Duration</code> is the longest a count can take, in milliseconds; a count ends early once the number stops
+        changing. <code>Delay</code> waits before counting from the start value. Keep counts under five seconds: a ticker
+        can't be paused.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <p>4 seconds: <WaNumberTicker @ref="slowTicker" Value="500" Duration="4000" /></p>
+        <p>1 second, after a 1 second delay: <WaNumberTicker @ref="delayedTicker" Value="500" Duration="1000" Delay="1000" /></p>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(slowTicker, delayedTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Easing" Code="@EasingExample">
+    <p>
+        <code>Easing</code> takes any CSS easing function, such as <code>linear</code>, <code>ease-in-out</code> or
+        <code>steps()</code>. An invalid value, including the named easings of <code>WaAnimation</code>, falls back to the
+        default ease-out curve.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <div style="display: grid; grid-template-columns: max-content 1fr; align-items: baseline; justify-items: start; gap: var(--wa-space-xs) var(--wa-space-l);">
+            <code>default</code>
+            <WaNumberTicker @ref="defaultEasingTicker" Value="1000" Duration="3000" />
+            <code>linear</code>
+            <WaNumberTicker @ref="linearTicker" Value="1000" Duration="3000" Easing="linear" />
+            <code>ease-in-out</code>
+            <WaNumberTicker @ref="easeInOutTicker" Value="1000" Duration="3000" Easing="ease-in-out" />
+            <code>steps(10)</code>
+            <WaNumberTicker @ref="stepsTicker" Value="1000" Duration="3000" Easing="steps(10)" />
+        </div>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled"
+                  OnClick="() => RestartAsync(defaultEasingTicker, linearTicker, easeInOutTicker, stepsTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Decimal Places" Code="@DecimalsExample">
+    <p>
+        A ticker keeps as many decimal places as <code>Value</code> and <code>StartValue</code> have, so 99.5 counts in
+        tenths. <code>MinimumFractionDigits</code> or <code>MaximumFractionDigits</code> set them; one of them alone
+        applies to both, so the number of places holds during the count.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <p>Default: <WaNumberTicker @ref="defaultDecimalsTicker" Value="99.5M" /></p>
+        <p>Always two places: <WaNumberTicker @ref="twoPlacesTicker" Value="99.5M" MaximumFractionDigits="2" /></p>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(defaultDecimalsTicker, twoPlacesTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Currency &amp; Percent" Code="@TypeExample">
+    <p>
+        <code>Type</code> formats the number as a currency (<code>Currency</code> is an ISO 4217 code, USD by default)
+        or a percentage, whose values are fractions: 0.87 shows as 87%. <code>CurrencyDisplay</code>,
+        <code>WithoutGrouping</code> and the digit options work as on <code>WaFormatNumber</code>.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <p>Raised: <WaNumberTicker @ref="raisedTicker" Type="WaFormatNumberType.Currency" Currency="EUR" Value="18452.75M" /></p>
+        <p>Funded: <WaNumberTicker @ref="fundedTicker" Type="WaFormatNumberType.Percent" Value="0.87M" /></p>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(raisedTicker, fundedTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Localization" Code="@LocalizationExample">
+    <p>
+        The <code>lang</code> attribute sets the formatting locale; the browser's <code>Intl.NumberFormat</code> API does
+        the work, so no language packs are needed. <code>WaNumberTicker</code> has no <code>Lang</code> parameter, so
+        <code>lang</code> goes through as an additional attribute.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <p>English (US): <WaNumberTicker @ref="englishTicker" Value="1234567.89M" lang="en-US" /></p>
+        <p>German: <WaNumberTicker @ref="germanTicker" Value="1234567.89M" lang="de" /></p>
+        <p>English (India): <WaNumberTicker @ref="indianTicker" Value="1234567.89M" lang="en-IN" /></p>
+        <p>Arabic (Egypt): <WaNumberTicker @ref="arabicTicker" Value="1234567.89M" lang="ar-EG" /></p>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled"
+                  OnClick="() => RestartAsync(englishTicker, germanTicker, indianTicker, arabicTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Starting When in View" Code="@EagerExample">
+    <p>
+        Tickers wait until they're at least halfway into view, and a ticker in a hidden container starts when it's
+        shown. <code>Eager</code> starts counting right away instead. Open both panels: the first ticker counts as it
+        opens, the eager one finished while it was closed.
+    </p>
+    <WaStack>
+        <WaDetails Summary="Default">
+            <WaNumberTicker Value="4096" Class="wa-heading-2xl" />
+        </WaDetails>
+        <WaDetails Summary="Eager">
+            <WaNumberTicker Value="4096" Class="wa-heading-2xl" Eager="true" />
+        </WaDetails>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="In a Sentence" Code="@InlineExample">
+    <p>
+        A ticker holds its text itself and inherits the text style around it, so it works inside a sentence and takes
+        <code>color</code>, <code>font-size</code> and <code>font-weight</code> directly. Its digits are tabular, so they
+        don't shift as they change. A prefix or suffix doesn't need a formatter: place the text next to the ticker.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <p>
+            Web Awesome runs on coffee. Cups brewed so far:
+            <WaNumberTicker @ref="coffeeTicker" Value="1204" Style="font-weight: var(--wa-font-weight-bold);" />
+        </p>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(coffeeTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Formatting the Value with JavaScript" Code="@FormatterExample">
+    <p>
+        <code>ValueFormatterFunction</code> formats each frame with a JavaScript function, here an export of the
+        collocated <code>NumberTickerPage.razor.js</code> that uses <code>Intl</code> compact notation in the culture of
+        the app. The function replaces the formatting parameters and receives unrounded numbers during the count, so
+        round them as needed.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <p><WaNumberTicker @ref="downloadsTicker" Value="2500000" Class="wa-heading-2xl" ValueFormatterFunction="compact" /> downloads</p>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(downloadsTicker)">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Updating the Value" Code="@UpdateExample">
+    <p>
+        A changed <code>Value</code> counts from the number currently shown to the new one, without the delay. Screen
+        readers announce the new value once it finishes counting.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <p>Score: <WaNumberTicker Value="score" Duration="1000" Class="wa-heading-2xl" /></p>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="() => score += 50">Add 50 Points</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Reacting to Completion" Code="@FinishExample">
+    <p>
+        <code>OnFinish</code> fires each time the ticker finishes counting, also when reduced motion skips the count:
+        reveal related content or start another animation from it.
+    </p>
+    <WaStack AlignItems="AlignItems.Start">
+        <WaCluster AlignItems="AlignItems.Center">
+            <WaNumberTicker @ref="goalTicker" Type="WaFormatNumberType.Currency" Value="50000" MaximumFractionDigits="0"
+                            Duration="3000" Class="wa-heading-2xl" OnFinish="() => goalReached = true" />
+            @if (goalReached)
+            {
+                <WaBadge Variant="WaVariant.Success">Goal Reached</WaBadge>
+            }
+        </WaCluster>
+        <WaDivider Class="wa-align-self-stretch" />
+        <WaButton Appearance="WaAppearance.Filled" OnClick="RestartGoalAsync">Restart</WaButton>
+    </WaStack>
+</ExampleSection>
+
+<ApiTable Tag="wa-number-ticker" />
+
+@code {
+    private WaNumberTicker? overviewTicker;
+    private WaNumberTicker? upTicker;
+    private WaNumberTicker? downTicker;
+    private WaNumberTicker? slowTicker;
+    private WaNumberTicker? delayedTicker;
+    private WaNumberTicker? defaultEasingTicker;
+    private WaNumberTicker? linearTicker;
+    private WaNumberTicker? easeInOutTicker;
+    private WaNumberTicker? stepsTicker;
+    private WaNumberTicker? defaultDecimalsTicker;
+    private WaNumberTicker? twoPlacesTicker;
+    private WaNumberTicker? raisedTicker;
+    private WaNumberTicker? fundedTicker;
+    private WaNumberTicker? englishTicker;
+    private WaNumberTicker? germanTicker;
+    private WaNumberTicker? indianTicker;
+    private WaNumberTicker? arabicTicker;
+    private WaNumberTicker? coffeeTicker;
+    private WaNumberTicker? downloadsTicker;
+    private WaNumberTicker? goalTicker;
+    private decimal score = 100;
+    private bool goalReached;
+
+    // formats the count in compact notation in the culture of the app
+    private readonly WaJsFunction compact = WaJsFunction.Module("./Pages/Components/NumberTickerPage.razor.js", "formatCompact")
+        .WithArgs(new { locale = CultureInfo.CurrentCulture.Name });
+
+    // plays the given tickers again from their start values
+    private static async Task RestartAsync(params WaNumberTicker?[] tickers)
+    {
+        foreach (var ticker in tickers)
+        {
+            if (ticker is not null) await ticker.RestartAsync();
+        }
+    }
+
+    // hides the badge and counts again; OnFinish shows it once the count ends
+    private async Task RestartGoalAsync()
+    {
+        goalReached = false;
+        await RestartAsync(goalTicker);
+    }
+
+    private const string DefaultExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <WaNumberTicker @ref="overviewTicker" Value="1000000" Class="wa-heading-3xl" />
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(overviewTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? overviewTicker;
+
+            // plays the given tickers again from their start values
+            private static async Task RestartAsync(params WaNumberTicker?[] tickers)
+            {
+                foreach (var ticker in tickers)
+                {
+                    if (ticker is not null) await ticker.RestartAsync();
+                }
+            }
+        }
+        """;
+
+    private const string ValuesExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <p>Up: <WaNumberTicker @ref="upTicker" Value="100" /></p>
+            <p>Down: <WaNumberTicker @ref="downTicker" StartValue="100" Value="0" /></p>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(upTicker, downTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? upTicker;
+            private WaNumberTicker? downTicker;
+        }
+        """;
+
+    private const string DurationExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <p>4 seconds: <WaNumberTicker @ref="slowTicker" Value="500" Duration="4000" /></p>
+            <p>1 second, after a 1 second delay: <WaNumberTicker @ref="delayedTicker" Value="500" Duration="1000" Delay="1000" /></p>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(slowTicker, delayedTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? slowTicker;
+            private WaNumberTicker? delayedTicker;
+        }
+        """;
+
+    private const string EasingExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <div style="display: grid; grid-template-columns: max-content 1fr; align-items: baseline; justify-items: start; gap: var(--wa-space-xs) var(--wa-space-l);">
+                <code>default</code>
+                <WaNumberTicker @ref="defaultEasingTicker" Value="1000" Duration="3000" />
+                <code>linear</code>
+                <WaNumberTicker @ref="linearTicker" Value="1000" Duration="3000" Easing="linear" />
+                <code>ease-in-out</code>
+                <WaNumberTicker @ref="easeInOutTicker" Value="1000" Duration="3000" Easing="ease-in-out" />
+                <code>steps(10)</code>
+                <WaNumberTicker @ref="stepsTicker" Value="1000" Duration="3000" Easing="steps(10)" />
+            </div>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled"
+                      OnClick="() => RestartAsync(defaultEasingTicker, linearTicker, easeInOutTicker, stepsTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? defaultEasingTicker;
+            private WaNumberTicker? linearTicker;
+            private WaNumberTicker? easeInOutTicker;
+            private WaNumberTicker? stepsTicker;
+        }
+        """;
+
+    private const string DecimalsExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <p>Default: <WaNumberTicker @ref="defaultDecimalsTicker" Value="99.5M" /></p>
+            <p>Always two places: <WaNumberTicker @ref="twoPlacesTicker" Value="99.5M" MaximumFractionDigits="2" /></p>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(defaultDecimalsTicker, twoPlacesTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? defaultDecimalsTicker;
+            private WaNumberTicker? twoPlacesTicker;
+        }
+        """;
+
+    private const string TypeExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <p>Raised: <WaNumberTicker @ref="raisedTicker" Type="WaFormatNumberType.Currency" Currency="EUR" Value="18452.75M" /></p>
+            <p>Funded: <WaNumberTicker @ref="fundedTicker" Type="WaFormatNumberType.Percent" Value="0.87M" /></p>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(raisedTicker, fundedTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? raisedTicker;
+            private WaNumberTicker? fundedTicker;
+        }
+        """;
+
+    private const string LocalizationExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <p>English (US): <WaNumberTicker @ref="englishTicker" Value="1234567.89M" lang="en-US" /></p>
+            <p>German: <WaNumberTicker @ref="germanTicker" Value="1234567.89M" lang="de" /></p>
+            <p>English (India): <WaNumberTicker @ref="indianTicker" Value="1234567.89M" lang="en-IN" /></p>
+            <p>Arabic (Egypt): <WaNumberTicker @ref="arabicTicker" Value="1234567.89M" lang="ar-EG" /></p>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled"
+                      OnClick="() => RestartAsync(englishTicker, germanTicker, indianTicker, arabicTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? englishTicker;
+            private WaNumberTicker? germanTicker;
+            private WaNumberTicker? indianTicker;
+            private WaNumberTicker? arabicTicker;
+        }
+        """;
+
+    private const string EagerExample = """
+        <WaStack>
+            <WaDetails Summary="Default">
+                <WaNumberTicker Value="4096" Class="wa-heading-2xl" />
+            </WaDetails>
+            <WaDetails Summary="Eager">
+                <WaNumberTicker Value="4096" Class="wa-heading-2xl" Eager="true" />
+            </WaDetails>
+        </WaStack>
+        """;
+
+    private const string InlineExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <p>
+                Web Awesome runs on coffee. Cups brewed so far:
+                <WaNumberTicker @ref="coffeeTicker" Value="1204" Style="font-weight: var(--wa-font-weight-bold);" />
+            </p>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(coffeeTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? coffeeTicker;
+        }
+        """;
+
+    private const string FormatterExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <p><WaNumberTicker @ref="downloadsTicker" Value="2500000" Class="wa-heading-2xl" ValueFormatterFunction="compact" /> downloads</p>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="() => RestartAsync(downloadsTicker)">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? downloadsTicker;
+
+            // formats the count in compact notation in the culture of the app
+            private readonly WaJsFunction compact = WaJsFunction.Module("./Pages/Components/NumberTickerPage.razor.js", "formatCompact")
+                .WithArgs(new { locale = CultureInfo.CurrentCulture.Name });
+        }
+
+        // NumberTickerPage.razor.js, next to NumberTickerPage.razor
+        export function formatCompact(value, ctx) {
+          return new Intl.NumberFormat(ctx.args.locale || undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(value);
+        }
+        """;
+
+    private const string UpdateExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <p>Score: <WaNumberTicker Value="score" Duration="1000" Class="wa-heading-2xl" /></p>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="() => score += 50">Add 50 Points</WaButton>
+        </WaStack>
+
+        @code {
+            private decimal score = 100;
+        }
+        """;
+
+    private const string FinishExample = """
+        <WaStack AlignItems="AlignItems.Start">
+            <WaCluster AlignItems="AlignItems.Center">
+                <WaNumberTicker @ref="goalTicker" Type="WaFormatNumberType.Currency" Value="50000" MaximumFractionDigits="0"
+                                Duration="3000" Class="wa-heading-2xl" OnFinish="() => goalReached = true" />
+                @if (goalReached)
+                {
+                    <WaBadge Variant="WaVariant.Success">Goal Reached</WaBadge>
+                }
+            </WaCluster>
+            <WaDivider Class="wa-align-self-stretch" />
+            <WaButton Appearance="WaAppearance.Filled" OnClick="RestartGoalAsync">Restart</WaButton>
+        </WaStack>
+
+        @code {
+            private WaNumberTicker? goalTicker;
+            private bool goalReached;
+
+            // hides the badge and counts again; OnFinish shows it once the count ends
+            private async Task RestartGoalAsync()
+            {
+                goalReached = false;
+                await RestartAsync(goalTicker);
+            }
+        }
+        """;
+}

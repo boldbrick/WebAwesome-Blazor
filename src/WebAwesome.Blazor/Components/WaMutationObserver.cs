@@ -183,7 +183,7 @@ public class WaMutationObserver : ComponentBase
         await JSInterop.InvokeMethodAsync(Element.Value, "startObserver");
     }
 
-    // NOTE checked against WA 3.14.0: no TakeRecordsAsync - wa-mutation-observer exposes no takeRecords()
+    // NOTE checked against WA 3.15.0: no TakeRecordsAsync - wa-mutation-observer exposes no takeRecords()
     // method (the underlying MutationObserver instance is private to the element)
 
     #endregion

@@ -15,8 +15,8 @@ namespace WebAwesome.Blazor.Tests.Forms;
 /// Verifies the model-to-element live value sync of the WaInputBase form controls (Web Awesome 3.12.0 bindings,
 /// GitHub issue #1): Web Awesome 3 maps the value/checked attribute to defaultValue/defaultChecked, so after the
 /// user has interacted the attribute no longer reaches the element, and the wrappers push a C#-side change into
-/// the live property through the interop module's "syncProperty". A theory over all 13 single-value controls that
-/// override LiveValuePropertyName (WaInput, WaTextArea, WaNumberInput, WaColorPicker, WaDateInput, WaKnownDate,
+/// the live property through the interop module's "syncProperty". A theory over all 14 single-value controls that
+/// override LiveValuePropertyName (WaInput, WaTextArea, WaRichTextEditor, WaNumberInput, WaColorPicker, WaDateInput, WaKnownDate,
 /// WaOtpInput, WaRadioGroup, WaSlider, WaRange, WaTimeInput, WaCheckbox, WaSwitch) asserts with a mocked interop
 /// module that nothing is pushed on first render or on a re-render with the same value, that a parent-side change
 /// is pushed exactly once with the live property name and the JS-typed value, and that a value that came from the
@@ -374,6 +374,7 @@ public class LiveValueSyncTests : FormControlTestBase
     {
         new LiveSyncCase<WaInput, string?>("wa-input", ValueProperty, "Ada", "Grace", "Grace", e => e.Change("Linus"), "Linus"),
         new LiveSyncCase<WaTextArea, string?>("wa-textarea", ValueProperty, "Ada", "Grace", "Grace", e => e.Change("Linus"), "Linus"),
+        new LiveSyncCase<WaRichTextEditor, string?>("wa-rich-text-editor", ValueProperty, "<p>Ada</p>", "<p>Grace</p>", "<p>Grace</p>", e => e.Change("<p>Linus</p>"), "<p>Linus</p>"),
         new LiveSyncCase<WaNumberInput, decimal?>("wa-number-input", ValueProperty, 1.5m, 2.5m, "2.5", e => e.Change("3.5"), 3.5m),
         new LiveSyncCase<WaColorPicker, string?>("wa-color-picker", ValueProperty, "#ff0000", "#00ff00", "#00ff00", e => e.Change("#0000ff"), "#0000ff"),
         new LiveSyncCase<WaDateInput, DateOnly?>("wa-date-input", ValueProperty, new DateOnly(2026, 1, 1), new DateOnly(2026, 2, 2), "2026-02-02", e => e.Change("2026-03-03"), new DateOnly(2026, 3, 3)),

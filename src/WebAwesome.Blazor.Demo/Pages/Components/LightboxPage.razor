@@ -1,0 +1,463 @@
+﻿@page "/components/lightbox"
+
+<PageTitle>Lightbox</PageTitle>
+
+<h1>Lightbox <ComponentBadges Tag="wa-lightbox" /></h1>
+<p>Lightboxes show a gallery of images and videos full screen, with swiping, zoom, a counter and optional thumbnails. <code>&lt;wa-lightbox&gt;</code> wrapped by <code>WaLightbox</code>, with <code>&lt;wa-lightbox-item&gt;</code> wrapped by <a href="components/lightbox-item"><code>WaLightboxItem</code></a>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <p>
+        Wrap each thumbnail in a <code>WaLightboxItem</code> and set its <code>Src</code> to the full-size image. Click a
+        thumbnail to open the lightbox at that item; swipe or use the arrow keys to move between items, click or pinch to
+        zoom, and press Escape to close. The lightbox itself is a plain block, so the thumbnails can be laid out any way you
+        like, here with a <code>WaGrid</code>.
+    </p>
+    <WaLightbox Label="Kitten photos">
+        <WaGrid MinColumnSize="8rem">
+            <WaLightboxItem Src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80"
+                            Caption="On the lookout" Width="1200" Height="800">
+                <img src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&h=400&q=60"
+                     alt="A gray tabby kitten looking down"
+                     style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+            <WaLightboxItem Src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=1200&h=800&q=80"
+                            Caption="Fluffy and gray" Width="1200" Height="800">
+                <img src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=600&h=400&q=60"
+                     alt="A white and grayish kitten"
+                     style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+            <WaLightboxItem Src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=1200&h=800&q=80"
+                            Caption="On the move" Width="1200" Height="800">
+                <img src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=600&h=400&q=60"
+                     alt="A kitten walking toward the camera on top of a pallet"
+                     style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+        </WaGrid>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Thumbnails &amp; Loop" Code="@ThumbnailsExample">
+    <p>
+        <code>WithThumbnails</code> shows a strip of thumbnails for jumping between items, and <code>Loop</code> wraps
+        around past the first and last items. The following examples build the items from a list of photos.
+    </p>
+    <WaLightbox Label="Kitten photos" WithThumbnails="true" Loop="true">
+        <WaGrid MinColumnSize="8rem">
+            @foreach (var photo in Photos)
+            {
+                <WaLightboxItem Src="@photo.Src" Caption="@photo.Caption" Width="1200" Height="800">
+                    <img src="@photo.Thumbnail" alt="@photo.Alt"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                </WaLightboxItem>
+            }
+        </WaGrid>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Hiding Controls" Code="@ControlsExample">
+    <p>
+        <code>WithoutCounter</code> hides the counter, <code>WithoutZoom</code> turns zooming off and
+        <code>WithoutNavigation</code> hides the previous and next buttons (swiping and the arrow keys still work). The
+        buttons are always hidden on touch screens, so keep <code>WithThumbnails</code> on when you hide them everywhere.
+    </p>
+    <WaLightbox Label="Kitten photos" WithoutCounter="true" WithoutZoom="true">
+        <WaGrid MinColumnSize="8rem">
+            @foreach (var photo in Photos)
+            {
+                <WaLightboxItem Src="@photo.Src" Width="1200" Height="800">
+                    <img src="@photo.Thumbnail" alt="@photo.Alt"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                </WaLightboxItem>
+            }
+        </WaGrid>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Video" Code="@VideoExample">
+    <p>
+        An item of <code>Type</code> <code>WaLightboxItemType.Video</code> plays its <code>Src</code> in the lightbox. Its
+        thumbnail gets a play button and becomes the video's poster; videos pause when you move on or close the lightbox.
+    </p>
+    <WaLightbox Label="Photos and videos">
+        <WaGrid MinColumnSize="8rem">
+            <WaLightboxItem Type="WaLightboxItemType.Video" Src="https://uploads.webawesome.com/01-create-your-first-kit.mp4"
+                            Caption="Create your first kit">
+                <img src="https://uploads.webawesome.com/fa-part-1.jpg" alt="Title card of the video Create your first kit"
+                     style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+            @foreach (var photo in Photos.Take(2))
+            {
+                <WaLightboxItem Src="@photo.Src" Width="1200" Height="800">
+                    <img src="@photo.Thumbnail" alt="@photo.Alt"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                </WaLightboxItem>
+            }
+        </WaGrid>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Single Image" Code="@SingleExample">
+    <p>
+        A lightbox with one item works as an image zoom: the counter, the navigation and the thumbnails are hidden when
+        there is nothing to navigate. <code>Width</code> and <code>Height</code> also set how far the image can be zoomed.
+    </p>
+    <WaLightbox Label="Kitten photo">
+        <WaLightboxItem Src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=2400&h=1600&q=80"
+                        Caption="On the move" Width="2400" Height="1600">
+            <img src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=600&h=400&q=60"
+                 alt="A kitten walking toward the camera on top of a pallet"
+                 style="width: 100%; max-width: 24rem; aspect-ratio: 3 / 2; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+        </WaLightboxItem>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Opening from Code" Code="@ProgrammaticExample">
+    <p>
+        Set <code>Index</code> to choose an item and <code>Open</code> to show the lightbox. The element closes itself and
+        changes its item as the user navigates, without writing the parameters back, so follow it with
+        <code>OnHide</code> and <code>OnItemChange</code>: then the next change of the parameters reaches the element.
+    </p>
+    <WaLightbox Label="Kitten photos" Index="@programmaticIndex" Open="@programmaticOpen"
+                OnHide="@(() => programmaticOpen = false)" OnItemChange="HandleProgrammaticItemChange">
+        <WaGrid MinColumnSize="8rem">
+            @foreach (var photo in Photos)
+            {
+                <WaLightboxItem Src="@photo.Src" Caption="@photo.Caption" Width="1200" Height="800">
+                    <img src="@photo.Thumbnail" alt="@photo.Alt"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                </WaLightboxItem>
+            }
+        </WaGrid>
+    </WaLightbox>
+    <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center" Style="margin-block-start: var(--wa-space-m);">
+        <WaButton OnClick="OpenLastPhoto">Open the last photo</WaButton>
+        <span>@(lastViewed ?? "No photo viewed yet.")</span>
+    </WaCluster>
+</ExampleSection>
+
+<ExampleSection Title="Items Without Thumbnails" Code="@HiddenItemsExample">
+    <p>
+        An item without content isn't shown on the page but still appears in the lightbox. Give it a
+        <code>Thumbnail</code> for the thumbnail strip and an <code>Alt</code>, since there is no image to take it from.
+        Here one cover photo is shown and a button opens the whole set at the first photo.
+    </p>
+    <WaLightbox Label="Kitten photos" WithThumbnails="true" Index="@coverIndex" Open="@coverOpen"
+                OnHide="@(() => coverOpen = false)" OnItemChange="@(e => coverIndex = e.Index)">
+        <WaLightboxItem Src="@Photos[0].Src" Width="1200" Height="800">
+            <img src="@Photos[0].Thumbnail" alt="@Photos[0].Alt"
+                 style="width: 100%; max-width: 24rem; aspect-ratio: 3 / 2; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+        </WaLightboxItem>
+        @foreach (var photo in Photos.Skip(1))
+        {
+            <WaLightboxItem Src="@photo.Src" Thumbnail="@photo.Thumbnail" Alt="@photo.Alt" Width="1200" Height="800" />
+        }
+    </WaLightbox>
+    <WaButton Size="WaSize.Small" StartIconName="images" OnClick="ViewAllPhotos">View all @Photos.Length photos</WaButton>
+</ExampleSection>
+
+<ExampleSection Title="Toolbar Actions" Code="@ActionsExample">
+    <p>
+        <code>ActionsContent</code> adds buttons to the lightbox's toolbar, styled to match its controls.
+        <code>OnItemChange</code> tells the page which item is showing, and <code>OnShow</code> keeps <code>Open</code> in
+        step when a thumbnail opens the lightbox, so the Done button can close it again.
+    </p>
+    <WaLightbox Label="Kitten photos" Open="@actionsOpen" OnShow="@(() => actionsOpen = true)"
+                OnHide="@(() => actionsOpen = false)" OnItemChange="@(e => actionsIndex = e.Index)">
+        <ChildContent>
+            <WaGrid MinColumnSize="8rem">
+                @foreach (var photo in Photos)
+                {
+                    <WaLightboxItem Src="@photo.Src" Width="1200" Height="800">
+                        <img src="@photo.Thumbnail" alt="@photo.Alt"
+                             style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                    </WaLightboxItem>
+                }
+            </WaGrid>
+        </ChildContent>
+        <ActionsContent>
+            <WaButton Href="@Photos[actionsIndex].Src" Target="WaLinkTarget.Blank">
+                <WaIcon Name="arrow-up-right-from-square" Label="Open original" />
+            </WaButton>
+            <WaButton OnClick="@(() => actionsOpen = false)">Done</WaButton>
+        </ActionsContent>
+    </WaLightbox>
+</ExampleSection>
+
+<ExampleSection Title="Customizing" Code="@CustomizingExample">
+    <p>
+        Custom properties set the backdrop (here frosted with <code>--backdrop-color</code> and
+        <code>--backdrop-filter</code>), the color of the controls and the size of the thumbnails, and the icon parameters
+        replace the close and navigation icons.
+    </p>
+    <WaLightbox Label="Kitten photos" WithThumbnails="true" Loop="true"
+                CloseIconName="circle-xmark" PreviousIconName="circle-chevron-left" NextIconName="circle-chevron-right"
+                Style="--backdrop-color: color-mix(in oklab, var(--wa-color-surface-default) 30%, transparent); --backdrop-filter: blur(40px) saturate(180%); --controls-color: var(--wa-color-text-normal); --controls-background: color-mix(in oklab, var(--wa-color-surface-raised) 70%, transparent); --media-border-radius: var(--wa-border-radius-l); --thumbnail-size: 3rem;">
+        <WaGrid MinColumnSize="8rem">
+            @foreach (var photo in Photos)
+            {
+                <WaLightboxItem Src="@photo.Src" Caption="@photo.Caption" Width="1200" Height="800">
+                    <img src="@photo.Thumbnail" alt="@photo.Alt"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-l); object-fit: cover;" />
+                </WaLightboxItem>
+            }
+        </WaGrid>
+    </WaLightbox>
+</ExampleSection>
+
+<ApiTable Tag="wa-lightbox" />
+
+@code {
+    // a photo of the examples: the full-size image, its thumbnail, the alternative text and the caption
+    private sealed record Photo(string Src, string Thumbnail, string Alt, string Caption);
+
+    private static readonly Photo[] Photos =
+    [
+        new("https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80",
+            "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&h=400&q=60",
+            "A gray tabby kitten looking down", "On the lookout"),
+        new("https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=1200&h=800&q=80",
+            "https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=600&h=400&q=60",
+            "A white and grayish kitten", "Fluffy and gray"),
+        new("https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=1200&h=800&q=80",
+            "https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=600&h=400&q=60",
+            "A kitten walking toward the camera on top of a pallet", "On the move"),
+    ];
+
+    private int programmaticIndex;
+    private bool programmaticOpen;
+    private string? lastViewed;
+
+    private int coverIndex;
+    private bool coverOpen;
+
+    private int actionsIndex;
+    private bool actionsOpen;
+
+    private void OpenLastPhoto()
+    {
+        programmaticIndex = Photos.Length - 1;
+        programmaticOpen = true;
+    }
+
+    // the element moved to another item: keep the index in step and report the item
+    private void HandleProgrammaticItemChange(WaLightboxItemChangeEventArgs e)
+    {
+        programmaticIndex = e.Index;
+        lastViewed = $"Last viewed: photo {e.Index + 1} of {Photos.Length} ({e.Item?.Caption})";
+    }
+
+    private void ViewAllPhotos()
+    {
+        coverIndex = 0;
+        coverOpen = true;
+    }
+
+    private const string DefaultExample = """
+        <WaLightbox Label="Kitten photos">
+            <WaGrid MinColumnSize="8rem">
+                <WaLightboxItem Src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80"
+                                Caption="On the lookout" Width="1200" Height="800">
+                    <img src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&h=400&q=60"
+                         alt="A gray tabby kitten looking down"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                </WaLightboxItem>
+                <WaLightboxItem Src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=1200&h=800&q=80"
+                                Caption="Fluffy and gray" Width="1200" Height="800">
+                    <img src="https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=600&h=400&q=60"
+                         alt="A white and grayish kitten"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                </WaLightboxItem>
+                <WaLightboxItem Src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=1200&h=800&q=80"
+                                Caption="On the move" Width="1200" Height="800">
+                    <img src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=600&h=400&q=60"
+                         alt="A kitten walking toward the camera on top of a pallet"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                </WaLightboxItem>
+            </WaGrid>
+        </WaLightbox>
+        """;
+
+    private const string ThumbnailsExample = """
+        <WaLightbox Label="Kitten photos" WithThumbnails="true" Loop="true">
+            <WaGrid MinColumnSize="8rem">
+                @foreach (var photo in Photos)
+                {
+                    <WaLightboxItem Src="@photo.Src" Caption="@photo.Caption" Width="1200" Height="800">
+                        <img src="@photo.Thumbnail" alt="@photo.Alt"
+                             style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                    </WaLightboxItem>
+                }
+            </WaGrid>
+        </WaLightbox>
+
+        @code {
+            // a photo of the examples: the full-size image, its thumbnail, the alternative text and the caption
+            private sealed record Photo(string Src, string Thumbnail, string Alt, string Caption);
+
+            private static readonly Photo[] Photos =
+            [
+                new("https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=1200&h=800&q=80",
+                    "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?auto=format&fit=crop&w=600&h=400&q=60",
+                    "A gray tabby kitten looking down", "On the lookout"),
+                new("https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=1200&h=800&q=80",
+                    "https://images.unsplash.com/photo-1591871937573-74dbba515c4c?auto=format&fit=crop&w=600&h=400&q=60",
+                    "A white and grayish kitten", "Fluffy and gray"),
+                new("https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=1200&h=800&q=80",
+                    "https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=600&h=400&q=60",
+                    "A kitten walking toward the camera on top of a pallet", "On the move"),
+            ];
+        }
+        """;
+
+    private const string ControlsExample = """
+        <WaLightbox Label="Kitten photos" WithoutCounter="true" WithoutZoom="true">
+            <WaGrid MinColumnSize="8rem">
+                @foreach (var photo in Photos)
+                {
+                    <WaLightboxItem Src="@photo.Src" Width="1200" Height="800">
+                        <img src="@photo.Thumbnail" alt="@photo.Alt"
+                             style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                    </WaLightboxItem>
+                }
+            </WaGrid>
+        </WaLightbox>
+        """;
+
+    private const string VideoExample = """
+        <WaLightbox Label="Photos and videos">
+            <WaGrid MinColumnSize="8rem">
+                <WaLightboxItem Type="WaLightboxItemType.Video" Src="https://uploads.webawesome.com/01-create-your-first-kit.mp4"
+                                Caption="Create your first kit">
+                    <img src="https://uploads.webawesome.com/fa-part-1.jpg" alt="Title card of the video Create your first kit"
+                         style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                </WaLightboxItem>
+                @foreach (var photo in Photos.Take(2))
+                {
+                    <WaLightboxItem Src="@photo.Src" Width="1200" Height="800">
+                        <img src="@photo.Thumbnail" alt="@photo.Alt"
+                             style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                    </WaLightboxItem>
+                }
+            </WaGrid>
+        </WaLightbox>
+        """;
+
+    private const string SingleExample = """
+        <WaLightbox Label="Kitten photo">
+            <WaLightboxItem Src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=2400&h=1600&q=80"
+                            Caption="On the move" Width="2400" Height="1600">
+                <img src="https://images.unsplash.com/photo-1547191783-94d5f8f6d8b1?auto=format&fit=crop&w=600&h=400&q=60"
+                     alt="A kitten walking toward the camera on top of a pallet"
+                     style="width: 100%; max-width: 24rem; aspect-ratio: 3 / 2; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+        </WaLightbox>
+        """;
+
+    private const string ProgrammaticExample = """
+        <WaLightbox Label="Kitten photos" Index="@programmaticIndex" Open="@programmaticOpen"
+                    OnHide="@(() => programmaticOpen = false)" OnItemChange="HandleProgrammaticItemChange">
+            <WaGrid MinColumnSize="8rem">
+                @foreach (var photo in Photos)
+                {
+                    <WaLightboxItem Src="@photo.Src" Caption="@photo.Caption" Width="1200" Height="800">
+                        <img src="@photo.Thumbnail" alt="@photo.Alt"
+                             style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                    </WaLightboxItem>
+                }
+            </WaGrid>
+        </WaLightbox>
+        <WaCluster Gap="GapSize.Gap_M" AlignItems="AlignItems.Center" Style="margin-block-start: var(--wa-space-m);">
+            <WaButton OnClick="OpenLastPhoto">Open the last photo</WaButton>
+            <span>@(lastViewed ?? "No photo viewed yet.")</span>
+        </WaCluster>
+
+        @code {
+            private int programmaticIndex;
+            private bool programmaticOpen;
+            private string? lastViewed;
+
+            private void OpenLastPhoto()
+            {
+                programmaticIndex = Photos.Length - 1;
+                programmaticOpen = true;
+            }
+
+            // the element moved to another item: keep the index in step and report the item
+            private void HandleProgrammaticItemChange(WaLightboxItemChangeEventArgs e)
+            {
+                programmaticIndex = e.Index;
+                lastViewed = $"Last viewed: photo {e.Index + 1} of {Photos.Length} ({e.Item?.Caption})";
+            }
+        }
+        """;
+
+    private const string HiddenItemsExample = """
+        <WaLightbox Label="Kitten photos" WithThumbnails="true" Index="@coverIndex" Open="@coverOpen"
+                    OnHide="@(() => coverOpen = false)" OnItemChange="@(e => coverIndex = e.Index)">
+            <WaLightboxItem Src="@Photos[0].Src" Width="1200" Height="800">
+                <img src="@Photos[0].Thumbnail" alt="@Photos[0].Alt"
+                     style="width: 100%; max-width: 24rem; aspect-ratio: 3 / 2; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+            </WaLightboxItem>
+            @foreach (var photo in Photos.Skip(1))
+            {
+                <WaLightboxItem Src="@photo.Src" Thumbnail="@photo.Thumbnail" Alt="@photo.Alt" Width="1200" Height="800" />
+            }
+        </WaLightbox>
+        <WaButton Size="WaSize.Small" StartIconName="images" OnClick="ViewAllPhotos">View all @Photos.Length photos</WaButton>
+
+        @code {
+            private int coverIndex;
+            private bool coverOpen;
+
+            private void ViewAllPhotos()
+            {
+                coverIndex = 0;
+                coverOpen = true;
+            }
+        }
+        """;
+
+    private const string ActionsExample = """
+        <WaLightbox Label="Kitten photos" Open="@actionsOpen" OnShow="@(() => actionsOpen = true)"
+                    OnHide="@(() => actionsOpen = false)" OnItemChange="@(e => actionsIndex = e.Index)">
+            <ChildContent>
+                <WaGrid MinColumnSize="8rem">
+                    @foreach (var photo in Photos)
+                    {
+                        <WaLightboxItem Src="@photo.Src" Width="1200" Height="800">
+                            <img src="@photo.Thumbnail" alt="@photo.Alt"
+                                 style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-m); object-fit: cover;" />
+                        </WaLightboxItem>
+                    }
+                </WaGrid>
+            </ChildContent>
+            <ActionsContent>
+                <WaButton Href="@Photos[actionsIndex].Src" Target="WaLinkTarget.Blank">
+                    <WaIcon Name="arrow-up-right-from-square" Label="Open original" />
+                </WaButton>
+                <WaButton OnClick="@(() => actionsOpen = false)">Done</WaButton>
+            </ActionsContent>
+        </WaLightbox>
+
+        @code {
+            private int actionsIndex;
+            private bool actionsOpen;
+        }
+        """;
+
+    private const string CustomizingExample = """
+        <WaLightbox Label="Kitten photos" WithThumbnails="true" Loop="true"
+                    CloseIconName="circle-xmark" PreviousIconName="circle-chevron-left" NextIconName="circle-chevron-right"
+                    Style="--backdrop-color: color-mix(in oklab, var(--wa-color-surface-default) 30%, transparent); --backdrop-filter: blur(40px) saturate(180%); --controls-color: var(--wa-color-text-normal); --controls-background: color-mix(in oklab, var(--wa-color-surface-raised) 70%, transparent); --media-border-radius: var(--wa-border-radius-l); --thumbnail-size: 3rem;">
+            <WaGrid MinColumnSize="8rem">
+                @foreach (var photo in Photos)
+                {
+                    <WaLightboxItem Src="@photo.Src" Caption="@photo.Caption" Width="1200" Height="800">
+                        <img src="@photo.Thumbnail" alt="@photo.Alt"
+                             style="width: 100%; aspect-ratio: 1; border-radius: var(--wa-border-radius-l); object-fit: cover;" />
+                    </WaLightboxItem>
+                }
+            </WaGrid>
+        </WaLightbox>
+        """;
+}

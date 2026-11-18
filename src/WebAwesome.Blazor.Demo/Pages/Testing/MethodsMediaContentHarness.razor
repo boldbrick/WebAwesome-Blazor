@@ -10,7 +10,7 @@
 <PageTitle>Testing: Methods (media and content)</PageTitle>
 
 <h1>Methods Harness: Media and Content</h1>
-<p>This page is an end-to-end test harness for the imperative methods of the media, animation, observer and content wrappers.</p>
+<p>This page is an end-to-end test harness for the imperative methods of the media, animation, observer, counting, gallery and content wrappers.</p>
 
 <ExampleSection Title="WaAnimatedImage">
     <div class="method-calls">
@@ -132,6 +132,38 @@
     <p>Copies reported: <strong data-testid="copy-count">@copyCount</strong></p>
 </ExampleSection>
 
+<ExampleSection Title="WaNumberTicker">
+    <div class="method-calls">
+        <MethodCall Id="ticker-restart" Action="() => numberTicker!.RestartAsync()" />
+    </div>
+    @* counts at once (eager) and linearly over a few seconds, so a restart shows numbers below the value for a while *@
+    <WaNumberTicker @ref="numberTicker" data-testid="number-ticker" Value="TickerValue" Duration="TickerDurationMs" Easing="@TickerEasing"
+                    Eager="true" OnFinish="() => tickerFinishCount++" />
+    <p>Counts finished: <strong data-testid="ticker-finish-count">@tickerFinishCount</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="WaLightbox and WaLightboxItem">
+    <div class="method-calls">
+        <MethodCall Id="lightbox-next" Action="() => lightbox!.NextAsync()" />
+        <MethodCall Id="lightbox-previous" Action="() => lightbox!.PreviousAsync()" />
+        <MethodCall Id="lightbox-zoom-in" Action="() => lightbox!.ZoomInAsync()" />
+        <MethodCall Id="lightbox-zoom-out" Action="() => lightbox!.ZoomOutAsync()" />
+        <MethodCall Id="lightbox-item-focus" Action="() => secondLightboxItem!.FocusAsync()" />
+    </div>
+    @* data URL images, so the gallery needs no network *@
+    <WaLightbox @ref="lightbox" data-testid="lightbox" Label="Harness gallery" OnItemChange="e => lightboxIndex = e.Index">
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaLightboxItem data-testid="lightbox-first" Src="@FirstSlide" Alt="First slide">
+                <img src="@FirstSlide" alt="First slide" style="width: 80px;" />
+            </WaLightboxItem>
+            <WaLightboxItem @ref="secondLightboxItem" data-testid="lightbox-second" Src="@SecondSlide" Alt="Second slide">
+                <img src="@SecondSlide" alt="Second slide" style="width: 80px;" />
+            </WaLightboxItem>
+        </WaCluster>
+    </WaLightbox>
+    <p>Item change reported: <strong data-testid="lightbox-index">@lightboxIndex</strong></p>
+</ExampleSection>
+
 <ExampleSection Title="Calls on the first render (?early=true)">
     <p>Zoomable frame zoom in: <output data-testid="early-zoom-in">@earlyZoomIn</output></p>
     <p>Animated image play: <output data-testid="early-animated-image-play">@earlyAnimatedImagePlay</output></p>
@@ -158,6 +190,12 @@
     private const int LastPlaylistIndex = 2;
     private const int InitialResizeWidth = 100;
     private const int RelativeTimeAgeMinutes = 10;
+    private const decimal TickerValue = 100m;
+    private const int TickerDurationMs = 3000;
+    private const string TickerEasing = "linear";
+    private const int NoItemChange = -1;
+    private const string FirstSlide = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%233b82f6'/%3E%3C/svg%3E";
+    private const string SecondSlide = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%2316a34a'/%3E%3C/svg%3E";
 
     private const int ClipSampleRate = 8000;
     private const int ClipSeconds = 6;
@@ -188,8 +226,13 @@
     private WaRandomContent? randomContent;
     private WaRelativeTime? relativeTime;
     private WaCopyButton? copyButton;
+    private WaNumberTicker? numberTicker;
+    private WaLightbox? lightbox;
+    private WaLightboxItem? secondLightboxItem;
 
     private string markdownSource = InitialMarkdown;
+    private int tickerFinishCount;
+    private int lightboxIndex = NoItemChange;
     private int animationFinishCount;
     private int animationCancelCount;
     private int copyCount;

@@ -450,7 +450,7 @@ public class ComponentParityConfig
 
     /// <summary>
     /// Slots the element's CEM entry omits but its compiled source renders and its documentation describes (e.g.
-    /// wa-date-picker's day-YYYY-MM-DD); the slot checks treat them as declared in both directions, a patterned name
+    /// wa-date-picker's day-YYYY-MM-DD before Web Awesome 3.15.0 declared it); the slot checks treat them as declared in both directions, a patterned name
     /// included. They must be re-verified against the source on every upgrade. Reason key
     /// "sourceVerifiedSlots:&lt;tag&gt;:&lt;slot&gt;" citing the source and documentation; an entry the CEM now declares is
     /// stale.

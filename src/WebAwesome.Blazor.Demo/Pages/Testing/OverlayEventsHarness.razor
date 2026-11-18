@@ -7,7 +7,7 @@
 <PageTitle>Testing: Overlay Events</PageTitle>
 
 <h1>Overlay Events Harness</h1>
-<p>This page is an end-to-end test harness: dialogs, drawers, popovers, tooltips, dropdowns and toasts wire their show/hide callbacks into the event log below, so the browser tests can check which callbacks a real interaction reached in .NET.</p>
+<p>This page is an end-to-end test harness: dialogs, drawers, popovers, tooltips, dropdowns, toasts and lightboxes wire their show/hide callbacks into the event log below, so the browser tests can check which callbacks a real interaction reached in .NET.</p>
 
 <ExampleSection Title="Dialog and drawer">
     <WaCluster Gap="GapSize.Gap_S">
@@ -87,11 +87,33 @@
     </WaToast>
 </ExampleSection>
 
+<ExampleSection Title="Lightbox">
+    @* data URL images, so the gallery needs no network *@
+    <WaLightbox Label="Harness gallery" data-testid="ov-lightbox"
+                OnShow="e => log.Record(Id(nameof(WaLightbox), nameof(WaLightbox.OnShow)), e)"
+                OnAfterShow="e => log.Record(Id(nameof(WaLightbox), nameof(WaLightbox.OnAfterShow)), e)"
+                OnHide="e => log.Record(Id(nameof(WaLightbox), nameof(WaLightbox.OnHide)), e)"
+                OnAfterHide="e => log.Record(Id(nameof(WaLightbox), nameof(WaLightbox.OnAfterHide)), e)"
+                OnItemChange="e => log.Record(Id(nameof(WaLightbox), nameof(WaLightbox.OnItemChange)), e)">
+        <WaCluster Gap="GapSize.Gap_S">
+            <WaLightboxItem Src="@FirstSlide" Alt="First slide" Caption="First" data-testid="ov-lightbox-first">
+                <img src="@FirstSlide" alt="First slide" style="width: 80px;" />
+            </WaLightboxItem>
+            <WaLightboxItem Src="@SecondSlide" Alt="Second slide" Caption="Second" data-testid="ov-lightbox-second">
+                <img src="@SecondSlide" alt="Second slide" style="width: 80px;" />
+            </WaLightboxItem>
+        </WaCluster>
+    </WaLightbox>
+</ExampleSection>
+
 <ExampleSection Title="Event log">
     <EventLogView Log="log" />
 </ExampleSection>
 
 @code {
+    private const string FirstSlide = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%233b82f6'/%3E%3C/svg%3E";
+    private const string SecondSlide = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%2316a34a'/%3E%3C/svg%3E";
+
     private readonly EventLog log = new();
 
     private WaDialog? dialog;

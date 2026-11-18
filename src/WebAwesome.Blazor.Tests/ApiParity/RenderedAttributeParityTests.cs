@@ -490,7 +490,7 @@ public class RenderedAttributeParityTests
     private const string DateSetKind = "IReadOnlySet<DateOnly>";
     private const string WeekdaySetKind = "IReadOnlySet<DayOfWeek>";
 
-    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind, LocalDateTimeKind, NumberListKind, StringListKind, StringSetKind, PlacementListKind];
+    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind, LocalDateTimeKind, NumberListKind, StringListKind, StringSetKind, PlacementListKind, HeadingLevelListKind];
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
     private const string StringType = "string";
@@ -508,6 +508,7 @@ public class RenderedAttributeParityTests
     private const string StringListKind = "IReadOnlyList<string>";
     private const string StringSetKind = "IReadOnlySet<string>";
     private const string PlacementListKind = "IReadOnlyList<WaPlacement>";
+    private const string HeadingLevelListKind = "IReadOnlyList<WaRichTextEditorHeadingLevel>";
     private const string ListKeyPrefix = "list:";
     private const string DefaultConstantPrefix = "Default";
     private const string PercentSign = "%";
@@ -784,6 +785,19 @@ public class RenderedAttributeParityTests
             yield return new[] { WaPlacement.RightEnd, WaPlacement.Bottom };
             yield return Array.Empty<WaPlacement>();
         }
+        else if (type == typeof(IReadOnlyList<WaRichTextEditorHeadingLevel>))
+        {
+            // descending, so a sorted rendering shows
+            yield return new[] { WaRichTextEditorHeadingLevel.H4, WaRichTextEditorHeadingLevel.H2 };
+            yield return Array.Empty<WaRichTextEditorHeadingLevel>();
+        }
+    }
+
+    // the item type of an IReadOnlyList<T> parameter, or null for any other parameter type
+    private static Type? ListItemType(PropertyInfo property)
+    {
+        var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IReadOnlyList<>) ? type.GetGenericArguments()[0] : null;
     }
 
     private static bool IsNumber(object value) => FloatingTypes.Contains(value.GetType())
@@ -1071,10 +1085,18 @@ public class RenderedAttributeParityTests
                     checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
                     miss = ListMiss(element.Tag, attribute, present, value, tokens.ToList(), string.Equals, rendered);
                     break;
-                case IReadOnlyList<WaPlacement> placements:
+                // array covariance lets an array of any int-backed enum pass as IReadOnlyList<WaPlacement>, so both enum
+                // list cases test the exact property type
+                case IReadOnlyList<WaPlacement> placements when ListItemType(sample.Property) == typeof(WaPlacement):
                     checkedKinds.Add(PlacementListKind);
                     checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
                     miss = ListMiss(element.Tag, attribute, present, value, placements.Select(p => EnumValueParityTests.HtmlValueOf(p) ?? string.Empty).ToList(),
+                        string.Equals, rendered);
+                    break;
+                case IReadOnlyList<WaRichTextEditorHeadingLevel> headingLevels when ListItemType(sample.Property) == typeof(WaRichTextEditorHeadingLevel):
+                    checkedKinds.Add(HeadingLevelListKind);
+                    checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
+                    miss = ListMiss(element.Tag, attribute, present, value, headingLevels.Select(l => EnumValueParityTests.HtmlValueOf(l) ?? string.Empty).ToList(),
                         string.Equals, rendered);
                     break;
                 case DateTime dateTime:

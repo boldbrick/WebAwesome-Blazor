@@ -673,6 +673,18 @@ public enum WaLoading
 }
 
 /// <summary>
+/// The kind of media a lightbox item shows (wa-lightbox-item's type).
+/// </summary>
+[JsonConverter(typeof(WaLightboxItemTypeJsonConverter))]
+public enum WaLightboxItemType
+{
+    /// <summary>A full-size image.</summary>
+    Image,
+    /// <summary>A video; the lightbox shows a play button over its thumbnail.</summary>
+    Video
+}
+
+/// <summary>
 /// Relative time formatting styles, passed to <c>Intl.RelativeTimeFormat</c> as its <c>style</c> option
 /// </summary>
 public enum WaRelativeTimeFormat
@@ -683,6 +695,35 @@ public enum WaRelativeTimeFormat
     Short,
     /// <summary>Uses the most compact unit names, e.g. "3h ago"; some locales render this the same as short.</summary>
     Narrow
+}
+/// <summary>
+/// Time units a counter shows, from the largest to the smallest
+/// </summary>
+public enum WaCounterUnit
+{
+    /// <summary>Calendar years.</summary>
+    Years,
+    /// <summary>Calendar months.</summary>
+    Months,
+    /// <summary>Days of 24 hours.</summary>
+    Days,
+    /// <summary>Hours.</summary>
+    Hours,
+    /// <summary>Minutes.</summary>
+    Minutes,
+    /// <summary>Seconds.</summary>
+    Seconds
+}
+
+/// <summary>
+/// Counting directions of a counter
+/// </summary>
+public enum WaCounterDirection
+{
+    /// <summary>Counts down to the date (Web Awesome default).</summary>
+    Down,
+    /// <summary>Counts up from the date.</summary>
+    Up
 }
 
 /// <summary>
@@ -1531,6 +1572,314 @@ public enum WaPageSections
     Menu = 16
 }
 
+/// <summary>
+/// The format of the value of a rich text editor (the format attribute of wa-rich-text-editor).
+/// </summary>
+public enum WaRichTextEditorFormat
+{
+    /// <summary>The value is an HTML string (the Web Awesome default).</summary>
+    Html,
+    /// <summary>The value, the value attribute, the initial content and the submitted form value are Markdown.</summary>
+    Markdown
+}
+
+/// <summary>
+/// Where the toolbar of a rich text editor sits (the toolbar-placement attribute of wa-rich-text-editor).
+/// </summary>
+public enum WaRichTextEditorToolbarPlacement
+{
+    /// <summary>Above the content (the Web Awesome default).</summary>
+    Top,
+    /// <summary>Below the content.</summary>
+    Bottom
+}
+
+/// <summary>
+/// A heading level a rich text editor offers (an item of the heading-levels attribute of wa-rich-text-editor).
+/// </summary>
+public enum WaRichTextEditorHeadingLevel
+{
+    /// <summary>Heading level 1.</summary>
+    H1 = 1,
+    /// <summary>Heading level 2.</summary>
+    H2 = 2,
+    /// <summary>Heading level 3.</summary>
+    H3 = 3,
+    /// <summary>Heading level 4.</summary>
+    H4 = 4,
+    /// <summary>Heading level 5.</summary>
+    H5 = 5,
+    /// <summary>Heading level 6.</summary>
+    H6 = 6
+}
+
+/// <summary>
+/// The features a rich text editor can remove entirely (the tokens of the disabled-features attribute of
+/// wa-rich-text-editor). Any combination is valid; <see cref="None"/> removes nothing.
+/// </summary>
+[Flags]
+public enum WaRichTextEditorFeatures
+{
+    /// <summary>Removes no feature (an empty attribute).</summary>
+    None = 0,
+    /// <summary>Bold text ("bold").</summary>
+    Bold = 1,
+    /// <summary>Italic text ("italic").</summary>
+    Italic = 2,
+    /// <summary>Underlined text ("underline").</summary>
+    Underline = 4,
+    /// <summary>Strikethrough text ("strikethrough").</summary>
+    Strikethrough = 8,
+    /// <summary>Highlighted text ("highlight").</summary>
+    Highlight = 16,
+    /// <summary>Inline code ("code").</summary>
+    Code = 32,
+    /// <summary>Subscript ("subscript").</summary>
+    Subscript = 64,
+    /// <summary>Superscript ("superscript").</summary>
+    Superscript = 128,
+    /// <summary>Text colors ("color").</summary>
+    Color = 256,
+    /// <summary>Links ("link").</summary>
+    Link = 512,
+    /// <summary>Text alignment ("align").</summary>
+    Align = 1024,
+    /// <summary>Bulleted lists ("bullet-list").</summary>
+    BulletList = 2048,
+    /// <summary>Numbered lists ("ordered-list").</summary>
+    OrderedList = 4096,
+    /// <summary>Both list types, the element's "lists" alias (rendered as "bullet-list ordered-list").</summary>
+    Lists = BulletList | OrderedList,
+    /// <summary>Blockquotes ("blockquote").</summary>
+    Blockquote = 8192,
+    /// <summary>Code blocks ("code-block").</summary>
+    CodeBlock = 16384,
+    /// <summary>Images ("image").</summary>
+    Image = 32768,
+    /// <summary>Embeds ("embed").</summary>
+    Embed = 65536,
+    /// <summary>Tables ("table").</summary>
+    Table = 131072,
+    /// <summary>Horizontal rules ("horizontal-rule").</summary>
+    HorizontalRule = 262144
+}
+
+/// <summary>
+/// A text alignment of a rich text editor, the align option of the align command.
+/// </summary>
+public enum WaRichTextEditorAlignment
+{
+    /// <summary>The default alignment at the start of the line.</summary>
+    Start,
+    /// <summary>Centered.</summary>
+    Center,
+    /// <summary>Aligned to the end of the line.</summary>
+    End,
+    /// <summary>Justified.</summary>
+    Justify
+}
+
+/// <summary>
+/// An image alignment of a rich text editor, the align option of the image command.
+/// </summary>
+public enum WaRichTextEditorImageAlignment
+{
+    /// <summary>At the start of the line.</summary>
+    Start,
+    /// <summary>Centered.</summary>
+    Center,
+    /// <summary>At the end of the line.</summary>
+    End,
+    /// <summary>Floated to the start, text wraps around it.</summary>
+    WrapStart,
+    /// <summary>Floated to the end, text wraps around it.</summary>
+    WrapEnd
+}
+
+/// <summary>
+/// A command of <c>WaRichTextEditor.RunCommandAsync</c>. A command reads only the options it needs.
+/// </summary>
+public enum WaRichTextEditorCommand
+{
+    /// <summary>Toggles bold.</summary>
+    Bold,
+    /// <summary>Toggles italic.</summary>
+    Italic,
+    /// <summary>Toggles underline.</summary>
+    Underline,
+    /// <summary>Toggles strikethrough.</summary>
+    Strikethrough,
+    /// <summary>Toggles the default highlight.</summary>
+    Highlight,
+    /// <summary>Toggles inline code.</summary>
+    Code,
+    /// <summary>Toggles subscript.</summary>
+    Subscript,
+    /// <summary>Toggles superscript.</summary>
+    Superscript,
+    /// <summary>Applies the heading level of the Level option.</summary>
+    Heading,
+    /// <summary>Applies heading level 1.</summary>
+    Heading1,
+    /// <summary>Applies heading level 2.</summary>
+    Heading2,
+    /// <summary>Applies heading level 3.</summary>
+    Heading3,
+    /// <summary>Applies heading level 4.</summary>
+    Heading4,
+    /// <summary>Applies heading level 5.</summary>
+    Heading5,
+    /// <summary>Applies heading level 6.</summary>
+    Heading6,
+    /// <summary>Applies the paragraph format.</summary>
+    Paragraph,
+    /// <summary>Applies the code block format.</summary>
+    CodeBlock,
+    /// <summary>Toggles a blockquote.</summary>
+    Blockquote,
+    /// <summary>Aligns text (the Align option).</summary>
+    Align,
+    /// <summary>Toggles a bulleted list.</summary>
+    BulletList,
+    /// <summary>Toggles a numbered list.</summary>
+    OrderedList,
+    /// <summary>Indents the list item.</summary>
+    Indent,
+    /// <summary>Outdents the list item.</summary>
+    Outdent,
+    /// <summary>Sets the text and highlight color (the Color and Highlight options).</summary>
+    Color,
+    /// <summary>Creates a link (the Href, Target and Rel options).</summary>
+    Link,
+    /// <summary>Removes the link at the selection.</summary>
+    Unlink,
+    /// <summary>Inserts or updates an image (the Src, Alt, Title, Caption and ImageAlign options).</summary>
+    Image,
+    /// <summary>Inserts or updates an embed (the Src, Title, Width and Height options).</summary>
+    Embed,
+    /// <summary>Inserts a table (the Rows and Columns options).</summary>
+    Table,
+    /// <summary>Inserts a horizontal rule.</summary>
+    HorizontalRule,
+    /// <summary>Removes all text formatting from the selection.</summary>
+    ClearFormatting,
+    /// <summary>Undoes the last edit.</summary>
+    Undo,
+    /// <summary>Redoes the last undone edit.</summary>
+    Redo,
+    /// <summary>Adds a table row above.</summary>
+    TableAddRowAbove,
+    /// <summary>Adds a table row below.</summary>
+    TableAddRowBelow,
+    /// <summary>Adds a table column before.</summary>
+    TableAddColumnBefore,
+    /// <summary>Adds a table column after.</summary>
+    TableAddColumnAfter,
+    /// <summary>Deletes the table row.</summary>
+    TableDeleteRow,
+    /// <summary>Deletes the table column.</summary>
+    TableDeleteColumn,
+    /// <summary>Deletes the table.</summary>
+    TableDelete,
+    /// <summary>Moves the table row up.</summary>
+    TableMoveRowUp,
+    /// <summary>Moves the table row down.</summary>
+    TableMoveRowDown,
+    /// <summary>Moves the table column before.</summary>
+    TableMoveColumnBefore,
+    /// <summary>Moves the table column after.</summary>
+    TableMoveColumnAfter,
+    /// <summary>Merges the selected table cells.</summary>
+    TableMergeCells,
+    /// <summary>Splits the table cell.</summary>
+    TableSplitCell,
+    /// <summary>Selects the table cell.</summary>
+    TableSelectCell,
+    /// <summary>Selects the table.</summary>
+    TableSelect,
+    /// <summary>Toggles the header row.</summary>
+    TableToggleHeaderRow,
+    /// <summary>Toggles the header column.</summary>
+    TableToggleHeaderColumn
+}
+
+/// <summary>
+/// A format or context that <c>WaRichTextEditor.IsActiveAsync</c> tests at the selection.
+/// </summary>
+public enum WaRichTextEditorActiveState
+{
+    /// <summary>Bold text.</summary>
+    Bold,
+    /// <summary>Italic text.</summary>
+    Italic,
+    /// <summary>Underlined text.</summary>
+    Underline,
+    /// <summary>Strikethrough text.</summary>
+    Strikethrough,
+    /// <summary>Highlighted text.</summary>
+    Highlight,
+    /// <summary>Inline code.</summary>
+    Code,
+    /// <summary>Subscript.</summary>
+    Subscript,
+    /// <summary>Superscript.</summary>
+    Superscript,
+    /// <summary>A paragraph block.</summary>
+    Paragraph,
+    /// <summary>A level 1 heading.</summary>
+    Heading1,
+    /// <summary>A level 2 heading.</summary>
+    Heading2,
+    /// <summary>A level 3 heading.</summary>
+    Heading3,
+    /// <summary>A level 4 heading.</summary>
+    Heading4,
+    /// <summary>A level 5 heading.</summary>
+    Heading5,
+    /// <summary>A level 6 heading.</summary>
+    Heading6,
+    /// <summary>A code block.</summary>
+    CodeBlock,
+    /// <summary>A text or highlight color.</summary>
+    Color,
+    /// <summary>A link.</summary>
+    Link,
+    /// <summary>A selected image.</summary>
+    Image,
+    /// <summary>A selected embed.</summary>
+    Embed,
+    /// <summary>A bulleted list.</summary>
+    BulletList,
+    /// <summary>A numbered list.</summary>
+    OrderedList,
+    /// <summary>A blockquote.</summary>
+    Blockquote,
+    /// <summary>A table.</summary>
+    Table,
+    /// <summary>A table header row.</summary>
+    TableHeaderRow,
+    /// <summary>A table header column.</summary>
+    TableHeaderColumn,
+    /// <summary>Text aligned to the start (the default).</summary>
+    AlignStart,
+    /// <summary>Centered text.</summary>
+    AlignCenter,
+    /// <summary>Text aligned to the end.</summary>
+    AlignEnd,
+    /// <summary>Justified text.</summary>
+    AlignJustify,
+    /// <summary>A selected image aligned to the start.</summary>
+    ImageAlignStart,
+    /// <summary>A selected image centered.</summary>
+    ImageAlignCenter,
+    /// <summary>A selected image aligned to the end.</summary>
+    ImageAlignEnd,
+    /// <summary>A selected image floated to the start with wrapping text.</summary>
+    ImageAlignWrapStart,
+    /// <summary>A selected image floated to the end with wrapping text.</summary>
+    ImageAlignWrapEnd
+}
+
 #endregion
 
 #region ------ Event and Model Enums ------
@@ -2126,6 +2475,22 @@ public static class WaEnumExtensions
     /// <summary>
     /// Converts the value to its Web Awesome attribute string.
     /// </summary>
+    /// <param name="type">The lightbox item type to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "image"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaLightboxItemType type)
+    {
+        return type switch
+        {
+            WaLightboxItemType.Image => "image",
+            WaLightboxItemType.Video => "video",
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
     /// <param name="trigger">The trigger flags to convert</param>
     /// <returns>
     /// The set flags as space-separated lowercase tokens in the stable order click, hover, focus, manual,
@@ -2592,6 +2957,41 @@ public static class WaEnumExtensions
             WaRelativeTimeFormat.Short => "short",
             WaRelativeTimeFormat.Narrow => "narrow",
             _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
+        };
+    }
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="unit">The counter unit value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "hours"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="unit"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaCounterUnit unit)
+    {
+        return unit switch
+        {
+            WaCounterUnit.Years => "years",
+            WaCounterUnit.Months => "months",
+            WaCounterUnit.Days => "days",
+            WaCounterUnit.Hours => "hours",
+            WaCounterUnit.Minutes => "minutes",
+            WaCounterUnit.Seconds => "seconds",
+            _ => throw new ArgumentOutOfRangeException(nameof(unit), unit, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="direction">The counter direction value to convert</param>
+    /// <returns>The lowercase attribute string, e.g. "down"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="direction"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaCounterDirection direction)
+    {
+        return direction switch
+        {
+            WaCounterDirection.Down => "down",
+            WaCounterDirection.Up => "up",
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
     }
 
@@ -3545,8 +3945,182 @@ public static class WaEnumExtensions
         };
     }
 
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="value">The format to convert</param>
+    /// <returns>"html" or "markdown"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRichTextEditorFormat value)
+    {
+        return value switch
+        {
+            WaRichTextEditorFormat.Html => "html",
+            WaRichTextEditorFormat.Markdown => "markdown",
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="value">The placement to convert</param>
+    /// <returns>"top" or "bottom"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRichTextEditorToolbarPlacement value)
+    {
+        return value switch
+        {
+            WaRichTextEditorToolbarPlacement.Top => "top",
+            WaRichTextEditorToolbarPlacement.Bottom => "bottom",
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="value">The heading level to convert</param>
+    /// <returns>"1" to "6"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRichTextEditorHeadingLevel value)
+    {
+        return value switch
+        {
+            WaRichTextEditorHeadingLevel.H1 => "1",
+            WaRichTextEditorHeadingLevel.H2 => "2",
+            WaRichTextEditorHeadingLevel.H3 => "3",
+            WaRichTextEditorHeadingLevel.H4 => "4",
+            WaRichTextEditorHeadingLevel.H5 => "5",
+            WaRichTextEditorHeadingLevel.H6 => "6",
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome attribute string.
+    /// </summary>
+    /// <param name="value">The features to convert</param>
+    /// <returns>The set features as space-separated tokens in declaration order; empty for
+    /// <see cref="WaRichTextEditorFeatures.None"/></returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> contains undefined bits</exception>
+    public static string ToHtmlValue(this WaRichTextEditorFeatures value)
+    {
+        return FlagTokens(value, nameof(value), RichTextEditorFeatureTokens);
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome option string.
+    /// </summary>
+    /// <param name="value">The alignment to convert</param>
+    /// <returns>"start", "center", "end" or "justify"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRichTextEditorAlignment value)
+    {
+        return value switch
+        {
+            WaRichTextEditorAlignment.Start => "start",
+            WaRichTextEditorAlignment.Center => "center",
+            WaRichTextEditorAlignment.End => "end",
+            WaRichTextEditorAlignment.Justify => "justify",
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to its Web Awesome option string.
+    /// </summary>
+    /// <param name="value">The image alignment to convert</param>
+    /// <returns>"start", "center", "end", "wrap-start" or "wrap-end"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRichTextEditorImageAlignment value)
+    {
+        return value switch
+        {
+            WaRichTextEditorImageAlignment.Start => "start",
+            WaRichTextEditorImageAlignment.Center => "center",
+            WaRichTextEditorImageAlignment.End => "end",
+            WaRichTextEditorImageAlignment.WrapStart => "wrap-start",
+            WaRichTextEditorImageAlignment.WrapEnd => "wrap-end",
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+        };
+    }
+
+    /// <summary>
+    /// Converts the value to the command name the element's runCommand takes.
+    /// </summary>
+    /// <param name="value">The command to convert</param>
+    /// <returns>The kebab-case command name, e.g. "table-add-row-below"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRichTextEditorCommand value)
+    {
+        // the names are in the order of the enum members
+        var index = (int)value;
+        if (index < 0 || index >= RichTextEditorCommandNames.Length) throw new ArgumentOutOfRangeException(nameof(value), value, null);
+        return RichTextEditorCommandNames[index];
+    }
+
+    /// <summary>
+    /// Converts the value to the name the element's isActive takes.
+    /// </summary>
+    /// <param name="value">The state to convert</param>
+    /// <returns>The kebab-case name, e.g. "image-align-wrap-start"</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is not a defined enum value</exception>
+    public static string ToHtmlValue(this WaRichTextEditorActiveState value)
+    {
+        // the names are in the order of the enum members
+        var index = (int)value;
+        if (index < 0 || index >= RichTextEditorActiveStateNames.Length) throw new ArgumentOutOfRangeException(nameof(value), value, null);
+        return RichTextEditorActiveStateNames[index];
+    }
     #region ------ Internals ------
 
+    // the tokens of the WaRichTextEditorFeatures flags (the Lists alias is the two list flags together)
+    private static readonly (WaRichTextEditorFeatures Flag, string Token)[] RichTextEditorFeatureTokens =
+    {
+        (WaRichTextEditorFeatures.Bold, "bold"),
+        (WaRichTextEditorFeatures.Italic, "italic"),
+        (WaRichTextEditorFeatures.Underline, "underline"),
+        (WaRichTextEditorFeatures.Strikethrough, "strikethrough"),
+        (WaRichTextEditorFeatures.Highlight, "highlight"),
+        (WaRichTextEditorFeatures.Code, "code"),
+        (WaRichTextEditorFeatures.Subscript, "subscript"),
+        (WaRichTextEditorFeatures.Superscript, "superscript"),
+        (WaRichTextEditorFeatures.Color, "color"),
+        (WaRichTextEditorFeatures.Link, "link"),
+        (WaRichTextEditorFeatures.Align, "align"),
+        (WaRichTextEditorFeatures.BulletList, "bullet-list"),
+        (WaRichTextEditorFeatures.OrderedList, "ordered-list"),
+        (WaRichTextEditorFeatures.Blockquote, "blockquote"),
+        (WaRichTextEditorFeatures.CodeBlock, "code-block"),
+        (WaRichTextEditorFeatures.Image, "image"),
+        (WaRichTextEditorFeatures.Embed, "embed"),
+        (WaRichTextEditorFeatures.Table, "table"),
+        (WaRichTextEditorFeatures.HorizontalRule, "horizontal-rule"),
+    };
+
+    // the names of the WaRichTextEditorCommand members, in the order of the members
+    private static readonly string[] RichTextEditorCommandNames =
+    {
+        "bold", "italic", "underline", "strikethrough", "highlight", "code", "subscript", "superscript",
+        "heading", "heading-1", "heading-2", "heading-3", "heading-4", "heading-5", "heading-6",
+        "paragraph", "code-block", "blockquote", "align", "bullet-list", "ordered-list", "indent", "outdent",
+        "color", "link", "unlink", "image", "embed", "table", "horizontal-rule", "clear-formatting", "undo", "redo",
+        "table-add-row-above", "table-add-row-below", "table-add-column-before", "table-add-column-after",
+        "table-delete-row", "table-delete-column", "table-delete", "table-move-row-up", "table-move-row-down",
+        "table-move-column-before", "table-move-column-after", "table-merge-cells", "table-split-cell",
+        "table-select-cell", "table-select", "table-toggle-header-row", "table-toggle-header-column",
+    };
+
+    // the names of the WaRichTextEditorActiveState members, in the order of the members
+    private static readonly string[] RichTextEditorActiveStateNames =
+    {
+        "bold", "italic", "underline", "strikethrough", "highlight", "code", "subscript", "superscript",
+        "paragraph", "heading-1", "heading-2", "heading-3", "heading-4", "heading-5", "heading-6", "code-block",
+        "color", "link", "image", "embed", "bullet-list", "ordered-list", "blockquote", "table",
+        "table-header-row", "table-header-column", "align-start", "align-center", "align-end", "align-justify",
+        "image-align-start", "image-align-center", "image-align-end", "image-align-wrap-start", "image-align-wrap-end",
+    };
     // the tokens of the WaIframeSandbox flags, in declaration order
     private static readonly (WaIframeSandbox Flag, string Token)[] SandboxTokens =
     {

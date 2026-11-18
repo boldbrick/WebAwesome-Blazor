@@ -232,6 +232,12 @@ private const string EXAMPLE_API_KEY = "your_api_key_here"; // Configure in apps
 `docs/dependencies/synced/INDEX.md` lists the packages, one line each. Committed docs of other
 dependencies are in `docs/dependencies/vendored/<name>/`.
 
+The company docs server is connected as an MCP server through the managed settings. It holds the
+ecosystem and decomposition rules (which project or package owns what), a directory of the
+packages and projects, the docs of every published package version, and shared memories. Its
+tools are `get_index`, `get_page`, `list_nugets`, `list_memories`, `search_memory`, `write_memory`
+and `delete_memory`; its server instructions say when to use them.
+
 Look up package documentation in this order:
 
 1. Working against a package: load its `pkg-<package-id>` skill.
@@ -243,8 +249,9 @@ Look up package documentation in this order:
 
 - Read index pages first. Never read a whole package folder.
 - Never edit files under `docs/dependencies/synced/` or the `pkg-*` skills; sync replaces them.
-- When the synced docs are missing or stale, run `dotnet tool restore`, then
-  `dotnet tool run docpack -- sync`.
+- When the synced docs are missing or stale, restore the solutions (the Build pipeline does it),
+  run `dotnet tool restore`, then `dotnet tool run docpack -- sync`. Sync reads only restored
+  projects and names the ones that are not.
 - To browse the docs in a browser, run `/docpack:docpack-view`.
 - `PACKAGE-SKILL.md` beside a packable project is the source of that package's developer skill.
   Review it like code; write or refresh it with `/docpack:docpack-skill <PackageId>`.

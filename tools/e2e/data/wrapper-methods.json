@@ -1072,6 +1072,51 @@
       "js": "setCustomValidity"
     },
     {
+      "id": "WaLightbox.NextAsync",
+      "component": "WaLightbox",
+      "member": "NextAsync",
+      "tag": "wa-lightbox",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "next"
+    },
+    {
+      "id": "WaLightbox.PreviousAsync",
+      "component": "WaLightbox",
+      "member": "PreviousAsync",
+      "tag": "wa-lightbox",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "previous"
+    },
+    {
+      "id": "WaLightbox.ZoomInAsync",
+      "component": "WaLightbox",
+      "member": "ZoomInAsync",
+      "tag": "wa-lightbox",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "zoomIn"
+    },
+    {
+      "id": "WaLightbox.ZoomOutAsync",
+      "component": "WaLightbox",
+      "member": "ZoomOutAsync",
+      "tag": "wa-lightbox",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "zoomOut"
+    },
+    {
+      "id": "WaLightboxItem.FocusAsync",
+      "component": "WaLightboxItem",
+      "member": "FocusAsync",
+      "tag": "wa-lightbox-item",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
       "id": "WaMarkdown.RenderMarkdownAsync",
       "component": "WaMarkdown",
       "member": "RenderMarkdownAsync",
@@ -1166,6 +1211,15 @@
       "also": [
         "getProperty:value"
       ]
+    },
+    {
+      "id": "WaNumberTicker.RestartAsync",
+      "component": "WaNumberTicker",
+      "member": "RestartAsync",
+      "tag": "wa-number-ticker",
+      "pro": false,
+      "kind": "invokeMethod",
+      "js": "restart"
     },
     {
       "id": "WaOtpInput.BlurAsync",
@@ -1445,6 +1499,123 @@
       "pro": false,
       "kind": "invokeMethod",
       "js": "startObserver"
+    },
+    {
+      "id": "WaRichTextEditor.BlurAsync",
+      "component": "WaRichTextEditor",
+      "member": "BlurAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "blur"
+    },
+    {
+      "id": "WaRichTextEditor.DeleteSelectionAsync",
+      "component": "WaRichTextEditor",
+      "member": "DeleteSelectionAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "deleteSelection"
+    },
+    {
+      "id": "WaRichTextEditor.FocusAsync",
+      "component": "WaRichTextEditor",
+      "member": "FocusAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "focus"
+    },
+    {
+      "id": "WaRichTextEditor.GetSelectionAsync",
+      "component": "WaRichTextEditor",
+      "member": "GetSelectionAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "getSelection"
+    },
+    {
+      "id": "WaRichTextEditor.InsertHtmlAsync",
+      "component": "WaRichTextEditor",
+      "member": "InsertHtmlAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "insertHtml"
+    },
+    {
+      "id": "WaRichTextEditor.InsertTextAsync",
+      "component": "WaRichTextEditor",
+      "member": "InsertTextAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "insertText"
+    },
+    {
+      "id": "WaRichTextEditor.IsActiveAsync",
+      "component": "WaRichTextEditor",
+      "member": "IsActiveAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "isActive"
+    },
+    {
+      "id": "WaRichTextEditor.RedoAsync",
+      "component": "WaRichTextEditor",
+      "member": "RedoAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "redo"
+    },
+    {
+      "id": "WaRichTextEditor.ResetValidityAsync",
+      "component": "WaRichTextEditor",
+      "member": "ResetValidityAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "resetValidity"
+    },
+    {
+      "id": "WaRichTextEditor.RunCommandAsync",
+      "component": "WaRichTextEditor",
+      "member": "RunCommandAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "runCommand"
+    },
+    {
+      "id": "WaRichTextEditor.SelectAllAsync",
+      "component": "WaRichTextEditor",
+      "member": "SelectAllAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "selectAll"
+    },
+    {
+      "id": "WaRichTextEditor.SetCustomValidityAsync",
+      "component": "WaRichTextEditor",
+      "member": "SetCustomValidityAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "setCustomValidity",
+      "js": "setCustomValidity"
+    },
+    {
+      "id": "WaRichTextEditor.UndoAsync",
+      "component": "WaRichTextEditor",
+      "member": "UndoAsync",
+      "tag": "wa-rich-text-editor",
+      "pro": true,
+      "kind": "invokeMethod",
+      "js": "undo"
     },
     {
       "id": "WaSelect.BlurAsync",

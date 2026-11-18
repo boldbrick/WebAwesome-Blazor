@@ -4,49 +4,14 @@ using System.Threading.Tasks;
 using WebAwesome.Blazor.Components;
 using Xunit;
 
-// the obsolete string methods stay covered until they are removed in the 3.15.0 train
-#pragma warning disable CS0618
-
 namespace WebAwesome.Blazor.Tests.Components;
 
 /// <summary>
-/// Interop tests for the obsolete WaRange.SetValueFormatterAsync: it rejects a missing function, throws before the first
-/// render, and afterwards sends nothing, because wa-slider ignores JavaScript source text and a string would replace a
-/// ValueFormatterFunction (the interop module is recorded, see RecordingJSRuntime); and for the focus/blur/stepUp/stepDown methods it shares with WaSlider.
+/// Interop tests for the focus/blur/stepUp/stepDown methods WaRange shares with WaSlider (the interop module is
+/// recorded, see RecordingJSRuntime).
 /// </summary>
 public class WaRangeIntegrationTests : IDisposable
 {
-    [Fact]
-    public async Task SetValueFormatterAsync_WithNullElement_ThrowsInvalidOperationException()
-    {
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            runtime.CreateUnrendered<WaRange>().SetValueFormatterAsync(Formatter));
-
-        Assert.Contains("Cannot set value formatter: component has not been rendered yet", exception.Message);
-    }
-
-    [Fact]
-    public async Task SetValueFormatterAsync_WithNullFunction_ThrowsArgumentNullException()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            runtime.CreateRendered<WaRange>().SetValueFormatterAsync(null!));
-    }
-
-    [Fact]
-    public async Task SetValueFormatterAsync_WithEmptyFunction_ThrowsArgumentNullException()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            runtime.CreateRendered<WaRange>().SetValueFormatterAsync(string.Empty));
-    }
-
-    [Fact]
-    public async Task SetValueFormatterAsync_WithValidElement_SendsNothing()
-    {
-        await runtime.CreateRendered<WaRange>().SetValueFormatterAsync(Formatter);
-
-        Assert.Empty(runtime.Module.Invocations);
-    }
-
     [Theory]
     [MemberData(nameof(ElementMethods))]
     public async Task ElementMethods_WithValidElement_InvokeTheElementMethod(string methodName, Func<WaRange, Task> invoke)
@@ -90,8 +55,6 @@ public class WaRangeIntegrationTests : IDisposable
     #endregion
 
     #region ------ Internals ------
-
-    private const string Formatter = "function(value) { return value + '%'; }";
 
     private readonly RecordingJSRuntime runtime = new();
 

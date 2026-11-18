@@ -3,7 +3,7 @@
  * Provides JavaScript functionality for Web Awesome Blazor components
  */
 
-import { findGlobalFunction, isFunctionDescriptor, resolveFunction } from './webawesome-functions.js';
+import { isFunctionDescriptor, resolveFunction } from './webawesome-functions.js';
 
 /**
  * Sets a custom validation message on a Web Awesome form control element, once its custom element is defined. Like
@@ -382,7 +382,7 @@ let webAwesomeModule = null;
 // the icon library members that take a function (upstream IconLibrary): the number of arguments wa-icon passes before
 // ctx. The resolver gets (name, family, variant, autoWidth) and returns a URL or a Promise of one; the mutator gets
 // (svg, hostElement).
-// NOTE checked against WA 3.14.0: the arities match components/icon/library.d.ts; recheck them on each upgrade (watch list)
+// NOTE checked against WA 3.15.0: the arities match components/icon/library.d.ts; recheck them on each upgrade (watch list)
 const iconLibraryFunctions = {
     resolver: { arity: 4 },
     mutator: { arity: 2 },
@@ -392,9 +392,9 @@ const iconLibraryFunctions = {
  * Registers an icon library with Web Awesome
  * @param {string|null} configuredEntryPointUrl - Web Awesome entry point configured in .NET, used when the page has no Web Awesome script tag
  * @param {string} name - Library name, referenced by wa-icon's library attribute
- * @param {{resolver?: string|null, resolverFunction?: object|null, mutator?: string|null, mutatorFunction?: object|null, spriteSheet?: boolean}} options -
+ * @param {{resolver?: string|null, resolverFunction?: object|null, mutatorFunction?: object|null, spriteSheet?: boolean}} options -
  *        the resolver as a URL template with {name}, {family} and {variant} placeholders or as a WaJsFunction descriptor,
- *        the mutator as a WaJsFunction descriptor (or the obsolete global function path, e.g. "myApp.icons.mutate"),
+ *        the mutator as a WaJsFunction descriptor,
  *        and the sprite sheet flag
  */
 export async function registerIconLibrary(configuredEntryPointUrl, name, options) {
@@ -526,24 +526,14 @@ function resolveIconLibraryFunction(name, member, descriptor) {
     });
 }
 
-// the mutator function, the function of the obsolete global path, or undefined; a mutator function that does not
-// resolve leaves the library without a mutator (resolveFunction logged the reason)
+// the mutator function, or undefined; a mutator function that does not resolve leaves the library without a mutator
+// (resolveFunction logged the reason)
 async function resolveIconMutator(name, options) {
     if (isFunctionDescriptor(options.mutatorFunction)) {
         return resolveIconLibraryFunction(name, 'mutator', options.mutatorFunction);
     }
 
-    // TODO WA 3.15.0 train: remove the obsolete global path (IconLibraryOptions.Mutator)
-    return options.mutator ? resolveGlobalFunction(options.mutator) : undefined;
-}
-
-function resolveGlobalFunction(path) {
-    const target = findGlobalFunction(path);
-    if (!target) {
-        throw new Error(`Icon library mutator '${path}' is not a global function`);
-    }
-
-    return target;
+    return undefined;
 }
 
 /*
@@ -561,7 +551,7 @@ function resolveGlobalFunction(path) {
 // ctx, whether the function renders content in the shadow root, and the argument that holds the row of the call. A
 // member with a static form (footer, aggregation, cellClass) keeps a string under the same key: only a descriptor is
 // resolved.
-// NOTE checked against WA 3.14.0: the arities match data-grid.d.ts; recheck them on each upgrade (watch list)
+// NOTE checked against WA 3.15.0: the arities match data-grid.d.ts; recheck them on each upgrade (watch list)
 const dataGridColumnFunctions = {
     formatter: { arity: 2, renders: true, rowArgument: 1 },
     aggregatedFormatter: { arity: 2, renders: true },
@@ -781,7 +771,7 @@ function removeSheet(state) {
 // tag -> member -> the number of arguments the element passes (ctx follows them), whether the function renders its
 // output in the shadow root (then the declared elements are registered before the assignment, and the rendered output
 // is discovered after it), and the argument that holds the row of the call (for ctx.rowKey, see elementFunctionContexts).
-// NOTE checked against WA 3.14.0: the members and arities match the components' .d.ts files; recheck them on each
+// NOTE checked against WA 3.15.0: the members and arities match the components' .d.ts files; recheck them on each
 // upgrade (watch list)
 const elementFunctions = {
     'wa-select': {
@@ -797,6 +787,12 @@ const elementFunctions = {
     'wa-slider': {
         valueFormatter: { arity: 1, renders: false },
     },
+    'wa-counter': {
+        valueFormatter: { arity: 2, renders: false },
+    },
+    'wa-number-ticker': {
+        valueFormatter: { arity: 1, renders: false },
+    },
     'wa-date-picker': {
         isDateDisabled: { arity: 1, renders: false },
         dayContent: { arity: 1, renders: true },
@@ -805,10 +801,14 @@ const elementFunctions = {
         isDateDisabled: { arity: 1, renders: false },
         dayContent: { arity: 1, renders: true },
     },
+    'wa-rich-text-editor': {
+        imageProvider: { arity: 1, renders: false },
+        embedProvider: { arity: 1, renders: false },
+    },
     'wa-pagination': {
         hrefTemplate: { arity: 1, renders: false },
     },
-    // NOTE checked against WA 3.14.0: the grid reads childRows only when it receives data (its row model is keyed on
+    // NOTE checked against WA 3.15.0: the grid reads childRows only when it receives data (its row model is keyed on
     // the data). The first data push waits for the pending function members (setDataGridData); a childRows change after
     // the data applies from the next data push
     'wa-data-grid': {

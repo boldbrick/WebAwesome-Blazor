@@ -76,6 +76,19 @@
                     <td></td>
                     <td></td>
                 </tr>
+                <tr>
+                    <td><code>WaRichTextEditor</code> <ComponentBadges Tag="wa-rich-text-editor" /></td>
+                    <td>
+                        @* OnSelectionChange is relayed (a non-bubbling event of the host); the spec gives the editor a
+                           rejecting JS suggestion source (a property no parameter sets) for wa-suggestions-error *@
+                        <WaRichTextEditor @ref="richTextEditor" Label="Notes" Toolbar="bold italic" data-testid="pro-rich-text-editor"
+                                          @bind-Value="richTextValue" @attributes="Common(nameof(WaRichTextEditor))"
+                                          OnSelectionChange="e => log.Record(Id(nameof(WaRichTextEditor), nameof(WaRichTextEditor.OnSelectionChange)), e)"
+                                          OnSuggestionsError="e => log.Record(Id(nameof(WaRichTextEditor), nameof(WaRichTextEditor.OnSuggestionsError)), e)" />
+                    </td>
+                    <td><code data-testid="pro-rich-text-editor-model">@richTextValue</code></td>
+                    <td></td>
+                </tr>
             </tbody>
         </table>
         <WaCluster Gap="GapSize.Gap_S">
@@ -124,13 +137,16 @@
     private static readonly DateOnly SetDatePicker = new(2024, 3, 20);
     private const string FormSubmitId = "form.submit";
     private const string InvalidMessage = "Rejected by the e2e harness";
+    private const string InitialRichText = "<p>Hello</p>";
 
     private readonly EventLog log = new();
 
     private WaCombobox? combobox;
     private WaDateInput? dateInput;
     private WaFileInput? fileInput;
+    private WaRichTextEditor? richTextEditor;
     private bool invalidMarked;
+    private string? richTextValue = InitialRichText;
 
     private string? comboboxValue = "apple";
     private IReadOnlyList<string>? comboboxToppings;
@@ -206,7 +222,7 @@
     // a custom validity error on every control makes the next submit fire the browser's invalid event on each
     private async Task MarkAllInvalidAsync()
     {
-        WebAwesome.Blazor.Base.IFormValidation?[] controls = [combobox, dateInput, fileInput];
+        WebAwesome.Blazor.Base.IFormValidation?[] controls = [combobox, dateInput, fileInput, richTextEditor];
         foreach (var control in controls)
         {
             if (control != null) await control.SetCustomValidityAsync(InvalidMessage);

@@ -103,6 +103,9 @@ async function pageEventCounts(page) {
 const FOURTH_STAR_FRACTION = 0.7;
 const FIFTH_STAR_FRACTION = 0.9;
 
+// how long the harness's one-second countdown may take to finish, the load of the wa-counter module included
+const COUNTDOWN_TIMEOUT_MS = 20_000;
+
 /** @type {EventCase[]} */
 const EVENT_CASES = [
   // --- 3.12-rewired callbacks, read from the counters of the regular demo pages ---
@@ -608,9 +611,60 @@ const EVENT_CASES = [
     },
   },
   {
+    // wa-rich-text-editor relays the focus and blur of the editor as a whole to its host as non-bubbling FocusEvents
+    // (the wrapper binds focus/blur there, not focusin/focusout), stops the propagation of Escape in its shadow root
+    // (OnKeyDown binds the relayed keydown), and dispatches selectionchange on its host without bubbling (only the JS
+    // initializer's relay delivers it); the change on blur commits the bound value
+    name: 'WaRichTextEditor focus, keyboard (relayed keydown), input, relayed selection change, blur, bound value',
+    route: PRO, tags: ['wa-rich-text-editor'], pro: true,
+    callbacks: ids('WaRichTextEditor', [...KEYBOARD, ...FOCUS, 'OnInput', 'OnSelectionChange']),
+    proven: ['WaRichTextEditor.ValueChanged'],
+    run: async page => {
+      const editor = page.getByTestId('pro-rich-text-editor');
+      await editor.locator('[part~="content"]').click();
+      await expectFiredTimes(page, 'WaRichTextEditor.OnFocus', 1);
+      expect(await payloadOf(page, 'WaRichTextEditor.OnFocus')).toEqual({ type: 'focus' });
+      // the caret moves to the end of the text, then a printable key edits the content
+      await page.keyboard.press('End');
+      await expectFired(page, 'WaRichTextEditor.OnSelectionChange');
+      const selectionChanges = await countOf(page, 'WaRichTextEditor.OnSelectionChange');
+      await page.keyboard.type('x');
+      await expectFired(page, 'WaRichTextEditor.OnInput');
+      await expectFired(page, 'WaRichTextEditor.OnSelectionChange', selectionChanges + 1);
+      await expect.poll(async () => (await payloadOf(page, 'WaRichTextEditor.OnKeyDown')).key, { message: 'relayed keydown of x' }).toBe('x');
+      // the bound value follows the change the editor commits when the focus leaves it
+      expect(await countOf(page, 'WaRichTextEditor.OnBlur')).toBe(0);
+      await leaveControls(page);
+      await expectFiredTimes(page, 'WaRichTextEditor.OnBlur', 1);
+      expect(await payloadOf(page, 'WaRichTextEditor.OnBlur')).toEqual({ type: 'blur' });
+      await expect(page.getByTestId('pro-rich-text-editor-model')).toHaveText('<p>Hellox</p>');
+      await expectFiredTimes(page, 'WaRichTextEditor.OnFocus', 1);
+    },
+  },
+  {
+    // the suggestion sources are a JS-only property of the element (data source functions), so the test installs a
+    // rejecting one; typing its trigger makes the element request suggestions and dispatch the real event
+    name: 'WaRichTextEditor suggestions error from a rejecting suggestion source',
+    route: PRO, tags: ['wa-rich-text-editor'], pro: true,
+    callbacks: ['WaRichTextEditor.OnSuggestionsError'],
+    run: async page => {
+      const editor = page.getByTestId('pro-rich-text-editor');
+      await editor.evaluate(el => {
+        /** @type {any} */ (el).suggestions = [{ trigger: '@', dataSource: () => Promise.reject(new Error('boom')) }];
+      });
+      await editor.locator('[part~="content"]').click();
+      await page.keyboard.press('End');
+      await page.keyboard.type(' @bo');
+      await expectFired(page, 'WaRichTextEditor.OnSuggestionsError');
+      await expect.poll(async () => (await payloadOf(page, 'WaRichTextEditor.OnSuggestionsError')).query, { message: 'query of the failed request after typing' }).toBe('bo');
+      expect(await payloadOf(page, 'WaRichTextEditor.OnSuggestionsError')).toEqual({ error: 'boom', trigger: '@', query: 'bo' });
+      await leaveControls(page);
+    },
+  },
+  {
     name: 'OnInvalid of the Pro form controls when an invalid form is submitted',
-    route: PRO, tags: ['wa-combobox', 'wa-date-input', 'wa-file-input'], pro: true,
-    callbacks: ['WaCombobox.OnInvalid', 'WaDateInput.OnInvalid', 'WaFileInput.OnInvalid'],
+    route: PRO, tags: ['wa-combobox', 'wa-date-input', 'wa-file-input', 'wa-rich-text-editor'], pro: true,
+    callbacks: ['WaCombobox.OnInvalid', 'WaDateInput.OnInvalid', 'WaFileInput.OnInvalid', 'WaRichTextEditor.OnInvalid'],
     run: async page => {
       await page.getByTestId('pro-mark-invalid').click();
       await expect(page.getByTestId('pro-invalid-marked')).toHaveText('True');
@@ -700,6 +754,31 @@ const EVENT_CASES = [
       await expectFired(page, 'WaToastItem.OnAfterShow');
       await page.getByTestId('ov-toast-item').locator('[part~="close-button"]').click();
       await expectFired(page, 'WaToastItem.OnAfterHide');
+    },
+  },
+
+  {
+    name: 'WaLightbox show from a thumbnail, item change from the keyboard, hide from Escape',
+    route: OVERLAYS, tags: ['wa-lightbox', 'wa-lightbox-item'],
+    callbacks: ids('WaLightbox', ['OnShow', 'OnAfterShow', 'OnItemChange', 'OnHide', 'OnAfterHide']),
+    run: async page => {
+      const first = page.getByTestId('ov-lightbox-first');
+      const second = page.getByTestId('ov-lightbox-second');
+      await first.click();
+      await expectFired(page, 'WaLightbox.OnAfterShow');
+      await page.keyboard.press('ArrowRight');
+      // the projection reports the indexes and the src, alt, caption and type of both items
+      await expect.poll(async () => (await payloadOf(page, 'WaLightbox.OnItemChange').catch(() => ({}))).index, { message: 'index of the item change' }).toBe(1);
+      expect(await payloadOf(page, 'WaLightbox.OnItemChange')).toEqual({
+        index: 1,
+        previousIndex: 0,
+        item: { src: await second.getAttribute('src'), alt: 'Second slide', caption: 'Second', type: 'image' },
+        previousItem: { src: await first.getAttribute('src'), alt: 'First slide', caption: 'First', type: 'image' },
+      });
+      await page.keyboard.press('Escape');
+      await expectFired(page, 'WaLightbox.OnAfterHide');
+      await expectFiredTimes(page, 'WaLightbox.OnShow', 1);
+      await expectFiredTimes(page, 'WaLightbox.OnHide', 1);
     },
   },
 
@@ -838,6 +917,36 @@ const EVENT_CASES = [
     callbacks: ['WaZoomableFrame.OnError'],
     run: async page => {
       await page.getByTestId('ct-zoomable-frame').evaluate(el => el.shadowRoot?.querySelector('iframe')?.dispatchEvent(new Event('error')));
+    },
+  },
+  {
+    // css is a bundled grammar; a language without a grammar renders plain text (the harness renders that block on
+    // demand, because Web Awesome warns about it in the console, which the route sweeps count)
+    name: 'WaCodeHighlighter load of a bundled grammar and error of an unknown language',
+    route: CONTENT, tags: ['wa-code-highlighter', 'wa-button'],
+    callbacks: ['WaCodeHighlighter.OnLoad', 'WaCodeHighlighter.OnError'],
+    run: async page => {
+      await expectFired(page, 'WaCodeHighlighter.OnLoad');
+      await expect.poll(() => page.getByTestId('ct-code-highlighter').evaluate(el => el.matches(':state(highlighted)')), { message: 'the code is highlighted' }).toBe(true);
+      expect(await countOf(page, 'WaCodeHighlighter.OnError')).toBe(0);
+      await page.getByTestId('ct-code-highlighter-unknown').click();
+      await expectFiredTimes(page, 'WaCodeHighlighter.OnError', 1);
+      expect(await page.getByTestId('ct-code-highlighter-error').evaluate(el => el.matches(':state(error)'))).toBe(true);
+      await expectFiredTimes(page, 'WaCodeHighlighter.OnLoad', 1);
+    },
+  },
+  {
+    name: 'WaCounter finish of a countdown and WaNumberTicker finish of an eager count',
+    route: CONTENT, tags: ['wa-number-ticker', 'wa-button'],
+    callbacks: ['WaCounter.OnFinish', 'WaNumberTicker.OnFinish'],
+    run: async page => {
+      await expectFiredTimes(page, 'WaNumberTicker.OnFinish', 1);
+      expect(await page.getByTestId('ct-number-ticker').evaluate(el => /** @type {any} */ (el).displayValue)).toBe(42);
+      // the one-second countdown starts when the counter is added to the page
+      expect(await countOf(page, 'WaCounter.OnFinish')).toBe(0);
+      await page.getByTestId('ct-counter-start').click();
+      // the element module loads once the first counter is on the page, so the countdown may start late
+      await expect.poll(() => countOf(page, 'WaCounter.OnFinish'), { message: 'WaCounter.OnFinish reached .NET once', timeout: COUNTDOWN_TIMEOUT_MS }).toBe(1);
     },
   },
 ];

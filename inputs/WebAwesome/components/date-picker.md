@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.14.0 release zip (dist/skills/webawesome/references/components/date-picker.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/date-picker -->
+<!-- Source: reference doc bundled in the Web Awesome 3.15.0 release zip (dist/skills/webawesome/references/components/date-picker.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/date-picker -->
 
 # Date Picker [Pro]
 
@@ -47,7 +47,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.14.0/components/date-picker/date-picker.js';
+import 'https://ka-f.webawesome.com/webawesome@3.15.0/components/date-picker/date-picker.js';
 ```
 
 \*\*npm\*\*
@@ -76,110 +76,112 @@ import WaDatePicker from '@awesome.me/webawesome/dist/react/date-picker/index.js
 
 ### Slots
 
-| Name | Description |
-| --- | --- |
-| \`footer\` | Optional content rendered below the calendar grid. Empty by default. |
-| \`header\` | Replaces the entire header row including title and navigation buttons. Advanced use only. |
-| \`next-icon\` | Icon shown inside the next-page button. Defaults to a right chevron. |
-| \`previous-icon\` | Icon shown inside the previous-page button. Defaults to a left chevron. |
+Valid slot names for this component (use exactly these — any other `slot` value is
+silently ignored and the element falls back to the default slot):
+
+- `previous-icon` — Icon shown inside the previous-page button. Defaults to a left chevron.
+- `next-icon` — Icon shown inside the next-page button. Defaults to a right chevron.
+- `header` — Replaces the entire header row including title and navigation buttons. Advanced use only.
+- `footer` — Optional content rendered below the calendar grid. Empty by default.
+- `day-YYYY-MM-DD` — Custom content for a specific day cell, replacing its label. Slot name is dynamic (e.g., `day-2026-05-25`).
 
 ### Attributes & Properties
 
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`dayContent\` | \`Date\` Author-supplied function that returns custom content for a day cell. Receives a and returns a string of HTML, a Lit TemplateResult, or null to use the default day number. Runs for every rendered day cell (including outside days). A day-YYYY-MM-DD slot, when provided for the same date, wins over this function. Property only. Type WaDatePickerDayContent \\| undefined | |
-| \`disabled\` disabled | \`boolean\` Disables the entire picker. Type Default false | |
-| \`disabledDates\` disabled-dates | \`string \\| string\[\] \\| Date\[\]\` A list of whitespace-separated ISO dates that should be disabled. The property accepts an array. Type | |
-| \`disabledDaysOfWeek\` disabled-days-of-week | \`sun\` Weekdays to disable. Accepts a space-separated list of three-letter weekday names: , mon, tue, wed, thu, fri, sat Type string Default '' | |
-| \`disableFuture\` disable-future | \`today\` Disable all dates strictly after . Type boolean Default false | |
-| \`disablePast\` disable-past | \`today\` Disable all dates strictly before . Type boolean Default false | |
-| \`firstDayOfWeek\` first-day-of-week | \`auto\` The first day of the week. The default uses the current locale's week info. To set a specific day, pass a three-letter weekday name: sun, mon, tue, wed, thu, fri, or sat. Type WaDatePickerFirstDayOfWeek Default 'auto' | |
-| \`focusedDate\` focused-date | \`YYYY-MM-DD\` The currently focused date as . Drives roving tabindex and the visible month. Type string Default '' | |
-| \`isDateDisabled\` | \`true\` Author-supplied predicate that returns when a date should be disabled. Runs in addition to declarative min / max / disabled-\* rules. JavaScript-only — set via property, not attribute. Type (date: Date) => boolean \\| undefined | |
-| \`locale\` locale | \`lang\` BCP-47 locale override. When empty, the inherited attribute is used. Type string Default '' | |
-| \`max\` max | \`YYYY-MM-DD\` The latest selectable date as . Type string Default '' | |
-| \`maxRange\` max-range | \`mode="range"\` Maximum range length in days ( only). 0 disables the check. Type number Default 0 | |
-| \`min\` min | \`YYYY-MM-DD\` The earliest selectable date as . Type string Default '' | |
-| \`minRange\` min-range | \`mode="range"\` Minimum range length in days ( only). 0 disables the check. Type number Default 0 | |
-| \`mode\` mode | \`WaDatePickerMode\` The selection mode. Type Default 'single' | |
-| \`months\` months | \`1\` Number of months rendered side-by-side. Either or 2. Set to 2 to see both ends of a range at once. Type 1 \\| 2 Default 1 | |
-| \`pageBy\` page-by | \`months\` Whether prev/next advances by the visible range () or one month at a time (single). Type WaDatePickerPageBy Default 'months' | |
-| \`readonly\` readonly | \`boolean\` Displays the current value without allowing changes. Cells remain focusable. Type Default false | |
-| \`size\` size | \`WaDatePickerSize \\| 'small' \\| 'medium' \\| 'large'\` Visual size. Type Default 'm' | |
-| \`today\` today | \`string\` Overrides the date considered "today". Type Default '' | |
-| \`value\` value | \`mode="single"\` The selected date(s). For , an ISO date string (YYYY-MM-DD) or empty. For mode="range", two ISO dates separated by / (YYYY-MM-DD/YYYY-MM-DD). The property setter also accepts Date objects and { from, to } objects for ranges. Type string | |
-| \`valueAsDate\` | \`mode="single"\` Read-only convenience getter: returns the selected date in . Type Date \\| null | |
-| \`valueAsRange\` | \`mode="range"\` Read-only convenience getter: returns the selected range in . Type WaDatePickerRange | |
-| \`view\` view | \`WaDatePickerView\` The current view. Type Default 'days' | |
-| \`weekdayFormat\` weekday-format | \`WaDatePickerWeekdayFormat\` The weekday header format. Type Default 'short' | |
-| \`withOutsideDays\` with-outside-days | \`boolean\` Shows leading and trailing days from adjacent months. Type Default false | |
-| \`withWeekNumbers\` with-week-numbers | \`boolean\` Shows an ISO week-number column. Type Default false | |
+| Property | Attribute | Description | Type | Default |
+| --- | --- | --- | --- | --- |
+| `mode` | `mode` | The selection mode. | `WaDatePickerMode` | `'single'` |
+| `value` | `value` | The selected date(s). For `mode="single"`, an ISO date string (`YYYY-MM-DD`) or empty. For `mode="range"`, two ISO dates separated by `/` (`YYYY-MM-DD/YYYY-MM-DD`). The property setter also accepts `Date` objects and `{ from, to }` objects for ranges. | `string` | — |
+| `min` | `min` | The earliest selectable date as `YYYY-MM-DD`. | `string` | `''` |
+| `max` | `max` | The latest selectable date as `YYYY-MM-DD`. | `string` | `''` |
+| `today` | `today` | Overrides the date considered "today". | `string` | `''` |
+| `focusedDate` | `focused-date` | The currently focused date as `YYYY-MM-DD`. Drives roving tabindex and the visible month. | `string` | `''` |
+| `view` | `view` | The current view. | `WaDatePickerView` | `'days'` |
+| `months` | `months` | Number of months rendered side-by-side. Either `1` or `2`. Set to `2` to see both ends of a range at once. | `1 \| 2` | `1` |
+| `pageBy` | `page-by` | Whether prev/next advances by the visible range (`months`) or one month at a time (`single`). | `WaDatePickerPageBy` | `'months'` |
+| `firstDayOfWeek` | `first-day-of-week` | The first day of the week. The default `auto` uses the current locale's week info. To set a specific day, pass a three-letter weekday name: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, or `sat`. | `WaDatePickerFirstDayOfWeek` | `'auto'` |
+| `withOutsideDays` | `with-outside-days` | Shows leading and trailing days from adjacent months. | `boolean` | `false` |
+| `withWeekNumbers` | `with-week-numbers` | Shows an ISO week-number column. | `boolean` | `false` |
+| `weekdayFormat` | `weekday-format` | The weekday header format. | `WaDatePickerWeekdayFormat` | `'short'` |
+| `disabled` | `disabled` | Disables the entire picker. | `boolean` | `false` |
+| `readonly` | `readonly` | Displays the current value without allowing changes. Cells remain focusable. | `boolean` | `false` |
+| `disabledDates` | `disabled-dates` | A list of whitespace-separated ISO dates that should be disabled. The property accepts an array. | `string \| string[] \| Date[]` | — |
+| `disabledDaysOfWeek` | `disabled-days-of-week` | Weekdays to disable. Accepts a space-separated list of three-letter weekday names: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat` | `string` | `''` |
+| `disablePast` | `disable-past` | Disable all dates strictly before `today`. | `boolean` | `false` |
+| `disableFuture` | `disable-future` | Disable all dates strictly after `today`. | `boolean` | `false` |
+| `minRange` | `min-range` | Minimum range length in days (`mode="range"` only). `0` disables the check. | `number` | `0` |
+| `maxRange` | `max-range` | Maximum range length in days (`mode="range"` only). `0` disables the check. | `number` | `0` |
+| `size` | `size` | Visual size. | `WaDatePickerSize \| 'small' \| 'medium' \| 'large'` | `'m'` |
+| `locale` | `locale` | BCP-47 locale override. When empty, the inherited `lang` attribute is used. | `string` | `''` |
+| `isDateDisabled` | — | Author-supplied predicate that returns `true` when a date should be disabled. Runs in addition to declarative `min` / `max` / `disabled-*` rules. JavaScript-only — set via property, not attribute. | `(date: Date) => boolean \| undefined` | — |
+| `dayContent` | — | Author-supplied function that returns custom content for a day cell. Receives a `Date` and returns a string of HTML, a Lit `TemplateResult`, or `null` to use the default day number. Runs for every rendered day cell (including outside days). A `day-YYYY-MM-DD` slot, when provided for the same date, wins over this function. Property only. | `WaDatePickerDayContent \| undefined` | — |
+| `valueAsDate` | — | Read-only convenience getter: returns the selected date in `mode="single"`. | `Date \| null` | — |
+| `valueAsRange` | — | Read-only convenience getter: returns the selected range in `mode="range"`. | `WaDatePickerRange` | — |
 
 ### Methods
 
 | Name | Description | Arguments |
 | --- | --- | --- |
-| \`clear()\` | \`input\` Clears the current selection and emits then change. | |
-| \`focus()\` | Focuses the calendar at the currently focused day. | \`options: FocusOptions\` |
-| \`goToDate()\` | Scrolls the view to show the given date and sets the focused day. | \`date: string \\| Date\` |
-| \`goToToday()\` | \`goToDate(today)\` Equivalent to . | |
+| `focus()` | Focuses the calendar at the currently focused day. | `options: FocusOptions` |
+| `goToDate()` | Scrolls the view to show the given date and sets the focused day. | `date: string \\| Date` |
+| `goToToday()` | Equivalent to `goToDate(today)`. | — |
+| `clear()` | Clears the current selection and emits `input` then `change`. | — |
 
 ### Events
 
 | Name | Description |
 | --- | --- |
-| \`change\` | \`event.target.value\` Emitted when the user commits a new value. Read the current value from . |
-| \`input\` | Emitted when the value changes during interaction. In range mode, this fires after the first click of a new range. |
-| \`wa-focus-day\` | \`event.detail\` Emitted when the focused day changes via keyboard navigation, paging, or pointer hover. is { date: Date }. |
-| \`wa-view-change\` | \`event.detail\` Emitted when the date picker switches between day, month, and year views. is { view, date }. |
+| `input` | Emitted when the value changes during interaction. In range mode, this fires after the first click of a new range. |
+| `change` | Emitted when the user commits a new value. Read the current value from `event.target.value`. |
+| `wa-focus-day` | Emitted when the focused day changes via keyboard navigation, paging, or pointer hover. `event.detail` is `{ date: Date }`. |
+| `wa-view-change` | Emitted when the date picker switches between day, month, and year views. `event.detail` is `{ view, date }`. |
 
 ### Custom States
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`disabled\` | The date picker is disabled. | \`:state(disabled)\` |
-| \`range\` | The date picker is in range mode. | \`:state(range)\` |
-| \`readonly\` | The date picker is readonly. | \`:state(readonly)\` |
+| `disabled` | The date picker is disabled. | `:state(disabled)` |
+| `readonly` | The date picker is readonly. | `:state(readonly)` |
+| `range` | The date picker is in range mode. | `:state(range)` |
 
 ### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`date-picker\` | The component's outer wrapper. | \`::part(date-picker)\` |
-| \`day\` | \`day\` A cell button. State-specific parts are added in addition to day so you can target them with ::part(day-...). | \`::part(day)\` |
-| \`day-disabled\` | Added when the day is disabled. | \`::part(day-disabled)\` |
-| \`day-label\` | The label text inside a day button. | \`::part(day-label)\` |
-| \`day-outside\` | \`with-outside-days\` Added when the day belongs to an adjacent month (requires ). | \`::part(day-outside)\` |
-| \`day-placeholder\` | \`with-outside-days\` An empty cell rendered in trailing rows when is off, so the grid is always 6 rows tall and the calendar's height doesn't shift between months. | \`::part(day-placeholder)\` |
-| \`day-range-end\` | Added to the second endpoint of a range. | \`::part(day-range-end)\` |
-| \`day-range-inner\` | Added to days that fall between the two endpoints of a committed range. | \`::part(day-range-inner)\` |
-| \`day-range-preview\` | Added to days inside the hover preview span during an in-progress range. | \`::part(day-range-preview)\` |
-| \`day-range-start\` | Added to the first endpoint of a range. | \`::part(day-range-start)\` |
-| \`day-selected\` | Added when the day is selected (single mode or a range endpoint). | \`::part(day-selected)\` |
-| \`day-today\` | Added to the day cell that represents today. | \`::part(day-today)\` |
-| \`day-weekend\` | Added when the day falls on a weekend per the locale's week info. | \`::part(day-weekend)\` |
-| \`footer\` | \`footer\` The container wrapping the slot. | \`::part(footer)\` |
-| \`grid\` | \`\` The day grid for a month. | \`::part(grid)\` |
-| \`header\` | The header row containing the title and navigation buttons. | \`::part(header)\` |
-| \`month\` | A single rendered month. | \`::part(month)\` |
-| \`month-label\` | \`months\` The label rendered above each month when is greater than 1. | \`::part(month-label)\` |
-| \`months\` | The container that holds the rendered month(s). | \`::part(months)\` |
-| \`nav\` | The container around the previous and next buttons. | \`::part(nav)\` |
-| \`next\` | The next-page button. | \`::part(next)\` |
-| \`previous\` | The previous-page button. | \`::part(previous)\` |
-| \`title\` | The clickable month/year title button that steps the view up (days → months → years). | \`::part(title)\` |
-| \`view-cell\` | \`display: contents\` The gridcell wrapper around a single view item. Transparent to layout (). | \`::part(view-cell)\` |
-| \`view-grid\` | The grid used when the picker is in month-select or year-select view. | \`::part(view-grid)\` |
-| \`view-item\` | A single month or year button inside the view grid. State-specific parts are added as siblings. | \`::part(view-item)\` |
-| \`view-item-disabled\` | Added when every day in the month/year is disabled. | \`::part(view-item-disabled)\` |
-| \`view-item-selected\` | Added to the month/year that matches the current selection. | \`::part(view-item-selected)\` |
-| \`view-item-today\` | Added to the month/year representing today. | \`::part(view-item-today)\` |
-| \`view-row\` | \`display: contents\` A row of three items inside the view grid. Transparent to layout (). | \`::part(view-row)\` |
-| \`weekday\` | A single weekday label cell. | \`::part(weekday)\` |
-| \`weekdays\` | The row of weekday labels above each month grid. | \`::part(weekdays)\` |
-| \`weeknumber\` | A single week-number cell. | \`::part(weeknumber)\` |
-| \`weeknumbers\` | The week-number column header cell. | \`::part(weeknumbers)\` |
-| \`base\` | \`date-picker\` Deprecated. Use the part instead. | \`::part(base)\` |
+| `date-picker` | The component's outer wrapper. | `::part(date-picker)` |
+| `header` | The header row containing the title and navigation buttons. | `::part(header)` |
+| `title` | The clickable month/year title button that steps the view up (days → months → years). | `::part(title)` |
+| `nav` | The container around the previous and next buttons. | `::part(nav)` |
+| `previous` | The previous-page button. | `::part(previous)` |
+| `next` | The next-page button. | `::part(next)` |
+| `months` | The container that holds the rendered month(s). | `::part(months)` |
+| `month` | A single rendered month. | `::part(month)` |
+| `month-label` | The label rendered above each month when `months` is greater than 1. | `::part(month-label)` |
+| `weekdays` | The row of weekday labels above each month grid. | `::part(weekdays)` |
+| `weekday` | A single weekday label cell. | `::part(weekday)` |
+| `weeknumbers` | The week-number column header cell. | `::part(weeknumbers)` |
+| `weeknumber` | A single week-number cell. | `::part(weeknumber)` |
+| `grid` | The day grid `<table>` for a month. | `::part(grid)` |
+| `day` | A day cell button. State-specific parts are added in addition to `day` so you can target them with `::part(day-...)`. | `::part(day)` |
+| `day-today` | Added to the day cell that represents today. | `::part(day-today)` |
+| `day-outside` | Added when the day belongs to an adjacent month (requires `with-outside-days`). | `::part(day-outside)` |
+| `day-weekend` | Added when the day falls on a weekend per the locale's week info. | `::part(day-weekend)` |
+| `day-disabled` | Added when the day is disabled. | `::part(day-disabled)` |
+| `day-selected` | Added when the day is selected (single mode or a range endpoint). | `::part(day-selected)` |
+| `day-range-start` | Added to the first endpoint of a range. | `::part(day-range-start)` |
+| `day-range-end` | Added to the second endpoint of a range. | `::part(day-range-end)` |
+| `day-range-inner` | Added to days that fall between the two endpoints of a committed range. | `::part(day-range-inner)` |
+| `day-range-preview` | Added to days inside the hover preview span during an in-progress range. | `::part(day-range-preview)` |
+| `day-label` | The label text inside a day button. | `::part(day-label)` |
+| `day-placeholder` | An empty cell rendered in trailing rows when `with-outside-days` is off, so the grid is always 6 rows tall and the calendar's height doesn't shift between months. | `::part(day-placeholder)` |
+| `view-grid` | The grid used when the picker is in month-select or year-select view. | `::part(view-grid)` |
+| `view-row` | A row of three items inside the view grid. Transparent to layout (`display: contents`). | `::part(view-row)` |
+| `view-cell` | The gridcell wrapper around a single view item. Transparent to layout (`display: contents`). | `::part(view-cell)` |
+| `view-item` | A single month or year button inside the view grid. State-specific parts are added as siblings. | `::part(view-item)` |
+| `view-item-today` | Added to the month/year representing today. | `::part(view-item-today)` |
+| `view-item-selected` | Added to the month/year that matches the current selection. | `::part(view-item-selected)` |
+| `view-item-disabled` | Added when every day in the month/year is disabled. | `::part(view-item-disabled)` |
+| `footer` | The container wrapping the `footer` slot. | `::part(footer)` |
+| `base` | Deprecated. Use the `date-picker` part instead. | `::part(base)` |
 
 ### Dependencies
 

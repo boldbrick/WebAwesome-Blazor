@@ -107,6 +107,12 @@ public static class Constants
     internal const string RelayedKeyDownEventAttribute = "onwablazor-keydown";
 
     /// <summary>
+    /// Render-tree attribute name of the "wablazor-selectionchange" event, the relay of the plain, non-bubbling,
+    /// non-composed selectionchange event of wa-rich-text-editor. See <see cref="RelayedShowEventAttribute"/>.
+    /// </summary>
+    internal const string RelayedSelectionChangeEventAttribute = "onwablazor-selectionchange";
+
+    /// <summary>
     /// Name of Web Awesome's cancelable show event: a handler that calls preventDefault() keeps the element closed
     /// (see <see cref="WebAwesomeJSInterop.InvokeCancelableMethodAsync"/>).
     /// </summary>

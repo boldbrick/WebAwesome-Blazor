@@ -5,12 +5,13 @@
    tools\e2e\tests\helpers\method-cases\forms-text.js) - deliberately outside /components/; the sweep reaches it
    through the method groups (tools\e2e\data\method-groups.json). Every MethodCall button calls one wrapper method from
    .NET through the wrapper's @ref and shows the outcome. ?early=true also calls methods on the first render, while the
-   autoloader still imports the element modules. All elements of the group are free components. *@
+   autoloader still imports the element modules. wa-rich-text-editor is a Pro component, so its tests skip on the free
+   CDN; the other elements are free components. *@
 
 <PageTitle>Testing: Methods (text inputs)</PageTitle>
 
 <h1>Methods Harness: Text and Number Inputs</h1>
-<p>This page is an end-to-end test harness for the imperative methods of the text and number input wrappers.</p>
+<p>This page is an end-to-end test harness for the imperative methods of the text, number and rich text input wrappers.</p>
 
 <ExampleSection Title="WaInput (text)">
     <div class="method-calls">
@@ -109,6 +110,26 @@
     <WaKnownDate @ref="knownDate" data-testid="known-date" Label="Birthday" Locale="@KnownDateLocale" @bind-Value="knownDateValue" />
 </ExampleSection>
 
+<ExampleSection Title="WaRichTextEditor (Pro)">
+    <div class="method-calls">
+        <MethodCall Id="editor-focus" Action="() => richTextEditor!.FocusAsync()" />
+        <MethodCall Id="editor-blur" Action="() => richTextEditor!.BlurAsync()" />
+        <MethodCall Id="editor-select-all" Action="() => richTextEditor!.SelectAllAsync()" />
+        <MethodCall Id="editor-get-selection" Function="async () => await richTextEditor!.GetSelectionAsync()" />
+        <MethodCall Id="editor-delete-selection" Action="() => richTextEditor!.DeleteSelectionAsync()" />
+        <MethodCall Id="editor-insert-text" Action="() => richTextEditor!.InsertTextAsync(EditorInsertedText)" />
+        <MethodCall Id="editor-insert-html" Action="() => richTextEditor!.InsertHtmlAsync(EditorInsertedHtml)" />
+        <MethodCall Id="editor-undo" Function="async () => await richTextEditor!.UndoAsync()" />
+        <MethodCall Id="editor-redo" Function="async () => await richTextEditor!.RedoAsync()" />
+        <MethodCall Id="editor-bold" Function="async () => await richTextEditor!.RunCommandAsync(WaRichTextEditorCommand.Bold)" />
+        <MethodCall Id="editor-heading" Function="async () => await richTextEditor!.RunCommandAsync(WaRichTextEditorCommand.Heading, headingOptions)" />
+        <MethodCall Id="editor-is-bold" Function="async () => await richTextEditor!.IsActiveAsync(WaRichTextEditorActiveState.Bold)" />
+        <MethodCall Id="editor-set-validity" Action="() => richTextEditor!.SetCustomValidityAsync(ValidityMessage)" />
+        <MethodCall Id="editor-reset-validity" Action="() => richTextEditor!.ResetValidityAsync()" />
+    </div>
+    <WaRichTextEditor @ref="richTextEditor" data-testid="rich-text-editor" Label="Story" Toolbar="bold italic" @bind-Value="richTextValue" />
+</ExampleSection>
+
 <ExampleSection Title="Calls on the first render (?early=true)">
     <p>Input focus: <output data-testid="early-input-focus">@earlyInputFocus</output></p>
     <p>Number input step up: <output data-testid="early-number-step-up">@earlyNumberStepUp</output></p>
@@ -137,6 +158,12 @@
     private const int ScrollRows = 3;
     private const int LongTextLines = 30;
     private const double ScrollTop = 40;
+    private const string InitialRichText = "<p>Hello world</p>";
+    private const string EditorInsertedText = "Howdy";
+    private const string EditorInsertedHtml = "<em>there</em>";
+
+    // a level 2 heading for RunCommandAsync with options
+    private static readonly WaRichTextEditorCommandOptions headingOptions = new() { Level = WaRichTextEditorHeadingLevel.H2 };
 
     // many more lines than the rows, so the textarea scrolls
     private string? longText = string.Join('\n', Enumerable.Range(1, LongTextLines).Select(line => $"{LongTextLine} {line}"));
@@ -150,6 +177,8 @@
     private WaOtpInput? otpInput;
     private WaTagInput? tagInput;
     private WaKnownDate? knownDate;
+    private WaRichTextEditor? richTextEditor;
+    private string? richTextValue = InitialRichText;
 
     private string? inputValue = InitialText;
     private string? numberTypeValue = InitialNumber.ToString(CultureInfo.InvariantCulture);
