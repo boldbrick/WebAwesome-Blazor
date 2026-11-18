@@ -166,14 +166,61 @@ Engineer groups (parallel): rich text editor alone; ticker + counter + highlight
   showcase; code highlighter → content showcase), flow spec steps.
 - Public API snapshots promoted (6 removals + additions); package skills refreshed (public API changed).
 
+## Implementation notes
+
+- **Train setup.** Subtrunk `/main/WA-3.15` off `/main` cs:417, epic folder cs:418; docs cs:419, plan cs:420, arming
+  cs:421, wrappers and removals cs:422, tests and migration guide cs:423.
+- **Arming worklist** was exactly the seven failures listed under "Parity worklist at arming".
+- **Wrapper decisions.**
+  - `WaCodeHighlighter.Language` is a string: the grammar set is open (bundled, on-demand and `registerCodeGrammar`).
+  - `WaNumberTicker.Easing` is a string with the plain helper: the CEM default (`DEFAULT_EASING`) is not a literal.
+  - `WaCounter.Date` is a `DateTimeOffset?` (plain helper: an unset date means "use `Duration`"); `Duration` is
+    `int?` milliseconds per the owner convention.
+  - `WaLightbox.Open` and `Index` are one-way, like `WaDialog.Open`; `OnItemChange` projects the item elements to
+    `WaLightboxItemInfo` (src, alt, caption, type).
+  - `WaLightboxItem.Srcset` is exposed as `SrcSet` (natural PascalCase, like `SrcDoc`; `attributeOverrides`).
+  - `WaRichTextEditor`: `WaLabeledInputBase<string?>`; `OnFocus`/`OnBlur` bind the host's own `focus`/`blur` (the
+    element relays synthetic non-bubbling focus events, so not `focusin`/`focusout`); `OnSelectionChange` through the
+    new `wablazor-selectionchange` relay; keydown relayed (Escape stopped in the shadow root); `HeadingLevels`,
+    `TextColors`, `HighlightColors` render nothing for null or empty (owner rule — the element's "empty removes the
+    row/headings" state is reachable only through `AdditionalAttributes`); `Toolbar` stays a string (a grammar).
+    All three behaviours were proven in the browser on Pro.
+- **Test-side extensions.** The token-list staleness check accepts `undefined | null | string`; a heading-level list
+  sample and check (both enum-list cases now test the element type, because array covariance let an int-backed enum
+  array match `IReadOnlyList<WaPlacement>`); list separators for `heading-levels` and the colors.
+- **Upstream fix observed.** `WaTextArea.ScrollPositionAsync` left value (WAB-64 finding F10, WA-side) is fixed in
+  3.15.0; the e2e case asserts it now.
+- **e2e.** The toasts showcase flow waited on the page clock before the show animation finished; it now waits for
+  `wa-after-show` before every clock jump. The data grid `selectableRows` spec selected the select-all checkbox by
+  the 3.14 `exportparts` value; 3.15.0 renders `checkbox:select-all-checkbox`, so the selector now matches the
+  exported name only.
+
+## Follow-ups
+
+- Icons: a variant argument for `SetDefaultIconFamilyAsync` and `GetDefaultIconVariantAsync` (new upstream API).
+- `registerCodeGrammar` interop for custom `WaCodeHighlighter` grammars.
+- `WaRichTextEditor`: `suggestions` (JS data sources), labeled swatches, `textValue`/`selectedText`/`dirty` getters,
+  and an update-on-input binding mode are not wrapped.
+- `WaLightbox`: custom item content through `<template>` cannot be supplied from Blazor; `OnHide` cannot cancel and
+  carries no `source`; like `WaDialog`, a nested overlay's bubbling `wa-hide` reaches `OnHide`.
+- `WaNumberTicker`/`WaCounter` have no `Lang` parameter, unlike `WaFormatNumber`/`WaRelativeTime` (`lang` passes
+  through `AdditionalAttributes`).
+- Carried forward: Enter on a link in a grid cell; the `wa-date-input` day-slot nudge.
+- DocPack tool pins (repo 0.2.0, plugin 0.3.1): `/docpack:docpack-upgrade` (owner).
+
 ## Validation checklist
 
-- [ ] Debug and Release builds, 0 warnings, 0 errors
-- [ ] `dotnet test` green on net9.0 and net10.0 (baseline 1457 + 213 per TFM)
-- [ ] `ApiSurfaceParityTests` and the render-based parity checks green
-- [ ] `PublicApiSnapshotTests` (both packages) promoted; every difference explained
-- [ ] Both Release `.nupkg` files contain `docs/`
-- [ ] e2e free CDN and Pro (`temp\wa-src\3.15.0`), sweep, interaction sweep, showcase flows, event coverage
+- [x] Debug and Release builds, 0 warnings, 0 errors (DocPack reports token-size notices only, no link warnings)
+- [x] `dotnet test` green on net9.0 and net10.0: 1584 + 213 per TFM (baseline 1457 + 213; 17 tests of the removed
+      members dropped, 144 added)
+- [x] `ApiSurfaceParityTests` and the render-based parity checks green
+- [x] `PublicApiSnapshotTests` promoted for WebAwesome.Blazor (the six removed members, the new types and their
+      `ToHtmlValue` overloads; nothing else); the Extensions baseline is unchanged
+- [x] Both Release `.nupkg` files contain `docs/` (496 and 31 entries)
+- [x] e2e free CDN: 479 passed, 113 skipped (all in `expected-skips.json`), 0 failed, 592 tests (`minimumTests` 578)
+- [x] e2e Pro (`temp\wa-src\3.15.0`): 592 passed, 0 failed; the `selectableRows` grid spec now matches the 3.15.0
+      `exportparts` (`checkbox:select-all-checkbox` instead of `base:select-all-checkbox`)
+- [x] Pro asset override cleared after the Pro pass
 
 ## Risks
 
