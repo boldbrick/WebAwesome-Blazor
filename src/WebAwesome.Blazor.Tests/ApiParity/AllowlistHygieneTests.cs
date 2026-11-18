@@ -114,6 +114,22 @@ public class AllowlistHygieneTests
     }
 
     /// <summary>
+    /// Every key a "targetFrameworkExclusions" entry lists must be the key of an allowlist entry, on every target
+    /// framework, so an exclusion cannot outlive the entry it excludes.
+    /// </summary>
+    [Fact]
+    public void TargetFrameworkExclusions_NameAllowlistEntries()
+    {
+        var keys = ParityAllowlists.Entries(Config).Select(e => e.Key).ToHashSet(StringComparer.Ordinal);
+
+        var misses = Config.TargetFrameworkExclusions
+            .SelectMany(e => e.Value.Where(k => !keys.Contains(k)).Select(k => $"targetFrameworkExclusions[\"{e.Key}\"] lists '{k}', which is the key of no allowlist entry; remove it"))
+            .ToList();
+
+        AssertNoMisses(misses, "Stale target framework exclusions");
+    }
+
+    /// <summary>
     /// Every "components" entry must name a custom element of the expected surface; the lists of a removed element
     /// would otherwise linger without anything checking them.
     /// </summary>

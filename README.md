@@ -30,7 +30,7 @@ Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web
 
 ✨ **Ergonomic where it counts.** Common slot usage is one attribute (`StartIconName="gear"`), with `RenderFragment` slots (`StartContent`, `EndContent`, …) always available as the general mechanism.
 
-📦 **Clean packaging.** Multi-targeted `net9.0`/`net10.0`, XML IntelliSense docs on every public member (missing docs fail the build), symbol packages (snupkg) with SourceLink, deterministic CI builds.
+📦 **Clean packaging.** Multi-targeted `net9.0`/`net10.0`/`net11.0`, XML IntelliSense docs on every public member (missing docs fail the build), symbol packages (snupkg) with SourceLink, deterministic CI builds.
 
 🎯 **Pure bindings, no lock-in.** By deliberate architectural decision, the main package contains no application logic, no extension components, and redistributes no Web Awesome Pro source — you bring WA assets via CDN or self-hosting, exactly as upstream documents. Extras that add behavior Web Awesome does not have are opt-in, in a [separate package](#extensions-package-optional).
 
@@ -40,7 +40,7 @@ Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web
 - [Changelog](docs/CHANGELOG.md) — keyed to Web Awesome versions, breaking changes called out per release
 
 ## Requirements
-- .NET 10 (LTS, primary target) or .NET 9 (compatibility; in Microsoft support until November 2026)
+- .NET 10 (LTS, primary target), .NET 11, or .NET 9 (out of Microsoft support since November 2026; 3.15 is the last release that supports it)
 - WA 3.x assets available to your app (via your chosen delivery method)
 
 ## Install

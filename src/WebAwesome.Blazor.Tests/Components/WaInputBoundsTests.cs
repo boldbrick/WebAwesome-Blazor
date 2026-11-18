@@ -1,3 +1,4 @@
+#if !NET11_0_OR_GREATER
 using System;
 using System.Collections.Generic;
 using Bunit;
@@ -12,7 +13,8 @@ namespace WebAwesome.Blazor.Tests.Components;
 /// <summary>
 /// WaInput's min and max (CEM number | string, passed to the native input unchanged): the raw string and each typed
 /// accessor (decimal, long, ulong, DateOnly, TimeOnly, DateTime) render the form the native input reads, culture-free,
-/// and setting two accessors of one bound throws. Until C# 15 union types (net11.0) replace them.
+/// and setting two accessors of one bound throws. net9.0 and net10.0 only; on net11.0 the C# 15 union WaInputBound replaces
+/// them (WaInputBoundUnionTests).
 /// </summary>
 public class WaInputBoundsTests : BunitContext
 {
@@ -96,3 +98,4 @@ public class WaInputBoundsTests : BunitContext
 
     #endregion
 }
+#endif

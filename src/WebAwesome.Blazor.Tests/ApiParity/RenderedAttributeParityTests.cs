@@ -34,7 +34,8 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// element parses, checked with Web Awesome's own patterns (WaWirePatterns), and an empty set renders nothing; (i) a
 /// rendered attribute with an element default falls back to it instead of being removed; (j) every Default&lt;Name&gt;
 /// constant holds the element default; (k) every default a sticky call site passes is the element default. The element
-/// defaults come from the test-side oracle WaElementDefaults, generated from the CEM. Parameters of
+/// defaults come from the test-side oracle WaElementDefaults, generated from the CEM. A C# 15 union parameter
+/// (net11.0, WaInputBound) is sampled with every sample of every case type. Parameters of
 /// other types (other collections, objects, fragments, callbacks) are not sampled. Every allowlist
 /// entry needs a reason, and stale entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
@@ -414,6 +415,8 @@ public class RenderedAttributeParityTests
 
             foreach (var (attribute, parameters) in componentConfig.AdditionalAttributeParameters)
             {
+                if (!AppliesToThisTargetFramework($"{AdditionalAttributeParametersKey}:{tag}:{attribute}")) continue;
+
                 var valid = parameters.Count > 0 && ofTag.Any(e => e.Component.Attributes.ContainsKey(attribute)
                     && parameters.All(p => FindParameter(e.Renders.ComponentType, p) != null));
                 if (!valid)
@@ -578,9 +581,14 @@ public class RenderedAttributeParityTests
     /// </summary>
     /// <param name="Property">The [Parameter] property</param>
     /// <param name="Label">"Property=value" for miss descriptions</param>
-    /// <param name="Value">The boxed value</param>
+    /// <param name="Value">The boxed value the checks read (for a union parameter, the value of its case)</param>
     internal sealed record ParameterSample(PropertyInfo Property, string Label, object Value)
     {
+        /// <summary>
+        /// The boxed value the parameter is set to: Value, or for a union parameter Value converted to the union.
+        /// </summary>
+        public object ParameterValue { get; init; } = Value;
+
         /// <summary>
         /// Other parameters set in the same render (the attribute's "attributePrerequisites").
         /// </summary>
@@ -627,7 +635,7 @@ public class RenderedAttributeParityTests
             .ToList();
 
         var parameterSets = samples
-            .Select(s => (IReadOnlyList<(string Name, object? Value)>)s.Prerequisites.Select(p => (p.Name, (object?)p.Value)).Append((s.Property.Name, s.Value)).ToList())
+            .Select(s => (IReadOnlyList<(string Name, object? Value)>)s.Prerequisites.Select(p => (p.Name, (object?)p.Value)).Append((s.Property.Name, s.ParameterValue)).ToList())
             .ToList();
 
         var roots = RenderedWrapperCatalog.RenderRoots(componentType, parameterSets, HostileCulture);
@@ -690,10 +698,31 @@ public class RenderedAttributeParityTests
             var parameter = property.GetCustomAttribute<ParameterAttribute>(inherit: true);
             if (parameter == null || parameter.CaptureUnmatchedValues || !property.CanWrite) continue;
 
-            foreach (var value in SampleValuesOf(Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType))
+            var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+            foreach (var value in SampleValuesOf(type))
                 yield return new ParameterSample(property, $"{property.Name}={Describe(value)}", value);
+
+#if NET11_0_OR_GREATER
+            // a C# 15 union (WaInputBound) is sampled with every sample of every case type, converted by the case's
+            // constructor; the checks read the case value, so each case is checked like a parameter of its own type
+            foreach (var constructor in UnionCaseConstructors(type))
+            {
+                foreach (var value in SampleValuesOf(constructor.GetParameters()[0].ParameterType))
+                    yield return new ParameterSample(property, $"{property.Name}={Describe(value)}", value) { ParameterValue = constructor.Invoke(new[] { value }) };
+            }
+#endif
         }
     }
+
+#if NET11_0_OR_GREATER
+    // the constructors of the cases of a C# 15 union type (one parameter each), or none for any other type
+    private static IEnumerable<ConstructorInfo> UnionCaseConstructors(Type type)
+    {
+        return typeof(IUnion).IsAssignableFrom(type)
+            ? type.GetConstructors().Where(c => c.GetParameters().Length == 1)
+            : Enumerable.Empty<ConstructorInfo>();
+    }
+#endif
 
     private static IEnumerable<object> SampleValuesOf(Type type)
     {
@@ -1247,7 +1276,7 @@ public class RenderedAttributeParityTests
             var prerequisites = sample.Sample.Prerequisites.Select(p => (p.Name, (object?)p.Value)).ToList();
             var sets = new IReadOnlyList<(string Name, object? Value)>[]
             {
-                prerequisites.Append((property.Name, sample.Sample.Value)).ToList(),
+                prerequisites.Append((property.Name, sample.Sample.ParameterValue)).ToList(),
                 prerequisites.Append((property.Name, property.GetValue(defaults))).ToList()
             };
 
@@ -1479,8 +1508,10 @@ public class RenderedAttributeParityTests
             if (IsIgnoredAttribute(element.Config, attribute)) continue;
             yield return (attribute, surface, FindParameter(element.Renders.ComponentType, ExpectedParameterName(element.Config, attribute)));
 
-            // further parameters rendering the same attribute ("additionalAttributeParameters")
+            // further parameters rendering the same attribute ("additionalAttributeParameters", where it applies on this
+            // target framework)
             if (!element.Config.AdditionalAttributeParameters.TryGetValue(attribute, out var others)) continue;
+            if (!AppliesToThisTargetFramework($"{AdditionalAttributeParametersKey}:{element.Tag}:{attribute}")) continue;
             foreach (var other in others)
             {
                 var property = FindParameter(element.Renders.ComponentType, other);

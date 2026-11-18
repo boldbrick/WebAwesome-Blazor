@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -113,12 +113,26 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
     [Parameter] public string? Pattern { get; set; }
 
 #if NET11_0_OR_GREATER
-#error Use a union type here
+    // The min and max of wa-input are typed number | string (a number for a number input, an ISO date, time or local
+    // date-time for the date and time types). On net11.0 each bound is one C# 15 union parameter; net9.0 and net10.0 keep
+    // the raw string plus typed accessors below, a deliberate divergence (docs\technical\technical.md, Multi-targeting).
+
+    /// <summary>
+    /// The input's minimum value. Only applies to date, time and number input types. A typed value renders the form the
+    /// native input reads, culture-free (see <see cref="WaInputBound"/>): <c>Min="@(new DateOnly(2026, 1, 1))"</c>,
+    /// <c>Min="@(2.5m)"</c>; a plain attribute value is the raw text (<c>Min="2026-01-01"</c>).
+    /// </summary>
+    [Parameter] public WaInputBound? Min { get; set; }
+
+    /// <summary>
+    /// The input's maximum value. Only applies to date, time and number input types. See <see cref="Min"/>.
+    /// </summary>
+    [Parameter] public WaInputBound? Max { get; set; }
 #else
     // The min and max of wa-input are typed number | string (a number for a number input, an ISO date, time or local
-    // date-time for the date and time types), which C# before 15 cannot express as one parameter type. Until then each
-    // bound is a raw string plus one strongly typed accessor per value type; at most one of them may be set per bound.
-    // On net11.0 this becomes a C# 15 union type, a deliberate breaking change (docs\technical\technical.md, Multi-targeting).
+    // date-time for the date and time types), which C# before 15 cannot express as one parameter type. Each bound is a
+    // raw string plus one strongly typed accessor per value type; at most one of them may be set per bound. On net11.0
+    // this is a C# 15 union type instead, a deliberate breaking change (docs\technical\technical.md, Multi-targeting).
 
     /// <summary>
     /// The input's minimum value as the raw attribute text, for a format none of the typed accessors covers. Only
@@ -406,6 +420,7 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         return true;
     }
 
+#if !NET11_0_OR_GREATER
     /// <inheritdoc />
     /// <exception cref="InvalidOperationException">Thrown when more than one accessor of the same bound is set</exception>
     protected override void OnParametersSet()
@@ -416,6 +431,8 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         EnsureOneBound((nameof(Max), Max != null), (nameof(MaxDecimal), MaxDecimal.HasValue), (nameof(MaxLong), MaxLong.HasValue),
             (nameof(MaxULong), MaxULong.HasValue), (nameof(MaxDate), MaxDate.HasValue), (nameof(MaxTime), MaxTime.HasValue), (nameof(MaxDateTime), MaxDateTime.HasValue));
     }
+#endif
+
     /// <inheritdoc />
     protected override string? LiveValuePropertyName => "value";
 
@@ -595,23 +612,36 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         SetCurrentValueAsStringFromElement(await JSInterop.GetPropertyAsync<string?>(Element!.Value, ValueProperty));
     }
 
+#if NET11_0_OR_GREATER
+    // the min attribute text of the union's case, in the invariant or ISO form the native input reads
+    private string? MinAttributeValue() => BoundValue(Min?.Value);
+
+    // the max attribute text of the union's case
+    private string? MaxAttributeValue() => BoundValue(Max?.Value);
+#else
     // the min attribute text of whichever accessor is set, in the invariant or ISO form the native input reads
-    private string? MinAttributeValue() => BoundValue(Min, MinDecimal, MinLong, MinULong, MinDate, MinTime, MinDateTime);
+    private string? MinAttributeValue() => BoundValue(Min ?? (object?)MinDecimal ?? (object?)MinLong ?? (object?)MinULong ?? (object?)MinDate ?? (object?)MinTime ?? MinDateTime);
 
     // the max attribute text of whichever accessor is set
-    private string? MaxAttributeValue() => BoundValue(Max, MaxDecimal, MaxLong, MaxULong, MaxDate, MaxTime, MaxDateTime);
+    private string? MaxAttributeValue() => BoundValue(Max ?? (object?)MaxDecimal ?? (object?)MaxLong ?? (object?)MaxULong ?? (object?)MaxDate ?? (object?)MaxTime ?? MaxDateTime);
+#endif
 
-    private static string? BoundValue(string? raw, decimal? number, long? integer, ulong? unsigned, DateOnly? date, TimeOnly? time, DateTime? dateTime)
+    // the attribute text of one bound value (a WaInputBound case on net11.0, the set accessor before), every number in the
+    // invariant culture; null renders nothing
+    private static string? BoundValue(object? value) => value switch
     {
-        if (raw != null) return raw;
-        if (number.HasValue) return number.Value.ToString(CultureInfo.InvariantCulture);
-        if (integer.HasValue) return integer.Value.ToString(CultureInfo.InvariantCulture);
-        if (unsigned.HasValue) return unsigned.Value.ToString(CultureInfo.InvariantCulture);
-        if (date.HasValue) return WaWireFormat.FormatDate(date.Value);
-        if (time.HasValue) return WaWireFormat.FormatTimeBound(time.Value);
-        return dateTime.HasValue ? WaWireFormat.FormatLocalDateTime(dateTime.Value) : null;
-    }
+        string raw => raw,
+        decimal number => number.ToString(CultureInfo.InvariantCulture),
+        int whole => whole.ToString(CultureInfo.InvariantCulture),
+        long integer => integer.ToString(CultureInfo.InvariantCulture),
+        ulong unsigned => unsigned.ToString(CultureInfo.InvariantCulture),
+        DateOnly date => WaWireFormat.FormatDate(date),
+        TimeOnly time => WaWireFormat.FormatTimeBound(time),
+        DateTime dateTime => WaWireFormat.FormatLocalDateTime(dateTime),
+        _ => null
+    };
 
+#if !NET11_0_OR_GREATER
     // throws when more than one accessor of a bound is set
     private static void EnsureOneBound(params (string Name, bool IsSet)[] accessors)
     {
@@ -619,6 +649,7 @@ public class WaInput : WaLabeledInputBase<string?>, IWaClearableControl, IWaAffi
         if (set.Count > 1)
             throw new InvalidOperationException($"WaInput: set at most one accessor of a bound, but {string.Join(" and ", set)} are all set.");
     }
+#endif
 
     #endregion
 }
