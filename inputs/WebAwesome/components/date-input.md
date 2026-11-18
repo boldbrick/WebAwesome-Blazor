@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.14.0 release zip (dist/skills/webawesome/references/components/date-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/date-input -->
+<!-- Source: reference doc bundled in the Web Awesome 3.15.0 release zip (dist/skills/webawesome/references/components/date-input.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/date-input -->
 
 # Date Input [Pro]
 
@@ -104,7 +104,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.14.0/components/date-input/date-input.js';
+import 'https://ka-f.webawesome.com/webawesome@3.15.0/components/date-input/date-input.js';
 ```
 
 \*\*npm\*\*
@@ -133,135 +133,168 @@ import WaDateInput from '@awesome.me/webawesome/dist/react/date-input/index.js';
 
 ### Slots
 
-| Name | Description |
-| --- | --- |
-| \`clear-icon\` | An icon to use in lieu of the default clear icon. |
-| \`day-YYYY-MM-DD\` | \`day-2026-05-25\` Custom content for a specific day in the popup date picker. Slot name is dynamic (e.g., ). Forwarded to . |
-| \`end\` | An element placed at the end of the input. |
-| \`expand-icon\` | The icon to show on the date picker toggle button. Defaults to a calendar icon. |
-| \`footer\` | Content shown below the date picker inside the popup. |
-| \`hint\` | \`hint\` Text that describes how to use the date input. Alternatively, use the attribute. |
-| \`label\` | \`label\` The date input's . Alternatively, use the label attribute. |
-| \`next-icon\` | \`\` Icon for the date picker's next-page button. Forwarded to . |
-| \`previous-icon\` | \`\` Icon for the date picker's previous-page button. Forwarded to . |
-| \`start\` | An element placed at the start of the input. |
+Valid slot names for this component (use exactly these — any other `slot` value is
+silently ignored and the element falls back to the default slot):
+
+- `label` — The date input's label. Alternatively, use the `label` attribute.
+- `hint` — Text that describes how to use the date input. Alternatively, use the `hint` attribute.
+- `start` — An element placed at the start of the input.
+- `end` — An element placed at the end of the input.
+- `clear-icon` — An icon to use in lieu of the default clear icon.
+- `expand-icon` — The icon to show on the date picker toggle button. Defaults to a calendar icon.
+- `footer` — Content shown below the date picker inside the popup.
+- `previous-icon` — Icon for the date picker's previous-page button. Forwarded to `<wa-date-picker>`.
+- `next-icon` — Icon for the date picker's next-page button. Forwarded to `<wa-date-picker>`.
+- `day-YYYY-MM-DD` — Custom content for a specific day in the popup date picker. Slot name is dynamic (e.g., `day-2026-05-25`). Forwarded to `<wa-date-picker>`.
 
 ### Attributes & Properties
 
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`appearance\` appearance | \`'filled' \\| 'outlined' \\| 'filled-outlined'\` The date input's visual appearance. Type Default 'outlined' | |
-| \`assumeInteractionOn\` | \`input\` Native events do not fire on role=spinbutton elements (they aren't real s). The component dispatches a composed host input event on every segment edit, every step, and on calendar selection, so a single input is enough to mark the field as interacted with. Type string\[\] Default \['input'\] | |
-| \`autocomplete\` autocomplete | \`'bday'\` Forwarded to the hidden form input (e.g., , 'cc-exp') to enable browser autofill. Type string Default '' | |
-| \`dayContent\` | \`WaDateInputDayContent \\| undefined\` JS-only callback for custom day-cell content. Forwarded to the popup calendar. Type | |
-| \`defaultValue\` value | \`string\` The default value of the form control. Used for form reset. Type | |
-| \`disabled\` disabled | \`boolean\` Disables the date input. Type Default false | |
-| \`disabledDates\` disabled-dates | \`string \\| string\[\] \\| Date\[\]\` Dates that cannot be selected. Type Default '' | |
-| \`disabledDaysOfWeek\` disabled-days-of-week | \`string\` Days of the week that cannot be selected. Accepts a space-separated list of three-letter weekday names. Type Default '' | |
-| \`disableFuture\` disable-future | \`boolean\` Disable all dates strictly after today. Type Default false | |
-| \`disablePast\` disable-past | \`boolean\` Disable all dates strictly before today. Type Default false | |
-| \`distance\` distance | \`number\` Distance in pixels between the popup and the input. Type Default 0 | |
-| \`firstDayOfWeek\` first-day-of-week | \`WaDateInputFirstDayOfWeek\` The first day of the week in the popup calendar. Type Default 'auto' | |
-| \`form\` | \`
-
-\` By default, form controls are associated with the nearest containing element. This attribute allows you to place the form control outside of a form and associate it with the form that has this id. The form must be in the same document or shadow root for this to work. Type HTMLFormElement \\| null | |
-| \`hint\` hint | \`hint\` The date input's . If you need to display HTML, use the hint slot instead. Type string Default '' | |
-| \`isDateDisabled\` | \`(date: Date) => boolean \\| undefined\` JS-only callback for custom date disabling. Forwarded to the popup calendar. Type | |
-| \`label\` label | \`label\` The date input's . If you need to display HTML, use the label slot instead. Type string Default '' | |
-| \`max\` max | \`YYYY-MM-DD\` Latest selectable date as . Out-of-range dates are disabled in the popup calendar and a committed value after max fails constraint validation with rangeOverflow. Type string Default '' | |
-| \`maxRange\` max-range | \`0\` Maximum range length in days (range mode only). disables. Type number Default 0 | |
-| \`min\` min | \`YYYY-MM-DD\` Earliest selectable date as . Out-of-range dates are disabled in the popup calendar and a committed value before min fails constraint validation with rangeUnderflow. Type string Default '' | |
-| \`minRange\` min-range | \`0\` Minimum range length in days (range mode only). disables. Type number Default 0 | |
-| \`mode\` mode | \`WaDateInputMode\` Selection mode. Type Default 'single' | |
-| \`months\` months | \`1 \\| 2\` Number of months rendered in the popup calendar. Type Default 1 | |
-| \`name\` name | \`string \\| null\` The date input's name, submitted as a name/value pair with form data. Type Default '' | |
-| \`open\` open | \`boolean\` Whether the popup calendar is open. Type Default false | |
-| \`pageBy\` page-by | \`'months' \\| 'single'\` Whether prev/next pages by the visible range or one month at a time. Type Default 'months' | |
-| \`pill\` pill | \`boolean\` Draws a pill-style date input with rounded edges. Type Default false | |
-| \`placement\` placement | \`WaDateInputPlacement\` Preferred popup placement. Type Default 'bottom-start' | |
-| \`readonly\` readonly | \`boolean\` Makes the input non-editable. The popup still opens for browsing. Type Default false | |
-| \`required\` required | \`boolean\` Makes the date input required for form submission. Type Default false | |
-| \`size\` size | \`WaDateInputSize \\| 'small' \\| 'medium' \\| 'large'\` The date input's size. Type Default 'm' | |
-| \`today\` today | \`YYYY-MM-DD\` Override "today" as (defaults to the runtime date). Type string Default '' | |
-| \`validationTarget\` | \`undefined \\| HTMLElement\` Override this to change where constraint validation popups are anchored. Type | |
-| \`validators\` | \`observedAttributes\` Validators are static because they have , essentially attributes to "watch" for changes. Whenever these attributes change, we want to be notified and update the validator. Type Validator\[\] Default \[\] | |
-| \`value\` | \`YYYY-MM-DD\` The date input's value. ISO 8601 for single mode, YYYY-MM-DD/YYYY-MM-DD for range mode (with from <= to). The setter also accepts a Date or a range object with from and to properties. Type string | |
-| \`valueAsDate\` | \`Date\` The selected date as a (single mode only). Type Date \\| null | |
-| \`valueAsRange\` | \`from\` The selected range as an object with and to properties (range mode only). Type { from: Date \\| null; to: Date \\| null } | |
-| \`weekdayFormat\` weekday-format | \`'narrow' \\| 'short' \\| 'long'\` Weekday header format in the popup calendar. Type Default 'short' | |
-| \`withClear\` with-clear | \`boolean\` Shows a clear button when the date input has a value. Type Default false | |
-| \`withHint\` with-hint | \`true\` Only required for SSR. Set to if you're slotting in a hint element. Type boolean Default false | |
-| \`withLabel\` with-label | \`true\` Only required for SSR. Set to if you're slotting in a label element. Type boolean Default false | |
-| \`withOutsideDays\` with-outside-days | \`boolean\` Show leading/trailing days from adjacent months in the popup calendar. Type Default false | |
-| \`withWeekNumbers\` with-week-numbers | \`boolean\` Show ISO 8601 week numbers in the popup calendar. Type Default false | |
+| Property | Attribute | Description | Type | Default |
+| --- | --- | --- | --- | --- |
+| `validators` | — | Validators are static because they have `observedAttributes`, essentially attributes to "watch" for changes. Whenever these attributes change, we want to be notified and update the validator. | `Validator[]` | `[]` |
+| `assumeInteractionOn` | — | Native `input` events do not fire on `role=spinbutton` elements (they aren't real `<input>`s). The component dispatches a composed host `input` event on every segment edit, every step, and on calendar selection, so a single `input` is enough to mark the field as interacted with. | `string[]` | `['input']` |
+| `validationTarget` | — | Override this to change where constraint validation popups are anchored. | `undefined \| HTMLElement` | — |
+| `name` | `name` | The date input's name, submitted as a name/value pair with form data. | `string \| null` | `''` |
+| `value` | — | The date input's value. ISO 8601 `YYYY-MM-DD` for single mode, `YYYY-MM-DD/YYYY-MM-DD` for range mode (with `from <= to`). The setter also accepts a `Date` or a range object with `from` and `to` properties. | `string` | — |
+| `defaultValue` | `value` | The default value of the form control. Used for form reset. | `string` | — |
+| `disabled` | `disabled` | Disables the date input. | `boolean` | `false` |
+| `required` | `required` | Makes the date input required for form submission. | `boolean` | `false` |
+| `readonly` | `readonly` | Makes the input non-editable. The popup still opens for browsing. | `boolean` | `false` |
+| `size` | `size` | The date input's size. | `WaDateInputSize \| 'small' \| 'medium' \| 'large'` | `'m'` |
+| `appearance` | `appearance` | The date input's visual appearance. | `'filled' \| 'outlined' \| 'filled-outlined'` | `'outlined'` |
+| `pill` | `pill` | Draws a pill-style date input with rounded edges. | `boolean` | `false` |
+| `label` | `label` | The date input's label. If you need to display HTML, use the `label` slot instead. | `string` | `''` |
+| `hint` | `hint` | The date input's hint. If you need to display HTML, use the `hint` slot instead. | `string` | `''` |
+| `autocomplete` | `autocomplete` | Forwarded to the hidden form input (e.g., `'bday'`, `'cc-exp'`) to enable browser autofill. | `string` | `''` |
+| `withClear` | `with-clear` | Shows a clear button when the date input has a value. | `boolean` | `false` |
+| `withLabel` | `with-label` | Only required for SSR. Set to `true` if you're slotting in a `label` element. | `boolean` | `false` |
+| `withHint` | `with-hint` | Only required for SSR. Set to `true` if you're slotting in a `hint` element. | `boolean` | `false` |
+| `mode` | `mode` | Selection mode. | `WaDateInputMode` | `'single'` |
+| `min` | `min` | Earliest selectable date as `YYYY-MM-DD`. Out-of-range dates are disabled in the popup calendar and a committed value before `min` fails constraint validation with `rangeUnderflow`. | `string` | `''` |
+| `max` | `max` | Latest selectable date as `YYYY-MM-DD`. Out-of-range dates are disabled in the popup calendar and a committed value after `max` fails constraint validation with `rangeOverflow`. | `string` | `''` |
+| `today` | `today` | Override "today" as `YYYY-MM-DD` (defaults to the runtime date). | `string` | `''` |
+| `firstDayOfWeek` | `first-day-of-week` | The first day of the week in the popup calendar. | `WaDateInputFirstDayOfWeek` | `'auto'` |
+| `disabledDates` | `disabled-dates` | Dates that cannot be selected. | `string \| string[] \| Date[]` | `''` |
+| `disabledDaysOfWeek` | `disabled-days-of-week` | Days of the week that cannot be selected. Accepts a space-separated list of three-letter weekday names. | `string` | `''` |
+| `disablePast` | `disable-past` | Disable all dates strictly before today. | `boolean` | `false` |
+| `disableFuture` | `disable-future` | Disable all dates strictly after today. | `boolean` | `false` |
+| `minRange` | `min-range` | Minimum range length in days (range mode only). `0` disables. | `number` | `0` |
+| `maxRange` | `max-range` | Maximum range length in days (range mode only). `0` disables. | `number` | `0` |
+| `isDateDisabled` | — | JS-only callback for custom date disabling. Forwarded to the popup calendar. | `(date: Date) => boolean \| undefined` | — |
+| `dayContent` | — | JS-only callback for custom day-cell content. Forwarded to the popup calendar. | `WaDateInputDayContent \| undefined` | — |
+| `months` | `months` | Number of months rendered in the popup calendar. | `1 \| 2` | `1` |
+| `pageBy` | `page-by` | Whether prev/next pages by the visible range or one month at a time. | `'months' \| 'single'` | `'months'` |
+| `withOutsideDays` | `with-outside-days` | Show leading/trailing days from adjacent months in the popup calendar. | `boolean` | `false` |
+| `withWeekNumbers` | `with-week-numbers` | Show ISO 8601 week numbers in the popup calendar. | `boolean` | `false` |
+| `weekdayFormat` | `weekday-format` | Weekday header format in the popup calendar. | `'narrow' \| 'short' \| 'long'` | `'short'` |
+| `open` | `open` | Whether the popup calendar is open. | `boolean` | `false` |
+| `placement` | `placement` | Preferred popup placement. | `WaDateInputPlacement` | `'bottom-start'` |
+| `distance` | `distance` | Distance in pixels between the popup and the input. | `number` | `0` |
+| `valueAsDate` | — | The selected date as a `Date` (single mode only). | `Date \| null` | — |
+| `valueAsRange` | — | The selected range as an object with `from` and `to` properties (range mode only). | `{ from: Date \| null; to: Date \| null }` | — |
+| `form` | — | By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you to place the form control outside of a form and associate it with the form that has this `id`. The form must be in the same document or shadow root for this to work. | `HTMLFormElement \| null` | — |
 
 ### Methods
 
 | Name | Description | Arguments |
 | --- | --- | --- |
-| \`blur()\` | Removes focus from the date input. | |
-| \`clear()\` | \`wa-clear\` Clears the current value and emits , input, and change. Mirrors activating the clear button. No-op when already empty or when disabled/readonly. | |
-| \`focus()\` | Sets focus on the first empty (else first) segment. | \`options: FocusOptions\` |
-| \`formStateRestoreCallback()\` | Called when the browser is trying to restore element’s state to state in which case reason is "restore", or when the browser is trying to fulfill autofill on behalf of user in which case reason is "autocomplete". In the case of "restore", state is a string, File, or FormData object previously set as the second argument to setFormValue. | \`state: string \\| File \\| FormData \\| null\` |
-| \`hide()\` | Closes the popup calendar. | |
-| \`resetValidity()\` | Reset validity is a way of removing manual custom errors and native validation. | |
-| \`setCustomValidity()\` | Do not use this when creating a "Validator". This is intended for end users of components. We track manually defined custom errors so we don't clear them on accident in our validators. | \`message: string\` |
-| \`show()\` | Opens the popup calendar. | |
+| `focus()` | Sets focus on the first empty (else first) segment. | `options: FocusOptions` |
+| `blur()` | Removes focus from the date input. | — |
+| `show()` | Opens the popup calendar. | — |
+| `hide()` | Closes the popup calendar. | — |
+| `clear()` | Clears the current value and emits `wa-clear`, `input`, and `change`. Mirrors activating the clear button. No-op when already empty or when disabled/readonly. | — |
+| `formStateRestoreCallback()` | Called when the browser is trying to restore element’s state to state in which case reason is "restore", or when the browser is trying to fulfill autofill on behalf of user in which case reason is "autocomplete". In the case of "restore", state is a string, File, or FormData object previously set as the second argument to setFormValue. | `state: string \\| File \\| FormData \\| null` |
+| `setCustomValidity()` | Do not use this when creating a "Validator". This is intended for end users of components. We track manually defined custom errors so we don't clear them on accident in our validators. | `message: string` |
+| `resetValidity()` | Reset validity is a way of removing manual custom errors and native validation. | — |
 
 ### Events
 
 | Name | Description |
 | --- | --- |
-| \`blur\` | Emitted when the control loses focus. |
-| \`change\` | \`\` Emitted on every committed value transition (each completed date edit, calendar selection, or clear), mirroring native rather than the commit-on-blur behavior of /. This matches the sibling . It does NOT fire while a value is still incomplete. |
-| \`focus\` | Emitted when the control receives focus. |
-| \`input\` | Emitted on every segment edit, step, calendar interaction, and clear, even while the value is incomplete. |
-| \`wa-after-hide\` | Emitted after the popup closes and animations complete. |
-| \`wa-after-show\` | Emitted after the popup opens and animations complete. |
-| \`wa-clear\` | Emitted when the clear button is activated. |
-| \`wa-hide\` | Emitted when the popup is about to close. Cancelable. |
-| \`wa-invalid\` | Emitted when the form control has been checked for validity and its constraints aren't satisfied. |
-| \`wa-show\` | Emitted when the popup is about to open. Cancelable. |
+| `input` | Emitted on every segment edit, step, calendar interaction, and clear, even while the value is incomplete. |
+| `change` | Emitted on every committed value transition (each completed date edit, calendar selection, or clear), mirroring native `<input type="date">` rather than the commit-on-blur behavior of `<wa-input>`/`<wa-select>`. This matches the sibling `<wa-time-input>`. It does NOT fire while a value is still incomplete. |
+| `focus` | Emitted when the control receives focus. |
+| `blur` | Emitted when the control loses focus. |
+| `wa-clear` | Emitted when the clear button is activated. |
+| `wa-show` | Emitted when the popup is about to open. Cancelable. |
+| `wa-after-show` | Emitted after the popup opens and animations complete. |
+| `wa-hide` | Emitted when the popup is about to close. Cancelable. |
+| `wa-after-hide` | Emitted after the popup closes and animations complete. |
+| `wa-invalid` | Emitted when the form control has been checked for validity and its constraints aren't satisfied. |
 
 ### CSS Custom Properties
 
-| Name | Description |
-| --- | --- |
-| \`--hide-duration\` | \`var(--wa-transition-fast)\` The duration of the hide animation. Default |
-| \`--show-duration\` | \`var(--wa-transition-fast)\` The duration of the show animation. Default |
+| Name | Description | Default |
+| --- | --- | --- |
+| `--show-duration` | The duration of the show animation. | `var(--wa-transition-fast)` |
+| `--hide-duration` | The duration of the hide animation. | `var(--wa-transition-fast)` |
 
 ### Custom States
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`blank\` | The date input has no committed value. | \`:state(blank)\` |
-| \`disabled\` | The date input is disabled. | \`:state(disabled)\` |
-| \`open\` | The popup is open. | \`:state(open)\` |
-| \`range\` | The date input is in range mode. | \`:state(range)\` |
+| `blank` | The date input has no committed value. | `:state(blank)` |
+| `open` | The popup is open. | `:state(open)` |
+| `range` | The date input is in range mode. | `:state(range)` |
+| `disabled` | The date input is disabled. | `:state(disabled)` |
 
 ### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`clear-button\` | The clear button. | \`::part(clear-button)\` |
-| \`date-input\` | The component's outer wrapper. | \`::part(date-input)\` |
-| \`date-picker\` | \`\` The popup's element. | \`::part(date-picker)\` |
-| \`end\` | \`end\` The container that wraps the slot. | \`::part(end)\` |
-| \`expand-button\` | The date picker toggle button. | \`::part(expand-button)\` |
-| \`expand-icon\` | The expand icon wrapper. | \`::part(expand-icon)\` |
-| \`form-control\` | The form control that wraps the label, input, and hint. | \`::part(form-control)\` |
-| \`form-control-input\` | The input's wrapper. | \`::part(form-control-input)\` |
-| \`form-control-label\` | The label. | \`::part(form-control-label)\` |
-| \`hint\` | The hint's wrapper. | \`::part(hint)\` |
-| \`input\` | The segmented input group. | \`::part(input)\` |
-| \`input-wrapper\` | The container that wraps the start slot, segmented input, clear button, and expand button. | \`::part(input-wrapper)\` |
-| \`popup\` | The popup container. | \`::part(popup)\` |
-| \`range-separator\` | The literal between the two groups in range mode. | \`::part(range-separator)\` |
-| \`segment\` | \`\[part~="segment"\]\` Each editable segment (month/day/year spinbutton). Use to style all. | \`::part(segment)\` |
-| \`segment-literal\` | Inert literal text between segments (separators). | \`::part(segment-literal)\` |
-| \`start\` | \`start\` The container that wraps the slot. | \`::part(start)\` |
-| \`base\` | \`date-input\` Deprecated. Use the part instead. | \`::part(base)\` |
-| \`label\` | \`form-control-label\` Deprecated. Use the part instead. | \`::part(label)\` |
+| `form-control` | The form control that wraps the label, input, and hint. | `::part(form-control)` |
+| `form-control-label` | The label. | `::part(form-control-label)` |
+| `form-control-input` | The input's wrapper. | `::part(form-control-input)` |
+| `hint` | The hint's wrapper. | `::part(hint)` |
+| `date-input` | The component's outer wrapper. | `::part(date-input)` |
+| `input-wrapper` | The container that wraps the start slot, segmented input, clear button, and expand button. | `::part(input-wrapper)` |
+| `start` | The container that wraps the `start` slot. | `::part(start)` |
+| `end` | The container that wraps the `end` slot. | `::part(end)` |
+| `input` | The segmented input group. | `::part(input)` |
+| `segment` | Each editable segment (month/day/year spinbutton). Use `[part~="segment"]` to style all. | `::part(segment)` |
+| `segment-literal` | Inert literal text between segments (separators). | `::part(segment-literal)` |
+| `range-separator` | The literal between the two groups in range mode. | `::part(range-separator)` |
+| `clear-button` | The clear button. | `::part(clear-button)` |
+| `expand-button` | The date picker toggle button. | `::part(expand-button)` |
+| `expand-icon` | The expand icon wrapper. | `::part(expand-icon)` |
+| `popup` | The popup container. | `::part(popup)` |
+| `date-picker` | The popup's `<wa-date-picker>` element. | `::part(date-picker)` |
+| `date-picker__date-picker` | The date picker's exported `date-picker` part. | `::part(date-picker__date-picker)` |
+| `date-picker__header` | The date picker's exported `header` part. | `::part(date-picker__header)` |
+| `date-picker__title` | The date picker's exported `title` part. | `::part(date-picker__title)` |
+| `date-picker__previous` | The date picker's exported `previous` part. | `::part(date-picker__previous)` |
+| `date-picker__next` | The date picker's exported `next` part. | `::part(date-picker__next)` |
+| `date-picker__months` | The date picker's exported `months` part. | `::part(date-picker__months)` |
+| `date-picker__month` | The date picker's exported `month` part. | `::part(date-picker__month)` |
+| `date-picker__month-label` | The date picker's exported `month-label` part. | `::part(date-picker__month-label)` |
+| `date-picker__weekdays` | The date picker's exported `weekdays` part. | `::part(date-picker__weekdays)` |
+| `date-picker__weekday` | The date picker's exported `weekday` part. | `::part(date-picker__weekday)` |
+| `date-picker__weeknumbers` | The date picker's exported `weeknumbers` part. | `::part(date-picker__weeknumbers)` |
+| `date-picker__weeknumber` | The date picker's exported `weeknumber` part. | `::part(date-picker__weeknumber)` |
+| `date-picker__grid` | The date picker's exported `grid` part. | `::part(date-picker__grid)` |
+| `date-picker__day` | The date picker's exported `day` part. | `::part(date-picker__day)` |
+| `date-picker__day-today` | The date picker's exported `day-today` part. | `::part(date-picker__day-today)` |
+| `date-picker__day-outside` | The date picker's exported `day-outside` part. | `::part(date-picker__day-outside)` |
+| `date-picker__day-weekend` | The date picker's exported `day-weekend` part. | `::part(date-picker__day-weekend)` |
+| `date-picker__day-disabled` | The date picker's exported `day-disabled` part. | `::part(date-picker__day-disabled)` |
+| `date-picker__day-selected` | The date picker's exported `day-selected` part. | `::part(date-picker__day-selected)` |
+| `date-picker__day-range-start` | The date picker's exported `day-range-start` part. | `::part(date-picker__day-range-start)` |
+| `date-picker__day-range-end` | The date picker's exported `day-range-end` part. | `::part(date-picker__day-range-end)` |
+| `date-picker__day-range-inner` | The date picker's exported `day-range-inner` part. | `::part(date-picker__day-range-inner)` |
+| `date-picker__day-range-preview` | The date picker's exported `day-range-preview` part. | `::part(date-picker__day-range-preview)` |
+| `date-picker__day-label` | The date picker's exported `day-label` part. | `::part(date-picker__day-label)` |
+| `date-picker__day-placeholder` | The date picker's exported `day-placeholder` part. | `::part(date-picker__day-placeholder)` |
+| `date-picker__view-grid` | The date picker's exported `view-grid` part. | `::part(date-picker__view-grid)` |
+| `date-picker__view-row` | The date picker's exported `view-row` part. | `::part(date-picker__view-row)` |
+| `date-picker__view-cell` | The date picker's exported `view-cell` part. | `::part(date-picker__view-cell)` |
+| `date-picker__view-item` | The date picker's exported `view-item` part. | `::part(date-picker__view-item)` |
+| `date-picker__view-item-today` | The date picker's exported `view-item-today` part. | `::part(date-picker__view-item-today)` |
+| `date-picker__view-item-selected` | The date picker's exported `view-item-selected` part. | `::part(date-picker__view-item-selected)` |
+| `date-picker__view-item-disabled` | The date picker's exported `view-item-disabled` part. | `::part(date-picker__view-item-disabled)` |
+| `date-picker__footer` | The date picker's exported `footer` part. | `::part(date-picker__footer)` |
+| `label` | Deprecated. Use the `form-control-label` part instead. | `::part(label)` |
+| `base` | Deprecated. Use the `date-input` part instead. | `::part(base)` |
+| `date-picker__base` | Deprecated. Use the `date-picker__date-picker` part instead. | `::part(date-picker__base)` |
 
 ### Dependencies
 
