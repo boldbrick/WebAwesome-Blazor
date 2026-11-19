@@ -3,10 +3,11 @@ const { test } = require('./helpers/test');
 const { runMethodCase, runKnownDefectCase } = require('./helpers/method-harness');
 const group = require('./helpers/method-cases/forms-text');
 
-// The wrapper method suite, group "forms-text": WaInput, WaTextArea, WaNumberInput, WaOtpInput, WaTagInput and
-// WaKnownDate on /testing/methods-forms-text. Each case calls wrapper methods from .NET through the wrapper's @ref and
-// asserts their effect; the known defects run as expected failures. The cases are in helpers\method-cases\forms-text.js,
-// where method-coverage.spec.js reads which methods they prove. Every group spec has this same shape.
+// The wrapper method suite, group "forms-text": WaInput, WaTextArea, WaNumberInput, WaOtpInput, WaTagInput, WaKnownDate
+// and WaRichTextEditor (Pro) on /testing/methods-forms-text. Each case calls wrapper methods from .NET through the
+// wrapper's @ref and asserts their effect; the known defects run as expected failures. The cases are in
+// helpers\method-cases\forms-text.js, where method-coverage.spec.js reads which methods they prove. Every group spec has
+// this same shape.
 
 test.describe('methods forms-text', () => {
   for (const c of group.cases) {

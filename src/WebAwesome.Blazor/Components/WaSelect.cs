@@ -175,13 +175,6 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
     /// </summary>
     [Parameter] public string? ShadowStyles { get; set; }
 
-    /// <summary>
-    /// A custom tag function that nothing reads.
-    /// </summary>
-    // TODO WA 3.15.0 train: remove this obsolete member (replaced by GetTagFunction)
-    [Obsolete(GetTagObsoleteMessage)]
-    public Func<WaOption, int, string>? GetTag { get; set; }
-
     #endregion
 
     #region ------ Overrides ------
@@ -347,9 +340,6 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
     // the function-valued member of wa-select
     private const string GetTagMember = "getTag";
 
-    private const string SetGetTagFunctionObsoleteMessage = "JavaScript source text cannot become the function that wa-select calls, so the element failed to render. Use GetTagFunction with a WaJsFunction reference. This method throws NotSupportedException and is removed in the 3.15.0 train.";
-    private const string GetTagObsoleteMessage = "Nothing reads this property. Use GetTagFunction with a WaJsFunction reference. This property is removed in the 3.15.0 train.";
-
     // the selection last pushed to or received from the element in multiple selection mode
     private string[] liveSelectedValues = [];
 
@@ -359,30 +349,6 @@ public class WaSelect : WaPopupInputBase<string?>, IWaClearableControl, IWaAffix
     #endregion
 
     #region ------ Public Methods ------
-
-
-    /// <summary>
-    /// Sent JavaScript source text to the element's <c>getTag</c>, which the element cannot call. Use
-    /// <see cref="GetTagFunction"/> instead.
-    /// </summary>
-    /// <param name="jsFunction">JavaScript source text, which is not sent</param>
-    /// <returns>A task that always fails</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the element is not rendered</exception>
-    /// <exception cref="ArgumentNullException">Thrown when jsFunction is null or empty</exception>
-    /// <exception cref="NotSupportedException">Thrown always otherwise: the replacement is <see cref="GetTagFunction"/></exception>
-    // TODO WA 3.15.0 train: remove this obsolete member (replaced by GetTagFunction)
-    [Obsolete(SetGetTagFunctionObsoleteMessage)]
-    public Task SetGetTagFunctionAsync(string jsFunction)
-    {
-        // the element would throw a TypeError on its next render, so the string is never sent
-        Exception failure = Element == null
-            ? new InvalidOperationException("Cannot set get tag function: component has not been rendered yet.")
-            : string.IsNullOrEmpty(jsFunction)
-                ? new ArgumentNullException(nameof(jsFunction))
-                : new NotSupportedException(SetGetTagFunctionObsoleteMessage);
-
-        return Task.FromException(failure);
-    }
 
     /// <summary>
     /// Removes focus from the select.

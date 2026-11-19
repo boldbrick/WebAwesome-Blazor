@@ -8,8 +8,9 @@
          are not imported during restore, which broke clean CI builds (MSB3030, missing apphost.exe) -->
     <OutputType>Exe</OutputType>
     <UseAppHost>true</UseAppHost>
-    <!-- BL0005: tests legitimately set [Parameter] properties directly when constructing components outside a renderer -->
-    <NoWarn>$(NoWarn);BL0005</NoWarn>
+    <!-- BL0005: tests legitimately set [Parameter] properties directly when constructing components outside a renderer;
+         BL0016 (.NET 11): tests call JS interop (and the recording fakes of it) unguarded on purpose, a failure must fail the test -->
+    <NoWarn>$(NoWarn);BL0005;BL0016</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +34,8 @@
   <ItemGroup>
     <None Include="ApiParity\expected-api-surface.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="ApiParity\parity-config.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="PublicApi\approved-public-api.txt" CopyToOutputDirectory="PreserveNewest" />
+    <!-- the shared baseline plus the baseline of each target framework whose surface differs (approved-public-api.<tfm>.txt) -->
+    <None Include="PublicApi\approved-public-api*.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

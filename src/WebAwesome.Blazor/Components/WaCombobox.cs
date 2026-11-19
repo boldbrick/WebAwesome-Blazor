@@ -12,7 +12,7 @@ using WebAwesome.Blazor.Models;
 namespace WebAwesome.Blazor.Components;
 
 /// <summary>
-/// An experimental combobox component that combines a text input with a list of selectable options.
+/// A combobox component that combines a text input with a list of selectable options.
 /// Corresponds to the wa-combobox Web Awesome component.
 /// </summary>
 /// <remarks>

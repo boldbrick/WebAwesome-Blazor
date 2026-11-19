@@ -223,7 +223,7 @@ public class WaPopover : ComponentBase
         await JSInterop.InvokeCancelableMethodAsync(Element.Value, "hide", Constants.HideEventName);
     }
 
-    // NOTE checked against WA 3.14.0: no RepositionAsync - wa-popover exposes no reposition() method
+    // NOTE checked against WA 3.15.0: no RepositionAsync - wa-popover exposes no reposition() method
     // (repositioning is handled internally by its anchored wa-popup)
 
     #endregion

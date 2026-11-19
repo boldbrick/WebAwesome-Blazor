@@ -52,6 +52,20 @@
         </WaText>
         <WaMarkdown Content="@upgradeChecklist" />
 
+        <WaText Variant="TextVariant.Heading" Element="h3" Style="margin-block-start: var(--wa-space-l);">Enabling the new export pipeline</WaText>
+        <WaText Element="p">
+            Opt a workspace into the 3.2 export pipeline in its settings file. The sample is highlighted by
+            <code>WaCodeHighlighter</code>, whose <code>OnLoad</code> callback reports when the grammar has highlighted it;
+            pick the format your workspace uses.
+        </WaText>
+        <WaRadioGroup Label="Settings format" Orientation="WaOrientation.Horizontal" @bind-Value="settingsFormat">
+            <WaRadio Value="@JsonFormat" Appearance="WaRadioAppearance.Button">nova.json</WaRadio>
+            <WaRadio Value="@JavaScriptFormat" Appearance="WaRadioAppearance.Button">nova.config.js</WaRadio>
+        </WaRadioGroup>
+        <WaCodeHighlighter Language="@settingsFormat" Code="@SettingsSample" Label="Workspace settings"
+                           Style="margin-block-start: var(--wa-space-s);" OnLoad="HandleSampleHighlighted" />
+        <WaText Variant="TextVariant.Caption" Element="p">@sampleMessage</WaText>
+
         <WaText Variant="TextVariant.Heading" Element="h3" Style="margin-block-start: var(--wa-space-l);">Frequently asked questions</WaText>
         <WaText Element="p">
             Common upgrade questions, grouped into an <code>WaAccordion</code> so only the relevant answer is expanded.
@@ -179,6 +193,36 @@
         - Custom color profiles are migrated automatically — no action needed.
         """;
 
+    // the settings formats of the export pipeline sample, as code highlighter languages (both grammars are bundled)
+    private const string JsonFormat = "json";
+    private const string JavaScriptFormat = "js";
+
+    private string? settingsFormat = JsonFormat;
+    private string sampleMessage = "Highlighting the settings sample…";
+
+    private const string jsonSettings = """
+        {
+          "exportPipeline": {
+            "version": 2,
+            "colorProfiles": "migrate",
+            "parallelJobs": 4
+          }
+        }
+        """;
+
+    private const string javaScriptSettings = """
+        // nova.config.js
+        export default {
+          exportPipeline: {
+            version: 2,
+            colorProfiles: 'migrate',
+            parallelJobs: 4,
+          },
+        };
+        """;
+
+    private string SettingsSample => settingsFormat == JavaScriptFormat ? javaScriptSettings : jsonSettings;
+
     private readonly List<string> reviewers = ["Mara Lindqvist", "Priya Anand"];
     private readonly string[] reviewerPool = ["Mara Lindqvist", "Priya Anand", "Jonas Petrov", "Tomás Ruiz", "Elena Fischer"];
 
@@ -207,6 +251,12 @@
     {
         signOffVisible = args.IsIntersecting;
         signOffRatio = args.IntersectionRatio;
+    }
+
+    private void HandleSampleHighlighted()
+    {
+        // OnLoad fires each time the grammar of the current language has highlighted the code
+        sampleMessage = settingsFormat == JavaScriptFormat ? "Highlighted as JavaScript" : "Highlighted as JSON";
     }
 
     private void HandleContentChange(WaContentChangeEventArgs args)

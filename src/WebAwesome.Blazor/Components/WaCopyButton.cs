@@ -304,7 +304,7 @@ public class WaCopyButton : ComponentBase
         if (Element == null)
             throw new InvalidOperationException("Cannot copy: component has not been rendered yet.");
 
-        // NOTE checked against WA 3.14.0: wa-copy-button has no public copy method; its copy handler listens for clicks
+        // NOTE checked against WA 3.15.0: wa-copy-button has no public copy method; its copy handler listens for clicks
         // inside its shadow root, which a click on the host does not reach, so the wrapper clicks the button part
         // there (a shadow-root internal of the element, recheck on every upgrade)
         await JSInterop.ClickShadowPartAsync(Element.Value, ButtonPart);

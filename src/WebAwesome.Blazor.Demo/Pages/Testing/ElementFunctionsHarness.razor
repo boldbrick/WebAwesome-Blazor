@@ -5,8 +5,8 @@
    derived from api-surface.json nor linked from the sidebar; the sweep reaches it through HARNESS_ROUTES in
    tools\e2e\tests\helpers\routes.js. Each wrapper binds its function-valued member to an export of the collocated
    ElementFunctionsHarness.razor.js; the select, combobox, date picker, date input and data grid also set ShadowStyles.
-   The buttons remove a function, change the styles, and call the obsolete string methods. The combobox, the date
-   controls and the data grid are Pro components. *@
+   The buttons remove a function and change the styles. The combobox, the date controls and the data grid are Pro
+   components. *@
 
 <PageTitle>Testing: Element Functions</PageTitle>
 
@@ -63,17 +63,6 @@
     <WaDataGrid data-testid="ef-grid" Label="Classed cells" RowKey="id" Data="rows" Columns="columns" ShadowStyles="@CellStyles" />
 </ExampleSection>
 
-<ExampleSection Title="Obsolete string methods">
-    <WaSelect @ref="obsoleteSelect" data-testid="ef-obsolete-select" Label="Obsolete select" Multiple="true"
-              @bind-Value="obsoleteSelectValue" SelectedValues="obsoleteSelectedValues" SelectedValuesChanged="@(v => obsoleteSelectedValues = v)">
-        <WaOption Value="alpha">Alpha</WaOption>
-        <WaOption Value="beta">Beta</WaOption>
-    </WaSelect>
-    <WaRating @ref="obsoleteRating" data-testid="ef-obsolete-rating" Label="Obsolete rating" @bind-Value="obsoleteRatingValue" />
-    <WaButton data-testid="ef-call-obsolete" Size="WaSize.Small" OnClick="CallObsoleteMethodsAsync">Call the obsolete methods</WaButton>
-    <p>Select: <strong data-testid="ef-obsolete-select-result">@obsoleteSelectResult</strong>, rating: <strong data-testid="ef-obsolete-rating-result">@obsoleteRatingResult</strong></p>
-</ExampleSection>
-
 @code {
     // the collocated module of this page
     private const string HarnessModule = "./Pages/Testing/ElementFunctionsHarness.razor.js";
@@ -85,13 +74,6 @@
 
     // the month the calendars show: March 2024 starts on a Friday, its 15th is a Friday too
     private static readonly DateOnly CalendarMonth = new(2024, 3, 12);
-
-    // JavaScript source text, as the obsolete methods took it
-    private const string TagSource = "(option) => `<wa-tag>${option.label}</wa-tag>`";
-    private const string SymbolSource = "() => '<span>*</span>'";
-
-    // the result text of an obsolete method call that did not throw
-    private const string SentResult = "sent";
 
     private sealed record CellRow(int Id, string Name);
 
@@ -123,33 +105,4 @@
     private DateOnly? inputValue = CalendarMonth;
     private WaDateRange? rangeInputValue = new(CalendarMonth, null);
 
-    private WaSelect obsoleteSelect = default!;
-    private WaRating obsoleteRating = default!;
-    private string? obsoleteSelectValue;
-    private IReadOnlyList<string>? obsoleteSelectedValues = ["alpha", "beta"];
-    private decimal obsoleteRatingValue = 3;
-    private string? obsoleteSelectResult;
-    private string? obsoleteRatingResult;
-
-#pragma warning disable CS0618 // the harness proves the obsolete methods no longer break their element
-    private async Task CallObsoleteMethodsAsync()
-    {
-        obsoleteSelectResult = await ResultOfAsync(() => obsoleteSelect.SetGetTagFunctionAsync(TagSource));
-        obsoleteRatingResult = await ResultOfAsync(() => obsoleteRating.SetSymbolFunctionAsync(SymbolSource));
-    }
-#pragma warning restore CS0618
-
-    // the type name of the exception a call throws, or SentResult
-    private static async Task<string> ResultOfAsync(Func<Task> call)
-    {
-        try
-        {
-            await call();
-            return SentResult;
-        }
-        catch (Exception exception)
-        {
-            return exception.GetType().Name;
-        }
-    }
 }

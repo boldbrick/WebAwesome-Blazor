@@ -1,0 +1,269 @@
+﻿@page "/components/code-highlighter"
+
+<PageTitle>Code Highlighter</PageTitle>
+
+<h1>Code Highlighter <ComponentBadges Tag="wa-code-highlighter" /></h1>
+<p>
+    Code highlighters display syntax-highlighted code with a copy button. <code>&lt;wa-code-highlighter&gt;</code> wrapped
+    by <code>WaCodeHighlighter</code>. The code comes from the <code>Code</code> parameter, which renders verbatim, or from
+    text child content, which is dedented; Blazor renders a string as text, so angle brackets need no escaping.
+    Highlighting uses the CSS Custom Highlight API (Chrome 105+, Safari 17.2+, Firefox 140+); older browsers show plain
+    text.
+</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <WaCodeHighlighter Language="html" Code="@launchButton" />
+</ExampleSection>
+
+<ExampleSection Title="Language" Code="@LanguageExample">
+    <p>
+        <code>Language</code> names a grammar or an alias. The css, html, javascript (js, jsx), json and typescript (ts)
+        grammars are bundled and highlight before the block first paints; the rest load on demand. Leave it empty to show
+        plain text.
+    </p>
+    <WaCodeHighlighter Language="ts" Code="@firstOrDefault" />
+</ExampleSection>
+
+<ExampleSection Title="Loading a Grammar on Demand" Code="@OnDemandExample">
+    <p>
+        A grammar that isn't bundled, such as csharp, loads from the library's <code>assets/grammars</code> folder the
+        first time it's used. <code>OnLoad</code> fires once the code is highlighted. A language without a grammar
+        renders as plain text, warns in the console and fires <code>OnError</code>.
+    </p>
+    <WaCodeHighlighter Language="csharp" Code="@greeting" OnLoad="() => grammarStatus = GrammarLoadedText" />
+    <p>Grammar: <strong>@grammarStatus</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Code as Child Content" Code="@ChildContentExample">
+    <p>
+        Text child content is dedented: common indentation and surrounding blank lines are removed, so the code can be
+        indented like the markup around it. Pass a string expression rather than literal markup text, so the Razor
+        compiler's whitespace trimming can't change the indentation.
+    </p>
+    <WaCodeHighlighter Language="css">@indentedRule</WaCodeHighlighter>
+</ExampleSection>
+
+<ExampleSection Title="Preserving Indentation" Code="@WithoutDedentExample">
+    <p>
+        <code>WithoutDedent</code> keeps the child content's whitespace exactly as written, like a <code>pre</code>
+        element; a single newline right after the opening tag is ignored. <code>Code</code> always renders verbatim.
+    </p>
+    <WaCodeHighlighter Language="js" WithoutDedent="true">@indentedComment</WaCodeHighlighter>
+</ExampleSection>
+
+<ExampleSection Title="Wrapping Long Lines" Code="@WrapExample">
+    <p>Long lines scroll horizontally by default; <code>Wrap</code> wraps them instead.</p>
+    <WaCodeHighlighter Language="js" Wrap="true">const message = 'This line is long enough to wrap onto the next line instead of making the code block scroll horizontally.';</WaCodeHighlighter>
+</ExampleSection>
+
+<ExampleSection Title="Label" Code="@LabelExample">
+    <p>The code block is a region named "Code" in the user's language; <code>Label</code> describes what the code is for.</p>
+    <WaCodeHighlighter Label="Install command">dotnet add package WebAwesome.Blazor</WaCodeHighlighter>
+</ExampleSection>
+
+<ExampleSection Title="Removing the Copy Button" Code="@WithoutCopyExample">
+    <p>
+        The copy button appears when the pointer is over the block or it has focus, and always on touch devices.
+        <code>WithoutCopy</code> removes it.
+    </p>
+    <WaCodeHighlighter Language="css" WithoutCopy="true" Code="@catfishRule" />
+</ExampleSection>
+
+<ExampleSection Title="Token Colors" Code="@ColorsExample">
+    <p>
+        Token colors come from custom properties such as <code>--comment-color</code>, <code>--keyword-color</code> and
+        <code>--string-color</code>; set them on one block, or on <code>wa-code-highlighter</code> in a stylesheet for
+        all of them. Use <code>light-dark()</code> to pick a color for each mode. Tokens can only change color,
+        background color and text decoration.
+    </p>
+    <WaCodeHighlighter Language="js" Code="@countFish"
+                       Style="--comment-color: light-dark(var(--wa-color-pink-40), var(--wa-color-pink-60)); --keyword-color: light-dark(var(--wa-color-orange-40), var(--wa-color-orange-60)); --string-color: light-dark(var(--wa-color-cyan-40), var(--wa-color-cyan-60));" />
+</ExampleSection>
+
+<ExampleSection Title="Dark Mode for One Block" Code="@DarkExample">
+    <p>The colors follow the color scheme; the <code>wa-dark</code> class shows one block in dark mode.</p>
+    <WaCodeHighlighter Language="css" Class="wa-dark" Code="@moonwalkRule" />
+</ExampleSection>
+
+<ExampleSection Title="Dynamic Code" Code="@DynamicExample">
+    <p>
+        Bind <code>Code</code> to a field to show code that changes: the block highlights what you type in the
+        textarea.
+    </p>
+    <WaStack>
+        <WaCodeHighlighter Language="css" Code="@editedCss" />
+        <WaDivider />
+        <WaTextArea Label="CSS" Rows="4" Immediate="true" @bind-Value="editedCss" />
+    </WaStack>
+</ExampleSection>
+
+<ApiTable Tag="wa-code-highlighter" />
+
+@code {
+    private const string GrammarLoadedText = "loaded and highlighted";
+
+    private string grammarStatus = "loading…";
+    private string? editedCss = ".bookworm {\n  font-family: var(--wa-font-family-longform);\n}";
+
+    private readonly string launchButton = """
+        <wa-button variant="brand">
+          <wa-icon slot="start" name="rocket"></wa-icon>
+          Launch
+        </wa-button>
+        """;
+
+    private readonly string firstOrDefault = """
+        function firstOrDefault<T>(items: T[], fallback: T): T {
+          return items.length > 0 && items[0] !== undefined ? items[0] : fallback;
+        }
+        """;
+
+    private readonly string greeting = """
+        public record Greeting(string Name)
+        {
+            public override string ToString() => $"Hello, {Name}!";
+        }
+        """;
+
+    // indented like the surrounding markup; the element removes the common indentation
+    private readonly string indentedRule = "\n    .catfish {\n      border-radius: 50%;\n    }\n";
+
+    // kept exactly as written, four-space indent included
+    private readonly string indentedComment = "\n    // This block keeps its four-space indent\n    const name = 'Web Awesome';";
+
+    private readonly string catfishRule = """
+        .catfish {
+          border-radius: 50%;
+        }
+        """;
+
+    private readonly string countFish = """
+        // Count the fish in the sea
+        const fish = ['catfish', 'swordfish', 'pufferfish'];
+        console.log(`There are ${fish.length} kinds of fish`);
+        """;
+
+    private readonly string moonwalkRule = """
+        .moonwalk {
+          animation: slide-back 2s ease-in-out infinite;
+        }
+        """;
+
+    private const string DefaultExample = """"
+        <WaCodeHighlighter Language="html" Code="@launchButton" />
+
+        @code {
+            private readonly string launchButton = """
+                <wa-button variant="brand">
+                  <wa-icon slot="start" name="rocket"></wa-icon>
+                  Launch
+                </wa-button>
+                """;
+        }
+        """";
+
+    private const string LanguageExample = """"
+        <WaCodeHighlighter Language="ts" Code="@firstOrDefault" />
+
+        @code {
+            private readonly string firstOrDefault = """
+                function firstOrDefault<T>(items: T[], fallback: T): T {
+                  return items.length > 0 && items[0] !== undefined ? items[0] : fallback;
+                }
+                """;
+        }
+        """";
+
+    private const string OnDemandExample = """"
+        <WaCodeHighlighter Language="csharp" Code="@greeting" OnLoad="() => grammarStatus = GrammarLoadedText" />
+        <p>Grammar: <strong>@grammarStatus</strong></p>
+
+        @code {
+            private const string GrammarLoadedText = "loaded and highlighted";
+
+            private string grammarStatus = "loading…";
+
+            private readonly string greeting = """
+                public record Greeting(string Name)
+                {
+                    public override string ToString() => $"Hello, {Name}!";
+                }
+                """;
+        }
+        """";
+
+    private const string ChildContentExample = """
+        <WaCodeHighlighter Language="css">@indentedRule</WaCodeHighlighter>
+
+        @code {
+            // indented like the surrounding markup; the element removes the common indentation
+            private readonly string indentedRule = "\n    .catfish {\n      border-radius: 50%;\n    }\n";
+        }
+        """;
+
+    private const string WithoutDedentExample = """
+        <WaCodeHighlighter Language="js" WithoutDedent="true">@indentedComment</WaCodeHighlighter>
+
+        @code {
+            // kept exactly as written, four-space indent included
+            private readonly string indentedComment = "\n    // This block keeps its four-space indent\n    const name = 'Web Awesome';";
+        }
+        """;
+
+    private const string WrapExample = """
+        <WaCodeHighlighter Language="js" Wrap="true">const message = 'This line is long enough to wrap onto the next line instead of making the code block scroll horizontally.';</WaCodeHighlighter>
+        """;
+
+    private const string LabelExample = """
+        <WaCodeHighlighter Label="Install command">dotnet add package WebAwesome.Blazor</WaCodeHighlighter>
+        """;
+
+    private const string WithoutCopyExample = """"
+        <WaCodeHighlighter Language="css" WithoutCopy="true" Code="@catfishRule" />
+
+        @code {
+            private readonly string catfishRule = """
+                .catfish {
+                  border-radius: 50%;
+                }
+                """;
+        }
+        """";
+
+    private const string ColorsExample = """"
+        <WaCodeHighlighter Language="js" Code="@countFish"
+                           Style="--comment-color: light-dark(var(--wa-color-pink-40), var(--wa-color-pink-60)); --keyword-color: light-dark(var(--wa-color-orange-40), var(--wa-color-orange-60)); --string-color: light-dark(var(--wa-color-cyan-40), var(--wa-color-cyan-60));" />
+
+        @code {
+            private readonly string countFish = """
+                // Count the fish in the sea
+                const fish = ['catfish', 'swordfish', 'pufferfish'];
+                console.log(`There are ${fish.length} kinds of fish`);
+                """;
+        }
+        """";
+
+    private const string DarkExample = """"
+        <WaCodeHighlighter Language="css" Class="wa-dark" Code="@moonwalkRule" />
+
+        @code {
+            private readonly string moonwalkRule = """
+                .moonwalk {
+                  animation: slide-back 2s ease-in-out infinite;
+                }
+                """;
+        }
+        """";
+
+    private const string DynamicExample = """
+        <WaStack>
+            <WaCodeHighlighter Language="css" Code="@editedCss" />
+            <WaDivider />
+            <WaTextArea Label="CSS" Rows="4" Immediate="true" @bind-Value="editedCss" />
+        </WaStack>
+
+        @code {
+            private string? editedCss = ".bookworm {\n  font-family: var(--wa-font-family-longform);\n}";
+        }
+        """;
+}

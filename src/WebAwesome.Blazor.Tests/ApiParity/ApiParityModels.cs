@@ -190,6 +190,16 @@ public class ParityConfig
     public Dictionary<string, EnumUnreachableValues> UnreachableEnumUnionValues { get; set; } = new();
 
     /// <summary>
+    /// Allowlist entries that do not apply on one target framework, keyed by its moniker ("net11.0"), each named by the
+    /// key of its reason ("additionalAttributeParameters:wa-input:min"), because the wrapper API legitimately differs
+    /// there (docs\technical\technical.md, Multi-targeting). The checks skip such an entry on that framework only.
+    /// Every moniker needs an ignoreReasons entry keyed "targetFrameworkExclusions:&lt;moniker&gt;"; a listed key that
+    /// names no allowlist entry is stale.
+    /// </summary>
+    [JsonPropertyName("targetFrameworkExclusions")]
+    public Dictionary<string, List<string>> TargetFrameworkExclusions { get; set; } = new();
+
+    /// <summary>
     /// Rationale of each deliberate deviation, keyed per allowlist entry: "&lt;list&gt;:&lt;tag&gt;:&lt;entry&gt;" for a
     /// per-component list, "&lt;list&gt;:&lt;entry&gt;" for a top-level one (see ParityAllowlists).
     /// </summary>
@@ -450,7 +460,7 @@ public class ComponentParityConfig
 
     /// <summary>
     /// Slots the element's CEM entry omits but its compiled source renders and its documentation describes (e.g.
-    /// wa-date-picker's day-YYYY-MM-DD); the slot checks treat them as declared in both directions, a patterned name
+    /// wa-date-picker's day-YYYY-MM-DD before Web Awesome 3.15.0 declared it); the slot checks treat them as declared in both directions, a patterned name
     /// included. They must be re-verified against the source on every upgrade. Reason key
     /// "sourceVerifiedSlots:&lt;tag&gt;:&lt;slot&gt;" citing the source and documentation; an entry the CEM now declares is
     /// stale.

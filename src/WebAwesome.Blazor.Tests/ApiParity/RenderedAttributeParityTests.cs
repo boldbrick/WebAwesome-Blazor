@@ -34,7 +34,8 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// element parses, checked with Web Awesome's own patterns (WaWirePatterns), and an empty set renders nothing; (i) a
 /// rendered attribute with an element default falls back to it instead of being removed; (j) every Default&lt;Name&gt;
 /// constant holds the element default; (k) every default a sticky call site passes is the element default. The element
-/// defaults come from the test-side oracle WaElementDefaults, generated from the CEM. Parameters of
+/// defaults come from the test-side oracle WaElementDefaults, generated from the CEM. A C# 15 union parameter
+/// (net11.0, WaInputBound) is sampled with every sample of every case type. Parameters of
 /// other types (other collections, objects, fragments, callbacks) are not sampled. Every allowlist
 /// entry needs a reason, and stale entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
@@ -414,6 +415,8 @@ public class RenderedAttributeParityTests
 
             foreach (var (attribute, parameters) in componentConfig.AdditionalAttributeParameters)
             {
+                if (!AppliesToThisTargetFramework($"{AdditionalAttributeParametersKey}:{tag}:{attribute}")) continue;
+
                 var valid = parameters.Count > 0 && ofTag.Any(e => e.Component.Attributes.ContainsKey(attribute)
                     && parameters.All(p => FindParameter(e.Renders.ComponentType, p) != null));
                 if (!valid)
@@ -490,7 +493,7 @@ public class RenderedAttributeParityTests
     private const string DateSetKind = "IReadOnlySet<DateOnly>";
     private const string WeekdaySetKind = "IReadOnlySet<DayOfWeek>";
 
-    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind, LocalDateTimeKind, NumberListKind, StringListKind, StringSetKind, PlacementListKind];
+    private static readonly string[] WireFormatKinds = [DateKind, TimeKind, InstantKind, RangeKind, DateSetKind, WeekdaySetKind, StepKind, LocalDateTimeKind, NumberListKind, StringListKind, StringSetKind, PlacementListKind, HeadingLevelListKind];
     private const string BooleanType = "boolean";
     private const string NumberType = "number";
     private const string StringType = "string";
@@ -508,6 +511,7 @@ public class RenderedAttributeParityTests
     private const string StringListKind = "IReadOnlyList<string>";
     private const string StringSetKind = "IReadOnlySet<string>";
     private const string PlacementListKind = "IReadOnlyList<WaPlacement>";
+    private const string HeadingLevelListKind = "IReadOnlyList<WaRichTextEditorHeadingLevel>";
     private const string ListKeyPrefix = "list:";
     private const string DefaultConstantPrefix = "Default";
     private const string PercentSign = "%";
@@ -577,9 +581,14 @@ public class RenderedAttributeParityTests
     /// </summary>
     /// <param name="Property">The [Parameter] property</param>
     /// <param name="Label">"Property=value" for miss descriptions</param>
-    /// <param name="Value">The boxed value</param>
+    /// <param name="Value">The boxed value the checks read (for a union parameter, the value of its case)</param>
     internal sealed record ParameterSample(PropertyInfo Property, string Label, object Value)
     {
+        /// <summary>
+        /// The boxed value the parameter is set to: Value, or for a union parameter Value converted to the union.
+        /// </summary>
+        public object ParameterValue { get; init; } = Value;
+
         /// <summary>
         /// Other parameters set in the same render (the attribute's "attributePrerequisites").
         /// </summary>
@@ -626,7 +635,7 @@ public class RenderedAttributeParityTests
             .ToList();
 
         var parameterSets = samples
-            .Select(s => (IReadOnlyList<(string Name, object? Value)>)s.Prerequisites.Select(p => (p.Name, (object?)p.Value)).Append((s.Property.Name, s.Value)).ToList())
+            .Select(s => (IReadOnlyList<(string Name, object? Value)>)s.Prerequisites.Select(p => (p.Name, (object?)p.Value)).Append((s.Property.Name, s.ParameterValue)).ToList())
             .ToList();
 
         var roots = RenderedWrapperCatalog.RenderRoots(componentType, parameterSets, HostileCulture);
@@ -689,10 +698,31 @@ public class RenderedAttributeParityTests
             var parameter = property.GetCustomAttribute<ParameterAttribute>(inherit: true);
             if (parameter == null || parameter.CaptureUnmatchedValues || !property.CanWrite) continue;
 
-            foreach (var value in SampleValuesOf(Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType))
+            var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+            foreach (var value in SampleValuesOf(type))
                 yield return new ParameterSample(property, $"{property.Name}={Describe(value)}", value);
+
+#if NET11_0_OR_GREATER
+            // a C# 15 union (WaInputBound) is sampled with every sample of every case type, converted by the case's
+            // constructor; the checks read the case value, so each case is checked like a parameter of its own type
+            foreach (var constructor in UnionCaseConstructors(type))
+            {
+                foreach (var value in SampleValuesOf(constructor.GetParameters()[0].ParameterType))
+                    yield return new ParameterSample(property, $"{property.Name}={Describe(value)}", value) { ParameterValue = constructor.Invoke(new[] { value }) };
+            }
+#endif
         }
     }
+
+#if NET11_0_OR_GREATER
+    // the constructors of the cases of a C# 15 union type (one parameter each), or none for any other type
+    private static IEnumerable<ConstructorInfo> UnionCaseConstructors(Type type)
+    {
+        return typeof(IUnion).IsAssignableFrom(type)
+            ? type.GetConstructors().Where(c => c.GetParameters().Length == 1)
+            : Enumerable.Empty<ConstructorInfo>();
+    }
+#endif
 
     private static IEnumerable<object> SampleValuesOf(Type type)
     {
@@ -784,6 +814,19 @@ public class RenderedAttributeParityTests
             yield return new[] { WaPlacement.RightEnd, WaPlacement.Bottom };
             yield return Array.Empty<WaPlacement>();
         }
+        else if (type == typeof(IReadOnlyList<WaRichTextEditorHeadingLevel>))
+        {
+            // descending, so a sorted rendering shows
+            yield return new[] { WaRichTextEditorHeadingLevel.H4, WaRichTextEditorHeadingLevel.H2 };
+            yield return Array.Empty<WaRichTextEditorHeadingLevel>();
+        }
+    }
+
+    // the item type of an IReadOnlyList<T> parameter, or null for any other parameter type
+    private static Type? ListItemType(PropertyInfo property)
+    {
+        var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IReadOnlyList<>) ? type.GetGenericArguments()[0] : null;
     }
 
     private static bool IsNumber(object value) => FloatingTypes.Contains(value.GetType())
@@ -1071,10 +1114,18 @@ public class RenderedAttributeParityTests
                     checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
                     miss = ListMiss(element.Tag, attribute, present, value, tokens.ToList(), string.Equals, rendered);
                     break;
-                case IReadOnlyList<WaPlacement> placements:
+                // array covariance lets an array of any int-backed enum pass as IReadOnlyList<WaPlacement>, so both enum
+                // list cases test the exact property type
+                case IReadOnlyList<WaPlacement> placements when ListItemType(sample.Property) == typeof(WaPlacement):
                     checkedKinds.Add(PlacementListKind);
                     checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
                     miss = ListMiss(element.Tag, attribute, present, value, placements.Select(p => EnumValueParityTests.HtmlValueOf(p) ?? string.Empty).ToList(),
+                        string.Equals, rendered);
+                    break;
+                case IReadOnlyList<WaRichTextEditorHeadingLevel> headingLevels when ListItemType(sample.Property) == typeof(WaRichTextEditorHeadingLevel):
+                    checkedKinds.Add(HeadingLevelListKind);
+                    checkedKinds.Add(ListKeyPrefix + EnumValueParityTests.AttributeKey(element.Tag, attribute));
+                    miss = ListMiss(element.Tag, attribute, present, value, headingLevels.Select(l => EnumValueParityTests.HtmlValueOf(l) ?? string.Empty).ToList(),
                         string.Equals, rendered);
                     break;
                 case DateTime dateTime:
@@ -1225,7 +1276,7 @@ public class RenderedAttributeParityTests
             var prerequisites = sample.Sample.Prerequisites.Select(p => (p.Name, (object?)p.Value)).ToList();
             var sets = new IReadOnlyList<(string Name, object? Value)>[]
             {
-                prerequisites.Append((property.Name, sample.Sample.Value)).ToList(),
+                prerequisites.Append((property.Name, sample.Sample.ParameterValue)).ToList(),
                 prerequisites.Append((property.Name, property.GetValue(defaults))).ToList()
             };
 
@@ -1457,8 +1508,10 @@ public class RenderedAttributeParityTests
             if (IsIgnoredAttribute(element.Config, attribute)) continue;
             yield return (attribute, surface, FindParameter(element.Renders.ComponentType, ExpectedParameterName(element.Config, attribute)));
 
-            // further parameters rendering the same attribute ("additionalAttributeParameters")
+            // further parameters rendering the same attribute ("additionalAttributeParameters", where it applies on this
+            // target framework)
             if (!element.Config.AdditionalAttributeParameters.TryGetValue(attribute, out var others)) continue;
+            if (!AppliesToThisTargetFramework($"{AdditionalAttributeParametersKey}:{element.Tag}:{attribute}")) continue;
             foreach (var other in others)
             {
                 var property = FindParameter(element.Renders.ComponentType, other);

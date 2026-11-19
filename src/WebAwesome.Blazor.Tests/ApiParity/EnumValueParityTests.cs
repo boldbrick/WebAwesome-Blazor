@@ -458,8 +458,8 @@ public class EnumValueParityTests
     }
 
     /// <summary>
-    /// A "tokenListAttributes" entry must name a CEM attribute of the element typed as a plain string (a literal
-    /// union needs no token list), and an "unresolvedEnumAttributes" entry must still name an enum parameter bound
+    /// A "tokenListAttributes" entry must name a CEM attribute of the element typed as a plain string, optionally with
+    /// null or undefined (a literal union needs no token list), and an "unresolvedEnumAttributes" entry must still name an enum parameter bound
     /// to an attribute whose type resolves to no string-literal union.
     /// </summary>
     [Fact]
@@ -476,7 +476,7 @@ public class EnumValueParityTests
             {
                 if (!Surface.Components.TryGetValue(tag, out var component) || !component.Attributes.TryGetValue(attributeName, out var attribute))
                     misses.Add($"{tag}: tokenListAttributes entry '{attributeName}' is not a CEM attribute of the element and must be removed");
-                else if (attribute.EffectiveType != PlainStringType)
+                else if (!IsPlainString(attribute.EffectiveType))
                     misses.Add($"{tag}: tokenListAttributes entry '{attributeName}' has CEM type '{attribute.EffectiveType}', not '{PlainStringType}'; check it as a union instead");
             }
 
@@ -507,6 +507,14 @@ public class EnumValueParityTests
 
     // union members that only express optionality, not an emitted value
     private static readonly HashSet<string> OptionalUnionMembers = new(StringComparer.Ordinal) { "null", "undefined" };
+
+    // whether a CEM type is a plain string, optionally with null or undefined (wa-page's disable-sticky is
+    // 'undefined | null | string' since 3.15.0)
+    private static bool IsPlainString(string? type)
+    {
+        var members = (type ?? string.Empty).Split('|').Select(p => p.Trim()).Where(p => p.Length > 0 && !OptionalUnionMembers.Contains(p)).ToList();
+        return members is [PlainStringType];
+    }
 
     // a single- or double-quoted string literal with no embedded quote of the same kind
     private static readonly Regex StringLiteralRegex = new(

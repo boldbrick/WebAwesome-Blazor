@@ -1,5 +1,3 @@
-using System;
-
 namespace WebAwesome.Blazor.Models;
 
 /// <summary>
@@ -36,15 +34,6 @@ public class IconLibraryOptions
     public WaJsFunction? ResolverFunction { get; set; }
 
     /// <summary>
-    /// Dotted path of a global JavaScript function (e.g. "myApp.icons.mutate") that mutates each SVG before it is
-    /// rendered. Web Awesome calls it with the SVG element and the wa-icon host element. The path is resolved when
-    /// the library is registered, so the function must be defined by then.
-    /// </summary>
-    // TODO WA 3.15.0 train: remove this obsolete member (replaced by MutatorFunction)
-    [Obsolete(MutatorObsoleteMessage)]
-    public string? Mutator { get; set; }
-
-    /// <summary>
     /// A JavaScript function that changes each SVG of the library after it loads, for example its stroke width. Web
     /// Awesome calls it as <c>(svg, icon, ctx)</c> after each load and each update of a <c>wa-icon</c>: <c>svg</c> is
     /// the SVG element, <c>icon</c> the <c>wa-icon</c> element, <c>ctx.args</c> the <see cref="WaJsFunction.WithArgs"/>
@@ -61,10 +50,4 @@ public class IconLibraryOptions
     /// &lt;use&gt; element instead of being fetched
     /// </summary>
     public bool SpriteSheet { get; set; }
-
-    #region ------ Internals ------
-
-    private const string MutatorObsoleteMessage = "Use MutatorFunction with WaJsFunction.Global(path), or with a registered or module function. This property is removed in the 3.15.0 train.";
-
-    #endregion
 }

@@ -1,0 +1,490 @@
+﻿@page "/components/rich-text-editor"
+@using System.ComponentModel.DataAnnotations
+@using WebAwesome.Blazor.Models
+
+<PageTitle>Rich Text Editor</PageTitle>
+
+<h1>Rich Text Editor <ComponentBadges Tag="wa-rich-text-editor" /></h1>
+<p>Rich text editors let users write and format content with a toolbar and keyboard shortcuts, bound to a string of HTML or Markdown. <code>&lt;wa-rich-text-editor&gt;</code> wrapped by <code>WaRichTextEditor</code>.</p>
+
+<ExampleSection Title="Default" Code="@DefaultExample">
+    <p>
+        The bound value is the content as HTML. Like a textarea, the editor reports a change when the focus leaves it, and
+        that is when the bound value updates.
+    </p>
+    <WaRichTextEditor Label="Description" Placeholder="Describe the project" @bind-Value="descriptionValue" />
+    <p>Value: <code>@(string.IsNullOrEmpty(descriptionValue) ? "(empty)" : descriptionValue)</code></p>
+</ExampleSection>
+
+<ExampleSection Title="Hint" Code="@HintExample">
+    <WaRichTextEditor Label="Bio" Hint="A few sentences about your background and interests." @bind-Value="bioValue" />
+</ExampleSection>
+
+<ExampleSection Title="Initial Value" Code="@InitialValueExample">
+    <p>
+        The bound value is also the initial content. The value is serialized from the editor's content, so after an edit
+        it can differ from the markup you set: unsupported markup is dropped and equivalent markup is normalized.
+    </p>
+    <WaRichTextEditor Label="Meeting notes" @bind-Value="meetingNotesValue" />
+</ExampleSection>
+
+<ExampleSection Title="Markdown" Code="@MarkdownExample">
+    <p>
+        With <code>Format</code> <code>WaRichTextEditorFormat.Markdown</code>, the bound value is GitHub Flavored Markdown,
+        plus <code>==text==</code> for highlights. What Markdown can't express, such as colors, stays inline HTML.
+    </p>
+    <WaRichTextEditor Label="Release notes" Format="WaRichTextEditorFormat.Markdown" @bind-Value="markdownValue" />
+    <pre style="white-space: pre-wrap;">@markdownValue</pre>
+</ExampleSection>
+
+<ExampleSection Title="Appearance" Code="@AppearanceExample">
+    <WaStack Gap="GapSize.Gap_M">
+        <WaRichTextEditor Appearance="WaInputAppearance.Outlined" Label="Outlined" Toolbar="bold italic underline" @bind-Value="outlinedValue" />
+        <WaRichTextEditor Appearance="WaInputAppearance.Filled" Label="Filled" Toolbar="bold italic underline" @bind-Value="filledValue" />
+        <WaRichTextEditor Appearance="WaInputAppearance.FilledOutlined" Label="Filled outlined" Toolbar="bold italic underline" @bind-Value="filledOutlinedValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Size" Code="@SizeExample">
+    <p>The toolbar, the content and the menus scale together.</p>
+    <WaStack Gap="GapSize.Gap_M">
+        <WaRichTextEditor Size="WaSize.Small" Label="Small" Toolbar="bold italic underline" @bind-Value="smallValue" />
+        <WaRichTextEditor Size="WaSize.Medium" Label="Medium" Toolbar="bold italic underline" @bind-Value="mediumValue" />
+        <WaRichTextEditor Size="WaSize.Large" Label="Large" Toolbar="bold italic underline" @bind-Value="largeValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Disabled &amp; Readonly" Code="@StatesExample">
+    <p>
+        A disabled editor can't be edited or focused. A readonly one stays focusable, its content can still be selected
+        and copied, and its value is still submitted with a form; its toolbar is hidden.
+    </p>
+    <WaStack Gap="GapSize.Gap_M">
+        <WaRichTextEditor Label="Notes" Disabled="true" @bind-Value="disabledValue" />
+        <WaRichTextEditor Label="Terms" Readonly="true" @bind-Value="readonlyValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Character Count" Code="@CountExample">
+    <p>
+        <code>WithCount</code> shows a character count below the editor; with <code>MaxLength</code> it shows the remaining
+        characters. The count is the text without markup. Typing past <code>MaxLength</code> isn't blocked: the count goes
+        negative and the editor is invalid until the text is shortened.
+    </p>
+    <WaStack Gap="GapSize.Gap_M">
+        <WaRichTextEditor Label="Comment" Hint="Share your feedback." WithCount="true" @bind-Value="countValue" />
+        <WaRichTextEditor Label="Summary" Hint="Keep it short." WithCount="true" MaxLength="140" @bind-Value="summaryValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Customizing the Toolbar" Code="@ToolbarExample">
+    <p>
+        <code>Toolbar</code> lists the tools as space-separated tokens, and a <code>|</code> starts a new group. Removing a
+        tool doesn't remove its feature: shortcuts, pasted content and the value can still bring it in (see Disabling
+        Features). An empty <code>Toolbar</code> removes the toolbar; keyboard and Markdown shortcuts still work.
+    </p>
+    <WaStack Gap="GapSize.Gap_M">
+        <WaRichTextEditor Label="Comment" Toolbar="bold italic underline | link | undo redo" @bind-Value="toolbarValue" />
+        <WaRichTextEditor Label="Quick note" Toolbar="" Placeholder="Type # and a space to start a heading" @bind-Value="quickNoteValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Toolbar Placement" Code="@PlacementExample">
+    <p>
+        <code>ToolbarPlacement</code> <code>WaRichTextEditorToolbarPlacement.Bottom</code> moves the toolbar below the
+        content. With a few tools, a short <code>--content-min-height</code> and the other features disabled, it makes a
+        compact composer for chat and comment boxes.
+    </p>
+    <WaRichTextEditor Label="Message" Placeholder="Write a message" ToolbarPlacement="WaRichTextEditorToolbarPlacement.Bottom"
+                      Toolbar="bold italic | link"
+                      DisabledFeatures="@(WaRichTextEditorFeatures.Image | WaRichTextEditorFeatures.Embed | WaRichTextEditorFeatures.Table | WaRichTextEditorFeatures.Color | WaRichTextEditorFeatures.Align)"
+                      Style="--content-min-height: 3em;" @bind-Value="messageValue" />
+</ExampleSection>
+
+<ExampleSection Title="Disabling Features" Code="@FeaturesExample">
+    <p>
+        <code>DisabledFeatures</code> removes features entirely: their tools, shortcuts and commands are turned off, and
+        they are stripped from the value and from pasted content, keeping the text. The second editor's table and code
+        block are reduced to paragraphs.
+    </p>
+    <WaStack Gap="GapSize.Gap_M">
+        <WaRichTextEditor Label="Comment" Toolbar="bold italic underline strikethrough | bullet-list ordered-list | link"
+                          DisabledFeatures="@(WaRichTextEditorFeatures.Image | WaRichTextEditorFeatures.Embed | WaRichTextEditorFeatures.Table | WaRichTextEditorFeatures.Color | WaRichTextEditorFeatures.Align)"
+                          @bind-Value="commentValue" />
+        <WaRichTextEditor Label="Support reply"
+                          DisabledFeatures="@(WaRichTextEditorFeatures.Table | WaRichTextEditorFeatures.Image | WaRichTextEditorFeatures.Embed | WaRichTextEditorFeatures.CodeBlock)"
+                          @bind-Value="strippedValue" />
+    </WaStack>
+</ExampleSection>
+
+<ExampleSection Title="Heading Levels" Code="@HeadingLevelsExample">
+    <p>
+        <code>HeadingLevels</code> chooses the heading levels users can apply (levels 1 to 3 by default). Headings at other
+        levels are converted to the nearest allowed level. Content shown within a page usually starts at level 2.
+    </p>
+    <WaRichTextEditor Label="Section" HeadingLevels="SectionHeadingLevels" @bind-Value="sectionValue" />
+</ExampleSection>
+
+<ExampleSection Title="Colors" Code="@ColorsExample">
+    <p>
+        The <code>color</code> tool isn't in the default toolbar. <code>TextColors</code> and <code>HighlightColors</code>
+        replace the swatches of its menu with your own CSS colors; translucent highlights read well on any background.
+    </p>
+    <WaRichTextEditor Label="Status update" Toolbar="bold italic color | undo redo"
+                      TextColors="StatusTextColors" HighlightColors="StatusHighlightColors" @bind-Value="statusValue" />
+</ExampleSection>
+
+<ExampleSection Title="Custom Toolbar Buttons" Code="@ActionsExample">
+    <p>
+        <code>ActionsContent</code> adds buttons to the toolbar, where the <code>actions</code> token appears. Pressing them
+        keeps the selection in the content. The highlight button runs a command with <code>RunCommandAsync</code> and
+        follows the formatting at the caret: <code>OnSelectionChange</code> asks <code>IsActiveAsync</code> whether the
+        caret is in highlighted text. The ticket button inserts a link with <code>InsertHtmlAsync</code>.
+    </p>
+    <WaRichTextEditor @ref="replyEditor" Label="Support reply" Toolbar="bold italic link | actions | undo redo"
+                      OnSelectionChange="RefreshHighlightAsync" @bind-Value="replyValue">
+        <ActionsContent>
+            <WaButton Appearance="@(highlightActive ? WaAppearance.Filled : WaAppearance.Plain)" Size="WaSize.Small"
+                      OnClick="ToggleHighlightAsync">
+                <WaIcon Name="highlighter" Label="Highlight" />
+            </WaButton>
+            <WaButton Appearance="WaAppearance.Plain" Size="WaSize.Small" OnClick="InsertTicketLinkAsync">
+                <WaIcon Name="ticket" Label="Insert ticket link" />
+            </WaButton>
+        </ActionsContent>
+    </WaRichTextEditor>
+    <p>Highlight at the caret: <strong>@(highlightActive ? "on" : "off")</strong></p>
+</ExampleSection>
+
+<ExampleSection Title="Image Provider" Code="@ImageProviderExample">
+    <p>
+        <code>ImageProviderFunction</code> replaces the image editor: the image button calls it instead of asking for a URL,
+        and pasted or dropped image files are passed to it, e.g. to upload them. Here an export of the collocated
+        <code>RichTextEditorPage.razor.js</code> inserts a picture from the app's media library.
+    </p>
+    <WaRichTextEditor Label="Post" Hint="The image button inserts a picture from the media library."
+                      Toolbar="bold italic | image | undo redo" ImageProviderFunction="mediaLibrary" @bind-Value="postValue" />
+</ExampleSection>
+
+<ExampleSection Title="Validation" Code="@ValidationExample">
+    <p>
+        <code>Required</code>, <code>MinLength</code> and <code>MaxLength</code> set the editor's own constraints, counted on
+        the text without markup; the <code>DataAnnotationsValidator</code> checks the bound model when the form is
+        submitted.
+    </p>
+    <EditForm Model="feedback" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <WaStack Gap="GapSize.Gap_M">
+            <WaRichTextEditor Label="Feedback" Hint="At least 20 characters." Toolbar="bold italic | bullet-list ordered-list | link"
+                              Required="true" MinLength="20" MaxLength="500" WithCount="true" @bind-Value="feedback.Message" />
+            <ValidationSummary />
+            <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+                <WaButton Variant="WaVariant.Brand" Type="WaButtonType.Submit">Submit</WaButton>
+                @if (feedbackSent)
+                {
+                    <WaBadge Variant="WaVariant.Success">Thanks for your feedback</WaBadge>
+                }
+            </WaCluster>
+        </WaStack>
+    </EditForm>
+</ExampleSection>
+
+<ApiTable Tag="wa-rich-text-editor" />
+
+@code {
+    private string? descriptionValue;
+    private string? bioValue;
+    private string? meetingNotesValue = "<h2>Decisions</h2><ul><li>Ship the import tool in the next release.</li><li>Move the weekly check-in to <strong>Thursdays</strong>.</li></ul><p>Next review is scheduled for <em>the end of the month</em>.</p>";
+    private string? markdownValue = "## What's New\n\n- **Faster sync** for large libraries\n- Export to ==CSV== and ~~XML~~ JSON\n\nRead the [full changelog](https://example.com/changelog).";
+    private string? outlinedValue;
+    private string? filledValue;
+    private string? filledOutlinedValue;
+    private string? smallValue;
+    private string? mediumValue;
+    private string? largeValue;
+    private string? disabledValue = "<p>This content can't be edited or focused.</p>";
+    private string? readonlyValue = "<p>Subscriptions renew automatically at the end of each billing period. You can cancel at any time from your <strong>account settings</strong>.</p>";
+    private string? countValue;
+    private string? summaryValue;
+    private string? toolbarValue = "<p>The <strong>groups</strong> in this toolbar follow the <a href=\"https://example.com/style-guide\">style guide</a>.</p>";
+    private string? quickNoteValue;
+    private string? messageValue;
+    private string? commentValue;
+    private string? strippedValue = "<p>The table and code block below are reduced to paragraphs because tables and code blocks are disabled.</p><table><tr><th>Plan</th><th>Seats</th></tr><tr><td>Team</td><td>10</td></tr></table><pre><code>npm install</code></pre>";
+    private string? sectionValue = "<h1>This heading becomes level 2</h1><p>Open the block menu to see the available levels.</p>";
+    private string? statusValue = "<p>The redesign is <span style=\"color: rgb(22 163 74)\">on track</span> for Friday, but the icon audit is <span style=\"color: rgb(220 38 38)\">blocked</span>. <mark style=\"background-color: rgb(250 204 21 / 40%)\">Sign-off is due Thursday</mark>.</p>";
+    private string? replyValue = "<p>Thanks for reaching out.</p>";
+    private string? postValue;
+
+    // the heading levels of the section editor: the page's own title keeps level 1
+    private static readonly WaRichTextEditorHeadingLevel[] SectionHeadingLevels = [WaRichTextEditorHeadingLevel.H2, WaRichTextEditorHeadingLevel.H3];
+
+    // a common eight-color palette: solid text colors and translucent highlights
+    private static readonly string[] StatusTextColors =
+        ["rgb(220 38 38)", "rgb(234 88 12)", "rgb(202 138 4)", "rgb(22 163 74)", "rgb(37 99 235)", "rgb(147 51 234)", "rgb(219 39 119)", "rgb(75 85 99)"];
+    private static readonly string[] StatusHighlightColors =
+        ["rgb(248 113 113 / 40%)", "rgb(251 146 60 / 40%)", "rgb(250 204 21 / 40%)", "rgb(74 222 128 / 40%)", "rgb(96 165 250 / 40%)", "rgb(192 132 252 / 40%)", "rgb(244 114 182 / 40%)", "rgb(156 163 175 / 40%)"];
+
+    private WaRichTextEditor? replyEditor;
+    private bool highlightActive;
+
+    // inserts images from the app's media library instead of asking for a URL
+    private readonly WaJsFunction mediaLibrary = WaJsFunction.Module("./Pages/Components/RichTextEditorPage.razor.js", "mediaLibrary");
+
+    private FeedbackModel feedback = new();
+    private bool feedbackSent;
+
+    // toggles the highlight at the selection, then reads back whether the caret is in highlighted text
+    private async Task ToggleHighlightAsync()
+    {
+        if (replyEditor is null) return;
+
+        await replyEditor.RunCommandAsync(WaRichTextEditorCommand.Highlight);
+        highlightActive = await replyEditor.IsActiveAsync(WaRichTextEditorActiveState.Highlight);
+    }
+
+    // the selection moved or its formatting changed: keep the highlight button in step
+    private async Task RefreshHighlightAsync()
+    {
+        if (replyEditor is not null)
+            highlightActive = await replyEditor.IsActiveAsync(WaRichTextEditorActiveState.Highlight);
+    }
+
+    private async Task InsertTicketLinkAsync()
+    {
+        if (replyEditor is not null)
+            await replyEditor.InsertHtmlAsync("<a href=\"https://example.com/tickets/4821\">ticket #4821</a>");
+    }
+
+    private void HandleValidSubmit() => feedbackSent = true;
+
+    private sealed class FeedbackModel
+    {
+        [Required(ErrorMessage = "Please share your feedback.")]
+        public string? Message { get; set; }
+    }
+
+    private const string DefaultExample = """
+        <WaRichTextEditor Label="Description" Placeholder="Describe the project" @bind-Value="descriptionValue" />
+        <p>Value: <code>@(string.IsNullOrEmpty(descriptionValue) ? "(empty)" : descriptionValue)</code></p>
+
+        @code {
+            private string? descriptionValue;
+        }
+        """;
+
+    private const string HintExample = """
+        <WaRichTextEditor Label="Bio" Hint="A few sentences about your background and interests." @bind-Value="bioValue" />
+
+        @code {
+            private string? bioValue;
+        }
+        """;
+
+    private const string InitialValueExample = """
+        <WaRichTextEditor Label="Meeting notes" @bind-Value="meetingNotesValue" />
+
+        @code {
+            private string? meetingNotesValue = "<h2>Decisions</h2><ul><li>Ship the import tool in the next release.</li><li>Move the weekly check-in to <strong>Thursdays</strong>.</li></ul><p>Next review is scheduled for <em>the end of the month</em>.</p>";
+        }
+        """;
+
+    private const string MarkdownExample = """
+        <WaRichTextEditor Label="Release notes" Format="WaRichTextEditorFormat.Markdown" @bind-Value="markdownValue" />
+        <pre style="white-space: pre-wrap;">@markdownValue</pre>
+
+        @code {
+            private string? markdownValue = "## What's New\n\n- **Faster sync** for large libraries\n- Export to ==CSV== and ~~XML~~ JSON\n\nRead the [full changelog](https://example.com/changelog).";
+        }
+        """;
+
+    private const string AppearanceExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaRichTextEditor Appearance="WaInputAppearance.Outlined" Label="Outlined" Toolbar="bold italic underline" @bind-Value="outlinedValue" />
+            <WaRichTextEditor Appearance="WaInputAppearance.Filled" Label="Filled" Toolbar="bold italic underline" @bind-Value="filledValue" />
+            <WaRichTextEditor Appearance="WaInputAppearance.FilledOutlined" Label="Filled outlined" Toolbar="bold italic underline" @bind-Value="filledOutlinedValue" />
+        </WaStack>
+        """;
+
+    private const string SizeExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaRichTextEditor Size="WaSize.Small" Label="Small" Toolbar="bold italic underline" @bind-Value="smallValue" />
+            <WaRichTextEditor Size="WaSize.Medium" Label="Medium" Toolbar="bold italic underline" @bind-Value="mediumValue" />
+            <WaRichTextEditor Size="WaSize.Large" Label="Large" Toolbar="bold italic underline" @bind-Value="largeValue" />
+        </WaStack>
+        """;
+
+    private const string StatesExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaRichTextEditor Label="Notes" Disabled="true" @bind-Value="disabledValue" />
+            <WaRichTextEditor Label="Terms" Readonly="true" @bind-Value="readonlyValue" />
+        </WaStack>
+
+        @code {
+            private string? disabledValue = "<p>This content can't be edited or focused.</p>";
+            private string? readonlyValue = "<p>Subscriptions renew automatically at the end of each billing period. You can cancel at any time from your <strong>account settings</strong>.</p>";
+        }
+        """;
+
+    private const string CountExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaRichTextEditor Label="Comment" Hint="Share your feedback." WithCount="true" @bind-Value="countValue" />
+            <WaRichTextEditor Label="Summary" Hint="Keep it short." WithCount="true" MaxLength="140" @bind-Value="summaryValue" />
+        </WaStack>
+        """;
+
+    private const string ToolbarExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaRichTextEditor Label="Comment" Toolbar="bold italic underline | link | undo redo" @bind-Value="toolbarValue" />
+            <WaRichTextEditor Label="Quick note" Toolbar="" Placeholder="Type # and a space to start a heading" @bind-Value="quickNoteValue" />
+        </WaStack>
+
+        @code {
+            private string? toolbarValue = "<p>The <strong>groups</strong> in this toolbar follow the <a href=\"https://example.com/style-guide\">style guide</a>.</p>";
+            private string? quickNoteValue;
+        }
+        """;
+
+    private const string PlacementExample = """
+        <WaRichTextEditor Label="Message" Placeholder="Write a message" ToolbarPlacement="WaRichTextEditorToolbarPlacement.Bottom"
+                          Toolbar="bold italic | link"
+                          DisabledFeatures="@(WaRichTextEditorFeatures.Image | WaRichTextEditorFeatures.Embed | WaRichTextEditorFeatures.Table | WaRichTextEditorFeatures.Color | WaRichTextEditorFeatures.Align)"
+                          Style="--content-min-height: 3em;" @bind-Value="messageValue" />
+        """;
+
+    private const string FeaturesExample = """
+        <WaStack Gap="GapSize.Gap_M">
+            <WaRichTextEditor Label="Comment" Toolbar="bold italic underline strikethrough | bullet-list ordered-list | link"
+                              DisabledFeatures="@(WaRichTextEditorFeatures.Image | WaRichTextEditorFeatures.Embed | WaRichTextEditorFeatures.Table | WaRichTextEditorFeatures.Color | WaRichTextEditorFeatures.Align)"
+                              @bind-Value="commentValue" />
+            <WaRichTextEditor Label="Support reply"
+                              DisabledFeatures="@(WaRichTextEditorFeatures.Table | WaRichTextEditorFeatures.Image | WaRichTextEditorFeatures.Embed | WaRichTextEditorFeatures.CodeBlock)"
+                              @bind-Value="strippedValue" />
+        </WaStack>
+
+        @code {
+            private string? commentValue;
+            private string? strippedValue = "<p>The table and code block below are reduced to paragraphs because tables and code blocks are disabled.</p><table><tr><th>Plan</th><th>Seats</th></tr><tr><td>Team</td><td>10</td></tr></table><pre><code>npm install</code></pre>";
+        }
+        """;
+
+    private const string HeadingLevelsExample = """
+        <WaRichTextEditor Label="Section" HeadingLevels="SectionHeadingLevels" @bind-Value="sectionValue" />
+
+        @code {
+            // the heading levels of the section editor: the page's own title keeps level 1
+            private static readonly WaRichTextEditorHeadingLevel[] SectionHeadingLevels = [WaRichTextEditorHeadingLevel.H2, WaRichTextEditorHeadingLevel.H3];
+
+            private string? sectionValue = "<h1>This heading becomes level 2</h1><p>Open the block menu to see the available levels.</p>";
+        }
+        """;
+
+    private const string ColorsExample = """
+        <WaRichTextEditor Label="Status update" Toolbar="bold italic color | undo redo"
+                          TextColors="StatusTextColors" HighlightColors="StatusHighlightColors" @bind-Value="statusValue" />
+
+        @code {
+            // a common eight-color palette: solid text colors and translucent highlights
+            private static readonly string[] StatusTextColors =
+                ["rgb(220 38 38)", "rgb(234 88 12)", "rgb(202 138 4)", "rgb(22 163 74)", "rgb(37 99 235)", "rgb(147 51 234)", "rgb(219 39 119)", "rgb(75 85 99)"];
+            private static readonly string[] StatusHighlightColors =
+                ["rgb(248 113 113 / 40%)", "rgb(251 146 60 / 40%)", "rgb(250 204 21 / 40%)", "rgb(74 222 128 / 40%)", "rgb(96 165 250 / 40%)", "rgb(192 132 252 / 40%)", "rgb(244 114 182 / 40%)", "rgb(156 163 175 / 40%)"];
+
+            private string? statusValue = "<p>The redesign is <span style=\"color: rgb(22 163 74)\">on track</span> for Friday, but the icon audit is <span style=\"color: rgb(220 38 38)\">blocked</span>. <mark style=\"background-color: rgb(250 204 21 / 40%)\">Sign-off is due Thursday</mark>.</p>";
+        }
+        """;
+
+    private const string ActionsExample = """
+        <WaRichTextEditor @ref="replyEditor" Label="Support reply" Toolbar="bold italic link | actions | undo redo"
+                          OnSelectionChange="RefreshHighlightAsync" @bind-Value="replyValue">
+            <ActionsContent>
+                <WaButton Appearance="@(highlightActive ? WaAppearance.Filled : WaAppearance.Plain)" Size="WaSize.Small"
+                          OnClick="ToggleHighlightAsync">
+                    <WaIcon Name="highlighter" Label="Highlight" />
+                </WaButton>
+                <WaButton Appearance="WaAppearance.Plain" Size="WaSize.Small" OnClick="InsertTicketLinkAsync">
+                    <WaIcon Name="ticket" Label="Insert ticket link" />
+                </WaButton>
+            </ActionsContent>
+        </WaRichTextEditor>
+        <p>Highlight at the caret: <strong>@(highlightActive ? "on" : "off")</strong></p>
+
+        @code {
+            private string? replyValue = "<p>Thanks for reaching out.</p>";
+            private WaRichTextEditor? replyEditor;
+            private bool highlightActive;
+
+            // toggles the highlight at the selection, then reads back whether the caret is in highlighted text
+            private async Task ToggleHighlightAsync()
+            {
+                if (replyEditor is null) return;
+
+                await replyEditor.RunCommandAsync(WaRichTextEditorCommand.Highlight);
+                highlightActive = await replyEditor.IsActiveAsync(WaRichTextEditorActiveState.Highlight);
+            }
+
+            // the selection moved or its formatting changed: keep the highlight button in step
+            private async Task RefreshHighlightAsync()
+            {
+                if (replyEditor is not null)
+                    highlightActive = await replyEditor.IsActiveAsync(WaRichTextEditorActiveState.Highlight);
+            }
+
+            private async Task InsertTicketLinkAsync()
+            {
+                if (replyEditor is not null)
+                    await replyEditor.InsertHtmlAsync("<a href=\"https://example.com/tickets/4821\">ticket #4821</a>");
+            }
+        }
+        """;
+
+    private const string ImageProviderExample = """
+        <WaRichTextEditor Label="Post" Hint="The image button inserts a picture from the media library."
+                          Toolbar="bold italic | image | undo redo" ImageProviderFunction="mediaLibrary" @bind-Value="postValue" />
+
+        @code {
+            private string? postValue;
+
+            // inserts images from the app's media library instead of asking for a URL
+            private readonly WaJsFunction mediaLibrary = WaJsFunction.Module("./Pages/Components/RichTextEditorPage.razor.js", "mediaLibrary");
+        }
+
+        // RichTextEditorPage.razor.js, next to RichTextEditorPage.razor
+        const LIBRARY_IMAGE = { src: 'https://uploads.webawesome.com/kits.jpg', alt: 'Downloading kits' };
+
+        export async function mediaLibrary(file) {
+          return file ? URL.createObjectURL(file) : LIBRARY_IMAGE;
+        }
+        """;
+
+    private const string ValidationExample = """
+        <EditForm Model="feedback" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <WaStack Gap="GapSize.Gap_M">
+                <WaRichTextEditor Label="Feedback" Hint="At least 20 characters." Toolbar="bold italic | bullet-list ordered-list | link"
+                                  Required="true" MinLength="20" MaxLength="500" WithCount="true" @bind-Value="feedback.Message" />
+                <ValidationSummary />
+                <WaCluster Gap="GapSize.Gap_S" AlignItems="AlignItems.Center">
+                    <WaButton Variant="WaVariant.Brand" Type="WaButtonType.Submit">Submit</WaButton>
+                    @if (feedbackSent)
+                    {
+                        <WaBadge Variant="WaVariant.Success">Thanks for your feedback</WaBadge>
+                    }
+                </WaCluster>
+            </WaStack>
+        </EditForm>
+
+        @code {
+            private FeedbackModel feedback = new();
+            private bool feedbackSent;
+
+            private void HandleValidSubmit() => feedbackSent = true;
+
+            private sealed class FeedbackModel
+            {
+                [Required(ErrorMessage = "Please share your feedback.")]
+                public string? Message { get; set; }
+            }
+        }
+        """;
+}

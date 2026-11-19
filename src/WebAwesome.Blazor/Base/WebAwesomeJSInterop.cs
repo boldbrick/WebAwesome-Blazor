@@ -227,9 +227,9 @@ public class WebAwesomeJSInterop
     /// <returns>A task that represents the asynchronous operation</returns>
     /// <exception cref="ArgumentNullException">Thrown when name is null or empty, or options is null</exception>
     /// <exception cref="ArgumentException">Thrown when the options have no resolver, or both a resolver URL template
-    /// and a resolver function, or both the obsolete mutator path and a mutator function</exception>
+    /// and a resolver function</exception>
     /// <exception cref="InvalidOperationException">Thrown when the registration fails, e.g. Web Awesome is not loaded,
-    /// the resolver function does not resolve, or the obsolete mutator path does not name a global function</exception>
+    /// or the resolver function does not resolve</exception>
     public virtual async Task RegisterIconLibraryAsync(string name, IconLibraryOptions options)
     {
         if (string.IsNullOrEmpty(name))
@@ -746,7 +746,7 @@ public class WebAwesomeJSInterop
 
     private const string InteropModulePath = "./_content/WebAwesome.Blazor/webawesome-interop.js";
 
-    // a resolver is either a URL template or a function, and a mutator either the obsolete global path or a function
+    // a resolver is either a URL template or a function
     private static void ValidateIconLibraryOptions(string name, IconLibraryOptions options)
     {
         var hasTemplate = !string.IsNullOrEmpty(options.Resolver);
@@ -755,11 +755,6 @@ public class WebAwesomeJSInterop
 
         if (hasTemplate && options.ResolverFunction is not null)
             throw new ArgumentException($"Icon library '{name}' has both {nameof(IconLibraryOptions.Resolver)} and {nameof(IconLibraryOptions.ResolverFunction)}; set only one of them.", nameof(options));
-
-#pragma warning disable CS0618 // the obsolete mutator path stays valid until its removal, but not together with its replacement
-        if (!string.IsNullOrEmpty(options.Mutator) && options.MutatorFunction is not null)
-            throw new ArgumentException($"Icon library '{name}' has both {nameof(IconLibraryOptions.Mutator)} and {nameof(IconLibraryOptions.MutatorFunction)}; set only {nameof(IconLibraryOptions.MutatorFunction)}.", nameof(options));
-#pragma warning restore CS0618
     }
 
     // initial default icon family of Web Awesome, reported while the JS runtime is disconnected
@@ -771,7 +766,11 @@ public class WebAwesomeJSInterop
 
     private async Task<IJSObjectReference> LoadModuleAsync()
     {
+        // a failed import must fault the module task, so that every interop call reports it to its caller; the
+        // .NET 11 analyzer BL0016 asks for a try/catch here, which would hide the failure
+#pragma warning disable BL0016
         return await jsRuntime.InvokeAsync<IJSObjectReference>("import", InteropModulePath);
+#pragma warning restore BL0016
     }
 
     private string? ConfiguredLoaderUrl() => options?.ResolveLoaderUrl();

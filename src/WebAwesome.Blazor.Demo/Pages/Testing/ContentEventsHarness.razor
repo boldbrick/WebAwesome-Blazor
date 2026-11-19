@@ -7,7 +7,7 @@
 <PageTitle>Testing: Content Events</PageTitle>
 
 <h1>Content Events Harness</h1>
-<p>This page is an end-to-end test harness: navigation, disclosure, media and utility components wire their callbacks into the event log below, so the browser tests can check which callbacks a real interaction reached in .NET.</p>
+<p>This page is an end-to-end test harness: navigation, disclosure, media, code, counting and utility components wire their callbacks into the event log below, so the browser tests can check which callbacks a real interaction reached in .NET.</p>
 
 <ExampleSection Title="Tabs">
     <WaTabGroup data-testid="ct-tab-group"
@@ -132,6 +132,33 @@
     <WaZoomableFrame SrcDoc="@FrameDocument" data-testid="ct-zoomable-frame" Style="height: 80px;" OnError="() => log.Record(Id(nameof(WaZoomableFrame), nameof(WaZoomableFrame.OnError)))" />
 </ExampleSection>
 
+<ExampleSection Title="Code highlighter, counter, number ticker">
+    @* css is a bundled grammar, so it loads without the network *@
+    <WaCodeHighlighter Language="css" Code="@HighlightedCode" data-testid="ct-code-highlighter"
+                       OnLoad="e => log.Record(Id(nameof(WaCodeHighlighter), nameof(WaCodeHighlighter.OnLoad)), e)" />
+    @* a language without a grammar makes Web Awesome warn in the console, so this block renders only on demand: the
+       route sweeps never click the button *@
+    <WaButton Size="WaSize.Small" data-testid="ct-code-highlighter-unknown" OnClick="() => unknownLanguageShown = true">Show code in an unknown language</WaButton>
+    @if (unknownLanguageShown)
+    {
+        <WaCodeHighlighter Language="@UnknownLanguage" Code="@HighlightedCode" data-testid="ct-code-highlighter-error"
+                           OnError="e => log.Record(Id(nameof(WaCodeHighlighter), nameof(WaCodeHighlighter.OnError)), e)" />
+    }
+
+    <WaCluster Gap="GapSize.Gap_L" AlignItems="AlignItems.Center">
+        @* counts down from a short duration, started on demand *@
+        <WaButton Size="WaSize.Small" data-testid="ct-counter-start" OnClick="() => counterStarted = true">Start the countdown</WaButton>
+        @if (counterStarted)
+        {
+            <WaCounter Duration="CounterDurationMs" Label="Harness countdown" data-testid="ct-counter"
+                       OnFinish="e => log.Record(Id(nameof(WaCounter), nameof(WaCounter.OnFinish)), e)" />
+        }
+        @* eager: counts at once, without waiting to scroll into view *@
+        <WaNumberTicker Value="TickerValue" Duration="TickerDurationMs" Eager="true" data-testid="ct-number-ticker"
+                        OnFinish="e => log.Record(Id(nameof(WaNumberTicker), nameof(WaNumberTicker.OnFinish)), e)" />
+    </WaCluster>
+</ExampleSection>
+
 <ExampleSection Title="Event log">
     <EventLogView Log="log" />
 </ExampleSection>
@@ -144,6 +171,11 @@
     private const string UnreachableInclude = "http://127.0.0.1:1/missing.html";
     private const string IncludeSource = "fragments/release-notes.html";
     private const string FrameDocument = "<body style=\"margin:0;font-family:sans-serif\">Framed</body>";
+    private const string HighlightedCode = ".harness { color: red; }";
+    private const string UnknownLanguage = "no-such-language";
+    private const int CounterDurationMs = 1000;
+    private const decimal TickerValue = 42m;
+    private const int TickerDurationMs = 500;
 
     private readonly EventLog log = new();
 
@@ -152,6 +184,8 @@
     private bool popupActive;
     private bool lazyPending = true;
     private bool tagRemoved;
+    private bool unknownLanguageShown;
+    private bool counterStarted;
 
     private static string Id(string wrapper, string callback) => $"{wrapper}.{callback}";
 

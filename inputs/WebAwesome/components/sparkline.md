@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.14.0 release zip (dist/skills/webawesome/references/components/sparkline.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/sparkline -->
+<!-- Source: reference doc bundled in the Web Awesome 3.15.0 release zip (dist/skills/webawesome/references/components/sparkline.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/sparkline -->
 
 # Sparkline [Pro]
 
@@ -52,7 +52,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.14.0/components/sparkline/sparkline.js';
+import 'https://ka-f.webawesome.com/webawesome@3.15.0/components/sparkline/sparkline.js';
 ```
 
 \*\*npm\*\*
@@ -81,30 +81,30 @@ import WaSparkline from '@awesome.me/webawesome/dist/react/sparkline/index.js';
 
 ### Attributes & Properties
 
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`appearance\` appearance | \`'gradient' \\| 'line' \\| 'solid'\` The visual fill style of the sparkline. Type Default 'solid' | |
-| \`curve\` curve | \`'linear' \\| 'natural' \\| 'step'\` The type of curve used to connect data points. Type Default 'linear' | |
-| \`data\` data | \`string\` Space-separated numeric values to visualize (e.g., "10 20 40 25 35"). Type Default '' | |
-| \`label\` label | \`string\` An accessible label describing the sparkline for screen readers. Type Default '' | |
-| \`trend\` trend | \`'positive' \\| 'negative' \\| 'neutral'\` A trend to indicate, which will affect the sparkline's default color. Type | |
+| Property | Attribute | Description | Type | Default |
+| --- | --- | --- | --- | --- |
+| `label` | `label` | An accessible label describing the sparkline for screen readers. | `string` | `''` |
+| `data` | `data` | Space-separated numeric values to visualize (e.g., "10 20 40 25 35"). | `string` | `''` |
+| `appearance` | `appearance` | The visual fill style of the sparkline. | `'gradient' \| 'line' \| 'solid'` | `'solid'` |
+| `trend` | `trend` | A trend to indicate, which will affect the sparkline's default color. | `'positive' \| 'negative' \| 'neutral'` | — |
+| `curve` | `curve` | The type of curve used to connect data points. | `'linear' \| 'natural' \| 'step'` | `'linear'` |
 
 ### CSS Custom Properties
 
-| Name | Description |
-| --- | --- |
-| \`--fill-color\` | The fill color for the area under the line. |
-| \`--line-color\` | The color of the sparkline stroke. |
-| \`--line-width\` | The width of the sparkline stroke. |
+| Name | Description | Default |
+| --- | --- | --- |
+| `--fill-color` | The fill color for the area under the line. | — |
+| `--line-color` | The color of the sparkline stroke. | — |
+| `--line-width` | The width of the sparkline stroke. | — |
 
 ### CSS Parts
 
 | Name | Description | CSS selector |
 | --- | --- | --- |
-| \`fill\` | The filled area under the line (visible with gradient or solid appearance). | \`::part(fill)\` |
-| \`line\` | The sparkline stroke path. | \`::part(line)\` |
-| \`sparkline\` | The component's outer wrapper. | \`::part(sparkline)\` |
-| \`base\` | \`sparkline\` Deprecated. Use the part instead. | \`::part(base)\` |
+| `sparkline` | The component's outer wrapper. | `::part(sparkline)` |
+| `line` | The sparkline stroke path. | `::part(line)` |
+| `fill` | The filled area under the line (visible with gradient or solid appearance). | `::part(fill)` |
+| `base` | Deprecated. Use the `sparkline` part instead. | `::part(base)` |
 
 ## Examples
 

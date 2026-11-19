@@ -2,6 +2,40 @@
 
 All notable changes to the Web Awesome Blazor Bindings. The first three version parts are the bound [Web Awesome](https://github.com/shoelace-style/webawesome) release, and an optional fourth part is a revision of the bindings; the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [3.15.0] — 2026-11-18
+
+Alignment with the Web Awesome 3.15.0 release, opening the **WA-3.15 train**. Upstream this is additive: six new components, and the data grid, stepper and step are stable now. The bindings remove the members that 3.14.0.1 deprecated, which is **breaking**, and add a `net11.0` target. See **[MIGRATION-3.15.0.md](migration/MIGRATION-3.15.0.md)**.
+
+### Breaking changes
+- Removed the members deprecated in 3.14.0.1: `WaSelect.GetTag` and `WaSelect.SetGetTagFunctionAsync` (use `GetTagFunction`), `WaRating.SetSymbolFunctionAsync` (use `GetSymbolFunction`), `SetValueFormatterAsync` of `WaSlider` and `WaRange` and `WaSlider.ValueFormatter` (use `ValueFormatterFunction`), and `IconLibraryOptions.Mutator` (use `MutatorFunction = WaJsFunction.Global(path)`) (section 1).
+- net11.0 only: `WaInput.Min` and `Max` are the C# 15 union `WaInputBound?`, and the typed accessors `MinDecimal`, `MinLong`, `MinULong`, `MinDate`, `MinTime`, `MinDateTime` and their `Max` equivalents do not exist there (section 2).
+
+### Added
+- `net11.0` target: both packages ship `net9.0`, `net10.0` and `net11.0` assemblies.
+
+### Deprecated
+- `net9.0`: 3.15 is the last release that supports .NET 9; the next version targets `net10.0` and `net11.0` only.
+
+### New components
+- `WaCodeHighlighter` (`wa-code-highlighter`, free/experimental) highlights code given as `Code` or as child text, with `Language`, `Wrap`, `WithoutCopy`, `WithoutDedent`, `Label`, `OnLoad` and `OnError`.
+- `WaCounter` (`wa-counter`, free/experimental) counts down to or up from a `Date`, or down from a `Duration`, with units, formats, a slot per unit, a finished slot, `Paused`, `OnFinish` and `ValueFormatterFunction`.
+- `WaNumberTicker` (`wa-number-ticker`, free/experimental) animates a number into view with the number options of `WaFormatNumber`, `Duration`, `Delay`, `Easing`, `Eager`, `OnFinish`, `RestartAsync` and `ValueFormatterFunction`.
+- `WaLightbox` and `WaLightboxItem` (`wa-lightbox`, `wa-lightbox-item`, free/experimental) show images and videos in an overlay with navigation, zoom and thumbnails; `OnItemChange` reports the index and the item, and `NextAsync`, `PreviousAsync`, `ZoomInAsync` and `ZoomOutAsync` drive it.
+- `WaRichTextEditor` (`wa-rich-text-editor`, Pro/experimental) is a form control for HTML or Markdown content with a configurable toolbar, heading levels, colors, disabled features, validation, `OnSelectionChange`, editing methods (`RunCommandAsync`, `IsActiveAsync`, `InsertHtmlAsync`, `InsertTextAsync`, `UndoAsync`, `RedoAsync`, `GetSelectionAsync`) and `ImageProviderFunction`/`EmbedProviderFunction`.
+
+### Changed
+- `WaDataGrid`, `WaStepper` and `WaStep` are stable upstream (no longer experimental).
+- Web Awesome 3.15.0: a submit or reset `WaButton` no longer acts on its form when its click is cancelled, and `WaSlider`/`WaRange` snap values to `Min + k * Step`.
+- `WaTextArea.ScrollPositionAsync` returns the real horizontal position; with Web Awesome 3.14.0 the left value repeated the top value.
+
+### Library
+- Versioned reference docs refreshed to the `v3.15.0` tag.
+- Demo: pages for the six new components; the dashboard shows a number ticker and a countdown, the content showcase highlights code, the media gallery opens a lightbox and the registration form has a rich text field.
+- Known issue, carried forward: in the data grid, Enter on a link in a cell still raises `OnCellClick` instead of following the link. **Next-release check:** recheck Enter on a link in a grid cell.
+
+### Public API
+- Baseline promoted with the six removed members and the additions `WaCodeHighlighter`, `WaCounter`, `WaCounterDirection`, `WaCounterUnit`, `WaNumberTicker`, `WaLightbox`, `WaLightboxItem`, `WaLightboxItemType`, `WaLightboxItemChangeEventArgs`, `WaLightboxItemInfo`, `WaRichTextEditor` with its enums, `WaRichTextEditorCommandOptions`, `WaRichTextEditorSelection` and `WaSuggestionsErrorEventArgs`.
+
 ## [3.14.0.4] — 2026-11-15
 
 A fourth revision of the bindings for Web Awesome 3.14.0; the default CDN version stays 3.14.0. Wrapper methods that did nothing, failed or never completed in the browser now do what their documentation says, and the documentation of several methods names their preconditions. There are no breaking changes.
@@ -82,7 +116,6 @@ A revision of the bindings for Web Awesome 3.14.0: the fourth version part marks
 - `WaRating.SetSymbolFunctionAsync`: use `GetSymbolFunction`. It is removed in 3.15.0.
 - `SetValueFormatterAsync` of `WaSlider` and `WaRange`, and `WaSlider.ValueFormatter`: use `ValueFormatterFunction`. They are removed in 3.15.0.
 - `IconLibraryOptions.Mutator` (a global function path): use `MutatorFunction = WaJsFunction.Global(path)`. It is removed in 3.15.0.
-- **Next-release check:** the 3.15.0 train removes the members above (each has a `// TODO WA 3.15.0 train` comment) as a breaking change, with a migration guide.
 
 ### Fixed
 - `WaSelect.SetGetTagFunctionAsync` and `WaRating.SetSymbolFunctionAsync` sent JavaScript source text, so the element failed to render. They now send nothing and throw `NotSupportedException`: use `GetTagFunction` and `GetSymbolFunction`. `SetValueFormatterAsync` of `WaSlider` and `WaRange`, which had no effect, now sends nothing: use `ValueFormatterFunction`.

@@ -11,7 +11,8 @@ const { openShowcase, expectHealthy, pickOption, typeInto } = require('./helpers
 // renders from the model, then starts over. The topics are a WaTagInput bound to a list: each tag typed and entered
 // reaches the model, and removing every tag (its clear button) brings the list's own message back. A WaStepper above
 // the fields tracks the progress from the model: a section's step is completed once its required fields are filled and
-// valid, and the first unfinished section is the active step.
+// valid, and the first unfinished section is the active step. The optional introduction is a WaRichTextEditor, also
+// Pro: the second test types it, and the summary confirms that the bound HTML reached the model.
 
 const ROUTE = '/showcases/registration-form';
 const TAGS = ['wa-input', 'wa-select', 'wa-option', 'wa-radio-group', 'wa-radio', 'wa-otp-input', 'wa-known-date',
@@ -38,6 +39,10 @@ const REQUIRED_MESSAGES = [
 
 // the steps of the progress stepper, one per section of the form, in order
 const SECTIONS = ['attendee', 'sessions', 'arrival', 'verify'];
+
+// the introduction typed into the rich text editor, and how the summary acknowledges it
+const INTRODUCTION = 'I build design systems for public services.';
+const INTRODUCTION_SUMMARY = 'Your introduction will be shared with your workshop group.';
 
 const INVALID_EMAIL_MESSAGE = "That doesn't look like a valid e-mail address.";
 const SHORT_CODE_MESSAGE = 'The verification code is six digits long.';
@@ -187,7 +192,7 @@ test('registration form showcase: validation lists each missing field and follow
 
 test('registration form showcase: a complete registration shows the summary and starts over', async ({ page }) => {
   const problems = await openShowcase(page, ROUTE, TAGS);
-  await skipUnlessProUpgrades(page, ['wa-date-input']);
+  await skipUnlessProUpgrades(page, ['wa-date-input', 'wa-rich-text-editor']);
 
   await fillFreeFields(page);
 
@@ -199,11 +204,20 @@ test('registration form showcase: a complete registration shows the summary and 
   // every section is completed; a finished form stays on the last step
   await expectProgress(page, 'verify', SECTIONS);
 
+  // the introduction: typed into the editor's content and committed when the focus leaves the editor
+  const introduction = page.locator('wa-rich-text-editor[label="Introduce yourself"]');
+  await introduction.locator('[part~="content"]').click();
+  await page.keyboard.type(INTRODUCTION);
+  await page.locator('h1').click();
+  await expect.poll(() => introduction.evaluate(el => /** @type {any} */ (el).value), 'the editor holds the text as HTML')
+    .toContain(INTRODUCTION);
+
   await submit(page);
   const summary = page.locator('wa-callout[variant="success"]');
   await expect(summary).toContainText("You're in, Ada Lovelace!");
   await expect(summary).toContainText('Your pro ticket for the ai track is reserved. A confirmation was sent to ada@example.com.');
   await expect(summary, 'the topics from the bound tag list').toContainText(TOPICS_SUMMARY);
+  await expect(summary, 'the introduction from the bound editor').toContainText(INTRODUCTION_SUMMARY);
   await expect(summary).toContainText('Your badge will use the default Nova Summit artwork.');
   await expect(page.locator('wa-input[label="Full name"]'), 'the form was replaced').toHaveCount(0);
 

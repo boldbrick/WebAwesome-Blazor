@@ -4,9 +4,9 @@ const { callMethod, callOk } = require('../method-harness');
 const { WA_READY_TIMEOUT_MS } = require('../wa-ready');
 
 // Method cases of the group "forms-text" (tools\e2e\data\method-groups.json): WaInput, WaTextArea, WaNumberInput,
-// WaOtpInput, WaTagInput and WaKnownDate on /testing/methods-forms-text (MethodsFormsTextHarness.razor). Every call
-// runs from .NET through the wrapper's @ref (a MethodCall button); the case asserts the effect on the element, and the
-// returned value where there is one. All elements are free components.
+// WaOtpInput, WaTagInput, WaKnownDate and WaRichTextEditor on /testing/methods-forms-text (MethodsFormsTextHarness.razor).
+// Every call runs from .NET through the wrapper's @ref (a MethodCall button); the case asserts the effect on the element,
+// and the returned value where there is one. wa-rich-text-editor is a Pro component, so its cases skip on the free CDN.
 
 /** @typedef {import('@playwright/test').Page} Page */
 /** @typedef {import('../method-harness').MethodGroupModule} MethodGroupModule */
@@ -17,6 +17,19 @@ const NUMBER_INPUT = 'wa-number-input';
 const OTP_INPUT = 'wa-otp-input';
 const TAG_INPUT = 'wa-tag-input';
 const KNOWN_DATE = 'wa-known-date';
+const RICH_TEXT_EDITOR = 'wa-rich-text-editor';
+
+// the rich text editor's value (HTML) at first, after bold on all of it, and after a level 2 heading
+const INITIAL_RICH_TEXT = '<p>Hello world</p>';
+const BOLD_RICH_TEXT = '<p><strong>Hello world</strong></p>';
+const HEADING_RICH_TEXT = '<h2><strong>Hello world</strong></h2>';
+
+// all of the editor's content: the paragraph (positions 0 to 13) around its eleven characters
+const ALL_SELECTED = { from: 0, to: 13, empty: false };
+
+// what the harness inserts into the editor
+const INSERTED_TEXT = 'Howdy';
+const INSERTED_HTML = '<em>there</em>';
 
 // the custom validity message of the harness
 const VALIDITY_MESSAGE = 'Check this field, please';
@@ -275,9 +288,9 @@ module.exports = {
         await callOk(page, 'textarea-scroll-set', QUIET);
         await expect.poll(scrollTop, { message: 'the textarea scrolled down' }).toBe(SCROLL_TOP);
 
-        // WAB-64 F10 (Web Awesome side, recheck on upgrade): scrollPosition() returns scrollTop as left too; the
-        // textarea wraps its lines, so its real horizontal scroll position stays 0; asserted as it is
-        expect(await callOk(page, 'textarea-scroll-get'), 'WA 3.14.0: left repeats top').toEqual({ top: SCROLL_TOP, left: SCROLL_TOP });
+        // the textarea wraps its lines, so its horizontal scroll position stays 0 (WAB-64 F10, scrollTop repeated as left
+        // in WA 3.14.0, is fixed in WA 3.15.0)
+        expect(await callOk(page, 'textarea-scroll-get')).toEqual({ top: SCROLL_TOP, left: 0 });
       },
     },
     {
@@ -372,6 +385,66 @@ module.exports = {
           await callOk(page, `${prefix}-reset-validity`);
           expect(await validityOf(page, testId), `${testId} is valid again`).toEqual({ message: '', customError: false });
         }
+      },
+    },
+    {
+      name: 'WaRichTextEditor takes and leaves the focus and reports a custom validity',
+      methods: ['WaRichTextEditor.FocusAsync', 'WaRichTextEditor.BlurAsync', 'WaRichTextEditor.SetCustomValidityAsync',
+        'WaRichTextEditor.ResetValidityAsync'],
+      tags: [RICH_TEXT_EDITOR],
+      pro: true,
+      run: async page => {
+        // the editable content in the editor's shadow root takes the focus
+        await focusAndBlur(page, 'rich-text-editor', 'editor');
+
+        await callOk(page, 'editor-set-validity');
+        expect(await validityOf(page, 'rich-text-editor')).toEqual({ message: VALIDITY_MESSAGE, customError: true });
+        await callOk(page, 'editor-reset-validity');
+        expect(await validityOf(page, 'rich-text-editor')).toEqual({ message: '', customError: false });
+      },
+    },
+    {
+      // the element's value is the content as HTML; the calls need no focus
+      name: 'WaRichTextEditor selects, deletes and inserts content, runs commands, reports the active format, undoes and redoes',
+      methods: ['WaRichTextEditor.SelectAllAsync', 'WaRichTextEditor.GetSelectionAsync', 'WaRichTextEditor.DeleteSelectionAsync',
+        'WaRichTextEditor.InsertTextAsync', 'WaRichTextEditor.InsertHtmlAsync', 'WaRichTextEditor.RunCommandAsync',
+        'WaRichTextEditor.IsActiveAsync', 'WaRichTextEditor.UndoAsync', 'WaRichTextEditor.RedoAsync'],
+      tags: [RICH_TEXT_EDITOR],
+      pro: true,
+      run: async page => {
+        const value = () => valueOf(page, 'rich-text-editor');
+        await expect.poll(value, { timeout: WA_READY_TIMEOUT_MS }).toBe(INITIAL_RICH_TEXT);
+
+        // all of the content: the paragraph and its text, as ProseMirror positions
+        expect(await callOk(page, 'editor-get-selection', QUIET), 'a caret at first').toMatchObject({ empty: true });
+        await callOk(page, 'editor-select-all', QUIET);
+        expect(await callOk(page, 'editor-get-selection', QUIET)).toEqual(ALL_SELECTED);
+
+        // a command applies to the selection and returns whether it applied; the active format follows it
+        expect(await callOk(page, 'editor-is-bold', QUIET)).toBe(false);
+        expect(await callOk(page, 'editor-bold', QUIET), 'bold applied').toBe(true);
+        expect(await value()).toBe(BOLD_RICH_TEXT);
+        expect(await callOk(page, 'editor-is-bold', QUIET)).toBe(true);
+        // with options: a level 2 heading
+        expect(await callOk(page, 'editor-heading', QUIET), 'the heading applied').toBe(true);
+        expect(await value()).toBe(HEADING_RICH_TEXT);
+        expect(await callOk(page, 'editor-undo', QUIET), 'there was an edit to undo').toBe(true);
+        expect(await value()).not.toContain('<h2>');
+        expect(await callOk(page, 'editor-redo', QUIET), 'there was an edit to redo').toBe(true);
+        expect(await value()).toBe(HEADING_RICH_TEXT);
+
+        // the selection is replaced by inserted text and HTML
+        await callOk(page, 'editor-select-all', QUIET);
+        await callOk(page, 'editor-delete-selection', QUIET);
+        expect(await value(), 'the content is deleted').not.toContain('Hello');
+        await callOk(page, 'editor-insert-text', QUIET);
+        expect(await value()).toContain(INSERTED_TEXT);
+        await callOk(page, 'editor-insert-html', QUIET);
+        expect(await value()).toContain(INSERTED_HTML);
+        expect(await callOk(page, 'editor-undo', QUIET)).toBe(true);
+        expect(await value(), 'the inserted HTML is undone').not.toContain(INSERTED_HTML);
+        expect(await callOk(page, 'editor-redo', QUIET)).toBe(true);
+        expect(await value(), 'the inserted HTML is redone').toContain(INSERTED_HTML);
       },
     },
     {

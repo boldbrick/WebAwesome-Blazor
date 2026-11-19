@@ -24,7 +24,7 @@ namespace WebAwesome.Blazor.Tests.ApiParity;
 /// feeds, and yields to that fragment when both are set (docs\technical\technical.md, "Icon slot convenience"). A patterned CEM
 /// slot name (wa-date-input's day-YYYY-MM-DD) stands for the slots of its pattern (day-2026-12-25), a
 /// "sourceVerifiedSlots" entry counts as declared where the CEM omits a slot the source renders (wa-date-picker's day
-/// slots), and the ChildContent of a day content host is sampled as a WaDayContent holding the marker
+/// slots until Web Awesome 3.15.0 declared them), and the ChildContent of a day content host is sampled as a WaDayContent holding the marker
 /// (docs\technical\technical.md, "Dynamic slots"). Every allowlist entry needs a reason (AllowlistHygieneTests), and stale
 /// entries fail. Skipped until parity-config.json sets "enabled": true.
 /// </summary>
@@ -379,7 +379,7 @@ public class SlotParityTests
             (IReadOnlyList<(string, object?)>)new[] { (p.Name, (object?)IconSample) })));
         samples.AddRange(RenderedAttributeParityTests.SampleValues(componentType)
             .Where(s => s.Value is bool or string && !iconNames.Contains(s.Property))
-            .Select(s => (SampleKind.Value, (PropertyInfo?)s.Property, s.Label, (IReadOnlyList<(string, object?)>)new[] { (s.Property.Name, (object?)s.Value) })));
+            .Select(s => (SampleKind.Value, (PropertyInfo?)s.Property, s.Label, (IReadOnlyList<(string, object?)>)new[] { (s.Property.Name, (object?)s.ParameterValue) })));
 
         var first = RenderedWrapperCatalog.RenderSlots(componentType, samples.Select(s => s.Values).ToList());
         var renders = samples.Select((s, i) => new SlotRender(s.Kind, s.Parameter, s.Label, first[i])).ToList();

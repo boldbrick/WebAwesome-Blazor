@@ -8,8 +8,8 @@
         <h1>Nova Studio — Release Dashboard</h1>
         <p>
             Sprint 42 status for the Nova Studio 3.2 release, showing cards, badges, progress indicators,
-            formatted values, avatars, tags, charts, sparklines, a data grid and skeleton placeholders on a
-            responsive grid.
+            formatted values, an animated number ticker, a countdown, avatars, tags, charts, sparklines, a data grid
+            and skeleton placeholders on a responsive grid.
         </p>
     </div>
     <WaButton Variant="WaVariant.Brand" StartIconName="rotate" OnClick="RefreshAsync" Loading="refreshing">Refresh</WaButton>
@@ -43,7 +43,9 @@
             <WaProgressRing Value="86" Label="Test coverage" Style="--size: 4.5rem;">86%</WaProgressRing>
             <div>
                 <WaText Element="div"><WaFormatNumber Value="0.86m" Type="WaFormatNumberType.Percent" /> lines covered</WaText>
-                <WaText Variant="TextVariant.Caption" Element="div">1,204 tests passing</WaText>
+                <WaText Variant="TextVariant.Caption" Element="div">
+                    <WaNumberTicker Value="testsPassing" /> tests passing
+                </WaText>
             </div>
         </WaCluster>
     </WaCard>
@@ -106,6 +108,17 @@
                         <WaTag Size="WaSize.Small" Pill="true">export-pipeline</WaTag>
                         <WaTag Size="WaSize.Small" Pill="true">a11y</WaTag>
                     </WaCluster>
+                    <WaDivider />
+                    <WaText Variant="TextVariant.Caption" Element="div">Next stakeholder status report in</WaText>
+                    <WaCounter Date="nextStatusReport" LargestUnit="WaCounterUnit.Hours" Format="WaRelativeTimeFormat.Short"
+                               Label="Time until the next stakeholder status report" OnFinish="HandleStatusReportDue" />
+                    @if (statusReportsSent > 0)
+                    {
+                        <WaText Variant="TextVariant.Caption" Element="div">
+                            <WaBadge Variant="WaVariant.Success">sent</WaBadge>
+                            status report #@statusReportsSent went out to stakeholders
+                        </WaText>
+                    }
                 </WaStack>
             </ChildContent>
         </WaCard>
@@ -235,7 +248,17 @@
 @code {
     private const int IssuePageSize = 6;
 
+    // the tests the nightly run adds between two refreshes
+    private const int TestsAddedPerRefresh = 15;
+
+    // the status report goes out 45 minutes after the dashboard opens, then once a day
+    private static readonly TimeSpan FirstStatusReportIn = TimeSpan.FromMinutes(45);
+    private static readonly TimeSpan StatusReportInterval = TimeSpan.FromDays(1);
+
     private bool refreshing;
+    private int testsPassing = 1204;
+    private int statusReportsSent;
+    private DateTimeOffset nextStatusReport = DateTimeOffset.UtcNow.Add(FirstStatusReportIn);
     private int issuePage = 1;
     private decimal satisfaction = 4.5m;
     private readonly DateTimeOffset featureFreeze = DateTimeOffset.UtcNow.AddDays(9);
@@ -303,5 +326,15 @@
         refreshing = true;
         await Task.Delay(1200);
         refreshing = false;
+
+        // the reloaded figures include the tests the nightly run added; the ticker counts from the shown number
+        testsPassing += TestsAddedPerRefresh;
+    }
+
+    // the countdown reached zero: record the sent report and count down to the next one
+    private void HandleStatusReportDue()
+    {
+        statusReportsSent++;
+        nextStatusReport = DateTimeOffset.UtcNow.Add(StatusReportInterval);
     }
 }

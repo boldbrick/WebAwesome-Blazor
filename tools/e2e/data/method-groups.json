@@ -3,9 +3,9 @@
   "groups": [
     {
       "name": "forms-text",
-      "title": "Text and number inputs",
+      "title": "Text, number and rich text inputs",
       "route": "/testing/methods-forms-text",
-      "components": ["WaInput", "WaTextArea", "WaNumberInput", "WaOtpInput", "WaTagInput", "WaKnownDate"]
+      "components": ["WaInput", "WaTextArea", "WaNumberInput", "WaOtpInput", "WaTagInput", "WaKnownDate", "WaRichTextEditor"]
     },
     {
       "name": "forms-choice",
@@ -33,9 +33,9 @@
     },
     {
       "name": "media-content",
-      "title": "Media, animation, observers and content",
+      "title": "Media, galleries, animation, observers and content",
       "route": "/testing/methods-media-content",
-      "components": ["WaAnimatedImage", "WaAnimation", "WaZoomableFrame", "WaVideo", "WaVideoPlaylist", "WaMarkdown", "WaMutationObserver", "WaResizeObserver", "WaRandomContent", "WaRelativeTime", "WaCopyButton"]
+      "components": ["WaAnimatedImage", "WaAnimation", "WaZoomableFrame", "WaVideo", "WaVideoPlaylist", "WaMarkdown", "WaMutationObserver", "WaResizeObserver", "WaRandomContent", "WaRelativeTime", "WaCopyButton", "WaNumberTicker", "WaLightbox", "WaLightboxItem"]
     },
     {
       "name": "pro-data",

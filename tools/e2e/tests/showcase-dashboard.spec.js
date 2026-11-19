@@ -4,8 +4,10 @@ const { skipUnlessProUpgrades } = require('./helpers/wa-ready');
 const { openShowcase, expectHealthy, readableText, pauseClock } = require('./helpers/showcase');
 
 // The Dashboard showcase (/showcases/dashboard) as a user works it: Refresh swaps the feed and the issue list for
-// skeletons while it reloads and brings them back, and the pagination control drives the page caption and (with the
-// Pro data grid) the rows the grid receives. Every outcome asserted is one Blazor renders from the model.
+// skeletons while it reloads and brings them back, the reload counts the tests-passing ticker to the new figure, the
+// status report countdown records the sent report when it reaches zero (OnFinish) and counts down to the next one,
+// and the pagination control drives the page caption and (with the Pro data grid) the rows the grid receives. Every
+// outcome asserted is one Blazor renders from the model, plus the number the ticker shows for it.
 
 const ROUTE = '/showcases/dashboard';
 const TAGS = ['wa-button', 'wa-pagination', 'wa-badge', 'wa-card'];
@@ -21,6 +23,25 @@ const FIRST_ISSUES = ['NOVA-812', 'NOVA-749', 'NOVA-690', 'NOVA-619'];
 
 // the issues of the last page
 const LAST_PAGE_ISSUES = ['NOVA-619', 'NOVA-624', 'NOVA-631'];
+
+// the tests-passing figure before and after one refresh (the dashboard adds 15 per refresh)
+const TESTS_PASSING = { before: { value: '1204', text: '1,204' }, after: { value: '1219', text: '1,219' } };
+
+// past the 45 minutes until the dashboard's first status report
+const STATUS_REPORT_JUMP_MS = 46 * 60 * 1000;
+
+/**
+ * The text a wa-number-ticker shows (its shadow root renders the number; while counting, the final value is only in a
+ * visually hidden span, so the shown text equals the final one once the count has finished).
+ *
+ * @param {import('@playwright/test').Locator} ticker
+ */
+function tickerText(ticker) {
+  return ticker.evaluate(el => {
+    const shown = el.shadowRoot?.querySelector('span:not(.wa-visually-hidden)');
+    return (shown?.textContent ?? '').trim();
+  });
+}
 
 /**
  * The page caption Blazor renders under the issue grid.
@@ -57,6 +78,43 @@ test('dashboard showcase: Refresh shows skeletons while it reloads and brings th
   await expect(feedHeaderSpinner).toHaveCount(0);
   await expect(feed).toBeVisible();
   await expect(main.locator('wa-data-grid')).toHaveCount(1);
+
+  await expectHealthy(page, problems);
+});
+
+test('dashboard showcase: Refresh counts the tests-passing ticker to the reloaded figure', async ({ page }) => {
+  // with reduced motion a ticker shows its final value right away, so the figure does not depend on animation frames
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const problems = await openShowcase(page, ROUTE, [...TAGS, 'wa-number-ticker'], { clock: true });
+  const refresh = page.locator('wa-button', { hasText: 'Refresh' });
+  const ticker = page.locator('main wa-number-ticker');
+
+  await expect(ticker).toHaveAttribute('value', TESTS_PASSING.before.value);
+  await expect.poll(() => tickerText(ticker), 'the ticker shows the figure').toBe(TESTS_PASSING.before.text);
+
+  await pauseClock(page);
+  await refresh.click();
+  await page.clock.fastForward(REFRESH_JUMP_MS);
+  await expect(refresh).not.toHaveAttribute('loading', '');
+  await expect(ticker, 'Blazor renders the reloaded figure').toHaveAttribute('value', TESTS_PASSING.after.value);
+  await expect.poll(() => tickerText(ticker), 'the ticker counted to the reloaded figure').toBe(TESTS_PASSING.after.text);
+
+  await expectHealthy(page, problems);
+});
+
+test('dashboard showcase: the status report countdown reports the sent report and starts over', async ({ page }) => {
+  const problems = await openShowcase(page, ROUTE, [...TAGS, 'wa-counter'], { clock: true });
+  const counter = page.locator('main wa-counter');
+  const sent = page.locator('main').getByText(/status report #\d+ went out to stakeholders/);
+
+  await expect(counter).toHaveAttribute('date', /.+/);
+  const firstReport = await counter.getAttribute('date');
+  await expect(sent, 'no report sent yet').toHaveCount(0);
+
+  // the countdown fires OnFinish when it reaches zero; Blazor records the report and counts down to the next one
+  await page.clock.fastForward(STATUS_REPORT_JUMP_MS);
+  await expect.poll(() => readableText(sent), 'the first report is recorded').toMatch(/status report #1 went out to stakeholders$/);
+  await expect.poll(() => counter.getAttribute('date'), 'the countdown targets the next report').not.toBe(firstReport);
 
   await expectHealthy(page, problems);
 });

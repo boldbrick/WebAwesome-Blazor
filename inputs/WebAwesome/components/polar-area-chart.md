@@ -1,4 +1,4 @@
-<!-- Source: reference doc bundled in the Web Awesome 3.14.0 release zip (dist/skills/webawesome/references/components/polar-area-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/polar-area-chart -->
+<!-- Source: reference doc bundled in the Web Awesome 3.15.0 release zip (dist/skills/webawesome/references/components/polar-area-chart.md) -- component absent from the public GitHub docs tree. Full documentation: https://webawesome.com/docs/components/polar-area-chart -->
 
 # Polar Area Chart [Pro]
 
@@ -54,7 +54,7 @@ If you're using the autoloader or a hosted project, components load on demand �
 Import this component directly from the CDN:
 
 ```js
-import 'https://ka-f.webawesome.com/webawesome@3.14.0/components/polar-area-chart/polar-area-chart.js';
+import 'https://ka-f.webawesome.com/webawesome@3.15.0/components/polar-area-chart/polar-area-chart.js';
 ```
 
 \*\*npm\*\*
@@ -83,53 +83,54 @@ import WaPolarAreaChart from '@awesome.me/webawesome/dist/react/polar-area-chart
 
 ### Slots
 
-| Name | Description |
-| --- | --- |
-| (default) | \`
+Valid slot names for this component (use exactly these — any other `slot` value is
+silently ignored and the element falls back to the default slot):
+
+- `(default)` — An optional `<script type="application/json">` element containing the Chart.js configuration object.
 
 ### Attributes & Properties
 
-| Name | Description | Reflects |
-| --- | --- | --- |
-| \`config\` | \`ChartJS\['config'\]\` The Chart.js configuration object. Setting this property will automatically re-render the chart. Type | |
-| \`description\` description | \`string \\| null\` A description of the chart, used for accessibility. Type Default null | |
-| \`grid\` grid | \`'x' \\| 'y' \\| 'both' \\| 'none'\` Which axes to show grid lines on. Type Default 'both' | |
-| \`indexAxis\` index-axis | \`'x' \\| 'y'\` The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. Type Default 'x' | |
-| \`label\` label | \`string \\| null\` A label for the chart, used for accessibility. Type Default null | |
-| \`legendPosition\` legend-position | \`LayoutPosition \\| 'start' \\| 'end'\` The position of the legend relative to the chart. Type Default 'top' | |
-| \`max\` max | \`number \\| null\` The maximum value for the value axis. Type Default null | |
-| \`min\` min | \`number \\| null\` The minimum value for the value axis. Type Default null | |
-| \`plugins\` plugins | \`array\` Additional Chart.js plugins to register for this chart instance. Type Default \[\] | |
-| \`stacked\` stacked | \`boolean\` Stacks datasets on top of each other along the value axis. Type Default false | |
-| \`type\` type | \`bar\` The type of chart to render. Valid types include , line, pie, doughnut, polarArea, radar, scatter, and bubble. Type ChartType Default 'polarArea' | |
-| \`withoutAnimation\` without-animation | \`boolean\` Disables chart animations Type Default false | |
-| \`withoutLegend\` without-legend | \`boolean\` Hides the legend Type Default false | |
-| \`withoutTooltip\` without-tooltip | \`boolean\` Hides tooltips over data points Type Default false | |
-| \`xLabel\` x-label | \`string \\| null\` A label for the x-axis. Type Default null | |
-| \`yLabel\` y-label | \`string \\| null\` A label for the y-axis. Type Default null | |
+| Property | Attribute | Description | Type | Default |
+| --- | --- | --- | --- | --- |
+| `type` | `type` | The type of chart to render. Valid types include `bar`, `line`, `pie`, `doughnut`, `polarArea`, `radar`, `scatter`, and `bubble`. | `ChartType` | `'polarArea'` |
+| `label` | `label` | A label for the chart, used for accessibility. | `string \| null` | `null` |
+| `description` | `description` | A description of the chart, used for accessibility. | `string \| null` | `null` |
+| `xLabel` | `x-label` | A label for the x-axis. | `string \| null` | `null` |
+| `yLabel` | `y-label` | A label for the y-axis. | `string \| null` | `null` |
+| `legendPosition` | `legend-position` | The position of the legend relative to the chart. | `LayoutPosition \| 'start' \| 'end'` | `'top'` |
+| `stacked` | `stacked` | Stacks datasets on top of each other along the value axis. | `boolean` | `false` |
+| `indexAxis` | `index-axis` | The base axis of the dataset. 'x' for vertical bars and 'y' for horizontal bars. | `'x' \| 'y'` | `'x'` |
+| `grid` | `grid` | Which axes to show grid lines on. | `'x' \| 'y' \| 'both' \| 'none'` | `'both'` |
+| `min` | `min` | The minimum value for the value axis. | `number \| null` | `null` |
+| `max` | `max` | The maximum value for the value axis. | `number \| null` | `null` |
+| `withoutAnimation` | `without-animation` | Disables chart animations | `boolean` | `false` |
+| `withoutLegend` | `without-legend` | Hides the legend | `boolean` | `false` |
+| `withoutTooltip` | `without-tooltip` | Hides tooltips over data points | `boolean` | `false` |
+| `config` | — | The Chart.js configuration object. Setting this property will automatically re-render the chart. | `ChartJS['config']` | — |
+| `plugins` | `plugins` | Additional Chart.js plugins to register for this chart instance. | `array` | `[]` |
 
 ### CSS Custom Properties
 
-| Name | Description |
-| --- | --- |
-| \`--border-color-1\` | \`var(--wa-color-blue-60)\` Border color for the first dataset. Default |
-| \`--border-color-2\` | \`var(--wa-color-pink-60)\` Border color for the second dataset. Default |
-| \`--border-color-3\` | \`var(--wa-color-green-60)\` Border color for the third dataset. Default |
-| \`--border-color-4\` | \`var(--wa-color-yellow-60)\` Border color for the fourth dataset. Default |
-| \`--border-color-5\` | \`var(--wa-color-purple-60)\` Border color for the fifth dataset. Default |
-| \`--border-color-6\` | \`var(--wa-color-orange-60)\` Border color for the sixth dataset. Default |
-| \`--border-radius\` | \`var(--wa-border-radius-s)\` Border radius for bar charts. Default |
-| \`--border-width\` | \`var(--wa-border-width-s)\` Border width for bars and arcs. Default |
-| \`--fill-color-1\` | \`color-mix(in srgb, var(--wa-color-blue-60) 40%, transparent)\` Fill color for the first dataset. Default |
-| \`--fill-color-2\` | \`color-mix(in srgb, var(--wa-color-pink-60) 40%, transparent)\` Fill color for the second dataset. Default |
-| \`--fill-color-3\` | \`color-mix(in srgb, var(--wa-color-green-60) 40%, transparent)\` Fill color for the third dataset. Default |
-| \`--fill-color-4\` | \`color-mix(in srgb, var(--wa-color-yellow-60) 40%, transparent)\` Fill color for the fourth dataset. Default |
-| \`--fill-color-5\` | \`color-mix(in srgb, var(--wa-color-purple-60) 40%, transparent)\` Fill color for the fifth dataset. Default |
-| \`--fill-color-6\` | \`color-mix(in srgb, var(--wa-color-orange-60) 40%, transparent)\` Fill color for the sixth dataset. Default |
-| \`--grid-border-width\` | \`var(--wa-border-width-s)\` Border width for chart grid lines and axis borders. Default |
-| \`--grid-color\` | \`var(--wa-color-neutral-border-quiet)\` Color of the chart grid lines and axis borders. Default |
-| \`--line-border-width\` | \`var(--wa-border-width-m)\` Border width for line and radar charts. Default |
-| \`--point-radius\` | \`var(--wa-border-width-m)\` Radius of data point dots. Default |
+| Name | Description | Default |
+| --- | --- | --- |
+| `--fill-color-1` | Fill color for the first dataset. | `color-mix(in srgb, var(--wa-color-blue-60) 40%, transparent)` |
+| `--fill-color-2` | Fill color for the second dataset. | `color-mix(in srgb, var(--wa-color-pink-60) 40%, transparent)` |
+| `--fill-color-3` | Fill color for the third dataset. | `color-mix(in srgb, var(--wa-color-green-60) 40%, transparent)` |
+| `--fill-color-4` | Fill color for the fourth dataset. | `color-mix(in srgb, var(--wa-color-yellow-60) 40%, transparent)` |
+| `--fill-color-5` | Fill color for the fifth dataset. | `color-mix(in srgb, var(--wa-color-purple-60) 40%, transparent)` |
+| `--fill-color-6` | Fill color for the sixth dataset. | `color-mix(in srgb, var(--wa-color-orange-60) 40%, transparent)` |
+| `--border-color-1` | Border color for the first dataset. | `var(--wa-color-blue-60)` |
+| `--border-color-2` | Border color for the second dataset. | `var(--wa-color-pink-60)` |
+| `--border-color-3` | Border color for the third dataset. | `var(--wa-color-green-60)` |
+| `--border-color-4` | Border color for the fourth dataset. | `var(--wa-color-yellow-60)` |
+| `--border-color-5` | Border color for the fifth dataset. | `var(--wa-color-purple-60)` |
+| `--border-color-6` | Border color for the sixth dataset. | `var(--wa-color-orange-60)` |
+| `--grid-color` | Color of the chart grid lines and axis borders. | `var(--wa-color-neutral-border-quiet)` |
+| `--border-width` | Border width for bars and arcs. | `var(--wa-border-width-s)` |
+| `--border-radius` | Border radius for bar charts. | `var(--wa-border-radius-s)` |
+| `--grid-border-width` | Border width for chart grid lines and axis borders. | `var(--wa-border-width-s)` |
+| `--line-border-width` | Border width for line and radar charts. | `var(--wa-border-width-m)` |
+| `--point-radius` | Radius of data point dots. | `var(--wa-border-width-m)` |
 
 ## Examples
 
