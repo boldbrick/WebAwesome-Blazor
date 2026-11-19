@@ -7,7 +7,7 @@
 Blazor-first wrappers for the **[Web Awesome](https://webawesome.com) (WA)** web components ([GitHub](https://github.com/shoelace-style/webawesome)), providing idiomatic C# APIs, eventing, and attributes that play nicely with Blazor (Server & WebAssembly). Focused on seamless integration into the Blazor ecosystem. The main package adds no application logic and no extension components; optional extras ship in a separate package, `WebAwesome.Blazor.Extensions`.
 
 > **Status**
-> - Active train: **WA 3.14**
+> - Active train: **WA 3.15**
 > - Current alignment: **WA 3.15.0** (tagged releases use `wa-blazor-<version>`)
 
 **[Live demo](https://boldbrick.github.io/WebAwesome-Blazor/)** — every component, rendered from this library; published to GitHub Pages as a Blazor WebAssembly app. It can also be built and run locally in server mode: `dotnet run --project src/WebAwesome.Blazor.Demo.Server`.
@@ -213,6 +213,7 @@ We align binding versions to WA versions:
 | 3.0 train   | rolling prereleases → tags as above    | `master-WA-3.0`         |
 | 3.0 patches | `wa-blazor-3.0.x` tagged on the subtrunk | `master-WA-3.0`       |
 | 3.14.0 (bindings revisions) | `wa-blazor-3.14.0.x` tagged on the subtrunk | `master-WA-3.14` |
+| 3.15.0      | `wa-blazor-3.15.0`          | `master` (promoted)     |
 
 > Development happens in PlasticSCM on hierarchical branches (`/main`, `/main/WA-3.0`); the GitHub mirror is produced by GitSync, whose fixed naming maps `/main` → `master` and flattens hierarchy with dashes (`/main/WA-3.0` → `master-WA-3.0`).
 
@@ -261,7 +262,7 @@ A Blazor WebAssembly gallery app (`src/WebAwesome.Blazor.Demo`) exercises every 
 - Missing something? File an issue or PR against the active subtrunk.
 
 ## Roadmap (contributions welcome!)
-- Ride the release train to current Web Awesome (3.1 → 3.14.x) via the automated upgrade pipeline
+- Ride the release train to current Web Awesome (3.1 → 3.15.x) via the automated upgrade pipeline
 
 > **Non-goal of `WebAwesome.Blazor`:** app-level convenience components (toast dispatch services, confirm dialogs, dark-mode toggles). It is an architectural decision that the main package ships pure bindings only — no extensions will be bundled into it. Features that add behavior upstream Web Awesome does not have go into the optional [`WebAwesome.Blazor.Extensions`](#extensions-package-optional) package.
 
